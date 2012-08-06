@@ -199,7 +199,7 @@ int CMessageBox::exec(int timeout)
 
 	uint64_t timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
 
-#if 1
+#ifdef FB_BLIT
 	CFrameBuffer::getInstance()->blit();
 #endif
 
@@ -268,7 +268,7 @@ int CMessageBox::exec(int timeout)
 			res  = menu_return::RETURN_EXIT_ALL;
 			loop = false;
 		}
-#if 1
+#ifdef FB_BLIT
 		CFrameBuffer::getInstance()->blit();
 #endif
 	}
