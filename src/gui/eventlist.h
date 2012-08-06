@@ -62,6 +62,7 @@ class EventList
                         SEARCH_EPG_GENRE,
                         SEARCH_EPG_ALL
                 }SEARCH_EPG;
+		
                 typedef enum
                 {
                         SEARCH_LIST_NONE,
@@ -69,17 +70,18 @@ class EventList
                         SEARCH_LIST_BOUQUET,
                         SEARCH_LIST_ALL
                 }SEARCH_LIST;
+		
         private:
-        int             m_search_epg_item;
-        std::string     m_search_keyword;
-        int             m_search_list;
-        t_channel_id    m_search_channel_id;
-        t_bouquet_id    m_search_bouquet_id;
-        bool m_showChannel;
+		int             m_search_epg_item;
+		std::string     m_search_keyword;
+		int             m_search_list;
+		t_channel_id    m_search_channel_id;
+		t_bouquet_id    m_search_bouquet_id;
+		bool m_showChannel;
 
         private:
                 int findEvents(void);
-    // Eventfinder end
+		// Eventfinder end
 
 	private:
 		CFrameBuffer	*frameBuffer;
