@@ -126,7 +126,7 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 	if(dmxUTC == NULL) {
 		dmxUTC = new cDemux(channel?channel->getDemuxIndex() : 0);
-		dmxUTC->Open(DMX_PSI_CHANNEL, 4096, channel?channel->getFeIndex() : 0 );
+		dmxUTC->Open(DMX_PSI_CHANNEL, 1026, channel?channel->getFeIndex() : 0 );
 	}
 
 	memset(&filter, 0, DMX_FILTER_SIZE);

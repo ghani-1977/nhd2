@@ -468,7 +468,7 @@ int DMX::immediate_start(void)
 {
 	if (isOpen())
 	{
-		xprintf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>DMX::imediate_start: isOpen()<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+		xprintf("DMX::imediate_start: isOpen()\n");
 		closefd();
 	}
 
@@ -479,7 +479,7 @@ int DMX::immediate_start(void)
 
 	if(dmx == NULL) 
 	{
-		dmx = new cDemux( /*channel?channel->getDemuxIndex() : 0*/ dmx_num);
+		dmx = new cDemux( channel?channel->getDemuxIndex() : 0 );
 		dmx->Open(DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, channel?channel->getFeIndex() : 0);
 	}
 
