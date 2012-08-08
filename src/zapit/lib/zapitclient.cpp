@@ -777,6 +777,7 @@ void CZapitClient::setScanType(const scanType mode)
 }
 
 /* query Frontend Signal parameters */
+#if 0
 void CZapitClient::getFESignal (struct responseFESignal &f)
 {
 	struct responseFESignal rsignal;
@@ -790,6 +791,7 @@ void CZapitClient::getFESignal (struct responseFESignal &f)
 
 	close_connection();
 }
+#endif
 
 /***********************************************/
 /*                                             */
@@ -1079,66 +1081,6 @@ bool CZapitClient::isRecordModeActive()
 	close_connection();
 	return response.activated;
 }
-
-// set PIP mode
-void CZapitClient::setPipMode(const bool activate)
-{
-	CZapitMessages::commandSetPipMode msg;
-	msg.activate = activate;
-	send(CZapitMessages::CMD_SET_PIP_MODE, (char*)&msg, sizeof(msg));
-	close_connection();
-}
-
-// is PIP mode active
-bool CZapitClient::isPipModeActive()
-{
-	send(CZapitMessages::CMD_GET_PIP_MODE);
-
-	CZapitMessages::responseGetPipModeState response;
-	CBasicClient::receive_data((char* )&response, sizeof(response));
-
-	close_connection();
-	return response.activated;
-}
-
-// get aspect ratio
-void CZapitClient::getAspectRatio(int *ratio)
-{
-	CZapitMessages::commandInt msg;
-	send(CZapitMessages::CMD_GET_ASPECTRATIO, 0, 0);
-	CBasicClient::receive_data((char* )&msg, sizeof(msg));
-	* ratio = msg.val;
-	close_connection();
-}
-
-// set aspect ratio
-void CZapitClient::setAspectRatio(int ratio)
-{
-	CZapitMessages::commandInt msg;
-	msg.val = ratio;
-	send(CZapitMessages::CMD_SET_ASPECTRATIO, (char*)&msg, sizeof(msg));
-	close_connection();
-}
-
-// get mode34
-void CZapitClient::getMode43(int *m43)
-{
-	CZapitMessages::commandInt msg;
-	send(CZapitMessages::CMD_GET_MODE43, 0, 0);
-	CBasicClient::receive_data((char* )&msg, sizeof(msg));
-	* m43 = msg.val;
-	close_connection();
-}
-
-/* set mode 34 */
-void CZapitClient::setMode43(int m43)
-{
-	CZapitMessages::commandInt msg;
-	msg.val = m43;
-	send(CZapitMessages::CMD_SET_MODE43, (char*)&msg, sizeof(msg));
-	close_connection();
-}
-//
 
 /* register event */
 void CZapitClient::registerEvent(const unsigned int eventID, const unsigned int clientID, const char * const udsName)
