@@ -47,7 +47,6 @@ int usage (const char * basename)
 		<< "\t-dr <count>\t\tset diseqc repeats: " << std::endl
 		<< "\t-ra\t\ttoggles radio mode" << std::endl
 		<< "\t-re\t\tswitch record mode on/off: " << std::endl
-		<< "\t--pe\t\tswitch pip mode on/off: " << std::endl
 		<< "\t-p\t\tstart/stop playback: " << std::endl
 		<< "\t-a <audio-number>\t\tchange audio pid: " << std::endl
 		<< "\t-c\t\treload channels bouquets: " << std::endl
@@ -63,15 +62,6 @@ int usage (const char * basename)
 		<< "\t-kill\t\tshutdown zapit: " << std::endl
 		<< "\t-esb\t\tenter standby: " << std::endl
 		<< "\t-lsb\t\tleave standby: " << std::endl
-		//test
-		<< "\t-var\t\tget aspect ratio: " << std::endl
-		<< "\t-var <aspectratio>\tset aspect ratio: " << std::endl
-#if 0
-		//FIXME howto read aspect mode back?
-		<< "\t-vm43\t\tget 4:3 mode: " << std::endl
-#endif
-		<< "\t-vm43 <4:3mode>\tset 4:3 mode: " << std::endl
-		//
         	<< "\t--1080\t\tswitch to hd 1080i mode: " << std::endl
         	<< "\t--pal\t\tswitch to pal mode: " << std::endl
         	<< "\t--720\t\tswitch to hd 720p mode: " << std::endl
@@ -97,15 +87,10 @@ int main (int argc, char** argv)
 	int mute = -1;
 	int volume = -1;
 	int nvod = -1;
-	//test
-	int arat = -1;
-	int m43 = -1;
-	//
 	const char * channelName = NULL;
 
 	bool playback = false;
 	bool recordmode = false;
-	bool pipmode = false;
 	bool radio = false;
 	bool reload = false;
 	bool register_neutrino = false;
@@ -122,12 +107,9 @@ int main (int argc, char** argv)
 	bool sendMotorCommand = false;
 	bool quiet = false;
 
-	//test
 	bool getchannel = false;
-	bool aspectratio = false;
-	bool mode43 = false;
 	bool getserviceinfo = false;
-	//
+
 	uint8_t motorCmdType = 0;
 	uint8_t motorCmd = 0;
 	uint8_t motorNumParameters = 0;
@@ -258,32 +240,6 @@ int main (int argc, char** argv)
 			recordmode = true;
 			continue;
 		}
-		else if (!strncmp(argv[i], "--pe", 4))
-		{
-			pipmode = true;
-			continue;
-		}
-		else if (!strncmp(argv[i], "-var", 4))
-		{
-			aspectratio = true;
-			if (i < argc - 1)
-				sscanf(argv[++i], "%d", &arat);
-			continue;
-		}
-		else if (!strncmp(argv[i], "-vm43", 5))
-		{
-			mode43 = true;
-			if (i < argc - 1)
-			{
-				sscanf(argv[++i], "%d", &m43);
-				continue;
-			}
-#if 0 
-			//FIXME howto read aspect mode back?
-			continue;
-#endif
-		}
-		//
 		else if (!strncmp(argv[i], "-sb", 3))
 		{
 			savebouquets = true;
@@ -491,38 +447,6 @@ int main (int argc, char** argv)
 	if (recordmode)
 	{
 		zapit.setRecordMode(!zapit.isRecordModeActive());
-		return 0;
-	}
-	
-	if (pipmode)
-	{
-		zapit.setPipMode(!zapit.isPipModeActive());
-		return 0;
-	}
-	
-	//aspectratio
-	if (aspectratio)
-	{
-		if(arat >= 0)
-			zapit.setAspectRatio(arat);
-		else
-		{
-			zapit.getAspectRatio(&arat);
-			printf("%d\n", arat);
-		}
-		return 0;
-	}
-	
-	//mode34
-	if (mode43)
-	{
-		if(m43 >= 0)
-			zapit.setMode43(m43);
-		else
-		{
-			zapit.getMode43(&m43);
-			printf("%d\n",m43);
-		}
 		return 0;
 	}
 
