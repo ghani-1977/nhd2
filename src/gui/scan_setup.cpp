@@ -915,39 +915,28 @@ void CScanSettings::useDefaults()
 
 bool CScanSettings::loadSettings(const char * const fileName, int feIndex)
 {
-	printf("[neutrino] CScanSettings::loadSettings: fe%d\n", feIndex);
+	printf("CScanSettings::loadSettings: fe%d\n", feIndex);
 	
 	/* if scan.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
 		useDefaults( );
 
-	//diseqcMode = configfile.getInt32("diseqcMode"  , diseqcMode);
 	diseqcMode = getConfigValue(feIndex, "diseqcMode", diseqcMode);
-	//diseqcRepeat = configfile.getInt32("diseqcRepeat", diseqcRepeat);
 	diseqcRepeat = getConfigValue(feIndex, "diseqcRepeat", diseqcRepeat);
 
-	//bouquetMode = (CZapitClient::bouquetMode) configfile.getInt32("bouquetMode" , bouquetMode);
 	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(feIndex, "bouquetMode", bouquetMode);
-	//scanType=(CZapitClient::scanType) configfile.getInt32("scanType", scanType);
 	scanType = (CZapitClient::scanType) getConfigValue(feIndex, "scanType", scanType);
-	//strcpy(satNameNoDiseqc, configfile.getString("satNameNoDiseqc", satNameNoDiseqc).c_str());
 	char cfg_key[81];
 	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feIndex);
 	strcpy(satNameNoDiseqc, configfile.getString(cfg_key, satNameNoDiseqc).c_str());
 
-	//scan_mode = configfile.getInt32("scan_mode", 1); // NIT (0) or fast (1)
 	scan_mode = getConfigValue(feIndex, "scan_mode", 1); // NIT (0) or fast (1)
 	
-	//TP_fec = configfile.getInt32("TP_fec", 1);
 	TP_fec = getConfigValue(feIndex, "TP_fec", 1);
-	//TP_pol = configfile.getInt32("TP_pol", 0);
 	TP_pol = getConfigValue(feIndex, "TP_pol", 0);
-	//TP_mod = configfile.getInt32("TP_mod", 3);
 	TP_mod = getConfigValue(feIndex, "TP_mod", 3);
-	//strcpy(TP_freq, configfile.getString("TP_freq", "10100000").c_str());
 	sprintf(cfg_key, "fe%d_TP_freq", feIndex);
 	strcpy(TP_freq, configfile.getString(cfg_key, "10100000").c_str());
-	//strcpy(TP_rate, configfile.getString("TP_rate", "27500000").c_str());
 	sprintf(cfg_key, "fe%d_TP_rate", feIndex);
 	strcpy(TP_rate, configfile.getString(cfg_key, "27500000").c_str());
 #if HAVE_DVB_API_VERSION >= 3
@@ -956,22 +945,14 @@ bool CScanSettings::loadSettings(const char * const fileName, int feIndex)
 #endif
 
 	//DVB-T
-	//TP_band = configfile.getInt32("TP_band", 0);
 	TP_band = getConfigValue(feIndex, "TP_band", 0);
-	//TP_HP = configfile.getInt32("TP_HP", 2);
 	TP_HP = getConfigValue(feIndex, "TP_HP", 2);
-	//TP_LP = configfile.getInt32("TP_LP", 1);
 	TP_LP = getConfigValue(feIndex, "TP_LP", 1);
-	//TP_const = configfile.getInt32("TP_const", 1);
 	TP_const = getConfigValue(feIndex, "TP_const", 1);
-	//TP_trans = configfile.getInt32("TP_trans", 1);
 	TP_trans = getConfigValue(feIndex, "TP_trans", 1);
-	//TP_guard = configfile.getInt32("TP_guard", 3);
 	TP_guard = getConfigValue(feIndex, "TP_guard", 3);
-	//TP_hierarchy = configfile.getInt32("TP_hierarchy", 0);
 	TP_hierarchy = getConfigValue(feIndex, "TP_hierarchy", 0);
 		
-	//scanSectionsd = configfile.getInt32("scanSectionsd", 0);
 	scanSectionsd = getConfigValue(feIndex, "scanSectionsd", 0);
 
 	return true;
@@ -981,34 +962,6 @@ bool CScanSettings::saveSettings(const char * const fileName, int feIndex)
 {
 	printf("CScanSettings::saveSettings: fe%d\n", feIndex);
 	
-	#if 0
-	configfile.setInt32( "diseqcMode", diseqcMode );
-	configfile.setInt32( "diseqcRepeat", diseqcRepeat );
-	
-	configfile.setInt32( "bouquetMode", bouquetMode );
-	configfile.setInt32( "scanType", scanType );
-	configfile.setString( "satNameNoDiseqc", satNameNoDiseqc );
-	
-	configfile.setInt32("scan_mode", scan_mode);
-
-	configfile.setInt32("TP_fec", TP_fec);
-	configfile.setInt32("TP_pol", TP_pol);
-	configfile.setInt32("TP_mod", TP_mod);
-	configfile.setString("TP_freq", TP_freq);
-	configfile.setString("TP_rate", TP_rate);
-
-	configfile.setInt32("TP_band", TP_band);
-	configfile.setInt32("TP_HP", TP_HP);
-	configfile.setInt32("TP_LP", TP_LP);
-	configfile.setInt32("TP_const", TP_const);
-	configfile.setInt32("TP_trans", TP_trans);
-	configfile.setInt32("TP_guard", TP_guard);
-	configfile.setInt32("TP_hierarchy", TP_hierarchy);
-
-	configfile.setInt32("scanSectionsd", scanSectionsd );
-	#endif
-	
-	#if 1
 	setConfigValue(feIndex, "diseqcMode", diseqcMode );
 	setConfigValue(feIndex, "diseqcRepeat", diseqcRepeat );
 	
@@ -1038,7 +991,6 @@ bool CScanSettings::saveSettings(const char * const fileName, int feIndex)
 	setConfigValue(feIndex, "TP_hierarchy", TP_hierarchy);
 
 	setConfigValue(feIndex, "scanSectionsd", scanSectionsd );
-	#endif
 
 	if(configfile.getModifiedFlag())
 	{
