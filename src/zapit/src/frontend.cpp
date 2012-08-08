@@ -60,8 +60,8 @@ extern int motorRotationSpeed;
 //extern t_channel_id live_channel_id;
 
 // unicable
-extern int uni_scr;
-extern int uni_qrg;
+//extern int uni_scr;
+//extern int uni_qrg;
 
 
 #define diff(x,y)	(max(x,y) - min(x,y))
@@ -1318,6 +1318,7 @@ void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t freque
 /* frequency is the IF-frequency (950-2100), what a stupid spec...
    high_band, horizontal, bank are actually bool (0/1)
    bank specifies the "switch bank" (as in Mini-DiSEqC A/B) */
+#if 0
 uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int high_band, const int horizontal, const int bank)
 {
 	uint32_t uni_qrgs[] = { 1284, 1400, 1516, 1632, 1748, 1864, 1980, 2096 };
@@ -1355,6 +1356,7 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 	
 	return 0;
 }
+#endif
 
 const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 {
