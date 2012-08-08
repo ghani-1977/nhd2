@@ -82,14 +82,9 @@ unsigned int def_volume_left = 0, def_volume_right = 0;
 int audio_mode = 0;
 int def_audio_mode = 0;
 
-/**/
-int aspectratio = 0;
-int mode43 = 0;
-
-/* live/record/pip channel id */
+/* live/record channel id */
 t_channel_id live_channel_id;
 static t_channel_id rec_channel_id;
-static t_channel_id pip_channel_id;
 
 int rezapTimeout;
 
@@ -165,8 +160,8 @@ int FrontendCount = 0;
 bool twin_tuned = false;
 
 /* variables for EN 50494 (a.k.a Unicable) */
-int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
-int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
+//int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
+//int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
 
 
 /* current zapit mode */
@@ -175,7 +170,6 @@ enum {
 	RADIO_MODE = 0x02,
 	//0x03 ???
 	RECORD_MODE = 0x04,
-	PIP_MODE = RECORD_MODE //0x04
 };
 
 int currentMode;
@@ -237,6 +231,100 @@ extern void tuxtx_stop_subtitle();
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
+// frontend config
+CConfigFile fe_configfile(',', false);
+#define FRONTEND_CONFIGFILE "/var/tuxbox/config/zapit/frontend,conf"
+
+// borrowed from cst neutrino-hd (femanager.cpp)
+uint32_t getConfigValue(int num, const char * name, uint32_t defval)
+{
+	char cfg_key[81];
+	sprintf(cfg_key, "fe%d_%s", num, name);
+	
+	return fe_configfile.getInt32(cfg_key, defval);
+}
+
+// borrowed from cst neutrino-hd (femanger.cpp)
+void setConfigValue(int num, const char * name, uint32_t val)
+{
+	char cfg_key[81];
+	
+	sprintf(cfg_key, "fe%d_%s", num, name);
+	fe_configfile.setInt32(cfg_key, val);
+}
+
+// save frontend config
+void saveFrontendConfig()
+{
+	printf("zapit: saveFrontendConfig\n");
+	
+	for(int i = 0; i < FrontendCount; i++)
+	{
+		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+		{
+			setConfigValue(i, "lastSatellitePosition", CFrontend::getInstance(i)->getCurrentSatellitePosition());
+			setConfigValue(i, "diseqcRepeats", CFrontend::getInstance(i)->getDiseqcRepeats());
+			setConfigValue(i, "diseqcType", CFrontend::getInstance(i)->getDiseqcType() );
+				
+			char tempd[12];
+			sprintf(tempd, "%3.6f", gotoXXLatitude);
+			//config.setString("gotoXXLatitude", tempd);
+			char cfg_key[81];
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", i);
+			fe_configfile.setString(cfg_key, tempd );
+			
+			sprintf(tempd, "%3.6f", gotoXXLongitude);
+			//config.setString("gotoXXLongitude", tempd);
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", i);
+			fe_configfile.setString(cfg_key, tempd );
+			
+			setConfigValue(i, "gotoXXLaDirection", gotoXXLaDirection);
+			setConfigValue(i, "gotoXXLoDirection", gotoXXLoDirection);
+			setConfigValue(i, "useGotoXX", useGotoXX);
+			setConfigValue(i, "repeatUsals", repeatUsals);
+		}
+	}
+	
+	if (fe_configfile.getModifiedFlag())
+		fe_configfile.saveConfig(FRONTEND_CONFIGFILE);
+}
+
+void loadFrontendConfig()
+{
+	printf("zapit: loadFrontendConfig\n");
+	
+	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
+		WARN("%s not found", FRONTEND_CONFIGFILE);
+	
+	for(int i = 0; i < FrontendCount; i++)
+	{
+		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+		{
+			useGotoXX = getConfigValue(i, "useGotoXX", 0);
+			
+			//gotoXXLatitude = strtod(config.getString("gotoXXLatitude", "0.0").c_str(), NULL);
+			//gotoXXLongitude = strtod(config.getString("gotoXXLongitude", "0.0").c_str(), NULL);
+			char cfg_key[81];
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", i);
+			gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", i);
+			gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			
+			gotoXXLaDirection = getConfigValue(i, "gotoXXLaDirection", 0);
+			gotoXXLoDirection = getConfigValue(i, "gotoXXLoDirection", 0);
+			repeatUsals = fe_configfile.getInt32("repeatUsals", 0);
+
+			diseqcType = (diseqc_t)getConfigValue(i, "diseqcType", NO_DISEQC);
+			//diseqcRepeats = getConfigValue(i, "diseqcRepeats", 0);
+			//printf("[zapit.cpp] diseqc type = %d\n", diseqcType);
+			motorRotationSpeed = getConfigValue(i, "motorRotationSpeed", 18); // default: 1.8 degrees per second
+
+			CFrontend::getInstance(i)->setDiseqcRepeats( getConfigValue(i, "diseqcRepeats", 0) );
+			CFrontend::getInstance(i)->setCurrentSatellitePosition( getConfigValue(i, "lastSatellitePosition", 0) );
+			CFrontend::getInstance(i)->setDiseqcType(diseqcType);
+		}
+	}
+}
 
 void saveZapitSettings(bool write, bool write_a)
 {
@@ -270,26 +358,8 @@ void saveZapitSettings(bool write, bool write_a)
 			config.setInt64("lastChannel", live_channel_id);
 		}
 		
-		// frontend settings //TODO
-		for(int i = 0; i < FrontendCount; i++)
-		{
-			if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
-			{
-				config.setInt32("lastSatellitePosition", CFrontend::getInstance(i)->getCurrentSatellitePosition());
-				config.setInt32("diseqcRepeats", CFrontend::getInstance(i)->getDiseqcRepeats());
-				config.setInt32("diseqcType", CFrontend::getInstance(i)->getDiseqcType() /*diseqcType*/);
-				
-				char tempd[12];
-				sprintf(tempd, "%3.6f", gotoXXLatitude);
-				config.setString("gotoXXLatitude", tempd);
-				sprintf(tempd, "%3.6f", gotoXXLongitude);
-				config.setString("gotoXXLongitude", tempd);
-				config.setInt32("gotoXXLaDirection", gotoXXLaDirection);
-				config.setInt32("gotoXXLoDirection", gotoXXLoDirection);
-				//config.setInt32("useGotoXX", useGotoXX);
-				config.setInt32("repeatUsals", repeatUsals);
-			}
-		}
+		// save frontend settings
+		saveFrontendConfig();
 
 		config.setInt32("rezapTimeout", rezapTimeout);
 		config.setBool("sortNames", sortNames);
@@ -389,26 +459,7 @@ void loadZapitSettings()
 	//uni_qrg = config.getInt32("uni_qrg", 0);
 
 	// frontend settings
-	for(int i = 0; i < FrontendCount; i++)
-	{
-		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
-		{
-			useGotoXX = config.getInt32("useGotoXX", 0);
-			gotoXXLatitude = strtod(config.getString("gotoXXLatitude", "0.0").c_str(), NULL);
-			gotoXXLongitude = strtod(config.getString("gotoXXLongitude", "0.0").c_str(), NULL);
-			gotoXXLaDirection = config.getInt32("gotoXXLaDirection", 0);
-			gotoXXLoDirection = config.getInt32("gotoXXLoDirection", 0);
-			repeatUsals = config.getInt32("repeatUsals", 0);
-
-			diseqcType = (diseqc_t)config.getInt32("diseqcType", NO_DISEQC);
-			//printf("[zapit.cpp] diseqc type = %d\n", diseqcType);
-			motorRotationSpeed = config.getInt32("motorRotationSpeed", 18); // default: 1.8 degrees per second
-
-			CFrontend::getInstance(i)->setDiseqcRepeats(config.getInt32("diseqcRepeats", 0));
-			CFrontend::getInstance(i)->setCurrentSatellitePosition(config.getInt32("lastSatellitePosition", 0));
-			CFrontend::getInstance(i)->setDiseqcType(diseqcType);
-		}
-	}
+	loadFrontendConfig();
 
 	//load audio map
 	load_audio_map();
@@ -669,7 +720,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	bool failed = false;
 	CZapitChannel * newchannel;
 
-	DBG("[zapit] zapto channel id %llx diseqcType %d nvod %d\n", channel_id, diseqcType, in_nvod);
+	DBG("[zapit] zapto channel id %llx nvod %d\n", channel_id, in_nvod);
 
 	// find channel to zap
 	if((newchannel = find_channel_tozap(channel_id, in_nvod)) == NULL) 
@@ -948,48 +999,6 @@ void unsetRecordMode(void)
 	}
 
 	rec_channel_id = 0;
-}
-
-void setPipMode(void)
-{
-	if(currentMode & PIP_MODE) 
-		return;
-
-	currentMode |= PIP_MODE;
-
-	eventServer->sendEvent(CZapitClient::EVT_PIPMODE_ACTIVATED, CEventServer::INITID_ZAPIT );
-
-	pip_channel_id = live_channel_id;
-}
-
-void unsetPipMode(void)
-{
-	if(!(currentMode & PIP_MODE)) 
-		return;
-
-	currentMode &= ~PIP_MODE;
- 
-	eventServer->sendEvent(CZapitClient::EVT_PIPMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
-
-	/* if we on rec. channel, just update pmt with new camask,
-	* else we must stop cam1 and start cam0 for current live channel
-	* in standby should be no cam1 running.
-	*/
-	if(standby)
-	{
-		cam0->sendMessage(0,0); // stop
-	}
-	else if(live_channel_id == pip_channel_id) 
-	{
-		cam0->setCaPmt(channel->getCaPmt(), 0, channel->getDemuxIndex(), true); // demux 0, update
-	} 
-	else 
-	{
-		cam1->sendMessage(0, 0); // stop
-		cam0->setCaPmt(channel->getCaPmt(), 0, channel->getDemuxIndex() ); // start
-	}
-
-	pip_channel_id = 0;
 }
 
 int prepare_channels()
@@ -1710,28 +1719,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &msgGetRecordModeState, sizeof(msgGetRecordModeState));
 			break;
 		}
-		case CZapitMessages::CMD_SET_PIP_MODE: 
-		{
-			CZapitMessages::commandSetPipMode msgSetPipMode;
-			CBasicServer::receive_data(connfd, &msgSetPipMode, sizeof(msgSetPipMode));
-			printf("[zapit] pip mode: %d\n", msgSetPipMode.activate);
-			fflush(stdout);
-			
-			if (msgSetPipMode.activate)
-				setPipMode();
-			else
-				unsetPipMode();
-			break;
-		}
-	
-		case CZapitMessages::CMD_GET_PIP_MODE: 
-		{
-			CZapitMessages::responseGetPipModeState msgGetPipModeState;
-			msgGetPipModeState.activated = (currentMode & PIP_MODE);
-			CBasicServer::send_data(connfd, &msgGetPipModeState, sizeof(msgGetPipModeState));
-			break;
-		}
-		//
 		
 		case CZapitMessages::CMD_SB_GET_PLAYBACK_ACTIVE: 
 		{
@@ -1973,55 +1960,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &msg, sizeof(msg));
 			break;
 		}
-	
-		#ifdef TEST
-		case CZapitMessages::CMD_SET_ASPECTRATIO: 
-		{
-			CZapitMessages::commandInt msg;
-			CBasicServer::receive_data(connfd, &msg, sizeof(msg));
-			aspectratio=(int) msg.val;
-			if(videoDecoder) 
-				videoDecoder->setAspectRatio(aspectratio, ASPECTRATIO_PANSCAN2);
-
-			break;
-		}
-	
-		case CZapitMessages::CMD_GET_ASPECTRATIO: 
-		{
-			CZapitMessages::commandInt msg;
-			if(videoDecoder) 
-				aspectratio = videoDecoder->getAspectRatio();
-
-			msg.val = aspectratio;
-			CBasicServer::send_data(connfd, &msg, sizeof(msg));
-			break;
-		}
-	
-		case CZapitMessages::CMD_SET_MODE43: 
-		{
-			CZapitMessages::commandInt msg;
-			CBasicServer::receive_data(connfd, &msg, sizeof(msg));
-			mode43=(int) msg.val;
-			if(videoDecoder)
-				videoDecoder->setAspectRatio(-1, mode43);
-
-			break;
-		}
-	
-#if 0 
-		//FIXME howto read aspect mode back?
-		case CZapitMessages::CMD_GET_MODE43: 
-		{
-			CZapitMessages::commandInt msg;
-			if(videoDecoder) 
-				mode43=videoDecoder->getCroppingMode();
-			msg.val = mode43;
-			CBasicServer::send_data(connfd, &msg, sizeof(msg));
-			break;
-		}
-#endif
-		#endif
-	
+		
 		case CZapitMessages::CMD_GETPIDS: 
 		{
 			if (channel) 
@@ -2041,6 +1980,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 	
+		#if 0
 		case CZapitMessages::CMD_GET_FE_SIGNAL: 
 		{
 			CZapitClient::responseFESignal response_FEsig;
@@ -2053,6 +1993,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			//sendAPIDs(connfd);
 			break;
 		}
+		#endif
 	
 		case CZapitMessages::CMD_SETSUBSERVICES: 
 		{
