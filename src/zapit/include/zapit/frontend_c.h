@@ -96,10 +96,9 @@ class CFrontend
 	public:
 		/*
 		typedef enum {
-			FE_CONNECTED,
-			FE_SINGLE,
+			FE_INDEPENDANT,
+			FE_TWIN,
 			FE_LOOP,
-			FE_NOTCONNECTED,
 		} fe_mode_t;
 		*/
 	  
@@ -232,6 +231,7 @@ class CFrontend
 		void setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int32_t _lnbSwitch);
 
 		struct dvb_frontend_event getEvent(void);
+		int getFeIndex() {return fenumber;}
 };
 
 #endif /* __zapit_frontend_h__ */
