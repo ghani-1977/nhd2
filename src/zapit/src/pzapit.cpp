@@ -35,10 +35,8 @@ int usage (const char * basename)
 	std::cout << "Usage:" << std::endl 
 		<< basename << " <options>" << std::endl
 		<< "   options:" << std::endl
-		//test
 		<< "\t-gi\t\tget current channel id: " << " -gi" << std::endl
 		<< "\t-gsi\t\tget current service info: " << " -gsi" << std::endl
-		//
 		<< "\t-ra\t\tbouquet list: " << std::endl
 		<< "\t-ra <bouquet-number>\t\tchannel list: " << std::endl
 		<< "\t-ra <bouquet-number> <channel-number\t\tzap by number: " << std::endl
@@ -286,18 +284,6 @@ int main (int argc, char** argv)
                         set_hd = VIDEO_STD_1080I50;
                         continue;
                 }
-                #if 0
-                else if (!strncmp(argv[i], "--1083", 6))
-                {
-                        set_hd = 9;
-                        continue;
-                }
-                else if (!strncmp(argv[i], "--1082", 6))
-                {
-                        set_hd = 10;
-                        continue;
-		}
-		#endif
                 else if (!strncmp(argv[i], "--720", 5))
                 {
                         set_hd = VIDEO_STD_720P50;
@@ -316,7 +302,6 @@ int main (int argc, char** argv)
 				continue;
 			}
 		}
-		//test
 		else if (!strncmp(argv[i], "-gi", 3))
 		{
 			getchannel = true;
@@ -327,7 +312,6 @@ int main (int argc, char** argv)
 			getserviceinfo = true;
 			continue;
 		}
-		//
 		else if (i < argc - 1)
 		{
 			if ((sscanf(argv[i], "%d", &bouquet) > 0) && (sscanf(argv[++i], "%u", &channel) > 0))
@@ -341,18 +325,6 @@ int main (int argc, char** argv)
 
 	/* create zapit client */
 	CZapitClient zapit;
-
-#if 0
-	TP_params TP;
-	TP.TP_id = 12345;
-        TP.polarization = 1;
-        TP.feparams.Frequency = 11727000;
-        TP.feparams.u.qpsk.SymbolRate = 27500000;
-        TP.feparams.u.qpsk.FEC_inner = (CodeRate) 3;
-
-	zapit.scan_TP(TP);
-	exit(0);
-#endif
 
 	/* send diseqc 1.2 motor command */
 	if (sendMotorCommand)
@@ -533,7 +505,6 @@ int main (int argc, char** argv)
                 return 0;
         }
 
-	//test
 	if (getchannel)
 	{
 		t_channel_id channelid = zapit.getCurrentServiceID();
@@ -541,26 +512,12 @@ int main (int argc, char** argv)
 		return 0;
 	}
 	
-	//test
 	if(getserviceinfo)
 	{
 		CZapitClient::CCurrentServiceInfo si;
 		si = zapit.getCurrentServiceInfo();
 
 		printf("frequency = %d.%d MHz\n", si.tsfrequency/1000, si.tsfrequency%1000);
-
-		#if 0
-		if (si.polarisation != 2) /* only satellite has polarisation */
-		{
-			printf(" (%c)\n", (si.polarisation == HORIZONTAL) ? 'h' : 'v');
-			//satellite
-			printf("diseqc = %d\n", si.diseqc);
-		}
-		else
-		{
-			printf("\n");
-		}
-		#endif
 		
 		printf("onid = 0x%04x\n", si.onid);
 		printf("sid = 0x%04x\n", si.sid);
