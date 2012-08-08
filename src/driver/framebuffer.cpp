@@ -443,7 +443,7 @@ int CFrameBuffer::setMode()
 	
 	dprintf(DEBUG_NORMAL, "CFrameBuffer::setMode: FB: %dx%dx%d\n", DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 
-#ifdef __sh__	
+#ifdef __sh__
 	xRes = DEFAULT_XRES;
 	yRes = DEFAULT_YRES;
 	bpp = DEFAULT_BPP;
