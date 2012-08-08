@@ -76,6 +76,7 @@ extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CPictureViewer * g_PicViewer;
 
 extern cVideo * videoDecoder;
+extern CFrontend * live_fe;
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -1889,11 +1890,11 @@ void CInfoViewer::showSNR()
 	  		CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 			
 			/* freq */
-			if( CFrontend::getInstance(si.FeIndex)->getInfo()->type == FE_QPSK || CFrontend::getInstance(si.FeIndex)->getInfo()->type == FE_QAM)
+			if( live_fe->getInfo()->type == FE_QPSK || live_fe->getInfo()->type == FE_QAM)
 			{
 				sprintf (freq, "%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
 			}
-			else if(CFrontend::getInstance(si.FeIndex)->getInfo()->type == FE_OFDM)
+			else if( live_fe->getInfo()->type == FE_OFDM)
 			{
 				sprintf (freq, "%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
 			}
@@ -1903,15 +1904,15 @@ void CInfoViewer::showSNR()
 
 			g_SignalFont->RenderString (3 + BoxStartX + ((ChanWidth - satNameWidth) / 2), BoxStartY + 2 * chanH - 3, satNameWidth, freq, COL_INFOBAR);
 		
-			ssig = CFrontend::getInstance(si.FeIndex)->getSignalStrength();
-			ssnr = CFrontend::getInstance(si.FeIndex)->getSignalNoiseRatio();
+			ssig = live_fe->getSignalStrength();
+			ssnr = live_fe->getSignalNoiseRatio();
 					
 			//show aktiv tuner
 			if( FrontendCount > 1 )
 			{
 				char AktivTuner[255];
 				
-				sprintf(AktivTuner, "T%d", (si.FeIndex + 1));
+				sprintf(AktivTuner, "T%d", (live_fe->getFeIndex() + 1));
 				
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 120, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 			}
