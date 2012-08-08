@@ -112,7 +112,7 @@ void DMX::closefd(void)
 		//dmx->Close();
 		//delete dmx;
 		//dmx = NULL;
-		close();
+		//close();
 
 		fd = -1;
 	}
