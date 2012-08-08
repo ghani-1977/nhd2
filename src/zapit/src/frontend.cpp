@@ -1289,7 +1289,6 @@ void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t freque
 	if(info.type == FE_QPSK)
 			setLnbOffsets(sit->second.lnbOffsetLow, sit->second.lnbOffsetHigh, sit->second.lnbSwitch);
 
-
 	// set diseqc
 	if (diseqcType != DISEQC_ADVANCED) 
 	{
