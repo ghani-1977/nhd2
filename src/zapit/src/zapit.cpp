@@ -233,7 +233,9 @@ extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
 // frontend config
 CConfigFile fe_configfile(',', false);
-#define FRONTEND_CONFIGFILE "/var/tuxbox/config/zapit/frontend,conf"
+#define FRONTEND_CONFIGFILE "/var/tuxbox/config/zapit/frontend.conf"
+CFrontend * live_fe = NULL;
+CFrontend * record_fe = NULL;
 
 // borrowed from cst neutrino-hd (femanager.cpp)
 uint32_t getConfigValue(int num, const char * name, uint32_t defval)
@@ -324,6 +326,32 @@ void loadFrontendConfig()
 			CFrontend::getInstance(i)->setDiseqcType(diseqcType);
 		}
 	}
+}
+
+CFrontend * find_live_fe(CZapitChannel * thischannel)
+{
+	//return CFrontend::getInstance(1);
+	transponder_list_t::iterator tpI;
+	//transponder_id_t ct = thischannel->getTransponderId();
+	
+	// get tpid
+	tpI = transponders.find(thischannel->getTransponderId());
+	
+	if (tpI == transponders.end()) 
+	{
+		return NULL;
+	}
+	
+	// now compare tp feparams with fe feparams
+	//tpI->second.feparams
+	
+	return CFrontend::getInstance(thischannel->getFeIndex() );
+}
+
+CFrontend * find_record_fe(CZapitChannel * thischannel)
+{
+	//return CFrontend::getInstance(1);
+	return CFrontend::getInstance(thischannel->getFeIndex() );
 }
 
 void saveZapitSettings(bool write, bool write_a)
@@ -574,18 +602,20 @@ static CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in
 	return &cit->second;
 }
 
-static bool tune_to_channel(CZapitChannel * thischannel, bool &transponder_change)
+static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, bool &transponder_change)
 {
 	int waitForMotor = 0;
 
 	transponder_change = false;
 		  
-	transponder_change = CFrontend::getInstance( thischannel->getFeIndex() )->setInput(thischannel, current_is_nvod);
+	//transponder_change = CFrontend::getInstance( thischannel->getFeIndex() )->setInput(thischannel, current_is_nvod);
+	transponder_change = frontend->setInput(thischannel, current_is_nvod);
 	
 	// drive rotor
 	if(transponder_change && !current_is_nvod) 
 	{
-		waitForMotor = CFrontend::getInstance( thischannel->getFeIndex() )->driveToSatellitePosition(thischannel->getSatellitePosition());
+		//waitForMotor = CFrontend::getInstance( thischannel->getFeIndex() )->driveToSatellitePosition(thischannel->getSatellitePosition());
+		waitForMotor = frontend->driveToSatellitePosition(thischannel->getSatellitePosition());
 			
 		if(waitForMotor > 0) 
 		{
@@ -608,7 +638,8 @@ static bool tune_to_channel(CZapitChannel * thischannel, bool &transponder_chang
 	// tune fe (by TP change, nvod, twin_mode)
 	if (transponder_change || current_is_nvod || twin_tuned) 
 	{
-		if (CFrontend::getInstance( thischannel->getFeIndex() )->tuneChannel(thischannel, current_is_nvod) == false) 
+		//if (CFrontend::getInstance( thischannel->getFeIndex() )->tuneChannel(thischannel, current_is_nvod) == false) 
+		if ( frontend->tuneChannel(thischannel, current_is_nvod) == false) 
 		{
 			return false;
 		}
@@ -723,9 +754,16 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	DBG("[zapit] zapto channel id %llx nvod %d\n", channel_id, in_nvod);
 
 	// find channel to zap
-	if((newchannel = find_channel_tozap(channel_id, in_nvod)) == NULL) 
+	if( (newchannel = find_channel_tozap(channel_id, in_nvod)) == NULL ) 
 	{
 		DBG("channel_id " PRINTF_CHANNEL_ID_TYPE " not found", channel_id);
+		return -1;
+	}
+	
+	// find live_fe
+	if(( live_fe = find_live_fe(newchannel)) == NULL)
+	{
+		printf("live_fe can't be found ;-(\n");
 		return -1;
 	}
 
@@ -752,10 +790,10 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	live_channel_id = channel->getChannelID();
 	saveZapitSettings(false, false);
 
-	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, channel->getName().c_str(), live_channel_id, channel->getFeIndex() );
+	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
 	// tune it
-	if(!tune_to_channel(channel, transponder_change))
+	if(!tune_to_channel(live_fe, channel, transponder_change))
 		return -1;
 
 	// check if nvod
@@ -818,6 +856,13 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	}
 	
+	// find record fe
+	if(( record_fe = find_live_fe(rec_channel)) == NULL)
+	{
+		printf("live_fe can't be found ;-(\n");
+		return -1;
+	}
+	
 	//tune
 	// check for twin
 	#if 1
@@ -838,7 +883,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), channel_id, rec_channel->getFeIndex());
 	
 	// tune to rec channel
-	if(!tune_to_channel(rec_channel, transponder_change))
+	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
 	
 	// parse pat_pmt
