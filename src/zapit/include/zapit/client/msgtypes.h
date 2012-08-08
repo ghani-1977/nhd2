@@ -95,7 +95,8 @@ class CZapitMessages
 			CMD_BQ_REMOVE_CHANNEL_FROM_BOUQUET = 46,
 			CMD_BQ_RENUM_CHANNELLIST           = 47,
 			CMD_BQ_RESTORE                     = 48,
-			/* unused:			CMD_BQ_COMMIT_CHANGE               = 49, */
+			
+			//CMD_BQ_COMMIT_CHANGE               = 49, //unused
 			CMD_BQ_SAVE_BOUQUETS               = 50,
 
 			CMD_SET_RECORD_MODE                = 51,
@@ -103,7 +104,9 @@ class CZapitMessages
 			CMD_SB_START_PLAYBACK              = 53,
 			CMD_SB_STOP_PLAYBACK               = 54,
 			CMD_SB_GET_PLAYBACK_ACTIVE         = 55,
-			/* unused:			 CMD_SET_DISPLAY_FORMAT             = 56, */
+			
+			//CMD_SET_DISPLAY_FORMAT             = 56, // unused
+			
 			CMD_SET_AUDIO_MODE                 = 57,
 			CMD_READY                          = 58,
 			CMD_GETPIDS                        = 59,
@@ -121,14 +124,14 @@ class CZapitMessages
 			CMD_GET_CHANNEL_NAME               = 69,
 			CMD_IS_TV_CHANNEL                  = 70,
 
-			CMD_GET_FE_SIGNAL                  = 71,
+			//CMD_GET_FE_SIGNAL                  = 71,
 
-			CMD_SET_AE_IEC_ON                  = 73,
-			CMD_SET_AE_IEC_OFF                 = 74,
-			CMD_GET_AE_IEC_STATE               = 75,
-			CMD_SET_AE_PLAYBACK_SPTS           = 76,
-			CMD_SET_AE_PLAYBACK_PES            = 77,
-			CMD_GET_AE_PLAYBACK_STATE          = 78,
+			//CMD_SET_AE_IEC_ON                  = 73,
+			//CMD_SET_AE_IEC_OFF                 = 74,
+			//CMD_GET_AE_IEC_STATE               = 75,
+			//CMD_SET_AE_PLAYBACK_SPTS           = 76,
+			//CMD_SET_AE_PLAYBACK_PES            = 77,
+			//CMD_GET_AE_PLAYBACK_STATE          = 78,
 
 			CMD_SCANSETTYPE                    = 79,
 			CMD_RELOAD_CURRENTSERVICES	   = 80,
@@ -137,24 +140,15 @@ class CZapitMessages
 			CMD_SB_LOCK_PLAYBACK		   = 92,
 			CMD_SB_UNLOCK_PLAYBACK		   = 93,
 			CMD_GET_BOUQUET_NCHANNELS          = 94,
-			//CMD_SET_EVENT_MODE                 = 95,
-			CMD_REZAP		  	   = 96,
-			CMD_GETCONFIG		  	   = 97,
-			CMD_SETCONFIG		  	   = 98,
-			CMD_SCANSTOP                       = 99,
+			
+			CMD_REZAP		  	   = 95,
+			CMD_GETCONFIG		  	   = 96,
+			CMD_SETCONFIG		  	   = 97,
+			CMD_SCANSTOP                       = 98,
+			
 			CMD_GET_VOLUME          	   = 104,
 			CMD_GET_AUDIO_MODE      	   = 105,
 			CMD_GET_MUTE_STATUS		   = 106,
-			CMD_GET_ASPECTRATIO		   = 107,
-			CMD_SET_ASPECTRATIO		   = 108,
-			CMD_GET_MODE43			   = 109,
-			CMD_SET_MODE43			   = 110,
-				
-			CMD_SET_PIP_MODE                   = 111,
-			CMD_GET_PIP_MODE                   = 112,
-			
-			CMD_PAUSE_PLAYBACK		   = 113,
-			CMD_RESUME_PLAYBACK		   = 114,
 		};
 
 		struct commandBoolean

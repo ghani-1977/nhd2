@@ -71,9 +71,6 @@ class CZapitClient : public CBasicClient
 			EVT_SDT_CHANGED,
 			EVT_SERVICES_CHANGED,
 
-			EVT_PIPMODE_ACTIVATED,
-			EVT_PIPMODE_DEACTIVATED,
-			
 			EVT_PMT_CHANGED,
 			
 			LAST_EVENT_MARKER             // <- no actual event, needed by pzapit
@@ -257,6 +254,7 @@ class CZapitClient : public CBasicClient
 		};
 		typedef std::vector<responseGetSatelliteList> SatelliteList;
 
+		#if 0
 		struct responseFESignal
 		{
 			unsigned int  sig;
@@ -268,6 +266,7 @@ class CZapitClient : public CBasicClient
 			// int          has_sync;
 			// int          has_carrier;
 		};
+		#endif
 
 
 	public:
@@ -448,7 +447,7 @@ class CZapitClient : public CBasicClient
 		void setScanType(const scanType mode);
 
 		/* get FrontEnd Signal Params */ 
-		void getFESignal (struct responseFESignal& f);
+		//void getFESignal (struct responseFESignal& f);
 
 		/****************************************/
 		/*					*/
@@ -531,12 +530,6 @@ class CZapitClient : public CBasicClient
 		void setAudioMode(int mode);
 		void getAudioMode(int * mode);
 		void setVideoSystem(int video_system);
-
-		//test
-		void getAspectRatio(int *ratio);
-		void setAspectRatio(int ratio);
-		void getMode43(int *m43);
-		void setMode43(int m43);
 
 		/****************************************/
 		/*					*/
