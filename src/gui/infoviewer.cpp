@@ -904,7 +904,7 @@ void CInfoViewer::showMovieTitle (const int playstate, const std::string & title
 	if (BOTTOM_BAR_OFFSET > 0)
 		frameBuffer->paintBackgroundBox (ChanInfoX, BoxEndInfoY, BoxEndX, BoxEndInfoY + BOTTOM_BAR_OFFSET);
 
-	//datum bar/ moviescale bar
+	//moviescale bar
 	frameBuffer->paintBox(ChanInfoX, BoxEndInfoY-2, BoxEndX, BoxEndY-20, COL_INFOBAR_PLUS_1);
 		
 	// bottum bar
