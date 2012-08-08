@@ -1029,17 +1029,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								*data         = 0;
 								break;
 								
-							//TEST
-							case CZapitClient::EVT_PIPMODE_ACTIVATED:
-								*msg  = NeutrinoMessages::EVT_PIPMODE;
-								*data = true;
-								break;
-								
-							case CZapitClient::EVT_PIPMODE_DEACTIVATED:
-								*msg  = NeutrinoMessages::EVT_PIPMODE;
-								*data = false;
-								break;
-								
 							case CZapitClient::EVT_PMT_CHANGED:
 								*msg          = NeutrinoMessages::EVT_PMT_CHANGED;
 								*data = (neutrino_msg_data_t) p;
