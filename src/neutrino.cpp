@@ -270,8 +270,6 @@ CPictureViewer 		* g_PicViewer;
 CCAMMenuHandler 	* g_CamHandler;
 #endif
 
-CFontSizeNotifier 	fontsizenotifier;
-
 bool parentallocked = false;
 static char **global_argv;
 
@@ -655,7 +653,7 @@ font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
         {LOCALE_FONTSIZE_CHANNELLIST_DESCR  ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_CHANNELLIST_NUMBER ,  14, FONT_STYLE_BOLD   , 2},
         {LOCALE_FONTSIZE_CHANNEL_NUM_ZAP    ,  40, FONT_STYLE_BOLD   , 0},
-        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  30, FONT_STYLE_BOLD   , 0},
+        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  50, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_CHANNAME   ,  30, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_INFO       ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_INFOBAR_SMALL      ,  14, FONT_STYLE_REGULAR, 1},
@@ -2443,16 +2441,14 @@ int CNeutrinoApp::run(int argc, char **argv)
 	dprintf( DEBUG_NORMAL, "CNeutrinoApp::run: registering as event client\n");
 
 	// g_sectionsd
-	#if 0
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_TIMESET, 222, NEUTRINO_UDS_NAME);
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_GOT_CN_EPG, 222, NEUTRINO_UDS_NAME);
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_SERVICES_UPDATE, 222, NEUTRINO_UDS_NAME);
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_BOUQUETS_UPDATE, 222, NEUTRINO_UDS_NAME);
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_WRITE_SI_FINISHED, 222, NEUTRINO_UDS_NAME);
-	#endif
 
 	// g_ZapitClient
-#define ZAPIT_EVENT_COUNT 32
+#define ZAPIT_EVENT_COUNT 30
 	const CZapitClient::events zapit_event[ZAPIT_EVENT_COUNT] =
 	{
 		CZapitClient::EVT_ZAP_COMPLETE,
@@ -2484,22 +2480,11 @@ int CNeutrinoApp::run(int argc, char **argv)
 		CZapitClient::EVT_SCAN_FOUND_RADIO_CHAN,
 		CZapitClient::EVT_SCAN_FOUND_DATA_CHAN,
 		CZapitClient::EVT_SDT_CHANGED,
-		CZapitClient::EVT_PIPMODE_ACTIVATED,
-		CZapitClient::EVT_PIPMODE_DEACTIVATED,
 		CZapitClient::EVT_PMT_CHANGED
 	};
 
 	for (int i = 0; i < ZAPIT_EVENT_COUNT; i++)
 		g_Zapit->registerEvent(zapit_event[i], 222, NEUTRINO_UDS_NAME);
-	
-	//TEST
-	// g_sectionsd
-	g_Sectionsd->registerEvent(CSectionsdClient::EVT_TIMESET, 222, NEUTRINO_UDS_NAME);
-	g_Sectionsd->registerEvent(CSectionsdClient::EVT_GOT_CN_EPG, 222, NEUTRINO_UDS_NAME);
-	g_Sectionsd->registerEvent(CSectionsdClient::EVT_SERVICES_UPDATE, 222, NEUTRINO_UDS_NAME);
-	g_Sectionsd->registerEvent(CSectionsdClient::EVT_BOUQUETS_UPDATE, 222, NEUTRINO_UDS_NAME);
-	g_Sectionsd->registerEvent(CSectionsdClient::EVT_WRITE_SI_FINISHED, 222, NEUTRINO_UDS_NAME);
-	//TEST
 
 	// g_timerd
 	g_Timerd->registerEvent(CTimerdClient::EVT_ANNOUNCE_SHUTDOWN, 222, NEUTRINO_UDS_NAME);
@@ -3603,7 +3588,7 @@ _repeat:
 					recordingstatus = 0;
 					autoshift = 0;
 					
-					//TEST
+
 					if(timeshiftstatus)
 					{
 						// if we dont jump in mp we resume audio/video
@@ -4162,7 +4147,6 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 
 			stop_daemons();
 			
-			//TEST
 			system("/etc/init.d/rcK");
 
 			dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
@@ -5560,7 +5544,6 @@ void CNeutrinoApp::StopSubtitles()
 	
 	int ttx, ttxpid, ttxpage;
 	
-	//TEST
 	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 
 	// dvbsub
@@ -5600,7 +5583,6 @@ void CNeutrinoApp::StartSubtitles(bool show)
 	if(!show)
 		return;
 	
-	//TEST
 	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 	
 	//dvbsub

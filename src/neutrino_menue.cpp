@@ -152,8 +152,6 @@ extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
 extern bool has_hdd;				// defined in hdd_menu.cpp
 
 extern bool parentallocked;			// defined neutrino.cpp
-extern const char * locale_real_names[];	// defined neutrino.cpp
-extern CFontSizeNotifier fontsizenotifier;	// defined neutrino.cpp
 
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
 #if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA)
