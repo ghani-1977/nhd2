@@ -137,7 +137,7 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
                 apids = g_settings.recording_audio_pids_default;
 
         apid_list.clear();
-        CZapitClient::responseGetPIDs allpids;
+        CZapitClient::responseGetRecordPIDs allpids;
 	
         g_Zapit->getRecordPIDS(allpids);
 
@@ -450,7 +450,7 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 		"\">\n"
 		"\t\t<channelname>";
 	
-	CZapitClient::responseGetPIDs pids;
+	CZapitClient::responseGetRecordPIDs pids;
 	g_Zapit->getRecordPIDS (pids);
 	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
@@ -515,8 +515,8 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 	extMessage += apids_selected;
 	extMessage += "\">\n";
 	// super hack :-), der einfachste weg an die apid descriptions ranzukommen
-	g_RemoteControl->current_PIDs = pids;
-	g_RemoteControl->processAPIDnames();
+	//g_RemoteControl->current_PIDs = pids;
+	//g_RemoteControl->processAPIDnames();
 
 	for(unsigned int i= 0; i< pids.APIDs.size(); i++)
 	{
@@ -605,11 +605,12 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
                 pids[numpids++] = it->apid;
 		transfer_pids(it->apid, EN_TYPE_AUDIO, it->ac3 ? 1 : 0);
         }
+        
 #if 0 // FIXME : why this needed ?
         if(!apid_list.empty())
                 g_Zapit->setAudioChannel(apid_list.begin()->index);
 #endif
-        CZapitClient::responseGetPIDs allpids;
+        CZapitClient::responseGetRecordPIDs allpids;
         g_Zapit->getRecordPIDS(allpids);
 
 	//record file name format
@@ -900,7 +901,7 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 
 	g_cMovieInfo->clearMovieInfo(g_movieInfo);
 
-	CZapitClient::responseGetPIDs pids;
+	CZapitClient::responseGetRecordPIDs pids;
 	g_Zapit->getRecordPIDS (pids);
 	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
@@ -951,8 +952,8 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 
 	EPG_AUDIO_PIDS audio_pids;
 	// super hack :-), der einfachste weg an die apid descriptions ranzukommen
-	g_RemoteControl->current_PIDs = pids;
-	g_RemoteControl->processAPIDnames();
+	//g_RemoteControl->current_PIDs = pids;
+	//g_RemoteControl->processAPIDnames();
 
 	APIDList::iterator it;
 	for(unsigned int i= 0; i< pids.APIDs.size(); i++) 
