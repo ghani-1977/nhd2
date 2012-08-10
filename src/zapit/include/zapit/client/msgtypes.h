@@ -154,6 +154,8 @@ class CZapitMessages
 			CMD_GET_RECORD_SERVICEINFO        = 108,
 			
 			CMD_GETRECORDPIDS		  = 109,
+			
+			CMD_ADD_FRONTEND		  = 110,
 		};
 
 		struct commandBoolean

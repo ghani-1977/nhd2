@@ -566,6 +566,8 @@ class CZapitClient : public CBasicClient
 		void setAudioMode(int mode);
 		void getAudioMode(int * mode);
 		void setVideoSystem(int video_system);
+		
+		void addFrontend();
 
 		/****************************************/
 		/*					*/
