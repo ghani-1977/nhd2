@@ -10,6 +10,8 @@
 #include "bouquets.h"
 
 
+bool initFrontend();
+
 void save_settings (bool write);
 void *start_scanthread(void *);
 int start_scan(CZapitMessages::commandStartScan StartScan);
