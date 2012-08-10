@@ -239,7 +239,6 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
-int live_fe_index = 0;
 
 /* variables for EN 50494 (a.k.a Unicable) */
 //int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
@@ -265,8 +264,8 @@ bool initFrontend()
 				
 				//printf("add fe %d", fe->getFeIndex() );
 				
-				//if(live_fe == NULL)
-				//	live_fe = fe;
+				if(live_fe == NULL)
+					live_fe = fe;
 			}
 		}
 	}
@@ -377,12 +376,6 @@ void saveFrontendConfig()
 {
 	printf("zapit: saveFrontendConfig\n");
 	
-	// common
-	// fe mode
-	
-	// live_fe_index
-	fe_configfile.setInt32("live_fe_index", live_fe->getFeIndex());
-	
 	for(int i = 0; i < FrontendCount; i++)
 	{
 		//CFrontend * fe = getFE(i);
@@ -421,12 +414,6 @@ void loadFrontendConfig()
 	
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		WARN("%s not found", FRONTEND_CONFIGFILE);
-	
-	// common
-	// fe mode
-	
-	// live_fe_index
-	live_fe_index = fe_configfile.getInt32("live_fe_index", 0);
 	
 	for(int i = 0; i < FrontendCount; i++)
 	{
@@ -3473,10 +3460,6 @@ int zapit_main_thread(void *data)
 	
 	// load fe config
 	loadFrontendConfig();
-	
-	// set live_fe
-	CFrontend * fe = getFE(live_fe_index);
-	live_fe = fe;
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;
