@@ -55,6 +55,8 @@ static const int FSHIFT = 16;              /* nr of bits of precision */
 #define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
 
 extern int FrontendCount;
+//extern CFrontend * live_fe;
+CFrontend * getFE(int index);
 
 // hdd
 #include <stdio.h>
@@ -317,7 +319,7 @@ void CDBoxInfoWidget::paint()
 		ypos += mheight;
 		char tbuf[255];
 		
-		sprintf(tbuf, "Tuner-%d: %s", i+1, CFrontend::getInstance(i)->getInfo()->name);
+		sprintf(tbuf, "Tuner-%d: %s", i + 1, getFE(i)->getInfo()->name);
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT);
 	}	
 }

@@ -85,6 +85,7 @@ extern int motorRotationSpeed;
 
 
 //FIXME: the dvb frontend device
+#if 0
 CFrontend *frontend0 = NULL;
 CFrontend *frontend1 = NULL;
 CFrontend *frontend2 = NULL;
@@ -179,10 +180,11 @@ CFrontend * CFrontend::killInstance(int num, int adap)
 		break;	
 	}
 }
+#endif
 
 CFrontend::CFrontend(int num, int adap)
 {
-	printf("CFrontend:: CFrontend(%d)\n", num);
+	printf("CFrontend:: CFrontend(%d, %d)\n", adap, num);
 	
 	fd = -1;
 	
@@ -195,10 +197,10 @@ CFrontend::CFrontend(int num, int adap)
 	slave = false;	// FIXME
 	diseqcType = NO_DISEQC;
 	
-	//mode = FE_CONNECTED;
+	//mode = FE_SINGLE;
 
 	/* open frontend */
-	Open();
+	//Open();
 
 	memset(&curfe, 0, sizeof(curfe));
 	
@@ -222,7 +224,7 @@ bool CFrontend::Open(void)
 	char filename[256];
 
 	sprintf(filename, "/dev/dvb/adapter%d/frontend%d", fe_adapter, fenumber);
-	printf("CFrontend::Open: fe(%d) %s\n", fenumber, filename);
+	//printf("CFrontend::Open: fe(%d, %d) %s\n", fe_adapter, fenumber, filename);
 
 	if (fd < 0) 
 	{

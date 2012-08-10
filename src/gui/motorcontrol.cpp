@@ -59,6 +59,9 @@ static int moving = 0;
 #define BAR_WIDTH 100
 #define BAR_HEIGHT 16 //(13 + BAR_BORDER*2)
 
+//extern CFrontend * live_fe;
+CFrontend * getFE(int index);
+
 
 
 #define get_set CNeutrinoApp::getInstance()->getScanSettings()
@@ -66,7 +69,6 @@ CMotorControl::CMotorControl(int num)
 {
 	Init();
 	
-	//test
 	feindex = num;
 }
 
@@ -715,8 +717,8 @@ void CMotorControl::showSNR()
 
 	int sw;
 	
-	ssig = CFrontend::getInstance(feindex)->getSignalStrength();
-	ssnr = CFrontend::getInstance(feindex)->getSignalNoiseRatio();
+	ssig = getFE(feindex)->getSignalStrength();
+	ssnr = getFE(feindex)->getSignalNoiseRatio();
 
 	snr = (ssnr & 0xFFFF) * 100 / 65535;
 	sig = (ssig & 0xFFFF) * 100 / 65535;

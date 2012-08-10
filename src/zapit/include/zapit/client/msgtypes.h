@@ -149,6 +149,11 @@ class CZapitMessages
 			CMD_GET_VOLUME          	   = 104,
 			CMD_GET_AUDIO_MODE      	   = 105,
 			CMD_GET_MUTE_STATUS		   = 106,
+			
+			CMD_GET_RECORD_SERVICEID          = 107,
+			CMD_GET_RECORD_SERVICEINFO        = 108,
+			
+			CMD_GETRECORDPIDS		  = 109,
 		};
 
 		struct commandBoolean
@@ -315,6 +320,13 @@ class CZapitMessages
 		{
 			t_channel_id channel_id;
 		};
+		
+		//TEST
+		struct responseGetRecordServiceID
+		{
+			t_channel_id record_channel_id;
+		};
+		//
 
 		struct responseZapComplete
 		{

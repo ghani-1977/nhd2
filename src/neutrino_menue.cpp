@@ -162,7 +162,9 @@ static CTimingSettingsNotifier timingsettingsnotifier;
 
 extern int FrontendCount;			// defined in zapit.cpp
 extern int tuner_to_scan;			// defined in scan_setup.cpp
-
+//extern CFrontend * live_fe;
+//extern fe_map_t	femap;
+CFrontend * getFE(int index);
 
 
 // option off0_on1
@@ -759,9 +761,10 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 		
 		for(int i=0; i<FrontendCount; i++)
 		{
+			CFrontend * fe = getFE(i);
 			char tbuf[255];
 		
-			sprintf(tbuf, "Tuner-%d: %s", i+1, CFrontend::getInstance(i)->getInfo()->name);
+			sprintf(tbuf, "Tuner-%d: %s", fe->getFeIndex() + 1, fe->getInfo()->name);
 			TunerSetup.addItem(new CMenuForwarderNonLocalized(tbuf, true, NULL, new CScanSetup(i) ));
 		}	
 		

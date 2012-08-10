@@ -90,15 +90,17 @@ typedef struct dvb_frontend_parameters FrontendParameters;
 
 //typedef std::map<unsigned short, CFrontend*> fe_map_t;
 //typedef fe_map_t::iterator fe_map_iterator_t;
+//fe_map_t	femap;
 
 class CFrontend
 {
 	public:
 		/*
 		typedef enum {
-			FE_INDEPENDANT,
+			FE_SINGLE,
 			FE_TWIN,
 			FE_LOOP,
+			FE_NOTCONNECTED,
 		} fe_mode_t;
 		*/
 	  
@@ -174,8 +176,8 @@ class CFrontend
 		void	reset(void);
 		
 	public:
-		static CFrontend * getInstance(int num = 0, int adap = 0);
-		static CFrontend * killInstance(int num = 0, int adap = 0);
+		//static CFrontend * getInstance(int num = 0, int adap = 0);
+		//static CFrontend * killInstance(int num = 0, int adap = 0);
 		
 		CFrontend(int num = 0, int adap = 0);
 		~CFrontend(void);
@@ -233,5 +235,8 @@ class CFrontend
 		struct dvb_frontend_event getEvent(void);
 		int getFeIndex() {return fenumber;}
 };
+
+//typedef std::map<unsigned short, CFrontend*> fe_map_t;
+//typedef fe_map_t::iterator fe_map_iterator_t;
 
 #endif /* __zapit_frontend_h__ */

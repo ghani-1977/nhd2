@@ -68,6 +68,8 @@
 #include <daemonc/remotecontrol.h>
 #include <zapit/client/zapittools.h>
 
+#include <zapit/client/zapittypes.h>
+
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 int was_record = 0;
 extern bool autoshift;
@@ -137,7 +139,7 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
         apid_list.clear();
         CZapitClient::responseGetPIDs allpids;
 	
-        g_Zapit->getPIDS(allpids);
+        g_Zapit->getRecordPIDS(allpids);
 
         // assume smallest apid ist std apid
         if (apids & TIMERD_APIDS_STD)
@@ -273,7 +275,7 @@ bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, co
 	if(channel_id != 0)	// wenn ein channel angegeben ist
 	{
 		// zap for live stream
-		if(g_Zapit->getCurrentServiceID() != channel_id)	// eventually not tuned
+		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) )	// eventually not tuned
 			g_Zapit->zapTo_serviceID(channel_id);		// for live stream
 
 		// zap for record
@@ -383,7 +385,8 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 		}
 		
 		// zap for live stream
-		if(g_Zapit->getCurrentServiceID() != channel_id) 
+		//if(g_Zapit->getCurrentServiceID() != channel_id) 
+		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) )	// eventually not tuned
 			g_Zapit->zapTo_serviceID(channel_id);
 		
 		// zap to record
@@ -448,8 +451,8 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 		"\t\t<channelname>";
 	
 	CZapitClient::responseGetPIDs pids;
-	g_Zapit->getPIDS (pids);
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo ();
+	g_Zapit->getRecordPIDS (pids);
+	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
         APIDList apid_list;
         getAPIDs(apids,apid_list);
@@ -585,7 +588,8 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 	unsigned int numpids;
 	unsigned int pos;
 
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
 	numpids = 0;
 
 	// vpid
@@ -606,7 +610,7 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
                 g_Zapit->setAudioChannel(apid_list.begin()->index);
 #endif
         CZapitClient::responseGetPIDs allpids;
-        g_Zapit->getPIDS(allpids);
+        g_Zapit->getRecordPIDS(allpids);
 
 	//record file name format
 	char filename[512]; // UTF-8
@@ -897,8 +901,8 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 	g_cMovieInfo->clearMovieInfo(g_movieInfo);
 
 	CZapitClient::responseGetPIDs pids;
-	g_Zapit->getPIDS (pids);
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo ();
+	g_Zapit->getRecordPIDS (pids);
+	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
 	std::string tmpstring = g_Zapit->getChannelName(channel_id);
 	if (tmpstring.empty())

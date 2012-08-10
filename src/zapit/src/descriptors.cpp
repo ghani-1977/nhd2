@@ -56,6 +56,9 @@ extern CEventServer *eventServer;
 extern int scan_pids;
 extern t_channel_id live_channel_id;
 
+//extern CFrontend * live_fe;
+CFrontend * getFE(int index);
+
 int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0);
 
 void generic_descriptor(const unsigned char * const)
@@ -264,7 +267,7 @@ int satellite_delivery_system_descriptor(const unsigned char * const buffer, t_t
 	transponder_id_t TsidOnid;
 	int modulationSystem, modulationType, rollOff, fec_inner;
 
-	if (CFrontend::getInstance(feindex)->getInfo()->type != FE_QPSK)
+	if ( getFE(feindex)->getInfo()->type != FE_QPSK)
 		return -1;
 
 	//freq
@@ -344,7 +347,7 @@ int cable_delivery_system_descriptor(const unsigned char * const buffer, t_trans
 {
 	transponder_id_t TsidOnid;
 
-	if (CFrontend::getInstance(feindex)->getInfo()->type != FE_QAM)
+	if ( getFE(feindex)->getInfo()->type != FE_QAM)
 		return -1;
 
 	FrontendParameters feparams;
@@ -420,7 +423,7 @@ uint8_t fix_service_type(uint8_t type)
 
 int parse_pat(int feindex = 0);
 int pat_get_pmt_pid(CZapitChannel * const channel);
-int parse_pmt(CZapitChannel * const channel);
+int parse_pmt(CZapitChannel * const channel, int dmx_num = LIVE_DEMUX);
 
 /* 0x48 */
 void service_descriptor(const unsigned char * const buffer, const t_service_id service_id, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, bool free_ca, int feindex)
@@ -595,7 +598,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 
 		if(tpchange) 
 		{
-			cDemux * dmx = new cDemux( feindex ); 
+			cDemux * dmx = new cDemux( feindex /*LIVE_DEMUX*/ ); 
 			dmx->Open(DMX_PSI_CHANNEL, 1024, feindex);
 			if (!((dmx->sectionFilter(0x10, filter, mask, 5, 10000) < 0) || (dmx->Read(buff, 1024) < 0))) 
 			{
@@ -667,7 +670,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 				int bouquetId;
 				char pname[100];
 				
-				if (CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK)
+				if ( getFE(feindex)->getInfo()->type == FE_QPSK)
 					snprintf(pname, 100, "[%c%03d.%d] %s", satellitePosition > 0? 'E' : 'W', abs(satellitePosition)/10, abs(satellitePosition)%10, providerName.c_str());
 				else
 					snprintf(pname, 100, "%s", providerName.c_str());
@@ -932,7 +935,7 @@ void subtitling_descriptor(const unsigned char * const)
 /* 0x5A */ //FIXME is brocken :-(
 int terrestrial_delivery_system_descriptor(const unsigned char * const buffer, t_transport_stream_id transport_stream_id, t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, int feindex)
 {
-	if (CFrontend::getInstance(feindex)->getInfo()->type != FE_OFDM)
+	if ( getFE(feindex)->getInfo()->type != FE_OFDM)
 		return -1;
 
 	FrontendParameters feparams;

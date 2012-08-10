@@ -49,6 +49,8 @@ extern int zapit_debug;						/* defined in zapit.cpp */
 extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 
 extern int FrontendCount;
+extern CFrontend * live_fe;
+CFrontend * getFE(int index);
 
 
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, uint8_t Source, int FeIndex)
@@ -468,15 +470,15 @@ int LoadServices(bool only_current)
 		xmlFreeDoc(scanInputParser);
 		scanInputParser = NULL;
 		
-		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK) 
+		if( getFE(i)->getInfo()->type == FE_QPSK) 
 		{
 			scanInputParser = parseXmlFile(SATELLITES_XML);
 		}
-		else if(CFrontend::getInstance(i)->getInfo()->type == FE_QAM)
+		else if( getFE(i)->getInfo()->type == FE_QAM)
 		{
 			scanInputParser = parseXmlFile(CABLES_XML);
 		}
-		else if(CFrontend::getInstance(i)->getInfo()->type == FE_OFDM)
+		else if( getFE(i)->getInfo()->type == FE_OFDM)
 		{
 			scanInputParser = parseXmlFile(TERRESTRIALS_XML);
 		}
@@ -506,7 +508,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_S;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					//satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -527,7 +529,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_C;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					//satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
@@ -545,11 +547,11 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_T;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					//satellitePositions[position].feindex = i;
 				}
 
 				// parse sat TP
-				ParseSatTransponders( CFrontend::getInstance(i)->getInfo()->type, search, position);
+				ParseSatTransponders( getFE(i)->getInfo()->type, search, position);
 				
 				position++;
 				
@@ -567,7 +569,7 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			if( CFrontend::getInstance(0)->getInfo()->type == FE_QPSK)
+			if( live_fe->getInfo()->type == FE_QPSK)
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -587,7 +589,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( CFrontend::getInstance(0)->getInfo()->type == FE_QAM)
+			else if( live_fe->getInfo()->type == FE_QAM)
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -607,7 +609,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( CFrontend::getInstance(0)->getInfo()->type == FE_OFDM)
+			else if( live_fe->getInfo()->type == FE_OFDM)
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
@@ -639,7 +641,7 @@ int LoadServices(bool only_current)
 
 	// load motor position
 	for(int i = 0; i < FrontendCount; i++)
-	{	if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+	{	if( getFE(i)->getInfo()->type == FE_QPSK)
 			LoadMotorPositions();
 	}
 

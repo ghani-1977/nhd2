@@ -234,6 +234,30 @@ class CZapitClient : public CBasicClient
 
 				int FeIndex;
 		};
+		
+		//TEST
+		class CRecordServiceInfo
+		{
+			public:
+				t_original_network_id onid;
+				t_service_id           sid;
+				t_transport_stream_id tsid;
+				unsigned short	vpid;
+				unsigned short  vtype;
+				unsigned short	apid;
+				unsigned short	pcrpid;
+				unsigned short	vtxtpid;
+				unsigned int	tsfrequency;
+				unsigned char	polarisation;
+				unsigned char	diseqc;
+				unsigned short  pmtpid;
+				unsigned short  pmt_version;
+				uint32_t	rate;
+				fe_code_rate	fec;
+
+				int FeIndex;
+		};
+		//
 
 		struct responseGetPIDs
 		{
@@ -307,6 +331,10 @@ class CZapitClient : public CBasicClient
 
 		/* return the current (tuned) ServiceID */
 		t_channel_id getCurrentServiceID();
+		
+		//TEST
+		/* return the record (tuned) ServiceID */
+		t_channel_id getRecordServiceID();
 
 		/* return the current satellite position */
 		int32_t getCurrentSatellitePosition();
@@ -358,9 +386,17 @@ class CZapitClient : public CBasicClient
 
 		/* get current APID-List */
 		void getPIDS( responseGetPIDs& pids );
+		
+		/* get record channel APID-List */
+		void getRecordPIDS( responseGetPIDs& pids );
 
 		/* get info about the current serivice */
 		CZapitClient::CCurrentServiceInfo getCurrentServiceInfo();
+		
+		//TEST
+		/* get info about the current serivice */
+		CZapitClient::CRecordServiceInfo getRecordServiceInfo();
+		//
 
 		/* transfer SubService-List to zapit */
 		void setSubServices( subServiceList& subServices );

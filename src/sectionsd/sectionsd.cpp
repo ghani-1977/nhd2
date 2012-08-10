@@ -7969,7 +7969,7 @@ static void *cnThread(void *)
 					dprintf("dmxCN: waking up again - requested from .change()\n");
 					// fix EPG problems on IPBox
 					// http://tuxbox-forum.dreambox-fan.de/forum/viewtopic.php?p=367937#p367937
-#if 0
+#if 1
 					dmxCN.change(0);
 #endif
 				}

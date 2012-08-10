@@ -67,7 +67,6 @@ extern "C" {
 }
 
 static cRecord * record = NULL;
-//extern CZapitChannel *channel;
 extern CZapitChannel * rec_channel;
 extern bool twin_tuned;
 extern CCam *cam0;

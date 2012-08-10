@@ -46,8 +46,10 @@ class CSatelliteSetupNotifier : public CChangeObserver
 		std::vector<CMenuItem*> items1;
 		std::vector<CMenuItem*> items2;
 		std::vector<CMenuItem*> items3;
+		
+		int feindex;
 	public:
-		CSatelliteSetupNotifier();
+		CSatelliteSetupNotifier(int num = 0);
 		void addItem(int list, CMenuItem* item);
 		bool changeNotify(const neutrino_locale_t, void * Data);
 };

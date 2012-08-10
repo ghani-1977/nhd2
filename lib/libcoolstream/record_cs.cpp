@@ -27,6 +27,7 @@
 #include "record_cs.h"
 
 #include <system/debug.h>
+#include <zapit/client/zapittypes.h>
 
 
 static const char * FILENAME = "[record_cs.cpp]";
@@ -44,7 +45,7 @@ void *execute_record_thread(void *c)
 cRecord::cRecord(int num)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-	demux_num = num;
+	demux_num = num /*RECORD_DEMUX*/;
 	fe_num = num;
 	dmx = NULL;
 	record_thread_running = false;

@@ -59,6 +59,7 @@
 #include <zapit/getservices.h>
 #include <zapit/satconfig.h>
 
+
 #define scanSettings CNeutrinoApp::getInstance()->getScanSettings() 	//(CNeutrinoApp::getInstance()->ScanSettings())
 
 
@@ -69,7 +70,11 @@ extern char zapit_long[20];			//defined neutrino.cpp
 extern int scan_pids;
 
 extern int FrontendCount;			// defined in zapit.cpp
-int tuner_to_scan = 0;
+//int tuner_to_scan = 0;
+//extern CFrontend * live_fe;
+//extern fe_map_t	femap;
+CFrontend * getFE(int index);
+
 
 CScanSetup::CScanSetup(int num)
 {
@@ -88,7 +93,7 @@ CScanSetup::CScanSetup(int num)
 	feindex = num;
 	
 	//FIXME
-	tuner_to_scan = num;
+	//tuner_to_scan = num;
 }
 
 CScanSetup::~CScanSetup()
@@ -115,7 +120,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex)) 
 			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: error while saving scan-settings!\n");
 		
-		if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK )
+		if( getFE(feindex)->getInfo()->type == FE_QPSK )
 		{
 			SaveMotorPositions();
 			
@@ -328,7 +333,7 @@ void CScanSetup::showScanService()
 	scansetup->addItem(GenericMenuSeparatorLine);
 			
 	// init satNotify
-	CSatelliteSetupNotifier * satNotify = new CSatelliteSetupNotifier();
+	CSatelliteSetupNotifier * satNotify = new CSatelliteSetupNotifier(feindex);
 	
 	// Sat Setup
 	CMenuWidget * satSetup = new CMenuWidget(LOCALE_SATSETUP_SAT_SETUP, NEUTRINO_ICON_SETTINGS);
@@ -347,7 +352,7 @@ void CScanSetup::showScanService()
 	CMenuWidget * satOnOff = NULL;
 	
 	// scan setup SAT
-	if(CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK) 
+	if( getFE(feindex)->getInfo()->type == FE_QPSK) 
 	{
 		satSelect = new CMenuOptionStringChooser(LOCALE_SATSETUP_SATELLITE, scanSettings.satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
 			
@@ -419,7 +424,7 @@ void CScanSetup::showScanService()
 			}
 		}
 	} 
-	else if (CFrontend::getInstance(feindex)->getInfo()->type == FE_QAM) 
+	else if ( getFE(feindex)->getInfo()->type == FE_QAM) 
 	{
 		satSelect = new CMenuOptionStringChooser(LOCALE_CABLESETUP_PROVIDER, (char*)scanSettings.satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
 
@@ -432,7 +437,7 @@ void CScanSetup::showScanService()
 			}
 		}
 	}
-	else if (CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM) 
+	else if ( getFE(feindex)->getInfo()->type == FE_OFDM) 
 	{
 		satSelect = new CMenuOptionStringChooser(LOCALE_TERRESTRIALSETUP_PROVIDER, (char*)scanSettings.satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
 
@@ -452,7 +457,7 @@ void CScanSetup::showScanService()
 	// motor menu
 	CMenuWidget * motorMenu = NULL;
 
-	if ( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK) 
+	if ( getFE(feindex)->getInfo()->type == FE_QPSK) 
 	{
 		satfindMenu->addItem(new CMenuForwarder(LOCALE_MOTORCONTROL_HEAD, true, NULL, new CMotorControl(feindex), "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
 
@@ -494,7 +499,10 @@ void CScanSetup::showScanService()
 	
 	//FIXME:
 	// fe mode: connected, independant, loop
-	scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "independant", NULL ));
+	//if(femap.size() > 1)
+	//	scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "twin", NULL ));
+	//else
+		scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "single", NULL ));
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
 	// scan type
@@ -514,7 +522,7 @@ void CScanSetup::showScanService()
 	CMenuForwarder * fmotorMenu = NULL;
 	//CMenuForwarder *fautoScanAll = NULL;
 
-	if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK )
+	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		// diseqc
 		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings.diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, true, satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
@@ -559,7 +567,7 @@ void CScanSetup::showScanService()
 	int man_shortcut = 1;
 		
 	// frequency
-	int freq_length = ( CFrontend::getInstance( feindex )->getInfo()->type == FE_QPSK) ? 8 : 6;
+	int freq_length = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? 8 : 6;
 	CStringInput * freq = new CStringInput(LOCALE_EXTRA_FREQ, (char *) scanSettings.TP_freq, freq_length, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789");
 	CMenuForwarder * Freq = new CMenuForwarder(LOCALE_EXTRA_FREQ, true, scanSettings.TP_freq, freq, "", CRCInput::convertDigitToKey(man_shortcut++));
 		
@@ -568,15 +576,15 @@ void CScanSetup::showScanService()
 	// modulation(t/c)/polarisation(sat)
 	CMenuOptionChooser * mod_pol = NULL;
 
-	if( CFrontend::getInstance( feindex )->getInfo()->type == FE_QPSK )
+	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_POL, (int *)&scanSettings.TP_pol, SATSETUP_SCANTP_POL, SATSETUP_SCANTP_POL_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 	}
-	else if( CFrontend::getInstance( feindex )->getInfo()->type == FE_QAM)
+	else if( getFE(feindex)->getInfo()->type == FE_QAM)
 	{
 		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings.TP_mod, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 	}
-	else if( CFrontend::getInstance( feindex )->getInfo()->type == FE_OFDM)
+	else if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings.TP_const, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 	}
@@ -588,10 +596,10 @@ void CScanSetup::showScanService()
 	CMenuForwarder * Rate = new CMenuForwarder(LOCALE_EXTRA_RATE, true, scanSettings.TP_rate, rate, "", CRCInput::convertDigitToKey(man_shortcut++));
 
 	// fec
-	int fec_count = ( CFrontend::getInstance( feindex )->getInfo()->type == FE_QPSK) ? SATSETUP_SCANTP_FEC_COUNT : CABLESETUP_SCANTP_FEC_COUNT;
+	int fec_count = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? SATSETUP_SCANTP_FEC_COUNT : CABLESETUP_SCANTP_FEC_COUNT;
 	CMenuOptionChooser * fec = new CMenuOptionChooser(LOCALE_EXTRA_FEC, (int *)&scanSettings.TP_fec, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 		
-	if( CFrontend::getInstance( feindex )->getInfo()->type != FE_OFDM)
+	if( getFE(feindex)->getInfo()->type != FE_OFDM)
 	{
 		// Rate
 		manualScan->addItem(Rate);
@@ -601,7 +609,7 @@ void CScanSetup::showScanService()
 	}
 
 	// band/hp/lp/
-	if( CFrontend::getInstance( feindex )->getInfo()->type == FE_OFDM)
+	if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		// Band
 		CMenuOptionChooser * Band = new CMenuOptionChooser(LOCALE_EXTRA_BAND, (int *)&scanSettings.TP_band, SATSETUP_SCANTP_BAND, SATSETUP_SCANTP_BAND_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
@@ -660,7 +668,7 @@ void CScanSetup::showScanService()
 	// scan all sats
 	CMenuForwarder * fautoScanAll = NULL;
 		
-	if( CFrontend::getInstance( feindex )->getInfo()->type == FE_QPSK )
+	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings.diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, true, satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
 		ojDiseqcRepeats = new CMenuOptionNumberChooser(LOCALE_SATSETUP_DISEQCREPEAT, (int *)&scanSettings.diseqcRepeat, (dmode != NO_DISEQC) && (dmode != DISEQC_ADVANCED), 0, 2, NULL);
@@ -768,11 +776,11 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 		sprintf(cnt, "%d", i);
 		char * f, *s, *m;
 		
-		switch(CFrontend::getInstance(feindex)->getInfo()->type) 
+		switch( getFE(feindex)->getInfo()->type) 
 		{
 			case FE_QPSK:
 			{
-				CFrontend::getInstance(feindex)->getDelSys(tI->second.feparams.u.qpsk.fec_inner, dvbs_get_modulation(tI->second.feparams.u.qpsk.fec_inner),  f, s, m);
+				getFE(feindex)->getDelSys(tI->second.feparams.u.qpsk.fec_inner, dvbs_get_modulation(tI->second.feparams.u.qpsk.fec_inner),  f, s, m);
 
 				snprintf(buf, sizeof(buf), "%d %c %d %s %s %s ", tI->second.feparams.frequency/1000, tI->second.polarization ? 'V' : 'H', tI->second.feparams.u.qpsk.symbol_rate/1000, f, s, m);
 			}
@@ -780,7 +788,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 
 			case FE_QAM:
 			{
-				CFrontend::getInstance(feindex)->getDelSys(tI->second.feparams.u.qam.fec_inner, tI->second.feparams.u.qam.modulation, f, s, m);
+				getFE(feindex)->getDelSys(tI->second.feparams.u.qam.fec_inner, tI->second.feparams.u.qam.modulation, f, s, m);
 
 				snprintf(buf, sizeof(buf), "%d %d %s %s %s ", tI->second.feparams.frequency/1000, tI->second.feparams.u.qam.symbol_rate/1000, f, s, m);
 			}
@@ -788,7 +796,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 
 			case FE_OFDM:
 			{
-				CFrontend::getInstance(feindex)->getDelSys(tI->second.feparams.u.ofdm.code_rate_HP, tI->second.feparams.u.ofdm.constellation, f, s, m);
+				getFE(feindex)->getDelSys(tI->second.feparams.u.ofdm.code_rate_HP, tI->second.feparams.u.ofdm.constellation, f, s, m);
 
 				snprintf(buf, sizeof(buf), "%d %s %s %s ", tI->second.feparams.frequency/1000, f, s, m);
 			}
@@ -816,7 +824,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 
 		sprintf(get_set.TP_freq, "%d", tmpI->second.feparams.frequency);
 		
-		switch(CFrontend::getInstance(feindex)->getInfo()->type) 
+		switch( getFE(feindex)->getInfo()->type) 
 		{
 			case FE_QPSK:
 				printf("CTPSelectHandler::exec: fe(%d) selected TP: freq %d pol %d SR %d fec %d\n", feindex, tmpI->second.feparams.frequency, tmpI->second.polarization, tmpI->second.feparams.u.qpsk.symbol_rate, tmpI->second.feparams.u.qpsk.fec_inner);

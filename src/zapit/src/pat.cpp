@@ -27,12 +27,12 @@
 #define PAT_SIZE 1024
 
 
-int parse_pat(CZapitChannel * const channel)
+int parse_pat(CZapitChannel * const channel, int dmx_num)
 {
 	if (!channel)
 		return -1;
 
-	cDemux * dmx = new cDemux( channel->getDemuxIndex() );
+	cDemux * dmx = new cDemux( channel->getDemuxIndex() /*dmx_num*/ );
 	
 	//open
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, channel->getFeIndex() );
@@ -99,7 +99,7 @@ int parse_pat(int feindex)
 
 	printf("parse_pat: Parsing pat ...\n");
 	
-	cDemux * dmx = new cDemux( feindex );
+	cDemux * dmx = new cDemux( feindex /*LIVE_DEMUX*/ );
 	
 	// open
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, feindex);

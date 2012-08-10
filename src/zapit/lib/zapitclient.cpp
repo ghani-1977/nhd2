@@ -107,6 +107,34 @@ CZapitClient::CCurrentServiceInfo CZapitClient::getCurrentServiceInfo()
 	return response;
 }
 
+//TEST
+/* get record SID */
+t_channel_id CZapitClient::getRecordServiceID()
+{
+	send(CZapitMessages::CMD_GET_RECORD_SERVICEID);
+
+	CZapitMessages::responseGetRecordServiceID response;
+	CBasicClient::receive_data((char* )&response, sizeof(response));
+
+	close_connection();
+
+	return response.record_channel_id;
+}
+
+/* get record Service Infos */
+CZapitClient::CRecordServiceInfo CZapitClient::getRecordServiceInfo()
+{
+	send(CZapitMessages::CMD_GET_RECORD_SERVICEINFO);
+
+	CZapitClient::CRecordServiceInfo response;
+	CBasicClient::receive_data((char* )&response, sizeof(response));
+
+	close_connection();
+	
+	return response;
+}
+//
+
 /* get lastchannel */
 void CZapitClient::getLastChannel(unsigned int &channumber, char &mode)
 {
@@ -296,6 +324,46 @@ void CZapitClient::getPIDS(responseGetPIDs& pids)
 
 	close_connection();
 }
+
+//TEST
+void CZapitClient::getRecordPIDS(responseGetPIDs& pids)
+{
+	CZapitMessages::responseGeneralInteger responseInteger;
+	responseGetAPIDs                       responseAPID;
+	responseGetSubPIDs                     responseSubPID;
+
+	send(CZapitMessages::CMD_GETRECORDPIDS);
+
+	CBasicClient::receive_data((char* )&(pids.PIDs), sizeof(pids.PIDs));
+
+	pids.APIDs.clear();
+
+	if (CBasicClient::receive_data((char* )&responseInteger, sizeof(responseInteger)))
+	{
+		pids.APIDs.reserve(responseInteger.number);
+
+		while (responseInteger.number-- > 0)
+		{
+			CBasicClient::receive_data((char*)&responseAPID, sizeof(responseAPID));
+			pids.APIDs.push_back(responseAPID);
+		};
+	}
+	
+	pids.SubPIDs.clear();
+	if (CBasicClient::receive_data((char* )&responseInteger, sizeof(responseInteger)))
+	{
+		pids.SubPIDs.reserve(responseInteger.number);
+
+		while (responseInteger.number-- > 0)
+		{
+			CBasicClient::receive_data((char*)&responseSubPID, sizeof(responseSubPID));
+			pids.SubPIDs.push_back(responseSubPID);
+		};
+	}
+
+	close_connection();
+}
+//
 
 // zapto Nvod subservice
 void CZapitClient::zaptoNvodSubService(const int num)

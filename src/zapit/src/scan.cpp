@@ -60,6 +60,9 @@ extern CEventServer *eventServer;
 //extern int useGotoXX;
 //extern int motorRotationSpeed;
 
+//extern CFrontend * live_fe;
+CFrontend * getFE(int index);
+
 extern xmlDocPtr scanInputParser;
 
 void SaveServices(bool tocopy);
@@ -97,12 +100,12 @@ std::map <transponder_id_t, transponder> nittransponders;
 bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satellite_position satellitePosition, int feindex)
 {
 	//Set Input
-	CFrontend::getInstance(feindex)->setInput(satellitePosition, feparams->frequency, polarization);
+	getFE(feindex)->setInput(satellitePosition, feparams->frequency, polarization);
 
 	//Drive Rotor	(SAT)
-	if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK)
+	if( getFE(feindex)->getInfo()->type == FE_QPSK)
 	{
-		int ret = CFrontend::getInstance(feindex)->driveToSatellitePosition(satellitePosition, false); //true);
+		int ret = getFE(feindex)->driveToSatellitePosition(satellitePosition, false); //true);
 		
 		if(ret > 0) 
 		{
@@ -119,7 +122,7 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 		}
 	}
 
-	return CFrontend::getInstance(feindex)->tuneFrequency(feparams, polarization, false);
+	return getFE(feindex)->tuneFrequency(feparams, polarization, false);
 }
 
 int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0)
@@ -230,7 +233,7 @@ _repeat:
 		eventServer->sendEvent(CZapitClient::EVT_SCAN_REPORT_FREQUENCY,CEventServer::INITID_ZAPIT, &actual_freq,sizeof(actual_freq));
 
 		/* by sat send pol to neutrino */
-		if(CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK)
+		if( getFE(feindex)->getInfo()->type == FE_QPSK)
 		{
 			actual_polarisation = ((tI->second.feparams.u.qpsk.symbol_rate/1000) << 16) | (tI->second.feparams.u.qpsk.fec_inner << 8) | (uint)tI->second.polarization;
 
@@ -339,21 +342,21 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 	freq_id_t freq;
 	feparams.inversion = INVERSION_AUTO;
 
-	if (CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM)
+	if ( getFE(feindex)->getInfo()->type == FE_OFDM)
 		feparams.frequency = xmlGetNumericAttribute(transponder, "centre_frequency", 0);
 	else
 		feparams.frequency = xmlGetNumericAttribute(transponder, "frequency", 0);
 
 	freq = feparams.frequency/1000;
 		
-	if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QAM)	//DVB-C
+	if( getFE(feindex)->getInfo()->type == FE_QAM)	//DVB-C
 	{
 		feparams.u.qam.symbol_rate = xmlGetNumericAttribute(transponder, "symbol_rate", 0);
 		feparams.u.qam.fec_inner = (fe_code_rate_t) xmlGetNumericAttribute(transponder, "fec_inner", 0);
 		feparams.u.qam.modulation = (fe_modulation_t) xmlGetNumericAttribute(transponder, "modulation", 0);
 		diseqc_pos = 0;
 	}
-	else if( CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM)
+	else if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		feparams.u.ofdm.bandwidth = (fe_bandwidth_t) xmlGetNumericAttribute(transponder, "bandwidth", 0);
 		feparams.u.ofdm.code_rate_HP = (fe_code_rate_t) xmlGetNumericAttribute(transponder, "code_rate_hp", 0);
@@ -366,7 +369,7 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 			
 		diseqc_pos = 0;
 	}
-	else if ( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK) 
+	else if ( getFE(feindex)->getInfo()->type == FE_QPSK) 
 	{
 		feparams.u.qpsk.symbol_rate = xmlGetNumericAttribute(transponder, "symbol_rate", 0);
 		polarization = xmlGetNumericAttribute(transponder, "polarization", 0);
@@ -527,15 +530,15 @@ void * start_scanthread(void *scanmode)
 	fake_tid = fake_nid = 0;
 	
 
-	if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QAM)
+	if( getFE(feindex)->getInfo()->type == FE_QAM)
 	{
 		frontendType = (char *) "cable";
 	}
-	else if( CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM)
+	else if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		frontendType = (char *) "terrestrial";
 	}
-	else if( CFrontend::getInstance(feindex)->getInfo()->type == FE_QPSK)
+	else if( getFE(feindex)->getInfo()->type == FE_QPSK)
 	{
 		frontendType = (char *) "sat";
 	}
@@ -548,7 +551,7 @@ void * start_scanthread(void *scanmode)
 	{
 		t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
 	
-		if( ( CFrontend::getInstance(feindex)->getInfo()->type == FE_QAM) || ( CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM) )
+		if( ( getFE(feindex)->getInfo()->type == FE_QAM) || ( getFE(feindex)->getInfo()->type == FE_OFDM) )
 		{
 			strcpy(providerName, xmlGetAttribute(search, const_cast<char*>("name")));
 			
@@ -578,7 +581,7 @@ void * start_scanthread(void *scanmode)
 			// get name of current satellite oder cable provider
 			strcpy(providerName, xmlGetAttribute(search,  "name"));
 
-			if( ( CFrontend::getInstance(feindex)->getInfo()->type == FE_OFDM || CFrontend::getInstance(feindex)->getInfo()->type == FE_QAM) && xmlGetAttribute(search, "satfeed") )
+			if( ( getFE(feindex)->getInfo()->type == FE_OFDM || getFE(feindex)->getInfo()->type == FE_QAM) && xmlGetAttribute(search, "satfeed") )
 			{
 				if (!strcmp(xmlGetAttribute(search, "satfeed"), "true"))
 					satfeed = true;
@@ -636,7 +639,7 @@ void * start_scanthread(void *scanmode)
 	{
 		stop_scan(false);
 
-		CFrontend::getInstance(feindex)->setTsidOnid(0);
+		getFE(feindex)->setTsidOnid(0);
 		
 		zapit(live_channel_id, 0);
 	}
@@ -681,15 +684,15 @@ void * scan_transponder(void * arg)
 	scan_mode = TP->scan_mode;
 	TP->feparams.inversion = INVERSION_AUTO;
 
-	if( CFrontend::getInstance(ScanTP.feindex)->getInfo()->type == FE_QAM)
+	if( getFE(ScanTP.feindex)->getInfo()->type == FE_QAM)
 	{
 		printf("[scan] fe(%d) scan_transponder: freq %d rate %d fec %d mod %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qam.symbol_rate, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation);
 	}
-	else if(CFrontend::getInstance(ScanTP.feindex)->getInfo()->type == FE_OFDM)
+	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_OFDM)
 	{
 		printf("[scan] fe(%d) scan_transponder: freq %d band %d HP %d LP %d const %d trans %d guard %d hierarchy %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information);
 	}
-	else if(CFrontend::getInstance(ScanTP.feindex)->getInfo()->type == FE_QPSK)
+	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_QPSK)
 	{
 		printf("[scan] fe(%d) scan_transponder: freq %d rate %d fec %d pol %d NIT %s\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qpsk.symbol_rate, TP->feparams.u.qpsk.fec_inner, TP->polarization, scan_mode ? "no" : "yes");
 	}
@@ -727,7 +730,7 @@ void * scan_transponder(void * arg)
 	{
 		stop_scan(false);
 
-		CFrontend::getInstance(ScanTP.feindex)->setTsidOnid(0);
+		getFE(ScanTP.feindex)->setTsidOnid(0);
 		
 		zapit(live_channel_id, 0);
 	}

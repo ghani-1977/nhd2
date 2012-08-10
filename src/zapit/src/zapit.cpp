@@ -152,18 +152,6 @@ extern cDemux * pmtDemux;			/* defined in pmt.cpp */
 /* the map which stores the wanted cables/satellites/terrestrials */
 scan_list_t scanProviders;
 
-// DVB
-#define DVBADAPTER_MAX	1
-#define FRONTEND_MAX	4
-int AdapterCount = 0;
-int FrontendCount = 0;
-bool twin_tuned = false;
-
-/* variables for EN 50494 (a.k.a Unicable) */
-//int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
-//int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
-
-
 /* current zapit mode */
 enum {
 	TV_MODE = 0x01,
@@ -231,11 +219,140 @@ extern void tuxtx_stop_subtitle();
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
+/**
+frontend stuff
+**/
+#define DVBADAPTER_MAX	2
+#define FRONTEND_MAX	4
+int AdapterCount = 0;
+int FrontendCount = 0;
+bool twin_tuned = false;
+
+#define MAKE_FE_KEY(adapter, number) ((adapter << 8) | (number & 0xFF))
+typedef std::map<unsigned short, CFrontend*> fe_map_t;
+typedef fe_map_t::iterator fe_map_iterator_t;
+fe_map_t	femap;
+
 // frontend config
 CConfigFile fe_configfile(',', false);
 #define FRONTEND_CONFIGFILE "/var/tuxbox/config/zapit/frontend.conf"
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
+
+int live_fe_index = 0;
+
+/* variables for EN 50494 (a.k.a Unicable) */
+//int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
+//int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
+
+bool initFrontend()
+{
+	// frontend count
+	int i, j;
+	
+	CFrontend * fe;
+	unsigned short fekey;
+	
+	for(i = 0; i < DVBADAPTER_MAX; i++)
+	{
+		for(j = 0; j < FRONTEND_MAX; j++)
+		{
+			fe = new CFrontend(j, i);
+			if(fe->Open()) 
+			{
+				fekey = MAKE_FE_KEY(i, j);
+				femap.insert(std::pair <unsigned short, CFrontend*> (fekey, fe));
+				
+				//printf("add fe %d", fe->getFeIndex() );
+				
+				//if(live_fe == NULL)
+				//	live_fe = fe;
+			}
+		}
+	}
+	
+	FrontendCount = femap.size();
+	
+	printf("found %d frontends\n", femap.size());
+	if(femap.size() == 0)
+		return false;
+		
+	return true;
+}
+
+CFrontend * getFE(int index)
+{
+	if((unsigned int) index < femap.size())
+		return femap[index];
+	
+	printf("Frontend #%d not found", index);
+	
+	return NULL;
+}
+
+CFrontend * find_live_fe(CZapitChannel * thischannel)
+//void find_live_fe(CZapitChannel * thischannel)
+{
+	//return CFrontend::getInstance(1);
+	#if 0
+	transponder_list_t::iterator tpI;
+	//transponder_id_t ct = thischannel->getTransponderId();
+	
+	// get tpid
+	tpI = transponders.find(thischannel->getTransponderId());
+	
+	if (tpI == transponders.end()) 
+	{
+		return;
+	}
+	#endif
+	
+	// now compare tp feparams with fe feparams
+	//tpI->second.feparams
+	
+	#if 0
+	fe_map_iterator_t feIt;
+	
+	for(feIt = femap.begin(); feIt != femap.end(); feIt++) 
+	{
+		//if(feIt->second.feparams == tpI->second.feparams)
+		if(feIt->second.getFeIndex() == 0)
+		{
+			break;
+				
+		}
+	}
+	
+	return feIt->second;
+	#endif
+	
+	#if 0
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		live_fe = it->second;
+	}
+	#endif
+	
+	//return femap[0];
+	#if 0
+	CFrontend * fe = NULL;
+	
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		//live_fe = it->second;
+		fe = it->second;
+	}
+	
+	return fe;
+	#endif
+	
+	return femap[thischannel->getFeIndex()];
+}
+
+CFrontend * find_record_fe(CZapitChannel * thischannel)
+{
+	return femap[thischannel->getFeIndex()];
+}
 
 // borrowed from cst neutrino-hd (femanager.cpp)
 uint32_t getConfigValue(int num, const char * name, uint32_t defval)
@@ -260,30 +377,37 @@ void saveFrontendConfig()
 {
 	printf("zapit: saveFrontendConfig\n");
 	
+	// common
+	// fe mode
+	
+	// live_fe_index
+	fe_configfile.setInt32("live_fe_index", live_fe->getFeIndex());
+	
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+		CFrontend * fe = getFE(i);
+		
+		if(fe->getInfo()->type == FE_QPSK)
 		{
-			setConfigValue(i, "lastSatellitePosition", CFrontend::getInstance(i)->getCurrentSatellitePosition());
-			setConfigValue(i, "diseqcRepeats", CFrontend::getInstance(i)->getDiseqcRepeats());
-			setConfigValue(i, "diseqcType", CFrontend::getInstance(i)->getDiseqcType() );
+			setConfigValue(fe->getFeIndex(), "lastSatellitePosition", fe->getCurrentSatellitePosition());
+			setConfigValue(fe->getFeIndex(), "diseqcRepeats", fe->getDiseqcRepeats());
+			setConfigValue(fe->getFeIndex(), "diseqcType", fe->getDiseqcType() );
 				
 			char tempd[12];
-			sprintf(tempd, "%3.6f", gotoXXLatitude);
-			//config.setString("gotoXXLatitude", tempd);
 			char cfg_key[81];
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", i);
+			
+			sprintf(tempd, "%3.6f", gotoXXLatitude);
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe->getFeIndex());
 			fe_configfile.setString(cfg_key, tempd );
 			
 			sprintf(tempd, "%3.6f", gotoXXLongitude);
-			//config.setString("gotoXXLongitude", tempd);
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", i);
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe->getFeIndex());
 			fe_configfile.setString(cfg_key, tempd );
 			
-			setConfigValue(i, "gotoXXLaDirection", gotoXXLaDirection);
-			setConfigValue(i, "gotoXXLoDirection", gotoXXLoDirection);
-			setConfigValue(i, "useGotoXX", useGotoXX);
-			setConfigValue(i, "repeatUsals", repeatUsals);
+			setConfigValue(fe->getFeIndex(), "gotoXXLaDirection", gotoXXLaDirection);
+			setConfigValue(fe->getFeIndex(), "gotoXXLoDirection", gotoXXLoDirection);
+			setConfigValue(fe->getFeIndex(), "useGotoXX", useGotoXX);
+			setConfigValue(fe->getFeIndex(), "repeatUsals", repeatUsals);
 		}
 	}
 	
@@ -298,60 +422,40 @@ void loadFrontendConfig()
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		WARN("%s not found", FRONTEND_CONFIGFILE);
 	
+	// common
+	// fe mode
+	
+	// live_fe_index
+	live_fe_index = fe_configfile.getInt32("live_fe_index", 0);
+	
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+		CFrontend * fe = getFE(i);
+		
+		if(fe->getInfo()->type == FE_QPSK)
 		{
-			useGotoXX = getConfigValue(i, "useGotoXX", 0);
+			useGotoXX = getConfigValue(fe->getFeIndex(), "useGotoXX", 0);
 			
-			//gotoXXLatitude = strtod(config.getString("gotoXXLatitude", "0.0").c_str(), NULL);
-			//gotoXXLongitude = strtod(config.getString("gotoXXLongitude", "0.0").c_str(), NULL);
 			char cfg_key[81];
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", i);
+			
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe->getFeIndex());
 			gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", i);
+			
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe->getFeIndex());
 			gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			gotoXXLaDirection = getConfigValue(i, "gotoXXLaDirection", 0);
-			gotoXXLoDirection = getConfigValue(i, "gotoXXLoDirection", 0);
-			repeatUsals = fe_configfile.getInt32("repeatUsals", 0);
+			gotoXXLaDirection = getConfigValue(fe->getFeIndex(), "gotoXXLaDirection", 0);
+			gotoXXLoDirection = getConfigValue(fe->getFeIndex(), "gotoXXLoDirection", 0);
+			
+			repeatUsals = getConfigValue(fe->getFeIndex(), "repeatUsals", 0);
+			diseqcType = (diseqc_t)getConfigValue(fe->getFeIndex(), "diseqcType", NO_DISEQC);
+			motorRotationSpeed = getConfigValue(live_fe->getFeIndex(), "motorRotationSpeed", 18); // default: 1.8 degrees per second
 
-			diseqcType = (diseqc_t)getConfigValue(i, "diseqcType", NO_DISEQC);
-			//diseqcRepeats = getConfigValue(i, "diseqcRepeats", 0);
-			//printf("[zapit.cpp] diseqc type = %d\n", diseqcType);
-			motorRotationSpeed = getConfigValue(i, "motorRotationSpeed", 18); // default: 1.8 degrees per second
-
-			CFrontend::getInstance(i)->setDiseqcRepeats( getConfigValue(i, "diseqcRepeats", 0) );
-			CFrontend::getInstance(i)->setCurrentSatellitePosition( getConfigValue(i, "lastSatellitePosition", 0) );
-			CFrontend::getInstance(i)->setDiseqcType(diseqcType);
+			fe->setDiseqcRepeats( getConfigValue(live_fe->getFeIndex(), "diseqcRepeats", 0) );
+			fe->setCurrentSatellitePosition( getConfigValue(live_fe->getFeIndex(), "lastSatellitePosition", 0) );
+			fe->setDiseqcType(diseqcType);
 		}
 	}
-}
-
-CFrontend * find_live_fe(CZapitChannel * thischannel)
-{
-	//return CFrontend::getInstance(1);
-	transponder_list_t::iterator tpI;
-	//transponder_id_t ct = thischannel->getTransponderId();
-	
-	// get tpid
-	tpI = transponders.find(thischannel->getTransponderId());
-	
-	if (tpI == transponders.end()) 
-	{
-		return NULL;
-	}
-	
-	// now compare tp feparams with fe feparams
-	//tpI->second.feparams
-	
-	return CFrontend::getInstance(thischannel->getFeIndex() );
-}
-
-CFrontend * find_record_fe(CZapitChannel * thischannel)
-{
-	//return CFrontend::getInstance(1);
-	return CFrontend::getInstance(thischannel->getFeIndex() );
 }
 
 void saveZapitSettings(bool write, bool write_a)
@@ -387,7 +491,7 @@ void saveZapitSettings(bool write, bool write_a)
 		}
 		
 		// save frontend settings
-		saveFrontendConfig();
+		//saveFrontendConfig();
 
 		config.setInt32("rezapTimeout", rezapTimeout);
 		config.setBool("sortNames", sortNames);
@@ -487,7 +591,7 @@ void loadZapitSettings()
 	//uni_qrg = config.getInt32("uni_qrg", 0);
 
 	// frontend settings
-	loadFrontendConfig();
+	//loadFrontendConfig();
 
 	//load audio map
 	load_audio_map();
@@ -608,7 +712,6 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 
 	transponder_change = false;
 		  
-	//transponder_change = CFrontend::getInstance( thischannel->getFeIndex() )->setInput(thischannel, current_is_nvod);
 	transponder_change = frontend->setInput(thischannel, current_is_nvod);
 	
 	// drive rotor
@@ -675,6 +778,42 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 			return false;
 		}
 		else if (parse_pmt(thischannel) < 0) 
+		{
+			printf("[zapit] pmt parsing failed\n");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+static bool parse_record_pat_pmt(CZapitChannel * thischannel)
+{
+	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
+	
+	// get program map table pid from program association table
+	if (thischannel->getPmtPid() == 0) 
+	{
+		printf("[zapit] no pmt pid, going to parse pat\n");
+		
+		if (parse_pat(thischannel) < 0) 
+		{
+			printf("[zapit] pat parsing failed\n");
+			return false;
+		}
+	}
+
+	/* parse program map table and store pids */
+	if (parse_pmt(thischannel, RECORD_DEMUX) < 0) 
+	{
+		printf("[zapit] pmt parsing failed\n");
+		
+		if (parse_pat(thischannel, RECORD_DEMUX) < 0) 
+		{
+			printf("pat parsing failed\n");
+			return false;
+		}
+		else if (parse_pmt(thischannel, RECORD_DEMUX) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -761,11 +900,15 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	}
 	
 	// find live_fe
+	//CFrontend * fe = find_live_fe(newchannel);
 	if(( live_fe = find_live_fe(newchannel)) == NULL)
+	//if(fe)
 	{
 		printf("live_fe can't be found ;-(\n");
 		return -1;
 	}
+	
+	//live_fe = femap[newchannel->getFeIndex()];
 
 	sig_delay = 2;
 	
@@ -856,8 +999,10 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	}
 	
+	rec_channel_id = rec_channel->getChannelID();
+	
 	// find record fe
-	if(( record_fe = find_live_fe(rec_channel)) == NULL)
+	if(( record_fe = find_record_fe(rec_channel)) == NULL)
 	{
 		printf("live_fe can't be found ;-(\n");
 		return -1;
@@ -865,7 +1010,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	//tune
 	// check for twin
-	#if 1
+	#if 0
 	if(FrontendCount > 1)
 	{
 		for(int i = 1; i < FrontendCount; i++)
@@ -880,18 +1025,18 @@ int zapit_to_record(const t_channel_id channel_id)
 	}
 	#endif
 	
-	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), channel_id, rec_channel->getFeIndex());
+	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), channel_id, record_fe->getFeIndex());
 	
 	// tune to rec channel
 	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
 	
 	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel))
+	if(!parse_record_pat_pmt(rec_channel))
 		return -1;
 	
 	//TEST: do we need to set ca_pmt_list_managment???
-	rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
+	//rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
 
 	return 0;
 }
@@ -1014,7 +1159,7 @@ void setRecordMode(void)
 	 
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_ACTIVATED, CEventServer::INITID_ZAPIT );
 
-	rec_channel_id = live_channel_id;
+	//rec_channel_id = live_channel_id;
 }
 
 void unsetRecordMode(void)
@@ -1076,7 +1221,7 @@ int prepare_channels()
 
 void parseScanInputXml(int feindex)
 {
-	switch (CFrontend::getInstance(feindex)->getInfo()->type) 
+	switch ( getFE(feindex)->getInfo()->type) 
 	{
 		case FE_QPSK:
 			scanInputParser = parseXmlFile(SATELLITES_XML);
@@ -1091,7 +1236,7 @@ void parseScanInputXml(int feindex)
 			break;
 		
 		default:
-			WARN("Unknown type %d", CFrontend::getInstance(feindex)->getInfo()->type);
+			WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
 			return;
 	}
 }
@@ -1210,7 +1355,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		
 		case CZapitMessages::CMD_GET_CURRENT_SATELLITE_POSITION: 
 		{
-			int32_t currentSatellitePosition = channel ? channel->getSatellitePosition() : CFrontend::getInstance()->getCurrentSatellitePosition();
+			int32_t currentSatellitePosition = channel ? channel->getSatellitePosition() : live_fe->getCurrentSatellitePosition();
 			CBasicServer::send_data(connfd, &currentSatellitePosition, sizeof(currentSatellitePosition));
 			break;
 		}
@@ -1269,12 +1414,12 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				
 				msgCurrentServiceInfo.pcrpid = channel->getPcrPid();
 				
-				msgCurrentServiceInfo.tsfrequency = CFrontend::getInstance(channel->getFeIndex())->getFrequency();
-				msgCurrentServiceInfo.rate = CFrontend::getInstance(channel->getFeIndex())->getRate();
-				msgCurrentServiceInfo.fec = CFrontend::getInstance(channel->getFeIndex())->getCFEC();
+				msgCurrentServiceInfo.tsfrequency = live_fe->getFrequency();
+				msgCurrentServiceInfo.rate = live_fe->getRate();
+				msgCurrentServiceInfo.fec = live_fe->getCFEC();
 					
-				if ( CFrontend::getInstance(channel->getFeIndex())->getInfo()->type == FE_QPSK)
-					msgCurrentServiceInfo.polarisation = CFrontend::getInstance(channel->getFeIndex())->getPolarization();
+				if ( live_fe->getInfo()->type == FE_QPSK)
+					msgCurrentServiceInfo.polarisation = live_fe->getPolarization();
 				else
 					msgCurrentServiceInfo.polarisation = 2;
 				
@@ -1290,12 +1435,62 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 		
+		//TEST
+		case CZapitMessages::CMD_GET_RECORD_SERVICEID: 
+		{
+			CZapitMessages::responseGetRecordServiceID msgRecordSID;
+			msgRecordSID.record_channel_id = (rec_channel != 0) ? rec_channel->getChannelID() : 0;
+			CBasicServer::send_data(connfd, &msgRecordSID, sizeof(msgRecordSID));
+			break;
+		}
+		
+		case CZapitMessages::CMD_GET_RECORD_SERVICEINFO: 
+		{
+			CZapitClient::CRecordServiceInfo msgRecordServiceInfo;
+			memset(&msgRecordServiceInfo, 0, sizeof(CZapitClient::CRecordServiceInfo));
+			
+			if(rec_channel) 
+			{
+				msgRecordServiceInfo.onid = rec_channel->getOriginalNetworkId();
+				msgRecordServiceInfo.sid = rec_channel->getServiceId();
+				msgRecordServiceInfo.tsid = rec_channel->getTransportStreamId();
+				msgRecordServiceInfo.vpid = rec_channel->getVideoPid();
+				msgRecordServiceInfo.apid = rec_channel->getAudioPid();
+				msgRecordServiceInfo.vtxtpid = rec_channel->getTeletextPid();
+				msgRecordServiceInfo.pmtpid = rec_channel->getPmtPid();
+				
+				msgRecordServiceInfo.pmt_version = (rec_channel->getCaPmt() != NULL) ? rec_channel->getCaPmt()->version_number : 0xff;
+				
+				msgRecordServiceInfo.pcrpid = rec_channel->getPcrPid();
+				
+				msgRecordServiceInfo.tsfrequency = record_fe->getFrequency();
+				msgRecordServiceInfo.rate = record_fe->getRate();
+				msgRecordServiceInfo.fec = record_fe->getCFEC();
+					
+				if ( record_fe->getInfo()->type == FE_QPSK)
+					msgRecordServiceInfo.polarisation = record_fe->getPolarization();
+				else
+					msgRecordServiceInfo.polarisation = 2;
+				
+				msgRecordServiceInfo.vtype = rec_channel->type;
+				
+				msgRecordServiceInfo.FeIndex = rec_channel->getFeIndex();
+			}
+			
+			if(!msgRecordServiceInfo.fec)
+				msgRecordServiceInfo.fec = (fe_code_rate)3;
+			
+			CBasicServer::send_data(connfd, &msgRecordServiceInfo, sizeof(msgRecordServiceInfo));
+			break;
+		}
+		//
+		
 		/* used by neutrino at start, this deliver infos only about the first tuner */
 		case CZapitMessages::CMD_GET_DELIVERY_SYSTEM: 
 		{
 			CZapitMessages::responseDeliverySystem response;
 			
-			switch ( CFrontend::getInstance()->getInfo()->type) 
+			switch ( live_fe->getInfo()->type) 
 			{
 				case FE_QAM:
 					response.system = DVB_C;
@@ -1310,7 +1505,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					break;
 
 				default:
-					WARN("Unknown type %d", CFrontend::getInstance()->getInfo()->type);
+					WARN("Unknown type %d", live_fe->getInfo()->type);
 					return false;
 			
 			}
@@ -1446,7 +1641,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			DBG("[zapit] sending EVT_SERVICES_CHANGED\n");
-			CFrontend::getInstance()->setTsidOnid(0);
+			live_fe->setTsidOnid(0);
 			zapit(live_channel_id, current_is_nvod);
 
 			eventServer->sendEvent(CZapitClient::EVT_BOUQUETS_CHANGED, CEventServer::INITID_ZAPIT);
@@ -1517,14 +1712,14 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			t_satellite_position satellitePosition = scanProviders.begin()->first;
 	
 			// tune
-			CFrontend::getInstance(TuneTP.feindex)->setInput(satellitePosition, TP.feparams.frequency,  TP.polarization);
+			getFE(TuneTP.feindex)->setInput(satellitePosition, TP.feparams.frequency,  TP.polarization);
 					
-			switch (CFrontend::getInstance(TuneTP.feindex)->getInfo()->type) 
+			switch ( getFE(TuneTP.feindex)->getInfo()->type) 
 			{
 				case FE_QPSK:
 				{
 					printf("[zapit] tune to sat %s freq %d rate %d fec %d pol %d\n", name, TP.feparams.frequency, TP.feparams.u.qpsk.symbol_rate, TP.feparams.u.qpsk.fec_inner, TP.polarization);
-					CFrontend::getInstance(TuneTP.feindex)->driveToSatellitePosition(satellitePosition);
+					live_fe->driveToSatellitePosition(satellitePosition);
 					break;
 				}
 		
@@ -1539,12 +1734,12 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					break;
 		
 				default:
-					WARN("Unknown type %d", CFrontend::getInstance(TuneTP.feindex)->getInfo()->type);
+					WARN("Unknown type %d", live_fe->getInfo()->type);
 					return false;
 			}
 		
 			// tune it
-			CFrontend::getInstance(TuneTP.feindex)->tuneFrequency(&TP.feparams, TP.polarization, true);
+			getFE(TuneTP.feindex)->tuneFrequency(&TP.feparams, TP.polarization, true);
 		}
 		break;
 	
@@ -1563,7 +1758,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				// freq
 				TP.feparams.frequency = transponder->second.feparams.frequency;
 				
-				switch (CFrontend::getInstance(ScanTP.feindex)->getInfo()->type) 
+				switch ( getFE(ScanTP.feindex)->getInfo()->type) 
 				{
 					case FE_QPSK:
 						TP.feparams.u.qpsk.symbol_rate = transponder->second.feparams.u.qpsk.symbol_rate;
@@ -1588,7 +1783,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 						break;
 
 					default:
-						WARN("Unknown type %d", CFrontend::getInstance(ScanTP.feindex)->getInfo()->type);
+						WARN("Unknown type %d", getFE(ScanTP.feindex)->getInfo()->type);
 						return false;
 				}
 	
@@ -1710,9 +1905,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			diseqcType = msgSetDiseqcType.diseqc;
 			
 			// fe set diseqc type
-			if(CFrontend::getInstance(msgSetDiseqcType.feindex)->getInfo()->type == FE_QPSK)
+			if( getFE(msgSetDiseqcType.feindex)->getInfo()->type == FE_QPSK)
 			{
-				CFrontend::getInstance()->setDiseqcType(diseqcType);
+				getFE(msgSetDiseqcType.feindex)->setDiseqcType(diseqcType);
 				printf("zapit: set diseqc type %d\n", diseqcType);
 			}
 			
@@ -1728,9 +1923,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			repeats = msgSetDiseqcRepeat.repeat;
 			
-			if(CFrontend::getInstance(msgSetDiseqcRepeat.feindex)->getInfo()->type == FE_QPSK)
+			if( getFE(msgSetDiseqcRepeat.feindex)->getInfo()->type == FE_QPSK)
 			{
-				CFrontend::getInstance(msgSetDiseqcRepeat.feindex)->setDiseqcRepeats(repeats);
+				getFE(msgSetDiseqcRepeat.feindex)->setDiseqcRepeats(repeats);
 				DBG("set diseqc repeats to %d", repeats);
 			}
 			
@@ -2024,6 +2219,25 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			}
 			break;
 		}
+		
+		case CZapitMessages::CMD_GETRECORDPIDS: 
+		{
+			if (rec_channel) 
+			{
+				CZapitClient::responseGetOtherPIDs responseGetOtherPIDs;
+				responseGetOtherPIDs.vpid = rec_channel->getVideoPid();
+				responseGetOtherPIDs.vtxtpid = rec_channel->getTeletextPid();
+				responseGetOtherPIDs.pmtpid = rec_channel->getPmtPid();
+				responseGetOtherPIDs.pcrpid = rec_channel->getPcrPid();
+				responseGetOtherPIDs.selected_apid = rec_channel->getAudioChannelIndex();
+				responseGetOtherPIDs.privatepid = rec_channel->getPrivatePid();
+				
+				CBasicServer::send_data(connfd, &responseGetOtherPIDs, sizeof(responseGetOtherPIDs));
+				sendAPIDs(connfd);
+				sendSubPIDs(connfd);
+			}
+			break;
+		}
 	
 		#if 0
 		case CZapitMessages::CMD_GET_FE_SIGNAL: 
@@ -2154,7 +2368,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::receive_data(connfd, &msgMotor, sizeof(msgMotor));
 			printf("[zapit] received motor command: %x %x %x %x %x %x fe(%d)\n", msgMotor.cmdtype, msgMotor.address, msgMotor.cmd, msgMotor.num_parameters, msgMotor.param1, msgMotor.param2, msgMotor.feindex);
 			if(msgMotor.cmdtype > 0x20)
-				CFrontend::getInstance(msgMotor.feindex)->sendMotorCommand(msgMotor.cmdtype, msgMotor.address, msgMotor.cmd, msgMotor.num_parameters, msgMotor.param1, msgMotor.param2);
+				getFE(msgMotor.feindex)->sendMotorCommand(msgMotor.cmdtype, msgMotor.address, msgMotor.cmd, msgMotor.num_parameters, msgMotor.param1, msgMotor.param2);
 			// TODO !!
 			//else if(channel)
 			//  frontend->satFind(msgMotor.cmdtype, channel);
@@ -2298,7 +2512,7 @@ void internalSendChannels(int connfd, ZapitChannelList* channels, const unsigned
 	for (uint32_t  i = 0; i < channels->size();i++) 
 	{
 #if RECORD_RESEND // old, before tv/radio resend
-		if ((currentMode & RECORD_MODE) && ((*channels)[i]->getTransponderId() != CFrontend::getInstance()->getTsidOnid()))
+		if ((currentMode & RECORD_MODE) && ((*channels)[i]->getTransponderId() != record_fe->getTsidOnid()))
 			continue;
 #endif
 
@@ -2369,9 +2583,9 @@ void sendBouquets(int connfd, const bool emptyBouquetsToo, CZapitClient::channel
 		{
 // ATTENTION: in RECORD_MODE empty bouquets are not send!
 #if RECORD_RESEND // old, before tv/radio resend
-			if ((!(currentMode & RECORD_MODE)) || ((CFrontend::getInstance() != NULL) &&
-			     (((currentMode & RADIO_MODE) && (g_bouquetManager->Bouquets[i]->recModeRadioSize( CFrontend::getInstance()->getTsidOnid()) > 0)) ||
-			      ((currentMode & TV_MODE)    && (g_bouquetManager->Bouquets[i]->recModeTVSize   ( CFrontend::getInstance()->getTsidOnid()) > 0)))))
+			if ((!(currentMode & RECORD_MODE)) || (( live_fe != NULL) &&
+			     (((currentMode & RADIO_MODE) && (g_bouquetManager->Bouquets[i]->recModeRadioSize( live_fe->getTsidOnid()) > 0)) ||
+			      ((currentMode & TV_MODE)    && (g_bouquetManager->Bouquets[i]->recModeTVSize   ( live_fe->getTsidOnid()) > 0)))))
 #endif
 			{
 				msgBouquet.bouquet_nr = i;
@@ -2485,7 +2699,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( thisChannel->getDemuxIndex() );
+			pcrDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ );
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2503,7 +2717,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( thisChannel->getDemuxIndex() );
+			audioDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ );
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2521,7 +2735,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( thisChannel->getDemuxIndex() ); 
+			videoDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2768,10 +2982,13 @@ void enterStandby(void)
 
 	if(!(currentMode & RECORD_MODE)) 
 	{
+		/*
 		for(int i = 0; i < FrontendCount; i++)
 		{
-			CFrontend::getInstance(i)->Close();
+			CFrontend * fe = getFE(i);
+			fe->Close();
 		}
+		*/
 		
 		rename("/tmp/pmt.tmp", "/tmp/pmt.tmp.off");
 	}
@@ -2784,32 +3001,40 @@ void leaveStandby(void)
 	if(!standby) 
 		return;
 	
+	/*
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+		CFrontend * fe = getFE(i);
+		
+		if( fe->getInfo()->type == FE_QPSK)
 		{
-			CFrontend::getInstance(i)->setDiseqcRepeats(config.getInt32("diseqcRepeats", 0));
-			CFrontend::getInstance(i)->setCurrentSatellitePosition(config.getInt32("lastSatellitePosition", 0));
-			CFrontend::getInstance(i)->setDiseqcType(diseqcType);
+			live_fe->setDiseqcRepeats(config.getInt32("diseqcRepeats", 0));
+			live_fe->setCurrentSatellitePosition(config.getInt32("lastSatellitePosition", 0));
+			live_fe->setDiseqcType(diseqcType);
 		}
 	}
+	*/
 
 	if(!(currentMode & RECORD_MODE)) 
-	{		
+	{
+		/*
 		for(int i = 0; i < FrontendCount; i++)
 		{
+			CFrontend * fe = getFE(i);
+			
 			// open frontend
-			CFrontend::getInstance(i)->Open();
+			fe->Open();
 			
 			// set TP
-			CFrontend::getInstance(i)->setTsidOnid(0);
+			fe->setTsidOnid(0);
 		
 			// set diseqc type
-			if( CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+			if( fe->getInfo()->type == FE_QPSK)
 			{
-				  CFrontend::getInstance(i)->setDiseqcType(diseqcType);
+				  fe->setDiseqcType(diseqcType);
 			}
 		}
+		*/
 
 		if (!cam0) 
 		{
@@ -2903,8 +3128,8 @@ unsigned zapTo(const unsigned int channel)
 
 void setZapitConfig(Zapit_config * Cfg)
 {
-	motorRotationSpeed = Cfg->motorRotationSpeed;
-	config.setInt32("motorRotationSpeed", motorRotationSpeed);
+	//motorRotationSpeed = Cfg->motorRotationSpeed;
+	//config.setInt32("motorRotationSpeed", motorRotationSpeed);
 	config.setBool("writeChannelsNames", Cfg->writeChannelsNames);
 	config.setBool("makeRemainingChannelsBouquet", Cfg->makeRemainingChannelsBouquet);
 	config.setBool("saveLastChannel", Cfg->saveLastChannel);
@@ -2914,12 +3139,12 @@ void setZapitConfig(Zapit_config * Cfg)
 	
 	scan_pids = Cfg->scanPids;
 	rezapTimeout = Cfg->rezapTimeout;
-	useGotoXX = Cfg->useGotoXX;
-	gotoXXLaDirection = Cfg->gotoXXLaDirection;
-	gotoXXLoDirection = Cfg->gotoXXLoDirection;
-	gotoXXLatitude = Cfg->gotoXXLatitude;
-	gotoXXLongitude = Cfg->gotoXXLongitude;
-	repeatUsals = Cfg->repeatUsals;
+	//useGotoXX = Cfg->useGotoXX;
+	//gotoXXLaDirection = Cfg->gotoXXLaDirection;
+	//gotoXXLoDirection = Cfg->gotoXXLoDirection;
+	//gotoXXLatitude = Cfg->gotoXXLatitude;
+	//gotoXXLongitude = Cfg->gotoXXLongitude;
+	//repeatUsals = Cfg->repeatUsals;
 
 	scanSDT = Cfg->scanSDT;
 	
@@ -2932,7 +3157,7 @@ void sendConfig(int connfd)
 	printf("\n[zapit]sendConfig:\n");
 	Zapit_config Cfg;
 
-	Cfg.motorRotationSpeed = motorRotationSpeed;
+	//Cfg.motorRotationSpeed = motorRotationSpeed;
 	Cfg.writeChannelsNames = config.getBool("writeChannelsNames", true);
 	Cfg.makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
 	Cfg.saveLastChannel = config.getBool("saveLastChannel", true);
@@ -2942,12 +3167,12 @@ void sendConfig(int connfd)
 	Cfg.scanPids = scan_pids;
 	Cfg.rezapTimeout = rezapTimeout;
 	Cfg.scanSDT = scanSDT;
-	Cfg.useGotoXX = useGotoXX;
-	Cfg.gotoXXLaDirection = gotoXXLaDirection;
-	Cfg.gotoXXLoDirection = gotoXXLoDirection;
-	Cfg.gotoXXLatitude = gotoXXLatitude;
-	Cfg.gotoXXLongitude = gotoXXLongitude;
-	Cfg.repeatUsals = repeatUsals;
+	//Cfg.useGotoXX = useGotoXX;
+	//Cfg.gotoXXLaDirection = gotoXXLaDirection;
+	//Cfg.gotoXXLoDirection = gotoXXLoDirection;
+	//Cfg.gotoXXLatitude = gotoXXLatitude;
+	//Cfg.gotoXXLongitude = gotoXXLongitude;
+	//Cfg.repeatUsals = repeatUsals;
 	
 	/* send */
 	CBasicServer::send_data(connfd, &Cfg, sizeof(Cfg));
@@ -2955,7 +3180,7 @@ void sendConfig(int connfd)
 
 void getZapitConfig(Zapit_config *Cfg)
 {
-        Cfg->motorRotationSpeed = motorRotationSpeed;
+        //Cfg->motorRotationSpeed = motorRotationSpeed;
         Cfg->writeChannelsNames = config.getBool("writeChannelsNames", true);
         Cfg->makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
         Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
@@ -2965,12 +3190,13 @@ void getZapitConfig(Zapit_config *Cfg)
         Cfg->scanPids = scan_pids;
         Cfg->rezapTimeout = rezapTimeout;
         Cfg->scanSDT = scanSDT;
-        Cfg->useGotoXX = useGotoXX;
-        Cfg->gotoXXLaDirection = gotoXXLaDirection;
-        Cfg->gotoXXLoDirection = gotoXXLoDirection;
-        Cfg->gotoXXLatitude = gotoXXLatitude;
-        Cfg->gotoXXLongitude = gotoXXLongitude;
-	Cfg->repeatUsals = repeatUsals;
+	
+        //Cfg->useGotoXX = useGotoXX;
+        //Cfg->gotoXXLaDirection = gotoXXLaDirection;
+        //Cfg->gotoXXLoDirection = gotoXXLoDirection;
+        //Cfg->gotoXXLatitude = gotoXXLatitude;
+        //Cfg->gotoXXLongitude = gotoXXLongitude;
+	//Cfg->repeatUsals = repeatUsals;
 }
 
 sdt_tp_t sdt_tp;
@@ -3073,7 +3299,7 @@ void * sdt_thread(void * arg)
 
 			if(channel) 
 			{
-				switch ( CFrontend::getInstance( channel->getFeIndex() )->getInfo()->type) 
+				switch ( live_fe->getInfo()->type) 
 				{
 					case FE_QPSK: /* satellite */
 						sprintf(satstr, "\t<%s name=\"%s\" position=\"%hd\">\n", "sat", spos_it->second.name.c_str(), satellitePosition);
@@ -3228,32 +3454,6 @@ void * sdt_thread(void * arg)
 	return 0;
 }
 
-bool getDVBCount()
-{
-	// frontend count
-	int i, j, fd = -1, frontend_count = 0;
-	char buf[256];
-	
-	for(i = 0; i < DVBADAPTER_MAX; i++)
-	{
-		for(j = 0; j < FRONTEND_MAX; j++)
-		{
-			sprintf(buf, "/dev/dvb/adapter%d/frontend%d", i, j);
-			fd = open(buf, O_RDWR | O_NONBLOCK);
-			if(fd >= 0)
-			{
-				frontend_count++;
-			}
-			
-			close(fd);
-		}
-	}
-	
-	FrontendCount = frontend_count;
-		
-	return true;
-}
-
 //#define CHECK_FOR_LOCK
 /*
 * init frontend
@@ -3270,8 +3470,15 @@ int zapit_main_thread(void *data)
 	
 	abort_zapit = 0;
 	
-	//scan for dvb adapter/frontend/demuxes and feed them in map
-	getDVBCount();
+	//scan for dvb adapter/frontendand feed them in map
+	initFrontend();
+	
+	// load fe config
+	loadFrontendConfig();
+	
+	// set live_fe
+	CFrontend * fe = getFE(live_fe_index);
+	live_fe = fe;
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;
@@ -3285,7 +3492,7 @@ int zapit_main_thread(void *data)
 	// audio decoder
 	audioDecoder = new cAudio();
 	
-	//TEST
+	//
 	if( videoDecoder->Open() < 0)
 		return -1;
 	
@@ -3377,7 +3584,7 @@ int zapit_main_thread(void *data)
 		{
 			//printf("checking for lock...\n");
 			
-			if ((CFrontend::getInstance( channel->getFeIndex() )->getStatus() & FE_HAS_LOCK) == 0) 
+			if ( (live_fe->getStatus() & FE_HAS_LOCK) == 0) 
 			{
 				//printf("[zapit] LOCK LOST! trying rezap... channel: '%s'\n", channel->getName().c_str());
 				zapit(channel->getChannelID(), current_is_nvod, true);
@@ -3431,6 +3638,7 @@ int zapit_main_thread(void *data)
 #endif
 
 	//HOUSEKEPPING
+	saveFrontendConfig();
 	
 	//save audio map
 	if(channel)
@@ -3440,9 +3648,11 @@ int zapit_main_thread(void *data)
 	stopPlayBack(true);
 
 	// save motor position
-	#if 0
+	#if 1
 	for(int i = 0; i < FrontendCount; i++)
-	{	if(CFrontend::getInstance(i)->getInfo()->type == FE_QPSK)
+	{
+	    CFrontend * fe = getFE(i);
+	    if( fe->getInfo()->type == FE_QPSK)
 			SaveMotorPositions();
 	}
 	#endif
@@ -3467,11 +3677,13 @@ int zapit_main_thread(void *data)
 		delete videoDecoder;
 
 	//close frontend	
-	for(int i = 0; i < FrontendCount; i++)
+	//for(int i = 0; i < FrontendCount; i++)
 	{
-		CFrontend::getInstance(i)->Close();
-		CFrontend::killInstance(i);
+	//	CFrontend::getInstance(i)->Close();
+	//	CFrontend::killInstance(i);
 	}
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
+		delete it->second;
 
 	printf("frontend deleted\n");
 	printf("zapit shutdown complete :-)\n");

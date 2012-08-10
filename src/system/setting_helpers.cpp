@@ -93,12 +93,13 @@ extern void tuxtx_set_pid(int pid, int page, const char * cc);
 //extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern int tuxtx_main(int _rc, int pid, int page, int source );
 
-extern int tuner_to_scan;		//defined in scan_setup.cpp
+//extern int tuner_to_scan;		//defined in scan_setup.cpp
 
 extern "C" int pinghost( const char *hostname );
 
-CSatelliteSetupNotifier::CSatelliteSetupNotifier()
+CSatelliteSetupNotifier::CSatelliteSetupNotifier(int num)
 {
+	feindex = num;
 }
 
 /* items1 enabled for advanced diseqc settings, items2 for diseqc != NO_DISEQC, items3 disabled for NO_DISEQC */
@@ -162,8 +163,8 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 		}
 	}
 
-	g_Zapit->setDiseqcType((diseqc_t) type, tuner_to_scan);
-	g_Zapit->setDiseqcRepeat( CNeutrinoApp::getInstance()->getScanSettings().diseqcRepeat, tuner_to_scan );
+	g_Zapit->setDiseqcType((diseqc_t) type, /*tuner_to_scan*/feindex);
+	g_Zapit->setDiseqcRepeat( CNeutrinoApp::getInstance()->getScanSettings().diseqcRepeat, /*tuner_to_scan*/feindex );
 
 	return true;
 }

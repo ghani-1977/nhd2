@@ -9,6 +9,7 @@
 
 #include "bouquets.h"
 
+
 void save_settings (bool write);
 void *start_scanthread(void *);
 int start_scan(CZapitMessages::commandStartScan StartScan);
@@ -37,9 +38,6 @@ void sendSubPIDs(int connfd);
 void enterStandby(void);
 void leaveStandby(void);
 void setVideoSystem_t(int video_system);
-
-//
-bool getDVBCount();
 
 
 #endif /* __zapit_h__ */

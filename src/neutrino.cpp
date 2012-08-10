@@ -225,6 +225,7 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
 extern CZapitChannel * channel;				// zapit.cpp
+extern CFrontend * live_fe;
 
 //nhttpd thread
 void * nhttpd_main_thread(void *data);
@@ -3216,7 +3217,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			if(tI != transponders.end()) 
 			{
 				sprintf(scanSettings.TP_freq, "%d", tI->second.feparams.frequency);
-				switch (CFrontend::getInstance(channel->getFeIndex())->getInfo()->type) 
+				switch ( live_fe->getInfo()->type) 
 				{
 					case FE_QPSK:
 						sprintf(scanSettings.TP_rate, "%d", tI->second.feparams.u.qpsk.symbol_rate);
