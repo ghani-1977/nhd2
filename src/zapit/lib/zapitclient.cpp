@@ -1150,6 +1150,13 @@ bool CZapitClient::isRecordModeActive()
 	return response.activated;
 }
 
+/* add frontend */
+void CZapitClient::addFrontend()
+{
+	send(CZapitMessages::CMD_ADD_FRONTEND);
+	close_connection();
+}
+
 /* register event */
 void CZapitClient::registerEvent(const unsigned int eventID, const unsigned int clientID, const char * const udsName)
 {
