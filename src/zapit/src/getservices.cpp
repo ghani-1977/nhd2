@@ -569,7 +569,7 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			if( live_fe->getInfo()->type == FE_QPSK)
+			if( getFE(0)->getInfo()->type == FE_QPSK)
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -589,7 +589,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( live_fe->getInfo()->type == FE_QAM)
+			else if( getFE(0)->getInfo()->type == FE_QAM)
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -609,7 +609,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( live_fe->getInfo()->type == FE_OFDM)
+			else if( getFE(0)->getInfo()->type == FE_OFDM)
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
