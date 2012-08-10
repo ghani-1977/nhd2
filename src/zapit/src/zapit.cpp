@@ -385,29 +385,29 @@ void saveFrontendConfig()
 	
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		CFrontend * fe = getFE(i);
+		//CFrontend * fe = getFE(i);
 		
-		if(fe->getInfo()->type == FE_QPSK)
+		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
-			setConfigValue(fe->getFeIndex(), "lastSatellitePosition", fe->getCurrentSatellitePosition());
-			setConfigValue(fe->getFeIndex(), "diseqcRepeats", fe->getDiseqcRepeats());
-			setConfigValue(fe->getFeIndex(), "diseqcType", fe->getDiseqcType() );
+			setConfigValue(getFE(i)->getFeIndex(), "lastSatellitePosition", getFE(i)->getCurrentSatellitePosition());
+			setConfigValue(getFE(i)->getFeIndex(), "diseqcRepeats", getFE(i)->getDiseqcRepeats());
+			setConfigValue(getFE(i)->getFeIndex(), "diseqcType", getFE(i)->getDiseqcType() );
 				
 			char tempd[12];
 			char cfg_key[81];
 			
 			sprintf(tempd, "%3.6f", gotoXXLatitude);
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe->getFeIndex());
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", getFE(i)->getFeIndex());
 			fe_configfile.setString(cfg_key, tempd );
 			
 			sprintf(tempd, "%3.6f", gotoXXLongitude);
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe->getFeIndex());
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", getFE(i)->getFeIndex());
 			fe_configfile.setString(cfg_key, tempd );
 			
-			setConfigValue(fe->getFeIndex(), "gotoXXLaDirection", gotoXXLaDirection);
-			setConfigValue(fe->getFeIndex(), "gotoXXLoDirection", gotoXXLoDirection);
-			setConfigValue(fe->getFeIndex(), "useGotoXX", useGotoXX);
-			setConfigValue(fe->getFeIndex(), "repeatUsals", repeatUsals);
+			setConfigValue(getFE(i)->getFeIndex(), "gotoXXLaDirection", gotoXXLaDirection);
+			setConfigValue(getFE(i)->getFeIndex(), "gotoXXLoDirection", gotoXXLoDirection);
+			setConfigValue(getFE(i)->getFeIndex(), "useGotoXX", useGotoXX);
+			setConfigValue(getFE(i)->getFeIndex(), "repeatUsals", repeatUsals);
 		}
 	}
 	
@@ -430,30 +430,28 @@ void loadFrontendConfig()
 	
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		CFrontend * fe = getFE(i);
-		
-		if(fe->getInfo()->type == FE_QPSK)
+		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
-			useGotoXX = getConfigValue(fe->getFeIndex(), "useGotoXX", 0);
+			useGotoXX = getConfigValue(getFE(i)->getFeIndex(), "useGotoXX", 0);
 			
 			char cfg_key[81];
 			
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe->getFeIndex());
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", getFE(i)->getFeIndex());
 			gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe->getFeIndex());
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", getFE(i)->getFeIndex());
 			gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			gotoXXLaDirection = getConfigValue(fe->getFeIndex(), "gotoXXLaDirection", 0);
-			gotoXXLoDirection = getConfigValue(fe->getFeIndex(), "gotoXXLoDirection", 0);
+			gotoXXLaDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLaDirection", 0);
+			gotoXXLoDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLoDirection", 0);
 			
-			repeatUsals = getConfigValue(fe->getFeIndex(), "repeatUsals", 0);
-			diseqcType = (diseqc_t)getConfigValue(fe->getFeIndex(), "diseqcType", NO_DISEQC);
-			motorRotationSpeed = getConfigValue(live_fe->getFeIndex(), "motorRotationSpeed", 18); // default: 1.8 degrees per second
+			repeatUsals = getConfigValue(getFE(i)->getFeIndex(), "repeatUsals", 0);
+			diseqcType = (diseqc_t)getConfigValue(getFE(i)->getFeIndex(), "diseqcType", NO_DISEQC);
+			motorRotationSpeed = getConfigValue(getFE(i)->getFeIndex(), "motorRotationSpeed", 18); // default: 1.8 degrees per second
 
-			fe->setDiseqcRepeats( getConfigValue(live_fe->getFeIndex(), "diseqcRepeats", 0) );
-			fe->setCurrentSatellitePosition( getConfigValue(live_fe->getFeIndex(), "lastSatellitePosition", 0) );
-			fe->setDiseqcType(diseqcType);
+			getFE(i)->setDiseqcRepeats( getConfigValue(getFE(i)->getFeIndex(), "diseqcRepeats", 0) );
+			getFE(i)->setCurrentSatellitePosition( getConfigValue(getFE(i)->getFeIndex(), "lastSatellitePosition", 0) );
+			getFE(i)->setDiseqcType(diseqcType);
 		}
 	}
 }

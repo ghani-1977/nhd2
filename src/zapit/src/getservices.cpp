@@ -508,7 +508,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_S;
 					
 					// feindex
-					//satellitePositions[position].feindex = i;
+					satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -529,7 +529,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_C;
 					
 					// feindex
-					//satellitePositions[position].feindex = i;
+					satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
@@ -547,7 +547,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].type = DVB_T;
 					
 					// feindex
-					//satellitePositions[position].feindex = i;
+					satellitePositions[position].feindex = i;
 				}
 
 				// parse sat TP
