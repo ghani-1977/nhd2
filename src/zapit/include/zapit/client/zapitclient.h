@@ -265,6 +265,13 @@ class CZapitClient : public CBasicClient
 			APIDList		APIDs;
 			SubPIDList  		SubPIDs;
 		};
+		
+		struct responseGetRecordPIDs
+		{
+			responseGetOtherPIDs	PIDs;
+			APIDList		APIDs;
+			SubPIDList  		SubPIDs;
+		};
 
 		struct responseGetSatelliteList
 		{
@@ -388,7 +395,7 @@ class CZapitClient : public CBasicClient
 		void getPIDS( responseGetPIDs& pids );
 		
 		/* get record channel APID-List */
-		void getRecordPIDS( responseGetPIDs& pids );
+		void getRecordPIDS( responseGetRecordPIDs& pids );
 
 		/* get info about the current serivice */
 		CZapitClient::CCurrentServiceInfo getCurrentServiceInfo();
