@@ -69,6 +69,9 @@
 #include <zapit/client/zapittools.h>
 
 #include <zapit/client/zapittypes.h>
+#include <zapit/frontend_c.h>
+#include <zapit/channel.h>
+
 
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 int was_record = 0;
@@ -86,6 +89,11 @@ CMovieInfo * g_cMovieInfo;
 MI_MOVIE_INFO * g_movieInfo;
 t_channel_id rec_channel_id;
 int safe_mkdir(char * path);
+
+extern int FrontendCount;
+extern CFrontend * getFE(int index);
+extern CZapitChannel * live_channel;
+extern CZapitChannel * rec_channel;
 
 static CVCRControl vcrControl;
 
@@ -271,11 +279,26 @@ bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, co
 		CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , mode | NeutrinoMessages::norezap );
 	}
 	
+	bool twin = false;
+	
+	for (int i = 1; i < FrontendCount; i++)
+	{
+		// twin
+		if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
+			twin = true;
+		//else
+		//	multi = true;
+	}
+	
+	bool multi = false;
+	if( rec_channel->getFeIndex() !=live_channel->getFeIndex())
+		multi = true;
+	
 	// zapit
 	if(channel_id != 0)	// wenn ein channel angegeben ist
 	{
 		// zap for live stream
-		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) )	// eventually not tuned
+		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) && !twin && !multi )	// eventually not tuned
 			g_Zapit->zapTo_serviceID(channel_id);		// for live stream
 
 		// zap for record
@@ -384,9 +407,21 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 				CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_standby);
 		}
 		
+		bool twin = false;
+	
+		for (int i = 1; i < FrontendCount; i++)
+		{
+			// twin
+			if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
+				twin = true;
+		}
+		
+		bool multi = false;
+		if( rec_channel->getFeIndex() !=live_channel->getFeIndex())
+			multi = true;
+	
 		// zap for live stream
-		//if(g_Zapit->getCurrentServiceID() != channel_id) 
-		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) )	// eventually not tuned
+		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) && !twin && !multi)	// eventually not tuned
 			g_Zapit->zapTo_serviceID(channel_id);
 		
 		// zap to record

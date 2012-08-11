@@ -271,7 +271,12 @@ _repeat:
 
 		freq_id_t freq;
 
-		freq = tI->second.feparams.frequency/1000;
+		//freq = tI->second.feparams.frequency/1000;
+		//TEST
+		if( getFE(feindex)->getInfo()->type == FE_QAM)
+			freq = tI->second.feparams.frequency/100;
+		else
+			freq = tI->second.feparams.frequency/1000;
 		
 		printf("parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
 
@@ -347,7 +352,12 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 	else
 		feparams.frequency = xmlGetNumericAttribute(transponder, "frequency", 0);
 
-	freq = feparams.frequency/1000;
+	//freq = feparams.frequency/1000;
+	//TEST
+	if( getFE(feindex)->getInfo()->type == FE_QAM)
+		freq = feparams.frequency/100;
+	else
+		freq = feparams.frequency/1000;
 		
 	if( getFE(feindex)->getInfo()->type == FE_QAM)	//DVB-C
 	{
@@ -699,7 +709,12 @@ void * scan_transponder(void * arg)
 
 	freq_id_t freq;
 
-	freq = TP->feparams.frequency/1000;
+	//freq = TP->feparams.frequency/1000;
+	//TEST
+	if( getFE(ScanTP.feindex)->getInfo()->type == FE_QAM)
+		freq = TP->feparams.frequency/100;
+	else
+		freq = TP->feparams.frequency/1000;
 
 	/* read network information table */
 	fake_tid++; fake_nid++;

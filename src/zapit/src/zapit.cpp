@@ -637,7 +637,7 @@ void start_camd(bool forupdate = false)
 	if(!live_channel)
 		return;
 	
-	static int camask = live_channel->getDemuxIndex(); // demux 0
+	static int camask = live_channel->getDemuxIndex();
 
 	if(currentMode & RECORD_MODE) 
 	{

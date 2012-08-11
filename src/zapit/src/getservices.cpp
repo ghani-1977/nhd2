@@ -100,13 +100,24 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 
 			if(feparams.u.qpsk.symbol_rate < 50000) 
 				feparams.u.qpsk.symbol_rate = feparams.u.qpsk.symbol_rate * 1000;
+			
+			// TEST
+			if(feparams.frequency < 20000) 
+				feparams.frequency = feparams.frequency*1000;
+			//else
+			//	feparams.frequency = (int) 1000 * (int) round ((double) feparams.frequency / (double) 1000);
 		}
 
 		/* ??? */
-		if(feparams.frequency < 20000) 
-			feparams.frequency = feparams.frequency*1000;
+		//if(feparams.frequency < 20000) 
+		//	feparams.frequency = feparams.frequency*1000;
 
-		freq = feparams.frequency/1000;
+		//freq = feparams.frequency/1000;
+		//TEST
+		if(Source == DVB_C)
+			freq = feparams.frequency/100;
+		else
+			freq = feparams.frequency/1000;
 
 		/* add current transponder to list */
 		transponder_id_t tid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
@@ -294,7 +305,7 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		else
 			feparams.frequency = xmlGetNumericAttribute(tps, "frequency", 0);
 
-		freq = feparams.frequency/1000;
+		//freq = feparams.frequency/1000;
 
 		// inversion
 		feparams.inversion = INVERSION_AUTO;
@@ -333,12 +344,19 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 			feparams.u.qpsk.fec_inner = (fe_code_rate_t)xml_fec;
 		}
 		
+		//TEST
+		if (frontendType == FE_QAM) 
+			freq = feparams.frequency/100;
+		else
+			freq = feparams.frequency/1000;
+			
+		
 		transponder_id_t tid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid);
 
 		polarization &= 1;
 		
 		// insert TPs list
-		select_transponders.insert( std::pair <transponder_id_t, transponder> (tid, transponder(fake_tid, feparams,polarization, fake_nid)));
+		select_transponders.insert( std::pair <transponder_id_t, transponder> (tid, transponder(fake_tid, feparams, polarization, fake_nid)));
 		
 		fake_nid ++; fake_tid ++;
 
