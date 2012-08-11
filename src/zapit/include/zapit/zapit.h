@@ -10,8 +10,6 @@
 #include "bouquets.h"
 
 
-bool initFrontend();
-
 void save_settings (bool write);
 void *start_scanthread(void *);
 int start_scan(CZapitMessages::commandStartScan StartScan);
@@ -36,6 +34,8 @@ unsigned int zapTo_ChannelID(const t_channel_id channel_id, const bool isSubServ
 
 void sendAPIDs(int connfd);
 void sendSubPIDs(int connfd);
+void sendRecordAPIDs(int connfd);
+void sendRecordSubPIDs(int connfd);
 
 void enterStandby(void);
 void leaveStandby(void);
