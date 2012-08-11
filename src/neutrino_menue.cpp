@@ -1541,6 +1541,10 @@ void CNeutrinoApp::InitColorThemesSettings(CMenuWidget &colorSettings_Themes)
 	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_EXTRA_SAVECOLORS, true, NULL, this, "savecolors"));
 	colorSettings_Themes.addItem(GenericMenuSeparatorLine);
 	
+	//nhd2
+		// dvb2k
+	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINOHD2_THEME, true, NULL, this, "theme_nhd2"));
+	
 	//neutrino themes
 	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME, true, NULL, this, "theme_neutrino"));
 	

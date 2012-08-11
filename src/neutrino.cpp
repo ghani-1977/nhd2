@@ -224,7 +224,7 @@ void * zapit_main_thread(void *data);
 extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
-extern CZapitChannel * channel;				// zapit.cpp
+extern CZapitChannel * live_channel;				// zapit.cpp
 extern CFrontend * live_fe;
 
 //nhttpd thread
@@ -630,6 +630,60 @@ void CNeutrinoApp::setupColors_dvb2k()
 	g_settings.infobar_Text_blue  = 100;
 }
 
+// nhd2
+void CNeutrinoApp::setupColors_nhd2()
+{
+	g_settings.menu_Head_alpha = 0;
+	g_settings.menu_Head_red   = 39;
+	g_settings.menu_Head_green = 40;
+	g_settings.menu_Head_blue  = 42;
+
+	g_settings.menu_Head_Text_alpha = 0;
+	g_settings.menu_Head_Text_red   = 100;
+	g_settings.menu_Head_Text_green = 100;
+	g_settings.menu_Head_Text_blue  = 100;
+
+	g_settings.menu_Content_alpha = 20;
+	g_settings.menu_Content_red   = 50;
+	g_settings.menu_Content_green = 50;
+	g_settings.menu_Content_blue  = 50;
+
+	g_settings.menu_Content_Text_alpha = 0;
+	g_settings.menu_Content_Text_red   = 100;
+	g_settings.menu_Content_Text_green = 100;
+	g_settings.menu_Content_Text_blue  = 100;
+
+	g_settings.menu_Content_Selected_alpha = 15;
+	g_settings.menu_Content_Selected_red   = 70;
+	g_settings.menu_Content_Selected_green = 70;
+	g_settings.menu_Content_Selected_blue  = 70;
+
+	g_settings.menu_Content_Selected_Text_alpha  = 0;
+	g_settings.menu_Content_Selected_Text_red    = 100;
+	g_settings.menu_Content_Selected_Text_green  = 100;
+	g_settings.menu_Content_Selected_Text_blue   = 100;
+
+	g_settings.menu_Content_inactive_alpha = 20;
+	g_settings.menu_Content_inactive_red   = 50;
+	g_settings.menu_Content_inactive_green = 50;
+	g_settings.menu_Content_inactive_blue  = 50;
+
+	g_settings.menu_Content_inactive_Text_alpha  = 0;
+	g_settings.menu_Content_inactive_Text_red    = 70;
+	g_settings.menu_Content_inactive_Text_green  = 72;
+	g_settings.menu_Content_inactive_Text_blue   = 74;
+
+	g_settings.infobar_alpha = 20;
+	g_settings.infobar_red   = 50;
+	g_settings.infobar_green = 50;
+	g_settings.infobar_blue  = 50;
+
+	g_settings.infobar_Text_alpha = 0;
+	g_settings.infobar_Text_red   = 100;
+	g_settings.infobar_Text_green = 100;
+	g_settings.infobar_Text_blue  = 100;
+}
+
 // fonts
 #define FONT_STYLE_REGULAR 0
 #define FONT_STYLE_BOLD    1
@@ -654,7 +708,7 @@ font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
         {LOCALE_FONTSIZE_CHANNELLIST_DESCR  ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_CHANNELLIST_NUMBER ,  14, FONT_STYLE_BOLD   , 2},
         {LOCALE_FONTSIZE_CHANNEL_NUM_ZAP    ,  40, FONT_STYLE_BOLD   , 0},
-        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  50, FONT_STYLE_BOLD   , 0},
+        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  40, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_CHANNAME   ,  30, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_INFO       ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_INFOBAR_SMALL      ,  14, FONT_STYLE_REGULAR, 1},
@@ -842,61 +896,60 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.help_txt = configfile.getInt32( "help_txt", 1);		//on
-	g_settings.help_bar = configfile.getInt32( "help_bar", 1);		//on
+	g_settings.help_bar = configfile.getInt32( "help_bar", 0);		//off
 	g_settings.menutitle_vfd = configfile.getInt32( "menutitle_vfd", 0);	// off
 
 	// themes
-	//gray colors default	
-	g_settings.menu_Head_alpha = configfile.getInt32( "menu_Head_alpha", 0 );
-	g_settings.menu_Head_red = configfile.getInt32( "menu_Head_red", 15 );
-	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 20 );
-	g_settings.menu_Head_blue = configfile.getInt32( "menu_Head_blue", 30 );
-	
-	g_settings.menu_Head_Text_alpha = configfile.getInt32( "menu_Head_Text_alpha", 0 );
-	g_settings.menu_Head_Text_red = configfile.getInt32( "menu_Head_Text_red", 95 );
-	g_settings.menu_Head_Text_green = configfile.getInt32( "menu_Head_Text_green", 70 );
-	g_settings.menu_Head_Text_blue = configfile.getInt32( "menu_Head_Text_blue", 0 );
-	
-	g_settings.menu_Content_alpha = configfile.getInt32( "menu_Content_alpha", 0 );
-	g_settings.menu_Content_red = configfile.getInt32( "menu_Content_red", 25 );
-	g_settings.menu_Content_green = configfile.getInt32( "menu_Content_green", 30 );
-	g_settings.menu_Content_blue = configfile.getInt32( "menu_Content_blue", 40 );
-	
-	g_settings.menu_Content_Text_alpha = configfile.getInt32( "menu_Content_Text_alpha", 0 );
-	g_settings.menu_Content_Text_red = configfile.getInt32( "menu_Content_Text_red", 100 );
-	g_settings.menu_Content_Text_green = configfile.getInt32( "menu_Content_Text_green", 100 );
-	g_settings.menu_Content_Text_blue = configfile.getInt32( "menu_Content_Text_blue", 100 );
-	
-	g_settings.menu_Content_Selected_alpha = configfile.getInt32( "menu_Content_Selected_alpha", 0 );
-	g_settings.menu_Content_Selected_red = configfile.getInt32( "menu_Content_Selected_red", 65 );
-	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 65 );
-	g_settings.menu_Content_Selected_blue = configfile.getInt32( "menu_Content_Selected_blue", 70 );
-	
-	g_settings.menu_Content_Selected_Text_alpha = configfile.getInt32( "menu_Content_Selected_Text_alpha", 0 );
-	g_settings.menu_Content_Selected_Text_red = configfile.getInt32( "menu_Content_Selected_Text_red", 0 );
-	g_settings.menu_Content_Selected_Text_green = configfile.getInt32( "menu_Content_Selected_Text_green", 0 );
-	g_settings.menu_Content_Selected_Text_blue = configfile.getInt32( "menu_Content_Selected_Text_blue", 0 );
-	
-	g_settings.menu_Content_inactive_alpha = configfile.getInt32( "menu_Content_inactive_alpha", 0 );
-	g_settings.menu_Content_inactive_red = configfile.getInt32( "menu_Content_inactive_red", 25 );
-	g_settings.menu_Content_inactive_green = configfile.getInt32( "menu_Content_inactive_green", 30 );
-	g_settings.menu_Content_inactive_blue = configfile.getInt32( "menu_Content_inactive_blue", 40 );
-	
-	g_settings.menu_Content_inactive_Text_alpha = configfile.getInt32( "menu_Content_inactive_Text_alpha", 0 );
-	g_settings.menu_Content_inactive_Text_red = configfile.getInt32( "menu_Content_inactive_Text_red", 56 );
-	g_settings.menu_Content_inactive_Text_green = configfile.getInt32( "menu_Content_inactive_Text_green", 60 );
-	g_settings.menu_Content_inactive_Text_blue = configfile.getInt32( "menu_Content_inactive_Text_blue", 64 );
+	// nhd2	
+	g_settings.menu_Head_alpha = configfile.getInt32( "menu_Head_alpha", 0);
+	g_settings.menu_Head_red   = configfile.getInt32( "menu_Head_red", 39);
+	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 40);
+	g_settings.menu_Head_blue  = configfile.getInt32( "menu_Head_blue", 42);
 
-	/* infobar */
-	g_settings.infobar_alpha = configfile.getInt32( "infobar_alpha", 0 );
-	g_settings.infobar_red = configfile.getInt32( "infobar_red", 25 );
-	g_settings.infobar_green = configfile.getInt32( "infobar_green", 29 );
-	g_settings.infobar_blue = configfile.getInt32( "infobar_blue", 40 );
-	
-	g_settings.infobar_Text_alpha = configfile.getInt32( "infobar_Text_alpha", 0 );
-	g_settings.infobar_Text_red = configfile.getInt32( "infobar_Text_red", 100 );
-	g_settings.infobar_Text_green = configfile.getInt32( "infobar_Text_green", 100 );
-	g_settings.infobar_Text_blue = configfile.getInt32( "infobar_Text_blue", 100 );
+	g_settings.menu_Head_Text_alpha = configfile.getInt32( "menu_Head_Text_alpha", 0);
+	g_settings.menu_Head_Text_red   = configfile.getInt32( "menu_Head_Text_red", 100);
+	g_settings.menu_Head_Text_green = configfile.getInt32( "menu_Head_Text_green", 100);
+	g_settings.menu_Head_Text_blue  = configfile.getInt32( "menu_Head_Text_blue", 100);
+
+	g_settings.menu_Content_alpha = configfile.getInt32( "menu_Content_alpha", 20);
+	g_settings.menu_Content_red   = configfile.getInt32( "menu_Content_red", 50);
+	g_settings.menu_Content_green = configfile.getInt32( "menu_Content_green", 50);
+	g_settings.menu_Content_blue  = configfile.getInt32( "menu_Content_blue", 50);
+
+	g_settings.menu_Content_Text_alpha = configfile.getInt32( "menu_Content_Text_alpha", 0);
+	g_settings.menu_Content_Text_red   = configfile.getInt32( "menu_Content_Text_red", 100);
+	g_settings.menu_Content_Text_green = configfile.getInt32( "menu_Content_Text_green", 100);
+	g_settings.menu_Content_Text_blue  = configfile.getInt32( "menu_Content_Text_blue", 100);
+
+	g_settings.menu_Content_Selected_alpha = configfile.getInt32( "menu_Content_Selected_alpha", 15);
+	g_settings.menu_Content_Selected_red   = configfile.getInt32( "menu_Content_Selected_red", 70);
+	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 70);
+	g_settings.menu_Content_Selected_blue  = configfile.getInt32( "menu_Content_Selected_blue", 70);
+
+	g_settings.menu_Content_Selected_Text_alpha  = configfile.getInt32( "menu_Content_Selected_Text_alpha", 0);
+	g_settings.menu_Content_Selected_Text_red    = configfile.getInt32( "menu_Content_Selected_Text_red", 100);
+	g_settings.menu_Content_Selected_Text_green  = configfile.getInt32( "menu_Content_Selected_Text_green", 100);
+	g_settings.menu_Content_Selected_Text_blue   = configfile.getInt32( "menu_Content_Selected_Text_blue", 100);
+
+	g_settings.menu_Content_inactive_alpha = configfile.getInt32( "menu_Content_inactive_alpha", 20);
+	g_settings.menu_Content_inactive_red   = configfile.getInt32( "menu_Content_inactive_red", 50);
+	g_settings.menu_Content_inactive_green = configfile.getInt32( "menu_Content_inactive_green", 50);
+	g_settings.menu_Content_inactive_blue  = configfile.getInt32( "menu_Content_inactive_blue", 50);
+
+	g_settings.menu_Content_inactive_Text_alpha  = configfile.getInt32( "menu_Content_inactive_Text_alpha", 0);
+	g_settings.menu_Content_inactive_Text_red    = configfile.getInt32( "menu_Content_inactive_Text_red", 70);
+	g_settings.menu_Content_inactive_Text_green  = configfile.getInt32( "menu_Content_inactive_Text_green", 72);
+	g_settings.menu_Content_inactive_Text_blue   = configfile.getInt32( "menu_Content_inactive_Text_blue", 74);
+
+	g_settings.infobar_alpha = configfile.getInt32( "infobar_alpha", 20);
+	g_settings.infobar_red   = configfile.getInt32( "infobar_red", 50);
+	g_settings.infobar_green = configfile.getInt32( "infobar_green", 50);
+	g_settings.infobar_blue  = configfile.getInt32( "infobar_blue", 50);
+
+	g_settings.infobar_Text_alpha = configfile.getInt32( "infobar_Text_alpha", 0);
+	g_settings.infobar_Text_red   = configfile.getInt32( "infobar_Text_red", 100);
+	g_settings.infobar_Text_green = configfile.getInt32( "infobar_Text_green", 100);
+	g_settings.infobar_Text_blue  = configfile.getInt32( "infobar_Text_blue", 100);
 
 	strcpy( g_settings.font_file, configfile.getString( "font_file", FONTDIR"/neutrino.ttf" ).c_str() );
 
@@ -3031,9 +3084,9 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				StopSubtitles();
 				
 				// show list only if we have subs
-				if(channel)
+				if(live_channel)
 				{
-					if(channel->getSubtitleCount() > 0)
+					if(live_channel->getSubtitleCount() > 0)
 					{
 						CDVBSubSelectMenuHandler tmpDVBSubSelectMenuHandler;
 						tmpDVBSubSelectMenuHandler.exec(NULL, "");
@@ -3208,14 +3261,14 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		StartSubtitles(!g_InfoViewer->is_visible);
 		
 		// update scan settings for manual scan to current channel
-		if(channel) 
+		if(live_channel) 
 		{
-			sat_iterator_t sit = satellitePositions.find(channel->getSatellitePosition());
+			sat_iterator_t sit = satellitePositions.find(live_channel->getSatellitePosition());
 			if(sit != satellitePositions.end())
 				strncpy(scanSettings.satNameNoDiseqc, sit->second.name.c_str(), 50);
 
 			transponder_list_t::iterator tI;
-			tI = transponders.find(channel->getTransponderId());
+			tI = transponders.find(live_channel->getTransponderId());
 			if(tI != transponders.end()) 
 			{
 				sprintf(scanSettings.TP_freq, "%d", tI->second.feparams.frequency);
@@ -4010,7 +4063,8 @@ skip_message:
 	}
 	else if (msg == NeutrinoMessages::EVT_SERVICES_UPD) 
 	{
-		ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_ZAPIT_SDTCHANGED), CMessageBox::mbrBack,CMessageBox::mbBack, NEUTRINO_ICON_INFO);
+		// dont show this msg
+		//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_ZAPIT_SDTCHANGED), CMessageBox::mbrBack,CMessageBox::mbBack, NEUTRINO_ICON_INFO);
 	}
 	
 	if ((msg >= CRCInput::RC_WithData) && (msg < CRCInput::RC_WithData + 0x10000000))
@@ -4920,6 +4974,11 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	else if(actionKey=="theme_red") 
 	{
 		setupColors_red();
+		colorSetupNotifier->changeNotify(NONEXISTANT_LOCALE, NULL);
+	}
+	else if(actionKey=="theme_nhd2") 
+	{
+		setupColors_nhd2();
 		colorSetupNotifier->changeNotify(NONEXISTANT_LOCALE, NULL);
 	}
 	else if(actionKey=="savesettings") 
