@@ -859,7 +859,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	// get current version SBBB YYYY MM TT HH MM -- formatsting
 	CConfigFile configfile('\t');
 
-	const char * versionString = (configfile.loadConfig("/.version")) ? (configfile.getString( "version", "????????????????????").c_str()) : "1200201205091849";
+	const char * versionString = (configfile.loadConfig("/.version")) ? (configfile.getString( "version", "1200201205091849").c_str()) : "1200201205091849";
 
 	dprintf(DEBUG_INFO, "CNeutrinoApp::InitServiceSettings: current flash-version: %s\n", versionString);
 
