@@ -94,6 +94,7 @@ extern void tuxtx_set_pid(int pid, int page, const char * cc);
 extern int tuxtx_main(int _rc, int pid, int page, int source );
 
 //extern int tuner_to_scan;		//defined in scan_setup.cpp
+extern CFrontend * live_fe;
 
 extern "C" int pinghost( const char *hostname );
 
@@ -562,7 +563,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 	printf("CSubtitleChangeExec::exec: action %s\n", actionKey.c_str());
 	
 	// get current service info
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 	
 	if(actionKey == "off") 
 	{
@@ -588,7 +589,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		dvbsub_stop();
 		dvbsub_close();
 		
-		dvbsub_init(si.FeIndex);
+		dvbsub_init(live_fe->getFeIndex() );
 		dvbsub_start(pid);
 	} 
 	else 
@@ -614,7 +615,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		//	tuxtxt_start( g_RemoteControl->current_PIDs.PIDs.vtxtpid, si.FeIndex );
 		
 		// start tuxtxt
-		tuxtx_main(g_RCInput->getFileHandle(), pid, page, si.FeIndex ); // this 
+		tuxtx_main(g_RCInput->getFileHandle(), pid, page, live_fe->getFeIndex() ); // this 
 	}
 	
         return menu_return::RETURN_EXIT;
