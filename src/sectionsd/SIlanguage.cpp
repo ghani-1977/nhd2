@@ -52,7 +52,16 @@
 
 std::vector<std::string> SIlanguage::languages;
 pthread_mutex_t SIlanguage::languages_lock = PTHREAD_MUTEX_INITIALIZER;
-CSectionsdClient::SIlanguageMode_t SIlanguage::mode = CSectionsdClient::ALL;
+
+/*
+ALL = Show all available languages
+FIRST_FIRST = Show first found language from list. If not found show first of available language
+FIRST_ALL = Show first found language from list. If not found show all available languages.
+ALL_FIRST = Show all wanted languages if possible. If not found show first of av ailable language
+ALL_ALL = Show all wanted languages if possible. If not found show all available languages.
+*/
+//CSectionsdClient::SIlanguageMode_t SIlanguage::mode = CSectionsdClient::ALL;
+CSectionsdClient::SIlanguageMode_t SIlanguage::mode = CSectionsdClient::FIRST_ALL;
 
 void SIlanguage::filter(const std::map<std::string, std::string>& s, int max, std::string& retval)
 {
@@ -63,7 +72,7 @@ void SIlanguage::filter(const std::map<std::string, std::string>& s, int max, st
 
 	if (mode != CSectionsdClient::ALL) {
 		for (std::vector<std::string>::const_iterator it = languages.begin() ;
-				 it != languages.end() ; ++it) {
+				it != languages.end() ; ++it) {
 			std::map<std::string,std::string>::const_iterator text;
 			if ((text = s.find(*it)) != s.end()) {
 				if (count != max) {
@@ -83,7 +92,7 @@ void SIlanguage::filter(const std::map<std::string, std::string>& s, int max, st
 		// return all available languages
 		if (s.begin() != s.end()) {
 			for (std::map<std::string, std::string>::const_iterator it = s.begin() ;
-					 it != s.end() ; ++it) {
+					it != s.end() ; ++it) {
 				if (it != s.begin()) {
 					retval.append(" \n");
 				}
@@ -105,7 +114,7 @@ bool SIlanguage::loadLanguages()
 	pthread_mutex_lock(&languages_lock);
 	std::ifstream file(LANGUAGEFILE);
 	std::string word;
-	CSectionsdClient::SIlanguageMode_t tmpMode = CSectionsdClient::LANGUAGE_MODE_OFF;
+	CSectionsdClient::SIlanguageMode_t tmpMode = CSectionsdClient::FIRST_ALL;
 	std::vector<std::string> tmpLang;
 
 	if (!(file >> word)) goto error;
@@ -133,7 +142,7 @@ bool SIlanguage::loadLanguages()
 	pthread_mutex_unlock(&languages_lock);
 	return true;
 
- error:
+error:
 	tmpLang.push_back("OFF");
 	languages = tmpLang;
 	mode = tmpMode;
@@ -167,8 +176,9 @@ bool SIlanguage::saveLanguages()
 	}
 
 	for (std::vector<std::string>::iterator it = languages.begin() ;
-			 it != languages.end() ; ++it) {
-		file << " " << *it;
+			it != languages.end() ; ++it) {
+		file << *it;
+		file << "\n";
 		if (file.fail()) goto error;
 	}
 
@@ -178,7 +188,7 @@ bool SIlanguage::saveLanguages()
 	pthread_mutex_unlock(&languages_lock);
 	return true;
 
- error:
+error:
 	pthread_mutex_unlock(&languages_lock);
 	return false;
 }

@@ -24,12 +24,12 @@
 #include <time.h>
 #include <sys/time.h>
 
-bool sections_debug = false;
+bool sections_debug;
 
 void printdate_ms(FILE *f) {
 	timeval now;
 	gettimeofday(&now, NULL);
 	struct tm *tm = localtime(&now.tv_sec);
 	/* use strftime for that? */
-	fprintf(f, "[ %02d:%02d:%02d.%03ld  ]", tm->tm_hour, tm->tm_min, tm->tm_sec, now.tv_usec/1000);
+	fprintf(f, "%02d:%02d:%02d.%03ld ", tm->tm_hour, tm->tm_min, tm->tm_sec, now.tv_usec/1000);
 }
