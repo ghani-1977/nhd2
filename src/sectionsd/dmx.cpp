@@ -109,10 +109,6 @@ void DMX::closefd(void)
 	{
 		//close(fd);
 		dmx->Stop();
-		//dmx->Close();
-		//delete dmx;
-		//dmx = NULL;
-		//close();
 
 		fd = -1;
 	}
