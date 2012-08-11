@@ -326,7 +326,7 @@ void CZapitClient::getPIDS(responseGetPIDs& pids)
 }
 
 //TEST
-void CZapitClient::getRecordPIDS(responseGetPIDs& pids)
+void CZapitClient::getRecordPIDS(responseGetRecordPIDs& pids)
 {
 	CZapitMessages::responseGeneralInteger responseInteger;
 	responseGetAPIDs                       responseAPID;
