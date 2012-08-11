@@ -7104,7 +7104,7 @@ int eit_set_update_filter(int *fd)
 	mask[2] = 0xFF;
 
 	int timeout = 0;
-#if 0
+#if 1
 	filter[3] = (cur_eit << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
@@ -7117,6 +7117,7 @@ int eit_set_update_filter(int *fd)
 #endif
 
 	//printf("[sectionsd] start EIT update filter: current version %02X, filter %02X %02X %02X %02X, mask %02X mode %02X \n", cur_eit, dsfp.filter.filter[0], dsfp.filter.filter[1], dsfp.filter.filter[2], dsfp.filter.filter[3], dsfp.filter.mask[3], dsfp.filter.mode[3]);
+	
 	*fd = 1;
 	return 0;
 }
