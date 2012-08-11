@@ -81,7 +81,7 @@
 #include <audio_cs.h>
 
 #include <zapit/channel.h>
-extern CZapitChannel * channel;			/* zapit.cpp */
+//extern CZapitChannel * live_channel;			/* zapit.cpp */
 
 extern cVideo * videoDecoder;
 extern cAudio * audioDecoder;
@@ -96,7 +96,7 @@ extern int dvbsub_pause();
 
 static cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
-extern CZapitChannel * channel;				/* zapit.cpp */
+extern CZapitChannel * live_channel;				/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
 
 void strReplace(std::string & orig, const char *fstr, const std::string rstr);
@@ -343,9 +343,9 @@ void CMoviePlayerGui::cutNeutrino()
 		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
 
 	/* show HD Icon */
-	if(channel)
+	if(live_channel)
 	{
-		if(channel->type == 1)
+		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 	}
 	#endif
@@ -381,9 +381,9 @@ void CMoviePlayerGui::restoreNeutrino()
 		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true);
 
 	/* show HD Icon */
-	if(channel)
+	if(live_channel)
 	{
-		if(channel->type == 1)
+		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true);
 	}
 	#endif
@@ -560,9 +560,9 @@ void updateLcd(const std::string & sel_filename)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
 
 	//hide HD Icon
-	if(channel)
+	if(live_channel)
 	{
-		if(channel->type == 1)
+		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 	}
 	#endif
