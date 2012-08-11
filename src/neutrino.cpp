@@ -2440,6 +2440,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	//CScanSetup scansetup;
 
 	dprintf( DEBUG_NORMAL, "CNeutrinoApp::run: registering as event client\n");
+	
+	sleep(1);
 
 	// g_sectionsd
 	g_Sectionsd->registerEvent(CSectionsdClient::EVT_TIMESET, 222, NEUTRINO_UDS_NAME);
@@ -5151,7 +5153,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		CFileBrowser fileBrowser;
 		fileBrowser.Dir_Mode = true;
 
-		if (fileBrowser.exec("/var/tuxbox") == true) 
+		if (fileBrowser.exec("/var/tuxbox/config") == true) 
 		{
 			char  fname[256] = "colors.conf", sname[256];
 			CStringInputSMS * sms = new CStringInputSMS(LOCALE_EXTRA_SAVECOLORS, fname, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789. ");
@@ -5188,7 +5190,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		CFileBrowser fileBrowser;
 		fileBrowser.Dir_Mode = true;
 		
-		if (fileBrowser.exec("/var/tuxbox") == true) 
+		if (fileBrowser.exec("/var/tuxbox/config") == true) 
 		{
 			char  fname[256] = "keys.conf", sname[256];
 			CStringInputSMS * sms = new CStringInputSMS(LOCALE_EXTRA_SAVEKEYS, fname, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789. ");
