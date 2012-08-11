@@ -2373,6 +2373,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 		
+		case CZapitMessages::CMD_ADD_FRONTEND:
+			initFrontend();
+			break;
+		
 		default:
 			WARN("unknown command %d (version %d)", rmsg.cmd, CZapitMessages::ACTVERSION);
 			break;
