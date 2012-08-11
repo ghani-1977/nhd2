@@ -2701,11 +2701,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				tuxtx_stop_subtitle();
 				
 				// get current service info
-				CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+				//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 				
-				printf("current service fe(%d)\n", si.FeIndex);
+				//printf("current service fe(%d)\n", si.FeIndex);
 
-				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, si.FeIndex );
+				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe->getFeIndex() );
 
 				frameBuffer->paintBackground();
 
@@ -4757,7 +4757,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 // start next recording
 void CNeutrinoApp::startNextRecording()
 {
-	if ((recordingstatus == 0) && (nextRecordingInfo != NULL)) 
+	if ( /*(recordingstatus == 0) &&*/ (nextRecordingInfo != NULL)) 
 	{
 		bool doRecord = true;
 		if (CVCRControl::getInstance()->isDeviceRegistered()) 
@@ -5545,7 +5545,7 @@ void CNeutrinoApp::StopSubtitles()
 	
 	int ttx, ttxpid, ttxpage;
 	
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 
 	// dvbsub
 	int dvbpid;
@@ -5568,7 +5568,7 @@ void CNeutrinoApp::StopSubtitles()
 	
 	if(ttx) 
 	{
-		tuxtx_pause_subtitle(true, si.FeIndex);
+		tuxtx_pause_subtitle(true, live_fe->getFeIndex() );
 		frameBuffer->paintBackground();
 #ifdef FB_BLIT
 		frameBuffer->blit();
@@ -5584,14 +5584,14 @@ void CNeutrinoApp::StartSubtitles(bool show)
 	if(!show)
 		return;
 	
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 	
 	//dvbsub
 	//dvbsub_init(si.FeIndex);
 	dvbsub_start(0);
 	
 	// tuxtxt
-	tuxtx_pause_subtitle(false, si.FeIndex);
+	tuxtx_pause_subtitle(false, live_fe->getFeIndex());
 }
 
 // select subtitle
