@@ -86,7 +86,7 @@ int def_audio_mode = 0;
 t_channel_id live_channel_id;
 static t_channel_id rec_channel_id;
 
-int rezapTimeout;
+//int rezapTimeout;
 
 bool sortNames;
 //bool mcemode = false;
@@ -99,6 +99,7 @@ bool playing = false;
 bool g_list_changed = false; 		/* flag to indicate, allchans was changed */
 int sig_delay = 2; 			/* seconds between signal check */
 
+// frontend config
 // usals
 double gotoXXLatitude;
 double gotoXXLongitude;
@@ -219,9 +220,7 @@ extern void tuxtx_stop_subtitle();
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
-/**
-frontend stuff
-**/
+// frontend stuff
 #define DVBADAPTER_MAX	2
 #define FRONTEND_MAX	4
 int AdapterCount = 0;
@@ -290,67 +289,94 @@ CFrontend * getFE(int index)
 }
 
 CFrontend * find_live_fe(CZapitChannel * thischannel)
-//void find_live_fe(CZapitChannel * thischannel)
 {
+	CFrontend * fe = NULL;
+	
 	//return CFrontend::getInstance(1);
 	#if 0
 	transponder_list_t::iterator tpI;
-	//transponder_id_t ct = thischannel->getTransponderId();
+	transponder_id_t ct = thischannel->getTransponderId();
 	
 	// get tpid
 	tpI = transponders.find(thischannel->getTransponderId());
 	
 	if (tpI == transponders.end()) 
 	{
-		return;
+		printf("find_live_fe: Transponder %llx for channel %llx not found\n", ct, thischannel->getChannelID());
+		return NULL;
 	}
-	#endif
 	
 	// now compare tp feparams with fe feparams
 	//tpI->second.feparams
 	
-	#if 0
-	fe_map_iterator_t feIt;
+
+	//fe_map_iterator_t feIt;
 	
-	for(feIt = femap.begin(); feIt != femap.end(); feIt++) 
+	for(fe_map_iterator_t feIt = femap.begin(); feIt != femap.end(); feIt++) 
 	{
+		fe = feIt->second;
 		//if(feIt->second.feparams == tpI->second.feparams)
-		if(feIt->second.getFeIndex() == 0)
+		//if(&fe->getfeparams() == tpI->second.feparams)
+		if( memcmp( fe->getfeparams(), tpI->second.feparams, sizeof(struct dvb_frontend_parameters) ) == 0)
 		{
-			break;
-				
+			fe = feIt->second;
+			break;		
 		}
 	}
 	
-	return feIt->second;
 	#endif
 	
 	#if 0
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	for(fe_map_iterator_t feit = femap.begin(); feit != femap.end(); feit++) 
 	{
-		live_fe = it->second;
+		fe = feit->second;
 	}
 	#endif
 	
-	//return femap[0];
-	#if 0
-	CFrontend * fe = NULL;
-	
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	/* index methode */
+	#if 1
+	if(currentMode & RECORD_MODE) 
 	{
-		//live_fe = it->second;
-		fe = it->second;
+		for (int i = 1; i < FrontendCount; i++)
+		{
+			// twin
+			if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+				fe = femap[0];
+		}
 	}
+	else
+		// multi
+		fe = femap[thischannel->getFeIndex()];
+	
+	fe = fe;
+	#endif
 	
 	return fe;
-	#endif
-	
-	return femap[thischannel->getFeIndex()];
 }
 
 CFrontend * find_record_fe(CZapitChannel * thischannel)
 {
-	return femap[thischannel->getFeIndex()];
+	CFrontend * fe = NULL;
+	
+	if(femap.size() == 1)
+	{
+		fe = live_fe;
+		
+		return fe;
+	}
+	
+	//
+	for (int i = 1; i < FrontendCount; i++)
+	{
+		// twin
+		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+			fe = femap[i];
+		else
+			// multi
+			fe = femap[thischannel->getFeIndex()];
+	}
+	
+	return fe;
 }
 
 // borrowed from cst neutrino-hd (femanager.cpp)
@@ -478,7 +504,7 @@ void saveZapitSettings(bool write, bool write_a)
 		// save frontend settings
 		//saveFrontendConfig();
 
-		config.setInt32("rezapTimeout", rezapTimeout);
+		//config.setInt32("rezapTimeout", rezapTimeout);
 		config.setBool("sortNames", sortNames);
 		config.setBool("scanPids", scan_pids);
 		
@@ -563,13 +589,13 @@ void loadZapitSettings()
 	live_channel_id = config.getInt64("lastChannel", 0);
 	lastChannelRadio = config.getInt32("lastChannelRadio", 0);
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
-	rezapTimeout = config.getInt32("rezapTimeout", 1);
+	//rezapTimeout = config.getInt32("rezapTimeout", 1);
 	
 	sortNames = config.getBool("sortNames", 0);
 	sortlist = sortNames;
 	scan_pids = config.getBool("scanPids", 0);
 	
-	scanSDT = config.getInt32("scanSDT", 0);
+	scanSDT = config.getInt32("scanSDT", 1);
 	
 	// unicable
 	//uni_scr = config.getInt32("uni_scr", -1);
@@ -789,16 +815,16 @@ static bool parse_record_pat_pmt(CZapitChannel * thischannel)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, RECORD_DEMUX) < 0) 
+	if (parse_pmt(thischannel) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, RECORD_DEMUX) < 0) 
+		if (parse_pat(thischannel) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, RECORD_DEMUX) < 0) 
+		else if (parse_pmt(thischannel) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -989,32 +1015,19 @@ int zapit_to_record(const t_channel_id channel_id)
 	// find record fe
 	if(( record_fe = find_record_fe(rec_channel)) == NULL)
 	{
-		printf("live_fe can't be found ;-(\n");
+		printf("record_fe can't be found ;-(\n");
 		return -1;
 	}
-	
-	//tune
-	// check for twin
-	#if 0
-	if(FrontendCount > 1)
-	{
-		for(int i = 1; i < FrontendCount; i++)
-		{
-			// always compare with fe0
-			if( CFrontend::getInstance(0)->getInfo()->type == CFrontend::getInstance(i)->getInfo()->type )
-			{
-				twin_tuned = true;
-				rec_channel->setFeIndex(i);
-			}
-		}
-	}
-	#endif
 	
 	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), channel_id, record_fe->getFeIndex());
 	
 	// tune to rec channel
 	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
+	
+	// check if channel feindex und record_fe index maches
+	if(rec_channel->getFeIndex() != record_fe->getFeIndex())
+		rec_channel->setFeIndex(record_fe->getFeIndex());
 	
 	// parse pat_pmt
 	if(!parse_record_pat_pmt(rec_channel))
@@ -1674,8 +1687,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_REZAP:
 			if (currentMode & RECORD_MODE)
 				break;
-			if(rezapTimeout > 0) 
-				sleep(rezapTimeout);
+			//if(rezapTimeout > 0) 
+			//	sleep(rezapTimeout);
 			if(channel)
 				zapit(channel->getChannelID(), current_is_nvod);
 			break;
@@ -2218,8 +2231,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				responseGetOtherPIDs.privatepid = rec_channel->getPrivatePid();
 				
 				CBasicServer::send_data(connfd, &responseGetOtherPIDs, sizeof(responseGetOtherPIDs));
-				sendAPIDs(connfd);
-				sendSubPIDs(connfd);
+				sendRecordAPIDs(connfd);
+				sendRecordSubPIDs(connfd);
 			}
 			break;
 		}
@@ -2479,6 +2492,86 @@ void sendSubPIDs(int connfd)
 	}
 }
 
+//
+void sendRecordAPIDs(int connfd)
+{
+	if (!send_data_count(connfd, rec_channel->getAudioChannelCount()))
+		return;
+
+	for (uint32_t  i = 0; i < rec_channel->getAudioChannelCount(); i++) 
+	{
+		CZapitClient::responseGetAPIDs response;
+		response.pid = rec_channel->getAudioPid(i);
+		strncpy(response.desc, rec_channel->getAudioChannel(i)->description.c_str(), 25);
+
+		response.is_ac3 = response.is_aac = 0;
+		
+		if (rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3) 
+		{
+			response.is_ac3 = 1;
+		} 
+		else if (rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AAC) 
+		{
+			response.is_aac = 1;
+		}
+		
+		response.component_tag = rec_channel->getAudioChannel(i)->componentTag;
+
+		if (CBasicServer::send_data(connfd, &response, sizeof(response)) == false) 
+		{
+			ERROR("could not send any return");
+			return;
+		}
+	}
+}
+
+void sendRecordSubPIDs(int connfd)
+{
+	if (!send_data_count(connfd, rec_channel->getSubtitleCount()))
+		return;
+	for (int i = 0 ; i < (int)rec_channel->getSubtitleCount() ; ++i) 
+	{
+		CZapitClient::responseGetSubPIDs response;
+		CZapitAbsSub* s = rec_channel->getChannelSub(i);
+		CZapitDVBSub* sd = reinterpret_cast<CZapitDVBSub*>(s);
+		CZapitTTXSub* st = reinterpret_cast<CZapitTTXSub*>(s);
+
+		response.pid = sd->pId;
+		strncpy(response.desc, sd->ISO639_language_code.c_str(), 4);
+		if (s->thisSubType == CZapitAbsSub::DVB) 
+		{
+			response.composition_page = sd->composition_page_id;
+			response.ancillary_page = sd->ancillary_page_id;
+			if (sd->subtitling_type >= 0x20) 
+			{
+				response.hearingImpaired = true;
+			} 
+			else 
+			{
+				response.hearingImpaired = false;
+			}
+			
+			if (CBasicServer::send_data(connfd, &response, sizeof(response)) == false) 
+			{
+				ERROR("could not send any return");
+	                        return;
+        	        }
+		} 
+		else if (s->thisSubType == CZapitAbsSub::TTX) 
+		{
+			response.composition_page = (st->teletext_magazine_number * 100) + ((st->teletext_page_number >> 4) * 10) + (st->teletext_page_number & 0xf);
+			response.ancillary_page = 0;
+			response.hearingImpaired = st->hearingImpaired;
+			if (CBasicServer::send_data(connfd, &response, sizeof(response)) == false) 
+			{
+				ERROR("could not send any return");
+	                        return;
+        	        }
+		}
+	}
+}
+//
+
 void internalSendChannels(int connfd, ZapitChannelList* channels, const unsigned int first_channel_nr, bool nonames)
 {
 	int data_count = channels->size();
@@ -2684,7 +2777,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ );
+			pcrDemux = new cDemux( thisChannel->getDemuxIndex() );
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2702,7 +2795,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ );
+			audioDemux = new cDemux( thisChannel->getDemuxIndex() );
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2720,7 +2813,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( thisChannel->getDemuxIndex() /*LIVE_DEMUX*/ ); 
+			videoDemux = new cDemux( thisChannel->getDemuxIndex() ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -3123,7 +3216,7 @@ void setZapitConfig(Zapit_config * Cfg)
 	sortlist = sortNames;
 	
 	scan_pids = Cfg->scanPids;
-	rezapTimeout = Cfg->rezapTimeout;
+	//rezapTimeout = Cfg->rezapTimeout;
 	//useGotoXX = Cfg->useGotoXX;
 	//gotoXXLaDirection = Cfg->gotoXXLaDirection;
 	//gotoXXLoDirection = Cfg->gotoXXLoDirection;
@@ -3150,7 +3243,7 @@ void sendConfig(int connfd)
 	Cfg.sortNames = sortNames;
 	
 	Cfg.scanPids = scan_pids;
-	Cfg.rezapTimeout = rezapTimeout;
+	//Cfg.rezapTimeout = rezapTimeout;
 	Cfg.scanSDT = scanSDT;
 	//Cfg.useGotoXX = useGotoXX;
 	//Cfg.gotoXXLaDirection = gotoXXLaDirection;
@@ -3173,7 +3266,7 @@ void getZapitConfig(Zapit_config *Cfg)
         Cfg->sortNames = sortNames;
 	
         Cfg->scanPids = scan_pids;
-        Cfg->rezapTimeout = rezapTimeout;
+        //Cfg->rezapTimeout = rezapTimeout;
         Cfg->scanSDT = scanSDT;
 	
         //Cfg->useGotoXX = useGotoXX;
@@ -3296,7 +3389,7 @@ void * sdt_thread(void * arg)
 						break;
 
 					case FE_QAM: /* cable */
-						sprintf(satstr, "\t<%s name=\"%s\"\n", "cable", spos_it->second.name.c_str());
+						sprintf(satstr, "\t<%s name=\"%s\">\n", "cable", spos_it->second.name.c_str());
 						sprintf(tpstr, "\t\t<TS id=\"%04x\" on=\"%04x\" frq=\"%u\" inv=\"%hu\" sr=\"%u\" fec=\"%hu\" mod=\"%hu\">\n",
 						tI->second.transport_stream_id, tI->second.original_network_id,
 						tI->second.feparams.frequency, tI->second.feparams.inversion,
@@ -3305,7 +3398,7 @@ void * sdt_thread(void * arg)
 						break;
 						
 					case FE_OFDM: /* terrestrial */
-						sprintf(satstr, "\t<%s name=\"%s\"\n", "terrestrial", spos_it->second.name.c_str());
+						sprintf(satstr, "\t<%s name=\"%s\">\n", "terrestrial", spos_it->second.name.c_str());
 						sprintf(tpstr, "\t\t<TS id=\"%04x\" on=\"%04x\" frq=\"%u\" inv=\"%hu\" band=\"%hu\" HP=\"%hu\" LP=\"%hu\" const=\"%hu\" trans=\"%hu\" guard=\"%hu\" hierarchy=\"%hu\">\n",
 						tI->second.transport_stream_id, tI->second.original_network_id,
 						tI->second.feparams.frequency, tI->second.feparams.inversion,
@@ -3400,11 +3493,46 @@ void * sdt_thread(void * arg)
 
 			if(tpdone) 
 			{
-				fprintf(fd, "\t\t</TS>\n");
-				fprintf(fd, "\t</sat>\n");
+				//fprintf(fd, "\t\t</TS>\n");
+				switch ( live_fe->getInfo()->type)
+				{
+					case FE_QPSK: /* satellite */
+						fprintf(fd, "\t</sat>\n");
+						break;
+						
+					case FE_QAM: /* cable */
+						fprintf(fd, "\t</cable>\n");
+						break;
+						
+					case FE_OFDM: /* satellite */
+						fprintf(fd, "\t</terrestrial>\n");
+						break;
+						
+					default:
+						break;
+				}
 			} 
 			else if(satfound)
-				fprintf(fd, "\t</sat>\n");
+			{
+				//fprintf(fd, "\t</sat>\n");
+				switch ( live_fe->getInfo()->type)
+				{
+					case FE_QPSK: /* satellite */
+						fprintf(fd, "\t</sat>\n");
+						break;
+						
+					case FE_QAM: /* cable */
+						fprintf(fd, "\t</cable>\n");
+						break;
+						
+					case FE_OFDM: /* satellite */
+						fprintf(fd, "\t</terrestrial>\n");
+						break;
+						
+					default:
+						break;
+				}
+			}
 
 			if(fd1) 
 			{

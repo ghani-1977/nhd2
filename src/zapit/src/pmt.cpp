@@ -420,7 +420,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 int curpmtpid;
 int pmt_caids[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int parse_pmt(CZapitChannel * const channel, int dmx_num)
+int parse_pmt(CZapitChannel * const channel)
 {
 	unsigned short i;
 	unsigned char buffer[PMT_SIZE];
@@ -442,7 +442,7 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 		return -1;
 	}
 	
-	cDemux * dmx = new cDemux( channel->getDemuxIndex() /*dmx_num*/ ); 
+	cDemux * dmx = new cDemux( channel->getDemuxIndex() ); 
 	
 	// open
 	dmx->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex());
@@ -630,7 +630,7 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 
 	if(pmtDemux == NULL) 
 	{
-		pmtDemux = new cDemux( channel->getDemuxIndex() /*LIVE_DEMUX*/ );
+		pmtDemux = new cDemux( channel->getDemuxIndex() );
 		
 		// open 
 		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex() ); // this indicate fe num
@@ -654,17 +654,19 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 	mask[4] = 0xFF;
 
 	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", channel->getFeIndex(), channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
-#if 0
-	filter[3] = (((channel->getCaPmt()->version_number + 1) & 0x01) << 1) | 0x01;
-	mask[3] = (0x01 << 1) | 0x01;
 	
-	pmtDemux->sectionFilter(channel->getPmtPid(), filter, mask, 5);
-#else
+#if 1
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
 	
 	pmtDemux->sectionFilter(channel->getPmtPid(), filter, mask, 5, 0, mode);
+#else
+	// coolstream driver
+	filter[3] = (((channel->getCaPmt()->version_number + 1) & 0x01) << 1) | 0x01;
+	mask[3] = (0x01 << 1) | 0x01;
+	
+	pmtDemux->sectionFilter(channel->getPmtPid(), filter, mask, 5);
 #endif
 
 	*fd = 1;
@@ -679,8 +681,6 @@ int pmt_stop_update_filter(int * fd)
 	if (pmtDemux)
 	{
 		pmtDemux->Stop();
-		
-		//pmtDemux->Close();
 		
 		delete pmtDemux; // delte closes demuxes
 

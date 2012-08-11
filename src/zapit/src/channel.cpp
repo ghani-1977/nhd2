@@ -46,7 +46,6 @@ CZapitChannel::CZapitChannel(const std::string & p_name, t_service_id p_sid, t_t
 	last_unlocked_time = 0;	
 	
 	FeIndex = p_FeIndex;
-	//ch_fe = p_frontend;
 	
 	//printf("CZapitChannel::CZapitChannel add %s (%x) fe(%d)\n", name.c_str(), this, FeIndex);
 }
