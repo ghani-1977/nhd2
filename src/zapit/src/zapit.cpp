@@ -193,8 +193,13 @@ bool standby = true;
 void * scan_transponder(void * arg);
 static TP_params TP;
 
+bool saveLastChannel;
+int lastChannelMode;
 uint32_t  lastChannelRadio;
 uint32_t  lastChannelTV;
+
+bool writeChannelsNames;
+bool makeRemainingChannelsBouquet;
 
 /* set/get zapit.config */
 void setZapitConfig(Zapit_config * Cfg);
@@ -345,7 +350,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 		}
 	}
 	else
-		// multi
+		// multi/single
 		fe = femap[thischannel->getFeIndex()];
 	
 	fe = fe;
@@ -358,6 +363,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
+	// single
 	if(femap.size() == 1)
 	{
 		fe = live_fe;
@@ -365,7 +371,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 		return fe;
 	}
 	
-	//
+	// twin/multi
 	for (int i = 1; i < FrontendCount; i++)
 	{
 		// twin
@@ -501,8 +507,8 @@ void saveZapitSettings(bool write, bool write_a)
 			config.setInt64("lastChannel", live_channel_id);
 		}
 		
-		// save frontend settings
-		//saveFrontendConfig();
+		config.setBool("writeChannelsNames", writeChannelsNames);
+		config.setBool("makeRemainingChannelsBouquet", makeRemainingChannelsBouquet);
 
 		//config.setInt32("rezapTimeout", rezapTimeout);
 		config.setBool("sortNames", sortNames);
@@ -585,11 +591,15 @@ void loadZapitSettings()
 	if (!config.loadConfig(CONFIGFILE))
 		WARN("%s not found", CONFIGFILE);
 
-	// last channel id
+	saveLastChannel = config.getBool("saveLastChannel", true);
+	lastChannelMode = config.getInt32("lastChannelMode", 1);
 	live_channel_id = config.getInt64("lastChannel", 0);
 	lastChannelRadio = config.getInt32("lastChannelRadio", 0);
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
 	//rezapTimeout = config.getInt32("rezapTimeout", 1);
+	
+	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", 1);
+	writeChannelsNames = config.getBool("writeChannelsNames", 1);
 	
 	sortNames = config.getBool("sortNames", 0);
 	sortlist = sortNames;
@@ -600,9 +610,6 @@ void loadZapitSettings()
 	// unicable
 	//uni_scr = config.getInt32("uni_scr", -1);
 	//uni_qrg = config.getInt32("uni_qrg", 0);
-
-	// frontend settings
-	//loadFrontendConfig();
 
 	//load audio map
 	load_audio_map();
@@ -3212,6 +3219,7 @@ void setZapitConfig(Zapit_config * Cfg)
 {
 	//motorRotationSpeed = Cfg->motorRotationSpeed;
 	//config.setInt32("motorRotationSpeed", motorRotationSpeed);
+	
 	config.setBool("writeChannelsNames", Cfg->writeChannelsNames);
 	config.setBool("makeRemainingChannelsBouquet", Cfg->makeRemainingChannelsBouquet);
 	config.setBool("saveLastChannel", Cfg->saveLastChannel);
