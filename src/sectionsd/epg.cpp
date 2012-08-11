@@ -100,9 +100,9 @@ int main(int /*argc*/, char** /*argv*/)
 #else
 	SIsectionsEITschedule epgset;
 #endif
-
+	
 	tzset(); // TZ auswerten
-
+	
 	starttime=time(NULL);
 	epgset.readSections();
 	sdtset.readSections();
@@ -110,29 +110,31 @@ int main(int /*argc*/, char** /*argv*/)
 	printf("EIT Sections read: %d\n", epgset.size());
 	printf("SDT Sections read: %d\n", sdtset.size());
 	printf("Time needed: %ds\n", (int)difftime(endtime, starttime));
-//  for_each(epgset.begin(), epgset.end(), printSmallSectionHeader());
-//  for_each(epgset.begin(), epgset.end(), printSIsection());
+	//  for_each(epgset.begin(), epgset.end(), printSmallSectionHeader());
+	//  for_each(epgset.begin(), epgset.end(), printSIsection());
 	SIevents events;
 	for(SIsectionsEIT::iterator k=epgset.begin(); k!=epgset.end(); k++)
-		events.insert((k->events()).begin(), (k->events()).end());
-
+	events.insert((k->events()).begin(), (k->events()).end());
+	
 	SIservices services;
 	for(SIsectionsSDT::iterator k=sdtset.begin(); k!=sdtset.end(); k++)
-		services.insert((k->services()).begin(), (k->services()).end());
-
+	services.insert((k->services()).begin(), (k->services()).end());
+	
 	// Damit wir die Zeiten der nvods richtig einsortiert bekommen
 	// Ist bei epgLarge eigentlich nicht noetig, da die NVODs anscheinend nur im present/actual (epgSmall) vorkommen
 	events.mergeAndRemoveTimeShiftedEvents(services);
-
+	
 	for_each(events.begin(), events.end(), printSIeventWithService(services));
-//  for_each(events.begin(), events.end(), printSIevent());
-//  for_each(epgset.begin(), epgset.end(), printSIsectionEIT());
+	//  for_each(events.begin(), events.end(), printSIevent());
+	//  for_each(epgset.begin(), epgset.end(), printSIsectionEIT());
+	
+	//  int i=0;
+	//  for(SIsectionsEIT::iterator s=epgset.begin(); s!=epgset.end(); s++, i++) 
+	//{
+		//char fname[20];
+		//sprintf(fname, "seit%d", i+1);
+		//s->saveBufferToFile(fname);
+	//}
 
-//  int i=0;
-//  for(SIsectionsEIT::iterator s=epgset.begin(); s!=epgset.end(); s++, i++) {
-//    char fname[20];
-//    sprintf(fname, "seit%d", i+1);
-//    s->saveBufferToFile(fname);
-//  }
 	return 0;
 }
