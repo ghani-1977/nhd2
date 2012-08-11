@@ -28,7 +28,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <vector>
-#include <config.h>
 
 #include <dmx_cs.h>
 
@@ -38,75 +37,73 @@ typedef unsigned char version_number_t;
 
 class DMX
 {
-private:
+	private:
 
-	int             fd;
-	cDemux * dmx;
-	int dmx_num;
-	pthread_mutex_t pauselock;
-	unsigned short  pID;
-	unsigned short  dmxBufferSizeInKB;
-	sections_id_t first_skipped;
-	int		current_service;
-	unsigned char	eit_version;
-	bool		cache; /* should read sections be cached? true for all but dmxCN */
+		int      fd;
+		cDemux * dmx;
+		int dmx_num;
+		pthread_mutex_t pauselock;
+		unsigned short  pID;
+		unsigned short  dmxBufferSizeInKB;
+		sections_id_t first_skipped;
+		int		current_service;
+		unsigned char	eit_version;
+		bool		cache; /* should read sections be cached? true for all but dmxCN */
 
-	inline bool isOpen(void) {
-		return (fd != -1);
-	}
+		inline bool isOpen(void) { return (fd != -1); }
+		
+		int immediate_start(void); /* mutex must be locked before and unlocked after this method */
+		int immediate_stop(void);  /* mutex must be locked before and unlocked after this method */
+		bool check_complete(const unsigned char table_id, const unsigned short extension_id, const unsigned short onid, const unsigned short tsid, const unsigned char);
+		sections_id_t create_sections_id(const unsigned char table_id, const unsigned short extension_id, const unsigned char section_number, const unsigned short onid, const unsigned short tsid);
+		ssize_t readNbytes(int fd, char * buf, const size_t n, unsigned timeoutInMSeconds);
 
-	int immediate_start(void); /* mutex must be locked before and unlocked after this method */
-	int immediate_stop(void);  /* mutex must be locked before and unlocked after this method */
-	bool check_complete(const unsigned char table_id, const unsigned short extension_id, const unsigned short onid, const unsigned short tsid, const unsigned char);
-	sections_id_t create_sections_id(const unsigned char table_id, const unsigned short extension_id, const unsigned char section_number, const unsigned short onid, const unsigned short tsid);
-	ssize_t readNbytes(int fd, char * buf, const size_t n, unsigned timeoutInMSeconds);
+	public:
+		struct s_filters
+		{
+			unsigned char filter;
+			unsigned char mask;
+		};
 
-public:
-	struct s_filters
-	{
-		unsigned char filter;
-		unsigned char mask;
-	};
+		std::vector<s_filters> filters;
+		int                    filter_index;
+		time_t                 lastChanged;
 
-	std::vector<s_filters> filters;
-	int                    filter_index;
-	time_t                 lastChanged;
-
-	int                    real_pauseCounter;
-	pthread_cond_t         change_cond;
-	pthread_mutex_t        start_stop_mutex;
+		int                    real_pauseCounter;
+		pthread_cond_t         change_cond;
+		pthread_mutex_t        start_stop_mutex;
 
 
-	DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool cache = true, int dmx_source = 0);
-	~DMX();
+		DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool cache = true);
+		~DMX();
 
-	int start(void);
-	ssize_t read(char * const buf, const size_t buflength, const unsigned timeoutMInSeconds);
-	void closefd(void);
-	void addfilter(const unsigned char filter, const unsigned char mask);
-	int stop(void);
-	void close(void);
+		int start(void);
+		ssize_t read(char * const buf, const size_t buflength, const unsigned timeoutMInSeconds);
+		void closefd(void);
+		void addfilter(const unsigned char filter, const unsigned char mask);
+		int stop(void);
+		void close(void);
 
-	int real_pause(void);
-	int real_unpause(void);
+		int real_pause(void);
+		int real_unpause(void);
 
-	int request_pause(void);
-	int request_unpause(void);
+		int request_pause(void);
+		int request_unpause(void);
 
-	int change(const int new_filter_index, const int new_current_service = -1); // locks while changing
+		int change(const int new_filter_index, const int new_current_service = -1); // locks while changing
 
-	void lock(void);
-	void unlock(void);
+		void lock(void);
+		void unlock(void);
 
-	int getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts);
-	// section with size < 3 + 5 are skipped !
-	int setPid(const unsigned short new_pid);
-	int setCurrentService(int new_current_service);
-	int dropCachedSectionIDs();
+		int getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts);
+		// section with size < 3 + 5 are skipped !
+		int setPid(const unsigned short new_pid);
+		int setCurrentService(int new_current_service);
+		int dropCachedSectionIDs();
 
-	unsigned char get_eit_version(void);
-	// was useful for debugging...
-	unsigned int get_current_service(void);
+		unsigned char get_eit_version(void);
+		// was useful for debugging...
+		unsigned int get_current_service(void);
 };
 
 #endif /* __sectionsd__dmx_h__ */
