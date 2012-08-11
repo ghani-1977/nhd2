@@ -85,13 +85,6 @@ typedef struct dvb_frontend_parameters FrontendParameters;
 #define MAX_LNBS	64	/* due to Diseqc 1.1  (2003-01-10 rasc) */
 
 
-//#define MAKE_FE_KEY(adapter, number) ((adapter << 8) | (number & 0xFF))
-//#define FECONFIGFILE      CONFIGDIR "/zapit/frontend.conf"
-
-//typedef std::map<unsigned short, CFrontend*> fe_map_t;
-//typedef fe_map_t::iterator fe_map_iterator_t;
-//fe_map_t	femap;
-
 class CFrontend
 {
 	public:
@@ -114,7 +107,6 @@ class CFrontend
 		bool slave;
 		bool standby;
 		
-		//fe_map_t	femap;
 		//fe_mode_t	mode;
 		
 		/* tuning finished flag */
@@ -176,13 +168,10 @@ class CFrontend
 		void	reset(void);
 		
 	public:
-		//static CFrontend * getInstance(int num = 0, int adap = 0);
-		//static CFrontend * killInstance(int num = 0, int adap = 0);
-		
 		CFrontend(int num = 0, int adap = 0);
 		~CFrontend(void);
 
-		static fe_code_rate_t	getCodeRate(const uint8_t fec_inner, int system = 0);
+		static fe_code_rate_t		getCodeRate(const uint8_t fec_inner, int system = 0);
 		uint8_t				getDiseqcPosition(void) const		{ return currentTransponder.diseqc; }
 		uint8_t				getDiseqcRepeats(void) const		{ return diseqcRepeats; }
 		diseqc_t			getDiseqcType(void) const		{ return diseqcType; }
@@ -190,6 +179,7 @@ class CFrontend
 		static fe_modulation_t		getModulation(const uint8_t modulation);
 		uint8_t				getPolarization(void) const;
 		const struct dvb_frontend_info *getInfo(void) const			{ return &info; };
+		const struct dvb_frontend_parameters * getfeparams(void) const {return &curfe;}
 
 		uint32_t			getBitErrorRate(void) const;
 		uint16_t			getSignalNoiseRatio(void) const;
@@ -211,6 +201,7 @@ class CFrontend
 		void 				positionMotor(uint8_t motorPosition);
 		void				sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t command, uint8_t num_parameters, uint8_t parameter1, uint8_t parameter2, int repeat = 0);
 		void 				gotoXX(t_satellite_position pos);
+		
 		const bool 			tuneChannel (CZapitChannel *channel, bool nvod);
 		const bool 			retuneChannel (void);
 		const bool 			retuneTP (bool nowait = true);
