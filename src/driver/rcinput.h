@@ -375,8 +375,11 @@ class CRCInput
 #else
 			for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
 			{
-				return fd_rc[i];
+				//return fd_rc[i];
+				fd_gamerc = fd_rc[i];
 			}
+			
+			return fd_gamerc;
 #endif
 		}
 		
