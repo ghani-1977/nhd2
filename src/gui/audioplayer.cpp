@@ -1969,7 +1969,7 @@ void CAudioPlayerGui::paint()
 	paintInfo();
 	
 #ifdef FB_BLIT	
-	//m_frameBuffer->blit();
+	m_frameBuffer->blit();
 #endif
 	m_visible = true;
 
