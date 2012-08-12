@@ -686,7 +686,7 @@ static void save_channel_pids(CZapitChannel * thischannel)
 	tuxtx_subtitle_running(&audio_map[thischannel->getChannelID()].ttxpid, &audio_map[thischannel->getChannelID()].ttxpage, NULL);
 }
 
-static CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod)
+/*static*/ CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod)
 {
 	tallchans_iterator cit;
 	
@@ -1698,11 +1698,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandTuneTP TuneTP;
 			CBasicServer::receive_data(connfd, &TuneTP, sizeof(TuneTP));
 
-			TP = TuneTP.TP;
 			sig_delay = 0;
 			
 			// inversion
-			TP.feparams.inversion = INVERSION_AUTO;
+			TuneTP.TP.feparams.inversion = INVERSION_AUTO;
 			
 			// satname
 			const char *name = scanProviders.size() > 0  ? scanProviders.begin()->second.c_str() : "unknown";
@@ -1710,24 +1709,24 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			t_satellite_position satellitePosition = scanProviders.begin()->first;
 	
 			// tune
-			getFE(TuneTP.feindex)->setInput(satellitePosition, TP.feparams.frequency,  TP.polarization);
+			getFE(TuneTP.feindex)->setInput(satellitePosition, TuneTP.TP.feparams.frequency, TuneTP.TP.polarization);
 					
 			switch ( getFE(TuneTP.feindex)->getInfo()->type) 
 			{
 				case FE_QPSK:
 				{
-					printf("[zapit] tune to sat %s freq %d rate %d fec %d pol %d\n", name, TP.feparams.frequency, TP.feparams.u.qpsk.symbol_rate, TP.feparams.u.qpsk.fec_inner, TP.polarization);
+					printf("[zapit] tune to sat %s freq %d rate %d fec %d pol %d\n", name, TuneTP.TP.feparams.frequency, TuneTP.TP.feparams.u.qpsk.symbol_rate, TuneTP.TP.feparams.u.qpsk.fec_inner, TuneTP.TP.polarization);
 					live_fe->driveToSatellitePosition(satellitePosition);
 					break;
 				}
 		
 				case FE_QAM:
-					printf("[zapit] tune to cable %s freq %d rate %d fec %d\n", name, TP.feparams.frequency * 1000, TP.feparams.u.qam.symbol_rate, TP.feparams.u.qam.fec_inner);
+					printf("[zapit] tune to cable %s freq %d rate %d fec %d\n", name, TuneTP.TP.feparams.frequency * 1000, TuneTP.TP.feparams.u.qam.symbol_rate, TuneTP.TP.feparams.u.qam.fec_inner);
 		
 					break;
 		
 				case FE_OFDM:
-					printf("[zapit] tune to terrestrial %s freq %d band %d HP %d LP %d const %d transmission_mode %d guard_interval %d hierarchy_infomation %d\n", name, TP.feparams.frequency * 1000, TP.feparams.u.ofdm.bandwidth, TP.feparams.u.ofdm.code_rate_HP, TP.feparams.u.ofdm.code_rate_LP, TP.feparams.u.ofdm.constellation, TP.feparams.u.ofdm.transmission_mode, TP.feparams.u.ofdm.guard_interval, TP.feparams.u.ofdm.hierarchy_information);
+					printf("[zapit] tune to terrestrial %s freq %d band %d HP %d LP %d const %d transmission_mode %d guard_interval %d hierarchy_infomation %d\n", name, TuneTP.TP.feparams.frequency * 1000, TuneTP.TP.feparams.u.ofdm.bandwidth, TuneTP.TP.feparams.u.ofdm.code_rate_HP, TuneTP.TP.feparams.u.ofdm.code_rate_LP, TuneTP.TP.feparams.u.ofdm.constellation, TuneTP.TP.feparams.u.ofdm.transmission_mode, TuneTP.TP.feparams.u.ofdm.guard_interval, TuneTP.TP.feparams.u.ofdm.hierarchy_information);
 		
 					break;
 		
@@ -1737,7 +1736,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			}
 		
 			// tune it
-			getFE(TuneTP.feindex)->tuneFrequency(&TP.feparams, TP.polarization, true);
+			getFE(TuneTP.feindex)->tuneFrequency(&TuneTP.TP.feparams, TuneTP.TP.polarization, true);
 		}
 		break;
 	
@@ -1746,38 +1745,36 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandScanTP ScanTP;
 			CBasicServer::receive_data(connfd, &ScanTP, sizeof(ScanTP));
 			
-			TP = ScanTP.TP;
-			
-			if(!(TP.feparams.frequency > 0) && live_channel) 
+			if(!(ScanTP.TP.feparams.frequency > 0) && live_channel) 
 			{
 				// TP
 				transponder_list_t::iterator transponder = transponders.find(live_channel->getTransponderId());
 	
 				// freq
-				TP.feparams.frequency = transponder->second.feparams.frequency;
+				ScanTP.TP.feparams.frequency = transponder->second.feparams.frequency;
 				
 				switch ( getFE(ScanTP.feindex)->getInfo()->type) 
 				{
 					case FE_QPSK:
-						TP.feparams.u.qpsk.symbol_rate = transponder->second.feparams.u.qpsk.symbol_rate;
-						TP.feparams.u.qpsk.fec_inner = transponder->second.feparams.u.qpsk.fec_inner;
-						TP.polarization = transponder->second.polarization;
+						ScanTP.TP.feparams.u.qpsk.symbol_rate = transponder->second.feparams.u.qpsk.symbol_rate;
+						ScanTP.TP.feparams.u.qpsk.fec_inner = transponder->second.feparams.u.qpsk.fec_inner;
+						ScanTP.TP.polarization = transponder->second.polarization;
 						break;
 
 					case FE_QAM:
-						TP.feparams.u.qam.symbol_rate = transponder->second.feparams.u.qam.symbol_rate;
-						TP.feparams.u.qam.fec_inner = transponder->second.feparams.u.qam.fec_inner;
-						TP.feparams.u.qam.modulation = transponder->second.feparams.u.qam.modulation;
+						ScanTP.TP.feparams.u.qam.symbol_rate = transponder->second.feparams.u.qam.symbol_rate;
+						ScanTP.TP.feparams.u.qam.fec_inner = transponder->second.feparams.u.qam.fec_inner;
+						ScanTP.TP.feparams.u.qam.modulation = transponder->second.feparams.u.qam.modulation;
 						break;
 
 					case FE_OFDM:
-						TP.feparams.u.ofdm.bandwidth =  transponder->second.feparams.u.ofdm.bandwidth;
-						TP.feparams.u.ofdm.code_rate_HP = transponder->second.feparams.u.ofdm.code_rate_HP; 
-						TP.feparams.u.ofdm.code_rate_LP = transponder->second.feparams.u.ofdm.code_rate_LP; 
-						TP.feparams.u.ofdm.constellation = transponder->second.feparams.u.ofdm.constellation;
-						TP.feparams.u.ofdm.transmission_mode = transponder->second.feparams.u.ofdm.transmission_mode;
-						TP.feparams.u.ofdm.guard_interval = transponder->second.feparams.u.ofdm.guard_interval;
-						TP.feparams.u.ofdm.hierarchy_information = transponder->second.feparams.u.ofdm.hierarchy_information;
+						ScanTP.TP.feparams.u.ofdm.bandwidth =  transponder->second.feparams.u.ofdm.bandwidth;
+						ScanTP.TP.feparams.u.ofdm.code_rate_HP = transponder->second.feparams.u.ofdm.code_rate_HP; 
+						ScanTP.TP.feparams.u.ofdm.code_rate_LP = transponder->second.feparams.u.ofdm.code_rate_LP; 
+						ScanTP.TP.feparams.u.ofdm.constellation = transponder->second.feparams.u.ofdm.constellation;
+						ScanTP.TP.feparams.u.ofdm.transmission_mode = transponder->second.feparams.u.ofdm.transmission_mode;
+						ScanTP.TP.feparams.u.ofdm.guard_interval = transponder->second.feparams.u.ofdm.guard_interval;
+						ScanTP.TP.feparams.u.ofdm.hierarchy_information = transponder->second.feparams.u.ofdm.hierarchy_information;
 						break;
 
 					default:
