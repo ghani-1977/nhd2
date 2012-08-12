@@ -59,7 +59,7 @@ extern t_channel_id live_channel_id;
 //extern CFrontend * live_fe;
 CFrontend * getFE(int index);
 
-int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0);
+int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0, int feindex = 0);
 
 void generic_descriptor(const unsigned char * const)
 {
@@ -337,7 +337,7 @@ int satellite_delivery_system_descriptor(const unsigned char * const buffer, t_t
 
 	TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
 
-	add_to_scan(TsidOnid, &feparams, polarization, true);
+	add_to_scan(TsidOnid, &feparams, polarization, true, feindex);
 
 	return 0;
 }
@@ -389,11 +389,11 @@ int cable_delivery_system_descriptor(const unsigned char * const buffer, t_trans
 	//mod
 	feparams.u.qam.modulation = CFrontend::getModulation(buffer[8]);
 
-	freq = feparams.frequency/1000;
+	freq = feparams.frequency/100;
 
        TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
 
-        add_to_scan(TsidOnid, &feparams, 0);
+        add_to_scan(TsidOnid, &feparams, 0, true, feindex);
 
 	return 0;
 }
@@ -973,7 +973,7 @@ int terrestrial_delivery_system_descriptor(const unsigned char * const buffer, t
 
 	TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
 
-	add_to_scan(TsidOnid, &feparams, 0);
+	add_to_scan(TsidOnid, &feparams, 0, true, feindex);
 
 
 	return 0;
