@@ -1040,6 +1040,17 @@ int zapit_to_record(const t_channel_id channel_id)
 	return 0;
 }
 
+int zapTo_RecordID(const t_channel_id channel_id)
+{
+	//
+	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) )
+		zapTo_ChannelID(channel_id, false);
+	else
+		zapit_to_record(channel_id);
+	
+	return 0;
+}
+
 int change_audio_pid(uint8_t index)
 {
 	if ((!audioDemux) || (!audioDecoder) || (!live_channel))
@@ -1325,7 +1336,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			if(msgZaptoServiceID.record) 
 			{
-				msgResponseZapComplete.zapStatus = zapit_to_record(msgZaptoServiceID.channel_id);
+				//msgResponseZapComplete.zapStatus = zapit_to_record(msgZaptoServiceID.channel_id);
+				msgResponseZapComplete.zapStatus = zapTo_RecordID(msgZaptoServiceID.channel_id);
 			} 
 			else 
 			{
