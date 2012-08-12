@@ -634,9 +634,9 @@ void CNeutrinoApp::setupColors_dvb2k()
 void CNeutrinoApp::setupColors_nhd2()
 {
 	g_settings.menu_Head_alpha = 0;
-	g_settings.menu_Head_red   = 39;
-	g_settings.menu_Head_green = 40;
-	g_settings.menu_Head_blue  = 42;
+	g_settings.menu_Head_red   = 35;
+	g_settings.menu_Head_green = 35;
+	g_settings.menu_Head_blue  = 35;
 
 	g_settings.menu_Head_Text_alpha = 0;
 	g_settings.menu_Head_Text_red   = 100;
@@ -654,9 +654,9 @@ void CNeutrinoApp::setupColors_nhd2()
 	g_settings.menu_Content_Text_blue  = 100;
 
 	g_settings.menu_Content_Selected_alpha = 15;
-	g_settings.menu_Content_Selected_red   = 70;
-	g_settings.menu_Content_Selected_green = 70;
-	g_settings.menu_Content_Selected_blue  = 70;
+	g_settings.menu_Content_Selected_red   = 20;
+	g_settings.menu_Content_Selected_green = 20;
+	g_settings.menu_Content_Selected_blue  = 20;
 
 	g_settings.menu_Content_Selected_Text_alpha  = 0;
 	g_settings.menu_Content_Selected_Text_red    = 100;
@@ -670,8 +670,8 @@ void CNeutrinoApp::setupColors_nhd2()
 
 	g_settings.menu_Content_inactive_Text_alpha  = 0;
 	g_settings.menu_Content_inactive_Text_red    = 70;
-	g_settings.menu_Content_inactive_Text_green  = 72;
-	g_settings.menu_Content_inactive_Text_blue   = 74;
+	g_settings.menu_Content_inactive_Text_green  = 70;
+	g_settings.menu_Content_inactive_Text_blue   = 70;
 
 	g_settings.infobar_alpha = 20;
 	g_settings.infobar_red   = 50;
@@ -708,7 +708,7 @@ font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
         {LOCALE_FONTSIZE_CHANNELLIST_DESCR  ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_CHANNELLIST_NUMBER ,  14, FONT_STYLE_BOLD   , 2},
         {LOCALE_FONTSIZE_CHANNEL_NUM_ZAP    ,  40, FONT_STYLE_BOLD   , 0},
-        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  40, FONT_STYLE_BOLD   , 0},
+        {LOCALE_FONTSIZE_INFOBAR_NUMBER     ,  30, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_CHANNAME   ,  30, FONT_STYLE_BOLD   , 0},
         {LOCALE_FONTSIZE_INFOBAR_INFO       ,  20, FONT_STYLE_REGULAR, 1},
         {LOCALE_FONTSIZE_INFOBAR_SMALL      ,  14, FONT_STYLE_REGULAR, 1},
@@ -902,9 +902,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// themes
 	// nhd2	
 	g_settings.menu_Head_alpha = configfile.getInt32( "menu_Head_alpha", 0);
-	g_settings.menu_Head_red   = configfile.getInt32( "menu_Head_red", 39);
-	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 40);
-	g_settings.menu_Head_blue  = configfile.getInt32( "menu_Head_blue", 42);
+	g_settings.menu_Head_red   = configfile.getInt32( "menu_Head_red", 35);
+	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 35);
+	g_settings.menu_Head_blue  = configfile.getInt32( "menu_Head_blue", 35);
 
 	g_settings.menu_Head_Text_alpha = configfile.getInt32( "menu_Head_Text_alpha", 0);
 	g_settings.menu_Head_Text_red   = configfile.getInt32( "menu_Head_Text_red", 100);
@@ -922,9 +922,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.menu_Content_Text_blue  = configfile.getInt32( "menu_Content_Text_blue", 100);
 
 	g_settings.menu_Content_Selected_alpha = configfile.getInt32( "menu_Content_Selected_alpha", 15);
-	g_settings.menu_Content_Selected_red   = configfile.getInt32( "menu_Content_Selected_red", 70);
-	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 70);
-	g_settings.menu_Content_Selected_blue  = configfile.getInt32( "menu_Content_Selected_blue", 70);
+	g_settings.menu_Content_Selected_red   = configfile.getInt32( "menu_Content_Selected_red", 20);
+	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 20);
+	g_settings.menu_Content_Selected_blue  = configfile.getInt32( "menu_Content_Selected_blue", 20);
 
 	g_settings.menu_Content_Selected_Text_alpha  = configfile.getInt32( "menu_Content_Selected_Text_alpha", 0);
 	g_settings.menu_Content_Selected_Text_red    = configfile.getInt32( "menu_Content_Selected_Text_red", 100);
@@ -938,8 +938,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	g_settings.menu_Content_inactive_Text_alpha  = configfile.getInt32( "menu_Content_inactive_Text_alpha", 0);
 	g_settings.menu_Content_inactive_Text_red    = configfile.getInt32( "menu_Content_inactive_Text_red", 70);
-	g_settings.menu_Content_inactive_Text_green  = configfile.getInt32( "menu_Content_inactive_Text_green", 72);
-	g_settings.menu_Content_inactive_Text_blue   = configfile.getInt32( "menu_Content_inactive_Text_blue", 74);
+	g_settings.menu_Content_inactive_Text_green  = configfile.getInt32( "menu_Content_inactive_Text_green", 70);
+	g_settings.menu_Content_inactive_Text_blue   = configfile.getInt32( "menu_Content_inactive_Text_blue", 70);
 
 	g_settings.infobar_alpha = configfile.getInt32( "infobar_alpha", 20);
 	g_settings.infobar_red   = configfile.getInt32( "infobar_red", 50);
@@ -2337,9 +2337,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	pthread_create(&sections_thread, NULL, sectionsd_main_thread, (void *) NULL);
 
 	// load scan settings FIXME: scan settings load this again
-	if( !scanSettings.loadSettings(NEUTRINO_SCAN_SETTINGS_FILE) ) 
+	//if( !scanSettings.loadSettings(NEUTRINO_SCAN_SETTINGS_FILE) ) 
 	{
-		dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: Loading of scan settings failed. Using defaults.\n");
+	//	dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: Loading of scan settings failed. Using defaults.\n");
 	}
 
 	// for boxes with lcd :-)
@@ -2568,6 +2568,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// start assistant
 	if(loadSettingsErg) 
 	{
+		// set help bar
+		g_settings.help_bar = 1;
+		
 		// startup pic
 		frameBuffer->loadBackgroundPic("start.jpg");	
 #ifdef FB_BLIT
@@ -2606,6 +2609,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 		ShowHintUTF(LOCALE_MESSAGEBOX_INFO, loadSettingsErg ==  1 ? g_Locale->getText(LOCALE_SETTINGS_NOCONFFILE) : g_Locale->getText(LOCALE_SETTINGS_MISSINGOPTIONSCONFFILE));
 		
 		configfile.setModifiedFlag(true);
+		
+		g_settings.help_bar = 0;
 
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 	}
@@ -3261,6 +3266,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		StartSubtitles(!g_InfoViewer->is_visible);
 		
 		// update scan settings for manual scan to current channel
+		#if 0
 		if(live_channel) 
 		{
 			sat_iterator_t sit = satellitePositions.find(live_channel->getSatellitePosition());
@@ -3301,6 +3307,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				}
 			}
 		}
+		#endif
 	}
 
 	if ((msg == NeutrinoMessages::EVT_TIMER)) 
@@ -4113,8 +4120,8 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 		networkConfig.commitConfig();
 		
 		// save scan settings
-		if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE)) 
-			dprintf(DEBUG_NORMAL, "error while saving scan-settings!\n");
+		//if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE)) 
+		//	dprintf(DEBUG_NORMAL, "error while saving scan-settings!\n");
 		
 		// save neutrino.conf
 		saveSetup(NEUTRINO_SETTINGS_FILE);
@@ -5212,7 +5219,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		CFileBrowser fileBrowser;
 		fileBrowser.Dir_Mode = true;
 
-		if (fileBrowser.exec("/var/tuxbox/config") == true) 
+		if (fileBrowser.exec("/var/tuxbox") == true) 
 		{
 			char  fname[256] = "colors.conf", sname[256];
 			CStringInputSMS * sms = new CStringInputSMS(LOCALE_EXTRA_SAVECOLORS, fname, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789. ");
@@ -5249,7 +5256,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		CFileBrowser fileBrowser;
 		fileBrowser.Dir_Mode = true;
 		
-		if (fileBrowser.exec("/var/tuxbox/config") == true) 
+		if (fileBrowser.exec("/var/tuxbox") == true) 
 		{
 			char  fname[256] = "keys.conf", sname[256];
 			CStringInputSMS * sms = new CStringInputSMS(LOCALE_EXTRA_SAVEKEYS, fname, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789. ");
