@@ -91,7 +91,6 @@ CScanTs::CScanTs(int num)
 	//canceled = false;
 	
 	feindex = num;
-
 }
 
 extern int scan_pids;		// defined in zapit.cpp
