@@ -176,13 +176,6 @@ int CStreamInfo2::doSignalStrengthLoop()
 	CZapitChannel * channel = channelList->getChannel(curnum);
 	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 	
-	// ugly hack
-	// dont calcultae rate when we have HD until to fix this
-	//int xres, yres, framerate;
-	//videoDecoder->getPictureInfo(xres, yres, framerate);
-	
-	//if(xres < 1280)
-	//
 	ts_setup(si.FeIndex);
 
 	while (1) 
@@ -355,14 +348,16 @@ void CStreamInfo2::paint_pig(int x, int y, int w, int h)
 #ifdef FB_BLIT
 	frameBuffer->blit();
 #endif
-	// ugly hack
-#if 0	
+	//dont pig if we have 1980 x 1080
+#ifdef __sh__	
 	int xres, yres, framerate;
 	videoDecoder->getPictureInfo(xres, yres, framerate);
 	
-	if(xres < 1280)
-#endif	
+	if(xres <= 1280)	
 		videoDecoder->Pig( x, y, w, h );
+#else
+	videoDecoder->Pig( x, y, w, h );
+#endif
 }
 
 void CStreamInfo2::paint_signal_fe_box(int _x, int _y, int w, int h)
