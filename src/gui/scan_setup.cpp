@@ -60,7 +60,7 @@
 #include <zapit/satconfig.h>
 
 
-#define scanSettings CNeutrinoApp::getInstance()->getScanSettings() 	//(CNeutrinoApp::getInstance()->ScanSettings())
+//#define scanSettings CNeutrinoApp::getInstance()->getScanSettings() 	//(CNeutrinoApp::getInstance()->ScanSettings())
 
 
 extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
@@ -92,8 +92,7 @@ CScanSetup::CScanSetup(int num)
 	
 	feindex = num;
 	
-	//FIXME
-	//tuner_to_scan = num;
+	//scansettings = new CScanSettings(feindex);
 }
 
 CScanSetup::~CScanSetup()
@@ -117,7 +116,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		hintBox->paint();
 		
 		// save scan.conf
-		if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex)) 
+		if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/)) 
 			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: error while saving scan-settings!\n");
 		
 		if( getFE(feindex)->getInfo()->type == FE_QPSK )
@@ -125,16 +124,16 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			SaveMotorPositions();
 			
 			//diseqc type
-			g_Zapit->setDiseqcType((diseqc_t)scanSettings.diseqcMode, feindex);
+			/*g_Zapit->setDiseqcType*/ getFE(feindex)->setDiseqcType((diseqc_t)scanSettings.diseqcMode/*, feindex*/);
 			
 			// diseqc repeat
-			g_Zapit->setDiseqcRepeat(scanSettings.diseqcRepeat, feindex);
+			/*g_Zapit->setDiseqcRepeat*/ getFE(feindex)->setDiseqcRepeats(scanSettings.diseqcRepeat/*, feindex*/);
 		
 			//gotoxx
-			zapitCfg.gotoXXLatitude = strtod(zapit_lat, NULL);
-			zapitCfg.gotoXXLongitude = strtod(zapit_long, NULL);
+			/*zapitCfg.*/ getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
+			/*zapitCfg.*/ getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 			
-			setZapitConfig(&zapitCfg);
+			//setZapitConfig(&zapitCfg);
 		}
 		
 		hintBox->hide();
@@ -295,12 +294,13 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 };
 
 // 
-#define FRONTEND_MODE_OPTION_COUNT 3
+#define FRONTEND_MODE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
 {
 	{ 0, NONEXISTANT_LOCALE, "single"  },
-	{ 1, NONEXISTANT_LOCALE, "loop" },
-	{ 2, NONEXISTANT_LOCALE, "not connected" },
+	{ 1, NONEXISTANT_LOCALE, "twin"  },
+	{ 2, NONEXISTANT_LOCALE, "loop" },
+	{ 3, NONEXISTANT_LOCALE, "not connected" },
 };
 
 void CScanSetup::showScanService()
@@ -310,7 +310,7 @@ void CScanSetup::showScanService()
 	printf("CScanSetup::showScanService: Tuner: %d\n", feindex);
 	
 	//load scan settings 
-	if( !scanSettings.loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
+	if( !scanSettings.loadSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/) ) 
 		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
 	
 	//menue init
@@ -474,24 +474,24 @@ void CScanSetup::showScanService()
 
 		motorMenu->addItem(GenericMenuSeparatorLine);
 
-		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_ZAPIT_ROTATION_SPEED, (int *)&zapitCfg.motorRotationSpeed, true, 0, 64, NULL) );
+		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_ZAPIT_ROTATION_SPEED, (int *)/*&zapitCfg.*/ getFE(feindex)->motorRotationSpeed, true, 0, 64, NULL) );
 
-		//motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_USE_GOTOXX,  (int *)&zapitCfg.useGotoXX, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_USE_GOTOXX,  (int *)/*&zapitCfg.*/ getFE(feindex)->useGotoXX, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
 
 		CStringInput * toff;
-		sprintf(zapit_lat, "%3.6f", zapitCfg.gotoXXLatitude);
-		sprintf(zapit_long, "%3.6f", zapitCfg.gotoXXLongitude);
+		sprintf(zapit_lat, "%3.6f", /*zapitCfg.*/ getFE(feindex)->gotoXXLatitude);
+		sprintf(zapit_long, "%3.6f", /*zapitCfg.*/ getFE(feindex)->gotoXXLongitude);
 
-		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LADIR,  (int *)&zapitCfg.gotoXXLaDirection, OPTIONS_SOUTH0_NORTH1_OPTIONS, OPTIONS_SOUTH0_NORTH1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LADIR,  (int *)/*&zapitCfg.*/ getFE(feindex)->gotoXXLaDirection, OPTIONS_SOUTH0_NORTH1_OPTIONS, OPTIONS_SOUTH0_NORTH1_OPTION_COUNT, true));
 
 		toff = new CStringInput(LOCALE_EXTRA_LAT, (char *) zapit_lat, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LAT, true, zapit_lat, toff));
 
-		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LODIR,  (int *)&zapitCfg.gotoXXLoDirection, OPTIONS_EAST0_WEST1_OPTIONS, OPTIONS_EAST0_WEST1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LODIR,  (int *)/*&zapitCfg.*/ getFE(feindex)->gotoXXLoDirection, OPTIONS_EAST0_WEST1_OPTIONS, OPTIONS_EAST0_WEST1_OPTION_COUNT, true));
 
 		toff = new CStringInput(LOCALE_EXTRA_LONG, (char *) zapit_long, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LONG, true, zapit_long, toff));
-		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_SATSETUP_USALS_REPEAT, (int *)&zapitCfg.repeatUsals, true, 0, 10, NULL, 0, 0, LOCALE_OPTIONS_OFF) );
+		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_SATSETUP_USALS_REPEAT, (int *)/*&zapitCfg.*/ getFE(feindex)->repeatUsals, true, 0, 10, NULL, 0, 0, LOCALE_OPTIONS_OFF) );
 		
 		// rotor swap east/west
 		motorMenu->addItem( new CMenuOptionChooser(LOCALE_EXTRA_ROTORSWAP, &g_settings.rotor_swap, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
@@ -867,7 +867,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 }
 
 // scan settings
-CScanSettings::CScanSettings( /*int num*/)
+CScanSettings::CScanSettings( int num)
 	: configfile('\t')
 {
 	//satNameNoDiseqc[0] = 0;
@@ -876,7 +876,7 @@ CScanSettings::CScanSettings( /*int num*/)
 	//scanType = CServiceScan::SCAN_TVRADIO;
 	//delivery_system = DVB_S;
 	
-	//feindex = num;
+	feindex = num;
 }
 
 // borrowed from cst neutrino-hd (femanager.cpp)
@@ -920,31 +920,31 @@ void CScanSettings::useDefaults()
 	strcpy(satNameNoDiseqc, "none");
 }
 
-bool CScanSettings::loadSettings(const char * const fileName, int feIndex)
+bool CScanSettings::loadSettings(const char * const fileName/*, int feIndex*/)
 {
-	printf("CScanSettings::loadSettings: fe%d\n", feIndex);
+	printf("CScanSettings::loadSettings: fe%d\n", feindex);
 	
 	/* if scan.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
 		useDefaults( );
 
-	diseqcMode = getConfigValue(feIndex, "diseqcMode", diseqcMode);
-	diseqcRepeat = getConfigValue(feIndex, "diseqcRepeat", diseqcRepeat);
+	diseqcMode = getConfigValue(feindex, "diseqcMode", diseqcMode);
+	diseqcRepeat = getConfigValue(feindex, "diseqcRepeat", diseqcRepeat);
 
-	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(feIndex, "bouquetMode", bouquetMode);
-	scanType = (CZapitClient::scanType) getConfigValue(feIndex, "scanType", scanType);
+	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(feindex, "bouquetMode", bouquetMode);
+	scanType = (CZapitClient::scanType) getConfigValue(feindex, "scanType", scanType);
 	char cfg_key[81];
-	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feIndex);
+	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feindex);
 	strcpy(satNameNoDiseqc, configfile.getString(cfg_key, satNameNoDiseqc).c_str());
 
-	scan_mode = getConfigValue(feIndex, "scan_mode", 1); // NIT (0) or fast (1)
+	scan_mode = getConfigValue(feindex, "scan_mode", 1); // NIT (0) or fast (1)
 	
-	TP_fec = getConfigValue(feIndex, "TP_fec", 1);
-	TP_pol = getConfigValue(feIndex, "TP_pol", 0);
-	TP_mod = getConfigValue(feIndex, "TP_mod", 3);
-	sprintf(cfg_key, "fe%d_TP_freq", feIndex);
+	TP_fec = getConfigValue(feindex, "TP_fec", 1);
+	TP_pol = getConfigValue(feindex, "TP_pol", 0);
+	TP_mod = getConfigValue(feindex, "TP_mod", 3);
+	sprintf(cfg_key, "fe%d_TP_freq", feindex);
 	strcpy(TP_freq, configfile.getString(cfg_key, "10100000").c_str());
-	sprintf(cfg_key, "fe%d_TP_rate", feIndex);
+	sprintf(cfg_key, "fe%d_TP_rate", feindex);
 	strcpy(TP_rate, configfile.getString(cfg_key, "27500000").c_str());
 #if HAVE_DVB_API_VERSION >= 3
 	if(TP_fec == 4) 
@@ -952,52 +952,52 @@ bool CScanSettings::loadSettings(const char * const fileName, int feIndex)
 #endif
 
 	//DVB-T
-	TP_band = getConfigValue(feIndex, "TP_band", 0);
-	TP_HP = getConfigValue(feIndex, "TP_HP", 2);
-	TP_LP = getConfigValue(feIndex, "TP_LP", 1);
-	TP_const = getConfigValue(feIndex, "TP_const", 1);
-	TP_trans = getConfigValue(feIndex, "TP_trans", 1);
-	TP_guard = getConfigValue(feIndex, "TP_guard", 3);
-	TP_hierarchy = getConfigValue(feIndex, "TP_hierarchy", 0);
+	TP_band = getConfigValue(feindex, "TP_band", 0);
+	TP_HP = getConfigValue(feindex, "TP_HP", 2);
+	TP_LP = getConfigValue(feindex, "TP_LP", 1);
+	TP_const = getConfigValue(feindex, "TP_const", 1);
+	TP_trans = getConfigValue(feindex, "TP_trans", 1);
+	TP_guard = getConfigValue(feindex, "TP_guard", 3);
+	TP_hierarchy = getConfigValue(feindex, "TP_hierarchy", 0);
 		
-	scanSectionsd = getConfigValue(feIndex, "scanSectionsd", 0);
+	scanSectionsd = getConfigValue(feindex, "scanSectionsd", 0);
 
 	return true;
 }
 
-bool CScanSettings::saveSettings(const char * const fileName, int feIndex)
+bool CScanSettings::saveSettings(const char * const fileName/*, int feIndex*/)
 {
-	printf("CScanSettings::saveSettings: fe%d\n", feIndex);
+	printf("CScanSettings::saveSettings: fe%d\n", feindex);
 	
-	setConfigValue(feIndex, "diseqcMode", diseqcMode );
-	setConfigValue(feIndex, "diseqcRepeat", diseqcRepeat );
+	setConfigValue(feindex, "diseqcMode", diseqcMode );
+	setConfigValue(feindex, "diseqcRepeat", diseqcRepeat );
 	
-	setConfigValue(feIndex, "bouquetMode", bouquetMode );
-	setConfigValue(feIndex, "scanType", scanType );
+	setConfigValue(feindex, "bouquetMode", bouquetMode );
+	setConfigValue(feindex, "scanType", scanType );
 	
 	char cfg_key[81];
-	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feIndex);
+	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feindex);
 	configfile.setString(cfg_key, satNameNoDiseqc );
 	
-	setConfigValue(feIndex, "scan_mode", scan_mode);
+	setConfigValue(feindex, "scan_mode", scan_mode);
 
-	setConfigValue(feIndex, "TP_fec", TP_fec);
-	setConfigValue(feIndex, "TP_pol", TP_pol);
-	setConfigValue(feIndex, "TP_mod", TP_mod);
-	sprintf(cfg_key, "fe%d_TP_freq", feIndex);
+	setConfigValue(feindex, "TP_fec", TP_fec);
+	setConfigValue(feindex, "TP_pol", TP_pol);
+	setConfigValue(feindex, "TP_mod", TP_mod);
+	sprintf(cfg_key, "fe%d_TP_freq", feindex);
 	configfile.setString(cfg_key, TP_freq);
-	sprintf(cfg_key, "fe%d_TP_rate", feIndex);
+	sprintf(cfg_key, "fe%d_TP_rate", feindex);
 	configfile.setString(cfg_key, TP_rate);
 
-	setConfigValue(feIndex, "TP_band", TP_band);
-	setConfigValue(feIndex, "TP_HP", TP_HP);
-	setConfigValue(feIndex, "TP_LP", TP_LP);
-	setConfigValue(feIndex, "TP_const", TP_const);
-	setConfigValue(feIndex, "TP_trans", TP_trans);
-	setConfigValue(feIndex, "TP_guard", TP_guard);
-	setConfigValue(feIndex, "TP_hierarchy", TP_hierarchy);
+	setConfigValue(feindex, "TP_band", TP_band);
+	setConfigValue(feindex, "TP_HP", TP_HP);
+	setConfigValue(feindex, "TP_LP", TP_LP);
+	setConfigValue(feindex, "TP_const", TP_const);
+	setConfigValue(feindex, "TP_trans", TP_trans);
+	setConfigValue(feindex, "TP_guard", TP_guard);
+	setConfigValue(feindex, "TP_hierarchy", TP_hierarchy);
 
-	setConfigValue(feIndex, "scanSectionsd", scanSectionsd );
+	setConfigValue(feindex, "scanSectionsd", scanSectionsd );
 
 	if(configfile.getModifiedFlag())
 	{
