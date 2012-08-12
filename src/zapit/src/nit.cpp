@@ -173,7 +173,6 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 			transport_descriptors_length = ((buffer[pos + 4] & 0x0F) << 8) | buffer[pos + 5];
 
 			//if (transponders.find((transport_stream_id << 16) | original_network_id) == transponders.end())
-			//test
 			//if (scantransponders.find(CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id)) == scantransponders.end())
 			{
 				for (pos2 = pos + 6; pos2 < pos + transport_descriptors_length + 6; pos2 += buffer[pos2 + 1] + 2)
