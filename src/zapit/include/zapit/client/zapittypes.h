@@ -145,20 +145,20 @@ typedef struct TP_map
 
 #define MAX_LNB 64 
 typedef struct Zapit_config {
-	int motorRotationSpeed;
+	//int motorRotationSpeed;
 	int writeChannelsNames;
 	int makeRemainingChannelsBouquet;
 	int saveLastChannel;
-	int rezapTimeout;
+	//int rezapTimeout;
 	int sortNames;
 	int scanPids;
 	int scanSDT;
-	int useGotoXX;
-	int gotoXXLaDirection;
-	int gotoXXLoDirection;
-	int repeatUsals;
-	double gotoXXLatitude;
-	double gotoXXLongitude;
+	//int useGotoXX;
+	//int gotoXXLaDirection;
+	//int gotoXXLoDirection;
+	//int repeatUsals;
+	//double gotoXXLatitude;
+	//double gotoXXLongitude;
 } t_zapit_config;
 
 //nit_data: SatellitesPosition/feindex
