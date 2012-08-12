@@ -91,9 +91,9 @@ t_channel_id rec_channel_id;
 int safe_mkdir(char * path);
 
 extern int FrontendCount;
-extern CFrontend * getFE(int index);
-extern CZapitChannel * live_channel;
-extern CZapitChannel * rec_channel;
+CFrontend * getFE(int index);
+CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod);
+extern CFrontend * live_fe;
 
 static CVCRControl vcrControl;
 
@@ -279,27 +279,34 @@ bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, co
 		CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , mode | NeutrinoMessages::norezap );
 	}
 	
+	// check for twin
+	#if 0
 	bool twin = false;
 	
-	for (int i = 1; i < FrontendCount; i++)
+	if(FrontendCount > 1)
 	{
-		// twin
-		if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
-			twin = true;
-		//else
-		//	multi = true;
+		for (int i = 1; i < FrontendCount; i++)
+		{
+			// twin
+			if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
+				twin = true;
+		}
 	}
 	
+	// check for multi
 	bool multi = false;
-	if( rec_channel->getFeIndex() !=live_channel->getFeIndex())
+	CZapitChannel * record_channel = find_channel_tozap(channel_id, false);
+	
+	if( record_channel->getFeIndex() != live_fe->getFeIndex() )
 		multi = true;
+	#endif
 	
 	// zapit
 	if(channel_id != 0)	// wenn ein channel angegeben ist
 	{
 		// zap for live stream
-		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) && !twin && !multi )	// eventually not tuned
-			g_Zapit->zapTo_serviceID(channel_id);		// for live stream
+		//if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) /*&& !twin && !multi*/ )	// eventually not tuned
+		//	g_Zapit->zapTo_serviceID(channel_id);		// for live stream
 
 		// zap for record
 		g_Zapit->zapTo_record(channel_id);			// for recording
@@ -407,6 +414,7 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 				CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_standby);
 		}
 		
+		#if 0
 		bool twin = false;
 	
 		for (int i = 1; i < FrontendCount; i++)
@@ -416,13 +424,17 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 				twin = true;
 		}
 		
+		// check for multi
 		bool multi = false;
-		if( rec_channel->getFeIndex() !=live_channel->getFeIndex())
+		CZapitChannel * record_channel = find_channel_tozap(channel_id, false);
+			
+		if( record_channel->getFeIndex() != live_fe->getFeIndex() )
 			multi = true;
+		#endif
 	
 		// zap for live stream
-		if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) && !twin && !multi)	// eventually not tuned
-			g_Zapit->zapTo_serviceID(channel_id);
+		//if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) /*&& !twin && !multi*/ )	// eventually not tuned
+		//	g_Zapit->zapTo_serviceID(channel_id);
 		
 		// zap to record
 		g_Zapit->zapTo_record(channel_id);
@@ -936,9 +948,12 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 
 	g_cMovieInfo->clearMovieInfo(g_movieInfo);
 
-	CZapitClient::responseGetRecordPIDs pids;
-	g_Zapit->getRecordPIDS (pids);
-	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
+	//CZapitClient::responseGetRecordPIDs pids;
+	g_Zapit->getRecordPIDS(pids);
+	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
+	//CZapitClient::responseGetPIDs pids;
+	//g_Zapit->getPIDS(pids);
+	//CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
 
 	std::string tmpstring = g_Zapit->getChannelName(channel_id);
 	if (tmpstring.empty())
@@ -947,7 +962,8 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 		g_movieInfo->epgChannel = ZapitTools::UTF8_to_UTF8XML(tmpstring.c_str());
 
 	tmpstring = "not available";
-	if (epgid != 0) {
+	if (epgid != 0) 
+	{
 		CEPGData epgdata;
 		//if (g_Sectionsd->getEPGid(epgid, epg_time, &epgdata)) {
 		if (sectionsd_getEPGid(epgid, epg_time, &epgdata)) 
@@ -957,6 +973,7 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 			info2 = epgdata.info2;
 			
 			g_movieInfo->parentalLockAge = epgdata.fsk;
+			
 			if(epgdata.contentClassification.size() > 0 )
 				g_movieInfo->genreMajor = epgdata.contentClassification[0];
 				
@@ -986,9 +1003,9 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 	g_numpida = 0;
 
 	EPG_AUDIO_PIDS audio_pids;
-	// super hack :-), der einfachste weg an die apid descriptions ranzukommen
-	//g_RemoteControl->current_PIDs = pids;
-	//g_RemoteControl->processAPIDnames();
+	
+	// get apids desc
+	processAPIDnames();
 
 	APIDList::iterator it;
 	for(unsigned int i= 0; i< pids.APIDs.size(); i++) 
@@ -1032,3 +1049,158 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 
 	return extMessage;
 }
+
+bool sectionsd_getComponentTagsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::ComponentTagList& tags);
+void CVCRControl::CFileAndServerDevice::processAPIDnames()
+{
+	bool has_unresolved_ctags= false;
+	bool has_ac3 = false; //FIXME what this variable suppoused to do ?? seems unused
+	int pref_found = -1;
+	int pref_ac3_found = -1;
+	int pref_idx = -1;
+	int pref_ac3_idx = -1;
+	int ac3_found = -1;
+	const char *desc;
+	char lang[4];
+
+	#if 0
+	if(g_settings.auto_lang) 
+	{
+		// first we check prefs to find pid according to pref index
+		for(int i = 0; i < 3; i++) 
+		{
+			for(int j = 0; j < (int) current_PIDs.APIDs.size(); j++) 
+			{
+				desc = current_PIDs.APIDs[j].desc;
+				// In some cases AAC is the only audio system used
+				// so accept it here as a 'normal' sound track
+				if(strstr(desc, "(AAC)")) 
+				{
+					strncpy(lang, desc, 3);
+					lang[3] = 0;
+					desc = lang;
+				}
+				/* processAPIDnames called 2 times, TODO find better way to detect second call */
+				if(strlen( desc ) != 3)
+					continue;
+				
+				if(strlen(g_settings.pref_lang[i]) == 0)
+					continue;
+
+				std::string temp(g_settings.pref_lang[i]);
+				std::map<std::string, std::string>::const_iterator it;
+				for(it = iso639.begin(); it != iso639.end(); it++) 
+				{
+					if(temp == it->second && strcasecmp(desc, it->first.c_str()) == 0) 
+					{
+						/* remember first pref found index and pid*/
+						if(pref_found < 0) 
+						{
+							pref_found = j;
+							pref_idx = i;
+						}
+						
+						if(current_PIDs.APIDs[j].is_ac3 && g_settings.audio_DolbyDigital && (pref_ac3_found < 0)) {
+							pref_ac3_found = j;
+							pref_ac3_idx = i;
+						}
+						break;
+					}
+				}
+			} /* for all pids */
+		} /*for all prefs*/
+
+		/* reset pref ac3, if it have lower priority */
+		if((pref_idx >= 0) && (pref_idx < pref_ac3_idx))
+			pref_ac3_found = -1;
+	}
+	#endif
+
+	for(unsigned int count=0; count < pids.APIDs.size(); count++)
+	{
+		//printf("CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
+		if ( pids.APIDs[count].component_tag != 0xFF )
+		{
+			has_unresolved_ctags= true;
+		}
+		
+		if ( strlen( pids.APIDs[count].desc ) == 3 )
+		{
+			// unaufgeloeste Sprache...
+			strcpy( pids.APIDs[count].desc, getISO639Description( pids.APIDs[count].desc ) );
+		}
+
+		if ( pids.APIDs[count].is_ac3 )
+		{
+			strncat(pids.APIDs[count].desc, " (AC3)", 25);
+			has_ac3 = true;
+			if((strlen( pids.APIDs[count].desc ) == 3) && g_settings.audio_DolbyDigital && (ac3_found < 0))
+				ac3_found = count;
+		}
+	}
+
+	if ( has_unresolved_ctags )
+	{
+		if ( record_EPGid != 0 )
+		{
+			CSectionsdClient::ComponentTagList tags;
+			//if ( g_Sectionsd->getComponentTagsUniqueKey( current_EPGid, tags ) )
+			if ( sectionsd_getComponentTagsUniqueKey( record_EPGid, tags ) )
+			{
+				has_unresolved_ctags = false;
+
+				for (unsigned int i=0; i< tags.size(); i++)
+				{
+					for (unsigned int j=0; j< pids.APIDs.size(); j++)
+					{
+						if ( pids.APIDs[j].component_tag == tags[i].componentTag )
+						{
+							// workaround for buggy ZDF ctags / or buggy sectionsd/drivers , who knows...
+							if(!tags[i].component.empty())
+							{
+								strncpy(pids.APIDs[j].desc, tags[i].component.c_str(), 25);
+								if ( pids.APIDs[j].is_ac3)
+									strncat( pids.APIDs[j].desc, " (AC3)", 25);
+								
+								else if ( pids.APIDs[j].is_aac)
+									strncat( pids.APIDs[j].desc, " (AAC)", 25);
+							}
+							pids.APIDs[j].component_tag = -1;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	//printf("CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
+	
+	#if 0
+	if(pref_ac3_found >= 0) 
+	{
+		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
+		setAPID(pref_ac3_found);
+	} 
+	else if(pref_found >= 0) 
+	{
+		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_found].desc, current_PIDs.APIDs[pref_found].pid);
+		setAPID(pref_found);
+	}
+	else if(ac3_found >= 0) 
+	{
+		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
+		setAPID(ac3_found);
+	}
+	else if ( current_PIDs.PIDs.selected_apid >= current_PIDs.APIDs.size() )
+	{
+		setAPID( 0 );
+	}
+	#endif
+
+	//t_channel_id * p = new t_channel_id;
+	//*p = current_channel_id;
+	//g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTAPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
+}
+
+

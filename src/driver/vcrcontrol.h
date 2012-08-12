@@ -40,6 +40,8 @@
 
 #include <neutrinoMessages.h>
 
+#include <zapit/client/zapitclient.h>
+
 
 class CVCRControl
 {
@@ -129,6 +131,13 @@ class CVCRControl
 				{
 					return true;
 				};
+				
+				//TEST
+				t_channel_id                  record_channel_id;
+				unsigned long long            record_EPGid;
+				unsigned long long            record_next_EPGid;
+				CZapitClient::responseGetRecordPIDs pids;
+				void processAPIDnames();
 		};
 
 		class CFileDevice : public CFileAndServerDevice
