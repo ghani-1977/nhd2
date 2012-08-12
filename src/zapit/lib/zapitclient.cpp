@@ -190,7 +190,7 @@ unsigned int CZapitClient::zapTo_serviceID(const t_channel_id channel_id)
 	return response.zapStatus;
 }
 
-//TEST
+// zap to record
 unsigned int CZapitClient::zapTo_record(const t_channel_id channel_id)
 {
 	CZapitMessages::commandZaptoServiceID msg;
