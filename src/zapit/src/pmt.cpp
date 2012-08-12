@@ -611,7 +611,8 @@ int parse_pmt(CZapitChannel * const channel)
 	}
 	
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-        ci->SendCaPMT(caPmt); 
+	if( !scan_runs ) 
+		ci->SendCaPMT(caPmt); 
 #endif
 
 	channel->setPidsFlag();
