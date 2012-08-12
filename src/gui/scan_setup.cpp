@@ -820,7 +820,6 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 		old_selected = select;
 
 		tmpI = tmplist.find(select);
-		//printf("CTPSelectHandler::exec: selected TP: freq %d pol %d SR %d\n", tmpI->second.feparams.frequency, tmpI->second.polarization, tmpI->second.feparams.u.qpsk.symbol_rate);
 
 		sprintf(get_set.TP_freq, "%d", tmpI->second.feparams.frequency);
 		
