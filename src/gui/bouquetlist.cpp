@@ -314,8 +314,10 @@ int CBouquetList::show(bool bShowChannelList)
 	
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
-	width  = w_max (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth()*52, 20);//500
-	height = h_max (16 * fheight, 40);
+	//width  = w_max (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth()*52, 20);//500
+	//height = h_max (16 * fheight, 40);
+	width = w_max (768, 70);
+	height = h_max (576, 50 + 30); // 30 for the bottom button box.
 
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
