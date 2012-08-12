@@ -1055,13 +1055,13 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 {
 	bool has_unresolved_ctags= false;
 	bool has_ac3 = false; //FIXME what this variable suppoused to do ?? seems unused
-	int pref_found = -1;
-	int pref_ac3_found = -1;
-	int pref_idx = -1;
-	int pref_ac3_idx = -1;
+	//int pref_found = -1;
+	//int pref_ac3_found = -1;
+	//int pref_idx = -1;
+	//int pref_ac3_idx = -1;
 	int ac3_found = -1;
-	const char *desc;
-	char lang[4];
+	//const char *desc;
+	//char lang[4];
 
 	#if 0
 	if(g_settings.auto_lang) 
