@@ -165,8 +165,8 @@ int currentMode;
 bool playbackStopForced = false;
 int zapit_debug = 0;
 int waitForMotor = 0;
-int motorRotationSpeed = 0; 		/* in 0.1 degrees per second */
-diseqc_t diseqcType;
+//int motorRotationSpeed = 0; 		/* in 0.1 degrees per second */
+//diseqc_t diseqcType;
 
 /* list of near video on demand */
 tallchans nvodchannels;         	/* tallchans defined in "bouquets.h" */
@@ -410,8 +410,6 @@ void saveFrontendConfig()
 	
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		//CFrontend * fe = getFE(i);
-		
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
 			setConfigValue(getFE(i)->getFeIndex(), "lastSatellitePosition", getFE(i)->getCurrentSatellitePosition());
@@ -451,26 +449,26 @@ void loadFrontendConfig()
 	{
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
-			useGotoXX = getConfigValue(getFE(i)->getFeIndex(), "useGotoXX", 0);
+			getFE(i)->useGotoXX = getConfigValue(getFE(i)->getFeIndex(), "useGotoXX", 0);
 			
 			char cfg_key[81];
 			
 			sprintf(cfg_key, "fe%d_gotoXXLatitude", getFE(i)->getFeIndex());
-			gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			getFE(i)->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
 			sprintf(cfg_key, "fe%d_gotoXXLongitude", getFE(i)->getFeIndex());
-			gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			getFE(i)->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			gotoXXLaDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLaDirection", 0);
-			gotoXXLoDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLoDirection", 0);
+			getFE(i)->gotoXXLaDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLaDirection", 0);
+			getFE(i)->gotoXXLoDirection = getConfigValue(getFE(i)->getFeIndex(), "gotoXXLoDirection", 0);
 			
-			repeatUsals = getConfigValue(getFE(i)->getFeIndex(), "repeatUsals", 0);
-			diseqcType = (diseqc_t)getConfigValue(getFE(i)->getFeIndex(), "diseqcType", NO_DISEQC);
-			motorRotationSpeed = getConfigValue(getFE(i)->getFeIndex(), "motorRotationSpeed", 18); // default: 1.8 degrees per second
+			getFE(i)->repeatUsals = getConfigValue(getFE(i)->getFeIndex(), "repeatUsals", 0);
+			getFE(i)->diseqcType = (diseqc_t)getConfigValue(getFE(i)->getFeIndex(), "diseqcType", NO_DISEQC);
+			getFE(i)->motorRotationSpeed = getConfigValue(getFE(i)->getFeIndex(), "motorRotationSpeed", 18); // default: 1.8 degrees per second
 
 			getFE(i)->setDiseqcRepeats( getConfigValue(getFE(i)->getFeIndex(), "diseqcRepeats", 0) );
 			getFE(i)->setCurrentSatellitePosition( getConfigValue(getFE(i)->getFeIndex(), "lastSatellitePosition", 0) );
-			getFE(i)->setDiseqcType(diseqcType);
+			getFE(i)->setDiseqcType( /*diseqcType*/ getFE(i)->diseqcType );
 		}
 	}
 }
@@ -686,7 +684,7 @@ static void save_channel_pids(CZapitChannel * thischannel)
 	tuxtx_subtitle_running(&audio_map[thischannel->getChannelID()].ttxpid, &audio_map[thischannel->getChannelID()].ttxpage, NULL);
 }
 
-/*static*/ CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod)
+static CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod)
 {
 	tallchans_iterator cit;
 	
@@ -1042,11 +1040,26 @@ int zapit_to_record(const t_channel_id channel_id)
 
 int zapTo_RecordID(const t_channel_id channel_id)
 {
-	//
-	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) )
+	// same channel_id
+	// same tp_id
+	// twin
+	bool twin = false;
+	
+	if(FrontendCount > 1)
+	{
+		for (int i = 1; i < FrontendCount; i++)
+		{
+			// twin
+			if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+				twin = true;
+		}
+	}
+	
+	// multi
+	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) && !twin)
 		zapTo_ChannelID(channel_id, false);
-	else
-		zapit_to_record(channel_id);
+
+	zapit_to_record(channel_id);
 	
 	return 0;
 }
@@ -1909,13 +1922,13 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			// diseqcType is global
 			printf("zapit get from [scan.cpp] diseqcType: %d\n", msgSetDiseqcType.diseqc);
-			diseqcType = msgSetDiseqcType.diseqc;
+			//diseqcType = msgSetDiseqcType.diseqc;
 			
 			// fe set diseqc type
 			if( getFE(msgSetDiseqcType.feindex)->getInfo()->type == FE_QPSK)
 			{
-				getFE(msgSetDiseqcType.feindex)->setDiseqcType(diseqcType);
-				printf("zapit: set diseqc type %d\n", diseqcType);
+				getFE(msgSetDiseqcType.feindex)->setDiseqcType(/*diseqcType*/ msgSetDiseqcType.diseqc );
+				printf("zapit: set diseqc type %d\n", /*diseqcType*/ msgSetDiseqcType.diseqc );
 			}
 			
 			break;
@@ -3272,10 +3285,15 @@ void sendConfig(int connfd)
 
 void getZapitConfig(Zapit_config *Cfg)
 {
+	//if (!config.loadConfig(CONFIGFILE))
+	//	WARN("%s not found", CONFIGFILE);
+	
+	loadZapitSettings();
+	
         //Cfg->motorRotationSpeed = motorRotationSpeed;
-        Cfg->writeChannelsNames = config.getBool("writeChannelsNames", true);
-        Cfg->makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
-        Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
+        Cfg->writeChannelsNames = writeChannelsNames /*config.getBool("writeChannelsNames", true)*/;
+        Cfg->makeRemainingChannelsBouquet = makeRemainingChannelsBouquet /*config.getBool("makeRemainingChannelsBouquet", true)*/;
+        Cfg->saveLastChannel = saveLastChannel /*config.getBool("saveLastChannel", true)*/;
 
         Cfg->sortNames = sortNames;
 	
