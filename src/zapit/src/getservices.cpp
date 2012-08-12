@@ -126,6 +126,8 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 
 		ret = transponders.insert (std::pair <transponder_id_t, transponder> ( tid, transponder(transport_stream_id, feparams, polarization, original_network_id)));
 
+		DBG("add transponder id %llx freq %d\n", tid, feparams.frequency);
+		
 		if (ret.second == false)
 			printf("[zapit] duplicate transponder id %llx freq %d\n", tid, feparams.frequency);
 
@@ -178,7 +180,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 		if (remove) 
 		{
 			int result = allchans.erase(chid);
-			printf("[getservices]: %s '%s' (sid=0x%x): %s", add ? "replacing" : "removing", name.c_str(), service_id, result ? "succeded.\n" : "FAILED!\n");
+			printf("%s '%s' (sid=0x%x): %s", add ? "replacing" : "removing", name.c_str(), service_id, result ? "succeded.\n" : "FAILED!\n");
 		}
 
 		if(!add) 
@@ -305,8 +307,6 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		else
 			feparams.frequency = xmlGetNumericAttribute(tps, "frequency", 0);
 
-		//freq = feparams.frequency/1000;
-
 		// inversion
 		feparams.inversion = INVERSION_AUTO;
 
@@ -344,7 +344,6 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 			feparams.u.qpsk.fec_inner = (fe_code_rate_t)xml_fec;
 		}
 		
-		//TEST
 		if (frontendType == FE_QAM) 
 			freq = feparams.frequency/100;
 		else
@@ -358,7 +357,10 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		// insert TPs list
 		select_transponders.insert( std::pair <transponder_id_t, transponder> (tid, transponder(fake_tid, feparams, polarization, fake_nid)));
 		
-		fake_nid ++; fake_tid ++;
+		DBG("add transponder id %llx freq %d\n", tid, feparams.frequency);
+		
+		fake_nid ++; 
+		fake_tid ++;
 
 		tps = tps->xmlNextNode;
 	}
@@ -567,6 +569,8 @@ int LoadServices(bool only_current)
 					// feindex
 					satellitePositions[position].feindex = i;
 				}
+				
+				DBG("parse provider %s position %d fe(%d)\n", xmlGetAttribute(search, "name"), position, satellitePositions[position].feindex);
 
 				// parse sat TP
 				ParseSatTransponders( getFE(i)->getInfo()->type, search, position);
@@ -670,7 +674,7 @@ int LoadServices(bool only_current)
 		//FIXME
 		sat_iterator_t sit;
 		for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++)
-			printf("satelliteName = %s (%d), satellitePosition = %d motor position = %d usals %d\n", sit->second.name.c_str(), sit->second.name.size(), sit->first, sit->second.motor_position, sit->second.use_usals);
+			printf("satelliteName = %s (%d), satellitePosition = %d motor position = %d usals %d fe(%d)\n", sit->second.name.c_str(), sit->second.name.size(), sit->first, sit->second.motor_position, sit->second.use_usals, sit->second.feindex);
 	}
 
 do_current:
