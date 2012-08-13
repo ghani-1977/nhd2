@@ -47,6 +47,7 @@ bool CCam::sendMessage(const char * const data, const size_t length, bool update
 				return false;
 			return send_data(data, length);
 		}
+		
 		return true;
 	}
 

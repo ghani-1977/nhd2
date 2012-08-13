@@ -119,8 +119,8 @@ pthread_mutex_t chan_mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
 bool sdt_wakeup;
 
 /* the conditional access module */
-CCam *cam0 = NULL;
-CCam *cam1 = NULL;
+CCam *live_cam = NULL;
+CCam *rec_cam = NULL;
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -297,64 +297,27 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
-	//return CFrontend::getInstance(1);
-	#if 0
-	transponder_list_t::iterator tpI;
-	transponder_id_t ct = thischannel->getTransponderId();
-	
-	// get tpid
-	tpI = transponders.find(thischannel->getTransponderId());
-	
-	if (tpI == transponders.end()) 
-	{
-		printf("find_live_fe: Transponder %llx for channel %llx not found\n", ct, thischannel->getChannelID());
-		return NULL;
-	}
-	
-	// now compare tp feparams with fe feparams
-	//tpI->second.feparams
-	
-
-	//fe_map_iterator_t feIt;
-	
-	for(fe_map_iterator_t feIt = femap.begin(); feIt != femap.end(); feIt++) 
-	{
-		fe = feIt->second;
-		//if(feIt->second.feparams == tpI->second.feparams)
-		//if(&fe->getfeparams() == tpI->second.feparams)
-		if( memcmp( fe->getfeparams(), tpI->second.feparams, sizeof(struct dvb_frontend_parameters) ) == 0)
-		{
-			fe = feIt->second;
-			break;		
-		}
-	}
-	
-	#endif
-	
-	#if 0
-	for(fe_map_iterator_t feit = femap.begin(); feit != femap.end(); feit++) 
-	{
-		fe = feit->second;
-	}
-	#endif
-	
 	/* index methode */
-	#if 1
 	if(currentMode & RECORD_MODE) 
 	{
-		for (int i = 1; i < FrontendCount; i++)
+		if(FrontendCount > 1)
 		{
-			// twin
-			if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-				fe = femap[0];
+			for (int i = 1; i < FrontendCount; i++)
+			{
+				// twin
+				if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+					fe = femap[0];
+				else
+					fe = femap[thischannel->getFeIndex()];
+			}
 		}
+			fe = femap[thischannel->getFeIndex()];
 	}
 	else
 		// multi/single
 		fe = femap[thischannel->getFeIndex()];
 	
 	fe = fe;
-	#endif
 	
 	return fe;
 }
@@ -630,41 +593,47 @@ CZapitClient::responseGetLastChannel load_settings(void)
 }
 
 // start cam
-void start_camd(bool forupdate = false)
+void sendCaPmt(bool forupdate = false)
 {
 	if(!live_channel)
 		return;
 	
-	static int camask = live_channel->getDemuxIndex();
-
+	/* currently, recording always starts after zap to channel.
+	 * if we are not in record mode, we just send new pmt over cam0,
+	 * if mode is recording, we zapping from or back to recording channel.
+	 * if we zap from, we start cam1  for new live and update cam0 with camask for rec.
+	 * if to recording channel, we must stop cam1 and update cam0 with live+rec camask.
+	 */
+	static int camask = 1;
+	
 	if(currentMode & RECORD_MODE) 
 	{
-		if(rec_channel_id != live_channel_id) 
+		if(live_channel_id != rec_channel_id) 
 		{
 			/* zap from rec. channel */
-			//camask = 1;
-			cam1->setCaPmt(live_channel->getCaPmt(), 0, live_channel->getDemuxIndex()); // demux 0
+			camask = 1;
+			live_cam->setCaPmt(live_channel->getCaPmt(), 0, camask ); // start live_cam
 		}
 		else if(forupdate) 
 		{ 
 			//FIXME broken!
-			/* forupdate means pmt update  for live channel, using old camask */
-			cam0->setCaPmt(live_channel->getCaPmt(), 0, camask, true);// update
+			/* forupdate means pmt update  for record channel, using old camask */
+			rec_cam->setCaPmt(live_channel->getCaPmt(), 0, camask, true);// update
 		}
 		else 
 		{
 			// zap back to rec. channel
-			camask =  rec_channel->getDemuxIndex() /*5*/; 	//
+			camask =  1; 	//
 					
-			cam0->setCaPmt(live_channel->getCaPmt(), 0, camask, true); // update
-			cam1->sendMessage(0, 0); // stop/close
+			rec_cam->setCaPmt(live_channel->getCaPmt(), 0, camask, true); // update rec_cam
+			live_cam->sendMessage(0, 0); // stop/close
 		}
-	} 
+	}
 	else 
 	{
-		//camask = 1; //demux 0
-		cam0->setCaPmt(live_channel->getCaPmt(), 0, live_channel->getDemuxIndex()/*camask*/ );
-	}
+		camask = 1; //demux 0
+		live_cam->setCaPmt(live_channel->getCaPmt(), 0, camask ); //start live cam
+	}	
 }
 
 // save pids
@@ -932,7 +901,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 #ifdef UPDATE_PMT
 	pmt_stop_update_filter(&pmt_update_fd);
 #endif	
-	
+	// how to stop ci capmt
 	stopPlayBack(!forupdate);
 
 	if(!forupdate && live_channel)
@@ -982,9 +951,9 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	if (startplayback)
 		startPlayBack(live_channel);
 
-	printf("[zapit] sending capmt....\n");
+	printf("%s sending capmt....\n", __FUNCTION__);
 
-	start_camd(forupdate);
+	sendCaPmt(forupdate);
 	
 	// send caid
 	int caid = 1;
@@ -1031,6 +1000,18 @@ int zapit_to_record(const t_channel_id channel_id)
 	// parse pat_pmt
 	if(!parse_record_pat_pmt(rec_channel))
 		return -1;
+	
+	printf("%s sending capmt....\n", __FUNCTION__);
+
+	static int camask = 1; // demux 0
+	
+	// brocken ???
+	if(rec_channel_id != live_channel_id) 
+	{
+		/* start cam1 for rec_channel */
+		camask = 1;
+		rec_cam->setCaPmt(rec_channel->getCaPmt(), 0, 1); // start record cam for recording
+        }       
 	
 	//TEST: do we need to set ca_pmt_list_managment???
 	//rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
@@ -1200,17 +1181,18 @@ void unsetRecordMode(void)
 	* in standby should be no cam1 running.
 	*/
 	if(standby)
-		cam0->sendMessage(0, 0); // stop
+		live_cam->sendMessage(0, 0); // stop
 	else if(live_channel_id == rec_channel_id) 
 	{
-		cam0->setCaPmt(live_channel->getCaPmt(), 0, live_channel->getDemuxIndex(), true); // demux 0, update
+		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1, true); // demux 0, update
 	} 
 	else 
 	{
-		cam1->sendMessage(0, 0); // stop
-		cam0->setCaPmt(live_channel->getCaPmt(), 0, live_channel->getDemuxIndex()); // start
+		rec_cam->sendMessage(0, 0); // stop
+		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
 	}
-
+	
+	rec_channel = 0;
 	rec_channel_id = 0;
 }
 
@@ -2165,9 +2147,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
-			stopPlayBack(true);
+			stopPlayBack(false);
 			
-			//TEST
 			if(audioDecoder)
 			{
 				audioDecoder->Flush();
@@ -2179,7 +2160,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				videoDecoder->Flush();
 				videoDecoder->Close();
 			}
-			//
 			
 			playbackStopForced = true;
 			break;
@@ -2187,18 +2167,16 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
 			
-			//TEST
 			if(videoDecoder)
 				videoDecoder->Open();
 	
 			if(audioDecoder)
 				audioDecoder->Open();
-			//
 	
 			startPlayBack(live_channel);
 			
 			//start cam
-			start_camd();
+			sendCaPmt();
 			
 			break;
 	
@@ -2984,19 +2962,19 @@ int stopPlayBack(bool stopemu)
 	// in record mode we stop one cam1, while cam continue to decrypt recording channel
 	if(stopemu) 
 	{
-		if(currentMode & RECORD_MODE) 
-		{
+		//if(currentMode & RECORD_MODE) 
+		//{
 			// if we recording and rec == live, only update camask on cam0, else stop cam1
-			if(live_channel_id == rec_channel_id)
-			{
-				cam0->setCaPmt(live_channel->getCaPmt(), 0, live_channel->getDemuxIndex(), true); // demux0+ 2, update
-			}
-			else
-				cam1->sendMessage(0, 0);
-		} 
-		else 
+			//if(live_channel_id == rec_channel_id)
+			//{
+			//	cam0->setCaPmt(live_channel->getCaPmt(), 0, 1, true); // demux0+ 2, update
+			//}
+			//else
+			//	rec_cam->sendMessage(0, 0);
+		//} 
+		//else 
 		{
-			cam0->sendMessage(0, 0);
+			live_cam->sendMessage(0, 0);
 			
 			unlink("/tmp/pmt.tmp"); 
 		}
@@ -3140,17 +3118,17 @@ void leaveStandby(void)
 		}
 		*/
 
-		if (!cam0) 
+		if (!live_cam) 
 		{
-			cam0 = new CCam();
+			live_cam = new CCam();
 		}
 		
 		rename("/tmp/pmt.tmp.off", "/tmp/pmt.tmp");
 	}
 
-	if (!cam1) 
+	if (!rec_cam) 
 	{
-		cam1 = new CCam();
+		rec_cam = new CCam();
 	}
 
 	standby = false;
@@ -3763,7 +3741,7 @@ int zapit_main_thread(void *data)
 					} 
 					else 
 					{
-						start_camd(true);
+						sendCaPmt(true);
 						pmt_set_update_filter(live_channel, &pmt_update_fd);
 					}
 						

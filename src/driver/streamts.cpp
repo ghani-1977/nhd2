@@ -41,15 +41,9 @@
 //#define PACKET_SIZE	1448
 #define PACKET_SIZE	7*TS_SIZE
 
-//unsigned char * buf;
 
 extern CZapitChannel * live_channel;
-extern CCam *cam0;
 
-//test
-//extern bool twin_tuned;
-
-//int demuxfd[MAXPIDS];
 
 static unsigned char exit_flag = 0;
 static unsigned int writebuf_size = 0;
@@ -357,9 +351,6 @@ void * streamts_live_thread(void *data)
 	for(int i = 1; i < demuxfd_count; i++)
 		dmx->addPid(pids[i]);
 
-	if(live_channel)
-		cam0->setCaPmt( live_channel->getCaPmt(), 0, live_channel->getDemuxIndex(), true); // demux 0 + 1, update
-
 	ssize_t r;
 
 #ifdef SYNC_TS
@@ -379,9 +370,6 @@ void * streamts_live_thread(void *data)
 	}
 
 	printf("[streamts] Exiting LIVE STREAM thread, fd %d\n", fd);
-	
-        if(live_channel)
-		cam0->setCaPmt( live_channel->getCaPmt(), 0, live_channel->getDemuxIndex(), true); // demux 0, update
 	
 	delete dmx;
 	free(buf);

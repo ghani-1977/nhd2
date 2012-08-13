@@ -68,9 +68,6 @@ extern "C" {
 
 static cRecord * record = NULL;
 extern CZapitChannel * rec_channel;
-extern bool twin_tuned;
-extern CCam *cam0;
-
 
 extern bool autoshift;
 extern bool autoshift_delete;
@@ -151,12 +148,6 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 		record = NULL;
 		return STREAM2FILE_INVALID_DIRECTORY;
 	}
-	
-        if(rec_channel)
-		cam0->setCaPmt(rec_channel->getCaPmt(), 0, rec_channel->getDemuxIndex(), true); // demux 0+2 , update
-		
-	if(twin_tuned)
-		rec_channel = 0;
 
 	return STREAM2FILE_OK;
 }
