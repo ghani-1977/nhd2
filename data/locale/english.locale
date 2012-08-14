@@ -1487,3 +1487,5 @@ colormenu.helptxt Help text
 colormenu.helpbar Help bar
 lcdmenu.menutitlevfd Menu title on VFD
 
+scansetup.tunermode Tuner mode
+
