@@ -69,10 +69,8 @@ extern char zapit_lat[20];			//defined neutrino.cpp
 extern char zapit_long[20];			//defined neutrino.cpp
 extern int scan_pids;
 
+// frontend
 extern int FrontendCount;			// defined in zapit.cpp
-//int tuner_to_scan = 0;
-//extern CFrontend * live_fe;
-//extern fe_map_t	femap;
 CFrontend * getFE(int index);
 
 
@@ -108,9 +106,6 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 
 	if(actionKey == "save_scansettings") 
 	{
-		//CNeutrinoApp::getInstance()->exec(NULL, "savescansettings");
-		//return res;
-		
 		// hint box
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT)); // UTF-8
 		hintBox->paint();
@@ -124,16 +119,14 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			SaveMotorPositions();
 			
 			//diseqc type
-			/*g_Zapit->setDiseqcType*/ getFE(feindex)->setDiseqcType((diseqc_t)scanSettings.diseqcMode/*, feindex*/);
+			getFE(feindex)->setDiseqcType((diseqc_t)scanSettings.diseqcMode/*, feindex*/);
 			
 			// diseqc repeat
-			/*g_Zapit->setDiseqcRepeat*/ getFE(feindex)->setDiseqcRepeats(scanSettings.diseqcRepeat/*, feindex*/);
+			getFE(feindex)->setDiseqcRepeats(scanSettings.diseqcRepeat/*, feindex*/);
 		
 			//gotoxx
-			/*zapitCfg.*/ getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
-			/*zapitCfg.*/ getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
-			
-			//setZapitConfig(&zapitCfg);
+			getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
+			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 		}
 		
 		hintBox->hide();
@@ -474,35 +467,41 @@ void CScanSetup::showScanService()
 
 		motorMenu->addItem(GenericMenuSeparatorLine);
 
-		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_ZAPIT_ROTATION_SPEED, (int *)/*&zapitCfg.*/ getFE(feindex)->motorRotationSpeed, true, 0, 64, NULL) );
+		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_ZAPIT_ROTATION_SPEED, (int *)getFE(feindex)->motorRotationSpeed, true, 0, 64, NULL) );
 
-		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_USE_GOTOXX,  (int *)/*&zapitCfg.*/ getFE(feindex)->useGotoXX, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_USE_GOTOXX,  (int *)getFE(feindex)->useGotoXX, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
 
 		CStringInput * toff;
-		sprintf(zapit_lat, "%3.6f", /*zapitCfg.*/ getFE(feindex)->gotoXXLatitude);
-		sprintf(zapit_long, "%3.6f", /*zapitCfg.*/ getFE(feindex)->gotoXXLongitude);
+		sprintf(zapit_lat, "%3.6f", getFE(feindex)->gotoXXLatitude);
+		sprintf(zapit_long, "%3.6f", getFE(feindex)->gotoXXLongitude);
 
-		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LADIR,  (int *)/*&zapitCfg.*/ getFE(feindex)->gotoXXLaDirection, OPTIONS_SOUTH0_NORTH1_OPTIONS, OPTIONS_SOUTH0_NORTH1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LADIR,  (int *)getFE(feindex)->gotoXXLaDirection, OPTIONS_SOUTH0_NORTH1_OPTIONS, OPTIONS_SOUTH0_NORTH1_OPTION_COUNT, true));
 
 		toff = new CStringInput(LOCALE_EXTRA_LAT, (char *) zapit_lat, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LAT, true, zapit_lat, toff));
 
-		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LODIR,  (int *)/*&zapitCfg.*/ getFE(feindex)->gotoXXLoDirection, OPTIONS_EAST0_WEST1_OPTIONS, OPTIONS_EAST0_WEST1_OPTION_COUNT, true));
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LODIR,  (int *)getFE(feindex)->gotoXXLoDirection, OPTIONS_EAST0_WEST1_OPTIONS, OPTIONS_EAST0_WEST1_OPTION_COUNT, true));
 
 		toff = new CStringInput(LOCALE_EXTRA_LONG, (char *) zapit_long, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LONG, true, zapit_long, toff));
-		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_SATSETUP_USALS_REPEAT, (int *)/*&zapitCfg.*/ getFE(feindex)->repeatUsals, true, 0, 10, NULL, 0, 0, LOCALE_OPTIONS_OFF) );
+		motorMenu->addItem(new CMenuOptionNumberChooser(LOCALE_SATSETUP_USALS_REPEAT, (int *)getFE(feindex)->repeatUsals, true, 0, 10, NULL, 0, 0, LOCALE_OPTIONS_OFF) );
 		
 		// rotor swap east/west
 		motorMenu->addItem( new CMenuOptionChooser(LOCALE_EXTRA_ROTORSWAP, &g_settings.rotor_swap, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
 	}
 	
+	// frontend mode
 	//FIXME:
 	// fe mode: connected, independant, loop
 	//if(femap.size() > 1)
 	//	scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "twin", NULL ));
 	//else
-		scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "single", NULL ));
+	//scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "single", NULL ));
+		
+	if(getFE(feindex)->getInfo()->type == FE_QPSK)
+	{
+		motorMenu->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
+	}
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
 	// scan type
@@ -522,7 +521,7 @@ void CScanSetup::showScanService()
 	CMenuForwarder * fmotorMenu = NULL;
 	//CMenuForwarder *fautoScanAll = NULL;
 
-	if( getFE(feindex)->getInfo()->type == FE_QPSK )
+	if( getFE(feindex)->getInfo()->type == FE_QPSK || getFE(feindex)->getInfo()->type == FE_OFDM )
 	{
 		// diseqc
 		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings.diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, true, satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
