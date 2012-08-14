@@ -3214,9 +3214,6 @@ unsigned zapTo(const unsigned int channel)
 
 void setZapitConfig(Zapit_config * Cfg)
 {
-	//motorRotationSpeed = Cfg->motorRotationSpeed;
-	//config.setInt32("motorRotationSpeed", motorRotationSpeed);
-	
 	config.setBool("writeChannelsNames", Cfg->writeChannelsNames);
 	config.setBool("makeRemainingChannelsBouquet", Cfg->makeRemainingChannelsBouquet);
 	config.setBool("saveLastChannel", Cfg->saveLastChannel);
@@ -3225,13 +3222,6 @@ void setZapitConfig(Zapit_config * Cfg)
 	sortlist = sortNames;
 	
 	scan_pids = Cfg->scanPids;
-	//rezapTimeout = Cfg->rezapTimeout;
-	//useGotoXX = Cfg->useGotoXX;
-	//gotoXXLaDirection = Cfg->gotoXXLaDirection;
-	//gotoXXLoDirection = Cfg->gotoXXLoDirection;
-	//gotoXXLatitude = Cfg->gotoXXLatitude;
-	//gotoXXLongitude = Cfg->gotoXXLongitude;
-	//repeatUsals = Cfg->repeatUsals;
 
 	scanSDT = Cfg->scanSDT;
 	
@@ -3244,7 +3234,6 @@ void sendConfig(int connfd)
 	printf("\n[zapit]sendConfig:\n");
 	Zapit_config Cfg;
 
-	//Cfg.motorRotationSpeed = motorRotationSpeed;
 	Cfg.writeChannelsNames = config.getBool("writeChannelsNames", true);
 	Cfg.makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
 	Cfg.saveLastChannel = config.getBool("saveLastChannel", true);
@@ -3252,43 +3241,22 @@ void sendConfig(int connfd)
 	Cfg.sortNames = sortNames;
 	
 	Cfg.scanPids = scan_pids;
-	//Cfg.rezapTimeout = rezapTimeout;
 	Cfg.scanSDT = scanSDT;
-	//Cfg.useGotoXX = useGotoXX;
-	//Cfg.gotoXXLaDirection = gotoXXLaDirection;
-	//Cfg.gotoXXLoDirection = gotoXXLoDirection;
-	//Cfg.gotoXXLatitude = gotoXXLatitude;
-	//Cfg.gotoXXLongitude = gotoXXLongitude;
-	//Cfg.repeatUsals = repeatUsals;
-	
+
 	/* send */
 	CBasicServer::send_data(connfd, &Cfg, sizeof(Cfg));
 }
 
 void getZapitConfig(Zapit_config *Cfg)
 {
-	//if (!config.loadConfig(CONFIGFILE))
-	//	WARN("%s not found", CONFIGFILE);
-	
-	loadZapitSettings();
-	
-        //Cfg->motorRotationSpeed = motorRotationSpeed;
-        Cfg->writeChannelsNames = writeChannelsNames /*config.getBool("writeChannelsNames", true)*/;
-        Cfg->makeRemainingChannelsBouquet = makeRemainingChannelsBouquet /*config.getBool("makeRemainingChannelsBouquet", true)*/;
-        Cfg->saveLastChannel = saveLastChannel /*config.getBool("saveLastChannel", true)*/;
+        Cfg->writeChannelsNames = config.getBool("writeChannelsNames", true);
+        Cfg->makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
+        Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
 
         Cfg->sortNames = sortNames;
 	
         Cfg->scanPids = scan_pids;
-        //Cfg->rezapTimeout = rezapTimeout;
         Cfg->scanSDT = scanSDT;
-	
-        //Cfg->useGotoXX = useGotoXX;
-        //Cfg->gotoXXLaDirection = gotoXXLaDirection;
-        //Cfg->gotoXXLoDirection = gotoXXLoDirection;
-        //Cfg->gotoXXLatitude = gotoXXLatitude;
-        //Cfg->gotoXXLongitude = gotoXXLongitude;
-	//Cfg->repeatUsals = repeatUsals;
 }
 
 sdt_tp_t sdt_tp;
