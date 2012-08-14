@@ -73,7 +73,7 @@
 #include <zapit/channel.h>
 
 
-extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
+
 int was_record = 0;
 extern bool autoshift;
 extern bool autoshift_delete;
@@ -137,8 +137,6 @@ bool CVCRControl::Record(const CTimerd::RecordingInfo * const eventinfo)
 
 void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list)
 {
-	//(strstr(g_RemoteControl->current_PIDs.APIDs[i].desc, "(AC3)") == NULL))
-	
         unsigned char apids = ap;
 
         if (apids == TIMERD_APIDS_CONF)
@@ -561,9 +559,9 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 	extMessage += "</videopid>\n\t\t<audiopids selected=\"";
 	extMessage += apids_selected;
 	extMessage += "\">\n";
-	// super hack :-), der einfachste weg an die apid descriptions ranzukommen
-	//g_RemoteControl->current_PIDs = pids;
-	//g_RemoteControl->processAPIDnames();
+	
+	// audio desc
+	processAPIDnames();
 
 	for(unsigned int i= 0; i< pids.APIDs.size(); i++)
 	{
@@ -571,7 +569,7 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 		sprintf(tmp, "%u", pids.APIDs[i].pid);
 		extMessage += tmp;
 		extMessage += "\" name=\"";
-		extMessage += ZapitTools::UTF8_to_UTF8XML(g_RemoteControl->current_PIDs.APIDs[i].desc);
+		extMessage += ZapitTools::UTF8_to_UTF8XML(pids.APIDs[i].desc);
 		extMessage += "\"/>\n";
 	}
 	extMessage += 
@@ -1015,7 +1013,7 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 			if(pids.APIDs[i].pid == it->apid) 
 			{
 				audio_pids.epgAudioPid = pids.APIDs[i].pid;
-				audio_pids.epgAudioPidName = ZapitTools::UTF8_to_UTF8XML(g_RemoteControl->current_PIDs.APIDs[i].desc);
+				audio_pids.epgAudioPidName = ZapitTools::UTF8_to_UTF8XML(pids.APIDs[i].desc);
 				audio_pids.atype = pids.APIDs[i].is_ac3;
 				audio_pids.selected = (audio_pids.epgAudioPid == (int) g_currentapid) ? 1 : 0;
 				g_movieInfo->audioPids.push_back(audio_pids);
@@ -1036,7 +1034,7 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 	{
 		int i = 0;
 		audio_pids.epgAudioPid = pids.APIDs[i].pid;
-		audio_pids.epgAudioPidName = ZapitTools::UTF8_to_UTF8XML(g_RemoteControl->current_PIDs.APIDs[i].desc);
+		audio_pids.epgAudioPidName = ZapitTools::UTF8_to_UTF8XML(pids.APIDs[i].desc);
 		audio_pids.atype = pids.APIDs[i].is_ac3;
 		audio_pids.selected = 1;
 		g_movieInfo->audioPids.push_back(audio_pids);
@@ -1055,70 +1053,12 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 {
 	bool has_unresolved_ctags= false;
 	bool has_ac3 = false; //FIXME what this variable suppoused to do ?? seems unused
-	//int pref_found = -1;
-	//int pref_ac3_found = -1;
-	//int pref_idx = -1;
-	//int pref_ac3_idx = -1;
 	int ac3_found = -1;
-	//const char *desc;
-	//char lang[4];
 
-	#if 0
-	if(g_settings.auto_lang) 
+	for(unsigned int count = 0; count < pids.APIDs.size(); count++)
 	{
-		// first we check prefs to find pid according to pref index
-		for(int i = 0; i < 3; i++) 
-		{
-			for(int j = 0; j < (int) current_PIDs.APIDs.size(); j++) 
-			{
-				desc = current_PIDs.APIDs[j].desc;
-				// In some cases AAC is the only audio system used
-				// so accept it here as a 'normal' sound track
-				if(strstr(desc, "(AAC)")) 
-				{
-					strncpy(lang, desc, 3);
-					lang[3] = 0;
-					desc = lang;
-				}
-				/* processAPIDnames called 2 times, TODO find better way to detect second call */
-				if(strlen( desc ) != 3)
-					continue;
-				
-				if(strlen(g_settings.pref_lang[i]) == 0)
-					continue;
-
-				std::string temp(g_settings.pref_lang[i]);
-				std::map<std::string, std::string>::const_iterator it;
-				for(it = iso639.begin(); it != iso639.end(); it++) 
-				{
-					if(temp == it->second && strcasecmp(desc, it->first.c_str()) == 0) 
-					{
-						/* remember first pref found index and pid*/
-						if(pref_found < 0) 
-						{
-							pref_found = j;
-							pref_idx = i;
-						}
-						
-						if(current_PIDs.APIDs[j].is_ac3 && g_settings.audio_DolbyDigital && (pref_ac3_found < 0)) {
-							pref_ac3_found = j;
-							pref_ac3_idx = i;
-						}
-						break;
-					}
-				}
-			} /* for all pids */
-		} /*for all prefs*/
-
-		/* reset pref ac3, if it have lower priority */
-		if((pref_idx >= 0) && (pref_idx < pref_ac3_idx))
-			pref_ac3_found = -1;
-	}
-	#endif
-
-	for(unsigned int count=0; count < pids.APIDs.size(); count++)
-	{
-		//printf("CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
+		printf("CVCRControl::CFileAndServerDevice::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", pids.APIDs[count].desc, getISO639Description( pids.APIDs[count].desc ), pids.APIDs[count].pid);
+		
 		if ( pids.APIDs[count].component_tag != 0xFF )
 		{
 			has_unresolved_ctags= true;
@@ -1134,7 +1074,7 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 		{
 			strncat(pids.APIDs[count].desc, " (AC3)", 25);
 			has_ac3 = true;
-			if((strlen( pids.APIDs[count].desc ) == 3) && g_settings.audio_DolbyDigital && (ac3_found < 0))
+			if((strlen( pids.APIDs[count].desc ) == 3) /*&& g_settings.audio_DolbyDigital*/ && (ac3_found < 0))
 				ac3_found = count;
 		}
 	}
@@ -1144,7 +1084,7 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 		if ( record_EPGid != 0 )
 		{
 			CSectionsdClient::ComponentTagList tags;
-			//if ( g_Sectionsd->getComponentTagsUniqueKey( current_EPGid, tags ) )
+
 			if ( sectionsd_getComponentTagsUniqueKey( record_EPGid, tags ) )
 			{
 				has_unresolved_ctags = false;
@@ -1159,6 +1099,7 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 							if(!tags[i].component.empty())
 							{
 								strncpy(pids.APIDs[j].desc, tags[i].component.c_str(), 25);
+								
 								if ( pids.APIDs[j].is_ac3)
 									strncat( pids.APIDs[j].desc, " (AC3)", 25);
 								
@@ -1173,34 +1114,6 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 			}
 		}
 	}
-	
-	//printf("CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
-	
-	#if 0
-	if(pref_ac3_found >= 0) 
-	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
-		setAPID(pref_ac3_found);
-	} 
-	else if(pref_found >= 0) 
-	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_found].desc, current_PIDs.APIDs[pref_found].pid);
-		setAPID(pref_found);
-	}
-	else if(ac3_found >= 0) 
-	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
-		setAPID(ac3_found);
-	}
-	else if ( current_PIDs.PIDs.selected_apid >= current_PIDs.APIDs.size() )
-	{
-		setAPID( 0 );
-	}
-	#endif
-
-	//t_channel_id * p = new t_channel_id;
-	//*p = current_channel_id;
-	//g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTAPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 }
 
 
