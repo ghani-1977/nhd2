@@ -60,7 +60,6 @@
 #include <zapit/satconfig.h>
 
 
-//#define scanSettings CNeutrinoApp::getInstance()->getScanSettings() 	//(CNeutrinoApp::getInstance()->ScanSettings())
 // global
 CScanSettings * scanSettings;
 
@@ -75,85 +74,6 @@ extern int scan_pids;
 extern int FrontendCount;			// defined in zapit.cpp
 CFrontend * getFE(int index);
 
-
-CScanSetup::CScanSetup(int num)
-{
-	frameBuffer = CFrameBuffer::getInstance();
-
-	width = w_max (500, 100);
-	
-	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	
-	height = hheight+13*mheight+ 10;
-	
-	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
-	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight()-height) >> 1);
-	
-	feindex = num;
-	
-	scanSettings = new CScanSettings(feindex);
-}
-
-CScanSetup::~CScanSetup()
-{
-	//delete scanSettings;
-}
-
-void setZapitConfig(Zapit_config * Cfg);
-int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
-{
-	dprintf(DEBUG_DEBUG, "CScanSetup::exec: init scan service\n");
-	int   res = menu_return::RETURN_REPAINT;
-
-	if(actionKey == "save_scansettings") 
-	{
-		// hint box
-		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT)); // UTF-8
-		hintBox->paint();
-		
-		// save scan.conf
-		if(!scanSettings->saveSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/)) 
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: error while saving scan-settings!\n");
-		
-		if( getFE(feindex)->getInfo()->type == FE_QPSK )
-		{
-			SaveMotorPositions();
-			
-			//diseqc type
-			getFE(feindex)->setDiseqcType((diseqc_t)scanSettings->diseqcMode/*, feindex*/);
-			
-			// diseqc repeat
-			getFE(feindex)->setDiseqcRepeats(scanSettings->diseqcRepeat/*, feindex*/);
-		
-			//gotoxx
-			getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
-			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
-		}
-		
-		hintBox->hide();
-		delete hintBox;
-		
-		return res;
-	}
-	
-	if (parent)
-	{
-		parent->hide();
-	}
-
-	showScanService();
-	
-	return res;
-}
-
-void CScanSetup::hide()
-{
-	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT
-	frameBuffer->blit();
-#endif
-}
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -292,11 +212,101 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 #define FRONTEND_MODE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
 {
+	#if 0
 	{ 0, NONEXISTANT_LOCALE, "single"  },
 	{ 1, NONEXISTANT_LOCALE, "twin"  },
 	{ 2, NONEXISTANT_LOCALE, "loop" },
 	{ 3, NONEXISTANT_LOCALE, "not connected" },
+	#else
+	{ 0, LOCALE_SCANSETUP_FEMODE_SINGLE },
+	{ 1, LOCALE_SCANSETUP_FEMODE_TWIN },
+	{ 2, LOCALE_SCANSETUP_FEMODE_LOOP },
+	{ 3, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
+	#endif
 };
+
+CScanSetup::CScanSetup(int num)
+{
+	frameBuffer = CFrameBuffer::getInstance();
+
+	width = w_max (500, 100);
+	
+	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
+	
+	height = hheight + 13*mheight + 10;
+	
+	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
+	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight()-height) >> 1);
+	
+	feindex = num;
+	
+	scanSettings = new CScanSettings(feindex);
+	
+	//load scan settings 
+	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
+		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
+}
+
+CScanSetup::~CScanSetup()
+{
+	//delete scanSettings;
+}
+
+int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
+{
+	dprintf(DEBUG_DEBUG, "CScanSetup::exec: init scan service\n");
+	int   res = menu_return::RETURN_REPAINT;
+
+	if(actionKey == "save_scansettings") 
+	{
+		// hint box
+		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT)); // UTF-8
+		hintBox->paint();
+		
+		// save scan.conf
+		if(!scanSettings->saveSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/)) 
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: error while saving scan-settings!\n");
+		
+		// send directly diseqc
+		if( getFE(feindex)->getInfo()->type == FE_QPSK )
+		{
+			SaveMotorPositions();
+			
+			//diseqc type
+			getFE(feindex)->setDiseqcType((diseqc_t)scanSettings->diseqcMode/*, feindex*/);
+			
+			// diseqc repeat
+			getFE(feindex)->setDiseqcRepeats(scanSettings->diseqcRepeat/*, feindex*/);
+		
+			//gotoxx
+			getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
+			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
+		}
+		
+		hintBox->hide();
+		delete hintBox;
+		
+		return res;
+	}
+	
+	if (parent)
+	{
+		parent->hide();
+	}
+
+	showScanService();
+	
+	return res;
+}
+
+void CScanSetup::hide()
+{
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
+#ifdef FB_BLIT
+	frameBuffer->blit();
+#endif
+}
 
 void CScanSetup::showScanService()
 {
@@ -304,9 +314,10 @@ void CScanSetup::showScanService()
 	
 	printf("CScanSetup::showScanService: Tuner: %d\n", feindex);
 	
+	// otherwise is too late to get scanSettings used elsewhere???
 	//load scan settings 
-	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/) ) 
-		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
+	//if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
+	//	dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
 	
 	//menue init
 	CMenuWidget * scansetup = new CMenuWidget(LOCALE_SERVICEMENU_SCANTS, NEUTRINO_ICON_SETTINGS, width);
@@ -502,8 +513,8 @@ void CScanSetup::showScanService()
 		
 	//if(getFE(feindex)->getInfo()->type == FE_QPSK)
 	{
-		//femode = getFE(feindex)->mode;
-		//motorMenu->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
+		femode = getFE(feindex)->mode;
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
 	}
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
@@ -546,7 +557,7 @@ void CScanSetup::showScanService()
 	}
 
 	// manuel scan menu
-	CMenuWidget* manualScan = new CMenuWidget(LOCALE_SATSETUP_MANUAL_SCAN, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget * manualScan = new CMenuWidget(LOCALE_SATSETUP_MANUAL_SCAN, NEUTRINO_ICON_SETTINGS);
 
 	CScanTs * scanTs = new CScanTs(feindex);
 
@@ -742,7 +753,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 	//loop throught satpos
 	for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++) 
 	{
-		if(!strcmp(sit->second.name.c_str(), /*CNeutrinoApp::getInstance()->getScanSettings()*/scanSettings->satNameNoDiseqc)) 
+		if(!strcmp(sit->second.name.c_str(), scanSettings->satNameNoDiseqc)) 
 		{
 			position = sit->first;
 			break;
@@ -755,7 +766,7 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 		old_position = position;
 	}
 	
-	printf("CTPSelectHandler::exec: fe(%d) %s position(%d)\n", feindex, /*CNeutrinoApp::getInstance()->getScanSettings().*/scanSettings->satNameNoDiseqc, position);
+	printf("CTPSelectHandler::exec: fe(%d) %s position(%d)\n", feindex, scanSettings->satNameNoDiseqc, position);
 
         CMenuWidget * menu = new CMenuWidget(LOCALE_SCANTS_SELECT_TP, NEUTRINO_ICON_SETTINGS);
         CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
@@ -823,37 +834,37 @@ int CTPSelectHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 
 		tmpI = tmplist.find(select);
 
-		sprintf( /*get_set.*/scanSettings->TP_freq, "%d", tmpI->second.feparams.frequency);
+		sprintf( scanSettings->TP_freq, "%d", tmpI->second.feparams.frequency);
 		
 		switch( getFE(feindex)->getInfo()->type) 
 		{
 			case FE_QPSK:
 				printf("CTPSelectHandler::exec: fe(%d) selected TP: freq %d pol %d SR %d fec %d\n", feindex, tmpI->second.feparams.frequency, tmpI->second.polarization, tmpI->second.feparams.u.qpsk.symbol_rate, tmpI->second.feparams.u.qpsk.fec_inner);
 					
-				sprintf(/*get_set.*/scanSettings->TP_rate, "%d", tmpI->second.feparams.u.qpsk.symbol_rate);
-				/*get_set.*/scanSettings->TP_fec = tmpI->second.feparams.u.qpsk.fec_inner;
-				/*get_set.*/scanSettings->TP_pol = tmpI->second.polarization;
+				sprintf(scanSettings->TP_rate, "%d", tmpI->second.feparams.u.qpsk.symbol_rate);
+				scanSettings->TP_fec = tmpI->second.feparams.u.qpsk.fec_inner;
+				scanSettings->TP_pol = tmpI->second.polarization;
 				break;
 
 			case FE_QAM:
 				printf("CTPSelectHandler::exec: fe(%d) selected TP: freq %d SR %d fec %d mod %d\n", feindex, tmpI->second.feparams.frequency, tmpI->second.feparams.u.qpsk.symbol_rate, tmpI->second.feparams.u.qam.fec_inner, tmpI->second.feparams.u.qam.modulation);
 					
-				sprintf( /*get_set.*/scanSettings->TP_rate, "%d", tmpI->second.feparams.u.qam.symbol_rate);
-				/*get_set.*/scanSettings->TP_fec = tmpI->second.feparams.u.qam.fec_inner;
-				/*get_set.*/scanSettings->TP_mod = tmpI->second.feparams.u.qam.modulation;
+				sprintf( scanSettings->TP_rate, "%d", tmpI->second.feparams.u.qam.symbol_rate);
+				scanSettings->TP_fec = tmpI->second.feparams.u.qam.fec_inner;
+				scanSettings->TP_mod = tmpI->second.feparams.u.qam.modulation;
 				break;
 
 			case FE_OFDM:
 			{
 				printf("CTPSelectHandler::exec: fe(%d) selected TP: freq %d band %d HP %d LP %d const %d trans %d guard %d hierarchy %d\n", feindex, tmpI->second.feparams.frequency, tmpI->second.feparams.u.ofdm.bandwidth, tmpI->second.feparams.u.ofdm.code_rate_HP, tmpI->second.feparams.u.ofdm.code_rate_LP, tmpI->second.feparams.u.ofdm.constellation, tmpI->second.feparams.u.ofdm.transmission_mode, tmpI->second.feparams.u.ofdm.guard_interval, tmpI->second.feparams.u.ofdm.hierarchy_information);
 					
-				/*get_set.*/scanSettings->TP_band = tmpI->second.feparams.u.ofdm.bandwidth;
-				/*get_set.*/scanSettings->TP_HP = tmpI->second.feparams.u.ofdm.code_rate_HP;
-				/*get_set.*/scanSettings->TP_LP = tmpI->second.feparams.u.ofdm.code_rate_LP;
-				/*get_set.*/scanSettings->TP_const = tmpI->second.feparams.u.ofdm.constellation;
-				/*get_set.*/scanSettings->TP_trans = tmpI->second.feparams.u.ofdm.transmission_mode;
-				/*get_set.*/scanSettings->TP_guard = tmpI->second.feparams.u.ofdm.guard_interval;
-				/*get_set.*/scanSettings->TP_hierarchy = tmpI->second.feparams.u.ofdm.hierarchy_information;
+				scanSettings->TP_band = tmpI->second.feparams.u.ofdm.bandwidth;
+				scanSettings->TP_HP = tmpI->second.feparams.u.ofdm.code_rate_HP;
+				scanSettings->TP_LP = tmpI->second.feparams.u.ofdm.code_rate_LP;
+				scanSettings->TP_const = tmpI->second.feparams.u.ofdm.constellation;
+				scanSettings->TP_trans = tmpI->second.feparams.u.ofdm.transmission_mode;
+				scanSettings->TP_guard = tmpI->second.feparams.u.ofdm.guard_interval;
+				scanSettings->TP_hierarchy = tmpI->second.feparams.u.ofdm.hierarchy_information;
 			}
 			break;
 
@@ -922,31 +933,31 @@ void CScanSettings::useDefaults()
 	strcpy(satNameNoDiseqc, "none");
 }
 
-bool CScanSettings::loadSettings(const char * const fileName/*, int feIndex*/)
+bool CScanSettings::loadSettings(const char * const fileName, int index)
 {
-	printf("CScanSettings::loadSettings: fe%d\n", feindex);
+	printf("CScanSettings::loadSettings: fe%d\n", index);
 	
 	/* if scan.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
 		useDefaults();
 
-	diseqcMode = getConfigValue(feindex, "diseqcMode", diseqcMode);
-	diseqcRepeat = getConfigValue(feindex, "diseqcRepeat", diseqcRepeat);
+	diseqcMode = getConfigValue(index, "diseqcMode", diseqcMode);
+	diseqcRepeat = getConfigValue(index, "diseqcRepeat", diseqcRepeat);
 
-	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(feindex, "bouquetMode", bouquetMode);
-	scanType = (CZapitClient::scanType) getConfigValue(feindex, "scanType", scanType);
+	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(index, "bouquetMode", bouquetMode);
+	scanType = (CZapitClient::scanType) getConfigValue(index, "scanType", scanType);
 	char cfg_key[81];
-	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feindex);
+	sprintf(cfg_key, "fe%d_satNameNoDiseqc", index);
 	strcpy(satNameNoDiseqc, configfile.getString(cfg_key, satNameNoDiseqc).c_str());
 
-	scan_mode = getConfigValue(feindex, "scan_mode", 1); // NIT (0) or fast (1)
+	scan_mode = getConfigValue(index, "scan_mode", 1); // NIT (0) or fast (1)
 	
-	TP_fec = getConfigValue(feindex, "TP_fec", 1);
-	TP_pol = getConfigValue(feindex, "TP_pol", 0);
-	TP_mod = getConfigValue(feindex, "TP_mod", 3);
-	sprintf(cfg_key, "fe%d_TP_freq", feindex);
+	TP_fec = getConfigValue(index, "TP_fec", 1);
+	TP_pol = getConfigValue(index, "TP_pol", 0);
+	TP_mod = getConfigValue(index, "TP_mod", 3);
+	sprintf(cfg_key, "fe%d_TP_freq", index);
 	strcpy(TP_freq, configfile.getString(cfg_key, "10100000").c_str());
-	sprintf(cfg_key, "fe%d_TP_rate", feindex);
+	sprintf(cfg_key, "fe%d_TP_rate", index);
 	strcpy(TP_rate, configfile.getString(cfg_key, "27500000").c_str());
 #if HAVE_DVB_API_VERSION >= 3
 	if(TP_fec == 4) 
@@ -954,20 +965,20 @@ bool CScanSettings::loadSettings(const char * const fileName/*, int feIndex*/)
 #endif
 
 	//DVB-T
-	TP_band = getConfigValue(feindex, "TP_band", 0);
-	TP_HP = getConfigValue(feindex, "TP_HP", 2);
-	TP_LP = getConfigValue(feindex, "TP_LP", 1);
-	TP_const = getConfigValue(feindex, "TP_const", 1);
-	TP_trans = getConfigValue(feindex, "TP_trans", 1);
-	TP_guard = getConfigValue(feindex, "TP_guard", 3);
-	TP_hierarchy = getConfigValue(feindex, "TP_hierarchy", 0);
+	TP_band = getConfigValue(index, "TP_band", 0);
+	TP_HP = getConfigValue(index, "TP_HP", 2);
+	TP_LP = getConfigValue(index, "TP_LP", 1);
+	TP_const = getConfigValue(index, "TP_const", 1);
+	TP_trans = getConfigValue(index, "TP_trans", 1);
+	TP_guard = getConfigValue(index, "TP_guard", 3);
+	TP_hierarchy = getConfigValue(index, "TP_hierarchy", 0);
 		
-	scanSectionsd = getConfigValue(feindex, "scanSectionsd", 0);
+	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
 
 	return true;
 }
 
-bool CScanSettings::saveSettings(const char * const fileName/*, int feIndex*/)
+bool CScanSettings::saveSettings(const char * const fileName/*, int index*/)
 {
 	printf("CScanSettings::saveSettings: fe%d\n", feindex);
 	
