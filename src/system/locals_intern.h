@@ -1500,5 +1500,9 @@ const char *locale_real_names[] = {
 	"lcdmenu.menutitlevfd",
 	
 	"scansetup.tunermode",
+	"scansetup.tunermode_single",
+	"scansetup.tunermode_twin",
+	"scansetup.tunermode_loop",
+	"scansetup.tunermode_notconnected",
 };
 #endif
