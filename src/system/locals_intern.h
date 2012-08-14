@@ -1498,5 +1498,7 @@ const char *locale_real_names[] = {
 	"colormenu.helptxt",
 	"colormenu.helpbar",
 	"lcdmenu.menutitlevfd",
+	
+	"scansetup.tunermode",
 };
 #endif
