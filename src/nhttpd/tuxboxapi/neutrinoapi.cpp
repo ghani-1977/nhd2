@@ -58,13 +58,16 @@ void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode = t
 // No Class Helpers
 //=============================================================================
 
-//static std::map<std::string, std::string> iso639;
-
 #ifndef initialize_iso639_map
 bool _initialize_iso639_map(void)
 {
 	std::string s, t, u, v;
+#if defined (PLATFORM_DUCKBOX)
+	std::ifstream in("/usr/local/share/iso-codes/iso-639.tab");
+#else
 	std::ifstream in("/share/iso-codes/iso-639.tab");
+#endif	
+	
 	if (in.is_open())
 	{
 		while (in.peek() == '#')
