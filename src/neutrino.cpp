@@ -1144,9 +1144,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	if ((g_settings.filebrowser_sortmethod < 0) || (g_settings.filebrowser_sortmethod >= FILEBROWSER_NUMBER_OF_SORT_VARIANTS))
 		g_settings.filebrowser_sortmethod = 0;
 	g_settings.filebrowser_denydirectoryleave = configfile.getBool("filebrowser_denydirectoryleave", false);
-
-	//crypticon infobar
-	g_settings.show_ca = configfile.getInt32( "show_ca", 0);
 	
 	// radiotext
 	g_settings.radiotext_enable = configfile.getBool("radiotext_enable"          , false);
@@ -1513,9 +1510,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "sms_channel", g_settings.sms_channel );
 
 	configfile.setBool("virtual_zap_mode", g_settings.virtual_zap_mode);
-
-	//crypticons infobar
-	configfile.setInt32( "show_ca", g_settings.show_ca);
 	
 	//zapit setup
 	configfile.setInt32("lastChannelMode", g_settings.lastChannelMode);
