@@ -33,20 +33,6 @@ install_DATA += \
 install_DATA += \
 	border_lr.raw border_ul.raw
 
-# crypt icons	
-install_DATA += \
-	biss_green.png biss_yellow.png \
-	conax_green.png conax_yellow.png \
-	cw_green.png cw_yellow.png \
-	d_green.png d_yellow.png \
-	ird_green.png ird_yellow.png \
-	nagra_green.png nagra_yellow.png \
-	nds_green.png nds_yellow.png \
-	powervu_green.png powervu_yellow.png \
-	seca_green.png seca_yellow.png \
-	via_green.png via_yellow.png
-
-
 # audio player background
 install_DATA += \
 	mp3.jpg mp3-0.jpg mp3-1.jpg mp3-2.jpg mp3-3.jpg mp3-4.jpg mp3-5.jpg mp3-6.jpg mp3-7.jpg
