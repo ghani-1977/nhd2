@@ -1488,4 +1488,8 @@ colormenu.helpbar Help bar
 lcdmenu.menutitlevfd Menu title on VFD
 
 scansetup.tunermode Tuner mode
+scansetup.tunermode_single single
+scansetup.tunermode_twin twin
+scansetup.tunermode_loop loop
+scansetup.tunermode_notconnected not connected
 
