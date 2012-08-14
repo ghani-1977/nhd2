@@ -145,14 +145,14 @@ typedef struct TP_map
 
 #define MAX_LNB 64 
 typedef struct Zapit_config {
-	//int motorRotationSpeed;
 	int writeChannelsNames;
 	int makeRemainingChannelsBouquet;
 	int saveLastChannel;
-	//int rezapTimeout;
 	int sortNames;
 	int scanPids;
 	int scanSDT;
+	
+	//int motorRotationSpeed;
 	//int useGotoXX;
 	//int gotoXXLaDirection;
 	//int gotoXXLoDirection;
@@ -181,6 +181,13 @@ typedef struct ZAPIT_start_arg
 	int video_mode;
 } Z_start_arg;
 //
+
+typedef enum {
+	FE_SINGLE,
+	FE_TWIN,
+	FE_LOOP,
+	FE_NOTCONNECTED, // do we really nned this
+} fe_mode_t;
 
 typedef std::map <uint32_t, TP_map> TP_map_t;
 typedef std::map <uint32_t, TP_map>::iterator TP_iterator;

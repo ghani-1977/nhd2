@@ -84,104 +84,6 @@ extern int motorRotationSpeed;
 		 label, timer_msec, tmin, tmax);
 
 
-//FIXME: the dvb frontend device
-#if 0
-CFrontend *frontend0 = NULL;
-CFrontend *frontend1 = NULL;
-CFrontend *frontend2 = NULL;
-CFrontend *frontend3 = NULL;
-
-//FIXME: too dirty
-CFrontend * CFrontend::getInstance(int num, int adap)
-{
-	switch(num)
-	{
-		case 0:
-		{
-			if(!frontend0)
-				frontend0 = new CFrontend();
-			
-			return frontend0;
-		}
-		break;
-		
-		case 1:
-		{
-			if(!frontend1)
-				frontend1 = new CFrontend(1);
-				
-			return frontend1;
-		}
-		break;
-		
-		case 2:
-		{
-			if(!frontend2)
-				frontend2 = new CFrontend(2);
-				
-			return frontend2;
-		}
-		break;
-		
-		case 3:
-		{
-			if(!frontend3)
-				frontend3 = new CFrontend(3);
-				
-			return frontend3;
-		}
-		break;		
-	}
-}
-
-//FIXME: too dirty
-CFrontend * CFrontend::killInstance(int num, int adap)
-{
-	switch(num)
-	{
-		case 0:
-		{
-			if(frontend0)
-			{
-				delete frontend0;
-				frontend0 = NULL;
-			}
-		}
-		break;
-		
-		case 1:
-		{
-			if(frontend1)
-			{
-				delete frontend1;
-				frontend1 = NULL;
-			}
-		}
-		break;
-		
-		case 2:
-		{
-			if(frontend2)
-			{
-				delete frontend2;
-				frontend2 = NULL;
-			}
-		}
-		break;
-		
-		case 3:
-		{
-			if(frontend3)
-			{
-				delete frontend3;
-				frontend3 = NULL;
-			}
-		}
-		break;	
-	}
-}
-#endif
-
 CFrontend::CFrontend(int num, int adap)
 {
 	printf("CFrontend:: CFrontend(%d, %d)\n", adap, num);
@@ -197,7 +99,7 @@ CFrontend::CFrontend(int num, int adap)
 	slave = false;	// FIXME
 	diseqcType = NO_DISEQC;
 	
-	//mode = FE_SINGLE;
+	mode = FE_SINGLE;
 
 	/* open frontend */
 	//Open();

@@ -88,12 +88,7 @@ typedef struct dvb_frontend_parameters FrontendParameters;
 class CFrontend
 {
 	public:
-		typedef enum {
-			FE_SINGLE,
-			FE_TWIN,
-			FE_LOOP,
-			FE_NOTCONNECTED,
-		} fe_mode_t;
+		fe_mode_t	mode;
 		
 		/**/
 		int useGotoXX;
@@ -102,8 +97,9 @@ class CFrontend
 		int gotoXXLaDirection;
 		int gotoXXLoDirection;
 		int repeatUsals;
-		
 		int motorRotationSpeed;
+		
+		//int32_t lastSatellitePosition;
 		
 		/* how often to repeat DiSEqC 1.1 commands */
 		uint8_t diseqcRepeats;
