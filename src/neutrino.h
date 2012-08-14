@@ -108,7 +108,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		};
 
 		CConfigFile			configfile;
-		CScanSettings			scanSettings;
 		int                             network_dhcp;
 		int                             network_automatic_start;
 
@@ -233,8 +232,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 
 		void setVolume(const neutrino_msg_t key, const bool bDoPaint = true, bool nowait = false);
 		~CNeutrinoApp();
-		
-		CScanSettings& getScanSettings(){ return scanSettings;};
 
 		/* channel list */
 		CChannelList			*TVchannelList;

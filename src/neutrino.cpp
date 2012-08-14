@@ -226,6 +226,7 @@ void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
 extern CZapitChannel * live_channel;				// zapit.cpp
 extern CFrontend * live_fe;
+extern CScanSettings * scanSettings;
 
 //nhttpd thread
 void * nhttpd_main_thread(void *data);
@@ -2115,7 +2116,7 @@ void CNeutrinoApp::SendSectionsdConfig(void)
 {
         CSectionsdClient::epg_config config;
 	
-        config.scanMode                 = scanSettings.scanSectionsd;
+        config.scanMode                 = scanSettings->scanSectionsd;
         config.epg_cache                = atoi(g_settings.epg_cache.c_str());
         config.epg_old_events           = atoi(g_settings.epg_old_events.c_str());
         config.epg_max_events           = atoi(g_settings.epg_max_events.c_str());
@@ -2329,12 +2330,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 
 	// sectionsd thread
 	pthread_create(&sections_thread, NULL, sectionsd_main_thread, (void *) NULL);
-
-	// load scan settings FIXME: scan settings load this again
-	//if( !scanSettings.loadSettings(NEUTRINO_SCAN_SETTINGS_FILE) ) 
-	{
-	//	dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: Loading of scan settings failed. Using defaults.\n");
-	}
 
 	// for boxes with lcd :-)
 #if 0	
@@ -3258,50 +3253,6 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		SelectSubtitles();
 		
 		StartSubtitles(!g_InfoViewer->is_visible);
-		
-		// update scan settings for manual scan to current channel
-		#if 0
-		if(live_channel) 
-		{
-			sat_iterator_t sit = satellitePositions.find(live_channel->getSatellitePosition());
-			if(sit != satellitePositions.end())
-				strncpy(scanSettings.satNameNoDiseqc, sit->second.name.c_str(), 50);
-
-			transponder_list_t::iterator tI;
-			tI = transponders.find(live_channel->getTransponderId());
-			if(tI != transponders.end()) 
-			{
-				sprintf(scanSettings.TP_freq, "%d", tI->second.feparams.frequency);
-				switch ( live_fe->getInfo()->type) 
-				{
-					case FE_QPSK:
-						sprintf(scanSettings.TP_rate, "%d", tI->second.feparams.u.qpsk.symbol_rate);
-						scanSettings.TP_fec = tI->second.feparams.u.qpsk.fec_inner;
-						scanSettings.TP_pol = tI->second.polarization;
-						break;
-						
-					case FE_QAM:
-						sprintf(scanSettings.TP_rate, "%d", tI->second.feparams.u.qam.symbol_rate);
-						scanSettings.TP_fec = tI->second.feparams.u.qam.fec_inner;
-						scanSettings.TP_mod = tI->second.feparams.u.qam.modulation;
-						break;
-						
-					case FE_OFDM:
-						scanSettings.TP_band = tI->second.feparams.u.ofdm.bandwidth;
-						scanSettings.TP_HP = tI->second.feparams.u.ofdm.code_rate_HP;
-						scanSettings.TP_LP = tI->second.feparams.u.ofdm.code_rate_LP;
-						scanSettings.TP_const = tI->second.feparams.u.ofdm.constellation;
-						scanSettings.TP_trans = tI->second.feparams.u.ofdm.transmission_mode;
-						scanSettings.TP_guard = tI->second.feparams.u.ofdm.guard_interval;
-						scanSettings.TP_hierarchy = tI->second.feparams.u.ofdm.hierarchy_information;
-						break;
-						
-					case FE_ATSC:
-						break;
-				}
-			}
-		}
-		#endif
 	}
 
 	if ((msg == NeutrinoMessages::EVT_TIMER)) 
@@ -4112,10 +4063,6 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 		// network down
 		networkConfig.automatic_start = (network_automatic_start == 1);
 		networkConfig.commitConfig();
-		
-		// save scan settings
-		//if(!scanSettings.saveSettings(NEUTRINO_SCAN_SETTINGS_FILE)) 
-		//	dprintf(DEBUG_NORMAL, "error while saving scan-settings!\n");
 		
 		// save neutrino.conf
 		saveSetup(NEUTRINO_SETTINGS_FILE);

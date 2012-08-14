@@ -95,6 +95,7 @@ extern int tuxtx_main(int _rc, int pid, int page, int source );
 
 //extern int tuner_to_scan;		//defined in scan_setup.cpp
 extern CFrontend * live_fe;
+extern CScanSettings * scanSettings;
 
 extern "C" int pinghost( const char *hostname );
 
@@ -165,7 +166,7 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	}
 
 	g_Zapit->setDiseqcType((diseqc_t) type, /*tuner_to_scan*/feindex);
-	g_Zapit->setDiseqcRepeat( CNeutrinoApp::getInstance()->getScanSettings().diseqcRepeat, /*tuner_to_scan*/feindex );
+	g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex );
 
 	return true;
 }

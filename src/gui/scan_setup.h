@@ -35,7 +35,7 @@
 
 #include <string>
 
-#define get_set CNeutrinoApp::getInstance()->getScanSettings()
+//#define get_set CNeutrinoApp::getInstance()->getScanSettings()
 
 class CTPSelectHandler : public CMenuTarget
 {
@@ -81,8 +81,6 @@ class CScanSettings
 		int		TP_trans;
 		int		TP_guard;
 		int		TP_hierarchy;
-		
-		//tuner mode: notconnected, indepandant, loop
 	
 		CScanSettings(int num = 0);
 	
@@ -102,10 +100,8 @@ class CScanSetup : public CMenuTarget
 		void hide();
 		void showScanService();
 		
-		//CScanSettings	scanSettings;
 	public:
-		CScanSettings	scanSettings;
-		//CScanSettings& getScanSettings(){ return scanSettings;};
+		int femode;
 		
 		CScanSetup(int num = 0);
 		~CScanSetup();
