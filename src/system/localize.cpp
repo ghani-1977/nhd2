@@ -47,8 +47,11 @@
 #include <iostream>
 #include <map>
 
-
+#if defined (PLATFORM_DUCKBOX)
+static const char * iso639filename = "/usr/local/share/iso-codes/iso-639.tab";
+#else
 static const char * iso639filename = "/share/iso-codes/iso-639.tab";
+#endif
 
 std::map<std::string, std::string> iso639;
 std::map<std::string, std::string> iso639rev;

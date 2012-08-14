@@ -365,7 +365,6 @@ struct SNeutrinoSettings
 	int mb_preview;
 	char timezone[150];
 
-	int show_ca;
 	int radiotext_enable;
 	
 	std::string logos_dir;
