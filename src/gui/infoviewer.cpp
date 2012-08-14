@@ -481,24 +481,21 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		frameBuffer->paintBox (ChanInfoX, BoxEndInfoY-2, BoxEndX, BoxEndY-20, COL_INFOBAR_PLUS_1);
 		
 		// show date
-		if(!g_settings.show_ca)
-		{
-			char datestr[11];
+		char datestr[11];
 			
-			time_t wakeup_time;
-			struct tm *now;
+		time_t wakeup_time;
+		struct tm *now;
 			
-			time(&wakeup_time);
-			now = localtime(&wakeup_time);
+		time(&wakeup_time);
+		now = localtime(&wakeup_time);
 		
-			strftime( datestr, sizeof(datestr), "%d.%m.%Y", now);
+		strftime( datestr, sizeof(datestr), "%d.%m.%Y", now);
 			
-			int widthr = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
+		int widthr = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
 			
-			//g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString( (BoxEndX - ChanInfoX + widthr)/2, BoxEndY - 16, widthr, datestr, COL_INFOBAR);
-			int stringstartposX = ChanInfoX + (BoxEndX >> 1) - (widthr >> 1) - 40;
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(stringstartposX, BoxEndY - 16, (BoxEndX - ChanInfoX) - (stringstartposX - ChanInfoX), datestr, /*COL_INFOBAR*/COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
-		}
+		//g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString( (BoxEndX - ChanInfoX + widthr)/2, BoxEndY - 16, widthr, datestr, COL_INFOBAR);
+		int stringstartposX = ChanInfoX + (BoxEndX >> 1) - (widthr >> 1) - 40;
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(stringstartposX, BoxEndY - 16, (BoxEndX - ChanInfoX) - (stringstartposX - ChanInfoX), datestr, /*COL_INFOBAR*/COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
 		
 		// botton bar
 		frameBuffer->paintBox(ChanInfoX, BoxEndY - 20, BoxEndX, BoxEndY, COL_INFOBAR_BUTTONS_BACKGROUND, RADIUS_MID, CORNER_BOTTOM); //round
@@ -1270,6 +1267,7 @@ void CInfoViewer::showIcon_Resolution() const
 			break;
 			
 		case 1088:
+		case 1080:
 			icon_name = NEUTRINO_ICON_RESOLUTION_1080;
 			break;
 			
@@ -1332,6 +1330,7 @@ void CInfoViewer::showIcon_Resolution() const
 		case 1440:
 		case 1280:
 		case 1088:
+		case 1080:
 		case 720:
 			icon_name_res = NEUTRINO_ICON_RESOLUTION_HD;
 			//test
@@ -2266,119 +2265,31 @@ void CInfoViewer::showLcdPercentOver()
 	}
 }
 
-#define ICON_H 16
-#define ICON_Y_2 (16 + 2 + ICON_H)
-#define MAX_EW 146
-
-void CInfoViewer::paint_ca_icons(int caid, char * icon)
-{
-	int py = BoxEndY - InfoHeightY_Info;
-	char buf[20];
-	int endx = BoxEndX -3;
-	int px = 0;
-	
-	/*get icon size */
-	int icon_w = 32;
-	int icon_h = 16;
-		
-	frameBuffer->getIconSize("nds", &icon_w, &icon_h);
-
-	switch ( caid & 0xFF00 ) 
-	{
-		case 0x0E00: 
-			px = endx - 11*icon_w; 
-			sprintf(buf, "%s_%s", "powervu", icon);
-			break;
-		case 0x4A00: 
-			px = endx - 10*icon_w; 
-			sprintf(buf, "%s_%s", "d", icon);
-			break;
-		case 0x2600: 
-			px = endx - 9*icon_w; 
-			sprintf(buf, "%s_%s", "biss", icon);
-			break;
-		case 0x0600: 
-		case 0x0602:
-			px = endx - 8*icon_w; 
-			sprintf(buf, "%s_%s", "ird", icon);
-			break;
-		case 0x1700: 
-			px = endx - 7*icon_w; 
-			sprintf(buf, "%s_%s", "nagra", icon);
-			break;
-		case 0x0100: 
-			px = endx - 6*icon_w; 
-			sprintf(buf, "%s_%s", "seca", icon);
-			break;
-		case 0x0500: 
-			px = endx - 5*icon_w; 
-			sprintf(buf, "%s_%s", "via", icon);
-			break;
-		case 0x1800: 
-		case 0x1801: 
-			px = endx - 4*icon_w; 
-			sprintf(buf, "%s_%s", "nagra", icon);
-			break;
-		case 0x0B00: 
-			px = endx - 3*icon_w ; 
-			sprintf(buf, "%s_%s", "conax", icon);
-			break;
-		case 0x0D00: 
-			px = endx - 2*icon_w; 
-			sprintf(buf, "%s_%s", "cw", icon);
-			break;
-			
-		case 0x0900: 
-			px = endx - icon_w; 
-			sprintf(buf, "%s_%s", "nds", icon);
-			break;
-		default: 
-			break;
-        }//case
-
-	if(px) 
-	{
-		frameBuffer->paintIcon(buf, px, py ); 
-	}
-}
-
 extern int pmt_caids[11];
 
 void CInfoViewer::showIcon_CA_Status(int notfirst)
 {
 	int i;
 	int caids[] = { 0x0600, 0x1700, 0x0100, 0x0500, 0x1800, 0x0B00, 0x0D00, 0x0900, 0x2600, 0x4a00, 0x0E00 };
-	
-	static char * green = (char *) "green";
-	static char * yellow = (char *) "yellow";
-	//static int icon_space_offset = 0;
 		
 	if(!notfirst) 
 	{
-		// full crypt
-		if(g_settings.show_ca)
+		bool fta = true;
+			
+		for(i=0; i < (int)(sizeof(caids)/sizeof(int)); i++) 
 		{
-			for(i=0; i < (int)(sizeof(caids)/sizeof(int)); i++) 
+			if (pmt_caids[i]) 
 			{
-				paint_ca_icons(caids[i], (char *) (pmt_caids[i] ? yellow : green)); // full cryptanzeige
+				fta = false;
+				break;
 			}
 		}
-		else
-		{
-			bool fta = true;
 			
-			for(i=0; i < (int)(sizeof(caids)/sizeof(int)); i++) 
-			{
-				if (pmt_caids[i]) 
-				{
-					fta = false;
-					break;
-				}
-			}
-			
-			frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 85, BoxEndY - ICON_Y_1);
-			return;
-		}
+		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 85, BoxEndY - ICON_Y_1);
+#if defined (PLATFORM_DUCKBOX)			
+		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
+#endif			
+		return;
 	}
 }
 
@@ -2416,9 +2327,9 @@ int CInfoViewerHandler::exec (CMenuTarget * parent, const std::string & actionke
 	
 	i = new CInfoViewer;
 	
-	channelList = CNeutrinoApp::getInstance ()->channelList;
+	channelList = CNeutrinoApp::getInstance()->channelList;
 	i->start();
-	i->showTitle (channelList->getActiveChannelNumber (), channelList->getActiveChannelName (), channelList->getActiveSatellitePosition (), channelList->getActiveChannel_ChannelID ());	// UTF-8
+	i->showTitle (channelList->getActiveChannelNumber(), channelList->getActiveChannelName(), channelList->getActiveSatellitePosition(), channelList->getActiveChannel_ChannelID ());	// UTF-8
 	delete i;
 	
 	return res;

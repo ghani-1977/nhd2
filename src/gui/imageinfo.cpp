@@ -179,7 +179,7 @@ void CImageInfo::paint()
 
 
 	CConfigFile config('\t');
-	config.loadConfig("/.version");
+	config.loadConfig("/var/etc/.version");
 
 	const char * imagename = config.getString("imagename", "NeutrinoHD2").c_str();
 	const char * homepage  = config.getString("homepage",  "http://www.dgstation-forum.org").c_str();

@@ -599,13 +599,9 @@ int CChannelList::show()
 		}
 		else if( msg == CRCInput::RC_blue ) //epgplus
 		{
-			CEPGplusHandler * tmpEPGplusHandler = NULL;
-			tmpEPGplusHandler = new CEPGplusHandler();
-			
-			tmpEPGplusHandler->exec(NULL, "");
-			
-			if(tmpEPGplusHandler)
-				delete tmpEPGplusHandler;
+			hide();
+			CEPGplusHandler eplus;
+			eplus.exec(NULL, "");
 			
 			loop = false;
 		}
