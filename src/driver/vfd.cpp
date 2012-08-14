@@ -46,10 +46,13 @@
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
 #if defined (PLATFORM_DUCKBOX)
+bool blocked = false;
+
 void CVFD::openDevice()
 { 
-	fd = open("/dev/vfd", O_RDWR);
+	//fd = open("/dev/vfd", O_RDWR);
 	
+	#if 0
 	if(fd < 0)
 	{
 		printf("failed to open vfd\n");
@@ -58,13 +61,37 @@ void CVFD::openDevice()
 	    
 		if (fd < 0)
 			printf("failed to open fplarge\n");
-        }        
+        } 
+        #endif
+        
+        if (!blocked)
+	{
+		fd = open("/dev/vfd", O_RDWR);
+		if(fd < 0)
+		{
+			printf("failed to open vfd\n");
+			fd = open("/dev/fplarge", O_RDWR);
+			if (fd < 0)
+			    printf("failed to open fplarge\n");
+		}
+		else
+			blocked = true;
+	}
 }
 
 void CVFD::closeDevice()
 { 
+	#if 0
 	if (fd)
 		close(fd);
+	fd = -1;
+	#endif
+	
+	if (fd)
+	{
+		close(fd);
+		blocked = false;
+	}
 	fd = -1;
 }
 #endif
@@ -211,13 +238,18 @@ void CVFD::setlcdparameter(int dimm, const int power)
 	if( ioctl(fd, FRONT_IOCS_VFDBRIGHT, &brightness) < 0 )
 		perror("FRONT_IOCS_VFDBRIGHT");
 #elif defined (PLATFORM_DUCKBOX)
-        struct vfd_ioctl_data data;
-	data.start_address = dimm;
+        //struct vfd_ioctl_data data;
+	//data.start_address = dimm;
+	
+	if(dimm < 1)
+		dimm = 1;
+	brightness = dimm;
 	
 	openDevice();
 	
-	if( ioctl(fd, VFDBRIGHTNESS, &data) < 0)
-		perror("VFDBRIGHTNESS");
+	//FIXME: why does this ioctl not work???
+	//if( ioctl(fd, VFDBRIGHTNESS, &data) < 0)  
+	//	perror("VFDBRIGHTNESS");
 	
 	closeDevice();
 #endif		
@@ -338,10 +370,14 @@ void CVFD::showVolume(const char vol, const bool perform_update)
 
 	volume = vol;
 	wake_up();
+	
+#if !defined (PLATFORM_DUCKBOX)	
 	ShowIcon(VFD_ICON_FRAME, true);
+#endif	
 
 	if ((mode == MODE_TVRADIO) && g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME]) 
 	{
+#if !defined (PLATFORM_DUCKBOX)	  
 		int pp = (int) round((double) vol * (double) 8 / (double) 100);
 		if(pp > 8) pp = 8;
 
@@ -363,6 +399,44 @@ void CVFD::showVolume(const char vol, const bool perform_update)
 			}
 			oldpp = pp;
 		}
+#else
+		int pp = (int) round((double) vol / (double) 2);
+		int i;
+		int j = pp / 5;
+		// v-lines 0-5 = {0x10,0x11,0x12,0x13,0x14,0x15}
+		char c1[1] = {0x11};
+		char c2[1] = {0x12}; 
+		char c3[1] = {0x13};
+		char c4[1] = {0x14};
+		char c5[1] = {0x15};
+		char VolumeBar[15];
+		memset (VolumeBar,0,sizeof VolumeBar);
+		strcpy(VolumeBar,"   ");
+		
+		for(i=1; i <= j; i++)
+		{
+			strncat(VolumeBar,c5,1);
+		}
+		
+		i = pp % 5;
+		switch (i)
+		{
+			case 1:
+				strncat(VolumeBar,c1,1);
+				break;
+			case 2:
+				strncat(VolumeBar,c2,1);
+				break;
+			case 3:
+				strncat(VolumeBar,c3,1);
+				break;
+			case 4:
+				strncat(VolumeBar,c4,1);
+				break;
+		}
+		dprintf(DEBUG_DEBUG,"CVFD::showVolume: vol %d - pp %d - fullblocks %d - mod %d - %s\n", vol, pp, j, i, VolumeBar);
+		ShowText(VolumeBar);
+#endif		
 	}	
 }
 
@@ -375,6 +449,7 @@ void CVFD::showPercentOver(const unsigned char perc, const bool perform_update)
 	{
 		if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 0) 
 		{
+#if !defined (PLATFORM_DUCKBOX)		  
 			ShowIcon(VFD_ICON_FRAME, true);
 			int pp;
 			if(perc == 255)
@@ -404,6 +479,7 @@ void CVFD::showPercentOver(const unsigned char perc, const bool perform_update)
 				}
 				percentOver = pp;
 			}
+#endif			
 		}
 	}	
 }
@@ -541,8 +617,10 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE)	
 			showServicename(servicename);
-#endif			
+#endif
+#if !defined (PLATFORM_DUCKBOX)
 			ShowIcon(VFD_ICON_TV, true);
+#endif			
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 			break;
@@ -550,7 +628,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 		case MODE_AUDIO:
 		{
 			ShowIcon(VFD_ICON_MP3, true);
+#if !defined (PLATFORM_DUCKBOX)			
 			ShowIcon(VFD_ICON_TV, false);
+#endif			
 			showAudioPlayMode(AUDIO_MODE_STOP);
 			showVolume(volume, false);
 			showclock = true;
@@ -561,7 +641,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 		}
 
 		case MODE_SCART:
+#if !defined (PLATFORM_DUCKBOX)		  
 			ShowIcon(VFD_ICON_TV, false);
+#endif			
 			showVolume(volume, false);
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
@@ -584,14 +666,19 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_COL1, true);
 			ShowIcon(VFD_ICON_COL2, true);
 #endif
+
+#if !defined (PLATFORM_DUCKBOX)
 			ShowIcon(VFD_ICON_TV, false);
+#endif			
 			showclock = true;
 			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 						/* "showTime()" clears the whole lcd in MODE_STANDBY */
 			break;
 		
 		case MODE_PIC:
+#if !defined (PLATFORM_DUCKBOX)		  
 			ShowIcon(VFD_ICON_TV, false);
+#endif			
 			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
 			
@@ -599,7 +686,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 			
 		case MODE_TS:
+#if !defined (PLATFORM_DUCKBOX)		  
 			ShowIcon(VFD_ICON_TV, false);
+#endif			
 			showclock = false;
 			break;
 		
@@ -1354,6 +1443,7 @@ void CVFD::ShowText(char *str)
 			break;
 	}
 
+	#if 0
 	if(!strcmp(str, text) || len > 255)
 	{
 	        //printf("CVFD::ShowText < %s - %s\n", str, text);
@@ -1361,8 +1451,11 @@ void CVFD::ShowText(char *str)
         }
 	
 	strcpy(text, str);
+	#endif
 	  
 	openDevice();
+	
+	printf("CVFD::ShowText >%s< - %d\n", str, len);
 	
 	if( write(fd , str, len > 16? 16 : len ) < 0)
 		perror("write to vfd failed");

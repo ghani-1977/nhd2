@@ -46,6 +46,26 @@
 // neutrino common
 typedef enum
 {
+#if defined (PLATFORM_DUCKBOX)
+    	VFD_ICON_USB = 0x10,
+    	VFD_ICON_HD,
+    	VFD_ICON_HDD,
+    	VFD_ICON_LOCK,
+    	VFD_ICON_BT,
+    	VFD_ICON_MP3,
+    	VFD_ICON_MUSIC,
+    	VFD_ICON_DOLBY,
+    	VFD_ICON_MAIL,
+    	VFD_ICON_MUTE,
+    	VFD_ICON_PLAY,
+    	VFD_ICON_PAUSE,
+    	VFD_ICON_FF,
+    	VFD_ICON_FR,
+    	VFD_ICON_REC,
+    	VFD_ICON_CLOCK,
+    	VFD_ICON_TIMESHIFT = VFD_ICON_REC,
+    	VFD_ICON_RADIO = VFD_ICON_MUSIC
+#else  
 	VFD_ICON_BAR8		= 0x00000004,
 	VFD_ICON_BAR7		= 0x00000008,
 	VFD_ICON_BAR6		= 0x00000010,
@@ -77,6 +97,7 @@ typedef enum
 	VFD_ICON_CAM1		= 0x0B000001,
 	VFD_ICON_COL2		= 0x0B000002,
 	VFD_ICON_CAM2		= 0x0C000001
+#endif	
 } vfd_icon;
 
 
