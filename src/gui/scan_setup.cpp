@@ -239,8 +239,8 @@ CScanSetup::CScanSetup(int num)
 	scanSettings = new CScanSettings(feindex);
 	
 	//load scan settings 
-	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
-		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
+	//if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
+	//	dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
 }
 
 CScanSetup::~CScanSetup()
@@ -279,7 +279,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 		}
 		
-		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode);
+		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 		
 		hintBox->hide();
 		delete hintBox;
@@ -313,8 +313,8 @@ void CScanSetup::showScanService()
 	
 	// otherwise is too late to get scanSettings used elsewhere???
 	//load scan settings 
-	//if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
-	//	dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
+	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
+		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
 	
 	//menue init
 	CMenuWidget * scansetup = new CMenuWidget(LOCALE_SERVICEMENU_SCANTS, NEUTRINO_ICON_SETTINGS, width);

@@ -232,7 +232,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	
 	// send fe mode
-	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode);
+	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
@@ -243,7 +243,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 		printf("scan.cpp send to zapit diseqctype: %d\n", diseqcType);
 			
 		// send diseqc repeat to zapit
-		g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat);
+		g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
 	}
 	
 	// send bouquets mode
