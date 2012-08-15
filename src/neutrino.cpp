@@ -882,6 +882,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.recording_audio_pids_default    = configfile.getInt32("recording_audio_pids_default", TIMERD_APIDS_STD | TIMERD_APIDS_AC3);
 	g_settings.recording_epg_for_filename      = configfile.getBool("recording_epg_for_filename", false);
 	g_settings.recording_save_in_channeldir      = configfile.getBool("recording_save_in_channeldir", false);
+	
+	g_settings.recording_zap_on_announce       = configfile.getBool("recording_zap_on_announce"      , false);
 	// end recording
 
 	// movieplayer
@@ -1297,6 +1299,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32 ("recording_audio_pids_default"       , g_settings.recording_audio_pids_default);
 	configfile.setBool  ("recording_epg_for_filename"         , g_settings.recording_epg_for_filename);
 	configfile.setBool  ("recording_save_in_channeldir"       , g_settings.recording_save_in_channeldir);
+	
+	configfile.setBool  ("recording_zap_on_announce"          , g_settings.recording_zap_on_announce );
 	// END RECORDING
 
 	// MOVIEPLAYER
@@ -3779,6 +3783,16 @@ _repeat:
 				char cmd[100];	
 				sprintf(cmd, "(rm /media/%s/.wakeup; touch /media/%s/.wakeup; sync) > /dev/null  2> /dev/null &", (char *)str.c_str(), (char *)str.c_str() );
 				system(cmd);
+			}
+		}
+		
+		if( g_settings.recording_zap_on_announce ) 
+		{
+			if(recordingstatus==0) 
+			{
+				//dvbsub_stop(); //FIXME if same channel ?
+				t_channel_id channel_id = ((CTimerd::RecordingInfo*)data)->channel_id;
+				g_Zapit->zapTo_serviceID_NOWAIT(channel_id); 
 			}
 		}
 
