@@ -2873,59 +2873,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles(res < 0);
 			}
-			//else if (msg == CRCInput::RC_games)
-			//{
-			//	StopSubtitles();
-				
-			//	int res = channelList->numericZap( msg );
-					
-			//	StartSubtitles(res < 0);
-			//}
-			#if 0
-			else if( msg == CRCInput::RC_pause || msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
-			{
-				if( g_settings.recording_type == RECORDING_FILE ) 
-				{
-					printf("[neutrino] timeshift try, recordingstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
-					std::string tmode;
-					
-					if(recordingstatus && msg == (neutrino_msg_t) g_settings.key_timeshift)
-						tmode = "ptimeshift"; // already recording, pause
-					else
-						tmode = "timeshift"; // record just started
-
-					if(g_RemoteControl->is_video_started) 
-					{
-						if(recordingstatus) 
-						{
-							//dvbsub_pause();
-							moviePlayerGui->exec(NULL, tmode);
-							//dvbsub_start(0);
-						} 
-						else
-						{
-							//dvbsub_pause();
-							if(g_settings.temp_timeshift) 
-							{
-								startAutoRecord(true);
-							} 
-							else 
-							{
-								recordingstatus = 1;
-								doGuiRecord(g_settings.network_nfs_recordingdir, true);
-							}
-							
-							if(recordingstatus) 
-							{
-								//dvbsub_pause();
-								moviePlayerGui->exec(NULL, tmode);
-								//dvbsub_start(0);
-							}
-						}
-					}
-				}
-			}
-			#else
 			else if( msg == CRCInput::RC_pause || msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
 			{
 			   	if( g_settings.recording_type == RECORDING_FILE )
@@ -2987,7 +2934,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					}
 				}
 			}
-			#endif
 			else if( msg == CRCInput::RC_record || msg == CRCInput::RC_stop ) 
 			{
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun\n");
