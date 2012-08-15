@@ -87,7 +87,6 @@ extern "C" {
 
 CMovieInfo * g_cMovieInfo;
 MI_MOVIE_INFO * g_movieInfo;
-t_channel_id rec_channel_id;
 int safe_mkdir(char * path);
 
 extern int FrontendCount;
@@ -390,8 +389,6 @@ void CVCRControl::CFileAndServerDevice::RestoreNeutrino(void)
 
 void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id channel_id, const int mode)
 {
-	rec_channel_id = channel_id;
-	
 	//printf("CutBackNeutrino\n");fflush(stdout);
 	
 	last_mode = CNeutrinoApp::getInstance()->getMode();
