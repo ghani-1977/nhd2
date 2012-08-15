@@ -88,7 +88,7 @@ class CScanSettings
 	
 		void useDefaults();
 		bool loadSettings(const char * const fileName, int index = 0);
-		bool saveSettings(const char * const fileName);
+		bool saveSettings(const char * const fileName, int index = 0);
 };
 
 class CScanSetup : public CMenuTarget

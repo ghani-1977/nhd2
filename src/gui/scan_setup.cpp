@@ -260,7 +260,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		hintBox->paint();
 		
 		// save scan.conf
-		if(!scanSettings->saveSettings(NEUTRINO_SCAN_SETTINGS_FILE/*, feindex*/)) 
+		if(!scanSettings->saveSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex)) 
 			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: error while saving scan-settings!\n");
 		
 		// send directly diseqc
@@ -985,41 +985,41 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 	return true;
 }
 
-bool CScanSettings::saveSettings(const char * const fileName/*, int index*/)
+bool CScanSettings::saveSettings(const char * const fileName, int index)
 {
-	printf("CScanSettings::saveSettings: fe%d\n", feindex);
+	printf("CScanSettings::saveSettings: fe%d\n", index);
 	
-	setConfigValue(feindex, "diseqcMode", diseqcMode );
-	setConfigValue(feindex, "diseqcRepeat", diseqcRepeat );
+	setConfigValue(index, "diseqcMode", diseqcMode );
+	setConfigValue(index, "diseqcRepeat", diseqcRepeat );
 	
-	setConfigValue(feindex, "bouquetMode", bouquetMode );
-	setConfigValue(feindex, "scanType", scanType );
+	setConfigValue(index, "bouquetMode", bouquetMode );
+	setConfigValue(index, "scanType", scanType );
 	
 	char cfg_key[81];
-	sprintf(cfg_key, "fe%d_satNameNoDiseqc", feindex);
+	sprintf(cfg_key, "fe%d_satNameNoDiseqc", index);
 	configfile.setString(cfg_key, satNameNoDiseqc );
 	
-	setConfigValue(feindex, "scan_mode", scan_mode);
+	setConfigValue(index, "scan_mode", scan_mode);
 
-	setConfigValue(feindex, "TP_fec", TP_fec);
-	setConfigValue(feindex, "TP_pol", TP_pol);
-	setConfigValue(feindex, "TP_mod", TP_mod);
-	sprintf(cfg_key, "fe%d_TP_freq", feindex);
+	setConfigValue(index, "TP_fec", TP_fec);
+	setConfigValue(index, "TP_pol", TP_pol);
+	setConfigValue(index, "TP_mod", TP_mod);
+	sprintf(cfg_key, "fe%d_TP_freq", index);
 	configfile.setString(cfg_key, TP_freq);
-	sprintf(cfg_key, "fe%d_TP_rate", feindex);
+	sprintf(cfg_key, "fe%d_TP_rate", index);
 	configfile.setString(cfg_key, TP_rate);
 
-	setConfigValue(feindex, "TP_band", TP_band);
-	setConfigValue(feindex, "TP_HP", TP_HP);
-	setConfigValue(feindex, "TP_LP", TP_LP);
-	setConfigValue(feindex, "TP_const", TP_const);
-	setConfigValue(feindex, "TP_trans", TP_trans);
-	setConfigValue(feindex, "TP_guard", TP_guard);
-	setConfigValue(feindex, "TP_hierarchy", TP_hierarchy);
+	setConfigValue(index, "TP_band", TP_band);
+	setConfigValue(index, "TP_HP", TP_HP);
+	setConfigValue(index, "TP_LP", TP_LP);
+	setConfigValue(index, "TP_const", TP_const);
+	setConfigValue(index, "TP_trans", TP_trans);
+	setConfigValue(index, "TP_guard", TP_guard);
+	setConfigValue(index, "TP_hierarchy", TP_hierarchy);
 
-	setConfigValue(feindex, "scanSectionsd", scanSectionsd );
+	setConfigValue(index, "scanSectionsd", scanSectionsd );
 	
-	setConfigValue(feindex, "femode", femode );
+	setConfigValue(index, "femode", femode );
 
 	if(configfile.getModifiedFlag())
 	{
