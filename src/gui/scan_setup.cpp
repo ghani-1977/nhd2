@@ -209,20 +209,15 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 };
 
 // 
+#define FRONTEND_MODE_SINGLE_OPTION_COUNT 2
 #define FRONTEND_MODE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
 {
-	#if 0
-	{ 0, NONEXISTANT_LOCALE, "single"  },
-	{ 1, NONEXISTANT_LOCALE, "twin"  },
-	{ 2, NONEXISTANT_LOCALE, "loop" },
-	{ 3, NONEXISTANT_LOCALE, "not connected" },
-	#else
-	{ 0, LOCALE_SCANSETUP_FEMODE_SINGLE },
-	{ 1, LOCALE_SCANSETUP_FEMODE_TWIN },
-	{ 2, LOCALE_SCANSETUP_FEMODE_LOOP },
-	{ 3, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
-	#endif
+	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_SINGLE },
+	{ (fe_mode_t)FE_NOTCONNECTED, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
+	
+	{ (fe_mode_t)FE_TWIN, LOCALE_SCANSETUP_FEMODE_TWIN },
+	{ (fe_mode_t)FE_LOOP, LOCALE_SCANSETUP_FEMODE_LOOP },
 };
 
 CScanSetup::CScanSetup(int num)
@@ -512,12 +507,18 @@ void CScanSetup::showScanService()
 	//	scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "twin", NULL ));
 	//else
 	//scansetup->addItem(new CMenuForwarderNonLocalized("Tuner Mode", false, "single", NULL ));
-		
-	//if(getFE(feindex)->getInfo()->type == FE_QPSK)
+	bool scanned_fe = false;
+	for (int i = 1; i < FrontendCount; i++)
 	{
-		//femode = getFE(feindex)->mode;
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
+		if( (getFE(0)->getInfo()->type == getFE(i)->getInfo()->type) && (feindex == i) )
+			scanned_fe = true;
 	}
+	
+	if(FrontendCount > 1)
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (scanned_fe)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true));
+	else
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_SINGLE_OPTION_COUNT, true));
+	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
 	// scan type
