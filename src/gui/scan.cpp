@@ -58,7 +58,6 @@
 
 #include <gui/pictureviewer.h>
 
-extern CPictureViewer * g_PicViewer;
 
 #define NEUTRINO_SCAN_START_SCRIPT	CONFIGDIR "/scan.start"
 #define NEUTRINO_SCAN_STOP_SCRIPT	CONFIGDIR "/scan.stop"
@@ -88,8 +87,6 @@ CScanTs::CScanTs(int num)
 	sigscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	snrscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
-	//canceled = false;
-	
 	feindex = num;
 }
 
@@ -112,6 +109,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	
 	int _scan_pids = scan_pids;
 
+	// window size
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	//width       = w_max(550, 0);
@@ -232,6 +230,9 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
                 if (system(NEUTRINO_SCAN_START_SCRIPT) != 0)
                 	perror(NEUTRINO_SCAN_START_SCRIPT " failed");
 	}
+	
+	// send fe mode
+	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode);
 
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{

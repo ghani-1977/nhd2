@@ -274,15 +274,17 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			SaveMotorPositions();
 			
 			//diseqc type
-			getFE(feindex)->setDiseqcType((diseqc_t)scanSettings->diseqcMode/*, feindex*/);
+			getFE(feindex)->setDiseqcType((diseqc_t)scanSettings->diseqcMode);
 			
 			// diseqc repeat
-			getFE(feindex)->setDiseqcRepeats(scanSettings->diseqcRepeat/*, feindex*/);
+			getFE(feindex)->setDiseqcRepeats(scanSettings->diseqcRepeat);
 		
 			//gotoxx
 			getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
 			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 		}
+		
+		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode);
 		
 		hintBox->hide();
 		delete hintBox;
@@ -513,8 +515,8 @@ void CScanSetup::showScanService()
 		
 	//if(getFE(feindex)->getInfo()->type == FE_QPSK)
 	{
-		femode = getFE(feindex)->mode;
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
+		//femode = getFE(feindex)->mode;
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_OPTION_COUNT, true));
 	}
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
@@ -929,6 +931,8 @@ void CScanSettings::useDefaults()
 	TP_trans = 1;
 	TP_guard = 3;
 	TP_hierarchy = 0;
+	
+	femode = (fe_mode_t)FE_SINGLE;
 
 	strcpy(satNameNoDiseqc, "none");
 }
@@ -974,6 +978,8 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 	TP_hierarchy = getConfigValue(index, "TP_hierarchy", 0);
 		
 	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
+	
+	femode = getConfigValue(index, "femode", (fe_mode_t)FE_SINGLE);
 
 	return true;
 }
@@ -1011,6 +1017,8 @@ bool CScanSettings::saveSettings(const char * const fileName/*, int index*/)
 	setConfigValue(feindex, "TP_hierarchy", TP_hierarchy);
 
 	setConfigValue(feindex, "scanSectionsd", scanSectionsd );
+	
+	setConfigValue(feindex, "femode", femode );
 
 	if(configfile.getModifiedFlag())
 	{

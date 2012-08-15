@@ -81,6 +81,8 @@ class CScanSettings
 		int		TP_trans;
 		int		TP_guard;
 		int		TP_hierarchy;
+		
+		int femode;
 	
 		CScanSettings(int num = 0);
 	
@@ -101,8 +103,6 @@ class CScanSetup : public CMenuTarget
 		void showScanService();
 		
 	public:
-		int femode;
-		
 		CScanSetup(int num = 0);
 		~CScanSetup();
 		int exec(CMenuTarget* parent, const std::string & actionKey);
