@@ -74,7 +74,7 @@ void CCaTable::addCaDescriptor(const unsigned char * const buffer)
 
 unsigned int CCaTable::writeToBuffer(unsigned char * const buffer) // returns number of bytes written
 {
-#if 1 
+#if 0 
 	unsigned int pos = 0;
 
 	for (unsigned int i = 0; i < ca_descriptor.size(); i++)
@@ -112,7 +112,7 @@ CCaTable::~CCaTable(void)
  */
 unsigned int CEsInfo::writeToBuffer(unsigned char * const buffer) // returns number of bytes written
 {
-#if 1 
+#if 0
 	int len = 0;
 	
 	buffer[0] = stream_type;
@@ -153,7 +153,7 @@ CCaPmt::~CCaPmt(void)
 
 unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
 {
-#if 1  
+#if 0 
 	unsigned int i;
 
 	memcpy(buffer, "\x9f\x80\x32\x82\x00\x00", 6);
@@ -230,7 +230,7 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 
 unsigned int CCaPmt::getLength(void)  // the (3 + length_field()) initial bytes are not counted !
 {
-#if 1  
+#if 0  
 	unsigned int size = 25 + CCaTable::getLength();
 	
 	for (unsigned int i = 0; i < es_info.size(); i++)
