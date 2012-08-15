@@ -98,6 +98,8 @@ std::map <transponder_id_t, transponder> nittransponders;
 
 bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satellite_position satellitePosition, int feindex)
 {
+	if( getFE(feindex)->mode == FE_NOTCONNECTED )
+		return false;
 	//Set Input
 	getFE(feindex)->setInput(satellitePosition, feparams->frequency, polarization);
 

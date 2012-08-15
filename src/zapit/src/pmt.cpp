@@ -461,7 +461,7 @@ int parse_pmt(CZapitChannel * const channel)
 	mask[3] = 0x01;
 	mask[4] = 0xFF;
 
-	if ( (dmx->sectionFilter(channel->getPmtPid(), filter, mask, 5) < 0) || (dmx->Read(buffer, PMT_SIZE) < 0) ) 
+	if ( (dmx->sectionFilter(channel->getPmtPid(), filter, mask, 5) < 0) || (dmx->Read(buffer, (PMT_SIZE - 1)) < 0) ) 
 	{
 		printf("[pmt]parse_pmt: dmx read failed\n");
 		

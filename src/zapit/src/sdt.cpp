@@ -33,7 +33,7 @@
 
 #include <dmx_cs.h>
 
-#define SDT_SIZE 1026
+#define SDT_SIZE 1024
 
 
 int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id *p_original_network_id,t_satellite_position satellitePosition, freq_id_t freq, int feindex)
@@ -84,7 +84,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	}
 
 	do {
-		if (dmx->Read(buffer, SDT_SIZE) < 0) 
+		if (dmx->Read(buffer, (SDT_SIZE - 1)) < 0) 
 		{
 			printf("parse_sdt: dmx read failed\n");
 			delete dmx;
@@ -287,7 +287,7 @@ int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const 
 	memset(&mask[8], 0x00, 8);
 
 	do {
-		if ((dmx->sectionFilter(0x11, filter, mask, 8) < 0) || (dmx->Read(buffer, SDT_SIZE) < 0)) 
+		if ((dmx->sectionFilter(0x11, filter, mask, 8) < 0) || (dmx->Read(buffer, (SDT_SIZE - 1)) < 0)) 
 		{
 			printf("parse_current_sdt: dmx read failed\n");
 			delete dmx;

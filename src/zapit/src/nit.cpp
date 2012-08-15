@@ -102,7 +102,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	}
 
 	do {
-		if (dmx->Read(buffer, NIT_SIZE) < 0) 
+		if (dmx->Read(buffer, (NIT_SIZE - 1)) < 0) 
 		{
 			printf("parse_nit: dmx read failed\n");
 			delete dmx;

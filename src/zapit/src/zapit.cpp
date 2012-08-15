@@ -372,7 +372,11 @@ void saveFrontendConfig()
 	printf("zapit: saveFrontendConfig\n");
 	
 	for(int i = 0; i < FrontendCount; i++)
-	{	
+	{
+		// common
+		setConfigValue(i, "mode", getFE(i)->mode);
+		
+		// sat
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
 			setConfigValue(i, "mode", getFE(i)->mode);
@@ -412,12 +416,14 @@ void loadFrontendConfig()
 	
 	for(int i = 0; i < FrontendCount; i++)
 	{
+		// common
+		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_NOTCONNECTED);
+		
+		printf("%s %d\n", __FUNCTION__, getFE(i)->mode);
+		
+		// sat
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
-			getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", 0);
-			
-			//getFE(i)->lastSatellitePosition = getConfigValue(i, "lastSatellitePosition", 0)
-			
 			getFE(i)->useGotoXX = getConfigValue(i, "useGotoXX", 0);
 			
 			char cfg_key[81];
@@ -1945,6 +1951,24 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SCANSETTYPE:
 			CBasicServer::receive_data(connfd, &scanType, sizeof(scanType));
 			break;
+			
+		case CZapitMessages::CMD_SCANSETFEMODE: 
+		{
+			CZapitMessages::commandSetFEMode msgSetFEMode;
+			CBasicServer::receive_data(connfd, &msgSetFEMode, sizeof(msgSetFEMode));
+			
+			// diseqcType is global
+			printf("zapit get from [scan.cpp] femode: %d\n", msgSetFEMode.mode);
+			//femode = msgSetFEMode.mode;
+			
+			// fe set femode
+			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
+			printf("zapit: set fe mode %d\n", msgSetFEMode.mode );
+			
+			saveFrontendConfig();
+			
+			break;
+		}
 		
 		case CZapitMessages::CMD_SET_RECORD_MODE: 
 		{
@@ -3063,6 +3087,9 @@ void enterStandby(void)
 	/* save zapitconfig */
 	saveZapitSettings(true, true);
 	
+	/* save frontend config*/
+	saveFrontendConfig();
+	
 	/* stop playback */
 	stopPlayBack(true);
 
@@ -3100,6 +3127,9 @@ void leaveStandby(void)
 		}
 	}
 	*/
+	
+	/* laod frontend config*/
+	loadFrontendConfig();
 
 	if(!(currentMode & RECORD_MODE)) 
 	{

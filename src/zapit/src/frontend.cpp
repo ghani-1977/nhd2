@@ -99,7 +99,7 @@ CFrontend::CFrontend(int num, int adap)
 	slave = false;	// FIXME
 	diseqcType = NO_DISEQC;
 	
-	mode = FE_SINGLE;
+	mode = (fe_mode_t)FE_SINGLE;
 
 	/* open frontend */
 	//Open();
@@ -879,7 +879,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 }
 #else //api3
 void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, bool nowait)
-{
+{	
 	fe_modulation_t modulation = QAM_16;
 	fe_code_rate_t fec_inner = FEC_3_4;
 	
@@ -1150,6 +1150,9 @@ void CFrontend::positionMotor(uint8_t motorPosition)
 
 bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 {
+	if(mode == FE_NOTCONNECTED)
+		return false;
+	
 	transponder_list_t::iterator tpI;
 	transponder_id_t ct = channel->getTransponderId();
 
@@ -1263,6 +1266,9 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 
 const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 {
+	if(mode == FE_NOTCONNECTED)
+		return false;
+	
 	printf("CFrontend::tuneChannel: fe(%d) tpid %llx\n", fenumber, currentTransponder.TP_id);
 
 	transponder_list_t::iterator transponder = transponders.find(currentTransponder.TP_id);
