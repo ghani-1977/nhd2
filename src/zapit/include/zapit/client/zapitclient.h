@@ -472,15 +472,9 @@ class CZapitClient : public CBasicClient
 		void setScanMotorPosList( ScanMotorPosList& motorPosList );
 
 		/* set diseqcType*/
-		#if 0
-		void setDiseqcType(const diseqc_t diseqc);
-		#endif
-		//test
 		void setDiseqcType(const diseqc_t diseqc, int feindex=0);
 
 		/* set diseqcRepeat*/
-		//void setDiseqcRepeat(const uint32_t repeat);
-		//test
 		void setDiseqcRepeat(const uint32_t repeat, int feindex=0);
 
 		/* set diseqcRepeat*/
@@ -488,6 +482,9 @@ class CZapitClient : public CBasicClient
 
 		/* set Scan-Type for channel search */
 		void setScanType(const scanType mode);
+		
+		/* set fe mode */
+		void setFEMode(const fe_mode_t mode, int feindex = 0);
 
 		/* get FrontEnd Signal Params */ 
 		//void getFESignal (struct responseFESignal& f);

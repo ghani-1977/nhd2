@@ -156,6 +156,7 @@ class CZapitMessages
 			CMD_GETRECORDPIDS		  = 109,
 			
 			CMD_ADD_FRONTEND		  = 110,
+			CMD_SCANSETFEMODE              = 111,
 		};
 
 		struct commandBoolean
@@ -366,44 +367,39 @@ class CZapitMessages
 			int feindex;
 		};
 		
-		//test
 		struct commandSetDiseqcType
 		{
 			diseqc_t diseqc;
 			int feindex;
 		};
 		
-		//test
 		struct commandSetDiseqcRepeat
 		{
 			uint32_t  repeat;
 			int feindex;
 		};
 		
-		//test
 		struct commandScanTP
 		{
 			TP_params TP;
 			int feindex;
 		};
 		
-		//test
 		struct commandTuneTP
 		{
 			TP_params TP;
 			int feindex;
 		};
 		
-		#if 0
-		struct commandStartScan
-		{
-			unsigned int satelliteMask;
-		};
-		#endif
-		//test
 		struct commandStartScan
 		{
 			int scan_mode;
+			int feindex;
+		};
+		
+		struct commandSetFEMode
+		{
+			fe_mode_t mode;
 			int feindex;
 		};
 };
