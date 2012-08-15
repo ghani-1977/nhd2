@@ -424,7 +424,7 @@ void loadFrontendConfig()
 	for(int i = 0; i < FrontendCount; i++)
 	{
 		// common
-		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_NOTCONNECTED);
+		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
 		
 		printf("%s %d\n", __FUNCTION__, getFE(i)->mode);
 		
