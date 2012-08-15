@@ -327,7 +327,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 	CFrontend * fe = NULL;
 	
 	// single
-	if(femap.size() == 1)
+	if(FrontendCount == 1)
 	{
 		fe = live_fe;
 		
@@ -338,8 +338,15 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 	for (int i = 1; i < FrontendCount; i++)
 	{
 		// twin
-		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-			fe = femap[i];
+		if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+		{
+			if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode != FE_LOOP) ) // not same tp and second fe isnt loop mode
+				fe = femap[i];
+			else if( (SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_LOOP) ) // same tp and second fe is loop mode
+				fe = femap[i];
+			else
+				fe = femap[0];
+		}
 		else
 			// multi
 			fe = femap[thischannel->getFeIndex()];
@@ -746,6 +753,9 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 
 static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 {
+	if(live_fe->mode == FE_NOTCONNECTED)
+		return false;
+	
 	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
 	
 	// get program map table pid from program association table
