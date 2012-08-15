@@ -844,6 +844,20 @@ void CZapitClient::setScanType(const scanType mode)
   	close_connection();
 }
 
+/* set fe mode */
+void CZapitClient::setFEMode(const fe_mode_t mode, int feindex)
+{
+	printf("CZapitClient::%s\n", __FUNCTION__);
+	
+	CZapitMessages::commandSetFEMode msg;
+
+	msg.mode = mode;
+	msg.feindex = feindex;
+
+	send(CZapitMessages::CMD_SCANSETFEMODE, (char*)&msg, sizeof(msg));
+	close_connection();
+}
+
 /* query Frontend Signal parameters */
 #if 0
 void CZapitClient::getFESignal (struct responseFESignal &f)
