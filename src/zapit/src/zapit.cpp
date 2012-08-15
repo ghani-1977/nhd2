@@ -99,15 +99,6 @@ bool playing = false;
 bool g_list_changed = false; 		/* flag to indicate, allchans was changed */
 int sig_delay = 2; 			/* seconds between signal check */
 
-// frontend config
-// usals
-//double gotoXXLatitude;
-//double gotoXXLongitude;
-//int gotoXXLaDirection;
-//int gotoXXLoDirection;
-//int useGotoXX;
-//int repeatUsals;
-
 int change_audio_pid(uint8_t index);
 
 /* SDT */
@@ -165,8 +156,6 @@ int currentMode;
 bool playbackStopForced = false;
 int zapit_debug = 0;
 int waitForMotor = 0;
-//int motorRotationSpeed = 0; 		/* in 0.1 degrees per second */
-//diseqc_t diseqcType;
 
 /* list of near video on demand */
 tallchans nvodchannels;         	/* tallchans defined in "bouquets.h" */
@@ -340,7 +329,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 		// twin
 		if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
 		{
-			if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode != FE_LOOP) ) // not same tp and second fe isnt loop mode
+			if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_TWIN) ) // not same tp and second fe is twin mode
 				fe = femap[i];
 			else if( (SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_LOOP) ) // same tp and second fe is loop mode
 				fe = femap[i];
