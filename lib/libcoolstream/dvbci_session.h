@@ -1,7 +1,7 @@
 #ifndef __dvbci_dvbci_tc_h
 #define __dvbci_dvbci_tc_h
 
-#include <dvb-ci.h>
+#include "dvb-ci.h"
 
 #define SLMS	256
 

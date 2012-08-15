@@ -1,19 +1,16 @@
 /* DVB CI Application Manager */
 #include <stdio.h>
-#include <stdlib.h>
-
-#include <cstdio>
-#include <cstring>
+#include <string.h>
 
 #include "dvbci_appmgr.h"
 
 eDVBCIApplicationManagerSession::eDVBCIApplicationManagerSession(tSlot *tslot)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	slot = tslot;
-#ifdef __sh__
+#if 1
 	slot->hasAppManager = true;
 	slot->appSession = this;
 
@@ -23,10 +20,10 @@ eDVBCIApplicationManagerSession::eDVBCIApplicationManagerSession(tSlot *tslot)
 
 eDVBCIApplicationManagerSession::~eDVBCIApplicationManagerSession()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
-#ifdef __sh__
+#if 1
 	slot->hasAppManager = false;
 	slot->appSession = NULL;
 
@@ -36,7 +33,7 @@ eDVBCIApplicationManagerSession::~eDVBCIApplicationManagerSession()
 
 int eDVBCIApplicationManagerSession::receivedAPDU(const unsigned char *tag,const void *data, int len)
 {
-#ifdef __sh__
+#if 1
 	printf("eDVBCIApplicationManagerSession::%s >\n", __func__);
 #endif
 	printf("SESSION(%d)/APP %02x %02x %02x: ", session_nb, tag[0], tag[1], tag[2]);
@@ -71,7 +68,7 @@ int eDVBCIApplicationManagerSession::receivedAPDU(const unsigned char *tag,const
 			printf("\n");
 
 			strcpy(slot->name, str);
-			printf("set name %s on slot %d, %p\n", slot->name, slot->slot, slot);
+printf("set name %s on slot %d, %p\n", slot->name, slot->slot, slot);
 			break;
 		}
 		default:
@@ -79,7 +76,7 @@ int eDVBCIApplicationManagerSession::receivedAPDU(const unsigned char *tag,const
 			break;
 		}
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <", __func__);
 #endif
 	return 0;
@@ -87,7 +84,7 @@ int eDVBCIApplicationManagerSession::receivedAPDU(const unsigned char *tag,const
 
 int eDVBCIApplicationManagerSession::doAction()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >", __func__);
 #endif
   switch (state)
@@ -98,7 +95,7 @@ int eDVBCIApplicationManagerSession::doAction()
     
     sendAPDU(tag);
     state=stateFinal;
-#ifdef __sh__
+#if 1
 	printf("%s <", __func__);
 #endif
     return 1;
@@ -114,26 +111,26 @@ int eDVBCIApplicationManagerSession::doAction()
       const unsigned char tag[3]={0x9F, 0x80, 0x22};  // Tenter_menu
       sendAPDU(tag);
       wantmenu=0;
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
       return 0;
     } else
       return 0;
   default:
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
     return 0;
   }
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 int eDVBCIApplicationManagerSession::startMMI()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	printf("in appmanager -> startmmi()\n");
@@ -142,7 +139,7 @@ int eDVBCIApplicationManagerSession::startMMI()
 
 	slot->mmiOpened = true;
 
-#ifdef __sh__
+#if 1
 	//fixme slot->mmiOpened();
 	printf("%s <\n", __func__);
 #endif

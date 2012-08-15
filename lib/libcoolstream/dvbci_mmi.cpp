@@ -1,52 +1,38 @@
 /* DVB CI MMI */
-#include <stdio.h>
 #include <stdlib.h>
-
-#include <cstdio>
-#include <cstring>
-
+#include <string.h>
+#include <string>
+//#ifdef __sh__
+#include <stdio.h>
+//#endif
 
 #include "dvbci_mmi.h"
 
 #include <neutrinoMessages.h>
 #include <driver/rcinput.h>
 
-#include <string>
-
 extern CRCInput *g_RCInput;
-
-/*
-PyObject *list = PyList_New(len);
-for (i=0; i<len; ++i) {
-	PyObject *tuple = PyTuple_New(3); // 3 eintrge im tuple
-	PyTuple_SetItem(tuple, 0, PyString_FromString("eintrag 1"))
-	PyTuple_SetItem(tuple, 1, PyInt_FromLong(31337));
-	PyTuple_SetItem(tuple, 2, PyString_FromString("eintrag 3"))
-	PyList_SetItem(list, i, tuple);
-}
-return list;
-*/
 
 eDVBCIMMISession::eDVBCIMMISession(tSlot *tslot)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	slot = tslot;
 
-#ifdef __sh__
+#if 1
 	slot->hasMMIManager = true;
 	slot->mmiSession = this;
 #endif
 
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 eDVBCIMMISession::~eDVBCIMMISession()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 	
         if (g_RCInput)
@@ -57,14 +43,14 @@ eDVBCIMMISession::~eDVBCIMMISession()
 	slot->mmiOpened = false;
 #endif	
 	//fixme eDVBCI_UI::getInstance()->mmiSessionDestroyed(slot->getSlotID());
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 int eDVBCIMMISession::receivedAPDU(const unsigned char *tag, const void *data, int len)
 {
-#ifdef __sh__
+#if 1
 	printf("eDVBCIMMISession::%s >\n", __func__);
 #endif
 	printf("SESSION(%d)/MMI %02x %02x %02x: ", session_nb, tag[0], tag[1],tag[2]);
@@ -73,7 +59,7 @@ int eDVBCIMMISession::receivedAPDU(const unsigned char *tag, const void *data, i
 	printf("\n");
 
 	if ((tag[0]==0x9f) && (tag[1]==0x88))
-#ifdef __sh__
+#if 1
         {
 #endif
 	
@@ -208,11 +194,11 @@ int eDVBCIMMISession::receivedAPDU(const unsigned char *tag, const void *data, i
 		    }
 		    break;
 		}
-#ifdef __sh__
+#if 1
         }
 #endif
 
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -220,7 +206,7 @@ int eDVBCIMMISession::receivedAPDU(const unsigned char *tag, const void *data, i
 
 int eDVBCIMMISession::doAction()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	switch (state)
@@ -251,7 +237,7 @@ int eDVBCIMMISession::doAction()
 	default:
 		break;
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -266,7 +252,7 @@ int eDVBCIMMISession::stopMMI()
 	sendAPDU(tag, data, 1);
 	
 	slot->mmiOpened = false;
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -281,7 +267,7 @@ int eDVBCIMMISession::answerText(int answer)
 	data[0] = answer & 0xff;
 	sendAPDU(tag, data, 1);
 	
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -298,7 +284,7 @@ int eDVBCIMMISession::answerEnq(char *answer, int len)
 	unsigned char tag[]={0x9f, 0x88, 0x08};
 	sendAPDU(tag, data, len+1);
 
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -314,7 +300,7 @@ int eDVBCIMMISession::cancelEnq()
 	
 	slot->mmiOpened = false;
 	
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;

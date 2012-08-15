@@ -1,15 +1,11 @@
 /* DVB CI Resource Manager */
 #include <stdio.h>
-#include <stdlib.h>
-
-#include <cstdio>
-#include <cstring>
 
 #include "dvbci_resmgr.h"
 
 int eDVBCIResourceManagerSession::receivedAPDU(const unsigned char *tag,const void *data, int len)
 {
-#ifdef __sh__
+#if 1
 	printf("eDVBCIResourceManagerSession::%s >\n", __func__);
 	printf("SESSION(%d) %02x %02x %02x (len = %d): \n", session_nb, tag[0], tag[1], tag[2], len);
 #else
@@ -25,7 +21,7 @@ int eDVBCIResourceManagerSession::receivedAPDU(const unsigned char *tag,const vo
 		case 0x10:  // profile enquiry
 			printf("cam fragt was ich kann.");
 			state=stateProfileEnquiry;
-#ifdef __sh__
+#if 1
 			printf("%s <\n", __func__);
 #endif
 			return 1;
@@ -40,7 +36,7 @@ int eDVBCIResourceManagerSession::receivedAPDU(const unsigned char *tag,const vo
 
 			if (state == stateFirstProfileEnquiry)
 			{
-#ifdef __sh__
+#if 1
 				printf("%s <\n", __func__);
 #endif
 				// profile change
@@ -53,7 +49,7 @@ int eDVBCIResourceManagerSession::receivedAPDU(const unsigned char *tag,const vo
 		}
 	}
 	
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;
@@ -61,7 +57,7 @@ int eDVBCIResourceManagerSession::receivedAPDU(const unsigned char *tag,const vo
 
 int eDVBCIResourceManagerSession::doAction()
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	switch (state)
@@ -71,7 +67,7 @@ int eDVBCIResourceManagerSession::doAction()
 		const unsigned char tag[3]={0x9F, 0x80, 0x10}; // profile enquiry
 		sendAPDU(tag);
 		state = stateFirstProfileEnquiry;
-#ifdef __sh__
+#if 1
 		printf("%s <\n", __func__);
 #endif
 		return 0;
@@ -81,7 +77,7 @@ int eDVBCIResourceManagerSession::doAction()
 		const unsigned char tag[3]={0x9F, 0x80, 0x12}; // profile change
 		sendAPDU(tag);
 		state=stateProfileChange;
-#ifdef __sh__
+#if 1
 		printf("%s <\n", __func__);
 #endif
 		return 0;
@@ -101,8 +97,8 @@ int eDVBCIResourceManagerSession::doAction()
 				{0x00, 0x03, 0x00, 0x41},
 //				{0x00, 0x20, 0x00, 0x41}, // host control
 				{0x00, 0x24, 0x00, 0x41},
-				{0x00, 0x40, 0x00, 0x41},
-//				{0x00, 0x10, 0x00, 0x41}, // auth.
+				{0x00, 0x40, 0x00, 0x41}
+//				{0x00, 0x10, 0x00, 0x41} // auth.
 			};
 		sendAPDU(tag, data, sizeof(data));
 		state=stateFinal;
@@ -113,7 +109,7 @@ int eDVBCIResourceManagerSession::doAction()
 	default:
 		break;
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return 0;

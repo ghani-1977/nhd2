@@ -2,14 +2,13 @@
 #define __dvbci_dvbci_camgr_h
 
 #include <vector>
-#include <stdint.h>
 
 #include "dvbci_session.h"
 
 class eDVBCICAManagerSession: public eDVBCISession
 {
 	enum {
-		stateFinal=statePrivate,
+		stateFinal=statePrivate
 	};
 	std::vector<uint16_t> caids;
 	int receivedAPDU(const unsigned char *tag, const void *data, int len);

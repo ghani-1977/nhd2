@@ -1,9 +1,11 @@
 /* DVB CI Transport Connection */
-#include <stdio.h>
-#include <stdlib.h>
 
-#include <cstdio>
-#include <cstring>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+//#ifdef __sh__
+#include <stdio.h>
+//#endif
 
 #include "dvbci_session.h"
 #include "dvbci_resmgr.h"
@@ -23,7 +25,7 @@ eDVBCISession* eDVBCISession::sessions[SLMS];
 
 int eDVBCISession::buildLengthField(unsigned char *pkt, int len)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	if (len < 127)
@@ -46,21 +48,21 @@ int eDVBCISession::buildLengthField(unsigned char *pkt, int len)
 		printf("too big length\n");
 		exit(0);
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 int eDVBCISession::parseLengthField(const unsigned char *pkt, int &len)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	len=0;
 	if (!(*pkt&0x80)) 
 	{
 		len = *pkt;
-#ifdef __sh__
+#if 1
 		printf("%s <\n", __func__);
 #endif
 		return 1;
@@ -70,7 +72,7 @@ int eDVBCISession::parseLengthField(const unsigned char *pkt, int &len)
 		len <<= 8;
 		len |= pkt[i + 1];
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 	return (pkt[0] & 0x7F) + 1;
@@ -80,7 +82,7 @@ void eDVBCISession::sendAPDU(const unsigned char *tag, const void *data, int len
 {
 	unsigned char pkt[len+3+4];
 	int l;
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	memcpy(pkt, tag, 3);
@@ -88,18 +90,18 @@ void eDVBCISession::sendAPDU(const unsigned char *tag, const void *data, int len
 	if (data)
 		memcpy(pkt+3+l, data, len);
 	sendSPDU(0x90, 0, 0, pkt, len+3+l);
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 void eDVBCISession::sendSPDU(unsigned char tag, const void *data, int len, const void *apdu, int alen)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	sendSPDU(slot, tag, data, len, session_nb, apdu, alen);
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
@@ -108,7 +110,7 @@ void eDVBCISession::sendSPDU(tSlot *slot, unsigned char tag, const void *data, i
 {
 	unsigned char pkt[4096];
 	unsigned char *ptr=pkt;
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 
@@ -127,7 +129,7 @@ void eDVBCISession::sendSPDU(tSlot *slot, unsigned char tag, const void *data, i
 	//slot->send(pkt, ptr - pkt);
         sendData(slot, pkt, ptr - pkt);
 
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
@@ -141,41 +143,41 @@ void eDVBCISession::sendOpenSessionResponse(tSlot *slot, unsigned char session_s
 	
 	memcpy(pkt + 1, resource_identifier, 4);
 	sendSPDU(slot, 0x92, pkt, 5, session_nb);
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 void eDVBCISession::recvCreateSessionResponse(const unsigned char *data)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	status = data[0];
 	state = stateStarted;
 	action = 1;
 	printf("create Session Response, status %x\n", status);
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 void eDVBCISession::recvCloseSessionRequest(const unsigned char *data)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	state = stateInDeletion;
 	action = 1;
 	printf("close Session Request\n");
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
 
 void eDVBCISession::deleteSessions(const tSlot *slot)
 {
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	for (unsigned short session_nb=0; session_nb < SLMS; ++session_nb)
@@ -183,7 +185,7 @@ void eDVBCISession::deleteSessions(const tSlot *slot)
 		if (sessions[session_nb] && sessions[session_nb]->slot == slot)
 			sessions[session_nb]=0;
 	}
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
@@ -193,19 +195,19 @@ eDVBCISession* eDVBCISession::createSession(tSlot *slot, const unsigned char *re
 	unsigned long tag;
 	unsigned short session_nb;
 
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	for (session_nb=1; session_nb < SLMS; ++session_nb)
 		if (!sessions[session_nb-1])
 			break;
-#ifdef __sh__		
+#if 1		
 	printf("use session_nb = %d\n", session_nb);
 #endif		
 	if (session_nb == SLMS)
 	{
 		status=0xF3;
-#ifdef __sh__
+#if 1
 	        printf("%s <\n", __func__);
 #endif
 		return NULL;
@@ -264,7 +266,7 @@ eDVBCISession* eDVBCISession::createSession(tSlot *slot, const unsigned char *re
 		status = 0;
 	}
 	sessions[session_nb - 1]->state = stateInCreation;
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
         return sessions[session_nb - 1];   
@@ -273,12 +275,12 @@ eDVBCISession* eDVBCISession::createSession(tSlot *slot, const unsigned char *re
 void eDVBCISession::handleClose()
 {
 	unsigned char data[1]={0x00};
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 	sendSPDU(0x96, data, 1, 0, 0);
 
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }
@@ -316,7 +318,7 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 	const unsigned char *pkt = (const unsigned char*)ptr;
 	unsigned char tag = *pkt++;
 	int llen, hlen;
-#ifdef __sh__
+#if 1
 	printf("%s >\n", __func__);
 #endif
 
@@ -347,7 +349,7 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 	else
 	{
 		unsigned session_nb;
-#ifdef __sh__
+#if 1
 		printf("hlen = %d, %d, %d\n", hlen,  pkt[hlen-2], pkt[hlen-1]);
 #endif
 		session_nb=pkt[hlen-2]<<8;
@@ -389,7 +391,7 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 	len -= hlen;
 
 	if (session)
-#ifdef __sh__
+#if 1
 	{
 		printf("len %d\n", len);
 #endif
@@ -402,7 +404,7 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 			hlen=parseLengthField(pkt, alen);
 			pkt+=hlen;
 			len-=hlen;
-#ifdef __sh__
+#if 1
 			printf("len = %d, hlen = %d, alen = %d\n", len, hlen, alen);
 #endif
 
@@ -414,8 +416,8 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 					alen=len;
 				}
 			}
-#ifdef __sh__
-			printf("1. Call receivedAPDU tag = 0x%2x, len = %d\n", tag, alen);
+#if 1
+			printf("1. Call receivedAPDU tag = 0x%2x, len = %d\n", (int) tag, alen);
 #endif
 			if (session->receivedAPDU(tag, pkt, alen))
 				session->action = 1;
@@ -423,12 +425,12 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 			len-=alen;
 		}
 		
-#ifdef __sh__
+#if 1
 	}
 #endif
 	if (len)
 		printf("PROTOCOL: warning, TL-Data has invalid length\n");
-#ifdef __sh__
+#if 1
 	printf("%s <\n", __func__);
 #endif
 }

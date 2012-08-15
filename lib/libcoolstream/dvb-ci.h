@@ -51,18 +51,9 @@ typedef struct
 #define T_DATA_MORE         0xA1	// convey data from higher      constructed h<->m
 				 // layers
 
-typedef enum {
-	eDataTimeout, 
-	eDataError, 
-	eDataReady, 
-	eDataWrite, 
-	eDataStatusChanged
-} eData;
+typedef enum {eDataTimeout, eDataError, eDataReady, eDataWrite, eDataStatusChanged} eData;
 
-typedef enum {
-	eStatusNone, 
-	eStatusWait
-} eStatus;
+typedef enum {eStatusNone, eStatusWait} eStatus;
 
 struct queueData
 {
@@ -148,6 +139,7 @@ class cDvbCi {
 		bool SendDateTime(void);
 #if 1
                 void slot_pollthread(void *c);
+                void setSource(tSlot* slot);
 #endif
  
 		//
