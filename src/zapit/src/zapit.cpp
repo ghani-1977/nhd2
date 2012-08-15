@@ -84,7 +84,7 @@ int def_audio_mode = 0;
 
 /* live/record channel id */
 t_channel_id live_channel_id;
-static t_channel_id rec_channel_id;
+t_channel_id rec_channel_id;
 
 //int rezapTimeout;
 
@@ -563,7 +563,6 @@ void loadZapitSettings()
 	live_channel_id = config.getInt64("lastChannel", 0);
 	lastChannelRadio = config.getInt32("lastChannelRadio", 0);
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
-	//rezapTimeout = config.getInt32("rezapTimeout", 1);
 	
 	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", 1);
 	writeChannelsNames = config.getBool("writeChannelsNames", 1);
@@ -996,7 +995,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	}
 	
-	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), channel_id, record_fe->getFeIndex());
+	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->getFeIndex());
 	
 	// tune to rec channel
 	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
@@ -1022,7 +1021,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		rec_cam->setCaPmt(rec_channel->getCaPmt(), 0, 1); // start record cam for recording
         }       
 	
-	//TEST: do we need to set ca_pmt_list_managment???
+	//NOTE: do we need to set ca_pmt_list_managment???
 	//rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
 
 	return 0;
@@ -1171,8 +1170,6 @@ void setRecordMode(void)
 	currentMode |= RECORD_MODE;
 	 
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_ACTIVATED, CEventServer::INITID_ZAPIT );
-
-	//rec_channel_id = live_channel_id;
 }
 
 void unsetRecordMode(void)
@@ -1201,8 +1198,8 @@ void unsetRecordMode(void)
 		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
 	}
 	
-	rec_channel = 0;
 	rec_channel_id = 0;
+	rec_channel = NULL;
 }
 
 int prepare_channels()
