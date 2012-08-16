@@ -721,30 +721,27 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt)
 
         for(it = slot_data.begin(); it != slot_data.end(); it++)
         {
-//fixme: ask camagr if module can handle this caids
+//fixme: ask cammanagr if module can handle this caids
 	       if (((*it)->fd > 0) && ((*it)->camIsReady)) 
 	       {
 	           unsigned int size = caPmt->getLength();
 		   
-#if 1 //orig
 	           unsigned char buffer[3 + get_length_field_size(size) + size];
-#else
-		   unsigned char buffer[24 + get_length_field_size(size) + size];
-#endif
 	           
+		   // get len and fill buffer
                    printf(" %d, %d\n", get_length_field_size(size), size);
 		   int len = caPmt->writeToBuffer(buffer, 0, 0xff);
 
          	   printf("capmt(%d): > ", len);
 	
-#ifdef x_debug
+#if 0
 		   for(int i=0; i < len; i++)
-	               printf("%02x ",buffer[i]);
+	               printf("0x%02x ",buffer[i]);
 	           printf("\n");
 #endif
 
                    if ((*it)->hasCAManager)
-                      (*it)->camgrSession->sendSPDU(0x90, 0, 0, buffer, len);
+		      (*it)->camgrSession->sendSPDU(0x90, 0, 0, buffer, len);
                }
                
 /* konfetti: if cam is not ready we must store caPmt too, because
