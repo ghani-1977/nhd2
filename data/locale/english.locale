@@ -1474,6 +1474,7 @@ helptext.miscsettingschannellist Here you can set up channel lists.
 helptext.miscsettingsepg Here you can set up EPG.
 helptext.miscsettingsfilebrowser Here you can set up the filebrowser.
 helptext.miscsettingszapitsetup Here you can set up the start-program and mode.
+helptext.miscsettingspsisetup Here you can set up video contrast
 
 miscsettings.logosdir Sender logos Dir
 

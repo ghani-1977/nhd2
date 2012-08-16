@@ -1476,6 +1476,7 @@ helptext.miscsettingschannellist Hier können Sie die Kanal listen einstellen.
 helptext.miscsettingsepg Hier können Sie EPG einstellen.
 helptext.miscsettingsfilebrowser Hier können Sie die Filebrowser einstellen
 helptext.miscsettingszapitsetup Hier können Sie das Start Program und mode fest einstellen.
+helptext.miscsettingspsisetup Hier können Sie Video Kontrast einstellen.
 
 miscsettings.logosdir Sender logos Dir
 
