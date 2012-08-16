@@ -111,7 +111,6 @@ bool sdt_wakeup;
 
 /* the conditional access module */
 CCam *live_cam = NULL;
-//CCam *rec_cam = NULL;  // capmt dont allow us daul decoding
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -287,6 +286,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 	CFrontend * fe = NULL;
 	
 	/* index methode */
+	#if 0
 	if(currentMode & RECORD_MODE) 
 	{
 		if(FrontendCount > 1)
@@ -303,6 +303,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 			fe = femap[thischannel->getFeIndex()];
 	}
 	else
+	#endif
 		// multi/single
 		fe = femap[thischannel->getFeIndex()];
 	
@@ -597,52 +598,13 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
 
-// start cam
 void sendCaPmt(bool forupdate = false)
 {
 	if(!live_channel)
 		return;
 	
-	/* currently, recording always starts after zap to channel.
-	 * if we are not in record mode, we just send new pmt over cam0,
-	 * if mode is recording, we zapping from or back to recording channel.
-	 * if we zap from, we start cam1  for new live and update cam0 with camask for rec.
-	 * if to recording channel, we must stop cam1 and update cam0 with live+rec camask.
-	 */
-	#if 0
-	static int camask = 1;
-	
-	if(currentMode & RECORD_MODE) 
-	{
-		if(live_channel_id != rec_channel_id) 
-		{
-			/* zap from rec. channel */
-			camask = 1;
-			live_cam->setCaPmt(live_channel->getCaPmt(), 0, camask ); // start live_cam
-		}
-		else if(forupdate) 
-		{ 
-			//FIXME broken!
-			/* forupdate means pmt update  for record channel, using old camask */
-			rec_cam->setCaPmt(live_channel->getCaPmt(), 0, camask, true);// update
-		}
-		else 
-		{
-			// zap back to rec. channel
-			camask =  1; 	//
-					
-			rec_cam->setCaPmt(live_channel->getCaPmt(), 0, camask, true); // update rec_cam
-			live_cam->sendMessage(0, 0); // stop/close
-		}
-	}
-	else 
-	{
-		camask = 1; //demux 0
-		live_cam->setCaPmt(live_channel->getCaPmt(), 0, camask ); //start live cam
-	}
-	#else
+	// cam
 	live_cam->setCaPmt(live_channel->getCaPmt());
-	#endif
 	
 	// ci cam
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
@@ -902,7 +864,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	// find live_fe
 	if(( live_fe = find_live_fe(newchannel)) == NULL)
 	{
-		printf("live_fe can't be found ;-(\n");
+		printf("%s can not allocate live fe;-(\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -919,7 +881,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 	pmt_stop_update_filter(&pmt_update_fd);
 #endif	
 	// how to stop ci capmt
-	stopPlayBack(!forupdate);
+	stopPlayBack();
 
 	if(!forupdate && live_channel)
 		live_channel->resetPids();
@@ -1001,7 +963,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	// find record fe
 	if(( record_fe = find_record_fe(rec_channel)) == NULL)
 	{
-		printf("record_fe can't be found ;-(\n");
+		printf("%s can not allocate record fe;-(\n", __FUNCTION__);
 		return -1;
 	}
 	
@@ -1021,18 +983,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
 
-	//static int camask = 1; // demux 0
-	
-	// brocken ???
-	//if(rec_channel_id != live_channel_id) 
-	//{
-		/* start cam1 for rec_channel */
-		//camask = 1;
-		//rec_cam->setCaPmt(rec_channel->getCaPmt(), 0, 1); // start record cam for recording
-        //} 
-	
-	//NOTE: do we need to set ca_pmt_list_managment???
-	//rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
+	//if( !SAME_TRANSPONDER(rec_channel_id, live_channel_id) )
+	//	rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
 
 	return 0;
 }
@@ -1191,24 +1143,6 @@ void unsetRecordMode(void)
 	currentMode &= ~RECORD_MODE;
  
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
-
-	/* if we on rec. channel, just update pmt with new camask,
-	* else we must stop cam1 and start cam0 for current live channel
-	* in standby should be no cam1 running.
-	*/
-	#if 0
-	if(standby)
-		live_cam->sendMessage(0, 0); // stop
-	else if(live_channel_id == rec_channel_id) 
-	{
-		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1, true); // demux 0, update
-	} 
-	else 
-	{
-		rec_cam->sendMessage(0, 0); // stop
-		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
-	}
-	#endif
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -1289,7 +1223,7 @@ int start_scan(CZapitMessages::commandStartScan StartScan)
 	scan_runs = 1;
 	
 	//stop playback
-	stopPlayBack(true);
+	stopPlayBack();
 	
 #ifdef UPDATE_PMT	
         pmt_stop_update_filter(&pmt_update_fd);
@@ -1820,7 +1754,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				live_channel = 0;
 			}
 	
-			stopPlayBack(true);
+			stopPlayBack();
 			
 #ifdef UPDATE_PMT			
 			pmt_stop_update_filter(&pmt_update_fd);
@@ -2176,14 +2110,14 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
-			stopPlayBack(false);
+			stopPlayBack();
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			break;
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
-			stopPlayBack(false);
+			stopPlayBack();
 			
 			if(audioDecoder)
 			{
@@ -2993,29 +2927,8 @@ int startPlayBack(CZapitChannel * thisChannel)
 	return 0;
 }
 
-int stopPlayBack(bool stopemu)
+int stopPlayBack()
 {
-	// in record mode we stop one cam1, while cam continue to decrypt recording channel
-	if(stopemu) 
-	{
-		//if(currentMode & RECORD_MODE) 
-		//{
-			// if we recording and rec == live, only update camask on cam0, else stop cam1
-			//if(live_channel_id == rec_channel_id)
-			//{
-			//	cam0->setCaPmt(live_channel->getCaPmt(), 0, 1, true); // demux0+ 2, update
-			//}
-			//else
-			//	rec_cam->sendMessage(0, 0);
-		//} 
-		//else 
-		{
-			//live_cam->sendMessage(0, 0);
-			
-			unlink("/tmp/pmt.tmp"); 
-		}
-	}
-
 	printf("[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
 
 	if (!playing)
@@ -3099,20 +3012,7 @@ void enterStandby(void)
 	saveFrontendConfig();
 	
 	/* stop playback */
-	stopPlayBack(true);
-
-	if(!(currentMode & RECORD_MODE)) 
-	{
-		/*
-		for(int i = 0; i < FrontendCount; i++)
-		{
-			CFrontend * fe = getFE(i);
-			fe->Close();
-		}
-		*/
-		
-		rename("/tmp/pmt.tmp", "/tmp/pmt.tmp.off");
-	}
+	stopPlayBack();
 }
 
 void leaveStandby(void)
@@ -3122,55 +3022,12 @@ void leaveStandby(void)
 	if(!standby) 
 		return;
 	
-	/*
-	for(int i = 0; i < FrontendCount; i++)
-	{
-		CFrontend * fe = getFE(i);
-		
-		if( fe->getInfo()->type == FE_QPSK)
-		{
-			live_fe->setDiseqcRepeats(config.getInt32("diseqcRepeats", 0));
-			live_fe->setCurrentSatellitePosition(config.getInt32("lastSatellitePosition", 0));
-			live_fe->setDiseqcType(diseqcType);
-		}
-	}
-	*/
-	
 	/* laod frontend config*/
 	loadFrontendConfig();
 
-	if(!(currentMode & RECORD_MODE)) 
+	if (!live_cam) 
 	{
-		/*
-		for(int i = 0; i < FrontendCount; i++)
-		{
-			CFrontend * fe = getFE(i);
-			
-			// open frontend
-			fe->Open();
-			
-			// set TP
-			fe->setTsidOnid(0);
-		
-			// set diseqc type
-			if( fe->getInfo()->type == FE_QPSK)
-			{
-				  fe->setDiseqcType(diseqcType);
-			}
-		}
-		*/
-
-		if (!live_cam) 
-		{
-			live_cam = new CCam();
-		}
-		
-		rename("/tmp/pmt.tmp.off", "/tmp/pmt.tmp");
-	}
-
-	//if (!rec_cam) 
-	{
-	//	rec_cam = new CCam();
+		live_cam = new CCam();
 	}
 
 	standby = false;
@@ -3770,19 +3627,16 @@ int zapit_main_thread(void *data)
 		save_channel_pids(live_channel);
 	
 	saveZapitSettings(true, true);
-	stopPlayBack(true);
+	stopPlayBack();
 
 	// save motor position
-	#if 1
 	for(int i = 0; i < FrontendCount; i++)
 	{
 	    CFrontend * fe = getFE(i);
 	    if( fe->getInfo()->type == FE_QPSK)
 			SaveMotorPositions();
 	}
-	#endif
 
-	//TEST
 	pthread_cancel(tsdt);
 	
 	zapit_ready = 0;
@@ -3802,11 +3656,6 @@ int zapit_main_thread(void *data)
 		delete videoDecoder;
 
 	//close frontend	
-	//for(int i = 0; i < FrontendCount; i++)
-	{
-	//	CFrontend::getInstance(i)->Close();
-	//	CFrontend::killInstance(i);
-	}
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
 		delete it->second;
 
