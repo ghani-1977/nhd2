@@ -307,7 +307,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 		// multi/single
 		fe = femap[thischannel->getFeIndex()];
 	
-	fe = fe;
+	//fe = fe;
 	
 	return fe;
 }
