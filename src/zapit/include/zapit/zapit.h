@@ -26,7 +26,7 @@ void sendBouquetChannels (int connfd, const unsigned int bouquet, CZapitClient::
 void sendChannels(int connfd, const CZapitClient::channelsMode mode = CZapitClient::MODE_CURRENT, const CZapitClient::channelsOrder order = CZapitClient::SORT_BOUQUET);
 
 int startPlayBack(CZapitChannel *);
-int stopPlayBack(bool stopemu);
+int stopPlayBack();
 
 unsigned int zapTo(const unsigned int channel);
 unsigned int zapTo(const unsigned int bouquet, const unsigned int channel);
