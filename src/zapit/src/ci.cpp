@@ -82,7 +82,7 @@ unsigned int CCaTable::writeToBuffer(unsigned char * const buffer) // returns nu
 	
 	return pos;
 #else
-//orig zapit
+	//orig zapit
 	buffer[0] = (reserved2 << 4) | (info_length >> 8);
 	buffer[1] = info_length;
 
@@ -133,7 +133,7 @@ unsigned int CEsInfo::writeToBuffer(unsigned char * const buffer) // returns num
 	
 	return len + 5;
 #else	
-//orig zapit
+	//orig zapit
 	buffer[0] = stream_type;
 	buffer[1] = (reserved1 << 5) | (elementary_PID >> 8);
 	buffer[2] = elementary_PID;
@@ -188,7 +188,6 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
         int len = 19;
         int wp = 31;
 
-
 	i = CCaTable::writeToBuffer(&(buffer[wp]));
 	wp += i;
 	len += i;
@@ -204,7 +203,8 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 
 	return wp;
 #else
-//orig zapit is much more correct :D
+	//NOTE: better way is to build enigma2 private tags
+	//orig zapit is much more correct :D
 	unsigned int pos = 0;
 	unsigned int i;
 
@@ -214,6 +214,8 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 
 	pos += write_length_field(&(buffer[pos]), getLength());
 
+	//ca_pmt_list_management = 3; /* fixme 5 fuer update */NOTE: we get this from pmt parsing, parsed in zapit()
+	
 	buffer[pos++] = ca_pmt_list_management;
 	buffer[pos++] = program_number >> 8;
 	buffer[pos++] = program_number;
@@ -238,7 +240,7 @@ unsigned int CCaPmt::getLength(void)  // the (3 + length_field()) initial bytes 
 
 	return size;
 #else
-// orig zapit
+	// orig zapit
 	unsigned int size = 4 + CCaTable::getLength();
 
 	for (unsigned int i = 0; i < es_info.size(); i++)
