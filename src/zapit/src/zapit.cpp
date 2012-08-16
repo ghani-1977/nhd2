@@ -111,7 +111,7 @@ bool sdt_wakeup;
 
 /* the conditional access module */
 CCam *live_cam = NULL;
-CCam *rec_cam = NULL;
+//CCam *rec_cam = NULL;  // capmt dont allow us daul decoding
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -609,6 +609,7 @@ void sendCaPmt(bool forupdate = false)
 	 * if we zap from, we start cam1  for new live and update cam0 with camask for rec.
 	 * if to recording channel, we must stop cam1 and update cam0 with live+rec camask.
 	 */
+	#if 0
 	static int camask = 1;
 	
 	if(currentMode & RECORD_MODE) 
@@ -638,7 +639,15 @@ void sendCaPmt(bool forupdate = false)
 	{
 		camask = 1; //demux 0
 		live_cam->setCaPmt(live_channel->getCaPmt(), 0, camask ); //start live cam
-	}	
+	}
+	#else
+	live_cam->setCaPmt(live_channel->getCaPmt());
+	#endif
+	
+	// ci cam
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
+	ci->SendCaPMT(live_channel->getCaPmt()); 
+#endif	
 }
 
 // save pids
@@ -961,6 +970,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 
 	printf("%s sending capmt....\n", __FUNCTION__);
 
+	// cam
 	sendCaPmt(forupdate);
 	
 	// send caid
@@ -1011,15 +1021,15 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
 
-	static int camask = 1; // demux 0
+	//static int camask = 1; // demux 0
 	
 	// brocken ???
-	if(rec_channel_id != live_channel_id) 
-	{
+	//if(rec_channel_id != live_channel_id) 
+	//{
 		/* start cam1 for rec_channel */
-		camask = 1;
-		rec_cam->setCaPmt(rec_channel->getCaPmt(), 0, 1); // start record cam for recording
-        }       
+		//camask = 1;
+		//rec_cam->setCaPmt(rec_channel->getCaPmt(), 0, 1); // start record cam for recording
+        //} 
 	
 	//NOTE: do we need to set ca_pmt_list_managment???
 	//rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
@@ -1186,6 +1196,7 @@ void unsetRecordMode(void)
 	* else we must stop cam1 and start cam0 for current live channel
 	* in standby should be no cam1 running.
 	*/
+	#if 0
 	if(standby)
 		live_cam->sendMessage(0, 0); // stop
 	else if(live_channel_id == rec_channel_id) 
@@ -1197,6 +1208,7 @@ void unsetRecordMode(void)
 		rec_cam->sendMessage(0, 0); // stop
 		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
 	}
+	#endif
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -2998,7 +3010,7 @@ int stopPlayBack(bool stopemu)
 		//} 
 		//else 
 		{
-			live_cam->sendMessage(0, 0);
+			//live_cam->sendMessage(0, 0);
 			
 			unlink("/tmp/pmt.tmp"); 
 		}
@@ -3156,9 +3168,9 @@ void leaveStandby(void)
 		rename("/tmp/pmt.tmp.off", "/tmp/pmt.tmp");
 	}
 
-	if (!rec_cam) 
+	//if (!rec_cam) 
 	{
-		rec_cam = new CCam();
+	//	rec_cam = new CCam();
 	}
 
 	standby = false;
