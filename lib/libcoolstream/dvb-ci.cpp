@@ -725,7 +725,12 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt)
 	       if (((*it)->fd > 0) && ((*it)->camIsReady)) 
 	       {
 	           unsigned int size = caPmt->getLength();
+		   
+#if 1 //orig
 	           unsigned char buffer[3 + get_length_field_size(size) + size];
+#else
+		   unsigned char buffer[24 + get_length_field_size(size) + size];
+#endif
 	           
                    printf(" %d, %d\n", get_length_field_size(size), size);
 		   int len = caPmt->writeToBuffer(buffer, 0, 0xff);
