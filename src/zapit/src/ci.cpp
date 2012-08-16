@@ -24,7 +24,7 @@
 #include <cstring>
 
 #include <zapit/ci.h>
-#include <messagetools.h>
+#include <messagetools.h>	/* get_length_field_size */
 
 
 extern int curpmtpid;
@@ -153,7 +153,7 @@ CCaPmt::~CCaPmt(void)
 
 unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
 {
-#if 0 
+#if 0
 	unsigned int i;
 
 	memcpy(buffer, "\x9f\x80\x32\x82\x00\x00", 6);
@@ -178,7 +178,7 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 	buffer[23] = 0x82;  			// demuxer kram..
 	buffer[24] = 0x02;
 	buffer[25] = camask; 			// descramble on demux0 and demux1
-	buffer[26] = demux; 			// get section data from demux1
+	buffer[26] = demux; 			// get section data from demux index
 	buffer[27] = 0x84;  			// pmt pid
 	buffer[28] = 0x02;
 	buffer[29] = (curpmtpid >> 8) & 0xFF;
@@ -232,7 +232,7 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 
 unsigned int CCaPmt::getLength(void)  // the (3 + length_field()) initial bytes are not counted !
 {
-#if 0  
+#if 0 
 	unsigned int size = 25 + CCaTable::getLength();
 	
 	for (unsigned int i = 0; i < es_info.size(); i++)
