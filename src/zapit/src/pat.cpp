@@ -55,7 +55,7 @@ int parse_pat(CZapitChannel * const channel)
 	do {
 		/* set filter for program association section */
 		/* read section */
-		if ( (dmx->sectionFilter(0, filter, mask, 5) < 0) || (i = dmx->Read(buffer, (PAT_SIZE - 1)) < 0))
+		if ( (dmx->sectionFilter(0, filter, mask, 5) < 0) || (i = dmx->Read(buffer, PAT_SIZE) < 0))
 		{
 			printf("parse_pat: dmx read failed\n");
 			
@@ -114,7 +114,7 @@ int parse_pat(int feindex)
 	mask[4] = 0xFF;
 
 	memset(pbuffer, 0x00, PAT_SIZE);
-	if ((dmx->sectionFilter(0, filter, mask, 5) < 0) || (dmx->Read(pbuffer, (PAT_SIZE - 1)) < 0))
+	if ((dmx->sectionFilter(0, filter, mask, 5) < 0) || (dmx->Read(pbuffer, PAT_SIZE) < 0))
 	{
 		printf("[pat.cpp] dmx read failed\n");
 		ret = -1;

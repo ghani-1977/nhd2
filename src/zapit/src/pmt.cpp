@@ -461,7 +461,7 @@ int parse_pmt(CZapitChannel * const channel)
 	mask[3] = 0x01;
 	mask[4] = 0xFF;
 
-	if ( (dmx->sectionFilter(channel->getPmtPid(), filter, mask, 5) < 0) || (dmx->Read(buffer, (PMT_SIZE - 1)) < 0) ) 
+	if ( (dmx->sectionFilter(channel->getPmtPid(), filter, mask, 5) < 0) || (dmx->Read(buffer, PMT_SIZE) < 0) ) 
 	{
 		printf("[pmt]parse_pmt: dmx read failed\n");
 		
@@ -605,7 +605,7 @@ int parse_pmt(CZapitChannel * const channel)
 		channel->setCaPmt(caPmt);
 		
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-		ci->SendCaPMT(caPmt ); 
+		//ci->SendCaPMT(caPmt ); 
 #endif		
 	}	
 
@@ -650,13 +650,14 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 
 	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", channel->getFeIndex(), channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
 	
-#if 0
+#if 1
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
 	
 	pmtDemux->sectionFilter(channel->getPmtPid(), filter, mask, 5, 0, mode);
 #else
+	// orig
 	filter[3] = (((channel->getCaPmt()->version_number + 1) & 0x01) << 1) | 0x01;
 	mask[3] = (0x01 << 1) | 0x01;
 	
