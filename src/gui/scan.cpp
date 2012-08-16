@@ -435,9 +435,8 @@ int CScanTs::handleMsg(neutrino_msg_t msg, neutrino_msg_data_t data)
 			paintLine(xpos2, ypos_transponder, w - 95, buffer);
 			total = data;
 			snprintf(str, 255, "scan: %d/%d", done, total);
-#if 0
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-#endif			
+
+			CVFD::getInstance()->showMenuText(0, str, -1, true);			
 			break;
 			
 		case NeutrinoMessages::EVT_SCAN_REPORT_NUM_SCANNED_TRANSPONDERS:
@@ -446,9 +445,8 @@ int CScanTs::handleMsg(neutrino_msg_t msg, neutrino_msg_data_t data)
 			sprintf(buffer, "%d/%d", done, total);
 			paintLine(xpos2, ypos_transponder, w - 95, buffer);
 			snprintf(str, 255, "scan %d/%d", done, total);
-#if 0
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-#endif			
+
+			CVFD::getInstance()->showMenuText(0, str, -1, true);			
 			break;
 
 		case NeutrinoMessages::EVT_SCAN_REPORT_FREQUENCY:
