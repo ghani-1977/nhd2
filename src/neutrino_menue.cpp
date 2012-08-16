@@ -1520,10 +1520,10 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 #endif
 
 	// psi setup
-	colorSettings.addItem(GenericMenuSeparatorLine);
+	//colorSettings.addItem(GenericMenuSeparatorLine);
 	
-	CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
-	colorSettings.addItem( new CMenuForwarder(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
+	//CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
+	//colorSettings.addItem( new CMenuForwarder(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
 }
 
 void CNeutrinoApp::InitColorThemesSettings(CMenuWidget &colorSettings_Themes)
