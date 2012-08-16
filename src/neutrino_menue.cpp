@@ -576,12 +576,6 @@ void CNeutrinoApp::InitVideoSettings(CMenuWidget &videoSettings, CVideoSetupNoti
 
 	// video mode
 	videoSettings.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_VIDEOMODE, &g_settings.video_Mode, VIDEOMENU_VIDEOMODE_OPTIONS, VIDEOMENU_VIDEOMODE_OPTION_COUNT, true, videoSetupNotifier, CRCInput::convertDigitToKey(shortcutVideo++), "", true));
-	
-	// psi setup
-	//videoSettings.addItem(GenericMenuSeparatorLine);
-	
-	//CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
-	//videoSettings.addItem( new CMenuForwarder(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutVideo++)));
 }
 
 // Init Audio Settings
@@ -1526,10 +1520,10 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 #endif
 
 	// psi setup
-	//colorSettings.addItem(GenericMenuSeparatorLine);
+	colorSettings.addItem(GenericMenuSeparatorLine);
 	
-	//CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
-	//colorSettings.addItem( new CMenuForwarder(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
+	CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
+	colorSettings.addItem( new CMenuForwarder(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
 }
 
 void CNeutrinoApp::InitColorThemesSettings(CMenuWidget &colorSettings_Themes)
