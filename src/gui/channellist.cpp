@@ -1165,7 +1165,7 @@ void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
 
 	CZapitChannel * chan = chanlist[pos];
 	
-	printf("CChannelList::zapTo me %x %s tuned %d new %d %s -> %llx\n", (int) this, name.c_str(), tuned, pos, chan->name.c_str(), chan->channel_id);
+	printf("CChannelList::zapTo me %s tuned %d new %d %s -> %llx\n", name.c_str(), tuned, pos, chan->name.c_str(), chan->channel_id);
 	
 	if ( pos !=(int)tuned ) 
 	{
