@@ -81,7 +81,7 @@
 #include <audio_cs.h>
 
 #include <zapit/channel.h>
-//extern CZapitChannel * live_channel;			/* zapit.cpp */
+
 
 extern cVideo * videoDecoder;
 extern cAudio * audioDecoder;
@@ -277,13 +277,16 @@ void CMoviePlayerGui::Init(void)
 	bookmarkmanager = 0;
 
 	tsfilefilter.addFilter("ts");
-	tsfilefilter.addFilter("avi");
-	tsfilefilter.addFilter("mkv");
-	tsfilefilter.addFilter("wav");
-	tsfilefilter.addFilter("asf");
-	tsfilefilter.addFilter("aiff");
 	tsfilefilter.addFilter("mpg");
 	tsfilefilter.addFilter("mpeg");
+	
+	tsfilefilter.addFilter("divx");
+	
+#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_DREAMBOX)
+	tsfilefilter.addFilter("avi");
+	tsfilefilter.addFilter("mkv");
+	tsfilefilter.addFilter("asf");
+	tsfilefilter.addFilter("aiff");
 	tsfilefilter.addFilter("m2p");
 	tsfilefilter.addFilter("mpv");
 	tsfilefilter.addFilter("m2ts");
@@ -291,17 +294,19 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("mp4");
 	tsfilefilter.addFilter("mov");
 	tsfilefilter.addFilter("flv");
+#endif	
+	
+	tsfilefilter.addFilter("dat");
+	tsfilefilter.addFilter("trp");
+	tsfilefilter.addFilter("vdr");
+	tsfilefilter.addFilter("mts");
+	
+	tsfilefilter.addFilter("wav");
 	tsfilefilter.addFilter("flac");
 	tsfilefilter.addFilter("mp3");
 	tsfilefilter.addFilter("wmv");
 	tsfilefilter.addFilter("wma");
-	
-	tsfilefilter.addFilter("divx");
-	tsfilefilter.addFilter("dat");
-	tsfilefilter.addFilter("trp");
-	tsfilefilter.addFilter("vdr");
 	tsfilefilter.addFilter("ogg");
-	tsfilefilter.addFilter("mts");
 
 	filebrowser->Filter = &tsfilefilter;
 }
