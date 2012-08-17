@@ -69,15 +69,13 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];
 
-	int flen;
-	flen = 1;
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
 
 	filter[0] = 0x42;
 	mask[0] = 0xFF;
 
-	if (dmx->sectionFilter(0x11, filter, mask, flen) < 0) 
+	if (dmx->sectionFilter(0x11, filter, mask, 1) < 0) 
 	{
 		delete dmx;
 		return -1;
