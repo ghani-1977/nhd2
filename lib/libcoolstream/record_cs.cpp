@@ -45,7 +45,7 @@ void *execute_record_thread(void *c)
 cRecord::cRecord(int num)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-	demux_num = num /*RECORD_DEMUX*/;
+	demux_num = num;
 	fe_num = num;
 	dmx = NULL;
 	record_thread_running = false;
