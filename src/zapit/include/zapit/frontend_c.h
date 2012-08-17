@@ -117,8 +117,6 @@ class CFrontend
 		bool slave;
 		bool standby;
 		
-		//fe_mode_t	mode;
-		
 		/* tuning finished flag */
 		bool tuned;
 		
@@ -134,19 +132,6 @@ class CFrontend
 		int32_t currentSatellitePosition;
 		
 		/**/
-		#if 0
-		double gotoXXLatitude;
-		double gotoXXLongitude;
-		int gotoXXLaDirection;
-		int gotoXXLoDirection;
-		int repeatUsals;
-		
-		/* how often to repeat DiSEqC 1.1 commands */
-		uint8_t diseqcRepeats;
-		
-		/* DiSEqC type of attached hardware */
-		diseqc_t diseqcType;
-		#endif
 		int diseqc;
 		uint8_t uncommitedInput;
 		
@@ -220,6 +205,11 @@ class CFrontend
 
 		fe_code_rate_t 			getCFEC ();
 		const transponder_id_t 		getTsidOnid()    { return currentTransponder.TP_id; }
+		bool				sameTsidOnid(transponder_id_t tpid)
+						{
+							return (currentTransponder.TP_id == 0)
+								|| (tpid == currentTransponder.TP_id);
+						}
 		void 				setTsidOnid(transponder_id_t newid)  { currentTransponder.TP_id = newid; }
 		uint32_t 			getRate();
 		
@@ -239,7 +229,5 @@ class CFrontend
 		int getFeIndex() {return fenumber;}
 };
 
-//typedef std::map<unsigned short, CFrontend*> fe_map_t;
-//typedef fe_map_t::iterator fe_map_iterator_t;
 
 #endif /* __zapit_frontend_h__ */
