@@ -62,6 +62,8 @@ static void* reader_thread(void *arg);
 static void* dvbsub_thread(void* arg);
 static void clear_queue();
 
+
+// initialize
 int dvbsub_initialise() 
 {
 	printf("dvbsub_init: starting... tid %ld\n", syscall(__NR_gettid));
@@ -70,23 +72,8 @@ int dvbsub_initialise()
 
 	sub_debug.set_level(0);
 
-	//reader_running = true;
-	//dvbsub_stopped = 1;
-	//pid_change_req = 1;
-	
-	// reader-Thread starten
-	//trc = pthread_create(&threadReader, 0, reader_thread, (void *) source);
-	//if (trc) {
-	//	fprintf(stderr, "[dvb-sub] failed to create reader-thread (rc=%d)\n", trc);
-	//	reader_running = false;
-	//	return -1;
-	//}
-
-#if 1
 	dvbsub_running = true;
 	
-	//if(!dvbsub_running)
-	//{
 	// subtitle decoder-Thread starten
 	trc = pthread_create(&threadDvbsub, 0, dvbsub_thread, NULL);
 
@@ -95,11 +82,7 @@ int dvbsub_initialise()
 		fprintf(stderr, "[dvb-sub] failed to create dvbsub-thread (rc=%d)\n", trc);
 		dvbsub_running = false;
 		return -1;
-	}
-	
-		//dvbsub_running = true;
-	//}
-#endif	
+	}	
 
 	return(0);
 }
@@ -125,21 +108,6 @@ int dvbsub_init(int source)
 		reader_running = false;
 		return -1;
 	}
-	
-	//if(!dvbsub_running)
-	//{
-		// subtitle decoder-Thread starten
-	//	trc = pthread_create(&threadDvbsub, 0, dvbsub_thread, NULL);
-	//
-	//	if (trc) 
-	//	{
-	//		fprintf(stderr, "[dvb-sub] failed to create dvbsub-thread (rc=%d)\n", trc);
-	//		dvbsub_running = false;
-	//		return -1;
-	//	}
-	//
-	//	dvbsub_running = true;
-	//}
 
 	return(0);
 }
@@ -152,9 +120,13 @@ int dvbsub_pause()
 		dvbsub_paused = true;
 		if(dvbSubtitleConverter)
 			dvbSubtitleConverter->Pause(true);
+		
+		pthread_mutex_lock(&readerMutex);
+		pthread_cond_broadcast(&readerCond);
+		pthread_mutex_unlock(&readerMutex);
+		
+		printf("[dvb-sub] paused\n");
 	}
-	
-	printf("[dvb-sub] paused\n");
 
 	return 0;
 }
@@ -243,10 +215,9 @@ void dvbsub_setpid(int pid)
 	pthread_mutex_unlock(&readerMutex);
 }
 
-//test
+// close
 int dvbsub_close()
 {
-	//if(threadReader) 
 	if(reader_running)
 	{
 		dvbsub_pause();
@@ -261,25 +232,6 @@ int dvbsub_close()
 		threadReader = 0;
 	}
 	
-		//if(threadDvbsub) 
-	//if(dvbsub_running)
-	//{
-	//	dvbsub_running = false;
-	//
-	//	pthread_mutex_lock(&packetMutex);
-	//	pthread_cond_broadcast(&packetCond);
-	//	pthread_mutex_unlock(&packetMutex);
-	//
-	//	pthread_join(threadDvbsub, NULL);
-	//	threadDvbsub = 0;
-	//	
-	//	if(dvbSubtitleConverter)
-	//	{
-	//		delete dvbSubtitleConverter;
-	//		dvbSubtitleConverter = NULL;
-	//	}
-	//}
-	
 	printf("[dvb-sub] closed...\n");
 
 	return 0;
@@ -289,22 +241,6 @@ int dvbsub_close()
 //int dvbsub_close()
 int dvbsub_terminate()
 {
-	//if(threadReader) 
-	//if(reader_running)
-	//{
-	//	dvbsub_pause();
-	//	reader_running = false;
-	//	dvbsub_stopped = 1;
-	//
-	//	pthread_mutex_lock(&readerMutex);
-	//	pthread_cond_broadcast(&readerCond);
-	//	pthread_mutex_unlock(&readerMutex);
-	//	
-	//	pthread_join(threadReader, NULL);
-	//	threadReader = 0;
-	//}
-	
-	//if(threadDvbsub) 
 	if(dvbsub_running)
 	{
 		dvbsub_running = false;
