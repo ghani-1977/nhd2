@@ -179,7 +179,7 @@ CZapitClient::scanType scanType = CZapitClient::ST_TVRADIO;
 
 bool standby = true;
 void * scan_transponder(void * arg);
-static TP_params TP;
+//static TP_params TP;
 
 bool saveLastChannel;
 int lastChannelMode;
@@ -573,10 +573,6 @@ void loadZapitSettings()
 	scan_pids = config.getBool("scanPids", 0);
 	
 	scanSDT = config.getInt32("scanSDT", 1);
-	
-	// unicable
-	//uni_scr = config.getInt32("uni_scr", -1);
-	//uni_qrg = config.getInt32("uni_qrg", 0);
 
 	//load audio map
 	load_audio_map();
@@ -893,9 +889,20 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 
 	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
+	//FIXME: add condition if we allow to tune when we are recording to protect record file
 	// tune it
-	if(!tune_to_channel(live_fe, live_channel, transponder_change))
-		return -1;
+	if( currentMode & RECORD_MODE ) 
+	{
+		// twin/mlti
+		if( (live_fe != record_fe) && (record_fe->mode != FE_LOOP) )
+			if(!tune_to_channel(live_fe, live_channel, transponder_change))
+				return -1;
+	}
+	else
+	{
+		if(!tune_to_channel(live_fe, live_channel, transponder_change))
+			return -1;
+	}
 
 	// check if nvod
 	if (live_channel->getServiceType() == ST_NVOD_REFERENCE_SERVICE) 
