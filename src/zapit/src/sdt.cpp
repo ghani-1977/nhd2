@@ -70,7 +70,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	unsigned char mask[DMX_FILTER_SIZE];
 
 	int flen;
-	flen = 5;
+	flen = 1;
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
 
