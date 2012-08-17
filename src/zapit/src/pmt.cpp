@@ -564,7 +564,7 @@ int parse_pmt(CZapitChannel * const channel)
 			channel->resetPids();
 	}
 	
-	/* pmt */
+	/* capmt descriptor*/
 	section_length = ((buffer[1] & 0x0F) << 8) + buffer[2];
 	channel->setPcrPid(((buffer[8] & 0x1F) << 8) + buffer[9]);
 	program_info_length = ((buffer[10] & 0x0F) << 8) | buffer[11];
@@ -585,7 +585,7 @@ int parse_pmt(CZapitChannel * const channel)
 		}
 	}
 
-	/* pmt ES_Info */
+	/* capmt parse ES_Info */
 	for (i = 12 + program_info_length; i < section_length - 1; i += ES_info_length + 5)
 		ES_info_length = parse_ES_info(buffer + i, channel, caPmt);
 
