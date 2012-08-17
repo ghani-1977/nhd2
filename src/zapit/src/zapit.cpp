@@ -841,7 +841,7 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 }
 
 // return 0, -1 fails
-int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool startplayback = true)
+int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 {
 	bool transponder_change = false;
 	tallchans_iterator cit;
@@ -934,8 +934,8 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool 
 
 	restore_channel_pids(live_channel);
 
-	if (startplayback)
-		startPlayBack(live_channel);
+	// start playback (live)
+	startPlayBack(live_channel);
 
 	printf("%s sending capmt....\n", __FUNCTION__);
 
@@ -1863,13 +1863,12 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			// diseqcType is global
 			printf("zapit get from [scan.cpp] diseqcType: %d\n", msgSetDiseqcType.diseqc);
-			//diseqcType = msgSetDiseqcType.diseqc;
 			
 			// fe set diseqc type
 			if( getFE(msgSetDiseqcType.feindex)->getInfo()->type == FE_QPSK)
 			{
-				getFE(msgSetDiseqcType.feindex)->setDiseqcType(/*diseqcType*/ msgSetDiseqcType.diseqc );
-				printf("zapit: set diseqc type %d\n", /*diseqcType*/ msgSetDiseqcType.diseqc );
+				getFE(msgSetDiseqcType.feindex)->setDiseqcType(msgSetDiseqcType.diseqc );
+				printf("zapit: set diseqc type %d\n", msgSetDiseqcType.diseqc );
 			}
 			
 			break;
@@ -1906,9 +1905,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandSetFEMode msgSetFEMode;
 			CBasicServer::receive_data(connfd, &msgSetFEMode, sizeof(msgSetFEMode));
 			
-			// diseqcType is global
 			printf("zapit get from [scan.cpp] femode: %d\n", msgSetFEMode.mode);
-			//femode = msgSetFEMode.mode;
 			
 			// fe set femode
 			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
@@ -3041,7 +3038,7 @@ void leaveStandby(void)
 
 	//if we have already zapped channel
 	if (live_channel)
-		zapit(live_channel_id, current_is_nvod, false, true);
+		zapit(live_channel_id, current_is_nvod, false);
 }
 
 unsigned zapTo(const unsigned int bouquet, const unsigned int channel)

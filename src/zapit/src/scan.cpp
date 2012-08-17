@@ -66,7 +66,7 @@ extern xmlDocPtr scanInputParser;
 
 void SaveServices(bool tocopy);
 
-int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0, bool nowait = 0);
+int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0);
 void * nit_thread(void * data);
 
 static int prov_found;
