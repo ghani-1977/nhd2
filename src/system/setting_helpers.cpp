@@ -563,9 +563,6 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 {
 	printf("CSubtitleChangeExec::exec: action %s\n", actionKey.c_str());
 	
-	// get current service info
-	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
-	
 	if(actionKey == "off") 
 	{
 		// tuxtxt stop
@@ -611,9 +608,6 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		tuxtx_stop_subtitle();
 		
 		tuxtx_set_pid(pid, page, ptr);
-		
-		//if(g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0)
-		//	tuxtxt_start( g_RemoteControl->current_PIDs.PIDs.vtxtpid, si.FeIndex );
 		
 		// start tuxtxt
 		tuxtx_main(g_RCInput->getFileHandle(), pid, page, live_fe->getFeIndex() ); // this 
