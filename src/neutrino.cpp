@@ -3609,8 +3609,6 @@ _repeat:
 			bool isTVMode = g_Zapit->isChannelTVChannel(eventinfo->channel_id);
 
 			dvbsub_stop();
-			//test
-			//dvbsub_close();
 
 			if ((!isTVMode) && (mode != mode_radio)) 
 			{
@@ -5513,23 +5511,15 @@ void CNeutrinoApp::StopSubtitles()
 	printf("[neutrino] %s\n", __FUNCTION__);
 	
 	int ttx, ttxpid, ttxpage;
-	
-	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 
 	// dvbsub
 	int dvbpid;
-	//int dvbsub;
 	
 	dvbpid = dvbsub_getpid();
-	//dvbsub_getpid(&dvbpid, &dvbsub);
 	
 	if(dvbpid)
-	//if(dvbsub)
 	{
 		dvbsub_pause();
-		
-		//dvbsub_stop();
-		//dvbsub_close();
 	}
 	
 	// tuxtxt
@@ -5553,11 +5543,8 @@ void CNeutrinoApp::StartSubtitles(bool show)
 	if(!show)
 		return;
 	
-	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
-	
 	//dvbsub
-	//dvbsub_init(si.FeIndex);
-	dvbsub_start(0);
+	dvbsub_start(dvbsub_getpid());
 	
 	// tuxtxt
 	tuxtx_pause_subtitle(false, live_fe->getFeIndex());
