@@ -80,26 +80,11 @@ class CHDDBrowser : public CMenuTarget
 
 // HDD menu handler
 class CHDDMenuHandler : public CMenuTarget
-{
-	//private:
-		//CMenuForwarderNonLocalized * hdd_mounted;
-		
+{	
 	public:
 		int  exec( CMenuTarget* parent,  const std::string &actionKey);
 		int  hddMenu();
 };
-
-#if 0
-// hdd notifier
-class CHDDMenuHandlerNotifier : public CMenuTarget
-{
-	private:
-		std::string dev;
-	public:
-		int exec(CMenuTarget* parent, const std::string& actionKey);
-		CHDDMenuHandlerNotifier(const std::string& actionKey);
-};
-#endif
 
 
 #endif	//hdd_menu_h
