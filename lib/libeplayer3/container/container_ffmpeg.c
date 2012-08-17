@@ -895,7 +895,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
         memset(&track, 0, sizeof(track));
 
         switch (stream->codec->codec_type) {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
         case AVMEDIA_TYPE_VIDEO:
+#else
+	case CODEC_TYPE_VIDEO:
+#endif        
             ffmpeg_printf(10, "CODEC_TYPE_VIDEO %d\n",stream->codec->codec_type);
 
             if (encoding != NULL) {
@@ -962,7 +966,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 ffmpeg_err("codec type video but codec unknown %d\n", stream->codec->codec_id);
             }
             break;
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
         case AVMEDIA_TYPE_AUDIO:
+#else
+	case CODEC_TYPE_AUDIO:
+#endif        
             ffmpeg_printf(10, "CODEC_TYPE_AUDIO %d\n",stream->codec->codec_type);
 
             if (encoding != NULL) {
@@ -1165,7 +1173,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 ffmpeg_err("codec type audio but codec unknown %d\n", stream->codec->codec_id);
             }
             break;
-#if defined (ENABLE_LIBASS)	    
+#if defined (ENABLE_LIBASS)
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
         case AVMEDIA_TYPE_SUBTITLE:
         {
             AVDictionaryEntry *lang;
@@ -1219,8 +1228,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 }
 
             break;
-        }
-#endif        
+        }        
         case AVMEDIA_TYPE_UNKNOWN:
         case AVMEDIA_TYPE_DATA:
         case AVMEDIA_TYPE_ATTACHMENT:
@@ -1228,6 +1236,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
         default:
             ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
          break;
+#endif	 
+#endif	 
         }
 
     } /* for */
