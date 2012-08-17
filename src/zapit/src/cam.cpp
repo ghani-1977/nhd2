@@ -67,7 +67,8 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 	if (!caPmt)
 		return true;
 
-	printf("CCam::setCaPmt: dmx %d camask %d update %s\n", demux, camask, update ? "yes" : "no" );
+	//printf("CCam::setCaPmt: dmx %d camask %d update %s\n", demux, camask, update ? "yes" : "no" );
+	printf("CCam::setCaPmt\n");
 	
 	unsigned int size = caPmt->getLength();
 	unsigned char buffer[3 + get_length_field_size(size) + size];
