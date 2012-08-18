@@ -286,7 +286,6 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 	CFrontend * fe = NULL;
 	
 	/* index methode */
-	#if 0
 	if(currentMode & RECORD_MODE) 
 	{
 		if(FrontendCount > 1)
@@ -303,7 +302,6 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 			fe = femap[thischannel->getFeIndex()];
 	}
 	else
-	#endif
 		// multi/single
 		fe = femap[thischannel->getFeIndex()];
 	
@@ -481,13 +479,8 @@ void saveZapitSettings(bool write, bool write_a)
 		config.setBool("writeChannelsNames", writeChannelsNames);
 		config.setBool("makeRemainingChannelsBouquet", makeRemainingChannelsBouquet);
 
-		//config.setInt32("rezapTimeout", rezapTimeout);
 		config.setBool("sortNames", sortNames);
 		config.setBool("scanPids", scan_pids);
-		
-		// unicable
-		//config.setInt32("uni_scr", uni_scr);
-		//config.setInt32("uni_qrg", uni_qrg);
 
 		config.setInt32("scanSDT", scanSDT);
 
@@ -893,10 +886,24 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// tune it
 	if( currentMode & RECORD_MODE ) 
 	{
-		// twin/mlti
-		if( (live_fe != record_fe) && (record_fe->mode != FE_LOOP) )
-			if(!tune_to_channel(live_fe, live_channel, transponder_change))
-				return -1;
+		for (int i = 1; i < FrontendCount; i++)
+		{
+			// twin
+			if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+			{
+				//if( (!SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (record_fe->mode == FE_TWIN) ) // not same tp and second fe is twin mode
+				if( record_fe->mode == FE_TWIN ) // not same tp and second fe is twin mode
+				{
+					if(!tune_to_channel(live_fe, live_channel, transponder_change))
+						return -1;
+				}
+			}
+			else if( !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
+			{
+				if(!tune_to_channel(live_fe, live_channel, transponder_change))
+					return -1;
+			}
+		}
 	}
 	else
 	{
