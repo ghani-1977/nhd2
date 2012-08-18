@@ -1191,8 +1191,10 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	miscSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MISCSETTINGS_ZAPIT, true, "", new CZapitSetup(), NULL, CRCInput::convertDigitToKey(shortcutMiscSettings++), NULL, "miscsettingsgeneral", LOCALE_HELPTEXT_MISCSETTINGSZAPITSETUP ));
 	
 	// psi setup
+#ifdef __sh__	
 	CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
 	miscSettings.addItem( new CMenuForwarderItemMenuIcon(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutMiscSettings++), NULL, "miscsettingsgeneral", LOCALE_HELPTEXT_MISCSETTINGSPSISETUP ));
+#endif	
 }
 
 // Init Language Settings
