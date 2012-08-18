@@ -53,12 +53,51 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/select.h>
 
 #include <global.h>
 #include <neutrino.h>
 
+#include <video_cs.h>
+
 #define PSI_STEP	5
 
+
+void CPSISetup::setContrast(int contrast)
+{
+	FILE* fd;
+
+	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
+	fprintf(fd, "%d", contrast);
+	fclose(fd);
+}
+
+void CPSISetup::setSaturation(int saturation)
+{
+	FILE* fd;
+
+	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
+	fprintf(fd, "%d", saturation);
+	fclose(fd);
+}
+
+void CPSISetup::setBrightness(int brightness)
+{
+	FILE* fd;
+
+	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
+	fprintf(fd, "%d", brightness);
+	fclose(fd);
+}
+
+void CPSISetup::setTint(int tint)
+{
+	FILE* fd;
+
+	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
+	fprintf(fd, "%d", tint);
+	fclose(fd);
+}
 
 CPSISetup::CPSISetup(const neutrino_locale_t Name, unsigned char *Contrast, unsigned char *Saturation, unsigned char *Brightness, unsigned char *Tint, CChangeObserver *Observer)
 {
@@ -70,11 +109,6 @@ CPSISetup::CPSISetup(const neutrino_locale_t Name, unsigned char *Contrast, unsi
 	saturation = Saturation;
 	brightness = Brightness;
 	tint = Tint;
-	
-	setContrast(*contrast);
-	setSaturation(*saturation);
-	setBrightness(*brightness);
-	setTint(*tint);
 }
 
 int CPSISetup::exec(CMenuTarget * parent, const std::string &)
@@ -104,10 +138,12 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	unsigned char brightness_old = *brightness;
 	unsigned char tint_old = *tint;
 
+	#if 1
 	setContrast(*contrast);
 	setSaturation(*saturation);
 	setBrightness(*brightness);
 	setTint(*tint);
+	#endif
 	
 	paint();
 	
@@ -342,10 +378,12 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 				*brightness = brightness_old;
 				*tint = tint_old;
 				
+				#if 1
 				setContrast(*contrast);
 				setSaturation(*saturation);
 				setBrightness(*brightness);
 				setTint(*tint);
+				#endif
 
 			case CRCInput::RC_timeout:
 			case CRCInput::RC_ok:
@@ -426,42 +464,4 @@ void CPSISetup::paintSlider(const int x, const int y, const unsigned char * cons
 	frameBuffer->paintBoxRel(x + 200 + 120 + 10, y, 50, mheight, COL_MENUCONTENT_PLUS_0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 200 + 120 + 10, y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
 }
-
-void CPSISetup::setContrast(int contrast)
-{
-	FILE* fd;
-
-	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
-	fprintf(fd, "%d", contrast);
-	fclose(fd);
-}
-
-void CPSISetup::setSaturation(int saturation)
-{
-	FILE* fd;
-
-	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
-	fprintf(fd, "%d", saturation);
-	fclose(fd);
-}
-
-void CPSISetup::setBrightness(int brightness)
-{
-	FILE* fd;
-
-	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
-	fprintf(fd, "%d", brightness);
-	fclose(fd);
-}
-
-void CPSISetup::setTint(int tint)
-{
-	FILE* fd;
-
-	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
-	fprintf(fd, "%d", tint);
-	fclose(fd);
-}
-
-
 
