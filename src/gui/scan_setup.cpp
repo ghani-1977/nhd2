@@ -65,10 +65,10 @@ CScanSettings * scanSettings;
 
 
 extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
-extern Zapit_config zapitCfg;			//defined neutrino.cpp
-extern char zapit_lat[20];			//defined neutrino.cpp
-extern char zapit_long[20];			//defined neutrino.cpp
-extern int scan_pids;
+Zapit_config zapitCfg;			//defined neutrino.cpp
+char zapit_lat[20];			//defined neutrino.cpp
+char zapit_long[20];			//defined neutrino.cpp
+//extern int scan_pids;
 
 // frontend
 extern int FrontendCount;			// defined in zapit.cpp
@@ -672,7 +672,7 @@ void CScanSetup::showScanService()
 	autoScan->addItem(useNit);
 		
 	// scan pids
-	CMenuOptionChooser* scanPids = new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SCANPIDS,  &scan_pids, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW);
+	CMenuOptionChooser* scanPids = new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SCANPIDS,  (int *)&scanSettings->scan_pids, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW);
 	autoScan->addItem(scanPids);
 		
 	// auto scan
@@ -913,74 +913,66 @@ void CScanSettings::setConfigValue(int num, const char * name, uint32_t val)
 	configfile.setInt32(cfg_key, val);
 }
 
-void CScanSettings::useDefaults()
-{
-	printf("[neutrino] CScanSettings::useDefaults\n");
-	
-	bouquetMode     = CZapitClient::BM_UPDATEBOUQUETS;
-	scanType = CZapitClient::ST_ALL;
-	diseqcMode      = NO_DISEQC;
-	diseqcRepeat    = 0;
-	TP_mod = 3;
-	TP_fec = 3;
-
-	//DVB-T
-	TP_band = 0;
-	TP_HP = 2;
-	TP_LP = 1;
-	TP_const = 1;
-	TP_trans = 1;
-	TP_guard = 3;
-	TP_hierarchy = 0;
-	
-	femode = (fe_mode_t)FE_SINGLE;
-
-	strcpy(satNameNoDiseqc, "none");
-}
-
 bool CScanSettings::loadSettings(const char * const fileName, int index)
 {
 	printf("CScanSettings::loadSettings: fe%d\n", index);
 	
 	/* if scan.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
-		useDefaults();
-
-	diseqcMode = getConfigValue(index, "diseqcMode", diseqcMode);
-	diseqcRepeat = getConfigValue(index, "diseqcRepeat", diseqcRepeat);
-
-	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(index, "bouquetMode", bouquetMode);
-	scanType = (CZapitClient::scanType) getConfigValue(index, "scanType", scanType);
+		printf("%s not found\n", fileName);
+	
+	// common
+	femode = getConfigValue(index, "femode", (fe_mode_t)FE_SINGLE);
+	scanType = (CZapitClient::scanType) getConfigValue(index, "scanType", CZapitClient::ST_ALL);
+	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(index, "bouquetMode", CZapitClient::BM_UPDATEBOUQUETS);
+	
 	char cfg_key[81];
 	sprintf(cfg_key, "fe%d_satNameNoDiseqc", index);
-	strcpy(satNameNoDiseqc, configfile.getString(cfg_key, satNameNoDiseqc).c_str());
-
-	scan_mode = getConfigValue(index, "scan_mode", 1); // NIT (0) or fast (1)
+	strcpy(satNameNoDiseqc, configfile.getString(cfg_key, "none").c_str());
 	
-	TP_fec = getConfigValue(index, "TP_fec", 1);
-	TP_pol = getConfigValue(index, "TP_pol", 0);
-	TP_mod = getConfigValue(index, "TP_mod", 3);
+	scan_mode = getConfigValue(index, "scan_mode", 1); // NIT (0) or fast (1)
+	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
+	scan_pids = getConfigValue(index, "scan_pids", 0);
+	
+	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);
 	strcpy(TP_freq, configfile.getString(cfg_key, "10100000").c_str());
+	
+	// rate
 	sprintf(cfg_key, "fe%d_TP_rate", index);
 	strcpy(TP_rate, configfile.getString(cfg_key, "27500000").c_str());
+	
+	if(getFE(index)->getInfo()->type == FE_QPSK)
+	{
+		diseqcMode = getConfigValue(index, "diseqcMode", (diseqc_t)NO_DISEQC);
+		diseqcRepeat = getConfigValue(index, "diseqcRepeat", 0);
+		
+		TP_fec = getConfigValue(index, "TP_fec", 1);
+		TP_pol = getConfigValue(index, "TP_pol", 0);
+	}
+	
+	if(getFE(index)->getInfo()->type == FE_QAM)
+	{
+		TP_mod = getConfigValue(index, "TP_mod", 3);
+		TP_fec = getConfigValue(index, "TP_fec", 1);
+	}
+	
 #if HAVE_DVB_API_VERSION >= 3
 	if(TP_fec == 4) 
 		TP_fec = 5;
 #endif
 
 	//DVB-T
-	TP_band = getConfigValue(index, "TP_band", 0);
-	TP_HP = getConfigValue(index, "TP_HP", 2);
-	TP_LP = getConfigValue(index, "TP_LP", 1);
-	TP_const = getConfigValue(index, "TP_const", 1);
-	TP_trans = getConfigValue(index, "TP_trans", 1);
-	TP_guard = getConfigValue(index, "TP_guard", 3);
-	TP_hierarchy = getConfigValue(index, "TP_hierarchy", 0);
-		
-	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
-	
-	femode = getConfigValue(index, "femode", (fe_mode_t)FE_SINGLE);
+	if(getFE(index)->getInfo()->type == FE_OFDM)
+	{
+		TP_band = getConfigValue(index, "TP_band", 0);
+		TP_HP = getConfigValue(index, "TP_HP", 2);
+		TP_LP = getConfigValue(index, "TP_LP", 1);
+		TP_const = getConfigValue(index, "TP_const", 1);
+		TP_trans = getConfigValue(index, "TP_trans", 1);
+		TP_guard = getConfigValue(index, "TP_guard", 3);
+		TP_hierarchy = getConfigValue(index, "TP_hierarchy", 0);
+	}
 
 	return true;
 }
@@ -989,37 +981,52 @@ bool CScanSettings::saveSettings(const char * const fileName, int index)
 {
 	printf("CScanSettings::saveSettings: fe%d\n", index);
 	
-	setConfigValue(index, "diseqcMode", diseqcMode );
-	setConfigValue(index, "diseqcRepeat", diseqcRepeat );
-	
-	setConfigValue(index, "bouquetMode", bouquetMode );
+	// common
+	setConfigValue(index, "femode", femode );
 	setConfigValue(index, "scanType", scanType );
+	setConfigValue(index, "bouquetMode", bouquetMode );
 	
 	char cfg_key[81];
 	sprintf(cfg_key, "fe%d_satNameNoDiseqc", index);
 	configfile.setString(cfg_key, satNameNoDiseqc );
 	
 	setConfigValue(index, "scan_mode", scan_mode);
-
-	setConfigValue(index, "TP_fec", TP_fec);
-	setConfigValue(index, "TP_pol", TP_pol);
-	setConfigValue(index, "TP_mod", TP_mod);
+	setConfigValue(index, "scanSectionsd", scanSectionsd ); // sectionsd
+	setConfigValue(index, "scan_pids", scan_pids );		// descriptor
+	
+	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);
 	configfile.setString(cfg_key, TP_freq);
+	
+	// rate
 	sprintf(cfg_key, "fe%d_TP_rate", index);
 	configfile.setString(cfg_key, TP_rate);
-
-	setConfigValue(index, "TP_band", TP_band);
-	setConfigValue(index, "TP_HP", TP_HP);
-	setConfigValue(index, "TP_LP", TP_LP);
-	setConfigValue(index, "TP_const", TP_const);
-	setConfigValue(index, "TP_trans", TP_trans);
-	setConfigValue(index, "TP_guard", TP_guard);
-	setConfigValue(index, "TP_hierarchy", TP_hierarchy);
-
-	setConfigValue(index, "scanSectionsd", scanSectionsd );
 	
-	setConfigValue(index, "femode", femode );
+	if(getFE(index)->getInfo()->type == FE_QPSK)
+	{
+		setConfigValue(index, "diseqcMode", diseqcMode );
+		setConfigValue(index, "diseqcRepeat", diseqcRepeat );
+	
+		setConfigValue(index, "TP_pol", TP_pol);
+		setConfigValue(index, "TP_fec", TP_fec);
+	}
+	
+	if(getFE(index)->getInfo()->type == FE_QAM)
+	{
+		setConfigValue(index, "TP_mod", TP_mod);
+		setConfigValue(index, "TP_fec", TP_fec);
+	}
+
+	if(getFE(index)->getInfo()->type == FE_OFDM)
+	{
+		setConfigValue(index, "TP_band", TP_band);
+		setConfigValue(index, "TP_HP", TP_HP);
+		setConfigValue(index, "TP_LP", TP_LP);
+		setConfigValue(index, "TP_const", TP_const);
+		setConfigValue(index, "TP_trans", TP_trans);
+		setConfigValue(index, "TP_guard", TP_guard);
+		setConfigValue(index, "TP_hierarchy", TP_hierarchy);
+	}
 
 	if(configfile.getModifiedFlag())
 	{

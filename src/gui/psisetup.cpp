@@ -66,36 +66,52 @@
 void CPSISetup::setContrast(int contrast)
 {
 	FILE* fd;
-
+#ifdef __sh__
 	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
-	fprintf(fd, "%d", contrast);
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_contrast", "w");
+#endif
+	if(fd > 0)
+		fprintf(fd, "%d", contrast);
 	fclose(fd);
 }
 
 void CPSISetup::setSaturation(int saturation)
 {
 	FILE* fd;
-
+#ifdef __sh__
 	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
-	fprintf(fd, "%d", saturation);
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_saturation", "w");
+#endif
+	if(fd > 0)
+		fprintf(fd, "%d", saturation);
 	fclose(fd);
 }
 
 void CPSISetup::setBrightness(int brightness)
 {
 	FILE* fd;
-
+#ifdef __sh__
 	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
-	fprintf(fd, "%d", brightness);
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_brightness", "w");
+#endif
+	if(fd > 0)
+		fprintf(fd, "%d", brightness);
 	fclose(fd);
 }
 
 void CPSISetup::setTint(int tint)
 {
 	FILE* fd;
-
+#ifdef __sh__
 	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
-	fprintf(fd, "%d", tint);
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_hue", "w");
+#endif
+	if(fd > 0)
+		fprintf(fd, "%d", tint);
 	fclose(fd);
 }
 

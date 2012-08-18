@@ -90,8 +90,6 @@ CScanTs::CScanTs(int num)
 	feindex = num;
 }
 
-extern int scan_pids;		// defined in zapit.cpp
-
 int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	diseqc_t            diseqcType = NO_DISEQC;
@@ -107,7 +105,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	CZapitClient::ScanSatelliteList satList;
 	CZapitClient::commandSetScanSatelliteList sat;
 	
-	int _scan_pids = scan_pids;
+	//int _scan_pids = scanSettings->scan_pids;
 
 	// window size
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -166,7 +164,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 		}
 		
 		// scan pids
-		scan_pids = true;
+		//scanSettings->scan_pids = true;
 		
 		// scan mode
 		TP.scan_mode = scanSettings->scan_mode;
@@ -394,7 +392,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 
 	hide();
 	
-	scan_pids = _scan_pids;
+	//scanSettings->scan_pids = _scan_pids;
 	
 	// Restore previous background
 	if (usedBackground)

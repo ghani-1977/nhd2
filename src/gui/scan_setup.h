@@ -35,7 +35,7 @@
 
 #include <string>
 
-//#define get_set CNeutrinoApp::getInstance()->getScanSettings()
+
 
 class CTPSelectHandler : public CMenuTarget
 {
@@ -83,10 +83,11 @@ class CScanSettings
 		int		TP_hierarchy;
 		
 		int femode;
+		
+		int scan_pids;
 	
 		CScanSettings(int num = 0);
 	
-		void useDefaults();
 		bool loadSettings(const char * const fileName, int index = 0);
 		bool saveSettings(const char * const fileName, int index = 0);
 };
