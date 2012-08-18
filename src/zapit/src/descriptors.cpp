@@ -38,6 +38,8 @@
 #include <dmx_cs.h>
 #include <math.h>
 
+#include <gui/scan_setup.h>
+
 extern CBouquetManager *g_bouquetManager;
 extern CZapitClient::scanType scanType;
 extern tallchans allchans;   			//  defined in zapit.cpp
@@ -53,7 +55,7 @@ std::string lastServiceName;
 std::map <t_channel_id, uint8_t> service_types;
 
 extern CEventServer *eventServer;
-extern int scan_pids;
+extern CScanSettings * scanSettings;
 extern t_channel_id live_channel_id;
 
 //extern CFrontend * live_fe;
@@ -695,7 +697,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 			break;
 	}
 
-	if(scan_pids && channel) 
+	if(scanSettings->scan_pids && channel) 
 	{
 		if(tpchange)
 			parse_pat(feindex);
@@ -706,14 +708,9 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		{
 			if(!parse_pmt(channel)) 
 			{
-				//if(channel->getPreAudioPid() == 0 && channel->getVideoPid() == 0)
-					//printf("[scan] Channel %s dont have A/V pids !\n", channel->getName().c_str());
-
 				if ((channel->getPreAudioPid() != 0) || (channel->getVideoPid() != 0)) 
 				{
 					channel->setPidsFlag();
-					//if(channel->getServiceType() == 1)
-						//live_channel_id = channel->getChannelID();
 				}
 			}
 		}
