@@ -142,13 +142,6 @@ int CMotorControl::exec(CMenuTarget* parent, const std::string &)
 	TP.feparams.u.qpsk.symbol_rate = atoi( scanSettings->TP_rate);
 	TP.feparams.u.qpsk.fec_inner = (fe_code_rate_t) scanSettings->TP_fec;
 	TP.polarization = scanSettings->TP_pol;
-#if 0
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo ();
-	TP.feparams.frequency = si.tsfrequency;
-	TP.feparams.u.qpsk.symbol_rate = si.rate;
-	TP.feparams.u.qpsk.fec_inner = si.fec;
-	TP.polarization = si.polarisation;
-#endif
 
 	g_Zapit->stopPlayBack();
 	g_Zapit->tune_TP(TP, feindex);
