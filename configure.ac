@@ -112,7 +112,6 @@ if test "$enable_dsp" = "yes"; then
 AC_DEFINE(ENABLE_DSP,1,[include dsp as audio player])
 fi
 
-
 AC_OUTPUT([
 Makefile
 lib/Makefile
