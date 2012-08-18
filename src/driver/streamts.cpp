@@ -361,15 +361,15 @@ void * streamts_live_thread(void *data)
 	{
 		r = dmx->Read(buf, IN_SIZE, 100);
 		
-#if 0
-		printf("ts: read %d\n", r);
-#endif		
-		
 		if(r > 0)
 			packet_stdout(fd, buf, r, NULL);
 	}
 
 	printf("[streamts] Exiting LIVE STREAM thread, fd %d\n", fd);
+	
+	for(int i = 1; i < demuxfd_count; i++)
+		dmx->removePid(pids[i]);
+	dmx->Stop();
 	
 	delete dmx;
 	free(buf);
