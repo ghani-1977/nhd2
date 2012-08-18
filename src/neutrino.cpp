@@ -167,11 +167,6 @@ extern bool has_hdd;
 //int allow_flash = 1;
 extern int was_record;
 
-//zapit config
-Zapit_config zapitCfg;
-char zapit_lat[20];
-char zapit_long[20];
-
 // record and timeshift
 bool autoshift = false;
 bool autoshift_delete = false;
