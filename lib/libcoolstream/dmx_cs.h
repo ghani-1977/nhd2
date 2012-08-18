@@ -71,6 +71,7 @@ class cDemux
 		bool sectionFilter(unsigned short Pid, const unsigned char * const Tid, const unsigned char * const Mask, int len, int Timeout = DEMUX_POLL_TIMEOUT, const unsigned char * const nMask = 0);
 		bool pesFilter(const unsigned short Pid, const dmx_input_t Input = DMX_IN_FRONTEND);
 		void addPid(unsigned short Pid);
+		void removePid(unsigned short Pid);
 		void getSTC(int64_t * STC);
 		
 		cDemux(int num = 0);

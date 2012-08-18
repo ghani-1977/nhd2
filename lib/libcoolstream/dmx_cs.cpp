@@ -433,6 +433,20 @@ void cDemux::addPid(unsigned short Pid)
 	return;
 }
 
+// remove pid
+void cDemux::removePid(unsigned short Pid)
+{
+	dprintf(DEBUG_INFO, "%s:%s type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], Pid);	
+
+	if(demux_fd <= 0)
+		return;
+
+	if (ioctl(demux_fd, DMX_REMOVE_PID, &Pid) < 0)
+		perror("DMX_ADD_PID");
+	
+	return;
+}
+
 void cDemux::getSTC(int64_t * STC)
 { 
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s STC=\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type]);	
