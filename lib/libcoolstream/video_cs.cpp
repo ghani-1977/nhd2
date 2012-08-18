@@ -618,7 +618,7 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h)
 	dprintf(DEBUG_INFO, "%s:%s - x=%d y=%d w=%d h=%d\n", FILENAME, __FUNCTION__, x, y, w, h);
 	
 	// eifes
-	char buffer[16];
+	//char buffer[16];
 	int _x, _y, _w, _h;
 	/* the target "coordinates" seem to be in a PAL sized plane
 	 * TODO: check this in the driver sources */
@@ -810,5 +810,4 @@ int64_t cVideo::GetPTS(void)
 	
 	return pts;
 }
-
 
