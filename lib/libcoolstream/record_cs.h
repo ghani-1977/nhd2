@@ -41,6 +41,7 @@ class cRecord
 		pthread_t record_thread;
 		bool record_thread_running;
 		record_state_t exit_flag;
+		
 	public:
 		cRecord(int num = 0);
 		~cRecord();

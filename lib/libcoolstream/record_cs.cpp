@@ -59,16 +59,16 @@ cRecord::~cRecord()
 	Stop();
 }
 
-bool cRecord::Open(int /*numpids*/)
+bool cRecord::Open(int numpids)
 {
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_INFO, "%s:%s pids:%d\n", FILENAME, __FUNCTION__, numpids);
 	exit_flag = RECORD_STOPPED;
 	return true;
 }
 
 bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int numpids)
 {
-	dprintf(DEBUG_INFO, "fd %d, vpid 0x%02x\n", fd, vpid);
+	dprintf(DEBUG_INFO, "%s: fd %d, vpid 0x%02x\n", __FUNCTION__, fd, vpid);
 	int i;
 
 	if (!dmx)
@@ -88,12 +88,18 @@ bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int num
 	{
 		exit_flag = RECORD_FAILED_READ;
 		errno = i;
-		dprintf(DEBUG_INFO, "error creating thread!\n");
-		delete dmx;
-		dmx = NULL;
+		dprintf(DEBUG_INFO, "cRecord::Start: error creating thread!\n");
+		
+		if (dmx)
+		{
+			dmx->Stop();
+			delete dmx;
+			dmx = NULL;
+		}
 		return false;
 	}
 	record_thread_running = true;
+	
 	return true;
 }
 
@@ -101,25 +107,22 @@ bool cRecord::Stop(void)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-	if (exit_flag != RECORD_RUNNING)
-		printf("status not RUNNING? (%d)\n", exit_flag);
-
 	exit_flag = RECORD_STOPPED;
 	if (record_thread_running)
 		pthread_join(record_thread, NULL);
 	record_thread_running = false;
 
 	/* We should probably do that from the destructor... */
-	if (!dmx)
-		printf("dmx == NULL?\n");
-	else
+	if (dmx)
+	{
+		dmx->Stop();
 		delete dmx;
-	dmx = NULL;
+		dmx = NULL;
+	}
 
 	if (file_fd != -1)
 		close(file_fd);
-	else
-		printf("file_fd not open??\n");
+	
 	file_fd = -1;
 	return true;
 }
@@ -146,7 +149,7 @@ void cRecord::RecordThread()
 		if (buf_pos < BUFSIZE)
 		{
 			r = dmx->Read(buf + buf_pos, BUFSIZE - 1 - buf_pos, 100);
-			//dprintf(DEBUG_INFO, "buf_pos %6d r %6d / %6d\n", buf_pos, (int)r, BUFSIZE - 1 - buf_pos);
+
 			if (r < 0)
 			{
 				if (errno != EAGAIN)
@@ -155,13 +158,10 @@ void cRecord::RecordThread()
 					exit_flag = RECORD_FAILED_READ;
 					break;
 				}
-				//dprintf(DEBUG_INFO, "EAGAIN\n");
 			}
 			else
 				buf_pos += r;
 		}
-		//else
-		//	printf("buffer full! Overflow?\n");
 		
 		if (buf_pos > (BUFSIZE / 3)) /* start writeout */
 		{
@@ -172,15 +172,16 @@ void cRecord::RecordThread()
 			if (r < 0)
 			{
 				exit_flag = RECORD_FAILED_FILE;
-				//dprintf(DEBUG_INFO, "write error\n");
+
 				break;
 			}
 			buf_pos -= r;
 			memmove(buf, buf + r, buf_pos);
-			//dprintf(DEBUG_INFO, "buf_pos %6d w %6d / %6d\n", buf_pos, (int)r, (int)towrite);
 		}
 	}
+	
 	dmx->Stop();
+	
 	while (buf_pos > 0) /* write out the unwritten buffer content */
 	{
 		r = write(file_fd, buf, buf_pos);
@@ -194,8 +195,6 @@ void cRecord::RecordThread()
 		memmove(buf, buf + r, buf_pos);
 	}
 	free(buf);
-
-	//dprintf(DEBUG_INFO, "end\n");
 	
 	pthread_exit(NULL);
 }
