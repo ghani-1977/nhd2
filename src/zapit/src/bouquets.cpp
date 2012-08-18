@@ -431,9 +431,6 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 
 				chan = findChannelByChannelID(CREATE_CHANNEL_ID64);
 
-				//test
-				//printf("Bouquet Channel-ID freq %d pos %d id %llx\n", freq, satellitePosition, CREATE_CHANNEL_ID64);
-
 				if (chan != NULL) 
 				{
 					//printf("found\n");
