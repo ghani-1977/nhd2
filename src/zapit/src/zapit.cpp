@@ -86,12 +86,7 @@ int def_audio_mode = 0;
 t_channel_id live_channel_id;
 t_channel_id rec_channel_id;
 
-//int rezapTimeout;
-
-bool sortNames;
-//bool mcemode = false;
-bool sortlist = false;
-int scan_pids = false;
+//int scan_pids = false;
 
 bool firstzap = true;
 bool playing = false;
@@ -179,8 +174,8 @@ CZapitClient::scanType scanType = CZapitClient::ST_TVRADIO;
 
 bool standby = true;
 void * scan_transponder(void * arg);
-//static TP_params TP;
 
+/* zapit config */
 bool saveLastChannel;
 int lastChannelMode;
 uint32_t  lastChannelRadio;
@@ -479,9 +474,6 @@ void saveZapitSettings(bool write, bool write_a)
 		config.setBool("writeChannelsNames", writeChannelsNames);
 		config.setBool("makeRemainingChannelsBouquet", makeRemainingChannelsBouquet);
 
-		config.setBool("sortNames", sortNames);
-		config.setBool("scanPids", scan_pids);
-
 		config.setInt32("scanSDT", scanSDT);
 
 		if (config.getModifiedFlag())
@@ -558,12 +550,8 @@ void loadZapitSettings()
 	lastChannelRadio = config.getInt32("lastChannelRadio", 0);
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
 	
-	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", 1);
-	writeChannelsNames = config.getBool("writeChannelsNames", 1);
-	
-	sortNames = config.getBool("sortNames", 0);
-	sortlist = sortNames;
-	scan_pids = config.getBool("scanPids", 0);
+	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", false);
+	writeChannelsNames = config.getBool("writeChannelsNames", false);
 	
 	scanSDT = config.getInt32("scanSDT", 1);
 
@@ -3120,14 +3108,10 @@ unsigned zapTo(const unsigned int channel)
 
 void setZapitConfig(Zapit_config * Cfg)
 {
-	config.setBool("writeChannelsNames", Cfg->writeChannelsNames);
-	config.setBool("makeRemainingChannelsBouquet", Cfg->makeRemainingChannelsBouquet);
-	config.setBool("saveLastChannel", Cfg->saveLastChannel);
-
-	sortNames = Cfg->sortNames;
-	sortlist = sortNames;
+	writeChannelsNames = Cfg->writeChannelsNames;
+	makeRemainingChannelsBouquet = Cfg->makeRemainingChannelsBouquet;
 	
-	scan_pids = Cfg->scanPids;
+	config.setBool("saveLastChannel", Cfg->saveLastChannel);
 
 	scanSDT = Cfg->scanSDT;
 	
@@ -3140,13 +3124,11 @@ void sendConfig(int connfd)
 	printf("\n[zapit]sendConfig:\n");
 	Zapit_config Cfg;
 
-	Cfg.writeChannelsNames = config.getBool("writeChannelsNames", true);
-	Cfg.makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
-	Cfg.saveLastChannel = config.getBool("saveLastChannel", true);
-
-	Cfg.sortNames = sortNames;
+	Cfg.writeChannelsNames = writeChannelsNames;
+	Cfg.makeRemainingChannelsBouquet = makeRemainingChannelsBouquet;
 	
-	Cfg.scanPids = scan_pids;
+	Cfg.saveLastChannel = config.getBool("saveLastChannel", true);
+	
 	Cfg.scanSDT = scanSDT;
 
 	/* send */
@@ -3155,13 +3137,11 @@ void sendConfig(int connfd)
 
 void getZapitConfig(Zapit_config *Cfg)
 {
-        Cfg->writeChannelsNames = config.getBool("writeChannelsNames", true);
-        Cfg->makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", true);
-        Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
-
-        Cfg->sortNames = sortNames;
+        Cfg->writeChannelsNames = writeChannelsNames;
+        Cfg->makeRemainingChannelsBouquet = makeRemainingChannelsBouquet;
 	
-        Cfg->scanPids = scan_pids;
+        Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
+	
         Cfg->scanSDT = scanSDT;
 }
 
