@@ -409,8 +409,6 @@ void loadFrontendConfig()
 		// common
 		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
 		
-		printf("%s %d\n", __FUNCTION__, getFE(i)->mode);
-		
 		// sat
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{
@@ -428,12 +426,15 @@ void loadFrontendConfig()
 			getFE(i)->gotoXXLoDirection = getConfigValue(i, "gotoXXLoDirection", 0);
 			
 			getFE(i)->repeatUsals = getConfigValue(i, "repeatUsals", 0);
-			getFE(i)->diseqcType = (diseqc_t)getConfigValue(i, "diseqcType", NO_DISEQC);
+			getFE(i)->diseqcType = (diseqc_t)getConfigValue(i, "diseqcType", (diseqc_t)NO_DISEQC);
+			getFE(i)->diseqcRepeats = getConfigValue(i, "diseqcRepeats", 0);
 			getFE(i)->motorRotationSpeed = getConfigValue(i, "motorRotationSpeed", 18); // default: 1.8 degrees per second
+			
+			getFE(i)->lastSatellitePosition = getConfigValue(i, "lastSatellitePosition", 0);
 
 			// FE functions at start
-			getFE(i)->setDiseqcRepeats( getConfigValue(i, "diseqcRepeats", 0) );
-			getFE(i)->setCurrentSatellitePosition( getConfigValue(i, "lastSatellitePosition", 0) );
+			getFE(i)->setDiseqcRepeats( getFE(i)->diseqcRepeats );
+			getFE(i)->setCurrentSatellitePosition( getFE(i)->lastSatellitePosition );
 			getFE(i)->setDiseqcType( getFE(i)->diseqcType );
 		}
 	}
