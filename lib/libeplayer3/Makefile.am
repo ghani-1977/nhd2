@@ -36,8 +36,6 @@ AM_CPPFLAGS = -Dattribute_deprecated=''
 
 LIBEPLAYER3_LIBS = libeplayer3.a -lpthread -lavformat -lavcodec -lavutil -lz -lm -lpng
 
-#LIBEPLAYER3_LIBS += -lass
-
 bin_PROGRAMS = eplayer3 meta
 
 eplayer3_SOURCES = tools/eplayer2.c
