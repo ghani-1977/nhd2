@@ -90,7 +90,7 @@ class CFrontend
 	public:
 		fe_mode_t	mode;
 		
-		/**/
+		/* usals config */
 		int useGotoXX;
 		double gotoXXLatitude;
 		double gotoXXLongitude;
@@ -99,7 +99,7 @@ class CFrontend
 		int repeatUsals;
 		int motorRotationSpeed;
 		
-		//int32_t lastSatellitePosition;
+		int32_t lastSatellitePosition;
 		
 		/* how often to repeat DiSEqC 1.1 commands */
 		uint8_t diseqcRepeats;
