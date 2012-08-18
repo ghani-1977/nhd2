@@ -148,17 +148,7 @@ typedef struct Zapit_config {
 	int writeChannelsNames;
 	int makeRemainingChannelsBouquet;
 	int saveLastChannel;
-	int sortNames;
-	int scanPids;
 	int scanSDT;
-	
-	//int motorRotationSpeed;
-	//int useGotoXX;
-	//int gotoXXLaDirection;
-	//int gotoXXLoDirection;
-	//int repeatUsals;
-	//double gotoXXLatitude;
-	//double gotoXXLongitude;
 } t_zapit_config;
 
 //nit_data: SatellitesPosition/feindex
