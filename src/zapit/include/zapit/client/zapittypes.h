@@ -145,7 +145,6 @@ typedef struct TP_map
 
 #define MAX_LNB 64 
 typedef struct Zapit_config {
-	int writeChannelsNames;
 	int makeRemainingChannelsBouquet;
 	int saveLastChannel;
 	int scanSDT;

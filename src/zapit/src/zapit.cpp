@@ -180,8 +180,6 @@ bool saveLastChannel;
 int lastChannelMode;
 uint32_t  lastChannelRadio;
 uint32_t  lastChannelTV;
-
-bool writeChannelsNames;
 bool makeRemainingChannelsBouquet;
 
 /* set/get zapit.config */
@@ -472,7 +470,6 @@ void saveZapitSettings(bool write, bool write_a)
 			config.setInt64("lastChannel", live_channel_id);
 		}
 		
-		config.setBool("writeChannelsNames", writeChannelsNames);
 		config.setBool("makeRemainingChannelsBouquet", makeRemainingChannelsBouquet);
 
 		config.setInt32("scanSDT", scanSDT);
@@ -552,7 +549,6 @@ void loadZapitSettings()
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
 	
 	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", false);
-	writeChannelsNames = config.getBool("writeChannelsNames", false);
 	
 	scanSDT = config.getInt32("scanSDT", 1);
 
@@ -3113,11 +3109,8 @@ unsigned zapTo(const unsigned int channel)
 
 void setZapitConfig(Zapit_config * Cfg)
 {
-	writeChannelsNames = Cfg->writeChannelsNames;
 	makeRemainingChannelsBouquet = Cfg->makeRemainingChannelsBouquet;
-	
 	config.setBool("saveLastChannel", Cfg->saveLastChannel);
-
 	scanSDT = Cfg->scanSDT;
 	
 	/* save it */
@@ -3129,11 +3122,8 @@ void sendConfig(int connfd)
 	printf("\n[zapit]sendConfig:\n");
 	Zapit_config Cfg;
 
-	Cfg.writeChannelsNames = writeChannelsNames;
 	Cfg.makeRemainingChannelsBouquet = makeRemainingChannelsBouquet;
-	
 	Cfg.saveLastChannel = config.getBool("saveLastChannel", true);
-	
 	Cfg.scanSDT = scanSDT;
 
 	/* send */
@@ -3142,11 +3132,8 @@ void sendConfig(int connfd)
 
 void getZapitConfig(Zapit_config *Cfg)
 {
-        Cfg->writeChannelsNames = writeChannelsNames;
         Cfg->makeRemainingChannelsBouquet = makeRemainingChannelsBouquet;
-	
         Cfg->saveLastChannel = config.getBool("saveLastChannel", true);
-	
         Cfg->scanSDT = scanSDT;
 }
 
