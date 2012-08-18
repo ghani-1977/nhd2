@@ -871,7 +871,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
 	//FIXME: add condition if we allow to tune when we are recording to protect record file
-	// tune it
+	#if 0
 	if( currentMode & RECORD_MODE ) 
 	{
 		for (int i = 1; i < FrontendCount; i++)
@@ -898,6 +898,10 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 		if(!tune_to_channel(live_fe, live_channel, transponder_change))
 			return -1;
 	}
+	#endif
+
+	if(!tune_to_channel(live_fe, live_channel, transponder_change))
+		return -1;
 
 	// check if nvod
 	if (live_channel->getServiceType() == ST_NVOD_REFERENCE_SERVICE) 
