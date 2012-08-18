@@ -747,7 +747,6 @@ void SaveServices(bool tocopy)
 		return;
 	}
 
-	//fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit api=\"3\">\n");
 	fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
 	
 	/* loop througth satpos */
