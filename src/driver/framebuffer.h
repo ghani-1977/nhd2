@@ -171,9 +171,10 @@ class CFrameBuffer
 		unsigned int getScreenHeight(bool real = false); 
 		unsigned int getScreenX();
 		unsigned int getScreenY();
+		unsigned int getAvailableMem() const;             // size of a available mem occupied by the framebuffer
 		
 		bool getActive() const;                     // is framebuffer active?
-		void setActive(bool enable);                     // is framebuffer active?
+		void setActive(bool enable);                // is framebuffer active?
 
 		void setBlendMode(uint8_t mode);
 		void setBlendLevel(int blev);

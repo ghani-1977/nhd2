@@ -345,6 +345,11 @@ fb_pixel_t * CFrameBuffer::getFrameBufferPointer() const
 		return (fb_pixel_t *) virtual_fb;
 }
 
+unsigned int CFrameBuffer::getAvailableMem() const
+{
+	return available;
+}
+
 bool CFrameBuffer::getActive() const
 {
 	return (active || (virtual_fb != NULL));
