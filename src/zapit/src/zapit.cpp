@@ -209,9 +209,7 @@ extern void tuxtx_set_pid(int pid, int page, const char * cc);
 // frontend stuff
 #define DVBADAPTER_MAX	2
 #define FRONTEND_MAX	4
-int AdapterCount = 0;
 int FrontendCount = 0;
-bool twin_tuned = false;
 
 #define MAKE_FE_KEY(adapter, number) ((adapter << 8) | (number & 0xFF))
 typedef std::map<unsigned short, CFrontend*> fe_map_t;
@@ -224,7 +222,8 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
-int twin_index;
+int twin_index = 1;
+bool HaveTwin = false;
 
 
 /* variables for EN 50494 (a.k.a Unicable) */
@@ -233,7 +232,7 @@ int twin_index;
 
 bool initFrontend()
 {
-	// frontend count
+	// scan for frontend
 	int i, j;
 	
 	CFrontend * fe;
@@ -260,6 +259,18 @@ bool initFrontend()
 	FrontendCount = femap.size();
 	
 	printf("found %d frontends\n", femap.size());
+	
+	// check for twin
+	for (int i = 1; i < FrontendCount; i++)
+	{
+			// twin
+		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+		{
+			HaveTwin = true;
+			twin_index = i;
+		}
+	}
+	
 	if(femap.size() == 0)
 		return false;
 		
@@ -274,21 +285,6 @@ CFrontend * getFE(int index)
 	printf("Frontend #%d not found", index);
 	
 	return NULL;
-}
-
-bool HaveTwin()
-{
-	for (int i = 1; i < FrontendCount; i++)
-	{
-			// twin
-		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-		{
-			twin_index = i;
-			return true;
-		}
-	}
-	
-	return false;
 }
 
 CFrontend * find_live_fe(CZapitChannel * thischannel)
@@ -306,7 +302,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 	CFrontend * fe = NULL;
 	
 	// twin
-	if(HaveTwin && ( (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_TWIN) || (femap[0]->mode == FE_TWIN && femap[twin_index]->mode == FE_SINGLE) ) )
+	if( HaveTwin && ( (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_TWIN) || (femap[0]->mode == FE_TWIN && femap[twin_index]->mode == FE_SINGLE) ) )
 		fe = femap[twin_index];					// we prefex twin fe
 	else if( HaveTwin && (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_LOOP) )
 	{
@@ -665,7 +661,7 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 	}
 
 	// tune fe (by TP change, nvod, twin_mode)
-	if (transponder_change || current_is_nvod || twin_tuned) 
+	if (transponder_change || current_is_nvod ) 
 	{
 		if ( frontend->tuneChannel(thischannel, current_is_nvod) == false) 
 		{
