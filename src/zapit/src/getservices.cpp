@@ -587,7 +587,8 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			if( getFE(0)->getInfo()->type == FE_QPSK && getFE(0)->mode != FE_LOOP )
+			//FIXME:
+			if( getFE(0)->getInfo()->type == FE_QPSK )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -607,7 +608,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_QAM && getFE(0)->mode != FE_LOOP )
+			else if( getFE(0)->getInfo()->type == FE_QAM )
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -627,7 +628,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_OFDM && getFE(0)->mode != FE_LOOP )
+			else if( getFE(0)->getInfo()->type == FE_OFDM )
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
