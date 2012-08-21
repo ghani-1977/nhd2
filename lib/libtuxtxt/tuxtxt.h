@@ -17,7 +17,6 @@
 #define TUXTXT_CFG_STANDALONE 0  // 1:plugin only 0:use library
 #define TUXTXT_DEBUG 0
 
-
 #include <config.h>
 
 #include <fcntl.h>
@@ -67,7 +66,6 @@ extern void tuxtxt_decompress_page(int p, int sp, unsigned char* buffer);
 extern int tuxtxt_get_zipsize(int p, int sp);
 #endif
 #endif
-
 
 #define TUXTXTCONF CONFIGDIR "/tuxtxt/tuxtxt2.conf"
 
@@ -203,7 +201,6 @@ const char *ObjectType[] =
 /* framebuffer stuff */
 static unsigned char *lfb = 0;
 struct fb_var_screeninfo var_screeninfo;
-struct fb_fix_screeninfo fix_screeninfo;
 
 /* freetype stuff */
 FT_Library      library;
@@ -215,7 +212,6 @@ FTC_SBit        sbit;
 
 FT_Face			face;
 FONTTYPE typettf;
-
 
 // G2 Charset (0 = Latin, 1 = Cyrillic, 2 = Greek)
 const unsigned short int G2table[3][6*16] = {
@@ -367,7 +363,6 @@ enum
 
 const unsigned char countryconversiontable[] = { NAT_UK, NAT_DE, NAT_SW, NAT_IT, NAT_FR, NAT_SP, NAT_CZ, NAT_RO};
 
-
 /* some data */
 char versioninfo[16];
 int hotlist[10];
@@ -404,7 +399,6 @@ struct timeval tv_delay;
 int  subtitledelay, delaystarted;
 FILE *conf;
 
-
 unsigned short RCCode;
 
 struct _pid_table
@@ -423,7 +417,6 @@ unsigned char restoreaudio = 0;
 /* language dependent texts */
 #define MAXMENULANGUAGE 8 /* 0 deutsch, 1 englisch, 2 französisch, 3 niederländisch, 4 griechisch, 5 italienisch, 6 polnisch, 7 schwedisch, 8 suomi */
 const int menusubset[] =   { NAT_DE   , NAT_UK    , NAT_FR       , NAT_UK          , NAT_GR      , NAT_IT       , NAT_PL    , NAT_SW, NAT_SW };
-
 
 #define Menu_StartX (StartX + fontwidth*9/2)
 #define Menu_StartY (StartY + fontheight)
@@ -456,10 +449,12 @@ const char hotlistpagecolumn[] =	/* last(!) column of page to show in each langu
 {
 	22, 26, 28, 27, 28, 27, 28, 21, 20
 };
+
 const char hotlisttextcolumn[] =
 {
 	24, 14, 14, 15, 14, 15, 14, 23, 22
 };
+
 const char hotlisttext[][2*6] =
 {
 	{ "dazu entf." },
@@ -485,6 +480,7 @@ const char configonoff[][2*4] =
 	{ "p} av " },
 	{ "EI ON " },
 };
+
 const char menuatr[Menu_Height*(Menu_Width+1)] =
 {
 	"0000000000000000000000000000002"
@@ -512,6 +508,7 @@ const char menuatr[Menu_Height*(Menu_Width+1)] =
 	"3334444444444444444444444443332"
 	"2222222222222222222222222222222"
 };
+
 const char configmenu[][Menu_Height*(Menu_Width+1)] =
 {
 	{
@@ -802,7 +799,9 @@ const char message_3[][39] =
 	{ "ã    s|ker efter TextTV tj{nster    äé" },
 	{ "ã   etsit{{n Teksti-TV -palvelua    äé" },
 };
+
 const char message_3_blank[] = "ã                                   äé";
+
 const char message_7[][39] =
 {
 	{ "ã kein Teletext auf dem Transponder äé" },
@@ -815,6 +814,7 @@ const char message_7[][39] =
 	{ "ã ingen TextTV p} denna transponder äé" },
 	{ "ã    Ei Teksti-TV:t{ l{hettimell{   äé" },
 };
+
 const char message_8[][39] =
 {
 /*    00000000001111111111222222222233333333334 */
@@ -829,6 +829,7 @@ const char message_8[][39] =
 	{ "ã  v{ntar p} mottagning av sida 100 äé" },
 	{ "ã        Odotetaan sivua 100        äé" },
 };
+
 const char message8pagecolumn[] = /* last(!) column of page to show in each language */
 {
 	33, 34, 34, 35, 29, 30, 30, 34, 34
@@ -963,7 +964,6 @@ tstPageAttr page_atrb[40 * 25];
 
 //unsigned short page_atrb[40 * 25]; /*  ?????:h:cc:bbbb:ffff -> ?=reserved, h=double height, c=charset (0:G0 / 1:G1c / 2:G1s), b=background, f=foreground */
 
-
 /* colormap */
 const unsigned short defaultcolors[] =	/* 0x0bgr */
 {
@@ -997,7 +997,6 @@ struct fb_cmap colormap_0 = {0, SIZECOLTABLE, rd0, gn0, bl0, tr0};
 /* tables for color table remapping, first entry (no remapping) skipped, offsets for color index */
 const unsigned char MapTblFG[] = {  0,  0,  8,  8, 16, 16, 16 };
 const unsigned char MapTblBG[] = {  8, 16,  8, 16,  8, 16, 24 };
-
 
 /* shapes */
 enum
@@ -1137,9 +1136,6 @@ unsigned char *aShapes[] =
 	aG3_60, aG3_61, aG3_62, aG3_63, aG3_64, aG3_65, aG3_66, aG3_67, aG3_68, aG3_69, aG3_6a, aG3_6b, aG3_6c, aG3_6d, aG3_6e, aG3_6f,
 	aG3_70, aG3_71, aG3_72, aG3_73, aG3_74, aG3_75, aG3_76, aG3_77, aG3_78, aG3_79, aG3_7a, aG3_7b, aG3_7c, aG3_7d, aG3_7e
 };
-
-
-
 
 /* lcd layout */
 const char lcd_layout[] =
