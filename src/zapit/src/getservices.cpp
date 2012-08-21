@@ -49,7 +49,6 @@ extern int zapit_debug;						/* defined in zapit.cpp */
 extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 
 extern int FrontendCount;
-extern CFrontend * live_fe;
 CFrontend * getFE(int index);
 
 
@@ -112,8 +111,6 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 		//if(feparams.frequency < 20000) 
 		//	feparams.frequency = feparams.frequency*1000;
 
-		//freq = feparams.frequency/1000;
-		//TEST
 		if(Source == DVB_C)
 			freq = feparams.frequency/100;
 		else
@@ -200,11 +197,11 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 
 		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid,CZapitChannel ( name, service_id, transport_stream_id,original_network_id, service_type, satellitePosition, freq, FeIndex)));
 
-		//printf("getServicess:ParseChannels: add %s %x fe(%d)\n", name.c_str(), &ret.first->second, FeIndex);
+		DBG("getServicess:ParseChannels: add %s %x fe(%d)\n", name.c_str(), &ret.first->second, FeIndex);
 
 		if(ret.second == false) 
 		{
-			//printf("getSevices:ParseChannels: duplicate channel %s id %llx freq %d (old %s at %d)\n", name.c_str(), chid, freq, ret.first->second.getName().c_str(), ret.first->second.getFreqId());
+			DBG("getSevices:ParseChannels: duplicate channel %s id %llx freq %d (old %s at %d)\n", name.c_str(), chid, freq, ret.first->second.getName().c_str(), ret.first->second.getFreqId());
 		} 
 		else 
 		{
@@ -241,7 +238,6 @@ void FindTransponder(xmlNodePtr search)
 	t_satellite_position satellitePosition = 0;
 	uint8_t Source;
 	newtpid = 0xC000;
-	//int feindex = 0;
 	
 	while (search) 
 	{
@@ -266,7 +262,7 @@ void FindTransponder(xmlNodePtr search)
 		
 
 		// sat position from services.xml
-		satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10); //FIXME
+		satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
 		
 		// frontend index from sat pos
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
@@ -591,7 +587,7 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			if( getFE(0)->getInfo()->type == FE_QPSK)
+			if( getFE(0)->getInfo()->type == FE_QPSK && getFE(0)->mode != FE_LOOP )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -611,7 +607,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_QAM)
+			else if( getFE(0)->getInfo()->type == FE_QAM && getFE(0)->mode != FE_LOOP )
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -631,7 +627,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_OFDM)
+			else if( getFE(0)->getInfo()->type == FE_OFDM && getFE(0)->mode != FE_LOOP )
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{

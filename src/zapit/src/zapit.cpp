@@ -224,6 +224,8 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
+int twin_index;
+
 
 /* variables for EN 50494 (a.k.a Unicable) */
 //int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
@@ -274,11 +276,27 @@ CFrontend * getFE(int index)
 	return NULL;
 }
 
+bool HaveTwin()
+{
+	for (int i = 1; i < FrontendCount; i++)
+	{
+			// twin
+		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+		{
+			twin_index = i;
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 CFrontend * find_live_fe(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
 	/* index methode */
+	#if 0
 	if(currentMode & RECORD_MODE) 
 	{
 		if(FrontendCount > 1)
@@ -292,13 +310,20 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 					fe = femap[thischannel->getFeIndex()];
 			}
 		}
+		else
 			fe = femap[thischannel->getFeIndex()];
 	}
 	else
 		// multi/single
 		fe = femap[thischannel->getFeIndex()];
-	
-	//fe = fe;
+	#endif
+		
+	if( HaveTwin && femap[0]->mode != FE_LOOP)
+		fe = femap[0];
+	else if( HaveTwin && femap[0]->mode == FE_LOOP )
+		fe = femap[twin_index];
+	else
+		fe = femap[thischannel->getFeIndex()];
 	
 	return fe;
 }
@@ -307,6 +332,7 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
+	#if 0
 	// single
 	if(FrontendCount == 1)
 	{
@@ -314,24 +340,49 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 		
 		return fe;
 	}
-	
-	// twin/multi
-	for (int i = 1; i < FrontendCount; i++)
+	else
 	{
-		// twin
-		if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+		// twin/multi
+		for (int i = 1; i < FrontendCount; i++)
 		{
-			if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_TWIN) ) // not same tp and second fe is twin mode
-				fe = femap[i];
-			else if( (SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_LOOP) ) // same tp and second fe is loop mode
-				fe = femap[i];
+			// twin
+			if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+			{
+				if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_TWIN) ) // not same tp and second fe is twin mode
+					fe = femap[i];
+				else if( (SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_LOOP) ) // same tp and second fe is loop mode
+					fe = femap[i];
+				else
+					fe = femap[0];
+			}
 			else
-				fe = femap[0];
+				// multi
+				fe = femap[thischannel->getFeIndex()];
 		}
-		else
-			// multi
-			fe = femap[thischannel->getFeIndex()];
 	}
+	#endif
+	
+	#if 1
+	// twin
+	if(HaveTwin && ( (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_TWIN) || (femap[0]->mode == FE_TWIN && femap[twin_index]->mode == FE_SINGLE) ) )
+		fe = femap[twin_index];					// we prefex twin fe
+	else if( HaveTwin && (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_LOOP) )
+	{
+		if( SAME_TRANSPONDER(rec_channel_id, live_channel_id) ) // same tp and second fe is loop mode
+			fe = femap[twin_index];				//we prefex looped fe
+		else
+			fe = femap[0];					// we prefex initial fe (fe_loop cant tune)
+	}
+	else if ( HaveTwin && (femap[0]->mode == FE_LOOP && femap[twin_index]->mode == FE_SINGLE) )
+	{
+		if( SAME_TRANSPONDER(rec_channel_id, live_channel_id) ) // same tp and second fe is loop mode
+			fe = femap[0];					//we prefex looped fe
+		else
+			fe = femap[twin_index];				// we prefex initial fe (fe_loop cant tune)
+	}
+	else
+		fe = femap[thischannel->getFeIndex()];			// single/multi
+	#endif
 	
 	return fe;
 }
@@ -868,35 +919,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
 	//FIXME: add condition if we allow to tune when we are recording to protect record file
-	#if 0
-	if( currentMode & RECORD_MODE ) 
-	{
-		for (int i = 1; i < FrontendCount; i++)
-		{
-			// twin
-			if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-			{
-				//if( (!SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (record_fe->mode == FE_TWIN) ) // not same tp and second fe is twin mode
-				if( record_fe->mode == FE_TWIN ) // not same tp and second fe is twin mode
-				{
-					if(!tune_to_channel(live_fe, live_channel, transponder_change))
-						return -1;
-				}
-			}
-			else if( !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
-			{
-				if(!tune_to_channel(live_fe, live_channel, transponder_change))
-					return -1;
-			}
-		}
-	}
-	else
-	{
-		if(!tune_to_channel(live_fe, live_channel, transponder_change))
-			return -1;
-	}
-	#endif
-
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 		return -1;
 
@@ -986,6 +1008,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
 
+	// dual decoding is brocken
 	//if( !SAME_TRANSPONDER(rec_channel_id, live_channel_id) )
 	//	rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
 
