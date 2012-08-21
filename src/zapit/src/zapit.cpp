@@ -296,34 +296,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 	CFrontend * fe = NULL;
 	
 	/* index methode */
-	#if 0
-	if(currentMode & RECORD_MODE) 
-	{
-		if(FrontendCount > 1)
-		{
-			for (int i = 1; i < FrontendCount; i++)
-			{
-				// twin
-				if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-					fe = femap[0];
-				else
-					fe = femap[thischannel->getFeIndex()];
-			}
-		}
-		else
-			fe = femap[thischannel->getFeIndex()];
-	}
-	else
-		// multi/single
-		fe = femap[thischannel->getFeIndex()];
-	#endif
-		
-	if( HaveTwin && femap[0]->mode != FE_LOOP)
-		fe = femap[0];
-	else if( HaveTwin && femap[0]->mode == FE_LOOP )
-		fe = femap[twin_index];
-	else
-		fe = femap[thischannel->getFeIndex()];
+	fe = femap[thischannel->getFeIndex()];
 	
 	return fe;
 }
@@ -332,37 +305,6 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
-	#if 0
-	// single
-	if(FrontendCount == 1)
-	{
-		fe = live_fe;
-		
-		return fe;
-	}
-	else
-	{
-		// twin/multi
-		for (int i = 1; i < FrontendCount; i++)
-		{
-			// twin
-			if( femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-			{
-				if( (!SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_TWIN) ) // not same tp and second fe is twin mode
-					fe = femap[i];
-				else if( (SAME_TRANSPONDER(rec_channel_id, live_channel_id)) && (femap[i]->mode == FE_LOOP) ) // same tp and second fe is loop mode
-					fe = femap[i];
-				else
-					fe = femap[0];
-			}
-			else
-				// multi
-				fe = femap[thischannel->getFeIndex()];
-		}
-	}
-	#endif
-	
-	#if 1
 	// twin
 	if(HaveTwin && ( (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_TWIN) || (femap[0]->mode == FE_TWIN && femap[twin_index]->mode == FE_SINGLE) ) )
 		fe = femap[twin_index];					// we prefex twin fe
@@ -382,7 +324,6 @@ CFrontend * find_record_fe(CZapitChannel * thischannel)
 	}
 	else
 		fe = femap[thischannel->getFeIndex()];			// single/multi
-	#endif
 	
 	return fe;
 }
