@@ -81,6 +81,8 @@ class CPlugins
 			int posx, posy, sizex, sizey;
 			bool needoffset;
 			bool hide;
+			//unsigned char lfb;
+			
 			bool operator< (const plugin& a) const
 			{
 				return this->filename < a.filename ;
