@@ -100,6 +100,7 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 {
 	if( getFE(feindex)->mode == FE_NOTCONNECTED )
 		return false;
+	
 	//Set Input
 	getFE(feindex)->setInput(satellitePosition, feparams->frequency, polarization);
 
@@ -401,7 +402,7 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 	// read network information table
 	fake_tid++; fake_nid++;
 
-	/*status =*/ add_to_scan(CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid), &feparams, polarization, false, feindex);
+	add_to_scan(CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid), &feparams, polarization, false, feindex);
 
 	return 0;
 }
@@ -456,7 +457,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 	
 	eventServer->sendEvent ( CZapitClient::EVT_SCAN_NUM_TRANSPONDERS, CEventServer::INITID_ZAPIT,&found_transponders, sizeof(found_transponders));
 
-	/*status =*/ get_sdts(satellitePosition, feindex);
+	get_sdts(satellitePosition, feindex);
 
 	/* 
 	 * channels from PAT do not have service_type set.
@@ -483,6 +484,8 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 						INFO("setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " from %02x to %02x", stI->first, scI->second.getServiceType(), stI->second);
 						DBG("setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " %s from %02x to %02x", stI->first, scI->second.getName().c_str(), scI->second.getServiceType(), stI->second);
 						scI->second.setServiceType(stI->second);
+						//FIXME: do we need to setFeIndex ??? twin???
+						scI->second.setFeIndex(feindex);
 						break;
 				}
 			}
@@ -541,7 +544,6 @@ void * start_scanthread(void *scanmode)
 	CZapitClient myZapitClient;
 
 	fake_tid = fake_nid = 0;
-	
 
 	if( getFE(feindex)->getInfo()->type == FE_QAM)
 	{
@@ -721,7 +723,7 @@ void * scan_transponder(void * arg)
 	fake_tid++; 
 	fake_nid++;
 
-	/*status =*/ add_to_scan(CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid), &TP->feparams, TP->polarization, false, ScanTP.feindex);
+	add_to_scan(CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid), &TP->feparams, TP->polarization, false, ScanTP.feindex);
 
 	get_sdts(satellitePosition, ScanTP.feindex);
 
