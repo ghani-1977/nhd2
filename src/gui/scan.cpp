@@ -63,8 +63,6 @@
 #define NEUTRINO_SCAN_STOP_SCRIPT	CONFIGDIR "/scan.stop"
 #define NEUTRINO_SCAN_SETTINGS_FILE	CONFIGDIR "/scan.conf"
 
-TP_params TP;
-
 #define RED_BAR 40
 #define YELLOW_BAR 70
 #define GREEN_BAR 100
@@ -72,7 +70,7 @@ TP_params TP;
 #define BAR_WIDTH 150
 #define BAR_HEIGHT 16//(13 + BAR_BORDER*2)
 
-
+TP_params TP;
 CFrontend * getFE(int index);
 extern CScanSettings * scanSettings;
 
@@ -93,9 +91,10 @@ CScanTs::CScanTs(int num)
 int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	diseqc_t            diseqcType = NO_DISEQC;
+	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
-	//bool manual = ( scanSettings->scan_mode == 2);
+
 	int scan_mode = scanSettings->scan_mode;
 	bool scan_all = actionKey == "all";
 	bool test = actionKey == "test";
@@ -104,8 +103,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	sat_iterator_t sit;
 	CZapitClient::ScanSatelliteList satList;
 	CZapitClient::commandSetScanSatelliteList sat;
-	
-	//int _scan_pids = scanSettings->scan_pids;
 
 	// window size
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -163,9 +160,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 			}
 		}
 		
-		// scan pids
-		//scanSettings->scan_pids = true;
-		
 		// scan mode
 		TP.scan_mode = scanSettings->scan_mode;
 		
@@ -177,7 +171,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 			TP.feparams.u.qpsk.symbol_rate = atoi(scanSettings->TP_rate);
 			TP.feparams.u.qpsk.fec_inner = (fe_code_rate_t) scanSettings->TP_fec;
 			TP.polarization = scanSettings->TP_pol;
-			//TP.feparams.u.qpsk.modulation	= (fe_modulation_t) scanSettings->TP_mod; //do we need this
 
 			printf("CScanTs::exec: fe(%d) freq %d rate %d fec %d pol %d\n", feindex, TP.feparams.frequency, TP.feparams.u.qpsk.symbol_rate, TP.feparams.u.qpsk.fec_inner, TP.polarization/*, TP.feparams.u.qpsk.modulation*/ );
 		} 
@@ -197,7 +190,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 			TP.feparams.u.ofdm.constellation = (fe_modulation_t)scanSettings->TP_const; 
 			TP.feparams.u.ofdm.transmission_mode = (fe_transmit_mode_t)scanSettings->TP_trans;
 			TP.feparams.u.ofdm.guard_interval = (fe_guard_interval_t)scanSettings->TP_guard;
-			//TP.feparams.u.ofdm.hierarchy_information = HIERARCHY_AUTO;
 			TP.feparams.u.ofdm.hierarchy_information = (fe_hierarchy_t)scanSettings->TP_hierarchy;
 
 			printf("CScanTs::exec: fe(%d) freq %d band %d HP %d LP %d const %d trans %d guard %d hierarchy %d\n", feindex, TP.feparams.frequency, TP.feparams.u.ofdm.bandwidth, TP.feparams.u.ofdm.code_rate_HP, TP.feparams.u.ofdm.code_rate_LP, TP.feparams.u.ofdm.constellation, TP.feparams.u.ofdm.transmission_mode, TP.feparams.u.ofdm.guard_interval, TP.feparams.u.ofdm.hierarchy_information);
