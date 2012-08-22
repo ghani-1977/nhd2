@@ -100,7 +100,7 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 			if(feparams.u.qpsk.symbol_rate < 50000) 
 				feparams.u.qpsk.symbol_rate = feparams.u.qpsk.symbol_rate * 1000;
 			
-			// TEST
+			// ???
 			if(feparams.frequency < 20000) 
 				feparams.frequency = feparams.frequency*1000;
 			//else
@@ -480,21 +480,21 @@ int LoadServices(bool only_current)
 
 	satcleared = 1;
 
-	// FIXME: twin: this rewrite the feindex !!!
+	// parse sat tp
 	for(int i = 0; i < FrontendCount; i++)
 	{
 		xmlFreeDoc(scanInputParser);
 		scanInputParser = NULL;
 		
-		if( getFE(i)->getInfo()->type == FE_QPSK) 
+		if( (getFE(i)->getInfo()->type == FE_QPSK) && (getFE(i)->mode == FE_SINGLE) ) 
 		{
 			scanInputParser = parseXmlFile(SATELLITES_XML);
 		}
-		else if( getFE(i)->getInfo()->type == FE_QAM)
+		else if( (getFE(i)->getInfo()->type == FE_QAM) && (getFE(i)->mode == FE_SINGLE) )
 		{
 			scanInputParser = parseXmlFile(CABLES_XML);
 		}
-		else if( getFE(i)->getInfo()->type == FE_OFDM)
+		else if( (getFE(i)->getInfo()->type == FE_OFDM) && (getFE(i)->mode == FE_SINGLE) )
 		{
 			scanInputParser = parseXmlFile(TERRESTRIALS_XML);
 		}
@@ -588,7 +588,7 @@ int LoadServices(bool only_current)
 		while (search) 
 		{
 			//FIXME:
-			if( getFE(0)->getInfo()->type == FE_QPSK )
+			if( (getFE(0)->getInfo()->type == FE_QPSK) && (getFE(0)->mode == FE_SINGLE) )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -608,7 +608,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_QAM )
+			else if( (getFE(0)->getInfo()->type == FE_QAM) && (getFE(0)->mode == FE_SINGLE) )
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -628,7 +628,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( getFE(0)->getInfo()->type == FE_OFDM )
+			else if( (getFE(0)->getInfo()->type == FE_OFDM) && (getFE(0)->mode == FE_SINGLE) )
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
