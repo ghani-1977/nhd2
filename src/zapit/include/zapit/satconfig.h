@@ -38,4 +38,13 @@ typedef std::map <int, std::string>::iterator scan_list_iterator_t;
 extern satellite_map_t satellitePositions;					// defined in getServices.cpp
 extern scan_list_t scanProviders;						// defined in zapit.cpp
 
+/* cable map */
+//typedef std::map<string, sat_config> cable_map_t;
+//typedef std::map<string, sat_config_t>::iterator cable_iterator_t;
+
+/* terrestrial map */
+//typedef std::map<string, sat_config> terrestrial_map_t;
+//typedef std::map<string, sat_config_t>::iterator terrestrial_iterator_t;
+
+
 #endif		/* _SAT_CONFIG_H_ */

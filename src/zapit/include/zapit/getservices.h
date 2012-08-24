@@ -39,6 +39,7 @@
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, /*const*/ uint8_t Source, int FeIndex = 0);
 void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, int FeIndex = 0);
 void FindTransponder(xmlNodePtr root);
+int loadProviders();
 int LoadServices(bool only_current);
 void SaveServices(bool tocopy=false);
 void SaveMotorPositions();
