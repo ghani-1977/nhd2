@@ -86,6 +86,9 @@ std::map <transponder_id_t, transponder> scantransponders;		/* TP list to scan *
 std::map <transponder_id_t, transponder> scanedtransponders;		/* global TP list for current scan */
 std::map <transponder_id_t, transponder> nittransponders;
 
+extern void parseScanInputXml(int feindex);
+
+
 #define TIMER_START()			\
         static struct timeval tv, tv2;	\
         static unsigned int msec;	\
@@ -558,7 +561,9 @@ void * start_scanthread(void *scanmode)
 		frontendType = (char *) "sat";
 	}
 	
-	// parse
+	// get provider position and name
+	parseScanInputXml(feindex);
+	
 	xmlNodePtr search = xmlDocGetRootElement(scanInputParser)->xmlChildrenNode;
 
 	// read all sat or cable sections
@@ -596,6 +601,7 @@ void * start_scanthread(void *scanmode)
 			// get name of current satellite oder cable provider
 			strcpy(providerName, xmlGetAttribute(search,  "name"));
 
+			// satfeed
 			if( ( getFE(feindex)->getInfo()->type == FE_OFDM || getFE(feindex)->getInfo()->type == FE_QAM) && xmlGetAttribute(search, "satfeed") )
 			{
 				if (!strcmp(xmlGetAttribute(search, "satfeed"), "true"))

@@ -697,7 +697,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 			break;
 	}
 
-	if(scanSettings->scan_pids && channel) 
+	if( /*scanSettings->scan_pids &&*/ channel) 
 	{
 		if(tpchange)
 			parse_pat(feindex);

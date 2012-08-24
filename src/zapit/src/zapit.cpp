@@ -287,7 +287,7 @@ CFrontend * getFE(int index)
 	return NULL;
 }
 
-CFrontend * find_live_fe(CZapitChannel * thischannel)
+CFrontend * liveFrontend(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
@@ -297,7 +297,7 @@ CFrontend * find_live_fe(CZapitChannel * thischannel)
 	return fe;
 }
 
-CFrontend * find_record_fe(CZapitChannel * thischannel)
+CFrontend * recordFrontend(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
@@ -824,7 +824,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	// find live_fe
-	if(( live_fe = find_live_fe(newchannel)) == NULL)
+	if(( live_fe = liveFrontend(newchannel)) == NULL)
 	{
 		printf("%s can not allocate live fe;-(\n", __FUNCTION__);
 		return -1;
@@ -923,7 +923,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	rec_channel_id = rec_channel->getChannelID();
 	
 	// find record fe
-	if(( record_fe = find_record_fe(rec_channel)) == NULL)
+	if(( record_fe = recordFrontend(rec_channel)) == NULL)
 	{
 		printf("%s can not allocate record fe;-(\n", __FUNCTION__);
 		return -1;
@@ -1121,11 +1121,17 @@ int prepare_channels()
 	allchans.clear();  				// <- this invalidates all bouquets, too!
 
 	// delete scaninputParser
+	#if 0
         if(scanInputParser) 
 	{
                 delete scanInputParser;
                 scanInputParser = NULL;
         }
+        #endif
+        
+        //
+        loadProviders();
+	//
 
 	// load services
 	if (LoadServices(false) < 0)
@@ -1141,6 +1147,17 @@ int prepare_channels()
 
 void parseScanInputXml(int feindex)
 {
+	//
+	if( (getFE(feindex)->mode == FE_TWIN) || (getFE(feindex)->mode == FE_LOOP) )
+		return;
+	
+	if(scanInputParser) 
+	{
+                delete scanInputParser;
+                scanInputParser = NULL;
+        }
+        //
+	
 	switch ( getFE(feindex)->getInfo()->type) 
 	{
 		case FE_QPSK:
@@ -3408,6 +3425,9 @@ int zapit_main_thread(void *data)
 	
 	// load fe config
 	loadFrontendConfig();
+	
+	// load sats list
+	//loadProviders(); //needed to get feindex, and for scan
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;

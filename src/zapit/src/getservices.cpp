@@ -32,14 +32,15 @@
 #include <set>
 
 
+
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */
-extern transponder_list_t transponders;				/* defined in zapit.cpp */
+extern transponder_list_t transponders;				/* defined in zapit.cpp */ // from services.xml
 extern tallchans allchans;					/* defined in zapit.cpp */
 extern int scanSDT;						/* defined in zapit.cpp */
 static int newfound;
 
 satellite_map_t satellitePositions;				// satellite position as specified in satellites.xml
-std::map<transponder_id_t, transponder> select_transponders;	// TP map
+std::map<transponder_id_t, transponder> select_transponders;	// TP map all tps from sats liste
 
 int newtpid;
 int tcnt = 0;
@@ -50,6 +51,9 @@ extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 
 extern int FrontendCount;
 CFrontend * getFE(int index);
+
+extern void parseScanInputXml(int feindex);
+//cable_map_t cablePositions;
 
 
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, uint8_t Source, int FeIndex)
@@ -195,7 +199,14 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 
 		pair<map<t_channel_id, CZapitChannel>::iterator,bool> ret;
 
-		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid,CZapitChannel ( name, service_id, transport_stream_id,original_network_id, service_type, satellitePosition, freq, FeIndex)));
+		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid,CZapitChannel ( name, 
+												     service_id, 
+												     transport_stream_id,
+												     original_network_id, 
+												     service_type, 
+												     satellitePosition, 
+												     freq, 
+												     FeIndex)));
 
 		DBG("getServicess:ParseChannels: add %s %x fe(%d)\n", name.c_str(), &ret.first->second, FeIndex);
 
@@ -452,14 +463,12 @@ void init_sat(t_satellite_position position)
 	satellitePositions[position].lnbSwitch = 11700;
 	satellitePositions[position].use_in_scan = 0;
 	satellitePositions[position].use_usals = 0;
-
-	//satellitePositions[position].type = DVB_S;
-	//satellitePositions[position].feindex = 0;
 }
 
-// load services
+//TEST
+// load sats list
 // FIXME: parsing sats is ugly musst be fixed, parsing T then S some T postions will be overwritten :-(
-int LoadServices(bool only_current)
+int loadProviders()
 {
 	xmlDocPtr parser;
 	bool satcleared = 0;
@@ -467,10 +476,7 @@ int LoadServices(bool only_current)
 	
 	t_satellite_position position = 0; //first postion
 
-	printf("getServices:LoadServices:\n");
-
-	if(only_current)
-		goto do_current;
+	printf("getServices:loadProviders:\n");
 	
 	select_transponders.clear();
 	fake_tid = fake_nid = 0;
@@ -482,22 +488,8 @@ int LoadServices(bool only_current)
 
 	// parse sat tp
 	for(int i = 0; i < FrontendCount; i++)
-	{
-		xmlFreeDoc(scanInputParser);
-		scanInputParser = NULL;
-		
-		if( (getFE(i)->getInfo()->type == FE_QPSK) && (getFE(i)->mode == FE_SINGLE) ) 
-		{
-			scanInputParser = parseXmlFile(SATELLITES_XML);
-		}
-		else if( (getFE(i)->getInfo()->type == FE_QAM) && (getFE(i)->mode == FE_SINGLE) )
-		{
-			scanInputParser = parseXmlFile(CABLES_XML);
-		}
-		else if( (getFE(i)->getInfo()->type == FE_OFDM) && (getFE(i)->mode == FE_SINGLE) )
-		{
-			scanInputParser = parseXmlFile(TERRESTRIALS_XML);
-		}
+	{		
+		parseScanInputXml(i);
 
 		if (scanInputParser != NULL) 
 		{
@@ -577,6 +569,24 @@ int LoadServices(bool only_current)
 			}
 		}
 	}
+	
+	return 0;
+}	
+
+// load services
+// FIXME: parsing sats is ugly musst be fixed, parsing T then S some T postions will be overwritten :-(
+int LoadServices(bool only_current)
+{
+	xmlDocPtr parser;
+	bool satcleared = 0;
+	scnt = 0;
+	
+	t_satellite_position position = 0; //first postion
+
+	printf("getServices:LoadServices:\n");
+
+	if(only_current)
+		goto do_current;
 
 	// parse services.xml
 	parser = parseXmlFile(SERVICES_XML);
@@ -588,6 +598,7 @@ int LoadServices(bool only_current)
 		while (search) 
 		{
 			//FIXME:
+			#if 0
 			if( (getFE(0)->getInfo()->type == FE_QPSK) && (getFE(0)->mode == FE_SINGLE) )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
@@ -648,6 +659,23 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
+			#endif
+			
+			//
+			if (!(strcmp(xmlGetName(search), "sat"))) 
+			{
+				// position
+				t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
+				char * name = xmlGetAttribute(search, "name");
+
+				if(satellitePositions.find(position) == satellitePositions.end()) 
+				{
+						init_sat(position);
+							
+						satellitePositions[position].name = name;
+				}
+			}
+			//
 
 			// jump to the next node
 			search = search->xmlNextNode;
