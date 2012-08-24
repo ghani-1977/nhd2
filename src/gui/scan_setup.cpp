@@ -66,8 +66,8 @@ CScanSettings * scanSettings;
 
 extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
 Zapit_config zapitCfg;			//defined neutrino.cpp
-char zapit_lat[20];			//defined neutrino.cpp
-char zapit_long[20];			//defined neutrino.cpp
+char zapit_lat[20];				//defined neutrino.cpp
+char zapit_long[20];				//defined neutrino.cpp
 
 // frontend
 extern int FrontendCount;			// defined in zapit.cpp
@@ -279,6 +279,8 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		}
 		
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
+		
+		g_Zapit->reinitChannels();	// needed for twin if we prefer other femodes
 		
 		hintBox->hide();
 		delete hintBox;
@@ -530,8 +532,8 @@ void CScanSetup::showScanService()
 	scansetup->addItem(useNit);
 	
 	// scan pids
-	CMenuOptionChooser* scanPids = new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SCANPIDS,  (int *)&scanSettings->scan_pids, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++) );
-	scansetup->addItem(scanPids);
+	//CMenuOptionChooser* scanPids = new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SCANPIDS,  (int *)&scanSettings->scan_pids, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++) );
+	//scansetup->addItem(scanPids);
 		
 	scansetup->addItem(GenericMenuSeparatorLine);
 		
@@ -918,7 +920,7 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 	
 	scan_mode = getConfigValue(index, "scan_mode", 1); // NIT (0) or fast (1)
 	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
-	scan_pids = getConfigValue(index, "scan_pids", 0);
+	//scan_pids = getConfigValue(index, "scan_pids", 0);
 	
 	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);
@@ -978,7 +980,7 @@ bool CScanSettings::saveSettings(const char * const fileName, int index)
 	
 	setConfigValue(index, "scan_mode", scan_mode);
 	setConfigValue(index, "scanSectionsd", scanSectionsd ); // sectionsd
-	setConfigValue(index, "scan_pids", scan_pids );		// descriptor
+	//setConfigValue(index, "scan_pids", scan_pids );		// descriptor
 	
 	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);

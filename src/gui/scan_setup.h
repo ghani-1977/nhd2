@@ -84,7 +84,7 @@ class CScanSettings
 		
 		int femode;
 		
-		int scan_pids;
+		//int scan_pids;
 	
 		CScanSettings(int num = 0);
 	
