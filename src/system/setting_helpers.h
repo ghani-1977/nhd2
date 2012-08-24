@@ -64,7 +64,7 @@ class CDHCPNotifier : public CChangeObserver
 		bool changeNotify(const neutrino_locale_t, void * data);
 };
 
-// onoff notifier
+// onoff notifier //needed by moviebrowser
 class COnOffNotifier : public CChangeObserver
 {
         private:
@@ -73,16 +73,6 @@ class COnOffNotifier : public CChangeObserver
         public:
                 COnOffNotifier (CMenuItem* a1,CMenuItem* a2 = NULL,CMenuItem* a3 = NULL,CMenuItem* a4 = NULL,CMenuItem* a5 = NULL);
                 bool changeNotify(const neutrino_locale_t, void *Data);
-};
-
-// recording notifier
-class CRecordingNotifier : public CChangeObserver
-{
-	private:
-		CMenuItem* toDisable[9];
-	public:
-		CRecordingNotifier(CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*);
-		bool changeNotify(const neutrino_locale_t OptionName, void*);
 };
 
 // recording safety notifier
@@ -124,6 +114,7 @@ class CSectionsdConfigNotifier : public CChangeObserver
 };
 
 // touch file notifier
+/*
 class CTouchFileNotifier : public CChangeObserver
 {
 	const char * filename;
@@ -136,6 +127,7 @@ class CTouchFileNotifier : public CChangeObserver
 		
 		bool changeNotify(const neutrino_locale_t, void * data);
 };
+*/
 
 // color setup notifier
 class CColorSetupNotifier : public CChangeObserver
@@ -177,13 +169,6 @@ class CTimingSettingsNotifier : public CChangeObserver
 {
 	public:
 		bool changeNotify(const neutrino_locale_t OptionName, void *);
-};
-
-// font size notifier
-class CFontSizeNotifier : public CChangeObserver
-{
-	public:
-		bool changeNotify(const neutrino_locale_t, void *);
 };
 
 // rec apids notifier
@@ -251,13 +236,6 @@ class CDataResetNotifier : public CMenuTarget
 		int exec(CMenuTarget* parent, const std::string& actionKey);
 };
 
-// blend mode
-class CColorMenuBlendModeNotifier : public CChangeObserver
-{
-	public:
-		bool changeNotify(const neutrino_locale_t, void * data);
-};
-
 // language select notifier
 class CLangSelectNotifier : public CChangeObserver
 {
@@ -267,6 +245,17 @@ class CLangSelectNotifier : public CChangeObserver
 	public:
 		CLangSelectNotifier(CMenuItem *);
 		bool changeNotify(const neutrino_locale_t, void * /*data*/);
+};
+
+// scan setup notifier
+class CScanSetupNotifier : public CChangeObserver
+{
+	private:
+		CMenuItem* toDisable[10];
+		int feindex;
+	public:
+		CScanSetupNotifier(CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, int num = 0);
+		bool changeNotify(const neutrino_locale_t OptionName, void*);
 };
 
 int safe_mkdir(char * path);

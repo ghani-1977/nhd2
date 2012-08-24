@@ -96,6 +96,7 @@ extern int tuxtx_main(int _rc, int pid, int page, int source );
 //extern int tuner_to_scan;		//defined in scan_setup.cpp
 extern CFrontend * live_fe;
 extern CScanSettings * scanSettings;
+extern CFrontend * getFE(int index);
 
 extern "C" int pinghost( const char *hostname );
 
@@ -210,7 +211,7 @@ bool CDHCPNotifier::changeNotify(const neutrino_locale_t, void * data)
 	return true;
 }
 
-// onoff notifier
+// onoff notifier needed by moviebrowser
 COnOffNotifier::COnOffNotifier( CMenuItem* a1,CMenuItem* a2,CMenuItem* a3,CMenuItem* a4,CMenuItem* a5)
 {
         number = 0;
@@ -234,40 +235,6 @@ bool COnOffNotifier::changeNotify(const neutrino_locale_t, void *Data)
 			toDisable[i]->setActive(true);
 	}
 	
-	return true;
-}
-
-// recording notifier
-CRecordingNotifier::CRecordingNotifier(CMenuItem* i1 , CMenuItem* i2 , CMenuItem* i3 ,
-                                       CMenuItem* i4 , CMenuItem* i5 , CMenuItem* i6 ,
-                                       CMenuItem* i7 , CMenuItem* i8 , CMenuItem* i9)
-{
-	toDisable[ 0] = i1;
-	toDisable[ 1] = i2;
-	toDisable[ 2] = i3;
-	toDisable[ 3] = i4;
-	toDisable[ 4] = i5;
-	toDisable[ 5] = i6;
-	toDisable[ 6] = i7;
-	toDisable[ 7] = i8;
-	toDisable[ 8] = i9;
-}
-
-bool CRecordingNotifier::changeNotify(const neutrino_locale_t, void *)
-{
-	if ((g_settings.recording_type == CNeutrinoApp::RECORDING_OFF) || (g_settings.recording_type == CNeutrinoApp::RECORDING_FILE))
-	{
-		for(int i = 0; i < 8; i++) 
-		{
-			toDisable[i]->setActive(false);
-		}
-
-		if (g_settings.recording_type == CNeutrinoApp::RECORDING_FILE)
-		{
-			toDisable[7]->setActive(true);
-		}
-	}
-
 	return true;
 }
 
@@ -320,6 +287,7 @@ bool CSectionsdConfigNotifier::changeNotify(const neutrino_locale_t, void *)
         return true;
 }
 
+/*
 bool CTouchFileNotifier::changeNotify(const neutrino_locale_t, void * data)
 {
 	if ((*(int *)data) != 0)
@@ -334,6 +302,7 @@ bool CTouchFileNotifier::changeNotify(const neutrino_locale_t, void * data)
 		remove(filename);
 	return true;
 }
+*/
 
 // color setup notifier
 bool CColorSetupNotifier::changeNotify(const neutrino_locale_t, void *)
@@ -516,19 +485,6 @@ bool CTimingSettingsNotifier::changeNotify(const neutrino_locale_t OptionName, v
 		}
 	}
 	return false;
-}
-
-// font size notifier
-bool CFontSizeNotifier::changeNotify(const neutrino_locale_t, void *)
-{
-	CHintBox hintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_FONTSIZE_HINT)); // UTF-8
-	hintBox.paint();
-
-	CNeutrinoApp::getInstance()->SetupFonts();
-
-	hintBox.hide();
-
-	return true;
 }
 
 // rec apids notifier
@@ -912,20 +868,10 @@ int CDataResetNotifier::exec(CMenuTarget* parent, const std::string& actionKey)
 
 	if(delete_chan) 
 	{
-		system("rm -f /var/tuxbox/config/zapit/*.xml");
+		system("rm -f /var/tuxbox/config/zapit/services.xml");
 		g_Zapit->reinitChannels();
 	}
 
-	return true;
-}
-
-// blendmodenotifier
-bool CColorMenuBlendModeNotifier::changeNotify(const neutrino_locale_t, void * data)
-{
-	int mode = * (int *) data;
-	
-	CFrameBuffer::getInstance()->setBlendMode(mode);
-  
 	return true;
 }
 
@@ -969,6 +915,39 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 	if(found)
 		sectionsd_set_languages(v_languages);
 	
+	return true;
+}
+
+// scansetup notifier
+CScanSetupNotifier::CScanSetupNotifier(CMenuItem* i1 , CMenuItem* i2 , CMenuItem* i3 ,
+                                       CMenuItem* i4 , CMenuItem* i5 , CMenuItem* i6 ,
+                                       CMenuItem* i7 , CMenuItem* i8 , CMenuItem* i9,
+				       CMenuItem *i10, int num)
+{
+	toDisable[ 0] = i1;
+	toDisable[ 1] = i2;
+	toDisable[ 2] = i3;
+	toDisable[ 3] = i4;
+	toDisable[ 4] = i5;
+	toDisable[ 5] = i6;
+	toDisable[ 6] = i7;
+	toDisable[ 7] = i8;
+	toDisable[ 8] = i9;
+	toDisable[ 9] = i10;
+	
+	feindex = num;
+}
+
+bool CScanSetupNotifier::changeNotify(const neutrino_locale_t, void *)
+{
+	if ( getFE(feindex)->mode == FE_LOOP )
+	{
+		for(int i = 0; i < 8; i++) 
+		{
+			toDisable[i]->setActive(false);
+		}
+	}
+
 	return true;
 }
 
