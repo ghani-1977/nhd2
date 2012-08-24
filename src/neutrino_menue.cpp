@@ -162,9 +162,11 @@ static CTimingSettingsNotifier timingsettingsnotifier;
 
 extern int FrontendCount;			// defined in zapit.cpp
 extern int tuner_to_scan;			// defined in scan_setup.cpp
-//extern CFrontend * live_fe;
-//extern fe_map_t	femap;
 CFrontend * getFE(int index);
+
+extern Zapit_config zapitCfg;	//defined in neutrino.cpp
+void setZapitConfig(Zapit_config * Cfg);
+void getZapitConfig(Zapit_config *Cfg);
 
 
 // option off0_on1
@@ -1008,6 +1010,14 @@ const CMenuOptionChooser::keyval  CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS[CHANNE
 	{ 1 , LOCALE_CHANNELLIST_EPGTEXT_ALIGN_RIGHT }
 };
 
+#define SECTIONSD_SCAN_OPTIONS_COUNT 3
+const CMenuOptionChooser::keyval SECTIONSD_SCAN_OPTIONS[SECTIONSD_SCAN_OPTIONS_COUNT] =
+{
+	{ 0, LOCALE_OPTIONS_OFF },
+	{ 1, LOCALE_OPTIONS_ON  },
+	{ 2, LOCALE_OPTIONS_ON_WITHOUT_MESSAGES  }
+};
+
 CMenuOptionStringChooser * tzSelect;
 
 void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &miscSettingsGeneral, CMenuWidget &miscSettingsChannelList, CMenuWidget &miscSettingsEPG, CMenuWidget &miscSettingsFileBrowser )
@@ -1126,6 +1136,13 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// channellist ca
 	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_SHOWCA, &g_settings.channellist_ca, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
+	
+	//
+	getZapitConfig(&zapitCfg);
+	
+	miscSettingsChannelList.addItem(GenericMenuSeparatorLine);
+	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_MAKE_BOUQUET, (int *)&zapitCfg.makeRemainingChannelsBouquet, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
+	miscSettingsChannelList.addItem( new CMenuOptionChooser(LOCALE_ZAPIT_SCANSDT, (int *)&zapitCfg.scanSDT, SECTIONSD_SCAN_OPTIONS, SECTIONSD_SCAN_OPTIONS_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++)) );
 
 	miscSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MISCSETTINGS_CHANNELLIST, true, "", &miscSettingsChannelList, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, "miscsettingschannellist", LOCALE_HELPTEXT_MISCSETTINGSCHANNELLIST ));
 

@@ -217,9 +217,10 @@ extern int zapit_ready;					//defined in zapit.cpp
 static pthread_t zapit_thread ;
 void * zapit_main_thread(void *data);
 extern t_channel_id live_channel_id; 			//defined in zapit.cpp
+extern Zapit_config zapitCfg;				//defined in scan_setup.cpp
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
-extern CZapitChannel * live_channel;				// zapit.cpp
+extern CZapitChannel * live_channel;			// zapit.cpp
 extern CFrontend * live_fe;
 extern CScanSettings * scanSettings;
 
@@ -3438,10 +3439,10 @@ _repeat:
 	}
 	else if( msg == NeutrinoMessages::EVT_SERVICESCHANGED ) 
 	{
-		if(!reloadhintBox)
-			reloadhintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RELOAD_HINT));
+		//if(!reloadhintBox)
+		//	reloadhintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RELOAD_HINT));
 
-		reloadhintBox->paint();
+		//reloadhintBox->paint();
 
 		channelsInit();
 
@@ -3454,7 +3455,7 @@ _repeat:
 			g_RCInput->postMsg(CRCInput::RC_ok, 0);
 		}
 
-		reloadhintBox->hide();
+		//reloadhintBox->hide();
 	}
 	else if( msg == NeutrinoMessages::EVT_BOUQUETSCHANGED ) 
 	{
@@ -3465,6 +3466,7 @@ _repeat:
 
 		channelsInit();
 		channelList->adjustToChannelID(live_channel_id);//FIXME what if deleted ?
+		
 		reloadhintBox->hide();
 
 		return messages_return::handled;
@@ -4896,6 +4898,9 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 
 		//g_Sectionsd->setEventsAreOldInMinutes((unsigned short) (g_settings.epg_old_hours*60));
 		//g_Sectionsd->setHoursToCache((unsigned short) (g_settings.epg_cache_days*24));
+		
+		zapitCfg.saveLastChannel = g_settings.uselastchannel;
+		setZapitConfig(&zapitCfg);
 
 		hintBox->hide();
 		delete hintBox;
@@ -4912,7 +4917,14 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	else if(actionKey=="reloadchannels") 
 	{
+		if(!reloadhintBox)
+			reloadhintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RELOAD_HINT));
+
+		reloadhintBox->paint();
+		
 		g_Zapit->reinitChannels();	//we don't need the reloadhint box g_zapit reinit channels apple evt bouquets change 
+		
+		reloadhintBox->hide();
 	}
 	else if(actionKey=="reloadplugins") 
 	{
