@@ -76,8 +76,6 @@ bool cPlayback::Open()
 		player->output		= &OutputHandler;
 		player->container	= &ContainerHandler;
 		player->manager		= &ManagerHandler;
-
-		//printf("%s\n", player->output->Name);
 	}
 
 	// registration of output devices
@@ -94,7 +92,6 @@ bool cPlayback::Open()
 #if defined (ENABLE_LIBASS)
 	SubtitleOutputDef_t out;
 
-	// for testing ass subtitles
 	out.screen_width = CFrameBuffer::getInstance()->getScreenWidth();
 	out.screen_height = CFrameBuffer::getInstance()->getScreenHeight();
 	out.framebufferFD = CFrameBuffer::getInstance()->getFileHandle();
@@ -131,21 +128,18 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 
 	if(!strncmp("http://", filename, 7))
 	{
-	   // printf("http://\n");
             isHTTP = true;
 	}
 	else if(!strncmp("vlc://", filename, 6))
 	{
-	   // printf("http://\n");
             isHTTP = true;
 	}
 	else if(!strncmp("file://", filename, 7))
 	{
-	    //printf("file://\n");
+	 
 	}
 	else if(!strncmp("upnp://", filename, 7))
 	{
-	    //printf("upnp://\n");
             isHTTP = true;
 	}
 	else
@@ -156,71 +150,6 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 	//open file
 	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0) 
 	{
-		#if 0
-		//list audio tracks
-		if(player && player->manager && player->manager->audio) 
-		{
-			char ** TrackList = NULL;
-			player->manager->audio->Command(player, MANAGER_LIST, &TrackList);
-
-			if (TrackList != NULL) 
-			{
-				printf("AudioTrack List\n");
-				int i = 0;
-
-				for (i = 0; TrackList[i] != NULL; i+=2) 
-				{
-					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-
-					free(TrackList[i]);
-					free(TrackList[i+1]);
-				}
-				free(TrackList);
-			}
-        	}
-
-		//list video tracks
-		if(player && player->manager && player->manager->video)
-		{
-			char **TrackList = NULL;
-			player->manager->video->Command(player, MANAGER_LIST, &TrackList);
-
-			if (TrackList != NULL) 
-			{
-				printf("VideoTrack List\n");
-				int i = 0;
-				for (i = 0; TrackList[i] != NULL; i+=2) 
-				{
-					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-					free(TrackList[i]);
-					free(TrackList[i+1]);
-				}
-				free(TrackList);
-			}
-		}
-
-		//list SUB tracks
-#if defined (ENABLE_LIBASS)		
-		if(player && player->manager && player->manager->subtitle) 
-		{
-			char ** TrackList = NULL;
-			player->manager->subtitle->Command(player, MANAGER_LIST, &TrackList);
-
-			if (TrackList != NULL) 
-			{
-				printf("SubtitleTrack List\n");
-				int i = 0;
-				for (i = 0; TrackList[i] != NULL; i+=2) 
-				{
-					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-					free(TrackList[i]);
-					free(TrackList[i+1]);
-				}
-				free(TrackList);
-			}
-		}
-#endif
-		#endif
 		/* play it baby  */
 		if(player && player->output && player->playback) 
 		{
