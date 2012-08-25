@@ -907,7 +907,7 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		{
 			std::string extension;
 			extension = file_name.substr(ext_pos + 1, file_name.length() - ext_pos);
-			
+			extension = "." + extension;
 			strReplace(file_name, extension.c_str(), ".jpg");
 		}
 	
