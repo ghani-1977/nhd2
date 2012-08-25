@@ -333,7 +333,7 @@ CMoviePlayerGui::~CMoviePlayerGui()
 
 void CMoviePlayerGui::cutNeutrino()
 {
-	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "CMoviePlayerGui::%s\n", __FUNCTION__);
 	
 	if (stopped)
 		return;
@@ -373,7 +373,7 @@ void CMoviePlayerGui::cutNeutrino()
 
 void CMoviePlayerGui::restoreNeutrino()
 {
-	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "CMoviePlayerGui::%s\n", __FUNCTION__);
 	
 	if (!stopped)
 		return;
