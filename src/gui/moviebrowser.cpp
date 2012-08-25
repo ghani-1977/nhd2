@@ -1248,7 +1248,18 @@ void CMovieBrowser::refreshMovieInfo(void)
 
 		std::string fname = m_movieSelectionHandler->file.Name;
 		
-		strReplace(fname, ".ts", ".jpg");
+		//strReplace(fname, ".ts", ".jpg");
+		///
+		int ext_pos = 0;
+		ext_pos = fname.rfind('.');
+		if( ext_pos > 0)
+		{
+			std::string extension;
+			extension = fname.substr(ext_pos + 1, fname.length() - ext_pos);
+			
+			strReplace(fname, extension.c_str(), ".jpg");
+		}
+		///
 		//printf("screenshot name: %s\n", fname.c_str());
 		logo_ok = !access(fname.c_str(), F_OK);
 		
@@ -1778,7 +1789,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
 		}
 	}
-	else if ( /*msg == CRCInput::RC_help ||*/ msg == CRCInput::RC_info) 
+	else if ( msg == CRCInput::RC_info) 
 	{
 		if(m_movieSelectionHandler != NULL)
 		{
@@ -2558,7 +2569,54 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 			}
 			else
 			{
-				int test = flist[i].getFileName().find(".ts") ;
+				//int test = flist[i].getFileName().find(".ts") ;
+				
+				// dirty way to use filter ;-8
+				int test = -1;
+				int ext_pos = 0;
+				ext_pos = flist[i].getFileName().rfind('.');
+				if( ext_pos > 0)
+				{
+					std::string extension;
+					extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
+					
+					if( 
+					    (strcasecmp("ts", extension.c_str()) == 0) ||
+					    (strcasecmp("mpg", extension.c_str()) == 0) ||
+					    (strcasecmp("mpeg", extension.c_str()) == 0) ||
+					    (strcasecmp("divx", extension.c_str()) == 0) ||
+#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_DREAMBOX)					    
+					    (strcasecmp("avi", extension.c_str()) == 0) ||
+					    (strcasecmp("mkv", extension.c_str()) == 0) ||
+					    (strcasecmp("asf", extension.c_str()) == 0) ||
+					    (strcasecmp("aiff", extension.c_str()) == 0) ||
+					    (strcasecmp("m2p", extension.c_str()) == 0) ||
+					    (strcasecmp("mpv", extension.c_str()) == 0) ||
+					    (strcasecmp("m2ts", extension.c_str()) == 0) ||
+					    (strcasecmp("m2ts", extension.c_str()) == 0) ||
+					    (strcasecmp("vob", extension.c_str()) == 0) ||
+					    (strcasecmp("mp4", extension.c_str()) == 0) ||
+					    (strcasecmp("mov", extension.c_str()) == 0) ||
+					    (strcasecmp("flv", extension.c_str()) == 0) ||
+#endif					    
+					    
+					    (strcasecmp("dat", extension.c_str()) == 0) ||
+					    (strcasecmp("trp", extension.c_str()) == 0) ||
+					    (strcasecmp("vdr", extension.c_str()) == 0) ||
+					    (strcasecmp("mts", extension.c_str()) == 0) //||
+					    
+					    //(strcasecmp("wav", extension.c_str()) == 0) ||
+					    //(strcasecmp("flac", extension.c_str()) == 0) ||
+					    //(strcasecmp("mp3", extension.c_str()) == 0) ||
+					    //(strcasecmp("wmv", extension.c_str()) == 0) ||
+					    //(strcasecmp("wma", extension.c_str()) == 0) ||
+					    //(strcasecmp("ogg", extension.c_str()) == 0)
+					    )
+					  
+							//return true;
+						test = 0;
+				}
+				//
 				
 				if( test == -1)
 				{
@@ -2568,7 +2626,10 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				{
 					m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 					movieInfo.file.Name = flist[i].Name;
-					if(m_movieInfo.loadMovieInfo(&movieInfo)) 
+					
+					//if(m_movieInfo.loadMovieInfo(&movieInfo)) 
+					m_movieInfo.loadMovieInfo(&movieInfo);
+					
 					{ 
 						//FIXME atm we show only ts+xml (records) here
 						movieInfo.file.Mode = flist[i].Mode;
