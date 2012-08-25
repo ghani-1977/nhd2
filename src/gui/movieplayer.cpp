@@ -957,6 +957,7 @@ void CMoviePlayerGui::PlayFile(void)
 						g_vtype = p_movie_info->VideoType;
 						
 						// show radio pic if we play mp3
+						#if 0
 						if(g_vpid == 0x0 && g_vtype == 0)
 						{
 							frameBuffer->loadBackgroundPic("mp3.jpg", true);
@@ -964,6 +965,7 @@ void CMoviePlayerGui::PlayFile(void)
 							frameBuffer->blit();
 #endif							
 						}
+						#endif
 						
 						printf("CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
 						printf("CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
@@ -1007,6 +1009,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 						is_file_player = true;
 
+						#if 0
 						if(ftype == CFile::FILE_MP3)
 						{
 							//test
@@ -1015,6 +1018,7 @@ void CMoviePlayerGui::PlayFile(void)
 							frameBuffer->blit();
 #endif
 						}
+						#endif
 
 						filename = file->Name.c_str();
 						update_lcd = true;
@@ -2105,7 +2109,9 @@ void CMoviePlayerGui::PlayFile(void)
 #endif		
 		else if(msg == CRCInput::RC_red)
 		{
-			playback->SyncAV();
+			//playback->SyncAV();
+			if (p_movie_info != NULL)
+				cMovieInfo.showMovieInfo(*p_movie_info);
 		}
 		else if (msg == CRCInput::RC_timeout) 
 		{
