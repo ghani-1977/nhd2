@@ -1150,9 +1150,10 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     memcpy(track.aacbuf + 94, &stream->codec->extradata_size, 2); //bits_per_sample
 
                     memcpy(track.aacbuf + 96, stream->codec->extradata, stream->codec->extradata_size);
-
-                    ffmpeg_printf(1, "aacbuf:\n");
-                    Hexdump(track.aacbuf, track.aacbuflen);
+		    
+                    //ffmpeg_printf(1, "aacbuf:\n");
+                    //Hexdump(track.aacbuf, track.aacbuflen);
+		    
 
                     //ffmpeg_printf(1, "priv_data:\n");
                     //Hexdump(stream->codec->priv_data, track.aacbuflen);
