@@ -90,7 +90,22 @@ bool CMovieInfo::convertTs2XmlName(char *char_filename, int size)
 bool CMovieInfo::convertTs2XmlName(std::string * filename)
 {
 	//TRACE("[mi]->convertTs2XmlName\r\n");
-	int bytes = filename->find(".ts");
+	//int bytes = filename->find(".ts");
+	///
+	int bytes = -1;
+	int ext_pos = 0;
+	ext_pos = filename->rfind('.');
+	if( ext_pos > 0)
+	{
+		std::string extension;
+		extension = filename->substr(ext_pos + 1, filename->length() - ext_pos);
+		//sprintf(extension-c_str(), ".%s", extension.c_str())
+		extension = "." + extension;
+			
+		//strReplace(fname, extension.c_str(), ".jpg");
+		bytes = filename->find( extension.c_str() );
+	}
+		///
 	bool result = false;
 
 	if (bytes != -1) 

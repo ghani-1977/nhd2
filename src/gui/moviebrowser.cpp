@@ -1256,7 +1256,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 		{
 			std::string extension;
 			extension = fname.substr(ext_pos + 1, fname.length() - ext_pos);
-			
+			extension = "." + extension;
 			strReplace(fname, extension.c_str(), ".jpg");
 		}
 		///
@@ -1891,7 +1891,18 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
                 	if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_REMOVE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 			{
                         	std::string fname = m_movieSelectionHandler->file.Name;
-				strReplace(fname, ".ts", ".jpg");
+				//strReplace(fname, ".ts", ".jpg");
+				///
+				int ext_pos = 0;
+				ext_pos = fname.rfind('.');
+				if( ext_pos > 0)
+				{
+					std::string extension;
+					extension = fname.substr(ext_pos + 1, fname.length() - ext_pos);
+					extension = "." + extension;
+					strReplace(fname, extension.c_str(), ".jpg");
+				}
+				///
                         	unlink(fname.c_str());
 				refresh();
 			}
@@ -2181,7 +2192,18 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
                         std::string fname = movieSelectionHandler.file.Name;
                         //strReplace(fname, ".ts", ".bmp");
 			//test
-			strReplace(fname, ".ts", ".jpg");
+			//strReplace(fname, ".ts", ".jpg");
+			///
+			int ext_pos = 0;
+			ext_pos = fname.rfind('.');
+			if( ext_pos > 0)
+			{
+				std::string extension;
+				extension = fname.substr(ext_pos + 1, fname.length() - ext_pos);
+				extension = "." + extension;
+				strReplace(fname, extension.c_str(), ".jpg");
+			}
+			///
                         unlink(fname.c_str());
 #endif
 
