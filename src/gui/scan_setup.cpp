@@ -236,10 +236,6 @@ CScanSetup::CScanSetup(int num)
 	feindex = num;
 	
 	scanSettings = new CScanSettings(feindex);
-	
-	//load scan settings 
-	//if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
-	//	dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
 }
 
 CScanSetup::~CScanSetup()
@@ -280,7 +276,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 		
-		g_Zapit->reinitChannels();	// needed for twin if we prefer other femodes
+		g_Zapit->reinitChannels();	// needed for twin if we set other femodes
 		
 		hintBox->hide();
 		delete hintBox;
@@ -338,6 +334,7 @@ void CScanSetup::showScanService()
 			
 	// init satNotify
 	CSatelliteSetupNotifier * satNotify = new CSatelliteSetupNotifier(feindex);
+	CScanSetupNotifier * feModeNotifier = new CScanSetupNotifier(feindex);
 	
 	// Sat Setup
 	CMenuWidget * satSetup = new CMenuWidget(LOCALE_SATSETUP_SAT_SETUP, NEUTRINO_ICON_SETTINGS);
@@ -404,9 +401,6 @@ void CScanSetup::showScanService()
 				satNotify->addItem(1, diseqc);
 				satNotify->addItem(0, comm);
 				satNotify->addItem(0, uncomm);
-				
-				//satNotify->addItem(0, motor); //FIXME testing motor with not DISEQC_ADVANCED
-				//satNotify->addItem(0, usals);
 
 				CIntInput* lofL = new CIntInput(LOCALE_SATSETUP_LOFL, (int&) sit->second.lnbOffsetLow, 5, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 				CIntInput* lofH = new CIntInput(LOCALE_SATSETUP_LOFH, (int&) sit->second.lnbOffsetHigh, 5, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
@@ -513,27 +507,26 @@ void CScanSetup::showScanService()
 	}
 	
 	if(FrontendCount > 1)
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (scanned_fe)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (scanned_fe)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
 	else
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_SINGLE_OPTION_COUNT, true, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
 	// scan type
-	CMenuOptionChooser* ojScantype = new CMenuOptionChooser(LOCALE_ZAPIT_SCANTYPE, (int *)&scanSettings->scanType, SCANTS_ZAPIT_SCANTYPE, SCANTS_ZAPIT_SCANTYPE_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++), "", true);
+	CMenuOptionChooser * ojScantype = new CMenuOptionChooser(LOCALE_ZAPIT_SCANTYPE, (int *)&scanSettings->scanType, SCANTS_ZAPIT_SCANTYPE, SCANTS_ZAPIT_SCANTYPE_COUNT, ((scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP)), NULL, CRCInput::convertDigitToKey(shortcut++), "", true);
+	feModeNotifier->addItem(0, ojScantype);
 	scansetup->addItem(ojScantype);
 		
 	// bqts
-	CMenuOptionChooser* ojBouquets = new CMenuOptionChooser(LOCALE_SCANTS_BOUQUET, (int *)&scanSettings->bouquetMode, SCANTS_BOUQUET_OPTIONS, SCANTS_BOUQUET_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++), "", true);
+	CMenuOptionChooser * ojBouquets = new CMenuOptionChooser(LOCALE_SCANTS_BOUQUET, (int *)&scanSettings->bouquetMode, SCANTS_BOUQUET_OPTIONS, SCANTS_BOUQUET_OPTION_COUNT, ((scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP)), NULL, CRCInput::convertDigitToKey(shortcut++), "", true);
+	feModeNotifier->addItem(0, ojBouquets);
 	scansetup->addItem(ojBouquets);
 	
 	// NIT
-	CMenuOptionChooser* useNit = new CMenuOptionChooser(LOCALE_SATSETUP_USE_NIT, (int *)&scanSettings->scan_mode, OPTIONS_OFF1_ON0_OPTIONS, OPTIONS_OFF1_ON0_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++) );
+	CMenuOptionChooser * useNit = new CMenuOptionChooser(LOCALE_SATSETUP_USE_NIT, (int *)&scanSettings->scan_mode, OPTIONS_OFF1_ON0_OPTIONS, OPTIONS_OFF1_ON0_OPTION_COUNT, ( (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP) ), NULL, CRCInput::convertDigitToKey(shortcut++) );
+	feModeNotifier->addItem(0, useNit);
 	scansetup->addItem(useNit);
-	
-	// scan pids
-	//CMenuOptionChooser* scanPids = new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SCANPIDS,  (int *)&scanSettings->scan_pids, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++) );
-	//scansetup->addItem(scanPids);
 		
 	scansetup->addItem(GenericMenuSeparatorLine);
 		
@@ -546,17 +539,21 @@ void CScanSetup::showScanService()
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		// diseqc
-		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings->diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, true, satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
+		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings->diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, /*true*/ ( (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP) ), satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
+		feModeNotifier->addItem(1, ojDiseqc);
 		
 		// diseqc repeat
-		ojDiseqcRepeats = new CMenuOptionNumberChooser(LOCALE_SATSETUP_DISEQCREPEAT, (int *)&scanSettings->diseqcRepeat, (dmode != NO_DISEQC) && (dmode != DISEQC_ADVANCED), 0, 2, NULL);
-
+		ojDiseqcRepeats = new CMenuOptionNumberChooser(LOCALE_SATSETUP_DISEQCREPEAT, (int *)&scanSettings->diseqcRepeat, (dmode != NO_DISEQC) && (dmode != DISEQC_ADVANCED) && (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), 0, 2, NULL);
 		satNotify->addItem(1, ojDiseqcRepeats);
+		feModeNotifier->addItem(1, ojDiseqcRepeats);
 
-		fsatSetup = new CMenuForwarder(LOCALE_SATSETUP_SAT_SETUP, true, NULL, satSetup, "", CRCInput::convertDigitToKey(shortcut++));
-		//fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, (dmode == DISEQC_ADVANCED), NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
-		//satNotify->addItem(0, fmotorMenu); //FIXME testing motor with not DISEQC_ADVANCED
-		fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, true, NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
+		// lnb setup
+		fsatSetup = new CMenuForwarder(LOCALE_SATSETUP_SAT_SETUP, /*true*/ (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, satSetup, "", CRCInput::convertDigitToKey(shortcut++));
+		feModeNotifier->addItem(1, fsatSetup);
+		
+		// motor setup
+		fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, /*true*/ (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
+		feModeNotifier->addItem(1, fmotorMenu);
 		
 		scansetup->addItem(ojDiseqc);
 		scansetup->addItem(ojDiseqcRepeats);
@@ -637,11 +634,11 @@ void CScanSetup::showScanService()
 		manualScan->addItem(Band);
 
 		// HP
-		CMenuOptionChooser * HP = new CMenuOptionChooser(LOCALE_EXTRA_HP, (int *)&scanSettings->TP_HP, /*SATSETUP_SCANTP_HP_LP*/ SATSETUP_SCANTP_FEC, /*SATSETUP_SCANTP_HP_LP_COUNT*/ fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		CMenuOptionChooser * HP = new CMenuOptionChooser(LOCALE_EXTRA_HP, (int *)&scanSettings->TP_HP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 		manualScan->addItem(HP);
 
 		// LP
-		CMenuOptionChooser * LP = new CMenuOptionChooser(LOCALE_EXTRA_LP, (int *)&scanSettings->TP_LP, /*SATSETUP_SCANTP_HP_LP*/ SATSETUP_SCANTP_FEC, /*SATSETUP_SCANTP_HP_LP_COUNT*/fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		CMenuOptionChooser * LP = new CMenuOptionChooser(LOCALE_EXTRA_LP, (int *)&scanSettings->TP_LP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
 		manualScan->addItem(LP);
 	}	
 
@@ -653,7 +650,10 @@ void CScanSetup::showScanService()
 	// scan
 	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "manual", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
 		
-	scansetup->addItem(new CMenuForwarder(LOCALE_SATSETUP_MANUAL_SCAN, true, NULL, manualScan, "", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW) );
+	//scansetup->addItem(new CMenuForwarder(LOCALE_SATSETUP_MANUAL_SCAN, true, NULL, manualScan, "", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW) );
+	CMenuForwarder * manScan = new CMenuForwarder(LOCALE_SATSETUP_MANUAL_SCAN, (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, manualScan, "", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW);
+	feModeNotifier->addItem(0, manScan);
+	scansetup->addItem(manScan);
 		
 	// auto scan menu
 	CMenuWidget * autoScan = new CMenuWidget(LOCALE_SATSETUP_AUTO_SCAN, NEUTRINO_ICON_SETTINGS);
@@ -673,27 +673,21 @@ void CScanSetup::showScanService()
 	autoScan->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "auto", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
 		
 	// auto scan menu item
-	scansetup->addItem(new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN, true, NULL, autoScan, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
+	//scansetup->addItem(new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN, true, NULL, autoScan, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
+	CMenuForwarder * auScan = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN, (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, autoScan, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE);
+	feModeNotifier->addItem(0, auScan);
+	scansetup->addItem(auScan);
 
 	// scan all sats
 	CMenuForwarder * fautoScanAll = NULL;
 		
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
-		ojDiseqc = new CMenuOptionChooser(LOCALE_SATSETUP_DISEQC, (int *)&scanSettings->diseqcMode, SATSETUP_DISEQC_OPTIONS, SATSETUP_DISEQC_OPTION_COUNT, true, satNotify, CRCInput::convertDigitToKey(shortcut++), "", true);
-		ojDiseqcRepeats = new CMenuOptionNumberChooser(LOCALE_SATSETUP_DISEQCREPEAT, (int *)&scanSettings->diseqcRepeat, (dmode != NO_DISEQC) && (dmode != DISEQC_ADVANCED), 0, 2, NULL);
-
-		satNotify->addItem(1, ojDiseqcRepeats);
-
-		fsatSetup = new CMenuForwarder(LOCALE_SATSETUP_SAT_SETUP, true, NULL, satSetup, "", CRCInput::convertDigitToKey(shortcut++));
-		//fmotorMenu	= new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, (dmode == DISEQC_ADVANCED), NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
-		//satNotify->addItem(0, fmotorMenu); //FIXME testing motor with not DISEQC_ADVANCED
-		fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, true, NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
-
 		CMenuWidget * autoScanAll = new CMenuWidget(LOCALE_SATSETUP_AUTO_SCAN_ALL, NEUTRINO_ICON_SETTINGS);
 			
-		fautoScanAll = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN_ALL, (dmode != NO_DISEQC), NULL, autoScanAll, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE);
+		fautoScanAll = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN_ALL, ( (dmode != NO_DISEQC) && (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP)), NULL, autoScanAll, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE);
 		satNotify->addItem(2, fautoScanAll);
+		feModeNotifier->addItem(2, fautoScanAll);
 
 		// intros
 		autoScanAll->addItem(GenericMenuBack);
