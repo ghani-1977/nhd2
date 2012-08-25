@@ -26,6 +26,8 @@
 #include <sys/select.h>
 #include <poll.h>
 
+#include <errno.h>
+
 #include "dmx_cs.h"
 #include <zapit/frontend_c.h>
 
@@ -159,7 +161,7 @@ bool cDemux::Stop(void)
 	return true;
 }
 
-int cDemux::Read(unsigned char * const buff, /*const size_t*/ int len, int Timeout)
+int cDemux::Read(unsigned char * const buff, int len, int Timeout)
 {
 	int rc;
 	struct pollfd ufds;
@@ -169,6 +171,7 @@ int cDemux::Read(unsigned char * const buff, /*const size_t*/ int len, int Timeo
 
 	if (Timeout > 0)	/* used in pmt_update_filter */
 	{
+retry:	  
 		rc = ::poll(&ufds, 1, Timeout);
 		if (!rc)
 		{
@@ -176,15 +179,18 @@ int cDemux::Read(unsigned char * const buff, /*const size_t*/ int len, int Timeo
 		}
 		else if (rc < 0)
 		{
+			if (errno == EINTR)
+				goto retry;
 			/* we consciously ignore EINTR, since it does not happen in practice */
 			return -1;
 		}
-		
+		#if 0
 		if (ufds.revents & POLLERR) /* POLLERR means buffer error, i.e. buffer overflow */
 		{
 			//fprintf(stderr, "[cDemux::Read] received POLLERR, fd %d\n", demux_fd);
 			return -1;
 		}
+		#endif
 		
 		if (ufds.revents & POLLHUP) /* we get POLLHUP if e.g. a too big DMX_BUFFER_SIZE was set */
 		{
@@ -199,7 +205,7 @@ int cDemux::Read(unsigned char * const buff, /*const size_t*/ int len, int Timeo
 		}
 	}
 
-	rc = read(demux_fd, buff, len);
+	rc = ::read(demux_fd, buff, len);
 	
 	//printf("cDemux::Read: fd %d ret: %d\n", demux_fd, rc);
 	
