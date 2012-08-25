@@ -911,7 +911,7 @@ void CInfoViewer::showMovieTitle (const int playstate, const std::string & title
 	//red 
 	//avsync
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, ChanInfoX + 2, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + (2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2), BoxEndY + 2, asize, /*g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST)*/ (char *)"AVSync", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + (2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2), BoxEndY + 2, asize, /*g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST)*/ (char *)"Movie Info", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 
 	// green buttom (audio)
 	//frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, ChanInfoX + 2, BoxEndY - ICON_Y_1);
