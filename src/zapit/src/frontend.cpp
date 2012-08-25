@@ -38,11 +38,7 @@
 #include <zapit/satconfig.h>
 
 
-extern double gotoXXLatitude, gotoXXLongitude;
-extern int gotoXXLaDirection, gotoXXLoDirection;
-extern int repeatUsals;
 extern transponder_list_t transponders;
-extern int motorRotationSpeed;
 
 #define SOUTH		0
 #define NORTH		1
@@ -54,10 +50,6 @@ extern int motorRotationSpeed;
 #define diff(x,y)	(max(x,y) - min(x,y))
 #define min(x,y)	((x < y) ? x : y)
 #define max(x,y)	((x > y) ? x : y)
-
-// channel
-//extern bool current_is_nvod;
-//extern t_channel_id live_channel_id;
 
 // unicable
 //extern int uni_scr;
@@ -386,7 +378,7 @@ struct dvb_frontend_parameters CFrontend::getFrontend(void) const
 
 uint32_t CFrontend::getBitErrorRate(void) const
 {
-	uint32_t ber=0;
+	uint32_t ber = 0;
 
 	if(ioctl(fd, FE_READ_BER, &ber) < 0)
 	      perror("FE_READ_BER");
@@ -396,7 +388,7 @@ uint32_t CFrontend::getBitErrorRate(void) const
 
 uint16_t CFrontend::getSignalStrength(void) const
 {
-	uint16_t strength;
+	uint16_t strength = 0;
 
 	if(ioctl(fd, FE_READ_SIGNAL_STRENGTH, &strength) < 0)
 	      perror("FE_READ_SIGNAL_STRENGHT");
@@ -406,7 +398,7 @@ uint16_t CFrontend::getSignalStrength(void) const
 
 uint16_t CFrontend::getSignalNoiseRatio(void) const
 {
-	uint16_t snr=0;
+	uint16_t snr = 0;
 
 	if(ioctl(fd, FE_READ_SNR, &snr) < 0)
 		perror("FE_READ_SNR");
