@@ -899,7 +899,17 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 
 		std::string file_name = fname; // UTF-8
 		
-		strReplace(file_name, ".ts", ".jpg");
+		//strReplace(file_name, ".ts", ".jpg");
+		///
+		int ext_pos = 0;
+		ext_pos = file_name.rfind('.');
+		if( ext_pos > 0)
+		{
+			std::string extension;
+			extension = file_name.substr(ext_pos + 1, file_name.length() - ext_pos);
+			
+			strReplace(file_name, extension.c_str(), ".jpg");
+		}
 	
 #ifdef __sh__		
 		sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 %s", fname, spos, (char *)file_name.c_str());
