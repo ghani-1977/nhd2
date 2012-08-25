@@ -115,17 +115,14 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	{
 		for(it = items1.begin(); it != items1.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(false);
 		}
 		for(it = items2.begin(); it != items2.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(false);
 		}
 		for(it = items3.begin(); it != items3.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(false);
 		}
 	}
@@ -133,17 +130,14 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	{
 		for(it = items1.begin(); it != items1.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(false);
 		}
 		for(it = items2.begin(); it != items2.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(true);
 		}
 		for(it = items3.begin(); it != items3.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(true);
 		}
 	}
@@ -151,22 +145,19 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	{
 		for(it = items1.begin(); it != items1.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(true);
 		}
 		for(it = items2.begin(); it != items2.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(false);
 		}
 		for(it = items3.begin(); it != items3.end(); it++) 
 		{
-			//(*it)->init(-1, 0, 0, 0);
 			(*it)->setActive(true);
 		}
 	}
 
-	g_Zapit->setDiseqcType((diseqc_t) type, /*tuner_to_scan*/feindex);
+	g_Zapit->setDiseqcType((diseqc_t) type, feindex);
 	g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex );
 
 	return true;
@@ -205,7 +196,7 @@ bool CDHCPNotifier::changeNotify(const neutrino_locale_t, void * data)
 {
 	CNeutrinoApp::getInstance()->networkConfig.inet_static = ((*(int*)(data)) == 0);
 	
-	for(int x=0;x<5;x++)
+	for(int x=0; x<5; x++)
 		toDisable[x]->setActive(CNeutrinoApp::getInstance()->networkConfig.inet_static);
 	
 	return true;
@@ -919,36 +910,69 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 }
 
 // scansetup notifier
-CScanSetupNotifier::CScanSetupNotifier(CMenuItem* i1 , CMenuItem* i2 , CMenuItem* i3 ,
-                                       CMenuItem* i4 , CMenuItem* i5 , CMenuItem* i6 ,
-                                       CMenuItem* i7 , CMenuItem* i8 , CMenuItem* i9,
-				       CMenuItem *i10, int num)
+CScanSetupNotifier::CScanSetupNotifier(int num)
 {
-	toDisable[ 0] = i1;
-	toDisable[ 1] = i2;
-	toDisable[ 2] = i3;
-	toDisable[ 3] = i4;
-	toDisable[ 4] = i5;
-	toDisable[ 5] = i6;
-	toDisable[ 6] = i7;
-	toDisable[ 7] = i8;
-	toDisable[ 8] = i9;
-	toDisable[ 9] = i10;
-	
 	feindex = num;
 }
 
-bool CScanSetupNotifier::changeNotify(const neutrino_locale_t, void *)
+/* items1 enabled for advanced diseqc settings, items2 for diseqc != NO_DISEQC, items3 disabled for NO_DISEQC */
+bool CScanSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 {
-	if ( getFE(feindex)->mode == FE_LOOP )
+	std::vector<CMenuItem*>::iterator it;
+	int FeMode = *((int*) Data);
+	
+	printf("CScanSetupNotifier::changeNotify: Femode:%d\n", FeMode);
+
+	if ( (FeMode == FE_NOTCONNECTED) || (FeMode == FE_LOOP) ) 
 	{
-		for(int i = 0; i < 8; i++) 
+		for(it = items1.begin(); it != items1.end(); it++) 
 		{
-			toDisable[i]->setActive(false);
+			(*it)->setActive(false);
+		}
+		for(it = items2.begin(); it != items2.end(); it++) 
+		{
+			(*it)->setActive(false);
+		}
+		for(it = items3.begin(); it != items3.end(); it++) 
+		{
+			(*it)->setActive(false);
+		}
+	}
+	else
+	{
+		for(it = items1.begin(); it != items1.end(); it++) 
+		{
+			(*it)->setActive(true);
+		}
+		for(it = items2.begin(); it != items2.end(); it++) 
+		{
+			(*it)->setActive(true);
+		}
+		for(it = items3.begin(); it != items3.end(); it++) 
+		{
+			(*it)->setActive(true);
 		}
 	}
 
 	return true;
+}
+
+void CScanSetupNotifier::addItem(int list, CMenuItem* item)
+{
+	switch(list) 
+	{
+		case 0:
+			items1.push_back(item);
+			break;	
+		case 1:
+			items2.push_back(item);
+			break;
+		case 2:
+			items3.push_back(item);
+			break;
+		default:
+			break;
+	}
 }
 
 // mkdir (0755)

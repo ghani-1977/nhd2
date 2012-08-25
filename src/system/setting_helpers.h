@@ -58,7 +58,7 @@ class CSatelliteSetupNotifier : public CChangeObserver
 class CDHCPNotifier : public CChangeObserver
 {
 	private:
-		CMenuForwarder* toDisable[5];
+		CMenuForwarder * toDisable[5];
 	public:
 		CDHCPNotifier( CMenuForwarder*, CMenuForwarder*, CMenuForwarder*, CMenuForwarder*, CMenuForwarder*);
 		bool changeNotify(const neutrino_locale_t, void * data);
@@ -69,9 +69,9 @@ class COnOffNotifier : public CChangeObserver
 {
         private:
                 int number;
-                CMenuItem* toDisable[5];
+                CMenuItem * toDisable[5];
         public:
-                COnOffNotifier (CMenuItem* a1,CMenuItem* a2 = NULL,CMenuItem* a3 = NULL,CMenuItem* a4 = NULL,CMenuItem* a5 = NULL);
+                COnOffNotifier(CMenuItem* a1, CMenuItem* a2 = NULL, CMenuItem* a3 = NULL, CMenuItem* a4 = NULL, CMenuItem* a5 = NULL);
                 bool changeNotify(const neutrino_locale_t, void *Data);
 };
 
@@ -112,22 +112,6 @@ class CSectionsdConfigNotifier : public CChangeObserver
         public:
                 bool changeNotify(const neutrino_locale_t, void * );
 };
-
-// touch file notifier
-/*
-class CTouchFileNotifier : public CChangeObserver
-{
-	const char * filename;
-	
-	public:
-		inline CTouchFileNotifier(const char * file_to_modify)
-		{
-			filename = file_to_modify;
-		};
-		
-		bool changeNotify(const neutrino_locale_t, void * data);
-};
-*/
 
 // color setup notifier
 class CColorSetupNotifier : public CChangeObserver
@@ -251,11 +235,15 @@ class CLangSelectNotifier : public CChangeObserver
 class CScanSetupNotifier : public CChangeObserver
 {
 	private:
-		CMenuItem* toDisable[10];
+		std::vector<CMenuItem*> items1;
+		std::vector<CMenuItem*> items2;
+		std::vector<CMenuItem*> items3;
+		
 		int feindex;
 	public:
-		CScanSetupNotifier(CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, CMenuItem*, int num = 0);
-		bool changeNotify(const neutrino_locale_t OptionName, void*);
+		CScanSetupNotifier(int num = 0);
+		void addItem(int list , CMenuItem* item);
+		bool changeNotify(const neutrino_locale_t, void * Data);
 };
 
 int safe_mkdir(char * path);
