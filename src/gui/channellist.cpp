@@ -94,7 +94,7 @@ int info_height = 0;
 bool new_mode_active = 0;
 
 extern int FrontendCount;			// defined in zapit.cpp
-
+extern CFrontend * getFE(int index);		// defined in zapit.cpp
 
 extern CBouquetManager *g_bouquetManager;
 
@@ -1772,7 +1772,19 @@ void CChannelList::paintItem(int pos)
 
 	if(!autoshift && CNeutrinoApp::getInstance()->recordingstatus && curr < chanlist.size()) 
 	{
-		iscurrent = SAME_TRANSPONDER(chanlist[curr]->channel_id, rec_channel_id);
+		CZapitChannel * live_chan = getChannel(live_channel_id);
+		CZapitChannel * rec_chan = getChannel(rec_channel_id);
+			
+		if(FrontendCount > 1)
+		{
+			// twin
+			if( getFE(rec_chan->getFeIndex())->mode == FE_LOOP)
+				iscurrent = SAME_TRANSPONDER(chanlist[curr]->channel_id, rec_channel_id);
+			else if( (rec_chan->getFeIndex() != live_chan->getFeIndex()) && getFE(rec_chan->getFeIndex())->mode != FE_LOOP)
+				iscurrent = true;
+		}
+		else
+			iscurrent = SAME_TRANSPONDER(chanlist[curr]->channel_id, rec_channel_id);
 	
 		dprintf(DEBUG_INFO, "CChannelList::paintItem: recording %llx current %llx current = %s\n", rec_channel_id, chanlist[liststart + pos]->channel_id, iscurrent? "yes" : "no");
 	}
