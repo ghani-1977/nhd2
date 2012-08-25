@@ -27,15 +27,28 @@
 
 
 #define DEMUX_POLL_TIMEOUT 0  			// timeout in ms
-#define MAX_FILTER_LENGTH 16    		// maximum number of filters
-#ifndef DMX_FILTER_SIZE
-#define DMX_FILTER_SIZE MAX_FILTER_LENGTH
-#endif
+//#define MAX_FILTER_LENGTH 16    		// maximum number of filters
+//#ifndef DMX_FILTER_SIZE
+//#define DMX_FILTER_SIZE MAX_FILTER_LENGTH
+//#endif
 
-// token from backend.h
-#define DMX_BUFFER_SIZE			8*8192  //512 * 188
-#define AUDIO_STREAM_BUFFER_SIZE        64*1024 //200*188
-#define VIDEO_STREAM_BUFFER_SIZE        64*1024 //200*188
+/* e2 */
+#define DMX_BUFFER_SIZE 		8*8192  	//65536
+#define AUDIO_STREAM_BUFFER_SIZE     	64*1024 	//65536
+#define VIDEO_STREAM_BUFFER_SIZE     	64*1024 	//65536
+#define RECORD_STREAM_BUFFER_SIZE	256*1024 	//262144)
+
+//NeutrinoHD
+//define RECORD_STREAM_BUFFER_SIZE	2 * 3008 * 62
+
+// player2 token from backend.h
+#if 0
+#define TRANSPORT_PACKET_SIZE           188
+
+#define DMX_BUFFER_SIZE			(512*TRANSPORT_PACKET_SIZE) 	//96256
+#define AUDIO_STREAM_BUFFER_SIZE        (200*TRANSPORT_PACKET_SIZE) 	//37600
+#define VIDEO_STREAM_BUFFER_SIZE        (200*TRANSPORT_PACKET_SIZE) 	//37600
+#endif
 
 
 typedef enum
@@ -48,7 +61,6 @@ typedef enum
 	DMX_TP_CHANNEL,
 	DMX_PCR_ONLY_CHANNEL
 } DMX_CHANNEL_TYPE;
-
 
 
 class cDemux
