@@ -65,13 +65,14 @@ CScanSettings * scanSettings;
 
 
 extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
-Zapit_config zapitCfg;			//defined neutrino.cpp
+
 char zapit_lat[20];				//defined neutrino.cpp
 char zapit_long[20];				//defined neutrino.cpp
 
 // frontend
 extern int FrontendCount;			// defined in zapit.cpp
-CFrontend * getFE(int index);
+extern CFrontend * getFE(int index);
+extern void saveFrontendConfig();
 
 
 // option off0_on1
@@ -275,6 +276,8 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		}
 		
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
+		
+		saveFrontendConfig();
 		
 		g_Zapit->reinitChannels();	// needed for twin if we set other femodes
 		
@@ -481,13 +484,17 @@ void CScanSetup::showScanService()
 		sprintf(zapit_lat, "%3.6f", getFE(feindex)->gotoXXLatitude);
 		sprintf(zapit_long, "%3.6f", getFE(feindex)->gotoXXLongitude);
 
+		// gotoxxladirection
 		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LADIR,  (int *)&getFE(feindex)->gotoXXLaDirection, OPTIONS_SOUTH0_NORTH1_OPTIONS, OPTIONS_SOUTH0_NORTH1_OPTION_COUNT, true));
 
+		// latitude
 		toff = new CStringInput(LOCALE_EXTRA_LAT, (char *) zapit_lat, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LAT, true, zapit_lat, toff));
 
+		// gotoxx lodirection
 		motorMenu->addItem(new CMenuOptionChooser(LOCALE_EXTRA_LODIR,  (int *)&getFE(feindex)->gotoXXLoDirection, OPTIONS_EAST0_WEST1_OPTIONS, OPTIONS_EAST0_WEST1_OPTION_COUNT, true));
 
+		// longitude
 		taff = new CStringInput(LOCALE_EXTRA_LONG, (char *) zapit_long, 10, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789.");
 		motorMenu->addItem(new CMenuForwarder(LOCALE_EXTRA_LONG, true, zapit_long, taff));
 		
@@ -548,11 +555,11 @@ void CScanSetup::showScanService()
 		feModeNotifier->addItem(1, ojDiseqcRepeats);
 
 		// lnb setup
-		fsatSetup = new CMenuForwarder(LOCALE_SATSETUP_SAT_SETUP, /*true*/ (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, satSetup, "", CRCInput::convertDigitToKey(shortcut++));
+		fsatSetup = new CMenuForwarder(LOCALE_SATSETUP_SAT_SETUP, (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, satSetup, "", CRCInput::convertDigitToKey(shortcut++));
 		feModeNotifier->addItem(1, fsatSetup);
 		
 		// motor setup
-		fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, /*true*/ (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
+		fmotorMenu = new CMenuForwarder(LOCALE_SATSETUP_EXTENDED_MOTOR, (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, motorMenu, "", CRCInput::convertDigitToKey(shortcut++));
 		feModeNotifier->addItem(1, fmotorMenu);
 		
 		scansetup->addItem(ojDiseqc);
