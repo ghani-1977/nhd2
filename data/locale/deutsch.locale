@@ -94,7 +94,7 @@ bouqueteditor.discardingchanges Änderungen werden verworfen. Bitte warten ...
 bouqueteditor.hide Verstecken
 bouqueteditor.lock Sperren
 bouqueteditor.move Verschieben
-bouqueteditor.name Bouquet-Verwaltung
+bouqueteditor.name Favoriten-Verwaltung
 bouqueteditor.newbouquetname Neuer Name des Bouquets
 bouqueteditor.rename Umbenennen
 bouqueteditor.return Fertig
@@ -102,7 +102,7 @@ bouqueteditor.savechanges? Sollen die Änderungen gespeichert werden?
 bouqueteditor.savingchanges Änderungen werden gespeichert. Bitte warten ...
 bouqueteditor.switch Kanal aufnehmen/entfernen
 bouqueteditor.switchmode TV/Radio
-bouquetlist.head Bouquet
+bouquetlist.head Favoriten
 cablesetup.provider Kabelanbieter
 terrestrialsetup.provider Anbieter
 cam.empty Kein CAM im Slot
@@ -343,7 +343,7 @@ extra.use_gotoxx Benutze gotoXX
 extra.use_log Log nach /tmp/log
 extra.west Westen
 extra.zap_cycle Zap nur in Bouquet
-extra.zapit_backup Sichere Kanelliste nach /tmp
+extra.zapit_backup Sichere Kanälliste nach /tmp
 extra.zapit_fast_zap Fast Zap
 extra.zapit_fe_timeout Tune timeout
 extra.zapit_hvoltage High (13.5/18.5) Voltage
@@ -820,7 +820,7 @@ moviebrowser.hint_movieend Filmende in 5 s\n '0' zum Weitersehen
 moviebrowser.hint_newbook_backward Neue Wiederholung\n 'blue' für Endposition
 moviebrowser.hint_newbook_forward Neuer Werbesprung\n 'blue' für Endposition
 moviebrowser.info_audio Audio
-moviebrowser.info_channel Kanel
+moviebrowser.info_channel Kanal
 moviebrowser.info_filename Name
 moviebrowser.info_genre_major Genre
 moviebrowser.info_genre_minor Genre
@@ -1158,7 +1158,7 @@ scants.abort_header Breche Scan ab
 scants.actcable Kabel:
 scants.actsatellite Satellit:
 scants.actterrestrial Terrestrial:
-scants.bouquet Bouquets
+scants.bouquet Favoriten
 scants.bouquet_create neu erstellen
 scants.bouquet_erase löschen
 scants.bouquet_leave nicht ändern
