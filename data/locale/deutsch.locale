@@ -94,7 +94,7 @@ bouqueteditor.discardingchanges Änderungen werden verworfen. Bitte warten ...
 bouqueteditor.hide Verstecken
 bouqueteditor.lock Sperren
 bouqueteditor.move Verschieben
-bouqueteditor.name Favoriten-Verwaltung
+bouqueteditor.name Bouquet-Verwaltung
 bouqueteditor.newbouquetname Neuer Name des Bouquets
 bouqueteditor.rename Umbenennen
 bouqueteditor.return Fertig
@@ -102,7 +102,7 @@ bouqueteditor.savechanges? Sollen die Änderungen gespeichert werden?
 bouqueteditor.savingchanges Änderungen werden gespeichert. Bitte warten ...
 bouqueteditor.switch Kanal aufnehmen/entfernen
 bouqueteditor.switchmode TV/Radio
-bouquetlist.head Favoriten
+bouquetlist.head Bouquets
 cablesetup.provider Kabelanbieter
 terrestrialsetup.provider Anbieter
 cam.empty Kein CAM im Slot

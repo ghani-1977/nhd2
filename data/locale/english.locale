@@ -93,7 +93,7 @@ bouqueteditor.discardingchanges Discarding changes. Please be patient.
 bouqueteditor.hide Hide
 bouqueteditor.lock Lock
 bouqueteditor.move Move
-bouqueteditor.name Favorites Editor
+bouqueteditor.name Bouquet Editor
 bouqueteditor.newbouquetname New name of bouquets
 bouqueteditor.rename Rename
 bouqueteditor.return ready
@@ -101,7 +101,7 @@ bouqueteditor.savechanges? Do you want to save the changes?
 bouqueteditor.savingchanges Saving changes. Please wait ...
 bouqueteditor.switch add/remove
 bouqueteditor.switchmode TV/Radio
-bouquetlist.head Favorites
+bouquetlist.head Bouquets
 cablesetup.provider Provider
 terrestrialsetup.provider Provider
 cam.empty No CAM in slot
