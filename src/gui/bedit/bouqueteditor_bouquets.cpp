@@ -68,7 +68,7 @@ CBEBouquetWidget::CBEBouquetWidget()
 	state = beDefault;
 	blueFunction = beRename;
 	
-	//Bouquets = &g_bouquetManager->Bouquets;
+	Bouquets = &g_bouquetManager->Bouquets;
 }
 
 void CBEBouquetWidget::paintItem(int pos)
@@ -107,7 +107,6 @@ void CBEBouquetWidget::paintItem(int pos)
 		if ((*Bouquets)[current]->bHidden)
 			frameBuffer->paintIcon(NEUTRINO_ICON_HIDDEN, x + 37, ypos);
 
-		//g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+68, ypos+ fheight, width-68, (*Bouquets)[current]->Name, color, 0, true);
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+68, ypos+ fheight, width-68, (*Bouquets)[current]->bFav ? g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME) : (*Bouquets)[current]->Name, color, 0, true);
 	}
 }
@@ -204,19 +203,7 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
         x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
         y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
 	
-	//
-	#if 1
-	g_bouquetManager->clearAll();
-	g_bouquetManager->loadBouquets(true);
-	#endif
-	//
-	
 	Bouquets = &g_bouquetManager->Bouquets;
-
-	//
-	//Bouquets.clear();
-	//g_Zapit->getBouquets(Bouquets, true);
-	//
 	
 	paintHead();
 	paint();
@@ -451,11 +438,6 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 #endif		
 	}
 	
-	#if 1
-	g_bouquetManager->clearAll();
-	g_bouquetManager->loadBouquets();
-	#endif
-	
 	hide();
 	
 	return res;
@@ -495,6 +477,7 @@ void CBEBouquetWidget::addBouquet()
 		selected = Bouquets->empty() ? 0 : (Bouquets->size() - 1);
 		bouquetsChanged = true;
 	}
+	
 	paintHead();
 	paint();
 	paintFoot();
@@ -615,9 +598,8 @@ void CBEBouquetWidget::saveChanges()
 	
 	g_Zapit->saveBouquets();
 	
-	//test
 	g_Zapit->reinitChannels();
-	//
+	
 	hintBox->hide();
 	delete hintBox;
 }
