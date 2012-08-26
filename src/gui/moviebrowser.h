@@ -177,7 +177,7 @@ typedef struct
 }MB_DIR;
 
 #define MB_MAX_ROWS 6
-#define MB_MAX_DIRS 5
+#define MB_MAX_DIRS 10
 /* MB_SETTINGS to be stored in g_settings anytime ....*/
 typedef struct
 {
@@ -442,7 +442,7 @@ class CMenuSelector : public CMenuItem
 class CMenuWidgetSelection : public CMenuWidget
 {
 	public:
-	CMenuWidgetSelection(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 400, const int mheight = 576) : CMenuWidget( Name, Icon, mwidth, mheight){;};
+	CMenuWidgetSelection(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576) : CMenuWidget( Name, Icon, mwidth, mheight){;};
 	int getSelectedLine(void){return exit_pressed ? -1 : selected;};
 };
 

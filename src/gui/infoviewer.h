@@ -59,7 +59,7 @@ class CInfoViewer
 	int            InfoHeightY;
 	int            InfoHeightY_Info;
 	bool         showButtonBar;
-	bool	       	fileplay;
+	//bool	       	fileplay;
 
 	int            BoxEndX;
 	int            BoxEndY;

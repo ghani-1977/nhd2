@@ -47,7 +47,6 @@
 #include <gui/color.h>
 #include <gui/infoviewer.h>
 #include <gui/nfs.h>
-#include <gui/bookmarkmanager.h>
 #include <gui/timeosd.h>
 
 #include <gui/widget/buttons.h>
@@ -108,8 +107,9 @@ void strReplace(std::string & orig, const char *fstr, const std::string rstr);
 extern char rec_filename[512];		// defined in stream2file.cpp
 
 static CMoviePlayerGui::state playstate;
-static bool isBookmark;
 static bool isMovieBrowser = false;
+
+static int file_prozent;
 
 int speed = 1;
 int slow = 0;
@@ -274,7 +274,6 @@ void CMoviePlayerGui::Init(void)
 	playback = new cPlayback();
 	
 	moviebrowser = new CMovieBrowser();
-	bookmarkmanager = 0;
 
 	tsfilefilter.addFilter("ts");
 	tsfilefilter.addFilter("mpg");
@@ -320,9 +319,6 @@ CMoviePlayerGui::~CMoviePlayerGui()
 		delete moviebrowser;
 	
 	delete hintBox;
-	
-	if (bookmarkmanager)
-		delete bookmarkmanager;
 	
 	g_Zapit->setStandby(false);
 	g_Sectionsd->setPauseScanning(false);
@@ -412,8 +408,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	printf("[movieplayer] actionKey=%s\n", actionKey.c_str());
 
-	bookmarkmanager = new CBookmarkManager();
-
 	dvbsub_pause();
 
 	if (parent) 
@@ -431,22 +425,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		frameBuffer->blit();
 #endif
 	}
-
-	const CBookmark *theBookmark = NULL;
-
-	if (actionKey == "bookmarkplayback") 
-	{
-		isBookmark = true;
-		theBookmark = bookmarkmanager->getBookmark(NULL);
-
-		if (theBookmark == NULL) 
-		{
-			bookmarkmanager->flush();
-			return menu_return::RETURN_REPAINT;
-		}
-	}
-
-	isBookmark = false;
+	
 	startfilename = "";
 	startposition = 0;
 
@@ -495,8 +474,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		PlayFile();
 	}
 	#endif
-
-	bookmarkmanager->flush();
 	
 	// Restore previous background
 	if (usedBackground) 
@@ -511,9 +488,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	restoreNeutrino();
 	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-
-	if (bookmarkmanager)
-		delete bookmarkmanager;
 
 	if (timeshift) 
 	{
@@ -591,7 +565,7 @@ void CMoviePlayerGui::PlayFile(void)
 	neutrino_msg_data_t data;
 	
 	int position = 0, duration = 0;
-	int file_prozent = 0;
+	//int file_prozent = 0;
 
 	std::string sel_filename;
 	CTimeOSD FileTime;
@@ -623,7 +597,6 @@ void CMoviePlayerGui::PlayFile(void)
 		//was_file = true;
 		
 		open_filebrowser = false;
-		isBookmark = false;
 		
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 		
@@ -661,11 +634,11 @@ void CMoviePlayerGui::PlayFile(void)
 
 	CBox boxposition(x, y, width, height);	// window position for the hint boxes
 
-	CTextBox endHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_MOVIEEND), NULL, CTextBox::CENTER /*CTextBox::AUTO_WIDTH | CTextBox::AUTO_HIGH */ , &boxposition);
-	CTextBox comHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_JUMPFORWARD), NULL, CTextBox::CENTER /*CTextBox::AUTO_WIDTH | CTextBox::AUTO_HIGH */ , &boxposition);
-	CTextBox loopHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_JUMPBACKWARD), NULL, CTextBox::CENTER /*CTextBox::AUTO_WIDTH | CTextBox::AUTO_HIGH */ , &boxposition);
-	CTextBox newLoopHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_NEWBOOK_BACKWARD), NULL, CTextBox::CENTER /*CTextBox::AUTO_WIDTH | CTextBox::AUTO_HIGH */ , &boxposition);
-	CTextBox newComHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_NEWBOOK_FORWARD), NULL, CTextBox::CENTER /*CTextBox::AUTO_WIDTH | CTextBox::AUTO_HIGH */ , &boxposition);
+	CTextBox endHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_MOVIEEND), NULL, CTextBox::CENTER, &boxposition);
+	CTextBox comHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_JUMPFORWARD), NULL, CTextBox::CENTER, &boxposition);
+	CTextBox loopHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_JUMPBACKWARD), NULL, CTextBox::CENTER, &boxposition);
+	CTextBox newLoopHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_NEWBOOK_BACKWARD), NULL, CTextBox::CENTER , &boxposition);
+	CTextBox newComHintBox(g_Locale->getText(LOCALE_MOVIEBROWSER_HINT_NEWBOOK_FORWARD), NULL, CTextBox::CENTER, &boxposition);
 
 	bool showEndHintBox = false;	// flag to check whether the box shall be painted
 	bool showComHintBox = false;	// flag to check whether the box shall be painted
@@ -676,24 +649,17 @@ void CMoviePlayerGui::PlayFile(void)
 	new_bookmark.length = 0;
 
 	// very dirty usage of the menue, but it works and I already spent to much time with it, feel free to make it better ;-)
-#define BOOKMARK_START_MENU_MAX_ITEMS 6
-//#define BOOKMARK_START_MENU_MAX_ITEMS 5
+//#define BOOKMARK_START_MENU_MAX_ITEMS 6
+#define BOOKMARK_START_MENU_MAX_ITEMS 5
 	CSelectedMenu cSelectedMenuBookStart[BOOKMARK_START_MENU_MAX_ITEMS];
 
 	CMenuWidget bookStartMenu(LOCALE_MOVIEBROWSER_BOOK_NEW, NEUTRINO_ICON_STREAMING);
-	
-	// intros
-	//bookStartMenu.addItem(GenericMenuSeparator);
 
-	//bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEPLAYER_HEAD, true, NULL, &cSelectedMenuBookStart[0]));
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_EDIT_BOOK, true, NULL, &cSelectedMenuBookStart[0]));
-	bookStartMenu.addItem(GenericMenuSeparatorLine);
-
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_NEW, true, NULL, &cSelectedMenuBookStart[1]));
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_TYPE_FORWARD, true, NULL, &cSelectedMenuBookStart[2]));
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_TYPE_BACKWARD, true, NULL, &cSelectedMenuBookStart[3]));
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIESTART, true, NULL, &cSelectedMenuBookStart[4]));
-	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIEEND, true, NULL, &cSelectedMenuBookStart[5]));
+	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_NEW, true, NULL, &cSelectedMenuBookStart[0]));
+	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_TYPE_FORWARD, true, NULL, &cSelectedMenuBookStart[1]));
+	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_TYPE_BACKWARD, true, NULL, &cSelectedMenuBookStart[2]));
+	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIESTART, true, NULL, &cSelectedMenuBookStart[3]));
+	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIEEND, true, NULL, &cSelectedMenuBookStart[4]));
 
  go_repeat:
 	do {
@@ -732,32 +698,12 @@ void CMoviePlayerGui::PlayFile(void)
 			update_lcd = true;
 			start_play = true;
 			open_filebrowser = false;
-			isBookmark = false;
 			timesh = false;
 			
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
 			FileTime.SetMode(CTimeOSD::MODE_ASC);
 			FileTime.show(position / 1000);
-		}
-
-		// bookmark 
-		if (isBookmark) 
-		{
-			open_filebrowser = false;
-			filename = startfilename.c_str();
-			sel_filename = startfilename;
-			update_lcd = true;
-			start_play = true;
-			isBookmark = false;
-			timeshift = false;
-			
-			CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-			
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-			// hide ts icon
-			CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif			
 		}
 
 		// moviebrowser
@@ -1505,30 +1451,6 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_bookmark) 
 		{
-			// is there already a bookmark activity?
-			#if 0 //FIXME: 
-			if (isMovieBrowser != true) 
-			{
-				if (bookmarkmanager->getBookmarkCount() < bookmarkmanager->getMaxBookmarkCount()) 
-				{
-					char timerstring[200];
-					fprintf(stderr, "fileposition: %lld\n", position);
-					sprintf(timerstring, "%lld", position);
-					fprintf(stderr, "timerstring: %s\n", timerstring);
-					std::string bookmarktime = "";
-					bookmarktime.append(timerstring);
-					fprintf(stderr, "bookmarktime: %s\n", bookmarktime.c_str());
-					bookmarkmanager->createBookmark(filename, bookmarktime);
-					fprintf(stderr, "bookmark done\n");
-				} 
-				else 
-				{
-					fprintf(stderr, "too many bookmarks\n");
-					DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEPLAYER_TOOMANYBOOKMARKS));	// UTF-8
-				}
-			} 
-			else 
-			#endif
 			if(isMovieBrowser == true)
 			{
 				int pos_sec = position / 1000;
@@ -1569,37 +1491,7 @@ void CMoviePlayerGui::PlayFile(void)
 					// next seems return menu_return::RETURN_EXIT, if something selected
 					bookStartMenu.exec(NULL, "none");
 					
-					//#if 0
 					if (cSelectedMenuBookStart[0].selected == true) 
-					{
-						/* Movieplayer bookmark */
-						if (bookmarkmanager->getBookmarkCount() < bookmarkmanager->getMaxBookmarkCount()) 
-						{
-							//test
-							//fullposition = position / 1000;
-							//
-							char timerstring[200];
-							fprintf(stderr, "fileposition: %lld\n", position);
-							sprintf(timerstring, "%lld", position);
-							fprintf(stderr, "timerstring: %s\n", timerstring);
-							std::string bookmarktime = "";
-							bookmarktime.append(timerstring);
-							fprintf(stderr, "bookmarktime: %s\n", bookmarktime.c_str());
-							bookmarkmanager->createBookmark(filename, bookmarktime);
-						} 
-						else 
-						{
-							fprintf(stderr, "too many bookmarks\n");
-							DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEPLAYER_TOOMANYBOOKMARKS));	// UTF-8
-						}
-						cSelectedMenuBookStart[0].selected = false;	// clear for next bookmark menu
-					} 
-					else 
-					//#endif
-					
-					if (cSelectedMenuBookStart[1].selected == true) 
-					//test
-					//if (cSelectedMenuBookStart[0].selected == true) 
 					{
 						/* Moviebrowser plain bookmark */
 						new_bookmark.pos = pos_sec;
@@ -1607,55 +1499,40 @@ void CMoviePlayerGui::PlayFile(void)
 						if (cMovieInfo.addNewBookmark(p_movie_info, new_bookmark) == true)
 							cMovieInfo.saveMovieInfo(*p_movie_info);	/* save immediately in xml file */
 						new_bookmark.pos = 0;	// clear again, since this is used as flag for bookmark activity
-						cSelectedMenuBookStart[1].selected = false;	// clear for next bookmark menu
-						//cSelectedMenuBookStart[0].selected = false;
+						cSelectedMenuBookStart[0].selected = false;	// clear for next bookmark menu
 					} 
-					else if (cSelectedMenuBookStart[2].selected == true)
-					//test
-					//else if (cSelectedMenuBookStart[1].selected == true) 
+					else if (cSelectedMenuBookStart[1].selected == true)
 					{
 						/* Moviebrowser jump forward bookmark */
 						new_bookmark.pos = pos_sec;
 						TRACE("[mp] new bookmark 1. pos: %d\r\n", new_bookmark.pos);
 						newComHintBox.paint();
 
-						cSelectedMenuBookStart[2].selected = false;	// clear for next bookmark menu
-						//cSelectedMenuBookStart[1].selected = false;	// clear for next bookmark menu
+						cSelectedMenuBookStart[1].selected = false;	// clear for next bookmark menu
 					} 
-					else if (cSelectedMenuBookStart[3].selected == true) 
-					//test
-					//else if (cSelectedMenuBookStart[2].selected == true) 
+					else if (cSelectedMenuBookStart[2].selected == true) 
 					{
 						/* Moviebrowser jump backward bookmark */
 						new_bookmark.pos = pos_sec;
 						TRACE("[mp] new bookmark 1. pos: %d\r\n", new_bookmark.pos);
 						newLoopHintBox.paint();
-						cSelectedMenuBookStart[3].selected = false;	// clear for next bookmark menu
-						//test
-						//cSelectedMenuBookStart[2].selected = false;	// clear for next bookmark menu
+						cSelectedMenuBookStart[2].selected = false;	// clear for next bookmark menu
 					} 
-					else if (cSelectedMenuBookStart[4].selected == true) 
-					//test
-					//else if (cSelectedMenuBookStart[3].selected == true) 
+					else if (cSelectedMenuBookStart[3].selected == true) 
 					{
 						/* Moviebrowser movie start bookmark */
 						p_movie_info->bookmarks.start = pos_sec;
 						TRACE("[mp] New movie start pos: %d\r\n", p_movie_info->bookmarks.start);
 						cMovieInfo.saveMovieInfo(*p_movie_info);	/* save immediately in xml file */
-						cSelectedMenuBookStart[4].selected = false;	// clear for next bookmark menu
-						//test
-						//cSelectedMenuBookStart[3].selected = false;	// clear for next bookmark menu
+						cSelectedMenuBookStart[3].selected = false;	// clear for next bookmark menu
 					} 
-					else if (cSelectedMenuBookStart[5].selected == true) 
-					//test
-					//else if (cSelectedMenuBookStart[4].selected == true) 
+					else if (cSelectedMenuBookStart[4].selected == true) 
 					{
 						/* Moviebrowser movie end bookmark */
 						p_movie_info->bookmarks.end = pos_sec;
 						TRACE("[mp]  New movie end pos: %d\r\n", p_movie_info->bookmarks.start);
 						cMovieInfo.saveMovieInfo(*p_movie_info);	/* save immediately in xml file */
-						cSelectedMenuBookStart[5].selected = false;	// clear for next bookmark menu
-						//cSelectedMenuBookStart[4].selected = false;	// clear for next bookmark menu
+						cSelectedMenuBookStart[4].selected = false;	// clear for next bookmark menu
 					}
 				}
 			}

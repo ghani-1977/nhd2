@@ -951,7 +951,7 @@ int CMovieBrowser::exec(const char* path)
 		CFSMounter::automount();
 	}
 
-	refreshTitle();
+	//refreshTitle();
 	
 	if(m_file_info_stale == true)
 	{
@@ -978,6 +978,7 @@ int CMovieBrowser::exec(const char* path)
 	updateMovieSelection();
 	//refreshMovieInfo();
 
+	refreshTitle();
 	onSetGUIWindow(m_settings.gui);
 	
 #ifdef FB_BLIT
@@ -1603,7 +1604,7 @@ void CMovieBrowser::refreshTitle(void)
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1-60, ypos);
 	
 #if 0
-	m_pcWindow->blit(/*m_cBoxFrame.iX+m_cBoxFrameTitleRel.iX, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight*/ );
+	m_pcWindow->blit();
 #endif
 }
 
@@ -1677,7 +1678,7 @@ void CMovieBrowser::refreshFoot(void)
 	m_pcFontFoot->RenderString(m_cBoxFrame.iX+xpos4+30, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), (CFBWindow::color_t)color, 0, true); // UTF-8
 	
 #if 0
-	m_pcWindow->blit(m_cBoxFrame.iX+m_cBoxFrameFootRel.iX, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight+ 6);
+	m_pcWindow->blit();
 #endif
 }
 
@@ -3051,7 +3052,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO* movie_info)
 		movieInfoUpdateAll[i]=0;
         movieInfoUpdateAllIfDestEmptyOnly=true;
 
-        CMenuWidget movieInfoMenuUpdate (LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE, NEUTRINO_ICON_STREAMING, 450);
+        CMenuWidget movieInfoMenuUpdate (LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE, NEUTRINO_ICON_STREAMING, 550);
 	
 	// intros
         //movieInfoMenuUpdate.addItem(GenericMenuSeparator);
@@ -3143,7 +3144,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	/**  options menu **************************************************/
 
 	/**  parental lock **************************************************/
-	CMenuWidget parentalMenu (LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD , NEUTRINO_ICON_STREAMING, 450);
+	CMenuWidget parentalMenu (LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD , NEUTRINO_ICON_STREAMING, 550);
 	
 	// intros
 	//parentalMenu.addItem(GenericMenuSeparator);
@@ -3151,7 +3152,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	parentalMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_RATE_HEAD, (int*)(&m_settings.parentalLockAge), MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS, MESSAGEBOX_PARENTAL_LOCKAGE_OPTION_COUNT, true ));
 
 	/**  optionsVerzeichnisse  **************************************************/
-	CMenuWidget optionsMenuDir (LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING, 450);
+	CMenuWidget optionsMenuDir (LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING, 550);
 	
 	// intros
 	//optionsMenuDir.addItem(GenericMenuSeparator);
@@ -3187,7 +3188,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	for(i=0; i<MB_MAX_ROWS ;i++)
 	    browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
-	CMenuWidget optionsMenuBrowser (LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING, 480);
+	CMenuWidget optionsMenuBrowser (LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING, 550);
 	
 	// intros
 	//optionsMenuBrowser.addItem(GenericMenuSeparator);
@@ -3206,7 +3207,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	}
 
 	/**  options  **************************************************/
-	CMenuWidget optionsMenu (LOCALE_EPGPLUS_OPTIONS , NEUTRINO_ICON_STREAMING, 450);
+	CMenuWidget optionsMenu (LOCALE_EPGPLUS_OPTIONS , NEUTRINO_ICON_STREAMING, 550);
 
 	// intros
 	//optionsMenu.addItem(GenericMenuSeparator);
@@ -3735,10 +3736,6 @@ int CMenuSelector::paint( bool selected )
 
 	int stringstartposName = x + offx + BORDER_RIGHT;
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName, y + height, dx- (stringstartposName - x), optionName, color, 0, true); // UTF-8
-	
-#if 0
-	frameBuffer->blit(x, y, dx, height);
-#endif
 
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
 	if (selected)
@@ -3961,7 +3958,7 @@ void CDirMenu::show(void)
 	
 	char tmp[20];
 	
-	CMenuWidget dirMenu (LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING, 440);
+	CMenuWidget dirMenu (LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING, 550);
 	
 	// intros
 	//dirMenu.addItem(GenericMenuSeparator);

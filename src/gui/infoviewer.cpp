@@ -160,13 +160,16 @@ void CInfoViewer::Init()
 	virtual_zap_mode = false;
 	chanready = 1;
 
-	fileplay = 0;
+	//fileplay = 0;
 	
 	sigscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
 	snrscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
 	timescale = new CScale(108, TIME_BAR_HEIGHT + 5, 30, GREEN_BAR, 70, true);	//5? see in code
+	
+	//moviescale = new CScale(BoxEndX - ChanInfoX, BoxEndY - 18 - BoxEndInfoY, 30, GREEN_BAR, 70, true);
+	moviescale = new CScale(594, TIME_BAR_HEIGHT + 8, 30, GREEN_BAR, 70, true);
 }
 
 void CInfoViewer::start()
@@ -270,7 +273,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	if (!calledFromNumZap && fadeIn)
 		fadeTimer = g_RCInput->addTimer (FADE_TIME, false);
 
-	fileplay = (ChanNum == 0);
+	//fileplay = (ChanNum == 0);
 	newfreq = true;
 	
 	sigscale->reset(); 
@@ -734,7 +737,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				res = messages_return::cancel_all;
 				hideIt = true;
 			} 
-			else if ( !fileplay && !timeshift) 
+			else if ( /*!fileplay &&*/ !timeshift) 
 			{
 				if ((msg == (neutrino_msg_t) g_settings.key_quickzap_up) || (msg == (neutrino_msg_t) g_settings.key_quickzap_down) || (msg == CRCInput::RC_0) || (msg == NeutrinoMessages::SHOW_INFOBAR)) 
 				{
@@ -797,7 +800,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	}
 
 	//test
-	fileplay = 0;
+	//fileplay = 0;
 }
 
 
@@ -820,10 +823,9 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 */
 
 extern int speed;
-void CInfoViewer::showMovieTitle (const int playstate, const std::string & title, const std::string & sub_title, const std::string & sub_title1, const int position, const int duration, const int ac3state, const bool ShowBlueButton, unsigned char file_prozent )
+void CInfoViewer::showMovieTitle(const int playstate, const std::string & title, const std::string & sub_title, const std::string & sub_title1, const int position, const int duration, const int ac3state, const bool ShowBlueButton, unsigned char file_prozent )
 {  
-	fileplay = 1;
-	//showButtonBar = true;
+	//fileplay = 1;
 
 	is_visible = true;
 
@@ -837,7 +839,7 @@ void CInfoViewer::showMovieTitle (const int playstate, const std::string & title
 	int BoxEndInfoY = BoxEndY - InfoHeightY_Info;
 	BoxStartY = BoxEndInfoY - InfoHeightY;
 	
-	moviescale = new CScale(BoxEndX - ChanInfoX, BoxEndY - 18 - BoxEndInfoY, 30, GREEN_BAR, 70, true);
+	//moviescale = new CScale(BoxEndX - ChanInfoX, BoxEndY - 18 - BoxEndInfoY, 30, GREEN_BAR, 70, true);
 	moviescale->reset();
 	MoviePercent = file_prozent;
 	
@@ -1575,7 +1577,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL)) 
 		{
 	  		getEPG (*(t_channel_id *) data, info_CurrentNext);
-	  		if (is_visible && !fileplay)
+	  		if (is_visible /*&& !fileplay*/ )
 				show_Data(true);
 			
 	  		showLcdPercentOver ();
@@ -1597,7 +1599,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		else if (data == lcdUpdateTimer) 
 		{
 			//printf("CInfoViewer::handleMsg: lcdUpdateTimer\n");
-			if ( is_visible && !fileplay)
+			if ( is_visible /*&& !fileplay*/ )
 				show_Data( true );
 
 	  		showLcdPercentOver ();
@@ -1606,7 +1608,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		} 
 		else if (data == sec_timer_id) 
 		{
-			if(!fileplay)
+			//if(!fileplay)
 			{
 				showSNR();
 			}
@@ -2202,18 +2204,20 @@ void CInfoViewer::showButton_Audio()
 	showIcon_Audio(ac3state);
 }
 
-void CInfoViewer::killTitle ()
+void CInfoViewer::killTitle()
 {
   	if (is_visible) 
 	{
 		is_visible = false;
 		
-		if(fileplay)
+		#if 0
+		if(/*fileplay*/ moviescale != NULL)
 		{
 			delete moviescale;
 			moviescale = NULL;
 			MoviePercent = 0;
 		}
+		#endif
 
 		frameBuffer->paintBackgroundBox (BoxStartX, BoxStartY, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET );
 		

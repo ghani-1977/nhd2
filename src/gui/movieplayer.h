@@ -37,7 +37,6 @@
 #if HAVE_DVB_API_VERSION >= 1
 #include "driver/framebuffer.h"
 #include "gui/filebrowser.h"
-#include "gui/bookmarkmanager.h"
 #include "gui/widget/menue.h"
 #include "gui/moviebrowser.h"
 #include "gui/movieinfo.h"
@@ -83,8 +82,6 @@ class CMoviePlayerGui : public CMenuTarget
 
 		CFileBrowser * filebrowser;
 		CMovieBrowser* moviebrowser;
-
-		CBookmarkManager * bookmarkmanager;
 
 		void PlayFile();
 		void cutNeutrino();
