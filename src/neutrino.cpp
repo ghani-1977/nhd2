@@ -217,7 +217,7 @@ extern int zapit_ready;					//defined in zapit.cpp
 static pthread_t zapit_thread ;
 void * zapit_main_thread(void *data);
 extern t_channel_id live_channel_id; 			//defined in zapit.cpp
-extern Zapit_config zapitCfg;				//defined in scan_setup.cpp
+Zapit_config zapitCfg;
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
 extern CZapitChannel * live_channel;			// zapit.cpp
@@ -4895,12 +4895,11 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 
 		tuxtxt_close();
-
-		//g_Sectionsd->setEventsAreOldInMinutes((unsigned short) (g_settings.epg_old_hours*60));
-		//g_Sectionsd->setHoursToCache((unsigned short) (g_settings.epg_cache_days*24));
 		
 		zapitCfg.saveLastChannel = g_settings.uselastchannel;
 		setZapitConfig(&zapitCfg);
+		
+		g_Zapit->reinitChannels();
 
 		hintBox->hide();
 		delete hintBox;
