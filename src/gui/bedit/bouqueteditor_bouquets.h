@@ -87,7 +87,7 @@ class CBEBouquetWidget : public CMenuWidget
 		int			iconoffset;
 		int			iheight; // item height
 		
-		bool	bouquetsChanged;
+		bool		bouquetsChanged;
 		int		width;
 		int		height;
 		int		x;
