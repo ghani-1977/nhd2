@@ -434,7 +434,8 @@ void SaveMotorPositions()
 	for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++) 
 	{
 		if(sit->second.type == DVB_S)
-		      fprintf(fd, "%d %d %d %d %d %d %d %d %d %d\n", sit->first, 
+		      fprintf(fd, "%d %d %d %d %d %d %d %d %d %d\n", 
+				sit->first, 
 				sit->second.motor_position,
 				sit->second.diseqc, 
 				sit->second.commited, 
@@ -470,7 +471,7 @@ void init_sat(t_satellite_position position)
 // FIXME: parsing sats is ugly musst be fixed, parsing T then S some T postions will be overwritten :-(
 int loadProviders()
 {
-	xmlDocPtr parser;
+	//xmlDocPtr parser;
 	bool satcleared = 0;
 	scnt = 0;
 	
@@ -578,10 +579,10 @@ int loadProviders()
 int LoadServices(bool only_current)
 {
 	xmlDocPtr parser;
-	bool satcleared = 0;
+	//bool satcleared = 0;
 	scnt = 0;
 	
-	t_satellite_position position = 0; //first postion
+	//t_satellite_position position = 0; //first postion
 
 	printf("getServices:LoadServices:\n");
 

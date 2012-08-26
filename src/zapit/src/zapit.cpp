@@ -1139,42 +1139,40 @@ int prepare_channels()
 
 	INFO("LoadServices: success");
 
-	// manage bouquets
+	// load bouquets
 	g_bouquetManager->loadBouquets();		// 2004.08.02 g_bouquetManager->storeBouquets();
 
 	return 0;
 }
 
 void parseScanInputXml(int feindex)
-{
-	//
-	if( (getFE(feindex)->mode == FE_TWIN) || (getFE(feindex)->mode == FE_LOOP) )
-		return;
-	
-	if(scanInputParser) 
+{	
+	if( (getFE(feindex)->mode != FE_TWIN) && (getFE(feindex)->mode != FE_LOOP) )
 	{
-                delete scanInputParser;
-                scanInputParser = NULL;
-        }
-        //
-	
-	switch ( getFE(feindex)->getInfo()->type) 
-	{
-		case FE_QPSK:
-			scanInputParser = parseXmlFile(SATELLITES_XML);
-			break;
+		if(scanInputParser) 
+		{
+			delete scanInputParser;
+			scanInputParser = NULL;
+		}
 		
-		case FE_QAM:
-			scanInputParser = parseXmlFile(CABLES_XML);
-			break;
+		switch ( getFE(feindex)->getInfo()->type) 
+		{
+			case FE_QPSK:
+				scanInputParser = parseXmlFile(SATELLITES_XML);
+				break;
+			
+			case FE_QAM:
+				scanInputParser = parseXmlFile(CABLES_XML);
+				break;
 
-		case FE_OFDM:
-			scanInputParser = parseXmlFile(TERRESTRIALS_XML);
-			break;
-		
-		default:
-			WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
-			return;
+			case FE_OFDM:
+				scanInputParser = parseXmlFile(TERRESTRIALS_XML);
+				break;
+			
+			default:
+				WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
+				return;
+		}
 	}
 }
 
@@ -1884,7 +1882,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
 			printf("zapit: set fe mode %d\n", msgSetFEMode.mode );
 			
-			saveFrontendConfig();
+			//saveFrontendConfig();
 			
 			break;
 		}

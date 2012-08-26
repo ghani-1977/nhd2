@@ -615,6 +615,7 @@ int CBouquetManager::existsBouquet(char const * const name)
 		if (Bouquets[i]->Name == name)
 			return (int)i;
 	}
+	
 	return -1;
 }
 
