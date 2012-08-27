@@ -488,7 +488,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 						DBG("setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " %s from %02x to %02x", stI->first, scI->second.getName().c_str(), scI->second.getServiceType(), stI->second);
 						scI->second.setServiceType(stI->second);
 						//FIXME: do we need to setFeIndex ??? twin???
-						scI->second.setFeIndex(feindex);
+						//scI->second.setFeIndex(feindex);
 						break;
 				}
 			}

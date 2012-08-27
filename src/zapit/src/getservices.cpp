@@ -53,7 +53,6 @@ extern int FrontendCount;
 CFrontend * getFE(int index);
 
 extern void parseScanInputXml(int feindex);
-//cable_map_t cablePositions;
 
 
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, uint8_t Source, int FeIndex)
@@ -249,6 +248,7 @@ void FindTransponder(xmlNodePtr search)
 	t_satellite_position satellitePosition = 0;
 	uint8_t Source;
 	newtpid = 0xC000;
+	int feindex = 0;
 	
 	while (search) 
 	{
@@ -277,11 +277,12 @@ void FindTransponder(xmlNodePtr search)
 		
 		// frontend index from sat pos
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		feindex = sit->second.feindex;
 		
 		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d fe(%d)\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition, sit->second.feindex);
 		
 		// parse TP
-		ParseTransponders(search->xmlChildrenNode, satellitePosition, Source, sit->second.feindex);
+		ParseTransponders(search->xmlChildrenNode, satellitePosition, Source, feindex);
 
 		newfound++;
 		
@@ -466,12 +467,9 @@ void init_sat(t_satellite_position position)
 	satellitePositions[position].use_usals = 0;
 }
 
-//TEST
 // load sats list
-// FIXME: parsing sats is ugly musst be fixed, parsing T then S some T postions will be overwritten :-(
 int loadProviders()
 {
-	//xmlDocPtr parser;
 	bool satcleared = 0;
 	scnt = 0;
 	
@@ -579,10 +577,7 @@ int loadProviders()
 int LoadServices(bool only_current)
 {
 	xmlDocPtr parser;
-	//bool satcleared = 0;
 	scnt = 0;
-	
-	//t_satellite_position position = 0; //first postion
 
 	printf("getServices:LoadServices:\n");
 
@@ -598,9 +593,7 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			//FIXME:
-			#if 0
-			if( (getFE(0)->getInfo()->type == FE_QPSK) && (getFE(0)->mode == FE_SINGLE) )
+			if( (getFE(0)->getInfo()->type == FE_QPSK) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
 				{
@@ -620,7 +613,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( (getFE(0)->getInfo()->type == FE_QAM) && (getFE(0)->mode == FE_SINGLE) )
+			else if( (getFE(0)->getInfo()->type == FE_QAM) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
 			{
 				if (!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -640,7 +633,7 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			else if( (getFE(0)->getInfo()->type == FE_OFDM) && (getFE(0)->mode == FE_SINGLE) )
+			else if( (getFE(0)->getInfo()->type == FE_OFDM) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
 			{
 				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
@@ -660,23 +653,6 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
-			#endif
-			
-			//
-			if (!(strcmp(xmlGetName(search), "sat"))) 
-			{
-				// position
-				t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
-				char * name = xmlGetAttribute(search, "name");
-
-				if(satellitePositions.find(position) == satellitePositions.end()) 
-				{
-						init_sat(position);
-							
-						satellitePositions[position].name = name;
-				}
-			}
-			//
 
 			// jump to the next node
 			search = search->xmlNextNode;

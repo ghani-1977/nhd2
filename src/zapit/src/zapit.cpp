@@ -1119,19 +1119,9 @@ int prepare_channels()
 	transponders.clear();
 	g_bouquetManager->clearAll();
 	allchans.clear();  				// <- this invalidates all bouquets, too!
-
-	// delete scaninputParser
-	#if 0
-        if(scanInputParser) 
-	{
-                delete scanInputParser;
-                scanInputParser = NULL;
-        }
-        #endif
         
-        //
+        // load sats/tps
         loadProviders();
-	//
 
 	// load services
 	if (LoadServices(false) < 0)
@@ -1147,32 +1137,29 @@ int prepare_channels()
 
 void parseScanInputXml(int feindex)
 {	
-	if( (getFE(feindex)->mode != FE_TWIN) && (getFE(feindex)->mode != FE_LOOP) )
+	if(scanInputParser) 
 	{
-		if(scanInputParser) 
-		{
-			delete scanInputParser;
-			scanInputParser = NULL;
-		}
+		delete scanInputParser;
+		scanInputParser = NULL;
+	}
 		
-		switch ( getFE(feindex)->getInfo()->type) 
-		{
-			case FE_QPSK:
-				scanInputParser = parseXmlFile(SATELLITES_XML);
-				break;
+	switch ( getFE(feindex)->getInfo()->type) 
+	{
+		case FE_QPSK:
+			scanInputParser = parseXmlFile(SATELLITES_XML);
+			break;
 			
-			case FE_QAM:
-				scanInputParser = parseXmlFile(CABLES_XML);
-				break;
+		case FE_QAM:
+			scanInputParser = parseXmlFile(CABLES_XML);
+			break;
 
-			case FE_OFDM:
-				scanInputParser = parseXmlFile(TERRESTRIALS_XML);
-				break;
+		case FE_OFDM:
+			scanInputParser = parseXmlFile(TERRESTRIALS_XML);
+			break;
 			
-			default:
-				WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
-				return;
-		}
+		default:
+			WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
+			return;
 	}
 }
 
@@ -1800,10 +1787,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitClient::commandSetScanSatelliteList sat;
 			scanProviders.clear();
-			//printf("[zapit] SETSCANSATLIST\n");
+			
 			while (CBasicServer::receive_data(connfd, &sat, sizeof(sat))) 
 			{
-				printf("[zapit] adding to scan %s (position %d) fe(%d)\n", sat.satName, sat.position, sat.feindex);
+				//printf("[zapit] adding to scan %s (position %d) fe(%d)\n", sat.satName, sat.position, sat.feindex);
 				scanProviders[sat.position] = sat.satName;
 			}
 			break;
@@ -3423,9 +3410,6 @@ int zapit_main_thread(void *data)
 	
 	// load fe config
 	loadFrontendConfig();
-	
-	// load sats list
-	//loadProviders(); //needed to get feindex, and for scan
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;
