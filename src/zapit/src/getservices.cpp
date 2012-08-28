@@ -515,7 +515,8 @@ int loadProviders()
 					satellitePositions[position].type = DVB_S;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "cable"))) 
 				{
@@ -536,7 +537,8 @@ int loadProviders()
 					satellitePositions[position].type = DVB_C;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "terrestrial"))) 
 				{
@@ -554,7 +556,8 @@ int loadProviders()
 					satellitePositions[position].type = DVB_T;
 					
 					// feindex
-					satellitePositions[position].feindex = i;
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+						satellitePositions[position].feindex = i;
 				}
 				
 				DBG("parse provider %s position %d fe(%d)\n", xmlGetAttribute(search, "name"), position, satellitePositions[position].feindex);
@@ -593,6 +596,7 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
+			#if 0
 			if( (getFE(0)->getInfo()->type == FE_QPSK) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
 			{
 				if (!(strcmp(xmlGetName(search), "sat"))) 
@@ -653,6 +657,23 @@ int LoadServices(bool only_current)
 					satellitePositions[position].feindex = 0;
 				}
 			}
+			#endif
+			
+			#if 1
+			if (!(strcmp(xmlGetName(search), "sat"))) 
+			{
+				// position
+				t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
+				char * name = xmlGetAttribute(search, "name");
+
+				if(satellitePositions.find(position) == satellitePositions.end()) 
+				{
+					init_sat(position);
+							
+					satellitePositions[position].name = name;
+				}
+			}
+			#endif
 
 			// jump to the next node
 			search = search->xmlNextNode;
