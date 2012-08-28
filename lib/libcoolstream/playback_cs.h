@@ -59,7 +59,7 @@ class cPlayback
 #if defined (ENABLE_LIBEPLAYER3)
 		Context_t * player;
 #elif defined (ENABLE_GSTREAMER)
-		GstElement *m_gst_playbin;
+		GstElement * m_gst_playbin;
 #endif
 		bool playing;
 

@@ -49,6 +49,12 @@ cPlayback::cPlayback(int num)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
+#if defined (ENABLE_LIBEPLAYER3)	
+	player = NULL;
+#elif defined (ENABLE_GSTREAMER)
+	m_gst_playbin = NULL;
+#endif	
+	
 	mAudioStream = 0;
 	mSpeed = 0;
 
