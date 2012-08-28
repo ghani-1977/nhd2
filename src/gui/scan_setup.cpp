@@ -72,6 +72,7 @@ extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);
 extern void saveFrontendConfig();
 //extern void loadFrontendConfig();
+extern bool HaveTwin;
 
 
 // option off0_on1
@@ -507,17 +508,17 @@ void CScanSetup::showScanService()
 	}
 	
 	// frontend mode
-	bool scanned_fe = false;
-	for (int i = 1; i < FrontendCount; i++)
-	{
-		if( (getFE(0)->getInfo()->type == getFE(i)->getInfo()->type) && (feindex == i) )
-			scanned_fe = true;
-	}
+	//bool scanned_fe = false;
+	//for (int i = 1; i < FrontendCount; i++)
+	//{
+	//	if( (getFE(0)->getInfo()->type == getFE(i)->getInfo()->type) && (feindex == i) )
+	//		scanned_fe = true;
+	//}
 	
-	if(FrontendCount > 1)
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (scanned_fe)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
-	else
-		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
+	//if(FrontendCount > 1)
+		scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (HaveTwin)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
+	//else
+	//	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
