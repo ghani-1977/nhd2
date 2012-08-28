@@ -300,9 +300,9 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 
 			if (test && (msg <= CRCInput::RC_MaxRC)) 
 			{
-				//TEST
+				// rezap
 				g_Zapit->Rezap();
-				//
+				
 				istheend = true;
 				msg = CRCInput::RC_timeout;
 			}
@@ -315,8 +315,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 				if (ShowLocalizedMessage(LOCALE_SCANTS_ABORT_HEADER, LOCALE_SCANTS_ABORT_BODY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 				{
 					g_Zapit->stopScan();
-					
-					//canceled = true;
 				}
 			}
 			else
@@ -343,10 +341,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 
 	if(!test) 
 	{
-		//ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, success ? LOCALE_SCANTS_FINISHED : LOCALE_SCANTS_FAILED, CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
-
 		const char * text = g_Locale->getText(success ? LOCALE_SCANTS_FINISHED : LOCALE_SCANTS_FAILED);
-		//paintLine(xpos2, ypos_frequency, xpos_frequency, text);
 		
 		// head
 		frameBuffer->paintBoxRel(x, y, width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -363,10 +358,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 		
 		// title
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(xpos1 + 5 + icon_s_w, y + hheight, width - BORDER_RIGHT - BORDER_LEFT - icon_hm_w - icon_s_w, text, COL_MENUHEAD, 0, true); // UTF-8
-		
-		// exit icon
-		//frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + width- 30, y + 5);
-		
+			
 #ifdef FB_BLIT
 		frameBuffer->blit();
 #endif		

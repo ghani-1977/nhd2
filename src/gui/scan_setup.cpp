@@ -62,9 +62,7 @@
 
 // global
 CScanSettings * scanSettings;
-
-
-extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
+//extern CZapitClient::SatelliteList satList;	//defined neutrino.cpp
 
 char zapit_lat[20];				//defined neutrino.cpp
 char zapit_long[20];				//defined neutrino.cpp
@@ -73,6 +71,7 @@ char zapit_long[20];				//defined neutrino.cpp
 extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);
 extern void saveFrontendConfig();
+//extern void loadFrontendConfig();
 
 
 // option off0_on1
@@ -275,11 +274,10 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 		}
 		
+		// frontend config (femode)
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
-		
 		saveFrontendConfig();
-		
-		g_Zapit->reinitChannels();	// needed for twin if we set other femodes
+		//g_Zapit->reinitChannels();	// needed for twin if we set other femodes
 		
 		hintBox->hide();
 		delete hintBox;
@@ -311,7 +309,6 @@ void CScanSetup::showScanService()
 	
 	printf("CScanSetup::showScanService: Tuner: %d\n", feindex);
 	
-	// otherwise is too late to get scanSettings used elsewhere???
 	//load scan settings 
 	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
 		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
@@ -326,6 +323,10 @@ void CScanSetup::showScanService()
 	int shortcut = 1;
 	
 	sat_iterator_t sit; //sat list iterator
+	
+	// load motor position
+	if( getFE(feindex)->getInfo()->type == FE_QPSK) 
+		 LoadMotorPositions();
 	
 	// intros
 	scansetup->addItem(GenericMenuBack);
@@ -358,7 +359,7 @@ void CScanSetup::showScanService()
 	// scan setup SAT
 	if( getFE(feindex)->getInfo()->type == FE_QPSK) 
 	{
-		satSelect = new CMenuOptionStringChooser(LOCALE_SATSETUP_SATELLITE, scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
+		satSelect = new CMenuOptionStringChooser(LOCALE_SATSETUP_SATELLITE, scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true);
 			
 		satOnOff = new CMenuWidget(LOCALE_SATSETUP_SATELLITE, NEUTRINO_ICON_SETTINGS);
 	
@@ -427,7 +428,7 @@ void CScanSetup::showScanService()
 	} 
 	else if ( getFE(feindex)->getInfo()->type == FE_QAM) 
 	{
-		satSelect = new CMenuOptionStringChooser(LOCALE_CABLESETUP_PROVIDER, (char*)scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
+		satSelect = new CMenuOptionStringChooser(LOCALE_CABLESETUP_PROVIDER, (char*)scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true);
 
 		for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++) 
 		{
@@ -440,7 +441,7 @@ void CScanSetup::showScanService()
 	}
 	else if ( getFE(feindex)->getInfo()->type == FE_OFDM) 
 	{
-		satSelect = new CMenuOptionStringChooser(LOCALE_TERRESTRIALSETUP_PROVIDER, (char*)scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_nokey, "", true);
+		satSelect = new CMenuOptionStringChooser(LOCALE_TERRESTRIALSETUP_PROVIDER, (char*)scanSettings->satNameNoDiseqc, true, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true);
 
 		for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++)
 		{
@@ -571,6 +572,7 @@ void CScanSetup::showScanService()
 	// manuel scan menu
 	CMenuWidget * manualScan = new CMenuWidget(LOCALE_SATSETUP_MANUAL_SCAN, NEUTRINO_ICON_SETTINGS);
 
+	int man_shortcut = 1;
 	CScanTs * scanTs = new CScanTs(feindex);
 
 	// intros
@@ -587,9 +589,7 @@ void CScanSetup::showScanService()
 	// TP select
 	CTPSelectHandler * tpSelect = new CTPSelectHandler(feindex);
 		
-	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_SELECT_TP, true, NULL, tpSelect, "test"));
-	
-	int man_shortcut = 1;
+	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_SELECT_TP, true, NULL, tpSelect, "test", CRCInput::convertDigitToKey(man_shortcut++) ));
 		
 	// frequency
 	int freq_length = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? 8 : 6;
@@ -677,12 +677,12 @@ void CScanSetup::showScanService()
 	autoScan->addItem(satSelect);
 		
 	// auto scan
-	autoScan->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "auto", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
+	autoScan->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "auto", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW) );
 		
 	// auto scan menu item
-	//scansetup->addItem(new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN, true, NULL, autoScan, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE) );
 	CMenuForwarder * auScan = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN, (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP), NULL, autoScan, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE);
 	feModeNotifier->addItem(0, auScan);
+	
 	scansetup->addItem(auScan);
 
 	// scan all sats
@@ -692,7 +692,7 @@ void CScanSetup::showScanService()
 	{
 		CMenuWidget * autoScanAll = new CMenuWidget(LOCALE_SATSETUP_AUTO_SCAN_ALL, NEUTRINO_ICON_SETTINGS);
 			
-		fautoScanAll = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN_ALL, ( (dmode != NO_DISEQC) && (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP)), NULL, autoScanAll, "", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE);
+		fautoScanAll = new CMenuForwarder(LOCALE_SATSETUP_AUTO_SCAN_ALL, ( (dmode != NO_DISEQC) && (scanSettings->femode != FE_NOTCONNECTED) && (scanSettings->femode != FE_LOOP)), NULL, autoScanAll );
 		satNotify->addItem(2, fautoScanAll);
 		feModeNotifier->addItem(2, fautoScanAll);
 
@@ -705,10 +705,10 @@ void CScanSetup::showScanService()
 		autoScanAll->addItem(GenericMenuSeparatorLine);
 		
 		// sat
-		autoScanAll->addItem(new CMenuForwarder(LOCALE_SATSETUP_SATELLITE, true, NULL, satOnOff ));
+		autoScanAll->addItem(new CMenuForwarder(LOCALE_SATSETUP_SATELLITE, true, NULL, satOnOff, "", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
 			
 		// scan
-		autoScanAll->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "all") );
+		autoScanAll->addItem(new CMenuForwarder(LOCALE_SCANTS_STARTNOW, true, NULL, scanTs, "all", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW ) );
 
 		// add item 
 		scansetup->addItem(fautoScanAll);
