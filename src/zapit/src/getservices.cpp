@@ -576,7 +576,6 @@ int loadProviders()
 }	
 
 // load services
-// FIXME: parsing sats is ugly musst be fixed, parsing T then S some T postions will be overwritten :-(
 int LoadServices(bool only_current)
 {
 	xmlDocPtr parser;
