@@ -1018,9 +1018,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                            printf("AVCODEC__INIT__FAILED\n");
                 }
                 else if(stream->codec->codec_id == CODEC_ID_AAC) {
-                    ffmpeg_printf(10,"Create AAC ExtraData\n");
-                    ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
-                    Hexdump(stream->codec->extradata, stream->codec->extradata_size);
+                    //ffmpeg_printf(10,"Create AAC ExtraData\n");
+                    //ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
+                    //Hexdump(stream->codec->extradata, stream->codec->extradata_size);
 
   /* extradata
 13 10 56 e5 9d 48 00 (anderen cops)
@@ -1063,8 +1063,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     track.aacbuf[5] = 0x1F;
                     track.aacbuf[6] = 0xFC;
 
-                    printf("AAC_HEADER -> ");
-                    Hexdump(track.aacbuf,7);
+                    //printf("AAC_HEADER -> ");
+                    //Hexdump(track.aacbuf,7);
                     track.have_aacheader = 1;
 
                 } else if(stream->codec->codec_id == CODEC_ID_WMAV1
@@ -1154,7 +1154,6 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     //ffmpeg_printf(1, "aacbuf:\n");
                     //Hexdump(track.aacbuf, track.aacbuflen);
 		    
-
                     //ffmpeg_printf(1, "priv_data:\n");
                     //Hexdump(stream->codec->priv_data, track.aacbuflen);
 

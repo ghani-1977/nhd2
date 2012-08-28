@@ -51,7 +51,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-//#define LINUXDVB_DEBUG
+#define LINUXDVB_DEBUG
 
 static short debug_level = 10;
 
