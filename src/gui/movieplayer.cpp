@@ -821,6 +821,12 @@ void CMoviePlayerGui::PlayFile(void)
 						else
 							loopHintBox.hide();
 					}
+					else
+					{
+						p_movie_info->epgChannel = sel_filename;
+						p_movie_info->epgTitle = sel_filename;
+
+					}
 				}
 			}
 		}// isMovieBrowser == true
