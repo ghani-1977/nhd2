@@ -277,7 +277,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		
 		// frontend config (femode)
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
-		saveFrontendConfig();
+		//saveFrontendConfig();
 		//g_Zapit->reinitChannels();	// needed for twin if we set other femodes
 		
 		hintBox->hide();
@@ -912,7 +912,6 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 	
 	scan_mode = getConfigValue(index, "scan_mode", 1); // NIT (0) or fast (1)
 	scanSectionsd = getConfigValue(index, "scanSectionsd", 0);
-	//scan_pids = getConfigValue(index, "scan_pids", 0);
 	
 	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);
