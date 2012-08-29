@@ -1819,14 +1819,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandSetDiseqcType msgSetDiseqcType;
 			CBasicServer::receive_data(connfd, &msgSetDiseqcType, sizeof(msgSetDiseqcType)); // bouquet & channel number are already starting at 0!
 			
-			// diseqcType is global
-			printf("zapit get from [scan.cpp] diseqcType: %d\n", msgSetDiseqcType.diseqc);
-			
 			// fe set diseqc type
 			if( getFE(msgSetDiseqcType.feindex)->getInfo()->type == FE_QPSK)
 			{
 				getFE(msgSetDiseqcType.feindex)->setDiseqcType(msgSetDiseqcType.diseqc );
-				printf("zapit: set diseqc type %d\n", msgSetDiseqcType.diseqc );
 			}
 			
 			break;
@@ -1863,13 +1859,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandSetFEMode msgSetFEMode;
 			CBasicServer::receive_data(connfd, &msgSetFEMode, sizeof(msgSetFEMode));
 			
-			printf("zapit get from [scan.cpp] femode: %d\n", msgSetFEMode.mode);
-			
 			// fe set femode
 			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
-			printf("zapit: set fe mode %d\n", msgSetFEMode.mode );
-			
-			//saveFrontendConfig();
+			saveFrontendConfig();
 			
 			break;
 		}
