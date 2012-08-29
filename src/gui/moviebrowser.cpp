@@ -2493,26 +2493,26 @@ bool CMovieBrowser::onSortMovieInfoHandleList(std::vector<MI_MOVIE_INFO*>& handl
 void CMovieBrowser::updateDir(void)
 {
     m_dir.clear();
-#if 0
-    // check if there is a movie dir and if we should use it
-    if(g_settings.network_nfs_moviedir[0] != 0 )
-    {
-        std::string name = g_settings.network_nfs_moviedir;
-        addDir(name,&m_settings.storageDirMovieUsed);
-    }
+#if 1
+	// check if there is a movie dir and if we should use it
+	if(g_settings.network_nfs_moviedir[0] != 0 )
+	{
+		std::string name = g_settings.network_nfs_moviedir;
+		addDir(name, &m_settings.storageDirMovieUsed);
+	}
 #endif
-    // check if there is a record dir and if we should use it
-    if(g_settings.network_nfs_recordingdir[0] != 0 )
-    {
-        std::string name = g_settings.network_nfs_recordingdir;
-        addDir(name,&m_settings.storageDirRecUsed);
-    }
+	// check if there is a record dir and if we should use it
+	if(g_settings.network_nfs_recordingdir[0] != 0 )
+	{
+		std::string name = g_settings.network_nfs_recordingdir;
+		addDir(name, &m_settings.storageDirRecUsed);
+	}
 
-    for(int i = 0; i < MB_MAX_DIRS; i++)
-    {
-        if(!m_settings.storageDir[i].empty())
-            addDir(m_settings.storageDir[i],&m_settings.storageDirUsed[i]);
-    }
+	for(int i = 0; i < MB_MAX_DIRS; i++)
+	{
+		if(!m_settings.storageDir[i].empty())
+			addDir(m_settings.storageDir[i], &m_settings.storageDirUsed[i]);
+	}
 }
 
 void CMovieBrowser::loadAllTsFileNamesFromStorage(void)
@@ -2598,9 +2598,10 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				int test = -1;
 				int ext_pos = 0;
 				ext_pos = flist[i].getFileName().rfind('.');
+				std::string extension;
 				if( ext_pos > 0)
 				{
-					std::string extension;
+					//std::string extension;
 					extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
 					
 					if( 
@@ -2650,8 +2651,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 					movieInfo.file.Name = flist[i].Name;
 					
-					//if(m_movieInfo.loadMovieInfo(&movieInfo)) 
-					m_movieInfo.loadMovieInfo(&movieInfo);
+					//m_movieInfo.loadMovieInfo(&movieInfo);
 					
 					{ 
 						//FIXME atm we show only ts+xml (records) here
@@ -3156,23 +3156,24 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	
 	// intros
 	//optionsMenuDir.addItem(GenericMenuSeparator);
-	optionsMenuDir.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_USE_REC_DIR,       (int*)(&m_settings.storageDirRecUsed), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
-	optionsMenuDir.addItem( new CMenuForwarder( LOCALE_MOVIEBROWSER_DIR , false ,g_settings.network_nfs_recordingdir));
+	optionsMenuDir.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_USE_REC_DIR, (int*)(&m_settings.storageDirRecUsed), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
+	optionsMenuDir.addItem( new CMenuForwarder( LOCALE_MOVIEBROWSER_DIR, false ,g_settings.network_nfs_recordingdir));
 
 	optionsMenuDir.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_USE_MOVIE_DIR,     (int*)(&m_settings.storageDirMovieUsed), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
 	optionsMenuDir.addItem( new CMenuForwarder (LOCALE_MOVIEBROWSER_DIR, false , g_settings.network_nfs_moviedir));
+	
 	optionsMenuDir.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MOVIEBROWSER_DIR_HEAD));
 	
-	CFileChooser*       dirInput[MB_MAX_DIRS];
-	CMenuOptionChooser* chooser[MB_MAX_DIRS];
-	COnOffNotifier*     notifier[MB_MAX_DIRS];
-	CMenuForwarder*     forwarder[MB_MAX_DIRS];
+	CFileChooser *       dirInput[MB_MAX_DIRS];
+	CMenuOptionChooser * chooser[MB_MAX_DIRS];
+	COnOffNotifier *     notifier[MB_MAX_DIRS];
+	CMenuForwarder *     forwarder[MB_MAX_DIRS];
 	for(i=0; i<MB_MAX_DIRS ;i++)
 	{
 		dirInput[i] =  new CFileChooser(&m_settings.storageDir[i]);
-		forwarder[i] = new CMenuForwarder(LOCALE_MOVIEBROWSER_DIR,        m_settings.storageDirUsed[i], m_settings.storageDir[i],      dirInput[i]);
+		forwarder[i] = new CMenuForwarder(LOCALE_MOVIEBROWSER_DIR, m_settings.storageDirUsed[i], m_settings.storageDir[i], dirInput[i]);
 		notifier[i] =  new COnOffNotifier(forwarder[i]);
-		chooser[i] =   new CMenuOptionChooser(LOCALE_MOVIEBROWSER_USE_DIR , &m_settings.storageDirUsed[i]  , MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true,notifier[i]);
+		chooser[i] =   new CMenuOptionChooser(LOCALE_MOVIEBROWSER_USE_DIR , &m_settings.storageDirUsed[i], MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true, notifier[i]);
 		optionsMenuDir.addItem(chooser[i] );
 		optionsMenuDir.addItem(forwarder[i] );
 		if(i != (MB_MAX_DIRS - 1))
@@ -3186,7 +3187,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	CIntInput browserRowNrIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_NR,          (int&) m_settings.browserRowNr,        1, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CIntInput* browserRowWidthIntInput[MB_MAX_ROWS];
 	for(i=0; i<MB_MAX_ROWS ;i++)
-	    browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
+		browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
 	CMenuWidget optionsMenuBrowser (LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING, 550);
 	
