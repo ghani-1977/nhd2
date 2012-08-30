@@ -21,15 +21,17 @@
 
 #include <string>
 #include <stdint.h>
-
 #include <vector>
 
 #include <config.h>
 
 
-#if defined (ENABLE_LIBEPLAYER3)
-#include <libeplayer3/include/common.h>
-#include <libeplayer3/include/subtitle.h>
+#if defined (ENABLE_GSTREAMER)
+#include <gst/gst.h>
+#include <gst/pbutils/missing-plugins.h>
+#else // eplayer3 default
+#include <common.h>
+#include <subtitle.h>
 #include <linux/fb.h>
 
 
@@ -37,11 +39,6 @@ extern OutputHandler_t		OutputHandler;
 extern PlaybackHandler_t	PlaybackHandler;
 extern ContainerHandler_t	ContainerHandler;
 extern ManagerHandler_t		ManagerHandler;
-#endif
-
-#if defined (ENABLE_GSTREAMER)
-#include <gst/gst.h>
-#include <gst/pbutils/missing-plugins.h>
 #endif
 
 typedef enum {
@@ -56,10 +53,10 @@ typedef enum {
 class cPlayback
 {
 	private:
-#if defined (ENABLE_LIBEPLAYER3)
-		Context_t * player;
-#elif defined (ENABLE_GSTREAMER)
+#if defined (ENABLE_GSTREAMER)
 		GstElement * m_gst_playbin;
+#else
+		Context_t * player;
 #endif
 		bool playing;
 

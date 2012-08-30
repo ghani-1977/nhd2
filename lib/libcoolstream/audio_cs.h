@@ -86,7 +86,7 @@ class cAudio
 		int clipfd; /* for pcm playback */	
 		
 		// for pcm soft decoder
-#elif defined (ENABLE_PCMSOFTDECODER)
+#else
 		int uNoOfChannels;
 		int uSampleRate;
 		int uBitsPerSample;

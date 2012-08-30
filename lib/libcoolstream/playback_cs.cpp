@@ -49,10 +49,10 @@ cPlayback::cPlayback(int num)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
-#if defined (ENABLE_LIBEPLAYER3)	
-	player = NULL;
-#elif defined (ENABLE_GSTREAMER)
+#if defined (ENABLE_GSTREAMER)
 	m_gst_playbin = NULL;
+#else
+	player = NULL;
 #endif	
 	
 	mAudioStream = 0;
@@ -72,7 +72,7 @@ bool cPlayback::Open()
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );
 	
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	player = (Context_t*)malloc(sizeof(Context_t));
 
 	//init player
@@ -89,13 +89,13 @@ bool cPlayback::Open()
 	{
 		player->output->Command(player,OUTPUT_ADD, (void*)"audio");
 		player->output->Command(player,OUTPUT_ADD, (void*)"video");
-#if defined (ENABLE_LIBASS)		
+//#if defined (ENABLE_LIBASS)		
 		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");
-#endif		
+//#endif		
 	}
 
 	// subtitle
-#if defined (ENABLE_LIBASS)
+//#if defined (ENABLE_LIBASS)
 	SubtitleOutputDef_t out;
 
 	out.screen_width = CFrameBuffer::getInstance()->getScreenWidth();
@@ -106,7 +106,7 @@ bool cPlayback::Open()
 	out.shareFramebuffer = 1;
     
 	player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-#endif // libass
+//#endif // libass
 #endif
 
 	return true;
@@ -127,7 +127,18 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 
 	mAudioStream = 0;
 
-#if defined (ENABLE_LIBEPLAYER3)
+#if defined (ENABLE_GSTREAMER)
+	int argc = 1;
+	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
+	gchar *uri;
+		
+	gst_init(&argc, &filename);
+	uri = g_filename_to_uri(filename, NULL, NULL);
+	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
+	g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
+	g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);
+	g_free(uri);
+#else
 	//create playback path
 	char file[400] = {""};
 	bool isHTTP = false;
@@ -170,19 +181,6 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 	}
 #endif
 
-#if defined (ENABLE_GSTREAMER)
-	int argc = 1;
-	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
-	gchar *uri;
-		
-	gst_init(&argc, &filename);
-	uri = g_filename_to_uri(filename, NULL, NULL);
-	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
-	g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
-	g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);
-	g_free(uri);
-#endif
-
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	return true;
@@ -195,7 +193,7 @@ bool cPlayback::Play(void)
 	if(playing == true) 
 		return true;
 	
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	/* play it baby  */
 	if(player && player->output && player->playback) 
 	{
@@ -219,7 +217,7 @@ bool cPlayback::SyncAV(void)
 	if(playing == false ) 
 		return false;
 	
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	if(player && player->output && player->playback) 
 	{
         	player->output->Command(player, OUTPUT_AVSYNC, NULL);
@@ -234,9 +232,14 @@ bool cPlayback::Stop(void)
 	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == false) 
-		return false;
+		return false;	
 
-#if defined (ENABLE_LIBEPLAYER3)
+#if defined (ENABLE_GSTREAMER)
+	if(m_gst_playbin)
+	{
+		gst_element_set_state(m_gst_playbin, GST_STATE_NULL);
+	}
+#else
 	if(player && player->playback && player->output) 
 	{
 		player->playback->Command(player, PLAYBACK_STOP, NULL);
@@ -247,9 +250,9 @@ bool cPlayback::Stop(void)
 	{
 		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
 		player->output->Command(player,OUTPUT_DEL, (void*)"video");
-#if defined (ENABLE_LIBASS)		
+//#if defined (ENABLE_LIBASS)		
 		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-#endif		
+//#endif		
 	}
 
 	if(player && player->playback)
@@ -261,13 +264,6 @@ bool cPlayback::Stop(void)
 		free(player);
 
 		player = NULL;
-	}
-#endif	
-
-#if defined (ENABLE_GSTREAMER)
-	if(m_gst_playbin)
-	{
-		gst_element_set_state(m_gst_playbin, GST_STATE_NULL);
 	}
 #endif
 
@@ -284,7 +280,7 @@ bool cPlayback::SetAPid(unsigned short pid, bool ac3)
 {
 	dprintf(DEBUG_INFO, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
 
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	int track = pid;
 
 	if(pid != mAudioStream)
@@ -305,8 +301,16 @@ bool cPlayback::SetSpeed(int speed)
 
 	if(playing == false) 
 		return false;
+
+#if defined (ENABLE_GSTREAMER)
+	if(speed == 0)
+		if(m_gst_playbin)
+			gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
 		
-#if defined (ENABLE_LIBEPLAYER3)
+	if(speed == 1)
+		if(m_gst_playbin)
+			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+#else
 	if(player && player->playback) 
 	{
 		if(speed > 1) 		//forwarding
@@ -340,16 +344,6 @@ bool cPlayback::SetSpeed(int speed)
 	}
 #endif
 
-#if defined (ENABLE_GSTREAMER)
-	if(speed == 0)
-		if(m_gst_playbin)
-			gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
-		
-	if(speed == 1)
-		if(m_gst_playbin)
-			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
-#endif
-
 	mSpeed = speed;
 
 	return true;
@@ -362,7 +356,7 @@ bool cPlayback::SetSlow(int slow)
 	if(playing == false) 
 		return false;
 
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	if(player && player->playback) 
 	{
 		player->playback->Command(player, PLAYBACK_SLOWMOTION, (void*)&slow);
@@ -386,9 +380,37 @@ bool cPlayback::GetSpeed(int &speed) const
 bool cPlayback::GetPosition(int &position, int &duration)
 {
 	if(playing == false) 
-		return false;
+		return false;	
+
+#if defined (ENABLE_GSTREAMER)
+	//PTS
+	unsigned long long int pts = 0;
 	
-#if defined (ENABLE_LIBEPLAYER3)
+	GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
+	
+	if(m_gst_playbin)
+	{
+		gst_element_query_position(m_gst_playbin, &fmt, &pts);
+		position = pts / 1000000000.0;
+		//debug(150, "Pts = %02d:%02d:%02d (%llu.0000 sec)", (int)((sec / 60) / 60) % 60, (int)(sec / 60) % 60, (int)sec % 60, sec);
+	}
+	
+	// length
+	double length = 0;
+	
+	GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
+	gint64 len;
+
+	if(m_gst_playbin)
+	{
+		gst_element_query_duration(m_gst_playbin, &fmt, &len);
+		length = len / 1000000000.0;
+		if(length < 0) length = 0;
+		
+		duration = (int)(length*1000);
+		//debug(150, "Length = %02d:%02d:%02d (%.4f sec)", (int)((length / 60) / 60) % 60, (int)(length / 60) % 60, (int)length % 60, length);
+	}
+#else
 	if (player && player->playback && !player->playback->isPlaying) 
 	{	  
 		dprintf(DEBUG_INFO, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);	
@@ -429,54 +451,15 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	{
 		duration = (int)(length*1000);
 	}
-	
-	return true;
 #endif	
-
-#if defined (ENABLE_GSTREAMER)
-	//PTS
-	unsigned long long int pts = 0;
-	
-	GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
-	
-	if(m_gst_playbin)
-	{
-		gst_element_query_position(m_gst_playbin, &fmt, &pts);
-		position = pts / 1000000000.0;
-		//debug(150, "Pts = %02d:%02d:%02d (%llu.0000 sec)", (int)((sec / 60) / 60) % 60, (int)(sec / 60) % 60, (int)sec % 60, sec);
-	}
-	
-	// length
-	double length = 0;
-	
-	GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
-	gint64 len;
-
-	if(m_gst_playbin)
-	{
-		gst_element_query_duration(m_gst_playbin, &fmt, &len);
-		length = len / 1000000000.0;
-		if(length < 0) length = 0;
-		
-		duration = (int)(length*1000);
-		//debug(150, "Length = %02d:%02d:%02d (%.4f sec)", (int)((length / 60) / 60) % 60, (int)(length / 60) % 60, (int)length % 60, length);
-	}	
 	
 	return true;
-#endif
 }
 
 bool cPlayback::SetPosition(int position, bool absolute)
 {
 	if(playing == false) 
 		return false;
-
-#if defined (ENABLE_LIBEPLAYER3)
-	float pos = (position/1000.0);
-
-	if(player && player->playback)
-		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
-#endif
 
 #if defined (ENABLE_GSTREAMER)
 	gint64 time_nanoseconds;
@@ -490,6 +473,11 @@ bool cPlayback::SetPosition(int position, bool absolute)
 		if(time_nanoseconds < 0) time_nanoseconds = 0;
 		gst_element_seek(m_gst_playbin, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, time_nanoseconds, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 	}
+#else
+	float pos = (position/1000.0);
+
+	if(player && player->playback)
+		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
 #endif
 
 	return true;
@@ -499,7 +487,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	// audio pids
 	if(player && player->manager && player->manager->audio) 
 	{
@@ -552,7 +540,7 @@ void cPlayback::getMeta()
 	if(playing) 
 		return;
 	
-#if defined (ENABLE_LIBEPLAYER3)
+#if !defined (ENABLE_GSTREAMER)
 	char *tags[] =
         {
                 "Title",
