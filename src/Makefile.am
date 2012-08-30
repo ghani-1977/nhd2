@@ -16,12 +16,9 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
 
-if ENABLE_LIBEPLAYER3
-INCLUDES += -I$(top_srcdir)/lib/libeplayer3
-endif
-
-if ENABLE_TEST_MENU
-AM_CPPFLAGS += -DENABLE_TEST_MENU
+if !ENABLE_GSTREAMER
+#INCLUDES += -I$(top_srcdir)/lib/libeplayer3
+INCLUDES += -I$(top_srcdir)/../misc/tools/libeplayer3/include
 endif
 
 bin_PROGRAMS = neutrino
@@ -70,17 +67,16 @@ neutrino_LDADD = \
 	@VORBISIDEC_LIBS@ \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
-if ENABLE_LIBEPLAYER3
-neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a
+if !ENABLE_GSTREAMER
+neutrino_LDADD += -leplayer3 -lass
 endif
 
-if ENABLE_LIBASS
-	neutrino_LDADD += -lass
-endif
+
 
 # LCD display
-neutrino_LDADD += \
-	$(top_builddir)/lib/liblcddisplay/liblcddisplay.a
+if ENABLE_LCD
+neutrino_LDADD += $(top_builddir)/lib/liblcddisplay/liblcddisplay.a
+endif
 
 
 
