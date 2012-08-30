@@ -4893,13 +4893,16 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		networkConfig.commitConfig();
 		
 		saveSetup(NEUTRINO_SETTINGS_FILE);
+		
+		/* save keymap */
+		//g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
 
 		tuxtxt_close();
 		
 		zapitCfg.saveLastChannel = g_settings.uselastchannel;
 		setZapitConfig(&zapitCfg);
 		
-		g_Zapit->reinitChannels();
+		//g_Zapit->reinitChannels();
 
 		hintBox->hide();
 		delete hintBox;
