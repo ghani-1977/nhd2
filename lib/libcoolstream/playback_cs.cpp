@@ -89,13 +89,13 @@ bool cPlayback::Open()
 	{
 		player->output->Command(player,OUTPUT_ADD, (void*)"audio");
 		player->output->Command(player,OUTPUT_ADD, (void*)"video");
-//#if defined (ENABLE_LIBASS)		
+#if defined (ENABLE_LIBASS)		
 		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");
-//#endif		
+#endif		
 	}
 
 	// subtitle
-//#if defined (ENABLE_LIBASS)
+#if defined (ENABLE_LIBASS)
 	SubtitleOutputDef_t out;
 
 	out.screen_width = CFrameBuffer::getInstance()->getScreenWidth();
@@ -106,7 +106,7 @@ bool cPlayback::Open()
 	out.shareFramebuffer = 1;
     
 	player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-//#endif // libass
+#endif // libass
 #endif
 
 	return true;
@@ -250,9 +250,9 @@ bool cPlayback::Stop(void)
 	{
 		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
 		player->output->Command(player,OUTPUT_DEL, (void*)"video");
-//#if defined (ENABLE_LIBASS)		
+#if defined (ENABLE_LIBASS)		
 		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-//#endif		
+#endif		
 	}
 
 	if(player && player->playback)

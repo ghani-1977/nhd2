@@ -11,7 +11,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libeventserver
 
 if !ENABLE_GSTREAMER
-INCLUDES += -I$(top_srcdir)/../misc/tools/libeplayer3/include
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 endif
 
 noinst_LIBRARIES = libcoolstream.a

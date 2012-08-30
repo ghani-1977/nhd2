@@ -17,8 +17,7 @@ INCLUDES = \
 	@FREETYPE_CFLAGS@
 
 if !ENABLE_GSTREAMER
-#INCLUDES += -I$(top_srcdir)/lib/libeplayer3
-INCLUDES += -I$(top_srcdir)/../misc/tools/libeplayer3/include
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3
 endif
 
 bin_PROGRAMS = neutrino
@@ -68,7 +67,7 @@ neutrino_LDADD = \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if !ENABLE_GSTREAMER
-neutrino_LDADD += -leplayer3 -lass
+neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a -lass
 endif
 
 
