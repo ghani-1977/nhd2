@@ -146,7 +146,8 @@
 typedef uint32_t neutrino_msg_t;
 typedef uint32_t neutrino_msg_data_t;
 
-#define NEUTRINO_UDS_NAME "/tmp/neutrino.sock"
+#define NEUTRINO_UDS_NAME 		"/tmp/neutrino.sock"
+#define NEUTRINO_KEYMAP_FILE		CONFIGDIR "/keymap.conf"
 
 
 class CRCInput
@@ -181,7 +182,6 @@ class CRCInput
 
 		int		fd_max;
 		__u16 rc_last_key;
-		//void set_dsp();
 
 		void open();
 		void close();
@@ -223,37 +223,17 @@ class CRCInput
 			
 			RC_spkr		= KEY_MUTE,	    /* /include/linux/input.h: #define KEY_MUTE			0x71   */
 			
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
-			RC_minus	= 0xBC,
-			RC_plus		= 0xBB,
-#else			
 			RC_minus        = KEY_VOLUMEDOWN,   /* /include/linux/input.h: #define KEY_VOLUMEDOWN          114   */
-			RC_plus         = KEY_VOLUMEUP,     /* /include/linux/input.h: #define KEY_VOLUMEUP            115   */
-#endif			
+			RC_plus         = KEY_VOLUMEUP,     /* /include/linux/input.h: #define KEY_VOLUMEUP            115   */			
 
 			RC_standby	= KEY_POWER,	    /* /include/linux/input.h: #define KEY_POWER		0x74   */			
 			
-#if defined (PLATFORM_GIGABLUE)
-			RC_home         = 0xAE,
-#elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
-			RC_home		= 0x9E,
-#else
 			RC_home         = KEY_HOME,         /* /include/linux/input.h: #define KEY_HOME                	0x66   */
-#endif			
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-			RC_setup	= 0x8B,
-#else
 			RC_setup	= KEY_MENU,	    /* /include/linux/input.h: #define KEY_SETUP		0x8d   */
-#endif				
 			
-#if defined (PLATFORM_GIGABLUE)
-			RC_page_up	= 0x192,
-			RC_page_down	= 0x193,
-#else
 			RC_page_up	= KEY_PAGEUP,	    /* /include/linux/input.h: #define KEY_PAGEUP		0x68   */
 			RC_page_down	= KEY_PAGEDOWN,	    /* /include/linux/input.h: #define KEY_PAGEDOWN		0x6d   */
-#endif			
 			
 			RC_ok		= KEY_OK,	    /* /include/linux/input.h: #define KEY_OK			0x160 */ /* in patched input.h */
 			
@@ -262,38 +242,14 @@ class CRCInput
 			RC_yellow	= KEY_YELLOW,	    /* /include/linux/input.h: #define KEY_YELLOW		0x190 */ /* in patched input.h */
 			RC_blue		= KEY_BLUE,	    /* /include/linux/input.h: #define KEY_BLUE			0x191 */ /* in patched input.h */
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-			RC_audio	= 0x3D,
-			RC_video	= 0x90,
-			
-			RC_text		= 0x173,
-#else
 			RC_audio	= KEY_AUDIO,		/* 0x188 */
 			RC_video	= KEY_VIDEO,		/* 0x189 */
 			
 			RC_text		= KEY_TEXT,		/* 0x184 */
-#endif
-
-#if defined (PLATFORM_DUCKBOX)
-			RC_info		= 0x8A,
-#else
-			RC_info		= KEY_INFO,		/* 0x166 */
-#endif			
-			
-#if defined (PLATFORM_GIGABLUE)			
-			RC_epg		= 0x8A,
-#else			
+			RC_info		= KEY_INFO,		/* 0x166 */			
 			RC_epg		= KEY_EPG,		/* 0x16d */
-#endif			
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-			RC_recall	= 0x3C,
-#else
 			RC_recall 	= KEY_BACK,		/* 0x9E */
-#endif			
-
 			RC_favorites	= KEY_FAVORITES,	/* 0x16c */
-
 			RC_sat		= KEY_SAT,		/* 0x17d */
 			
 			RC_record	= KEY_RECORD,		/* 0xA7 */
@@ -304,25 +260,13 @@ class CRCInput
 			RC_stop		= KEY_STOP,		/* 0x80 */
 			
 			RC_timeshift	= KEY_TIME,		/* 0x167 */
-			
-#if defined (PLATFORM_GIGABLUE)
-			RC_mode		= 0x181,
-#elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-			RC_mode		= 0x3B,
-#else			
+						
 			RC_mode		= KEY_MODE,		/* 0x175 */
-#endif			
 
-#if defined (PLATFORM_GIGABLUE)
-			RC_next		= 0x197,
-			RC_prev		= 0x19C,
-#else
 			RC_next		= 0xFFFFFFF0,
 			RC_prev		= 0xFFFFFFF1,
-#endif			
 
 			/* added from cuberevo3000hd so fix it please */
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 			RC_music	= KEY_MUSIC,
 			RC_picture	= KEY_PICTURE,			
 			
@@ -337,24 +281,17 @@ class CRCInput
 			RC_pipsubch	= KEY_PIPSUBCH,
 
 			RC_net		= KEY_NET,
-			
 			RC_bookmark	= KEY_BOOKMARK,
-#endif
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 			RC_multifeed	= KEY_MULTIFEED,
-#else
-			RC_multifeed	= 0x165,
-#endif
-			
-#if defined (PLATFORM_GIGABLUE)			
+
+			/* functions */
 			RC_f1		= 0x3B,
 			RC_f2		= 0x3C,
 			RC_f3		= 0x3D,
 			RC_f4		= 0x3E,
 			RC_aspect	= 0x40,
-#endif			
-			
+
+			/* frontpanel */
 			RC_vfdup	= VFD_UP,
 			RC_vfddown	= VFD_DOWN,
 			RC_vfdright	= VFD_RIGHT,
@@ -367,8 +304,111 @@ class CRCInput
 			RC_timeout	= 0xFFFFFFFF,
 			RC_nokey	= 0xFFFFFFFE
 		};
+		
+		CConfigFile	configfile;
 
-		inline int getFileHandle(void) /* used for plugins (i.e. games) only */
+		neutrino_msg_t key_0;
+		neutrino_msg_t key_1;
+		neutrino_msg_t key_2;
+		neutrino_msg_t key_3;
+		neutrino_msg_t key_4;
+		neutrino_msg_t key_5;
+		neutrino_msg_t key_6;
+		neutrino_msg_t key_7;
+		neutrino_msg_t key_8;
+		neutrino_msg_t key_9;
+			
+		neutrino_msg_t key_backspace;
+			
+		neutrino_msg_t key_up;
+		neutrino_msg_t key_left;
+		neutrino_msg_t key_right;
+		neutrino_msg_t key_down;
+			
+		neutrino_msg_t key_spkr;
+						
+		neutrino_msg_t key_minus;
+		neutrino_msg_t key_plus;			
+
+		neutrino_msg_t key_standby;
+		neutrino_msg_t key_home;
+		neutrino_msg_t key_setup;				
+			
+		neutrino_msg_t key_page_up;
+		neutrino_msg_t key_page_down;			
+			
+		neutrino_msg_t key_ok;
+			
+		neutrino_msg_t key_red;
+		neutrino_msg_t key_green;
+		neutrino_msg_t key_yellow;
+		neutrino_msg_t key_blue;
+
+		neutrino_msg_t key_audio;
+		neutrino_msg_t key_video;
+			
+		neutrino_msg_t key_text;
+
+		neutrino_msg_t key_info;				
+			
+		neutrino_msg_t key_epg;
+			
+		neutrino_msg_t key_recall;		
+
+		neutrino_msg_t key_favorites;
+
+		neutrino_msg_t key_sat;
+			
+		neutrino_msg_t key_record;
+		neutrino_msg_t key_play;
+		neutrino_msg_t key_pause;
+		neutrino_msg_t key_forward;
+		neutrino_msg_t key_rewind;
+		neutrino_msg_t key_stop;
+			
+		neutrino_msg_t key_timeshift;
+						
+		neutrino_msg_t key_mode;			
+
+		neutrino_msg_t key_next;
+		neutrino_msg_t key_prev;			
+
+		/* added from cuberevo3000hd so fix it please */
+		neutrino_msg_t key_music;
+		neutrino_msg_t key_picture;	
+		neutrino_msg_t key_repeat;
+		neutrino_msg_t key_slow;
+			
+		neutrino_msg_t key_dvbsub;
+
+		neutrino_msg_t key_pip;
+		neutrino_msg_t key_pippos;
+		neutrino_msg_t key_pipswap;
+		neutrino_msg_t key_pipsubch;
+
+		neutrino_msg_t key_net;	
+		neutrino_msg_t key_bookmark;
+		neutrino_msg_t key_multifeed;
+					
+		neutrino_msg_t key_f1;
+		neutrino_msg_t key_f2;
+		neutrino_msg_t key_f3;
+		neutrino_msg_t key_f4;
+		neutrino_msg_t key_aspect;
+			
+		neutrino_msg_t key_vfdup;
+		neutrino_msg_t key_vfddown;
+		neutrino_msg_t key_vfdright;
+		neutrino_msg_t key_vfdleft;
+		neutrino_msg_t key_vfdpower;
+		neutrino_msg_t key_vfdmenu;
+		neutrino_msg_t key_vfdexit;
+		neutrino_msg_t key_vfdok;
+		
+		bool loadKeyMap(const char * const fileName);
+		bool saveKeyMap(const char * const fileName);
+
+		inline int getFileHandle(void) /* used for tuxtxt and plugins */
 		{
 #if HAVE_DVB_API_VERSION == 1
 			return fd_gamerc;
@@ -387,7 +427,6 @@ class CRCInput
 		unsigned long long repeat_block_generic;
 		CRCInput();      //constructor - opens rc-device and starts needed threads
 		~CRCInput();     //destructor - closes rc-device
-
 
 		static bool isNumeric(const neutrino_msg_t key);
 		static int getNumericValue(const neutrino_msg_t key);
