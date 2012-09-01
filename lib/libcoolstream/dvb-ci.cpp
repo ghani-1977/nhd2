@@ -157,7 +157,6 @@ int asn_1_decode(uint16_t * length, unsigned char * asn_1_array,
 	return -1;
 }
 
-
 //wait for a while for some data und read it if some
 eData waitData(int fd, unsigned char* buffer, int* len)
 {
@@ -694,23 +693,6 @@ void* execute_thread(void *c)
    obj->slot_pollthread(c);
 
    return NULL;
-}
-
-/* ********************************** */
-
-bool cDvbCi::Init(void)
-{
-	printf("%s:%s\n", FILENAME, __FUNCTION__);
-        return true;
-}
-
-bool cDvbCi::SendPMT(unsigned char *data, int len)
-{
-	printf("%s:%s\n", FILENAME, __FUNCTION__);
-
-//Dagobert: noop here, we need do deal with capmt rather then
-//with raw pmt
-        return true;
 }
 
 bool cDvbCi::SendCaPMT(CCaPmt *caPmt)
