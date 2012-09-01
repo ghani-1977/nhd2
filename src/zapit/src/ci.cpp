@@ -166,8 +166,6 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 	buffer[pos++] = 0x32;    // ca_pmt_tag
 
 	pos += write_length_field(&(buffer[pos]), getLength());
-
-	//ca_pmt_list_management = 3; /* fixme 5 fuer update */NOTE: we get this from pmt parsing, parsed in zapit()
 	
 	buffer[pos++] = ca_pmt_list_management;
 	buffer[pos++] = program_number >> 8;
@@ -238,7 +236,7 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
 	buffer[lenpos+1]=(len & 0xff);
 
 	for (i = 0; i < es_info.size(); i++) {
-		wp += es_info[i]->CamwriteToBuffer(&(buffer[wp]));
+		wp += es_info[i]->writeToBuffer(&(buffer[wp]));
 	}
 	buffer[4] = ((wp-6)>>8) & 0xff;
 	buffer[5]=(wp-6) & 0xff;
