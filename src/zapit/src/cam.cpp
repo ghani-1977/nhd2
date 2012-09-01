@@ -92,3 +92,4 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 	return sendMessage((char *)buffer, pos, update);
 }
 
+
