@@ -324,7 +324,8 @@ static void * reader_thread(void * arg)
 	uint16_t packlen;
 	uint8_t* buf;
 
-        dmx = new cDemux( source );
+	int demux_index = 0; //source;
+        dmx = new cDemux( demux_index );
 
 	dmx->Open(DMX_PES_CHANNEL, 64*1024, source);	
 
