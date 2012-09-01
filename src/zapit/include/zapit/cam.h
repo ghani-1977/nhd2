@@ -26,6 +26,7 @@
 #include "ci.h"
 #include <basicclient.h>
 
+
 class CCam : public CBasicClient
 {
 	private:

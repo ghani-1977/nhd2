@@ -62,17 +62,32 @@ bool CCam::sendMessage(const char * const data, const size_t length, bool update
 	return send_data(data, length);
 }
 
+/*
 bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 {
 	if (!caPmt)
 		return true;
 
-	//printf("CCam::setCaPmt: dmx %d camask %d update %s\n", demux, camask, update ? "yes" : "no" );
 	printf("CCam::setCaPmt\n");
 	
 	unsigned int size = caPmt->getLength();
 	unsigned char buffer[3 + get_length_field_size(size) + size];
 	size_t pos = caPmt->writeToBuffer(buffer, demux, camask);
+
+	return sendMessage((char *)buffer, pos, update);
+}
+*/
+
+bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
+{
+	if (!caPmt)
+		return true;
+
+	printf("CCam::setCaPmt: dmx %d camask %d update %s\n", demux, camask, update ? "yes" : "no" );
+	
+	unsigned int size = caPmt->CamgetLength();
+	unsigned char buffer[3 + get_length_field_size(size) + size];
+	size_t pos = caPmt->CamwriteToBuffer(buffer, demux, camask);
 
 	return sendMessage((char *)buffer, pos, update);
 }

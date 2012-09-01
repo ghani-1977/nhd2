@@ -138,7 +138,7 @@ void CBouquetList::adjustToChannelID(t_channel_id channel_id)
 		int nChannelPos = Bouquets[selected]->channelList->hasChannelID(channel_id);
 		if(nChannelPos > -1) 
 		{
-			printf("CBouquetList::adjustToChannelID to %llx -> not needed\n", channel_id);
+			//printf("CBouquetList::adjustToChannelID to %llx -> not needed\n", channel_id);
 			Bouquets[selected]->channelList->setSelected(nChannelPos);
 			return;
 		}

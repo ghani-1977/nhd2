@@ -154,8 +154,8 @@ class CZapitChannel
 		/* the conditional access program map table of this channel */
 		CCaPmt * 			caPmt;
 		
+		/* frontend index */
 		int 				FeIndex;
-		//CFrontend			*ch_fe;
 		
 		/* from neutrino CChannel class */
 		uint64_t      last_unlocked_EPGid;
@@ -217,13 +217,13 @@ class CZapitChannel
 		void setPcrPid(unsigned short pPcrPid)			{ pcrPid = pPcrPid; }
 		void setPmtPid(unsigned short pPmtPid)			{ pmtPid = pPmtPid; }
 		void setTeletextPid(unsigned short pTeletextPid)	{ teletextPid = pTeletextPid; }
-		//TEST
 		void setTeletextLang(char * lang)			{ ttx_language_code = lang; };
 		void setVideoPid(unsigned short pVideoPid)		{ videoPid = pVideoPid; }
 		void setAudioPid(unsigned short pAudioPid)		{ audioPid = pAudioPid; }
 		void setPrivatePid(unsigned short pPrivatePid)		{ privatePid = pPrivatePid; }
 		void setPidsFlag(void)					{ pidsFlag = true; }
-		void setCaPmt(CCaPmt *pCaPmt)				{ caPmt = pCaPmt; }
+		void setCaPmt(CCaPmt * pCaPmt)				{ caPmt = pCaPmt; }
+		
 		/* cleanup methods */
 		void resetPids(void);
 		

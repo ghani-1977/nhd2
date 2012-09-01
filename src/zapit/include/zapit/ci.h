@@ -54,6 +54,9 @@ class CCaTable
 		~CCaTable(void);
 		unsigned getLength(void)	{ return info_length + 2; }
 		unsigned writeToBuffer(unsigned char * const buffer);
+		
+		//cam
+		unsigned CamwriteToBuffer(unsigned char * const buffer);
 
 	public:
 		unsigned reserved2		: 4;
@@ -66,6 +69,9 @@ class CEsInfo : public CCaTable
 	protected:
 		unsigned getLength(void)	{ return CCaTable::getLength() + 3; }
 		unsigned writeToBuffer(unsigned char * const buffer);
+		
+		//cam
+		unsigned CamwriteToBuffer(unsigned char * const buffer);
 
 	public:
 		unsigned stream_type		: 8;
@@ -84,6 +90,10 @@ class CCaPmt : public CCaTable
 		~CCaPmt(void);
 		unsigned getLength(void);
 		unsigned writeToBuffer(unsigned char * const buffer, int demux = 1, int camask = 3);
+		
+		//cam
+		unsigned CamgetLength(void);
+		unsigned CamwriteToBuffer(unsigned char * const buffer, int demux = 1, int camask = 3);
 
 		unsigned ca_pmt_list_management	: 8;
 		unsigned program_number		: 16;

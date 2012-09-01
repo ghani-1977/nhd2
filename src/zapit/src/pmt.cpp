@@ -559,6 +559,7 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 
 	printf("[pmt]parse_pmt: fe(%d) pcr pid: old 0x%x new 0x%x\n", channel->getFeIndex(), channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
 
+	// ci
 	if(channel->getCaPmt() != 0) 
 	{
 		if(channel->getCaPmt()->version_number != caPmt->version_number)
@@ -592,10 +593,12 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 
 	if(scan_runs) 
 	{
+		// ci
 		if(channel->getCaPmt() != 0)
 			delete channel->getCaPmt();
 		
 		channel->setCaPmt(NULL);
+		
 		delete caPmt;
 	} 
 	else 
@@ -603,8 +606,8 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 		if(channel->getCaPmt() != 0) 
 			delete channel->getCaPmt();
 		
-		channel->setCaPmt(caPmt);		
-	}	
+		channel->setCaPmt(caPmt);
+	}
 
 	channel->setPidsFlag();
 
