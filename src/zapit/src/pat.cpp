@@ -27,12 +27,13 @@
 #define PAT_SIZE 1024
 
 
-int parse_pat(CZapitChannel * const channel)
+int parse_pat(CZapitChannel * const channel, int dmx_num)
 {
 	if (!channel)
 		return -1;
 
-	cDemux * dmx = new cDemux( channel->getDemuxIndex() );
+	int demux_index = dmx_num; //channel->getDemuxIndex();
+	cDemux * dmx = new cDemux( demux_index );
 	
 	//open
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, channel->getFeIndex() );
@@ -65,9 +66,6 @@ int parse_pat(CZapitChannel * const channel)
 
 		if(buffer[7]) 
 			printf("parse_pat: fe(%d) section 0x%X last 0x%X\n", channel->getFeIndex(), buffer[6], buffer[7]);
-
-		//debug
-		//printf("[pat.cpp] dmx read %d len %d\n", i, ( (buffer[1] & 0x0F) << 8) | buffer[2]);
 		
 		/* loop over service id / program map table pid pairs */
 		for (i = 8; i < (((buffer[1] & 0x0F) << 8) | buffer[2]) + 3; i += 4) 
@@ -96,6 +94,7 @@ static unsigned char pbuffer[PAT_SIZE];
 int parse_pat(int feindex)
 {
 	int ret = 0;
+	int dmx_num = 0; //feindex;
 
 	printf("parse_pat: Parsing pat ...\n");
 	

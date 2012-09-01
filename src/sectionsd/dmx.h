@@ -77,7 +77,7 @@ public:
 	pthread_mutex_t        start_stop_mutex;
 
 
-	DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool cache = true, int dmx_source = 0);
+	DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool cache = true/*, int dmx_source = 0*/);
 	~DMX();
 
 	int start(void);

@@ -247,7 +247,7 @@ extern CZapitChannel * live_channel;			/* zapit.cpp */
 
 
 static DMX dmxEIT(0x12, 3000 );
-static DMX dmxCN(0x12, 512, false, 1);
+static DMX dmxCN(0x12, 512, false);
 
 #ifdef ENABLE_FREESATEPG
 static DMX dmxFSEIT(3842, 320);
@@ -7084,7 +7084,8 @@ int eit_set_update_filter(int *fd)
 	}
 
 	if(eitDmx == NULL) {
-		eitDmx = new cDemux( live_channel? live_channel->getDemuxIndex() : 0);
+		int demux_index = 0; //live_channel? live_channel->getDemuxIndex() : 0
+		eitDmx = new cDemux( demux_index );
 		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_channel? live_channel->getFeIndex() : 0);
 	}
 

@@ -720,7 +720,7 @@ static bool parse_record_pat_pmt(CZapitChannel * thischannel)
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel) < 0) 
+		if (parse_pat( thischannel, thischannel->getFeIndex() ) < 0) 
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -728,16 +728,16 @@ static bool parse_record_pat_pmt(CZapitChannel * thischannel)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel) < 0) 
+	if (parse_pmt( thischannel, thischannel->getFeIndex() ) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel) < 0) 
+		if (parse_pat( thischannel, thischannel->getFeIndex() ) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel) < 0) 
+		else if (parse_pmt( thischannel, thischannel->getFeIndex() ) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -2705,7 +2705,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( thisChannel->getDemuxIndex() );
+			pcrDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ );
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2723,7 +2723,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( thisChannel->getDemuxIndex() );
+			audioDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ );
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2741,7 +2741,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( thisChannel->getDemuxIndex() ); 
+			videoDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )

@@ -343,7 +343,8 @@ void * streamts_live_thread(void *data)
 		return 0;
 	}
 
-	cDemux * dmx = new cDemux( live_channel? live_channel->getDemuxIndex():0 );
+	int demux_index = 0; //live_channel? live_channel->getDemuxIndex() : 0
+	cDemux * dmx = new cDemux( demux_index );
 	
 	dmx->Open(DMX_TP_CHANNEL, 2 * 3008 * 62, live_channel? live_channel->getFeIndex():0);	
 	

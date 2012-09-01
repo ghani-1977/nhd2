@@ -25,7 +25,8 @@
 #include "channel.h"
 #include "ci.h"
 
-int parse_pmt(CZapitChannel * const channel);
+
+int parse_pmt(CZapitChannel * const channel, int dmx_num = 0);
 int pmt_set_update_filter(CZapitChannel * const channel, int * fd);
 int pmt_stop_update_filter(int * fd);
 

@@ -420,7 +420,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 int curpmtpid;
 int pmt_caids[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int parse_pmt(CZapitChannel * const channel)
+int parse_pmt(CZapitChannel * const channel, int dmx_num)
 {
 	unsigned short i;
 	unsigned char buffer[PMT_SIZE];
@@ -442,7 +442,8 @@ int parse_pmt(CZapitChannel * const channel)
 		return -1;
 	}
 	
-	cDemux * dmx = new cDemux( channel->getDemuxIndex() ); 
+	int demux_index = dmx_num; //channel->getDemuxIndex()
+	cDemux * dmx = new cDemux( demux_index ); 
 	
 	// open
 	dmx->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex());
@@ -621,7 +622,8 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 
 	if(pmtDemux == NULL) 
 	{
-		pmtDemux = new cDemux( channel->getDemuxIndex() );
+		int demux_index = 0; //channel->getDemuxIndex()
+		pmtDemux = new cDemux( demux_index );
 		
 		// open 
 		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex() ); // this indicate fe num

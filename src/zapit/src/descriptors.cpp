@@ -58,7 +58,6 @@ extern CEventServer *eventServer;
 extern CScanSettings * scanSettings;
 extern t_channel_id live_channel_id;
 
-//extern CFrontend * live_fe;
 CFrontend * getFE(int index);
 
 int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0, int feindex = 0);
@@ -425,7 +424,7 @@ uint8_t fix_service_type(uint8_t type)
 
 int parse_pat(int feindex = 0);
 int pat_get_pmt_pid(CZapitChannel * const channel);
-int parse_pmt(CZapitChannel * const channel);
+int parse_pmt(CZapitChannel * const channel, int dmx_num = 0);
 
 /* 0x48 */
 void service_descriptor(const unsigned char * const buffer, const t_service_id service_id, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, bool free_ca, int feindex)
@@ -600,8 +599,10 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 
 		if(tpchange) 
 		{
-			cDemux * dmx = new cDemux( feindex /*LIVE_DEMUX*/ ); 
+			int demux_index = 0; //feindex;
+			cDemux * dmx = new cDemux( demux_index ); 
 			dmx->Open(DMX_PSI_CHANNEL, 1024, feindex);
+			
 			if (!((dmx->sectionFilter(0x10, filter, mask, 5, 10000) < 0) || (dmx->Read(buff, 1024) < 0))) 
 			{
 				network_descriptors_length = ((buff[8] & 0x0F) << 8) | buff[9];
