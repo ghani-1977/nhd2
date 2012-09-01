@@ -105,7 +105,7 @@ pthread_mutex_t chan_mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
 bool sdt_wakeup;
 
 /* the conditional access module */
-CCam *live_cam = NULL;
+CCam * live_cam = NULL;
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -3425,7 +3425,6 @@ int zapit_main_thread(void *data)
 	//CI init
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
 	ci = cDvbCi::getInstance();
-	ci->Init();
 #endif	
 	
 	//globals
