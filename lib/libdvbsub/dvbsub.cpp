@@ -57,23 +57,32 @@ static int dvbsub_pid;
 static int dvbsub_stopped;
 static int pid_change_req;
 
-cDvbSubtitleConverter *dvbSubtitleConverter = NULL;
+cDvbSubtitleConverter *dvbSubtitleConverter;
 static void* reader_thread(void *arg);
 static void* dvbsub_thread(void* arg);
 static void clear_queue();
 
-
-// initialize
-int dvbsub_initialise() 
+int dvbsub_init() 
 {
 	printf("dvbsub_init: starting... tid %ld\n", syscall(__NR_gettid));
 	
 	int trc;
 
-	sub_debug.set_level(0);
+	sub_debug.set_level(1);
+
+	reader_running = true;
+	dvbsub_stopped = 1;
+	pid_change_req = 1;
+	
+	// reader-Thread starten
+	trc = pthread_create(&threadReader, 0, reader_thread, (void *) NULL);
+	if (trc) {
+		fprintf(stderr, "[dvb-sub] failed to create reader-thread (rc=%d)\n", trc);
+		reader_running = false;
+		return -1;
+	}
 
 	dvbsub_running = true;
-	
 	// subtitle decoder-Thread starten
 	trc = pthread_create(&threadDvbsub, 0, dvbsub_thread, NULL);
 
@@ -82,36 +91,10 @@ int dvbsub_initialise()
 		fprintf(stderr, "[dvb-sub] failed to create dvbsub-thread (rc=%d)\n", trc);
 		dvbsub_running = false;
 		return -1;
-	}	
-
-	return(0);
-}
-
-//
-
-int dvbsub_init(int source) 
-{
-	printf("dvbsub_start_reader: starting... tid %ld\n", syscall(__NR_gettid));
-	
-	int trc;
-
-	//sub_debug.set_level(0);
-
-	reader_running = true;
-	dvbsub_stopped = 1;
-	pid_change_req = 1;
-	
-	// reader-Thread starten
-	trc = pthread_create(&threadReader, 0, reader_thread, (void *) source);
-	if (trc) {
-		fprintf(stderr, "[dvb-sub] failed to create reader-thread (rc=%d)\n", trc);
-		reader_running = false;
-		return -1;
 	}
 
 	return(0);
 }
-//
 
 int dvbsub_pause()
 {
@@ -120,11 +103,7 @@ int dvbsub_pause()
 		dvbsub_paused = true;
 		if(dvbSubtitleConverter)
 			dvbSubtitleConverter->Pause(true);
-		
-		pthread_mutex_lock(&readerMutex);
-		pthread_cond_broadcast(&readerCond);
-		pthread_mutex_unlock(&readerMutex);
-		
+
 		printf("[dvb-sub] paused\n");
 	}
 
@@ -132,7 +111,7 @@ int dvbsub_pause()
 }
 
 int dvbsub_start(int pid)
-{	
+{
 	if(!dvbsub_paused && (pid == 0)) 
 	{
 		return 0;
@@ -142,16 +121,14 @@ int dvbsub_start(int pid)
 	{
 		if(pid != dvbsub_pid) 
 		{
-			dvbsub_pause(); 
-			
+			dvbsub_pause();
 			if(dvbSubtitleConverter)
 				dvbSubtitleConverter->Reset();
-			
 			dvbsub_pid = pid;
 			pid_change_req = 1;
 		}
 	}
-	printf("[dvb-sub] start, stopped %d pid 0x%x\n", dvbsub_stopped, dvbsub_pid);
+	printf("[dvb-sub] start, stopped %d pid %x\n", dvbsub_stopped, dvbsub_pid);
 #if 0
 	while(!dvbsub_stopped)
 		usleep(10);
@@ -162,11 +139,9 @@ int dvbsub_start(int pid)
 		dvbsub_paused = false;
 		if(dvbSubtitleConverter)
 			dvbSubtitleConverter->Pause(false);
-		
 		pthread_mutex_lock(&readerMutex);
 		pthread_cond_broadcast(&readerCond);
 		pthread_mutex_unlock(&readerMutex);
-		
 		printf("[dvb-sub] started with pid 0x%x\n", pid);
 	}
 
@@ -176,14 +151,11 @@ int dvbsub_start(int pid)
 int dvbsub_stop()
 {
 	dvbsub_pid = 0;
-	if(reader_running) 
-	{
+	if(reader_running) {
 		dvbsub_stopped = 1;
 		dvbsub_pause();
 		pid_change_req = 1;
 	}
-	
-	printf("[dvb-sub] stopped...\n");
 
 	return 0;
 }
@@ -195,8 +167,6 @@ int dvbsub_getpid()
 
 void dvbsub_setpid(int pid)
 {
-	printf("dvbsub_setpid: 0x%x\n", pid);
-	
 	dvbsub_pid = pid;
 
 	if(dvbsub_pid == 0)
@@ -215,10 +185,9 @@ void dvbsub_setpid(int pid)
 	pthread_mutex_unlock(&readerMutex);
 }
 
-// close
 int dvbsub_close()
 {
-	if(reader_running)
+	if(threadReader) 
 	{
 		dvbsub_pause();
 		reader_running = false;
@@ -227,21 +196,12 @@ int dvbsub_close()
 		pthread_mutex_lock(&readerMutex);
 		pthread_cond_broadcast(&readerCond);
 		pthread_mutex_unlock(&readerMutex);
-		
+
 		pthread_join(threadReader, NULL);
 		threadReader = 0;
 	}
 	
-	printf("[dvb-sub] closed...\n");
-
-	return 0;
-}
-//
-
-//int dvbsub_close()
-int dvbsub_terminate()
-{
-	if(dvbsub_running)
+	if(threadDvbsub) 
 	{
 		dvbsub_running = false;
 
@@ -251,15 +211,8 @@ int dvbsub_terminate()
 
 		pthread_join(threadDvbsub, NULL);
 		threadDvbsub = 0;
-		
-		if(dvbSubtitleConverter)
-		{
-			delete dvbSubtitleConverter;
-			dvbSubtitleConverter = NULL;
-		}
 	}
-	
-	printf("[dvb-sub] terminate...\n");
+	printf("[dvb-sub] stopped\n");
 
 	return 0;
 }
@@ -315,19 +268,17 @@ static void clear_queue()
 	pthread_mutex_unlock(&packetMutex);
 }
 
-static void * reader_thread(void * arg)
+static void* reader_thread(void * /*arg*/)
 {
-	int source = (int) arg;
 	uint8_t tmp[16];  /* actually 6 should be enough */
 	int count;
 	int len;
 	uint16_t packlen;
 	uint8_t* buf;
 
-	int demux_index = 0; //source;
-        dmx = new cDemux( demux_index );
+        dmx = new cDemux();
 
-	dmx->Open(DMX_PES_CHANNEL, 64*1024, source);	
+	dmx->Open(DMX_PES_CHANNEL, 64*1024);	
 
 	while (reader_running) 
 	{
@@ -348,10 +299,8 @@ static void * reader_thread(void * arg)
 			{
 				sub_debug.print(Debug::VERBOSE, "pthread_cond_timedwait fails with %d\n", ret);
 			}
-			
 			if(!reader_running)
 				break;
-			
 			dvbsub_stopped = 0;
 			sub_debug.print(Debug::VERBOSE, "%s (re)started with pid 0x%x\n", __FUNCTION__, dvbsub_pid);
 		}
@@ -411,7 +360,7 @@ static void * reader_thread(void * arg)
 		}
 #endif
 
-		if(!dvbsub_stopped /* !dvbsub_paused*/ ) 
+		if(!dvbsub_stopped /*!dvbsub_paused*/ ) 
 		{
 			//sub_debug.print(Debug::VERBOSE, "[subtitles] new packet, len %d buf 0x%x pts-stc diff %lld\n", count, buf, get_pts_stc_delta(get_pts(buf)));
 			/* Packet now in memory */
@@ -434,7 +383,6 @@ static void * reader_thread(void * arg)
 	dmx = NULL;
 
 	sub_debug.print(Debug::VERBOSE, "%s shutdown\n", __FUNCTION__);
-	
 	pthread_exit(NULL);
 }
 
@@ -444,12 +392,10 @@ static void* dvbsub_thread(void* /*arg*/)
 	struct timeval now;
 
 	sub_debug.print(Debug::VERBOSE, "%s started\n", __FUNCTION__);
-	
 	if (!dvbSubtitleConverter)
-		dvbSubtitleConverter = new cDvbSubtitleConverter();
+		dvbSubtitleConverter = new cDvbSubtitleConverter;
 
 	int timeout = 1000000;
-	
 	while(dvbsub_running) 
 	{
 		uint8_t* packet;
@@ -474,8 +420,7 @@ static void* dvbsub_thread(void* /*arg*/)
 		ret = pthread_cond_timedwait( &packetCond, &packetMutex, &restartWait );
 		pthread_mutex_unlock( &packetMutex );
 
-		if(dvbSubtitleConverter)
-			timeout = dvbSubtitleConverter->Action();
+		timeout = dvbSubtitleConverter->Action();
 
 		if(packet_queue.size() == 0) {
 			continue;
@@ -527,16 +472,13 @@ static void* dvbsub_thread(void* /*arg*/)
 
 		if (packet[dataoffset + 2] == 0x0f) 
 		{
-			if(dvbSubtitleConverter)
-				dvbSubtitleConverter->Convert(&packet[dataoffset + 2], packlen - (dataoffset + 2), pts);
+			dvbSubtitleConverter->Convert(&packet[dataoffset + 2], packlen - (dataoffset + 2), pts);
 		} 
 		else 
 		{
 			sub_debug.print(Debug::INFO, "End_of_PES is missing\n");
 		}
-		
-		if(dvbSubtitleConverter)
-			timeout = dvbSubtitleConverter->Action();
+		timeout = dvbSubtitleConverter->Action();
 
 next_round:
 		free(packet);
@@ -545,6 +487,5 @@ next_round:
 	delete dvbSubtitleConverter;
 
 	sub_debug.print(Debug::VERBOSE, "%s shutdown\n", __FUNCTION__);
-	
 	pthread_exit(NULL);
 }
