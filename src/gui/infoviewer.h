@@ -58,7 +58,7 @@ class CInfoViewer
 	
 		int            InfoHeightY;
 		int            InfoHeightY_Info;
-		bool         showButtonBar;
+		bool         	showButtonBar;
 
 		int            BoxEndX;
 		int            BoxEndY;
@@ -69,6 +69,11 @@ class CInfoViewer
 		int            ChanWidth;
 		int            ChanHeight;
 		int            ChanInfoX;
+		
+		int BoxHeight;
+		int BoxWidth;
+		
+		int satNameWidth;
 		
 		// dimensions of radiotext window
 		int             rt_dx;
