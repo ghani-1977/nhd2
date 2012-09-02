@@ -190,16 +190,16 @@ void sendConfig(int connfd);
 static int pmt_update_fd = -1;
 
 // dvbsub
-extern int dvbsub_initialise();
-extern int dvbsub_init(int source);
+//extern int dvbsub_initialise();
+extern int dvbsub_init( /*int source*/);
 extern int dvbsub_pause();
 extern int dvbsub_stop();
 extern int dvbsub_getpid();
 //extern int dvbsub_getpid(int *pid, int *running);
-extern int dvbsub_start(int pid);
+//extern int dvbsub_start(int pid);
 extern void dvbsub_setpid(int pid);
-extern int dvbsub_close();
-extern int dvbsub_terminate();
+//extern int dvbsub_close();
+//extern int dvbsub_terminate();
 
 // tuxtxt
 extern void tuxtx_stop_subtitle();
@@ -2940,7 +2940,7 @@ int stopPlayBack()
 	else
 	{
 		dvbsub_stop();
-		dvbsub_close();
+		//dvbsub_close();
 	}
 
 	return 0;
@@ -3426,6 +3426,9 @@ int zapit_main_thread(void *data)
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
 	ci = cDvbCi::getInstance();
 #endif	
+
+	//dvbsub
+	dvbsub_init();
 	
 	//globals
 	scan_runs = 0;
