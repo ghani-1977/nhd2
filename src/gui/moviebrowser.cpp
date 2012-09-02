@@ -2598,10 +2598,10 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				int test = -1;
 				int ext_pos = 0;
 				ext_pos = flist[i].getFileName().rfind('.');
-				std::string extension;
+				
 				if( ext_pos > 0)
 				{
-					//std::string extension;
+					std::string extension;
 					extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
 					
 					if( 
@@ -2649,30 +2649,30 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				else
 				{
 					m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
+					
 					movieInfo.file.Name = flist[i].Name;
 					
-					//m_movieInfo.loadMovieInfo(&movieInfo);
+					// load movie infos
+					m_movieInfo.loadMovieInfo(&movieInfo);
 					
-					{ 
-						//FIXME atm we show only ts+xml (records) here
-						movieInfo.file.Mode = flist[i].Mode;
-						//movieInfo.file.Size = flist[i].Size;
-						movieInfo.file.Size = get_full_len((char *)flist[i].Name.c_str());
-						movieInfo.file.Time = flist[i].Time;
-						//TRACE(" N:%s,s:%d,t:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size,movieInfo.file.Time);
-						//TRACE(" N:%s,s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size>>20);
-						//TRACE(" s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
-						//TRACE(" s:%llu\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
-						if(file_found_in_dir == false)
-						{
-							// first file in directory found, add directory to list 
-							m_dirNames.push_back(dirname);
-							file_found_in_dir = true;
-							//TRACE("[mb] new dir: :%s\r\n",dirname);
-						}
-						movieInfo.dirItNr = m_dirNames.size()-1;
-						m_vMovieInfo.push_back(movieInfo);
+					//
+					movieInfo.file.Mode = flist[i].Mode;
+					//movieInfo.file.Size = flist[i].Size;
+					movieInfo.file.Size = get_full_len((char *)flist[i].Name.c_str());
+					movieInfo.file.Time = flist[i].Time;
+					//TRACE(" N:%s,s:%d,t:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size,movieInfo.file.Time);
+					//TRACE(" N:%s,s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size>>20);
+					//TRACE(" s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
+					//TRACE(" s:%llu\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
+					if(file_found_in_dir == false)
+					{
+						// first file in directory found, add directory to list 
+						m_dirNames.push_back(dirname);
+						file_found_in_dir = true;
+						//TRACE("[mb] new dir: :%s\r\n",dirname);
 					}
+					movieInfo.dirItNr = m_dirNames.size()-1;
+					m_vMovieInfo.push_back(movieInfo);
 				}
 			}
 		}
