@@ -46,126 +46,121 @@
 
 class CInfoViewer
 {
- private:
-	void Init(void);
-	CFrameBuffer * frameBuffer;
-	
-	bool           gotTime;
-	bool           recordModeActive;
+	private:
+		void Init(void);
+		CFrameBuffer * frameBuffer;
+		
+		bool           gotTime;
+		bool           recordModeActive;
 #ifndef SKIP_CA_STATUS
-	bool           CA_Status;
+		bool           CA_Status;
 #endif
 	
-	int            InfoHeightY;
-	int            InfoHeightY_Info;
-	bool         showButtonBar;
-	//bool	       	fileplay;
+		int            InfoHeightY;
+		int            InfoHeightY_Info;
+		bool         showButtonBar;
 
-	int            BoxEndX;
-	int            BoxEndY;
-	int            BoxStartX;
-	int            BoxStartY;
-	int            ButtonWidth;
+		int            BoxEndX;
+		int            BoxEndY;
+		int            BoxStartX;
+		int            BoxStartY;
+		int            ButtonWidth;
 
-	int            ChanWidth;
-	int            ChanHeight;
-	int            ChanInfoX;
-	
-	// dimensions of radiotext window
-        int             rt_dx;
-        int             rt_dy;
-        int             rt_x;
-        int             rt_y;
-        int             rt_h;
-        int             rt_w;
+		int            ChanWidth;
+		int            ChanHeight;
+		int            ChanInfoX;
+		
+		// dimensions of radiotext window
+		int             rt_dx;
+		int             rt_dy;
+		int             rt_x;
+		int             rt_y;
+		int             rt_h;
+		int             rt_w;
 
-	int		asize;
+		int		asize;
 
-	int ChanLogoX;
-	int ChanLogoY;
-	int PIC_X;
-	int PIC_Y;
+		int ChanLogoX;
+		int ChanLogoY;
+		int PIC_X;
+		int PIC_Y;
 
-	CSectionsdClient::CurrentNextInfo info_CurrentNext;
-        t_channel_id   channel_id;
+		CSectionsdClient::CurrentNextInfo info_CurrentNext;
+		t_channel_id   channel_id;
 
-	char           aspectRatio;
+		char           aspectRatio;
 
-	uint32_t           sec_timer_id;
-	uint32_t           fadeTimer;
-	bool           virtual_zap_mode;
-	CChannelEventList               evtlist;
-	CChannelEventList::iterator     eli;
+		uint32_t           sec_timer_id;
+		uint32_t           fadeTimer;
+		bool           virtual_zap_mode;
+		CChannelEventList               evtlist;
+		CChannelEventList::iterator     eli;
 
-	void show_Data( bool calledFromEvent = false );
-	void paintTime( bool show_dot, bool firstPaint );
-	
-	void showButton_Audio();
-	void showButton_SubServices();
-	
-	void showIcon_16_9();
-	//TEST
-	void showIcon_RadioText(bool rt_available) const;
+		void show_Data( bool calledFromEvent = false );
+		void paintTime( bool show_dot, bool firstPaint );
+		
+		void showButton_Audio();
+		void showButton_SubServices();
+		
+		void showIcon_16_9();
+		void showIcon_RadioText(bool rt_available) const;
 	
 #ifndef SKIP_CA_STATUS
-	void showIcon_CA_Status(int);
-	void paint_ca_icons(int, char*);
+		void showIcon_CA_Status(int);
+		void paint_ca_icons(int, char*);
 #endif
-	void showIcon_VTXT()      const;
-	void showRecordIcon(const bool show);
-	void showIcon_SubT() const;
+		void showIcon_VTXT()      const;
+		void showRecordIcon(const bool show);
+		void showIcon_SubT() const;
 
-	void showIcon_Resolution() const;
-	void showIcon_Audio(const int ac3state) const;
-	
-	void showFailure();
-	void showMotorMoving(int duration);
-   	void showLcdPercentOver();
-	void showSNR();
-	
-	void showRadiotext();
-	void killRadiotext();
+		void showIcon_Resolution() const;
+		void showIcon_Audio(const int ac3state) const;
+		
+		void showFailure();
+		void showMotorMoving(int duration);
+		void showLcdPercentOver();
+		void showSNR();
+		
+		void showRadiotext();
+		void killRadiotext();
 
-	CScale *snrscale, *sigscale, *timescale, * moviescale;
-	char MoviePercent;
-	std::string eventname;
+		CScale *snrscale, *sigscale, *timescale;
+		char MoviePercent;
+		std::string eventname;
 
  public:
-	bool chanready;
-	bool	is_visible;
+		bool chanready;
+		bool	is_visible;
 
-	uint32_t    lcdUpdateTimer;
+		uint32_t    lcdUpdateTimer;
 
-	CInfoViewer();
+		CInfoViewer();
 
-	void	start();
+		void	start();
 
-	void	showTitle(const int ChanNum, const std::string & Channel, const t_satellite_position satellitePosition, const t_channel_id new_channel_id = 0, const bool calledFromNumZap = false, int epgpos = 0); // Channel must be UTF-8 encoded
+		void	showTitle(const int ChanNum, const std::string & Channel, const t_satellite_position satellitePosition, const t_channel_id new_channel_id = 0, const bool calledFromNumZap = false, int epgpos = 0); // Channel must be UTF-8 encoded
 
-	enum
-	{
-		NO_AC3,
-		AC3_AVAILABLE,
-		AC3_ACTIVE
-	};
+		enum
+		{
+			NO_AC3,
+			AC3_AVAILABLE,
+			AC3_ACTIVE
+		};
 
-	void showMovieTitle (const int playstate, const std::string & title, const std::string & sub_title, const std::string & sub_title1, const int position, const int duration, const int ac3state = NO_AC3, const bool ShowBlueButton = true, unsigned char file_prozent = 0);
-
-
-	void lookAheadEPG(const int ChanNum, const std::string & Channel, const t_channel_id new_channel_id = 0, const bool calledFromNumZap = false); //alpha: fix for nvod subchannel update
-	void	killTitle();
-	CSectionsdClient::CurrentNextInfo getEPG(const t_channel_id for_channel_id, CSectionsdClient::CurrentNextInfo &info);
-	CSectionsdClient::CurrentNextInfo getCurrentNextInfo() { return info_CurrentNext; }
+		void lookAheadEPG(const int ChanNum, const std::string & Channel, const t_channel_id new_channel_id = 0, const bool calledFromNumZap = false); //alpha: fix for nvod subchannel update
+		void	killTitle();
+		CSectionsdClient::CurrentNextInfo getEPG(const t_channel_id for_channel_id, CSectionsdClient::CurrentNextInfo &info);
+		CSectionsdClient::CurrentNextInfo getCurrentNextInfo() { return info_CurrentNext; }
 	
-	void	showSubchan();
+		void	showSubchan();
 #ifndef SKIP_CA_STATUS
-	void	Set_CA_Status(int Status);
+		void	Set_CA_Status(int Status);
 #endif
 	
-	int     handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
-	void    clearVirtualZapMode() {virtual_zap_mode = false;}
-	
-	void	showEpgInfo();
+		int     handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
+		void    clearVirtualZapMode() {virtual_zap_mode = false;}
+		
+		void	showEpgInfo();
 };
 
 class CInfoViewerHandler : public CMenuTarget

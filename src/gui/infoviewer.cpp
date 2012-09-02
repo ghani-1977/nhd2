@@ -159,17 +159,12 @@ void CInfoViewer::Init()
 	CA_Status = false;
 	virtual_zap_mode = false;
 	chanready = 1;
-
-	//fileplay = 0;
 	
 	sigscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
 	snrscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
 	timescale = new CScale(108, TIME_BAR_HEIGHT + 5, 30, GREEN_BAR, 70, true);	//5? see in code
-	
-	//moviescale = new CScale(BoxEndX - ChanInfoX, BoxEndY - 18 - BoxEndInfoY, 30, GREEN_BAR, 70, true);
-	moviescale = new CScale(594, TIME_BAR_HEIGHT + 8, 30, GREEN_BAR, 70, true);
 }
 
 void CInfoViewer::start()
@@ -252,6 +247,23 @@ void CInfoViewer::showRecordIcon (const bool show)
 	}
 }
 
+/*
+		 ___BoxStartX
+		|-ChanWidth-|
+		|           |  _recording icon                 _progress bar
+    BoxStartY---+-----------+ |                               |
+	|	|           | *  infobar.txt text            #######____
+	|	|           |-------------------------------------------+--ChanNameY
+	|	|           | Channelname                               |
+    ChanHeight--+-----------+                                           |
+		   |                                                    |
+		   |01:23     Current Event                             |
+		   |02:34     Next Event                                |
+		   |                                                    |
+    BoxEndY--------+----------------------------------------------------+
+		                                                        |
+		                                                BoxEndX-/
+*/
 void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, const t_satellite_position satellitePosition, const t_channel_id new_channel_id, const bool calledFromNumZap, int epgpos)
 {
 	last_curr_id = last_next_id = 0;
@@ -273,7 +285,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	if (!calledFromNumZap && fadeIn)
 		fadeTimer = g_RCInput->addTimer (FADE_TIME, false);
 
-	//fileplay = (ChanNum == 0);
 	newfreq = true;
 	
 	sigscale->reset(); 
@@ -708,7 +719,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				{
 #if 0
 					if ((msg != CRCInput::RC_timeout) && (msg != CRCInput::RC_ok))
-						if (!fileplay && !timeshift)
+						if (!timeshift)
 							g_RCInput->postMsg (msg, data);
 #endif
 					res = messages_return::cancel_info;
@@ -737,7 +748,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				res = messages_return::cancel_all;
 				hideIt = true;
 			} 
-			else if ( /*!fileplay &&*/ !timeshift) 
+			else if ( !timeshift ) 
 			{
 				if ((msg == (neutrino_msg_t) g_settings.key_quickzap_up) || (msg == (neutrino_msg_t) g_settings.key_quickzap_down) || (msg == CRCInput::RC_0) || (msg == NeutrinoMessages::SHOW_INFOBAR)) 
 				{
@@ -797,290 +808,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		if (virtual_zap_mode)
 			CNeutrinoApp::getInstance()->channelList->virtual_zap_mode(msg == CRCInput::RC_right);
 
-	}
-
-	//test
-	//fileplay = 0;
-}
-
-
-/*
-		 ___BoxStartX
-		|-ChanWidth-|
-		|           |  _recording icon                 _progress bar
-    BoxStartY---+-----------+ |                               |
-	|	|           | *  infobar.txt text            #######____
-	|	|           |-------------------------------------------+--ChanNameY
-	|	|           | Channelname                               |
-    ChanHeight--+-----------+                                           |
-		   |                                                    |
-		   |01:23     Current Event                             |
-		   |02:34     Next Event                                |
-		   |                                                    |
-    BoxEndY--------+----------------------------------------------------+
-		                                                        |
-		                                                BoxEndX-/
-*/
-
-extern int speed;
-void CInfoViewer::showMovieTitle(const int playstate, const std::string & title, const std::string & sub_title, const std::string & sub_title1, const int position, const int duration, const int ac3state, const bool ShowBlueButton, unsigned char file_prozent )
-{  
-	//fileplay = 1;
-
-	is_visible = true;
-
-	InfoHeightY = NUMBER_H * 9 / 8 + 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() + 25;
-	InfoHeightY_Info = 40;
-
-	BoxStartX = g_settings.screen_StartX + 10;
-	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10 - 20;
-
-	int BoxEndInfoY = BoxEndY - InfoHeightY_Info;
-	BoxStartY = BoxEndInfoY - InfoHeightY;
-	
-	//moviescale = new CScale(BoxEndX - ChanInfoX, BoxEndY - 18 - BoxEndInfoY, 30, GREEN_BAR, 70, true);
-	moviescale->reset();
-	MoviePercent = file_prozent;
-	
-	int fadeValue;
-	//bool fadeIn = false /*g_settings.widget_fade*/ && (!is_visible) /*&& showButtonBar*/;
-	bool fadeIn = !is_visible;
-
-	if (fadeIn)
-		fadeTimer = g_RCInput->addTimer (FADE_TIME, false);
-
-	if (fadeIn) 
-	{
-		fadeValue = 0x10;
-		frameBuffer->setBlendLevel(fadeValue);
-	} 
-	else
-		fadeValue = g_settings.gtx_alpha;
-	
-	/* kill linke seite */
-	frameBuffer->paintBackgroundBox (BoxStartX, BoxStartY + ChanHeight, BoxStartX + (ChanWidth / 3), BoxStartY + ChanHeight + InfoHeightY_Info + 10);
-
-	/* kill progressbar */
-	frameBuffer->paintBackgroundBox (BoxEndX - 120, BoxStartY, BoxEndX, BoxStartY + ChanHeight);
-
-	int ChanNameX = BoxStartX + ChanWidth + SHADOW_OFFSET;
-	int ChanNameY = BoxStartY + (ChanHeight / 2) + 5;	//oberkante schatten?
-	ChanInfoX = BoxStartX + (ChanWidth / 3);
-
-	/* Shadow linke seite */
-	frameBuffer->paintBox (BoxEndX-20, ChanNameY + SHADOW_OFFSET, BoxEndX + SHADOW_OFFSET, BoxEndY, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
-
-	/* shadow untere seite */
-	frameBuffer->paintBox (ChanInfoX + SHADOW_OFFSET, BoxEndY -20, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
-
-	/* infobox */
-	frameBuffer->paintBoxRel (ChanNameX-10, ChanNameY, BoxEndX-ChanNameX+10, BoxEndInfoY-ChanNameY, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP); // round
-
-	/* numberbox shadow */
-	frameBuffer->paintBoxRel (BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, ChanWidth, ChanHeight + 4, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH); // round
-
-	/* numberbox */
-	frameBuffer->paintBoxRel (BoxStartX, BoxStartY, ChanWidth, ChanHeight + 4, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_BOTH); // round
-	
-	//test
-	/* time */
-	//bool show_dot = true;
-	paintTime (true, true);
-	//show_dot = !show_dot;
-
-	int ChanInfoY = BoxStartY + ChanHeight + 10;
-	ButtonWidth = (BoxEndX - ChanInfoX - ICON_OFFSET) >> 2;
-
-	frameBuffer->paintBox(ChanInfoX, ChanInfoY, ChanNameX, BoxEndInfoY, COL_INFOBAR_PLUS_0);
-
-	/* buttons bar */
-	asize = (BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 102) - ChanInfoX;
-	asize = asize - (NEUTRINO_ICON_BUTTON_RED_WIDTH+6)*4;
-	asize = asize / 4;
-	
-	sec_timer_id = g_RCInput->addTimer (1*1000*1000, false);
-
-	if (BOTTOM_BAR_OFFSET > 0)
-		frameBuffer->paintBackgroundBox (ChanInfoX, BoxEndInfoY, BoxEndX, BoxEndInfoY + BOTTOM_BAR_OFFSET);
-
-	//moviescale bar
-	frameBuffer->paintBox(ChanInfoX, BoxEndInfoY-2, BoxEndX, BoxEndY-20, COL_INFOBAR_PLUS_1);
-		
-	// bottum bar
-	frameBuffer->paintBox (ChanInfoX, BoxEndY-20, BoxEndX, BoxEndY, COL_INFOBAR_BUTTONS_BACKGROUND, RADIUS_MID, CORNER_BOTTOM); //round
-		
-	//red 
-	//avsync
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, ChanInfoX + 2, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + (2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2), BoxEndY + 2, asize, /*g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST)*/ (char *)"Movie Info", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
-
-	// green buttom (audio)
-	//frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, ChanInfoX + 2, BoxEndY - ICON_Y_1);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2, BoxEndY+2, asize, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true);		 // UTF-8
-		
-	//yellow
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + 2*asize + 2, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + 2*asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), (char *)"help", COL_INFOBAR_BUTTONS, 0, true);	 // UTF-8
-		
-	// blue buttom (bookmark)
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + 3*asize + 2, BoxEndY - ICON_Y_1);
-	if(ShowBlueButton)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + 3*asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), COL_INFOBAR_BUTTONS, 0, true);	 // UTF-8
-		
-	/* mp keys */
-	frameBuffer->paintIcon("ico_mp_rewind", ChanInfoX + 16*3 + (asize * 4), BoxEndY - ICON_Y_1);
-	frameBuffer->paintIcon("ico_mp_play", ChanInfoX + 16*3 + (asize * 4) + 17, BoxEndY - ICON_Y_1);
-	frameBuffer->paintIcon("ico_mp_pause", ChanInfoX + 16*3 + (asize * 4) + 2*17, BoxEndY - ICON_Y_1);
-	frameBuffer->paintIcon("ico_mp_stop", ChanInfoX + 16*3 + (asize * 4) + 3*17, BoxEndY - ICON_Y_1);
-	frameBuffer->paintIcon("ico_mp_forward", ChanInfoX + 16*3 + (asize * 4) + 4*17, BoxEndY - ICON_Y_1);
-		
-	// 16_9
-	//showIcon_16_9();
-		
-	// ac3
-	showIcon_Audio(ac3state);
-		
-	// mp icon
-	frameBuffer->paintIcon("mp", ChanInfoX, ChanInfoY);	
-
-	// play-state icon 
-	const char *icon;
-	
-	switch(playstate)
-	{
-		case CMoviePlayerGui::PAUSE: icon = "mp_pause"; break;
-		case CMoviePlayerGui::PLAY: icon = "mp_play"; break;
-		case CMoviePlayerGui::REW: icon = "mp_b-skip"; break;
-		case CMoviePlayerGui::FF: icon = "mp_f-skip"; break;
-	}
-
-	// get icon size
-	int icon_w = 0;
-	int icon_h = 0;
-	
-	frameBuffer->getIconSize(icon, &icon_w, &icon_h);
-
-	int icon_x = BoxStartX + ChanWidth / 2 - icon_w / 2 + 5;
-	int icon_y = BoxStartY + ChanHeight / 2 - icon_h / 2;
-	
-
-	frameBuffer->paintIcon(icon, icon_x, icon_y);
-	
-	// paint speed
-	char strSpeed[4];
-	if( playstate == CMoviePlayerGui::FF || playstate == CMoviePlayerGui::REW )
-	{
-		sprintf(strSpeed, "%d", speed);
-		
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(BoxStartX + 5, BoxStartY + ChanHeight - 15, ChanWidth, strSpeed, /*COL_MENUHEAD*/ COL_MENUCONTENTINACTIVE); // UTF-8
-	}
-		
-
-	/* Movieplayer Title */
-	time_height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight () + 5;
-	//time_width = time_left_width * 2 + time_dot_width;
-	//time_height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight () + 5;
-	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth (widest_number);
-	time_dot_width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth (":");
-	time_width = time_left_width * 2 + time_dot_width;
-	
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(ChanNameX + 10, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - 15, g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), COL_INFOBAR, 0, true);	
-
-	// file_procent bar
-	moviescale->paint(BoxStartX + 40, BoxEndY - 40, MoviePercent);
-
-	// Infos Titles
-	int xStart = BoxStartX + ChanWidth;
-	ChanInfoY = BoxStartY + ChanHeight + 15;	//+10
-
-	int height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
-	
-	char runningRest[32]; // %d can be 10 digits max...
-	//sprintf(runningRest, "%ld / %ld min", (time_elapsed + 30) / 60, (time_remaining + 30) / 60);
-	sprintf(runningRest, "%d / %d min", (position + 30000) / 60000, (duration + 30000) / 60000);
-
-	int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth (runningRest);
-	int duration1TextPos = BoxEndX - duration1Width - LEFT_OFFSET;
-
-	//Title 1
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration1TextPos - xStart - 5, sub_title, COL_INFOBAR, 0, true);
-
-	//Title2
-	ChanInfoY += height;
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration1TextPos - xStart - 5, sub_title1, COL_INFOBAR, 0, true);
-
-	//Time Elapsed/Time Remaining
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration1TextPos, ChanInfoY, duration1Width, runningRest, COL_INFOBAR);
-	
-#ifdef FB_BLIT	
-	frameBuffer->blit();	
-#endif	
-
-	/* info loop msg */
-	//InfoLoop(const boll calledFromNumZap, FadeIn)
-	bool fadeOut = false;
-	neutrino_msg_t msg;
-	neutrino_msg_data_t data;
-
-	bool hideIt = true;
-
-	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd (g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR]);
-
-	int res = messages_return::none;
-
-	while (!(res & (messages_return::cancel_info | messages_return::cancel_all))) 
-	{
-		g_RCInput->getMsgAbsoluteTimeout (&msg, &data, &timeoutEnd);
-
-		if ( (msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout) ) 
-		{
-			if (fadeIn) 
-			{
-				g_RCInput->killTimer(fadeTimer);
-				fadeIn = false;
-			}
-
-			if ((!fadeOut) && false /*g_settings.widget_fade*/) 
-			{
-				fadeOut = true;
-				fadeTimer = g_RCInput->addTimer (FADE_TIME, false);
-				timeoutEnd = CRCInput::calcTimeoutEnd(1);
-			} 
-			else 
-			{
-				res = messages_return::cancel_info;
-			}
-		}
-		else
-		{
-			res = CNeutrinoApp::getInstance()->handleMsg(msg, data);
-
-			if (res & messages_return::unhandled) 
-			{
-				// raus hier und im Hauptfenster behandeln...
-				g_RCInput->postMsg (msg, data);
-				res = messages_return::cancel_info;
-			}
-		}
-			
-#ifdef FB_BLIT
-		frameBuffer->blit();
-#endif			
-	}
-
-	if (hideIt)
-		killTitle();
-
-	g_RCInput->killTimer(sec_timer_id);
-	sec_timer_id = 0;
-
-	if (fadeIn || fadeOut) 
-	{
-		g_RCInput->killTimer(fadeTimer);
-
-		frameBuffer->setBlendLevel(g_settings.gtx_alpha);
 	}
 }
 
@@ -1577,7 +1304,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL)) 
 		{
 	  		getEPG (*(t_channel_id *) data, info_CurrentNext);
-	  		if (is_visible /*&& !fileplay*/ )
+	  		if ( is_visible )
 				show_Data(true);
 			
 	  		showLcdPercentOver ();
@@ -1599,7 +1326,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		else if (data == lcdUpdateTimer) 
 		{
 			//printf("CInfoViewer::handleMsg: lcdUpdateTimer\n");
-			if ( is_visible /*&& !fileplay*/ )
+			if ( is_visible )
 				show_Data( true );
 
 	  		showLcdPercentOver ();
@@ -1608,10 +1335,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		} 
 		else if (data == sec_timer_id) 
 		{
-			//if(!fileplay)
-			{
-				showSNR();
-			}
+			showSNR();
 
 	  		return messages_return::handled;
 		}
@@ -2209,15 +1933,6 @@ void CInfoViewer::killTitle()
   	if (is_visible) 
 	{
 		is_visible = false;
-		
-		#if 0
-		if(/*fileplay*/ moviescale != NULL)
-		{
-			delete moviescale;
-			moviescale = NULL;
-			MoviePercent = 0;
-		}
-		#endif
 
 		frameBuffer->paintBackgroundBox (BoxStartX, BoxStartY, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET );
 		
@@ -2247,13 +1962,6 @@ void CInfoViewer::showLcdPercentOver()
 {
 	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] != 1) 
 	{
-		
-		//if (fileplay || (NeutrinoMessages::mode_ts == CNeutrinoApp::getInstance()->getMode())) 
-		//{
-		//	CVFD::getInstance()->showPercentOver(file_prozent);
-		//	return;
-		//}
-
 		int runningPercent = -1;
 		time_t jetzt = time (NULL);
 
