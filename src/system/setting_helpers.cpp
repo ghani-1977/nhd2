@@ -73,7 +73,8 @@ extern cDemux *audioDemux;
 extern cDemux *pcrDemux;
 
 // dvbsub
-extern int dvbsub_init(int source);
+//extern int dvbsub_init(int source);
+extern int dvbsub_init();
 extern int dvbsub_stop();
 extern int dvbsub_close();
 extern int dvbsub_start(int pid);
@@ -517,7 +518,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		
 		// dvbsub stop
 		dvbsub_stop();
-		dvbsub_close();
+		//dvbsub_close();
 		
 		return menu_return::RETURN_EXIT;
 	}
@@ -531,10 +532,11 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		tuxtx_stop_subtitle();
 		
 		// dvbsub stop and close
-		dvbsub_stop();
-		dvbsub_close();
+		//dvbsub_stop();
+		//dvbsub_close();
+		//dvbsub_init(live_fe->getFeIndex() );
 		
-		dvbsub_init(live_fe->getFeIndex() );
+		dvbsub_pause();
 		dvbsub_start(pid);
 	} 
 	else 
@@ -550,7 +552,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		printf("CSubtitleChangeExec::exec: TTX, pid %x page %x lang %s\n", pid, page, ptr);
 		
 		dvbsub_stop();
-		dvbsub_close();
+		//dvbsub_close();
 		
 		tuxtx_stop_subtitle();
 		
