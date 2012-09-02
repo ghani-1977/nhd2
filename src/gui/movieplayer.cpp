@@ -106,13 +106,19 @@ void strReplace(std::string & orig, const char *fstr, const std::string rstr);
 
 extern char rec_filename[512];		// defined in stream2file.cpp
 
-static CMoviePlayerGui::state playstate;
-static bool isMovieBrowser = false;
+/*static*/ CMoviePlayerGui::state playstate;
+/*static*/ bool isMovieBrowser = false;
 
 static int file_prozent;
 
 int speed = 1;
 int slow = 0;
+
+int position = 0;
+int duration = 0;
+
+//std::string sub_title;
+//std::string sub_title1;
 
 int startposition;
 int timeshift;
@@ -139,11 +145,12 @@ std::string    g_language[10];
 
 unsigned int g_currentapid = 0, g_currentac3 = 0, apidchanged = 0;
 
-static unsigned int ac3state = CInfoViewer::NO_AC3;
+/*static*/ unsigned int ac3state = CInfoViewer::NO_AC3;
 
 
 std::string g_file_epg;
 std::string g_file_epg1;
+
 bool showaudioselectdialog = false;
 
 bool isHTTP = false;
@@ -438,7 +445,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		isMovieBrowser = true;
 		timeshift = 0;
-		//test
 		isHTTP = false;
 		PlayFile();
 	}
@@ -564,7 +570,7 @@ void CMoviePlayerGui::PlayFile(void)
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
 	
-	int position = 0, duration = 0;
+	//int position = 0, duration = 0;
 	//int file_prozent = 0;
 
 	std::string sel_filename;
@@ -597,6 +603,9 @@ void CMoviePlayerGui::PlayFile(void)
 		//was_file = true;
 		
 		open_filebrowser = false;
+		
+		g_file_epg = std::string(rindex(filename, '/') + 1);
+		g_file_epg1 = std::string(rindex(filename, '/') + 1);
 		
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 		
@@ -702,8 +711,8 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
-			FileTime.SetMode(CTimeOSD::MODE_ASC);
-			FileTime.show(position / 1000);
+			//FileTime.SetMode(CTimeOSD::MODE_ASC);
+			//FileTime.show( (position / 1000));
 		}
 
 		// moviebrowser
@@ -821,12 +830,6 @@ void CMoviePlayerGui::PlayFile(void)
 						else
 							loopHintBox.hide();
 					}
-					else
-					{
-						p_movie_info->epgChannel = sel_filename;
-						p_movie_info->epgTitle = sel_filename;
-
-					}
 				}
 			}
 		}// isMovieBrowser == true
@@ -836,7 +839,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			open_filebrowser = false;
 			timeshift = false;
-			//FileTime.hide();
+			FileTime.hide();
 
 			// clear audipopids
 			for (int i = 0; i < g_numpida; i++) 
@@ -908,16 +911,10 @@ void CMoviePlayerGui::PlayFile(void)
 						g_vpid = p_movie_info->epgVideoPid;
 						g_vtype = p_movie_info->VideoType;
 						
-						// show radio pic if we play mp3
-						#if 0
-						if(g_vpid == 0x0 && g_vtype == 0)
-						{
-							frameBuffer->loadBackgroundPic("mp3.jpg", true);
-#ifdef FB_BLIT
-							frameBuffer->blit();
-#endif							
-						}
-						#endif
+						//
+						g_file_epg = p_movie_info->epgTitle;
+						g_file_epg1 = p_movie_info->epgInfo1;
+						//
 						
 						printf("CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
 						printf("CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
@@ -961,17 +958,6 @@ void CMoviePlayerGui::PlayFile(void)
 
 						is_file_player = true;
 
-						#if 0
-						if(ftype == CFile::FILE_MP3)
-						{
-							//test
-							frameBuffer->loadBackgroundPic("mp3.jpg", true);
-#ifdef FB_BLIT
-							frameBuffer->blit();
-#endif
-						}
-						#endif
-
 						filename = file->Name.c_str();
 						update_lcd = true;
 						start_play = true;
@@ -981,6 +967,11 @@ void CMoviePlayerGui::PlayFile(void)
 						//playstate = CMoviePlayerGui::PLAY;
 						//if(theBookmark->getUrl() == file->Name)
 						//	sscanf (theBookmark->getTime(), "%lld", &startposition);
+						
+						//
+						g_file_epg = sel_filename;
+						g_file_epg1 = sel_filename;
+						//
 					}
 				}
 				else if (playstate == CMoviePlayerGui::STOPPED) 
@@ -1155,16 +1146,14 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 			{
 				FileTime.update(position / 1000);
-				//FileTime.update();
 			} 
 			else 
 			{
 				FileTime.update((duration - position) / 1000);
-
-				//FileTime.update();
 			}
-
-			FileTime.updatePos(file_prozent);
+			
+			if(!timeshift)
+				FileTime.updatePos(file_prozent);
 		}
 
 		// start playing
@@ -1250,39 +1239,36 @@ void CMoviePlayerGui::PlayFile(void)
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
 				
-					if ( isMovieBrowser ) 
+					if(!timeshift)
 					{
-						g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-						//g_InfoViewer->updatePos(file_prozent);
-					}
-					//else if(timeshift)
-					//{
-					//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-					//}
-					else
-					{
-						char temp_name[255];
-						char *slash = const_cast<char *>(strrchr(filename, '/'));
-			
-						if (slash) 
+						if (FileTime.IsVisible()) 
 						{
-							slash++;
-							int len = strlen(slash);
-			
-							for (int i = 0; i < len; i++) 
+							if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 							{
-								if (slash[i] == '_')
-									temp_name[i] = ' ';
+								if(timeshift)
+									FileTime.hide();
 								else
-									temp_name[i] = slash[i];
+								{
+									FileTime.SetMode(CTimeOSD::MODE_DESC);
+									FileTime.update((duration - position) / 1000);
+									
+									if(!timeshift)
+										FileTime.updatePos(file_prozent);
+								}
+							} 
+							else 
+							{
+								FileTime.hide();
 							}
-							temp_name[len] = 0;
 						}
-						g_file_epg = "";
-						g_file_epg1 = "";
-			
-						g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent);	// UTF-8
-						//g_InfoViewer->updatePos(file_prozent);
+						else 
+						{
+							FileTime.SetMode(CTimeOSD::MODE_ASC);
+							FileTime.show(position / 1000);
+							
+							if(!timeshift)
+								FileTime.updatePos(file_prozent);
+						}
 					}
 				}
 			}
@@ -1315,13 +1301,20 @@ void CMoviePlayerGui::PlayFile(void)
 			//exit play
 			playstate = CMoviePlayerGui::STOPPED;
 
-			if (isMovieBrowser == true && p_movie_info != NULL) 
+			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
 				p_movie_info->dateOfLastPlay = current_time.time;
 				current_time.time = time(NULL);
 				p_movie_info->bookmarks.lastPlayStop = position / 1000;
+				
+				//TEST
+				if(p_movie_info == NULL)
+				{
+					p_movie_info->epgChannel = sel_filename;
+					p_movie_info->epgTitle = sel_filename;
+				}
 
 				cMovieInfo.saveMovieInfo(*p_movie_info);
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
@@ -1361,38 +1354,37 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 
 			// movie title
-			if (isMovieBrowser ) 
+			if(!timeshift)
 			{
-				g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-			}
-			//else if(timeshift)
-			//{
-			//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-			//}
-			else if(!timeshift)
-			{
-				char temp_name[255];
-				char *slash = const_cast<char *>(strrchr(filename, '/'));
-
-				if (slash) 
+				if (FileTime.IsVisible()) 
 				{
-					slash++;
-					int len = strlen(slash);
-
-					for (int i = 0; i < len; i++) 
+					if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 					{
-						if (slash[i] == '_')
-							temp_name[i] = ' ';
+						if(timeshift)
+							FileTime.hide();
 						else
-							temp_name[i] = slash[i];
+						{
+							FileTime.SetMode(CTimeOSD::MODE_DESC);
+							FileTime.update((duration - position) / 1000);
+							
+							if(!timeshift)
+								FileTime.updatePos(file_prozent);
+						}
+					} 
+					else 
+					{
+						FileTime.hide();
 					}
-					temp_name[len] = 0;
 				}
-				g_file_epg = "";
-				g_file_epg1 = "";
-
-				g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-			} 
+				else 
+				{
+					FileTime.SetMode(CTimeOSD::MODE_ASC);
+					FileTime.show(position / 1000);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
+				}
+			}
 		} 
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_pause) 
 		{
@@ -1402,7 +1394,7 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				playstate = CMoviePlayerGui::PLAY;
 				CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
-				//test
+				// show play icon
 				CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, true);
 				speed = 1;
 				playback->SetSpeed(speed);
@@ -1420,43 +1412,43 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.hide();
 
 			//show MovieInfoBar
-			if (isMovieBrowser ) 
+			if(!timeshift)
 			{
-				g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent);	// UTF-8
-				//g_InfoViewer->updatePos(file_prozent);
-			}
-			//else if(timeshift)
-			//{
-			//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-			//}
-			else if(!timeshift)
-			{
-				char temp_name[255];
-				char *slash = const_cast<char *>(strrchr(filename, '/'));
-
-				if (slash) 
+				if (FileTime.IsVisible()) 
 				{
-					slash++;
-					int len = strlen(slash);
-
-					for (int i = 0; i < len; i++) 
+					if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 					{
-						if (slash[i] == '_')
-							temp_name[i] = ' ';
+						if(timeshift)
+							FileTime.hide();
 						else
-							temp_name[i] = slash[i];
+						{
+							FileTime.SetMode(CTimeOSD::MODE_DESC);
+							FileTime.update((duration - position) / 1000);
+							
+							if(!timeshift)
+								FileTime.updatePos(file_prozent);
+						}
+					} 
+					else 
+					{
+						FileTime.hide();
 					}
-					temp_name[len] = 0;
 				}
-				g_file_epg = "";
-				g_file_epg1 = "";
-
-				g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent);	// UTF-8
-				//g_InfoViewer->updatePos(file_prozent);
-			} 
+				else 
+				{
+					FileTime.SetMode(CTimeOSD::MODE_ASC);
+					FileTime.show(position / 1000);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
+				}
+			}
 		} 
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_bookmark) 
 		{
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
+			
 			if(isMovieBrowser == true)
 			{
 				int pos_sec = position / 1000;
@@ -1545,74 +1537,22 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if ( (msg == (neutrino_msg_t) g_settings.mpkey_audio) || ( msg == CRCInput::RC_audio)) 
 		{
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
+			
 			showaudioselectdialog = true;
 		} 
 		else if(msg == CRCInput::RC_yellow)
 		{
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
+			
 			//show help
 			showHelpTS();
 		}
 		else if (msg == CRCInput::RC_info) 
 		{
-			if (FileTime.IsVisible()) 
-				FileTime.hide();
-			
-			if (timeshift)
-			{
-				g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
-			}
-			else 
-			{
-				if (isMovieBrowser ) 
-				{
-					g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent );
-					//g_InfoViewer->updatePos(file_prozent);
-				} 
-				//else if(timeshift)
-				//{
-				//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-				//}
-				else //multiformat
-				{
-					char temp_name[255];
-					char *slash = const_cast<char *>(strrchr(filename, '/'));
-
-					if (slash) 
-					{
-						slash++;
-						int len = strlen(slash);
-
-						for (int i = 0; i < len; i++) 
-						{
-							if (slash[i] == '_')
-								temp_name[i] = ' ';
-							else
-								temp_name[i] = slash[i];
-						}
-						temp_name[len] = 0;
-					}
-					
-					g_file_epg = "";
-					g_file_epg1 = "";
-
-					g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-					//g_InfoViewer->updatePos(file_prozent);
-					
-					//TEST
-					//playback->getMeta();
-				}
-
-				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-				// hide ts icon
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif				
-				update_lcd = true;
-			}
-		} 
-		else if (msg == (neutrino_msg_t) g_settings.mpkey_time) 
-		{
-			//if(!timeshift)
+			if(!timeshift)
 			{
 				if (FileTime.IsVisible()) 
 				{
@@ -1624,8 +1564,9 @@ void CMoviePlayerGui::PlayFile(void)
 						{
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
-
-							FileTime.updatePos(file_prozent);
+							
+							if(!timeshift)
+								FileTime.updatePos(file_prozent);
 						}
 					} 
 					else 
@@ -1637,8 +1578,43 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
+				}
+			}
+		} 
+		else if ( msg == (neutrino_msg_t) g_settings.mpkey_time )
+		{
+			if(!timeshift)
+			{
+				if (FileTime.IsVisible()) 
+				{
+					if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
+					{
+						if(timeshift)
+							FileTime.hide();
+						else
+						{
+							FileTime.SetMode(CTimeOSD::MODE_DESC);
+							FileTime.update((duration - position) / 1000);
+							
+							if(!timeshift)
+								FileTime.updatePos(file_prozent);
+						}
+					} 
+					else 
+					{
+						FileTime.hide();
+					}
+				}
+				else 
+				{
+					FileTime.SetMode(CTimeOSD::MODE_ASC);
+					FileTime.show(position / 1000);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 				}
 			}
 		} 
@@ -1650,7 +1626,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(speed < -15)
 				speed = -15;			
 			
-			//test
+			// hide icons
 			CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 			CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
 
@@ -1661,49 +1637,16 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			
-			if (isMovieBrowser ) 
-			{
-				g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-				//g_InfoViewer->updatePos(file_prozent);
-			}
-			//else if(timeshift)
-			//{
-			//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-			//}
-			else if(!timeshift)
-			{
-				char temp_name[255];
-				char *slash = const_cast<char *>(strrchr(filename, '/'));
-
-				if (slash) 
-				{
-					slash++;
-					int len = strlen(slash);
-
-					for (int i = 0; i < len; i++) 
-					{
-						if (slash[i] == '_')
-							temp_name[i] = ' ';
-						else
-							temp_name[i] = slash[i];
-					}
-					temp_name[len] = 0;
-				}
-				g_file_epg = "";
-				g_file_epg1 = "";
-
-				g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-				//g_InfoViewer->updatePos(file_prozent);
-			}
-			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1728,49 +1671,16 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.hide();
 
 			// movie info viewer
-			if (isMovieBrowser ) 
-			{
-				g_InfoViewer->showMovieTitle(playstate, p_movie_info->epgChannel.c_str(), p_movie_info->epgTitle, p_movie_info->epgInfo1, position, duration, ac3state, isMovieBrowser, file_prozent );	// UTF-8
-				//g_InfoViewer->updatePos(file_prozent);
-			}
-			//else if(timeshift)
-			//{
-			//	g_InfoViewer->showMovieTitle(playstate, CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), "", "", position, duration, ac3state, isMovieBrowser );	// UTF-8
-			//}
-			else if(!timeshift)
-			{
-				char temp_name[255];
-				char *slash = const_cast<char *>(strrchr(filename, '/'));
-
-				if (slash) 
-				{
-					slash++;
-					int len = strlen(slash);
-
-					for (int i = 0; i < len; i++) 
-					{
-						if (slash[i] == '_')
-							temp_name[i] = ' ';
-						else
-							temp_name[i] = slash[i];
-					}
-					temp_name[len] = 0;
-				}
-				g_file_epg = "";
-				g_file_epg1 = "";
-
-				g_InfoViewer->showMovieTitle(playstate, g_file_epg, temp_name, g_file_epg1, position, duration, ac3state, isMovieBrowser, file_prozent );
-				//g_InfoViewer->updatePos(file_prozent);
-			} 
-			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1780,14 +1690,16 @@ void CMoviePlayerGui::PlayFile(void)
 			//update_lcd = true;
 			playback->SetPosition(-60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1797,14 +1709,16 @@ void CMoviePlayerGui::PlayFile(void)
 			//update_lcd = true;
 			playback->SetPosition(60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1813,14 +1727,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{	// Jump Backwards 5 minutes
 			playback->SetPosition(-5 * 60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1829,14 +1745,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{	// Jump Forward 5 minutes
 			playback->SetPosition(5 * 60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1845,14 +1763,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{	// Jump Backwards 10 minutes
 			playback->SetPosition(-10 * 60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1861,14 +1781,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{	// Jump Forward 10 minutes
 			playback->SetPosition(10 * 60 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1881,14 +1803,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{	// goto start
 			playback->SetPosition(startposition, true);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1898,14 +1822,16 @@ void CMoviePlayerGui::PlayFile(void)
 			// goto middle
 			playback->SetPosition(duration/2, true);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1915,14 +1841,16 @@ void CMoviePlayerGui::PlayFile(void)
 			// goto end
 			playback->SetPosition(duration - 60 * 1000, true);
 			
-			//TEST
+			//time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1931,14 +1859,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			playback->SetPosition(10 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1948,14 +1878,16 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			playback->SetPosition(-10 * 1000);
 			
-			//TEST
+			// time
 			if (!FileTime.IsVisible()) 
 			{
 				if( !g_InfoViewer->is_visible)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					FileTime.updatePos(file_prozent);
+					
+					if(!timeshift)
+						FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -1983,7 +1915,7 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			slow += 2;
 		
-			//TEST
+			// set slow
 			playback->SetSlow(slow);
 			//update_lcd = true;
 			playstate = CMoviePlayerGui::SLOW;
@@ -1993,8 +1925,16 @@ void CMoviePlayerGui::PlayFile(void)
 		else if(msg == CRCInput::RC_red)
 		{
 			//playback->SyncAV();
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
+			
 			if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);
+		}
+		else if(msg == CRCInput::RC_home)
+		{
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
 		}
 		else if (msg == CRCInput::RC_timeout) 
 		{
@@ -2024,13 +1964,20 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{
-			if (isMovieBrowser == true && p_movie_info != NULL) 
+			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
 				p_movie_info->dateOfLastPlay = current_time.time;
 				current_time.time = time(NULL);
 				p_movie_info->bookmarks.lastPlayStop = position / 1000;
+				
+				//TEST
+				if(p_movie_info == NULL)
+				{
+					p_movie_info->epgChannel = sel_filename;
+					p_movie_info->epgTitle = sel_filename;
+				}
 
 				cMovieInfo.saveMovieInfo(*p_movie_info);
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser

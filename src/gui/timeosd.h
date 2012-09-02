@@ -27,6 +27,8 @@
 
 #include <time.h>
 #include <driver/framebuffer.h>
+#include "movieplayer.h"
+
 
 class CTimeOSD
 {
@@ -38,16 +40,17 @@ class CTimeOSD
 		};
 	
 	private:
-		CFrameBuffer		*frameBuffer;
+		CFrameBuffer * frameBuffer;
 		time_t m_time_dis;
 		time_t m_time_show;
 		bool visible;
-		int m_xstart,m_xend,m_y,m_height, m_width, twidth;
+		int m_xstart, m_xend, m_y, m_height, m_width, twidth;
 		mode m_mode;
 		void GetDimensions();
 		
-		uint32_t           sec_timer_id;
-		uint32_t           fadeTimer;
+		//int i_width, i_height;
+		int BoxStartX, BoxStartY, BoxEndY, BoxEndX;
+		int BoxWidth, BoxHeight;
 
 	public:
 		CTimeOSD();
