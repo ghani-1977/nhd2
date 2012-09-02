@@ -188,8 +188,8 @@ extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern int tuxtx_main(int _rc, int pid, int page, int source );
 
 // dvbsub
-extern int dvbsub_initialise();
-extern int dvbsub_init(int source);
+//extern int dvbsub_initialise();
+extern int dvbsub_init( /*int source*/);
 extern int dvbsub_stop();
 extern int dvbsub_close();
 extern int dvbsub_start(int pid);
@@ -2267,7 +2267,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 #endif	
 	
 	//dvb sub reader thread
-	dvbsub_initialise();
+	//dvbsub_initialise();
 
 	// zapit	
 	//zapit start parameters
@@ -5522,9 +5522,7 @@ void CNeutrinoApp::StopSubtitles()
 	int ttx, ttxpid, ttxpage;
 
 	// dvbsub
-	int dvbpid;
-	
-	dvbpid = dvbsub_getpid();
+	int dvbpid = dvbsub_getpid();
 	
 	if(dvbpid)
 	{
