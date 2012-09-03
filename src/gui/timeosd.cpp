@@ -52,8 +52,7 @@ CTimeOSD::CTimeOSD()
 	GetDimensions();
 
 	if(!timescale)
-		//timescale = new CScale(200, 32, 40, 100, 70, true);
-		timescale = new CScale(twidth - m_width - 10, TIMEBARH, 40, 100, 70, true);
+		timescale = new CScale( BoxWidth - 15, 6, 40, 100, 70, true );
 }
 
 CTimeOSD::~CTimeOSD()
@@ -75,6 +74,7 @@ extern int duration;
 extern std::string g_file_epg;
 extern std::string g_file_epg1;
 extern bool isMovieBrowser;
+extern int timeshift;
 void CTimeOSD::show(time_t time_show)
 {	
 	// show / update
@@ -83,123 +83,129 @@ void CTimeOSD::show(time_t time_show)
 	m_time_dis  = time(NULL);
 	m_time_show = time_show;
 	
+
 	// timescale
-	//frameBuffer->paintBoxRel(m_xstart-2, m_y, 2+BARLEN+2, TIMEBARH, COL_INFOBAR_SHADOW_PLUS_0); //border
-	
-	// timescale box shadow
-	frameBuffer->paintBoxRel(m_xstart + 3, m_y + 5, twidth, TIMEBARH, COL_INFOBAR_SHADOW_PLUS_0); //border
-	frameBuffer->paintBoxRel(m_xstart - 2, m_y, twidth, TIMEBARH, COL_INFOBAR_SHADOW_PLUS_0); //border
 	timescale->reset();
+	  
+	// time shadow
+	frameBuffer->paintBoxRel(m_xend - m_width - 5, m_y + 5, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
 	
-	// paint shadow
-	frameBuffer->paintBoxRel(BoxStartX + 5, BoxStartY + 5, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP ); //border
-	
-	// paint info box
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP ); //border
-	
-	// bottum bar
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1 ); //border
-	
-	// mp icon
-	int m_icon_w = 0;
-	int m_icon_h = 0;
-	
-	frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
-
-	int m_icon_x = BoxStartX + 5;
-	int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
-	frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
-	
-	// paint buttons
-	// red
-	// movie info
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - 18);
-	if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 2 + 16 + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	
-	// green
-	// audio
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxEndY - 18);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)+ 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	
-	// yellow
-	// help
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxEndY - 18);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + 18, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
-	
-	// blue
-	// bookmark
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxEndY - 18);
-	if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	
-	/* mp keys */
-	frameBuffer->paintIcon("ico_mp_rewind", BoxEndX - 60 - 16*5, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_play", BoxEndX - 60 - 16*4, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_pause", BoxEndX - 60 - 16*3, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_stop", BoxEndX - 60 - 16*2, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_forward", BoxEndX - 60 - 16, BoxEndY - 18);
-	
-	// ac3
-	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD:NEUTRINO_ICON_DD_GREY, BoxEndX - 2 - 26, BoxEndY - 18);
-	
-	// 4:3/16:9
-	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
-			
-	if(videoDecoder->getAspectRatio() == 1)
-		aspect_icon = NEUTRINO_ICON_16_9;
-			
-	frameBuffer->paintIcon(aspect_icon, BoxEndX - 2 - 55, BoxEndY - 18);
-	
-	//playstate
-	const char *icon = "mp_play";
-	
-	switch(playstate)
+	if(!timeshift)
 	{
-		case CMoviePlayerGui::PAUSE: icon = "mp_pause"; break;
-		case CMoviePlayerGui::PLAY: icon = "mp_play"; break;
-		case CMoviePlayerGui::REW: icon = "mp_b-skip"; break;
-		case CMoviePlayerGui::FF: icon = "mp_f-skip"; break;
-	}
-
-	// get icon size
-	int icon_w = 0;
-	int icon_h = 0;
-	
-	frameBuffer->getIconSize(icon, &icon_w, &icon_h);
-
-	int icon_x = BoxStartX + 60 + 5;
-	int icon_y = BoxStartY + (BoxHeight - icon_h) / 2;
-	
-
-	frameBuffer->paintIcon(icon, icon_x, icon_y);
-	
-	// paint speed
-	char strSpeed[4];
-	if( playstate == CMoviePlayerGui::FF || playstate == CMoviePlayerGui::REW )
-	{
-		sprintf(strSpeed, "%d", speed);
+		// paint shadow
+		frameBuffer->paintBoxRel(BoxStartX + 5, BoxStartY + 5, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP );
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_MENUCONTENTINACTIVE); // UTF-8
+		// paint info box
+		frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP ); 
+		
+		// timescale bg
+		frameBuffer->paintBoxRel(BoxStartX + 10, BoxStartY + 15, BoxWidth - 20, 6, COL_INFOBAR_SHADOW_PLUS_1 ); 
+		
+		// bottum bar
+		frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1 ); 
+		
+		// mp icon
+		int m_icon_w = 0;
+		int m_icon_h = 0;
+		
+		frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
+
+		int m_icon_x = BoxStartX + 5;
+		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
+		frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
+		
+		// paint buttons
+		// red
+		// movie info
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - 18);
+		if(isMovieBrowser)
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 2 + 16 + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+		// green
+		// audio
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxEndY - 18);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)+ 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+		// yellow
+		// help
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxEndY - 18);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + 18, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+		
+		// blue
+		// bookmark
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxEndY - 18);
+		if(isMovieBrowser)
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+		/* mp keys */
+		frameBuffer->paintIcon("ico_mp_rewind", BoxEndX - 60 - 16*5, BoxEndY - 18);
+		frameBuffer->paintIcon("ico_mp_play", BoxEndX - 60 - 16*4, BoxEndY - 18);
+		frameBuffer->paintIcon("ico_mp_pause", BoxEndX - 60 - 16*3, BoxEndY - 18);
+		frameBuffer->paintIcon("ico_mp_stop", BoxEndX - 60 - 16*2, BoxEndY - 18);
+		frameBuffer->paintIcon("ico_mp_forward", BoxEndX - 60 - 16, BoxEndY - 18);
+		
+		// ac3
+		frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD:NEUTRINO_ICON_DD_GREY, BoxEndX - 2 - 26, BoxEndY - 18);
+		
+		// 4:3/16:9
+		const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
+				
+		if(videoDecoder->getAspectRatio() == 1)
+			aspect_icon = NEUTRINO_ICON_16_9;
+				
+		frameBuffer->paintIcon(aspect_icon, BoxEndX - 2 - 55, BoxEndY - 18);
+		
+		//playstate
+		const char *icon = "mp_play";
+		
+		switch(playstate)
+		{
+			case CMoviePlayerGui::PAUSE: icon = "mp_pause"; break;
+			case CMoviePlayerGui::PLAY: icon = "mp_play"; break;
+			case CMoviePlayerGui::REW: icon = "mp_b-skip"; break;
+			case CMoviePlayerGui::FF: icon = "mp_f-skip"; break;
+		}
+
+		// get icon size
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(icon, &icon_w, &icon_h);
+
+		int icon_x = BoxStartX + 60 + 5;
+		int icon_y = BoxStartY + (BoxHeight - icon_h) / 2;
+		
+
+		frameBuffer->paintIcon(icon, icon_x, icon_y);
+		
+		// paint speed
+		char strSpeed[4];
+		if( playstate == CMoviePlayerGui::FF || playstate == CMoviePlayerGui::REW )
+		{
+			sprintf(strSpeed, "%d", speed);
+			
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_MENUCONTENTINACTIVE); // UTF-8
+		}
+		
+		// infos
+		char runningRest[32]; // %d can be 10 digits max...
+		//sprintf(runningRest, "%d / %d min", (position + 30000) / 60000, (duration + 30000) / 60000);
+		sprintf(runningRest, "%d min", (duration + 30000) / 60000);
+		
+		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
+		int durationTextPos = BoxEndX - durationWidth - 15;
+		
+		//Title 1
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 - 5, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg, COL_INFOBAR, 0, true);
+
+		//Title2
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 + 25, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg1, COL_INFOBAR, 0, true);
+
+		//Time Elapsed/Time Remaining
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningRest, COL_INFOBAR);
 	}
 	
-	// infos
-	char runningRest[32]; // %d can be 10 digits max...
-	//sprintf(runningRest, "%d / %d min", (position + 30000) / 60000, (duration + 30000) / 60000);
-	sprintf(runningRest, "%d min", (duration + 30000) / 60000);
-	
-	int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
-	int durationTextPos = BoxEndX - durationWidth - 15;
-	
-	//Title 1
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 - 5, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg, COL_INFOBAR, 0, true);
-
-	//Title2
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 + 25, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg1, COL_INFOBAR, 0, true);
-
-	//Time Elapsed/Time Remaining
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningRest, COL_INFOBAR);
-	
+	// time
 	update();	
 }
 
@@ -219,8 +225,6 @@ void CTimeOSD::GetDimensions()
 	BoxStartY = g_settings.screen_EndY - BoxHeight -10;
 	BoxEndY = BoxStartY + BoxHeight;
 	BoxEndX = m_xend;
-	
-	printf("TEST: asize=%d\n", BoxWidth/5);
 }
 
 void CTimeOSD::update(time_t time_show)
@@ -274,7 +278,7 @@ void CTimeOSD::update(time_t time_show)
 
 		frameBuffer->paintBoxRel(m_xend - m_width - 10, m_y, m_width + 10, m_height, color1/*, RADIUS_MID, CORNER_BOTH*/);
 
-		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5,  m_y + m_height, m_width +5,    cDisplayTime, color2);
+		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5, m_y + m_height, m_width + 5, cDisplayTime, color2);
 	}
 	
 #ifdef FB_BLIT
@@ -284,7 +288,9 @@ void CTimeOSD::update(time_t time_show)
 
 void CTimeOSD::updatePos(short runningPercent)
 {
-	timescale->paint(m_xstart, m_y, runningPercent);
+	if(!timeshift)
+		//timescale->paint(m_xstart, m_y, runningPercent);
+		timescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 }
 
 void CTimeOSD::hide()

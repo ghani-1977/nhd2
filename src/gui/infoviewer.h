@@ -58,8 +58,9 @@ class CInfoViewer
 	
 		int            InfoHeightY;
 		int            InfoHeightY_Info;
-		bool         	showButtonBar;
-
+		
+		bool         showButtonBar;
+		
 		int            BoxEndX;
 		int            BoxEndY;
 		int            BoxStartX;

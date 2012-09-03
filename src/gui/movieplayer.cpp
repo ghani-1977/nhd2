@@ -711,8 +711,8 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
-			//FileTime.SetMode(CTimeOSD::MODE_ASC);
-			//FileTime.show( (position / 1000));
+			FileTime.SetMode(CTimeOSD::MODE_ASC);
+			FileTime.show( (position / 1000));
 		}
 
 		// moviebrowser
@@ -1234,7 +1234,7 @@ void CMoviePlayerGui::PlayFile(void)
 				//
 
 				// show movieviewer directly after starting play
-				if( /* !timeshift &&*/ playback->GetPosition(position, duration)) 
+				if( playback->GetPosition(position, duration) ) 
 				{
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
@@ -1252,8 +1252,7 @@ void CMoviePlayerGui::PlayFile(void)
 									FileTime.SetMode(CTimeOSD::MODE_DESC);
 									FileTime.update((duration - position) / 1000);
 									
-									if(!timeshift)
-										FileTime.updatePos(file_prozent);
+									FileTime.updatePos(file_prozent);
 								}
 							} 
 							else 
@@ -1266,8 +1265,7 @@ void CMoviePlayerGui::PlayFile(void)
 							FileTime.SetMode(CTimeOSD::MODE_ASC);
 							FileTime.show(position / 1000);
 							
-							if(!timeshift)
-								FileTime.updatePos(file_prozent);
+							FileTime.updatePos(file_prozent);
 						}
 					}
 				}
@@ -1367,8 +1365,7 @@ void CMoviePlayerGui::PlayFile(void)
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
 							
-							if(!timeshift)
-								FileTime.updatePos(file_prozent);
+							FileTime.updatePos(file_prozent);
 						}
 					} 
 					else 
@@ -1381,8 +1378,7 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					if(!timeshift)
-						FileTime.updatePos(file_prozent);
+					FileTime.updatePos(file_prozent);
 				}
 			}
 		} 
@@ -1425,8 +1421,7 @@ void CMoviePlayerGui::PlayFile(void)
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
 							
-							if(!timeshift)
-								FileTime.updatePos(file_prozent);
+							FileTime.updatePos(file_prozent);
 						}
 					} 
 					else 
@@ -1439,8 +1434,7 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					if(!timeshift)
-						FileTime.updatePos(file_prozent);
+					FileTime.updatePos(file_prozent);
 				}
 			}
 		} 
@@ -1579,9 +1573,21 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					if(!timeshift)
-						FileTime.updatePos(file_prozent);
+					FileTime.updatePos(file_prozent);
 				}
+			}
+			else
+			if(timeshift)
+			{
+				if (FileTime.IsVisible()) 
+					FileTime.hide();
+				else
+				{
+					FileTime.SetMode(CTimeOSD::MODE_ASC);
+					FileTime.show(position / 1000);
+				}
+				
+				g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
 			}
 		} 
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_time )
@@ -1599,8 +1605,7 @@ void CMoviePlayerGui::PlayFile(void)
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
 							
-							if(!timeshift)
-								FileTime.updatePos(file_prozent);
+							FileTime.updatePos(file_prozent);
 						}
 					} 
 					else 
@@ -1613,8 +1618,17 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					if(!timeshift)
-						FileTime.updatePos(file_prozent);
+					FileTime.updatePos(file_prozent);
+				}
+			}
+			else
+			{
+				if (FileTime.IsVisible()) 
+					FileTime.hide();
+				else
+				{
+					FileTime.SetMode(CTimeOSD::MODE_ASC);
+					FileTime.show(position / 1000);
 				}
 			}
 		} 
