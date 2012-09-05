@@ -944,6 +944,11 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
+	
+	// ci cam
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
+	ci->SendCaPMT(rec_channel->getCaPmt(), rec_channel->getFeIndex());
+#endif	
 
 	// dual decoding is brocken
 	//if( !SAME_TRANSPONDER(rec_channel_id, live_channel_id) )
