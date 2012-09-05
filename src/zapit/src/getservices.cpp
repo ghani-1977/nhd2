@@ -277,8 +277,9 @@ void FindTransponder(xmlNodePtr search)
 		
 		// frontend index from sat pos
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		//if ( sit->second.type = Source )
 		feindex = sit->second.feindex;
-		
+			
 		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d fe(%d)\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition, sit->second.feindex);
 		
 		// parse TP
@@ -595,70 +596,6 @@ int LoadServices(bool only_current)
 
 		while (search) 
 		{
-			#if 0
-			if( (getFE(0)->getInfo()->type == FE_QPSK) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
-			{
-				if (!(strcmp(xmlGetName(search), "sat"))) 
-				{
-					// position
-					t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
-					char * name = xmlGetAttribute(search, "name");
-
-					if(satellitePositions.find(position) == satellitePositions.end()) 
-					{
-						init_sat(position);
-							
-						satellitePositions[position].name = name;
-					}
-					
-					// type //needed to resort list for scan menue
-					satellitePositions[position].type = DVB_S;
-					satellitePositions[position].feindex = 0;
-				}
-			}
-			else if( (getFE(0)->getInfo()->type == FE_QAM) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
-			{
-				if (!(strcmp(xmlGetName(search), "cable"))) 
-				{
-					// position
-					t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
-					char * name = xmlGetAttribute(search, "name");
-
-					if(satellitePositions.find(position) == satellitePositions.end()) 
-					{
-						init_sat(position); // this will reset feindex to 
-							
-						satellitePositions[position].name = name;
-					}
-					
-					// type //needed to resort list for scan menue
-					satellitePositions[position].type = DVB_C;
-					satellitePositions[position].feindex = 0;
-				}
-			}
-			else if( (getFE(0)->getInfo()->type == FE_OFDM) && ( (getFE(0)->mode != FE_TWIN) || (getFE(0)->mode != FE_LOOP) ) )
-			{
-				if (!(strcmp(xmlGetName(search), "terrestrial"))) 
-				{
-					// position
-					t_satellite_position position = xmlGetSignedNumericAttribute(search, "position", 10);
-					char * name = xmlGetAttribute(search, "name");
-
-					if(satellitePositions.find(position) == satellitePositions.end()) 
-					{
-						init_sat(position); // this will reset feindex to 
-							
-						satellitePositions[position].name = name;
-					}
-					
-					// type //needed to resort list for scan menue
-					satellitePositions[position].type = DVB_T;
-					satellitePositions[position].feindex = 0;
-				}
-			}
-			#endif
-			
-			#if 1
 			if (!(strcmp(xmlGetName(search), "sat"))) 
 			{
 				// position
@@ -672,7 +609,6 @@ int LoadServices(bool only_current)
 					satellitePositions[position].name = name;
 				}
 			}
-			#endif
 
 			// jump to the next node
 			search = search->xmlNextNode;
