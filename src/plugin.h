@@ -41,7 +41,7 @@ typedef struct _PluginParam
 
 } PluginParam;
 
-typedef int (*PluginExec)( PluginParam *par );
+typedef int (*PluginExec)( PluginParam * par );
 /* das dlsym kann auf PluginExec gecastet werden */
 
 /* NOTE : alle Plugins haben uebergangs-weise neue und alte schnittstelle */
