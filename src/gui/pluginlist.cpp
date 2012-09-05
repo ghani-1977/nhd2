@@ -295,7 +295,7 @@ void CPluginList::paintItem(int pos)
 		int icon_h = 0;
 		if(!isback_menu)
 		{
-			std::string IconName = "/var/tuxbox/plugins/" + actplugin->icon;
+			std::string IconName = PLUGINDIR "/" + actplugin->icon;
 			
 			frameBuffer->getIconSize(NEUTRINO_ICON_PLUGIN, &icon_w, &icon_h);
 			
