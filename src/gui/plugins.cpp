@@ -426,7 +426,7 @@ void CPlugins::startPlugin(int number,int param)
 
 	strcpy(depstring, plugin_list[number].depend.c_str());
 
-	argc=0;
+	argc = 0;
 	if ( depstring[0] )
 	{
 		p=depstring;
@@ -445,11 +445,11 @@ void CPlugins::startPlugin(int number,int param)
 		}
 	}
 	
-	for ( i=0; i<argc; i++ )
+	for ( i = 0; i <argc; i++ )
 	{
 		std::string libname = argv[i];
 		printf("[CPlugins] try load shared lib : %s\n",argv[i]);
-		libhandle[i] = dlopen ( *argv[i] == '/' ?
+		libhandle[i] = dlopen( *argv[i] == '/' ?
 					argv[i] : (PLUGINDIR "/"+libname).c_str(),
 					RTLD_NOW | RTLD_GLOBAL );
 		if ( !libhandle[i] )
