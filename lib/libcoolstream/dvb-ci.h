@@ -15,6 +15,11 @@
 #define MAX_MMI_TEXT_LEN 255
 #define MAX_MMI_CHOICE_TEXT_LEN 255
 
+#define TUNER_A		0
+#define TUNER_B		1
+#define TUNER_C		2
+#define TUNER_D		3
+
 typedef struct
 {
         int slot;
@@ -118,7 +123,7 @@ typedef struct
 	std::priority_queue<queueData> sendqueue;
 
         CCaPmt      *caPmt;
-
+	int source;
 } tSlot;
 
 
@@ -134,11 +139,11 @@ class cDvbCi {
 	        std::list<tSlot*> slot_data;
                 pthread_t     slot_thread;
 	public:
-                bool SendCaPMT(CCaPmt *caPmt);
+                bool SendCaPMT(CCaPmt *caPmt, int source = TUNER_A);
 
-		bool SendDateTime(void);
+		//bool SendDateTime(void);
                 void slot_pollthread(void *c);
-                void setSource(tSlot* slot);
+                void setSource(/*tSlot**/int slot, int source);
  
 		//
 		cDvbCi(int Slots);
