@@ -130,7 +130,9 @@ bool cRecord::Stop(void)
 void cRecord::RecordThread()
 {
 	//dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-#define BUFSIZE (1 << 19) /* 512 kB */
+#define BUFSIZE (1 << 20) /* 1024 kB */
+#define READSIZE (BUFSIZE / 16)
+
 	ssize_t r = 0;
 	int buf_pos = 0;
 	uint8_t *buf;
@@ -148,7 +150,11 @@ void cRecord::RecordThread()
 	{
 		if (buf_pos < BUFSIZE)
 		{
-			r = dmx->Read(buf + buf_pos, BUFSIZE - 1 - buf_pos, 100);
+			int toread = BUFSIZE - buf_pos;
+			if (toread > READSIZE)
+				toread = READSIZE;
+			
+			r = dmx->Read(buf + buf_pos, /*BUFSIZE - 1 - buf_pos*/toread, 50);
 
 			if (r < 0)
 			{
