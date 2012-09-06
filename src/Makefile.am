@@ -16,10 +16,6 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
 
-if !ENABLE_GSTREAMER
-INCLUDES += -I$(top_srcdir)/lib/libeplayer3
-endif
-
 bin_PROGRAMS = neutrino
 
 neutrino_SOURCES = neutrino_menue.cpp neutrino.cpp
@@ -71,9 +67,9 @@ neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a
 if ENABLE_LIBASS
 neutrino_LDADD += -lass
 endif
+else
+neutrino_LDADD += -lgstreamer-0.10
 endif
-
-
 
 # LCD display
 if ENABLE_LCD
