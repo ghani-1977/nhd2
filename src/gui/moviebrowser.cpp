@@ -2608,8 +2608,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					    (strcasecmp("ts", extension.c_str()) == 0) ||
 					    (strcasecmp("mpg", extension.c_str()) == 0) ||
 					    (strcasecmp("mpeg", extension.c_str()) == 0) ||
-					    (strcasecmp("divx", extension.c_str()) == 0) ||
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_DREAMBOX)					    
+					    (strcasecmp("divx", extension.c_str()) == 0) ||	    
 					    (strcasecmp("avi", extension.c_str()) == 0) ||
 					    (strcasecmp("mkv", extension.c_str()) == 0) ||
 					    (strcasecmp("asf", extension.c_str()) == 0) ||
@@ -2622,8 +2621,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					    (strcasecmp("mp4", extension.c_str()) == 0) ||
 					    (strcasecmp("mov", extension.c_str()) == 0) ||
 					    (strcasecmp("flv", extension.c_str()) == 0) ||
-#endif					    
-					    
 					    (strcasecmp("dat", extension.c_str()) == 0) ||
 					    (strcasecmp("trp", extension.c_str()) == 0) ||
 					    (strcasecmp("vdr", extension.c_str()) == 0) ||
