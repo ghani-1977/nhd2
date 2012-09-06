@@ -287,7 +287,7 @@ const char* usermenu_button_def[SNeutrinoSettings::BUTTON_MAX]={
 #endif
 };
 
-CZapitClient::SatelliteList satList;
+//CZapitClient::SatelliteList satList;
 
 CVCRControl::CDevice * recordingdevice = NULL;
 
