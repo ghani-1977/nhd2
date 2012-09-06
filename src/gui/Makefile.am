@@ -29,6 +29,8 @@ INCLUDES = \
 
 if !ENABLE_GSTREAMER
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+else
+INCLUDES += @GST_CFLAGS@
 endif
 
 noinst_LIBRARIES = libtimerlist.a libneutrino_gui.a libneutrino_gui2.a
