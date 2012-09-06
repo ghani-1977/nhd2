@@ -82,8 +82,8 @@
 #include <zapit/channel.h>
 
 
-extern cVideo * videoDecoder;
-extern cAudio * audioDecoder;
+//extern cVideo * videoDecoder;
+//extern cAudio * audioDecoder;
 
 #define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
@@ -285,10 +285,8 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("ts");
 	tsfilefilter.addFilter("mpg");
 	tsfilefilter.addFilter("mpeg");
-	
 	tsfilefilter.addFilter("divx");
 	
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_DREAMBOX)
 	tsfilefilter.addFilter("avi");
 	tsfilefilter.addFilter("mkv");
 	tsfilefilter.addFilter("asf");
@@ -300,7 +298,6 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("mp4");
 	tsfilefilter.addFilter("mov");
 	tsfilefilter.addFilter("flv");
-#endif	
 	
 	tsfilefilter.addFilter("dat");
 	tsfilefilter.addFilter("trp");
