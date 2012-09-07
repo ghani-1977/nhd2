@@ -222,10 +222,6 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
-int twin_index = 1;
-int twin_1 = 0;
-int twin_2 = 1;
-bool HaveTwin = false;
 
 
 /* variables for EN 50494 (a.k.a Unicable) */
@@ -262,17 +258,6 @@ bool initFrontend()
 	
 	printf("found %d frontends\n", femap.size());
 	
-	// check for twin
-	for (int i = 0; i < FrontendCount; i++)
-	{
-			// twin
-		if(femap[i]->getInfo()->type == femap[i+1]->getInfo()->type)
-		{
-			HaveTwin = true;
-			twin_index = i;
-		}
-	}
-	
 	if(femap.size() == 0)
 		return false;
 		
@@ -303,25 +288,7 @@ CFrontend * recordFrontend(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
-	// twin
-	if( HaveTwin && ( (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_TWIN) || (femap[0]->mode == FE_TWIN && femap[twin_index]->mode == FE_SINGLE) ) )
-		fe = femap[twin_index];					// we prefex twin fe
-	else if( HaveTwin && (femap[0]->mode == FE_SINGLE && femap[twin_index]->mode == FE_LOOP) )
-	{
-		if( SAME_TRANSPONDER(rec_channel_id, live_channel_id) ) // same tp and second fe is loop mode
-			fe = femap[twin_index];				//we prefex looped fe
-		else
-			fe = femap[0];					// we prefex initial fe (fe_loop cant tune)
-	}
-	else if ( HaveTwin && (femap[0]->mode == FE_LOOP && femap[twin_index]->mode == FE_SINGLE) )
-	{
-		if( SAME_TRANSPONDER(rec_channel_id, live_channel_id) ) // same tp and second fe is loop mode
-			fe = femap[0];					//we prefex looped fe
-		else
-			fe = femap[twin_index];				// we prefex initial fe (fe_loop cant tune)
-	}
-	else
-		fe = femap[thischannel->getFeIndex()];			// single/multi
+	fe = femap[thischannel->getFeIndex()];			// single/multi
 	
 	return fe;
 }
