@@ -62,7 +62,6 @@
 
 // global
 CScanSettings * scanSettings;
-//CZapitClient::SatelliteList satList;	//defined neutrino.cpp
 
 char zapit_lat[20];				//defined neutrino.cpp
 char zapit_long[20];				//defined neutrino.cpp
@@ -71,8 +70,6 @@ char zapit_long[20];				//defined neutrino.cpp
 extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);
 extern void saveFrontendConfig();
-extern void saveProviderConfig();
-extern bool HaveTwin;
 
 
 // option off0_on1
@@ -277,7 +274,6 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		
 		// frontend config (femode)
 		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
-		saveProviderConfig();
 		//g_Zapit->reinitChannels();	// needed for twin if we set other femodes
 		
 		hintBox->hide();
@@ -508,7 +504,7 @@ void CScanSetup::showScanService()
 	}
 	
 	// frontend mode
-	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, /*(HaveTwin)*/(getFE(feindex)->getInfo()->type == FE_QPSK)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
+	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&scanSettings->femode, FRONTEND_MODE_OPTIONS, (getFE(feindex)->getInfo()->type == FE_QPSK)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
