@@ -2016,11 +2016,12 @@ void CMoviePlayerGui::PlayFile(void)
 void CMoviePlayerGui::showHelpTS()
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1)*/ (char *)"Sync Audio/Video");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1)*/ (char *)"Movie info");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP2));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP3));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP4));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_HELP, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, (char *)"jump backward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, (char *)"goto start"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, (char *)"jump forward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7)*/ );
