@@ -223,6 +223,8 @@ CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
 int twin_index = 1;
+int twin_1 = 0;
+int twin_2 = 1;
 bool HaveTwin = false;
 
 
@@ -261,10 +263,10 @@ bool initFrontend()
 	printf("found %d frontends\n", femap.size());
 	
 	// check for twin
-	for (int i = 1; i < FrontendCount; i++)
+	for (int i = 0; i < FrontendCount; i++)
 	{
 			// twin
-		if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
+		if(femap[i]->getInfo()->type == femap[i+1]->getInfo()->type)
 		{
 			HaveTwin = true;
 			twin_index = i;
@@ -2900,31 +2902,25 @@ int stopPlayBack()
 	{
 		// stop
 		videoDemux->Stop();
-		
 		//delete
-		delete videoDemux;	//destructor closes dmx
-		
-		videoDemux = NULL;
+		//delete videoDemux;	//destructor closes dmx
+		//videoDemux = NULL;
 	}
 	
 	if (audioDemux)
 	{
 		// stop
 		audioDemux->Stop();
-		
-		delete audioDemux;  //destructor closes dmx
-		
-		audioDemux = NULL;
+		//delete audioDemux;  //destructor closes dmx
+		//audioDemux = NULL;
 	}
 	
 	if (pcrDemux)
 	{
 		// stop
 		pcrDemux->Stop();
-		
-		delete pcrDemux; //destructor closes dmx
-		
-		pcrDemux = NULL;
+		//delete pcrDemux; //destructor closes dmx
+		//pcrDemux = NULL;
 	}
 	
 	// audio decoder stop
@@ -2972,6 +2968,36 @@ void enterStandby(void)
 	
 	/* stop playback */
 	stopPlayBack();
+	
+	/* close demuxes */
+	if (videoDemux)
+	{
+		//delete
+		delete videoDemux;	//destructor closes dmx
+		
+		videoDemux = NULL;
+	}
+	
+	if (audioDemux)
+	{
+		delete audioDemux;  //destructor closes dmx
+		
+		audioDemux = NULL;
+	}
+	
+	if (pcrDemux)
+	{
+		delete pcrDemux; //destructor closes dmx
+		
+		pcrDemux = NULL;
+	}
+	
+	/* delete cam */
+	if (live_cam) 
+	{
+		delete live_cam;
+		live_cam = NULL;
+	}
 }
 
 void leaveStandby(void)
