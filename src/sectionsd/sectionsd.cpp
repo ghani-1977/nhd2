@@ -8917,9 +8917,11 @@ static void *cnThread(void *)
 		}
 		sectionsd_ready = true;
 
-		while (sectionsd_server.run(sectionsd_parse_command, sectionsd::ACTVERSION, true)) {
+		while (sectionsd_server.run(sectionsd_parse_command, sectionsd::ACTVERSION, true)) 
+		{
 			sched_yield();
-			if (eit_update_fd != -1) {
+			if (eit_update_fd != -1) 
+			{
 				unsigned char buf[4096];
 				int ret = eitDmx->Read(buf, 4095, 10);
 

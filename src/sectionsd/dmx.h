@@ -32,6 +32,8 @@
 
 #include <dmx_cs.h>
 
+//#define MAX_SECTION_LENGTH (0x0fff + 3)
+
 
 typedef uint64_t sections_id_t;
 typedef unsigned char version_number_t;
