@@ -44,7 +44,7 @@
 
 #include <fcntl.h>
 
-#include <gui/scale.h>
+#include <gui/widget/progressbar.h>
 #include <gui/infoviewer.h>
 
 #include <gui/widget/icons.h>
@@ -169,9 +169,9 @@ void CInfoViewer::Init()
 	virtual_zap_mode = false;
 	chanready = 1;
 	
-	sigscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	snrscale = new CScale(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	timescale = new CScale(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
+	sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
 }
 
 void CInfoViewer::start()
@@ -195,10 +195,10 @@ void CInfoViewer::paintTime (bool show_dot, bool firstPaint)
 		ftime (&tm);
 		strftime ((char *) &timestr, 20, "%H:%M", localtime (&tm.time));
 	
-		if ((!firstPaint) && (strcmp (timestr, old_timestr) == 0)) 
+		if ((!firstPaint) && (strcmp(timestr, old_timestr) == 0)) 
 		{
 			if (show_dot)
-				frameBuffer->paintBoxRel(BoxEndX - time_width + time_left_width - LEFT_OFFSET, ChanNameY, time_dot_width, time_height / 2 + 2, COL_INFOBAR_PLUS_0);
+				frameBuffer->paintBoxRel(BoxEndX - time_width + time_left_width - LEFT_OFFSET, ChanNameY + 5, time_dot_width, time_height/2, COL_INFOBAR_PLUS_0);
 			else
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString (BoxEndX - time_width + time_left_width - LEFT_OFFSET, ChanNameY + time_height, time_dot_width, ":", COL_INFOBAR);
 
@@ -221,7 +221,7 @@ void CInfoViewer::paintTime (bool show_dot, bool firstPaint)
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString (BoxEndX - time_width + time_left_width - LEFT_OFFSET, ChanNameY + time_height, time_dot_width, ":", COL_INFOBAR);
 
 			if (show_dot)
-				frameBuffer->paintBoxRel (BoxEndX - time_left_width - time_dot_width - LEFT_OFFSET, ChanNameY, time_dot_width, time_height / 2 + 2, COL_INFOBAR_PLUS_0);
+				frameBuffer->paintBoxRel (BoxEndX - time_left_width - time_dot_width - LEFT_OFFSET, ChanNameY + 5, time_dot_width, time_height/2, COL_INFOBAR_PLUS_0);
 		}
 	}
 }

@@ -34,7 +34,6 @@
 #include <global.h>
 #include <neutrino.h>
 #include <driver/rcinput.h>
-#include <gui/scale.h>
 #include <gui/motorcontrol.h>
 #include <gui/color.h>
 #include <gui/widget/menue.h>
@@ -93,8 +92,8 @@ void CMotorControl::Init(void)
 	motorPosition = 1;
 	satellitePosition = 0;
 	stepDelay = 10;
-	sigscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	snrscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	sigscale = new CProgressBar(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	snrscale = new CProgressBar(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
 }
 
 int CMotorControl::exec(CMenuTarget* parent, const std::string &)

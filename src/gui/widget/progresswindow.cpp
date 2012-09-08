@@ -112,11 +112,11 @@ void CProgressWindow::showLocalStatus(const unsigned int prog)
 
 		pos += int( float(width-20)/100.0 * local_progress);
 		//vordergrund
-		frameBuffer->paintBox(x+10, localstatusY,pos, localstatusY+10, COL_MENUCONTENT_PLUS_7);
+		frameBuffer->paintBox(x+10, localstatusY, pos, localstatusY + 10, COL_MENUCONTENT_PLUS_7);
 	}
 	
 	//hintergrund
-	frameBuffer->paintBox(pos, localstatusY, x+width-10, localstatusY+10, COL_MENUCONTENT_PLUS_2);
+	frameBuffer->paintBox(pos, localstatusY, x + width-10, localstatusY + 10, COL_MENUCONTENT_PLUS_2);
 	
 #ifdef FB_BLIT
 	frameBuffer->blit();

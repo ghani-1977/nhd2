@@ -40,9 +40,9 @@
 #include <driver/fontrenderer.h>
 #include <system/settings.h>
 #include "widget/menue.h"
-#include <gui/scale.h>
-//#include <gui/widget/progressbar.h>
+#include <gui/widget/progressbar.h>
 #include <string>
+
 
 class CInfoViewer
 {
@@ -130,7 +130,7 @@ class CInfoViewer
 		void showRadiotext();
 		void killRadiotext();
 
-		CScale *snrscale, *sigscale, *timescale;
+		CProgressBar *snrscale, *sigscale, *timescale;
 		char MoviePercent;
 		std::string eventname;
 

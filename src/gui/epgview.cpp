@@ -48,13 +48,13 @@
 #include <driver/encoding.h>
 #include <driver/screen_max.h>
 #include <gui/filebrowser.h>
-#include <gui/scale.h>
+#include <gui/widget/progressbar.h>
 #include <gui/pictureviewer.h>
 
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 52
 #define PIC_H 39
-static CScale * timescale;
+static CProgressBar * timescale;
 
 #define ICON_LARGE_WIDTH 26
 
@@ -134,7 +134,7 @@ CEpgData::CEpgData()
 {
 	bigFonts = false;
 	frameBuffer = CFrameBuffer::getInstance();
-	timescale = new CScale(100, 12, 30, 100, 70, true);
+	timescale = new CProgressBar(100, 12, 30, 100, 70, true);
 }
 
 #define MAX_W 460 /*540*/

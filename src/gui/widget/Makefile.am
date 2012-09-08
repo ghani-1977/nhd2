@@ -20,7 +20,7 @@ libneutrino_gui_widget_a_SOURCES = \
 	listframe.cpp msgbox.cpp textbox.cpp vfdcontroler.cpp
 
 libneutrino_gui_widget2_a_SOURCES = \
-	progresswindow.cpp
+	progresswindow.cpp progressbar.cpp
 
 
 

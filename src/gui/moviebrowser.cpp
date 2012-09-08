@@ -64,7 +64,7 @@
 #include <gui/widget/icons.h>
 #include <sys/mount.h>
 #include <utime.h>
-#include <gui/scale.h>
+#include <gui/widget/progressbar.h>
 #include <gui/pictureviewer.h>
 
 #include <system/debug.h>
@@ -74,7 +74,7 @@
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 52
 #define PIC_H 39
-static CScale * timescale;
+static CProgressBar * timescale;
 
 
 
@@ -4235,7 +4235,7 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
 
 	if(!timescale) 
-		timescale = new CScale(200, 15, 0, 100, 0);
+		timescale = new CProgressBar(200, 15, 0, 100, 0);
 	
         int dx = 256;
         int x = (((g_settings.screen_EndX- g_settings.screen_StartX)- dx) / 2) + g_settings.screen_StartX;
@@ -4499,7 +4499,7 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
 	if(!timescale)
-		timescale = new CScale(200, 15, 0, 100, 0);
+		timescale = new CProgressBar(200, 15, 0, 100, 0);
         int dx = 256;
         int x = (((g_settings.screen_EndX- g_settings.screen_StartX)- dx) / 2) + g_settings.screen_StartX;
         int y = g_settings.screen_EndY - 50;

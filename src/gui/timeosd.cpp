@@ -29,7 +29,7 @@
 #include <gui/timeosd.h>
 #include <driver/fontrenderer.h>
 #include <system/settings.h>
-#include <gui/scale.h>
+#include <gui/widget/progressbar.h>
 #include <driver/rcinput.h>
 
 #include <video_cs.h>
@@ -37,11 +37,12 @@
 
 extern cVideo * videoDecoder;
 
-static CScale * timescale;
+static CProgressBar * timescale;
 
 #define TIMEOSD_FONT SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME
 #define TIMEBARH 38
 #define BARLEN 200
+#define SHADOW_OFFSET	5
 
 
 CTimeOSD::CTimeOSD()
@@ -52,7 +53,7 @@ CTimeOSD::CTimeOSD()
 	GetDimensions();
 
 	if(!timescale)
-		timescale = new CScale( BoxWidth - 15, 6, 40, 100, 70, true );
+		timescale = new CProgressBar( BoxWidth - 15, 6, 40, 100, 70, true );
 }
 
 CTimeOSD::~CTimeOSD()
@@ -88,12 +89,12 @@ void CTimeOSD::show(time_t time_show)
 	timescale->reset();
 	  
 	// time shadow
-	frameBuffer->paintBoxRel(m_xend - m_width - 5, m_y + 5, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
+	frameBuffer->paintBoxRel(m_xend - m_width - 10 + SHADOW_OFFSET, m_y + SHADOW_OFFSET, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
 	
 	if(!timeshift)
 	{
 		// paint shadow
-		frameBuffer->paintBoxRel(BoxStartX + 5, BoxStartY + 5, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP );
+		frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP );
 		
 		// paint info box
 		frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP ); 
@@ -211,6 +212,7 @@ void CTimeOSD::show(time_t time_show)
 
 void CTimeOSD::GetDimensions()
 {
+	// time
 	m_xstart = g_settings.screen_StartX + 10;
 	m_xend = g_settings.screen_EndX - 10;
 	m_height = g_Font[TIMEOSD_FONT]->getHeight();
@@ -218,7 +220,7 @@ void CTimeOSD::GetDimensions()
 	m_width = g_Font[TIMEOSD_FONT]->getRenderWidth("00:00:00");
 	twidth = m_xend - m_xstart;
 	
-	//
+	// infobar
 	BoxStartX = m_xstart;
 	BoxWidth = m_xend - m_xstart;
 	BoxHeight = TIMEBARH * 3;
@@ -276,7 +278,7 @@ void CTimeOSD::update(time_t time_show)
 		oldDisplayTime = tDisplayTime;
 		strftime(cDisplayTime, 9, "%T", gmtime(&tDisplayTime));
 
-		frameBuffer->paintBoxRel(m_xend - m_width - 10, m_y, m_width + 10, m_height, color1/*, RADIUS_MID, CORNER_BOTH*/);
+		frameBuffer->paintBoxRel(m_xend - m_width - 10, m_y, m_width + 10, m_height, color1 );
 
 		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5, m_y + m_height, m_width + 5, cDisplayTime, color2);
 	}
@@ -289,21 +291,23 @@ void CTimeOSD::update(time_t time_show)
 void CTimeOSD::updatePos(short runningPercent)
 {
 	if(!timeshift)
-		//timescale->paint(m_xstart, m_y, runningPercent);
 		timescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 }
 
 void CTimeOSD::hide()
 {
 	GetDimensions();
-	printf("CTimeOSD::hide: x %d y %d xend %d yend %d\n", m_xstart, m_y , m_xend, m_height + 15);
+	//printf("CTimeOSD::hide: x %d y %d xend %d yend %d\n", m_xstart, m_y , m_xend, m_height + 15);
 
 	if(!visible)
 		return;
 
-	frameBuffer->paintBackgroundBoxRel(m_xstart - 10, m_y - 10, m_xend, m_height + 15);
+	// hide time
+	frameBuffer->paintBackgroundBoxRel(m_xend - m_width - 10, m_y, m_width + 10 + SHADOW_OFFSET, m_height + SHADOW_OFFSET );
 	
-	frameBuffer->paintBackgroundBoxRel(BoxStartX, BoxStartY, BoxWidth + 5, BoxHeight + 5);
+	// hide infobar
+	frameBuffer->paintBackgroundBoxRel(BoxStartX, BoxStartY, BoxWidth + SHADOW_OFFSET, BoxHeight + SHADOW_OFFSET );
+	
 #ifdef FB_BLIT
 	frameBuffer->blit();
 #endif

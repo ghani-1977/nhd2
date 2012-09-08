@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <gui/scale.h>
 #include <gui/scan.h>
 
 #include <driver/rcinput.h>
@@ -82,8 +81,8 @@ CScanTs::CScanTs(int num)
 	total = done = 0;
 	freqready = 0;
 
-	sigscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	snrscale = new CScale(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	sigscale = new CProgressBar(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	snrscale = new CProgressBar(BAR_WIDTH, BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	
 	feindex = num;
 }

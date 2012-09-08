@@ -162,7 +162,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void standbyMode( bool bOnOff );
 		
 		void AudioMute( int newValue, bool isEvent= false );
-		void setvol(int vol, int avs);
+		void setvol(int vol);
 		
 		void saveEpg();
 		

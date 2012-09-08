@@ -47,7 +47,7 @@ libneutrino_gui_a_SOURCES = \
 	scan_setup.cpp zapit_setup.cpp
 
 libneutrino_gui2_a_SOURCES = \
-	color.cpp motorcontrol.cpp scale.cpp hdd_menu.cpp \
+	color.cpp motorcontrol.cpp hdd_menu.cpp \
 	alphasetup.cpp dvbsub_select.cpp upnpbrowser.cpp
 
 libneutrino_gui2_a_SOURCES += \

@@ -182,20 +182,18 @@ static long secondsExtendedTextCache;
 static long oldEventsAre;
 static int scanning = 1;
 
-std::string epg_filter_dir = "/var/tuxbox/config/zapit/epgfilter.xml";
+std::string epg_filter_dir = CONFIGDIR "/zapit/epgfilter.xml";
 static bool epg_filter_is_whitelist = false;
 static bool epg_filter_except_current_next = false;
 // static bool bouquet_filter_is_whitelist = false;
 static bool messaging_zap_detected = false;
 
-std::string dvbtime_filter_dir = "/var/tuxbox/config/zapit/dvbtimefilter.xml";
+std::string dvbtime_filter_dir = CONFIGDIR "/zapit/dvbtimefilter.xml";
 static bool dvb_time_update = false;
 
 //NTP-Config
-#define CONF_FILE "/var/tuxbox/config/neutrino.conf"
+#define CONF_FILE CONFIGDIR "/neutrino.conf"
 
-//#ifdef USE_BB_NTPD
-//const std::string ntp_system_cmd_prefix = "/sbin/ntpd -q -p ";
 #ifdef __sh__
 const std::string ntp_system_cmd_prefix = "/sbin/rdate ";
 #else

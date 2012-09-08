@@ -111,7 +111,7 @@
 #include "gui/pictureviewer.h"
 #include "gui/motorcontrol.h"
 #include "gui/filebrowser.h"
-#include "gui/scale.h"
+#include "gui/widget/progressbar.h"
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 #include "gui/cam_menu.h"
@@ -200,7 +200,7 @@ extern void dvbsub_setpid(int pid);
 extern int dvbsub_terminate();
 
 // volume bar
-static CScale 		* g_volscale;
+static CProgressBar 		* g_volscale;
 
 
 // timerd thread
@@ -2359,7 +2359,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_EventList = new EventList;
 	
 	// volume bar
-	g_volscale = new CScale(200, 15, 50, 100, 80, true);
+	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
@@ -3406,7 +3406,7 @@ _repeat:
 			}
 		}
 	}
-	else if ((msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus) || (msg == CRCInput::RC_vfdright) || (msg == CRCInput::RC_vfdleft))
+	else if ( (msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus) )
 	{
 		setVolume(msg, (mode != mode_scart));
 		return messages_return::handled;
@@ -4189,7 +4189,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 }
 
 // set vol
-void CNeutrinoApp::setvol(int vol, int avs)
+void CNeutrinoApp::setvol(int vol)
 {
 	if(audioDecoder)
 		audioDecoder->setVolume(vol, vol);
@@ -4266,16 +4266,16 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		frameBuffer->paintIcon(NEUTRINO_ICON_VOLUME,x+dy/2,y+(dy/4), 0, COL_MENUCONTENT_PLUS_0);
 
 		g_volscale->reset();
-		g_volscale->paint(x + dy+ (dy/4), y +(dy/4), g_settings.current_volume);
+		g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
 		
 
 		char p1[4]; // 3 digits + '\0'
-		sprintf(p1, "%3d", g_settings.current_volume);
+		sprintf(p1, "%3d", vol);
 
 		// erase the numbers
 		frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);
 
-		g_Font[SNeutrinoSettings::/*FONT_TYPE_INFOBAR_INFO*/ FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p1, COL_MENUHEAD);
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p1, COL_MENUHEAD);
 
 #ifdef FB_BLIT
 		frameBuffer->blit();
@@ -4289,17 +4289,15 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	do {
 		if (msg <= CRCInput::RC_MaxRC) 
 		{
-			if (msg == CRCInput::RC_plus || msg == CRCInput::RC_vfdright) 
+			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				//FIXME
 				if (g_settings.current_volume < 100 - 2)
 					g_settings.current_volume += 2;
 				else
 					g_settings.current_volume = 100;
 			}
-			else if (msg == CRCInput::RC_minus || msg == CRCInput::RC_vfdleft) 
+			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				//FIXME
 				if (g_settings.current_volume > 2)
 					g_settings.current_volume -= 2;
 				else
@@ -4311,9 +4309,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 				break;
 			}
 
-			setvol(g_settings.current_volume, false);
+			setvol(g_settings.current_volume);
 
-			//timeoutEnd = CRCInput::calcTimeoutEnd(nowait ? 1 : g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] / 2);
 			timeoutEnd = CRCInput::calcTimeoutEnd(nowait ? 1 : 3);
 		}
 		else if (msg == NeutrinoMessages::EVT_VOLCHANGED) 
@@ -4332,6 +4329,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			{
 				vol = g_settings.current_volume;
 
+				//g_volscale->reset();
 				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), g_settings.current_volume);
 
 				char p[4]; // 3 digits + '\0'
@@ -4340,7 +4338,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 				// erase the numbers
 				frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);
 
-				g_Font[SNeutrinoSettings::/*FONT_TYPE_INFOBAR_INFO*/ FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p, COL_MENUHEAD);
+				g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p, COL_MENUHEAD);
 			}
 		}
 

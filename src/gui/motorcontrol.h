@@ -35,7 +35,7 @@
 
 #include <gui/widget/menue.h>
 #include <driver/framebuffer.h>
-#include <gui/scale.h>
+#include <gui/widget/progressbar.h>
 #include <string>
 
 
@@ -65,7 +65,7 @@ class CMotorControl : public CMenuTarget
 		uint8_t motorPosition;
 		int32_t satellitePosition;
 		int satfindpid;
-		CScale * snrscale, * sigscale;
+		CProgressBar * snrscale, * sigscale;
 
 		void paint();
 		void paintMenu(void);

@@ -106,7 +106,6 @@
 #include "gui/pictureviewer.h"
 #include "gui/motorcontrol.h"
 #include "gui/filebrowser.h"
-#include "gui/scale.h"
 
 #include "gui/psisetup.h"
 #include "gui/upnpbrowser.h"

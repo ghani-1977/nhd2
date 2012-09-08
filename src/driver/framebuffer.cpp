@@ -165,23 +165,23 @@ void CFrameBuffer::init(const char * const fbDevice)
 	cache_size = 0;
 	
 	// Windows Colors
-        paletteSetColor(0x1, 0x010101, tr);
-        paletteSetColor(COL_MAROON0, 0x800000, tr);
-        paletteSetColor(COL_GREEN0, 0x008000, tr);
-        paletteSetColor(COL_OLIVE0, 0x808000, tr);
-        paletteSetColor(COL_NAVY0, 0x000080, tr);
-        paletteSetColor(COL_PURPLE0, 0x800080, tr);
-        paletteSetColor(COL_TEAL0, 0x008080, tr);
-        paletteSetColor(COL_SILVER0, 0xA0A0A0, tr);
-        paletteSetColor(COL_GRAY0, 0x505050, tr);
-        paletteSetColor(COL_RED0, 0xFF0000, tr);
-        paletteSetColor(COL_LIME0, 0x00FF00, tr);
-        paletteSetColor(COL_YELLOW0, 0xFFFF00, tr);
-        paletteSetColor(COL_BLUE0, 0x0000FF, tr);
-        paletteSetColor(COL_MAGENTA0, 0xFF00FF, tr);
-        paletteSetColor(COL_CYAN0, 0x00FFFF, tr);
-        paletteSetColor(COL_WHITE0, 0xFFFFFF, tr);
-        paletteSetColor(COL_BLACK0, 0x000000, tr);
+	paletteSetColor(0x1, 0x010101, tr);
+        paletteSetColor(0x2, 0x800000, tr);
+        paletteSetColor(0x3, 0x008000, tr);
+        paletteSetColor(0x4, 0x808000, tr);
+        paletteSetColor(0x5, 0x000080, tr);
+        paletteSetColor(0x6, 0x800080, tr);
+        paletteSetColor(0x7, 0x008080, tr);
+        paletteSetColor(0x8, 0xA0A0A0, tr);
+        paletteSetColor(0x9, 0x505050, tr);
+        paletteSetColor(0xA, 0xFF0000, tr);
+        paletteSetColor(0xB, 0x00FF00, tr);
+        paletteSetColor(0xC, 0xFFFF00, tr);
+        paletteSetColor(0xD, 0x0000FF, tr);
+        paletteSetColor(0xE, 0xFF00FF, tr);
+        paletteSetColor(0xF, 0x00FFFF, tr);
+        paletteSetColor(0x10, 0xFFFFFF, tr);
+        paletteSetColor(0x11, 0x000000, tr);
         paletteSetColor(COL_BACKGROUND, 0x000000, 0xffff);
 
         paletteSet();

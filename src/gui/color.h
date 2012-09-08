@@ -33,41 +33,8 @@
 #ifndef __color__
 #define __color__
 
-//#include "customcolor.h"
 
-#define COL_CYAN0 		0xF
-#define COL_MAGENTA0		0xE
-
-#define COL_GRAY0		0x9
-
-#define COL_LIME0		0xB
-
-
-#define COL_SILVER0		0x8
-#define COL_TEAL0		0x7
-#define COL_PURPLE0		0x6
-#define COL_NAVY0		0x5
-#define COL_OLIVE0		0x4
-
-#define COL_MAROON0		0x2
-
-
-#define COLOR_CUSTOM 		0x0
-
-#define COL_DARK_RED0	 	0x02
-#define COL_DARK_GREEN0	 	0x03
-#define COL_DARK_BLUE0	 	0x05
-#define COL_LIGHT_GRAY0	 	0x08
-#define COL_DARK_GRAY0	 	0x09
-#define COL_RED0	 	0x0A
-#define COL_GREEN0	 	0x0B
-#define COL_YELLOW0	 	0x0C
-#define COL_BLUE0	 	0x0D
-#define COL_PURP0	 	0x0E
-#define COL_LIGHT_BLUE0	 	0x0F
-#define COL_WHITE0	 	0x10
-#define COL_BLACK0	 	0x11
-
+// common 32 bits color
 #define COL_DARK_RED			(CFrameBuffer::getInstance()->realcolor[0x02])
 #define COL_DARK_GREEN			(CFrameBuffer::getInstance()->realcolor[0x03])
 #define COL_DARK_BLUE			(CFrameBuffer::getInstance()->realcolor[0x05])
@@ -82,8 +49,8 @@
 #define COL_WHITE                       (CFrameBuffer::getInstance()->realcolor[0x10])
 #define COL_BLACK                       (CFrameBuffer::getInstance()->realcolor[0x11])
 
-
-#define COL_MAXFREE			254-8*7 - 1
+// neutrino colors
+#define COL_BACKGROUND 			255
 
 #define COL_INFOBAR_SHADOW		254-8*7
 #define COL_INFOBAR			254-8*6
@@ -93,8 +60,6 @@
 #define COL_MENUCONTENTDARK		254-8*3
 #define COL_MENUCONTENTSELECTED		254-8*2
 #define COL_MENUCONTENTINACTIVE		254-8*1
-
-#define COL_BACKGROUND 			255
 
 #define COL_INFOBAR_SHADOW_PLUS_0       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 0)])
 #define COL_INFOBAR_SHADOW_PLUS_1       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 1)])
