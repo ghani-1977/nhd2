@@ -175,13 +175,13 @@ typedef enum {
 	FE_SINGLE,
 	FE_TWIN,
 	FE_LOOP,
-	FE_NOTCONNECTED, // do we really nned this
+	FE_NOTCONNECTED, // do we really need this
 } fe_mode_t;
 
 typedef std::map <uint32_t, TP_map> TP_map_t;
 typedef std::map <uint32_t, TP_map>::iterator TP_iterator;
 
 #define LIVE_DEMUX	0
-#define RECORD_DEMUX	1
+
 
 #endif /* __zapittypes_h__ */
