@@ -86,13 +86,9 @@ int def_audio_mode = 0;
 t_channel_id live_channel_id;
 t_channel_id rec_channel_id;
 
-//int scan_pids = false;
-
 bool firstzap = true;
 bool playing = false;
-
 bool g_list_changed = false; 		/* flag to indicate, allchans was changed */
-int sig_delay = 2; 			/* seconds between signal check */
 
 int change_audio_pid(uint8_t index);
 
@@ -246,8 +242,6 @@ bool initFrontend()
 				fekey = MAKE_FE_KEY(i, j);
 				femap.insert(std::pair <unsigned short, CFrontend*> (fekey, fe));
 				
-				//printf("add fe %d", fe->getFeIndex() );
-				
 				if(live_fe == NULL)
 					live_fe = fe;
 			}
@@ -288,7 +282,7 @@ CFrontend * recordFrontend(CZapitChannel * thischannel)
 {
 	CFrontend * fe = NULL;
 	
-	fe = femap[thischannel->getFeIndex()];			// single/multi
+	fe = femap[thischannel->getFeIndex()];
 	
 	return fe;
 }
@@ -798,8 +792,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 		printf("%s can not allocate live fe;-(\n", __FUNCTION__);
 		return -1;
 	}
-
-	sig_delay = 2;
 	
 	// save pids
 	if (!firstzap && live_channel)
@@ -1595,8 +1587,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandTuneTP TuneTP;
 			CBasicServer::receive_data(connfd, &TuneTP, sizeof(TuneTP));
-
-			sig_delay = 0;
 			
 			// inversion
 			TuneTP.TP.feparams.inversion = INVERSION_AUTO;
