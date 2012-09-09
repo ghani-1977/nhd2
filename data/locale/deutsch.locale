@@ -1145,7 +1145,7 @@ satsetup.minidiseqc Mini-DiSEqC
 satsetup.motor_pos Rotor-Position
 satsetup.motorcontrol Manuelle Motor-Einstellung
 satsetup.nodiseqc Kein DiSEqC
-satsetup.sat_setup Einstellen LNB-Konfiguration
+satsetup.sat_setup LNB-Konfiguration
 satsetup.satellite Satellit
 satsetup.savesettingsnow Einstellungen jetzt speichern
 satsetup.smatvremote SMATV Remote Tuning
