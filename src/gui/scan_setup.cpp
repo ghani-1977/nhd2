@@ -238,7 +238,7 @@ CScanSetup::CScanSetup(int num)
 
 CScanSetup::~CScanSetup()
 {
-	//delete scanSettings;
+	
 }
 
 int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
