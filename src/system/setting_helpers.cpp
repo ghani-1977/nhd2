@@ -354,15 +354,18 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 
 	if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_ANALOG_MODE))	/* video analoue mode */
 	{
-		videoDecoder->SetAnalogMode(g_settings.analog_mode);
+		if(videoDecoder)
+			videoDecoder->SetAnalogMode(g_settings.analog_mode);
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_VIDEORATIO) || ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_VIDEOFORMAT ))	/* format aspect-ratio */
 	{
-		videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);
+		if(videoDecoder)
+			videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_VIDEOMODE))	/* mode */
 	{
-		videoDecoder->SetVideoSystem(g_settings.video_Mode);
+		if(videoDecoder)
+			videoDecoder->SetVideoSystem(g_settings.video_Mode);
 		
 		// clear screen
 		frameBuffer->paintBackground();
@@ -375,7 +378,8 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 			if(ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_VIDEOMODE_OK), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_INFO) != CMessageBox::mbrYes) 
 			{
 				g_settings.video_Mode = prev_video_Mode;
-				videoDecoder->SetVideoSystem(g_settings.video_Mode);	//no-> return to prev mode
+				if(videoDecoder)
+					videoDecoder->SetVideoSystem(g_settings.video_Mode);	//no-> return to prev mode
 			} 
 			else
 			{
@@ -385,11 +389,13 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_HDMI_COLOR_SPACE)) 
 	{
-		videoDecoder->SetSpaceColour(g_settings.hdmi_color_space);
+		if(videoDecoder)
+			videoDecoder->SetSpaceColour(g_settings.hdmi_color_space);
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_WSS)) 
 	{
-		videoDecoder->SetWideScreen(g_settings.wss_mode);
+		if(videoDecoder)
+			videoDecoder->SetWideScreen(g_settings.wss_mode);
 	}
 
 	return true;
@@ -406,12 +412,16 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	} 
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_HDMI_DD)) 
 	{
-		audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
+		if(audioDecoder)
+			audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_AVSYNC)) 
-	{	  
-		videoDecoder->SetSyncMode(g_settings.avsync);			
-		audioDecoder->SetSyncMode(g_settings.avsync);
+	{
+		if(videoDecoder)
+			videoDecoder->SetSyncMode(g_settings.avsync);			
+		
+		if(audioDecoder)
+			audioDecoder->SetSyncMode(g_settings.avsync);
 		
 		//videoDemux->SetSyncMode(g_settings.avsync);
 		//audioDemux->SetSyncMode(g_settings.avsync);
@@ -419,11 +429,13 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	}
 	else if( ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_AC3_DELAY) )
 	{
-		audioDecoder->setHwAC3Delay(g_settings.ac3_delay);
+		if(audioDecoder)
+			audioDecoder->setHwAC3Delay(g_settings.ac3_delay);
 	}
 	else if( ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_PCM_DELAY) )
 	{
-		audioDecoder->setHwPCMDelay(g_settings.pcm_delay);
+		if(audioDecoder)
+			audioDecoder->setHwPCMDelay(g_settings.pcm_delay);
 	}	
 
 	return true;
@@ -559,7 +571,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		tuxtx_set_pid(pid, page, ptr);
 		
 		// start tuxtxt
-		tuxtx_main(g_RCInput->getFileHandle(), pid, page, live_fe->getFeIndex() ); // this 
+		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->getFeIndex() : 0 ); // this 
 	}
 	
         return menu_return::RETURN_EXIT;
@@ -839,18 +851,22 @@ int CDataResetNotifier::exec(CMenuTarget* parent, const std::string& actionKey)
 		CFrameBuffer::getInstance()->blit();
 #endif		
 		/*video mode*/
-		videoDecoder->SetVideoSystem(g_settings.video_Mode);
+		if(videoDecoder)
+		{
+			videoDecoder->SetVideoSystem(g_settings.video_Mode);
 
-		/*aspect-ratio*/
-		videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);	
-		videoDecoder->SetAnalogMode( g_settings.analog_mode); 
+			/*aspect-ratio*/
+			videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);	
+			videoDecoder->SetAnalogMode( g_settings.analog_mode); 
 #ifdef __sh__		
-		videoDecoder->SetSpaceColour(g_settings.hdmi_color_space);
-#endif		
+			videoDecoder->SetSpaceColour(g_settings.hdmi_color_space);
+#endif
+		}
 		/*audio mode */
 		g_Zapit->setAudioMode(g_settings.audio_AnalogMode);
 
-		audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
+		if(audioDecoder)
+			audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
 
 		CNeutrinoApp::getInstance()->loadColors(NEUTRINO_SETTINGS_FILE);
 
