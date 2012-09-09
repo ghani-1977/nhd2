@@ -306,40 +306,35 @@ void setConfigValue(int num, const char * name, uint32_t val)
 }
 
 // save frontend config
-void saveFrontendConfig()
+void saveFrontendConfig(int feindex)
 {
 	printf("zapit: saveFrontendConfig\n");
 	
-	for(int i = 0; i < FrontendCount; i++)
-	{
-		// common
-		setConfigValue(i, "mode", getFE(i)->mode);
+	// common
+	setConfigValue(feindex, "mode", getFE(feindex)->mode);
 		
-		// sat
-		if(getFE(i)->getInfo()->type == FE_QPSK)
-		{
-			setConfigValue(i, "mode", getFE(i)->mode);
-			
-			setConfigValue(i, "lastSatellitePosition", getFE(i)->getCurrentSatellitePosition());
-			setConfigValue(i, "diseqcRepeats", getFE(i)->getDiseqcRepeats());
-			setConfigValue(i, "diseqcType", getFE(i)->getDiseqcType() );
+	// sat
+	if(getFE(feindex)->getInfo()->type == FE_QPSK)
+	{
+		setConfigValue(feindex, "lastSatellitePosition", getFE(feindex)->getCurrentSatellitePosition());
+		setConfigValue(feindex, "diseqcRepeats", getFE(feindex)->getDiseqcRepeats());
+		setConfigValue(feindex, "diseqcType", getFE(feindex)->getDiseqcType() );
 				
-			char tempd[12];
-			char cfg_key[81];
+		char tempd[12];
+		char cfg_key[81];
 			
-			sprintf(tempd, "%3.6f", getFE(i)->gotoXXLatitude);
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", i);
-			fe_configfile.setString(cfg_key, tempd );
+		sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLatitude);
+		sprintf(cfg_key, "fe%d_gotoXXLatitude", feindex);
+		fe_configfile.setString(cfg_key, tempd );
 			
-			sprintf(tempd, "%3.6f", getFE(i)->gotoXXLongitude);
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", i);
-			fe_configfile.setString(cfg_key, tempd );
+		sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLongitude);
+		sprintf(cfg_key, "fe%d_gotoXXLongitude", feindex);
+		fe_configfile.setString(cfg_key, tempd );
 			
-			setConfigValue(i, "gotoXXLaDirection", getFE(i)->gotoXXLaDirection);
-			setConfigValue(i, "gotoXXLoDirection", getFE(i)->gotoXXLoDirection);
-			setConfigValue(i, "useGotoXX", getFE(i)->useGotoXX);
-			setConfigValue(i, "repeatUsals", getFE(i)->repeatUsals);
-		}
+		setConfigValue(feindex, "gotoXXLaDirection", getFE(feindex)->gotoXXLaDirection);
+		setConfigValue(feindex, "gotoXXLoDirection", getFE(feindex)->gotoXXLoDirection);
+		setConfigValue(feindex, "useGotoXX", getFE(feindex)->useGotoXX);
+		setConfigValue(feindex, "repeatUsals", getFE(feindex)->repeatUsals);
 	}
 	
 	if (fe_configfile.getModifiedFlag())
@@ -1825,7 +1820,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			// fe set femode
 			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
-			saveFrontendConfig();
+			//saveFrontendConfig();
 			
 			break;
 		}
@@ -2921,7 +2916,7 @@ void enterStandby(void)
 	saveZapitSettings(true, true);
 	
 	/* save frontend config*/
-	saveFrontendConfig();
+	//saveFrontendConfig();
 	
 	/* stop playback */
 	stopPlayBack();
@@ -3547,7 +3542,7 @@ int zapit_main_thread(void *data)
 #endif
 
 	//HOUSEKEPPING
-	saveFrontendConfig();
+	//saveFrontendConfig();
 	
 	//save audio map
 	if(live_channel)
@@ -3557,12 +3552,11 @@ int zapit_main_thread(void *data)
 	stopPlayBack();
 
 	// save motor position
-	for(int i = 0; i < FrontendCount; i++)
-	{
-	    CFrontend * fe = getFE(i);
-	    if( fe->getInfo()->type == FE_QPSK)
-			SaveMotorPositions();
-	}
+	//for(int i = 0; i < FrontendCount; i++)
+	//{
+	//	if( getFE(i)->getInfo()->type == FE_QPSK)
+	//		SaveMotorPositions();
+	//}
 
 	pthread_cancel(tsdt);
 	
