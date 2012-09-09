@@ -69,7 +69,7 @@ char zapit_long[20];				//defined neutrino.cpp
 // frontend
 extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);
-extern void saveFrontendConfig();
+extern void saveFrontendConfig(int i);
 
 
 // option off0_on1
@@ -210,7 +210,7 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 #define FRONTEND_MODE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
 {
-	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_SINGLE },
+	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_ACTIV },
 	{ (fe_mode_t)FE_NOTCONNECTED, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
 	
 	{ (fe_mode_t)FE_TWIN, LOCALE_SCANSETUP_FEMODE_TWIN },
@@ -273,8 +273,14 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		}
 		
 		// frontend config (femode)
-		g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
-		//g_Zapit->reinitChannels();	// needed for twin if we set other femodes
+		//g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
+		getFE(feindex)->mode = (fe_mode_t)scanSettings->femode;
+		
+		// save frontend.conf
+		saveFrontendConfig(feindex);
+		
+		// relaod services
+		g_Zapit->reinitChannels();
 		
 		hintBox->hide();
 		delete hintBox;
@@ -967,7 +973,6 @@ bool CScanSettings::saveSettings(const char * const fileName, int index)
 	
 	setConfigValue(index, "scan_mode", scan_mode);
 	setConfigValue(index, "scanSectionsd", scanSectionsd ); // sectionsd
-	//setConfigValue(index, "scan_pids", scan_pids );		// descriptor
 	
 	// freq
 	sprintf(cfg_key, "fe%d_TP_freq", index);
