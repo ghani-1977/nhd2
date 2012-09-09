@@ -2299,15 +2299,12 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 
                         case SNeutrinoSettings::ITEM_AUDIO_SELECT:
-				if( g_RemoteControl->current_PIDs.APIDs.size() > 1 )
-				{
-                                        menu_items++;
-                                        menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
-                                        tmpAudioSelectMenuHandler = new CAudioSelectMenuHandler;
-                                        keyhelper.get(&key,&icon);
-                                        menu_item = new CMenuForwarder(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon);
-                                        menu->addItem(menu_item, false);
-                                }
+                                menu_items++;
+                                menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
+                                tmpAudioSelectMenuHandler = new CAudioSelectMenuHandler;
+                                keyhelper.get(&key,&icon);
+                                menu_item = new CMenuForwarder(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon);
+                                menu->addItem(menu_item, false);
                                 break;
 
                         case SNeutrinoSettings::ITEM_SUBCHANNEL:
