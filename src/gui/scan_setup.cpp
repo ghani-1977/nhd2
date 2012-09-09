@@ -279,9 +279,6 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 		// save frontend.conf
 		saveFrontendConfig(feindex);
 		
-		// relaod services
-		g_Zapit->reinitChannels();
-		
 		hintBox->hide();
 		delete hintBox;
 		
