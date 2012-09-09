@@ -227,48 +227,55 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 
 	if ( msg == NeutrinoMessages::EVT_CURRENTEPG ) 
 	{
-		CSectionsdClient::CurrentNextInfo * info_CN = (CSectionsdClient::CurrentNextInfo*) data;
-
-		t_channel_id chid = (info_CN->current_uniqueKey >> 16);
-		if(chid != (current_channel_id&0xFFFFFFFFFFFFULL) && chid != (current_sub_channel_id&0xFFFFFFFFFFFFULL))
+		if ((*(t_channel_id *)data) != current_channel_id)
 			return messages_return::handled;
 		
-		dprintf(DEBUG_INFO, "CRemoteControl::handleMsg got  EVT_CURRENTEPG, uniqueKey %llx chid %llx flags %x\n", info_CN->current_uniqueKey, current_channel_id, info_CN->flags);
-		dprintf(DEBUG_INFO, "CRemoteControl::handleMsg comparing: uniqueKey %llx chid %llx\n", info_CN->current_uniqueKey >> 16, current_channel_id & 0xFFFFFFFFFFFFULL);
+		//CSectionsdClient::CurrentNextInfo * info_CN = (CSectionsdClient::CurrentNextInfo*) data;
+		const CSectionsdClient::CurrentNextInfo info_CN = g_InfoViewer->getCurrentNextInfo();
 
-		/* current event came for current channel */
-		if ( info_CN->current_uniqueKey != current_EPGid )
+		//t_channel_id chid = (info_CN->current_uniqueKey >> 16);
+		//if(chid != (current_channel_id&0xFFFFFFFFFFFFULL) && chid != (current_sub_channel_id&0xFFFFFFFFFFFFULL))
+		//	return messages_return::handled;
+		
+		//dprintf(DEBUG_INFO, "CRemoteControl::handleMsg got  EVT_CURRENTEPG, uniqueKey %llx chid %llx flags %x\n", info_CN->current_uniqueKey, current_channel_id, info_CN->flags);
+		//dprintf(DEBUG_INFO, "CRemoteControl::handleMsg comparing: uniqueKey %llx chid %llx\n", info_CN->current_uniqueKey >> 16, current_channel_id & 0xFFFFFFFFFFFFULL);
+
+		if ((info_CN.current_uniqueKey >> 16) == current_channel_id || (info_CN.current_uniqueKey >> 16) == current_sub_channel_id)
 		{
-			if ( current_EPGid != 0 )
+			/* current event came for current channel */
+			if ( info_CN.current_uniqueKey != current_EPGid )
 			{
-				/* new event, not channel. get pids */
-				g_Zapit->getPIDS( current_PIDs );
-				has_unresolved_ctags = true;
-				// infobar indicate on epg change
-				g_InfoViewer->showEpgInfo();
+				if ( current_EPGid != 0 )
+				{
+					/* new event, not channel. get pids */
+					g_Zapit->getPIDS( current_PIDs );
+					has_unresolved_ctags = true;
+					// infobar indicate on epg change
+					g_InfoViewer->showEpgInfo();
+				}
+
+				current_EPGid = info_CN.current_uniqueKey;
+
+				if ( has_unresolved_ctags )
+					processAPIDnames();
+
+				if ( info_CN.flags & CSectionsdClient::epgflags::current_has_linkagedescriptors ) 
+				{
+					subChannels.clear();
+					getSubChannels();
+				}
+
+				if ( needs_nvods )
+					getNVODs();
 			}
 
-			current_EPGid= info_CN->current_uniqueKey;
-
-			if ( has_unresolved_ctags )
-				processAPIDnames();
-
-			if ( info_CN->flags & CSectionsdClient::epgflags::current_has_linkagedescriptors ) 
-			{
-				subChannels.clear();
-				getSubChannels();
-			}
-
-			if ( needs_nvods )
-				getNVODs();
+			// is_video_started is only false if channel is locked
+			if ((!is_video_started) &&
+					(info_CN.current_fsk == 0 || g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED))
+				g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, 0x100, false);
+			else
+				g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, info_CN.current_fsk, false);
 		}
-
-		// is_video_started is only false if channel is locked
-		if ((!is_video_started) &&
-				(info_CN->current_fsk == 0 || g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED))
-			g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, 0x100, false);
-		else
-			g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, info_CN->current_fsk, false);
 		return messages_return::handled;
 	}
 	else if ( msg == NeutrinoMessages::EVT_NEXTEPG )
@@ -328,8 +335,10 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			g_Zapit->getPIDS(current_PIDs );
 			
 			// sectionsd set pid
+#ifdef ENABLE_PPT			
 			//g_Sectionsd->setPrivatePid( current_PIDs.PIDs.privatepid );
 			sectionsd_setPrivatePid( current_PIDs.PIDs.privatepid );
+#endif			
 			
 			t_channel_id * p = new t_channel_id;
 			*p = current_channel_id;
