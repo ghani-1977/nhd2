@@ -173,7 +173,8 @@ void CTimeOSD::show(time_t time_show)
 		
 		frameBuffer->getIconSize(icon, &icon_w, &icon_h);
 
-		int icon_x = BoxStartX + 60 + 5;
+		//int icon_x = BoxStartX + 60 + 5;
+		int icon_x = BoxStartX + 5 + m_icon_w + 10;
 		int icon_y = BoxStartY + (BoxHeight - icon_h) / 2;
 		
 
@@ -196,11 +197,16 @@ void CTimeOSD::show(time_t time_show)
 		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
 		int durationTextPos = BoxEndX - durationWidth - 15;
 		
+		int speedWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("-8");
+		
+		int InfoStartX = BoxStartX + 5 + m_icon_w + 10 + icon_w + 5 + speedWidth + 20;
+		int InfoWidth = durationTextPos - InfoStartX;
+		
 		//Title 1
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 - 5, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg, COL_INFOBAR, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, /*durationTextPos - (icon_x + icon_w + 15) - 5*/InfoWidth, g_file_epg, COL_INFOBAR, 0, true);
 
 		//Title2
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (icon_x + icon_w + 35, BoxStartY + BoxHeight/2 + 25, durationTextPos - (icon_x + icon_w + 15) - 5, g_file_epg1, COL_INFOBAR, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, /*durationTextPos - (icon_x + icon_w + 15) - 5*/InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 		//Time Elapsed/Time Remaining
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningRest, COL_INFOBAR);
