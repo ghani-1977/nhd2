@@ -144,6 +144,8 @@
 #include "gui/scan_setup.h"
 #include "gui/zapit_setup.h"
 
+#include <zapit/client/zapitclient.h>
+
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
@@ -2297,8 +2299,7 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 
                         case SNeutrinoSettings::ITEM_AUDIO_SELECT:
-				//g_settings.audio_left_right_selectable || g_RemoteControl->current_PIDs.APIDs.size() > 1)
-                                if (1) 
+				if( g_RemoteControl->current_PIDs.APIDs.size() > 1 )
 				{
                                         menu_items++;
                                         menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
