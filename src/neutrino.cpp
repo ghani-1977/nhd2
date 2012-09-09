@@ -2266,9 +2266,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CVFD::getInstance()->ShowText((char *)"NEUTRINOHD2");
 #endif	
 	
-	//dvb sub reader thread
-	//dvbsub_initialise();
-
 	// zapit	
 	//zapit start parameters
 	Z_start_arg ZapStart_arg;
@@ -2295,15 +2292,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	{
 		// set volume
 		audioDecoder->setVolume(g_settings.current_volume, g_settings.current_volume);
-		
-		// ac3
-		audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
-		
-		// ac3 delay
-		audioDecoder->setHwAC3Delay(g_settings.ac3_delay);
-		
-		// pcm delay
-		audioDecoder->setHwPCMDelay(g_settings.pcm_delay);
 	}
 
 	// Video
@@ -2318,6 +2306,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// A/V sync */
 	audioSetupNotifier = new CAudioSetupNotifier;
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AVSYNC, NULL);
+	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_HDMI_DD, NULL);
+	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
+	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
 
 	// timerd thread
 	pthread_create(&timer_thread, NULL, timerd_main_thread, (void *) NULL);
