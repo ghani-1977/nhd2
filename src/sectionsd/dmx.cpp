@@ -53,10 +53,10 @@ static MyDMXOrderUniqueKey myDMXOrderUniqueKey;
 
 extern void showProfiling(std::string text);
 
-DMX::DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool c/*, int dmx_source*/)
+DMX::DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool c, int dmx_source)
 {
 	fd = -1;
-	dmx_num = 0; //live_channel? live_channel->getDemuxIndex() : 0//dmx_source;
+	dmx_num = dmx_source; //live_channel? live_channel->getDemuxIndex() : 0//dmx_source;
 	lastChanged = time_monotonic();
 	filter_index = 0;
 	pID = p;
