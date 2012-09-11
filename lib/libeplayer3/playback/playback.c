@@ -195,8 +195,7 @@ static int PlaybackOpen(Context_t  *context, char * uri)
 
             free(extension);
 
-            //CHECK FOR SUBTITLES
-#if defined (ENABLE_LIBASS)	    
+            //CHECK FOR SUBTITLES	    
             if (context->container && context->container->textSrtContainer)
                 context->container->textSrtContainer->Command(context, CONTAINER_INIT, uri+7);
 
@@ -204,8 +203,7 @@ static int PlaybackOpen(Context_t  *context, char * uri)
                 context->container->textSsaContainer->Command(context, CONTAINER_INIT, uri+7);
 
             if (context->container && context->container->assContainer)
-                context->container->assContainer->Command(context, CONTAINER_INIT, NULL);
-#endif	    
+                context->container->assContainer->Command(context, CONTAINER_INIT, NULL);    
 
         } else if (!strncmp("http://", uri, 7)) 
 	{
@@ -339,19 +337,15 @@ static int PlaybackClose(Context_t  *context)
     }
 
 //FIXME KILLED BY signal 7 or 11
-#if defined (ENABLE_LIBASS)
     if (context->container && context->container->textSrtContainer)
         context->container->textSrtContainer->Command(context, CONTAINER_DEL, NULL);
 
     if (context->container && context->container->textSsaContainer)
-        context->container->textSsaContainer->Command(context, CONTAINER_DEL, NULL);
-#endif    
+        context->container->textSsaContainer->Command(context, CONTAINER_DEL, NULL);    
 
     context->manager->audio->Command(context, MANAGER_DEL, NULL);
-    context->manager->video->Command(context, MANAGER_DEL, NULL);
-#if defined (ENABLE_LIBASS)    
-    context->manager->subtitle->Command(context, MANAGER_DEL, NULL);
-#endif    
+    context->manager->video->Command(context, MANAGER_DEL, NULL);    
+    context->manager->subtitle->Command(context, MANAGER_DEL, NULL);   
 
     context->playback->isPaused     = 0;
     context->playback->isPlaying    = 0;
@@ -950,7 +944,6 @@ static int PlaybackSwitchAudio(Context_t  *context, int* track)
     return ret;
 }
 
-#if defined (ENABLE_LIBASS)
 static int PlaybackSwitchSubtitle(Context_t  *context, int* track)
 {
     int ret = cERR_PLAYBACK_NO_ERROR;
@@ -1006,7 +999,6 @@ static int PlaybackSwitchSubtitle(Context_t  *context, int* track)
 
     return ret;
 }
-#endif
 
 static int PlaybackInfo(Context_t  *context, char** infoString) 
 {
@@ -1085,13 +1077,11 @@ static int Command(void* _context, PlaybackCmd_t command, void * argument)
 	case PLAYBACK_SWITCH_AUDIO: {
 	    ret = PlaybackSwitchAudio(context, (int*)argument);
 	    break;
-	}
-#if defined (ENABLE_LIBASS)    
+	}    
 	case PLAYBACK_SWITCH_SUBTITLE: {
 	    ret = PlaybackSwitchSubtitle(context, (int*)argument);
 	    break;
-	}
-#endif    
+	}   
 	case PLAYBACK_INFO: {
 	    ret = PlaybackInfo(context, (char**)argument);
 	    break;
@@ -1136,10 +1126,8 @@ PlaybackHandler_t PlaybackHandler = {
     0,
     0,
     0,
-    0,
-#if defined (ENABLE_LIBASS)    
-    0,
-#endif    
+    0,    
+    0,   
     &Command,
     "",
     0,

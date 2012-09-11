@@ -67,10 +67,8 @@ typedef struct Manager_s {
 typedef struct ManagerHandler_s {
     char * Name;
     Manager_t * audio;
-    Manager_t * video;
-#if defined (ENABLE_LIBASS)    
-    Manager_t * subtitle;
-#endif    
+    Manager_t * video;    
+    Manager_t * subtitle;   
 } ManagerHandler_t;
 
 void freeTrack(Track_t* track);

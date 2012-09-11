@@ -121,10 +121,8 @@ void framebuffer_init()
 }
 
 
-int main(int argc,char* argv[]) {
-#if defined (ENABLE_LIBASS)  
-    SubtitleOutputDef_t out;
-#endif    
+int main(int argc,char* argv[]) {  
+    SubtitleOutputDef_t out;    
     int showInfos = 0, noinput = 0;
     char file[255] = {""};
     int speed = 0, speedmap = 0;
@@ -163,15 +161,12 @@ int main(int argc,char* argv[]) {
 
     //Registrating output devices
     player->output->Command(player,OUTPUT_ADD, "audio");
-    player->output->Command(player,OUTPUT_ADD, "video");
-#if defined (ENABLE_LIBASS)    
-    player->output->Command(player,OUTPUT_ADD, "subtitle");
-#endif    
+    player->output->Command(player,OUTPUT_ADD, "video");   
+    player->output->Command(player,OUTPUT_ADD, "subtitle");   
 
     framebuffer_init();
 
-    /* for testing ass subtitles */
-#if defined (ENABLE_LIBASS)    
+    /* for testing ass subtitles */    
     out.screen_width = xRes;
     out.screen_height = yRes;
     out.framebufferFD = fd;
@@ -179,8 +174,7 @@ int main(int argc,char* argv[]) {
     out.destStride    = stride;
     out.shareFramebuffer = 1;
     
-    player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-#endif    
+    player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);    
 
     if(player->playback->Command(player, PLAYBACK_OPEN, file) < 0)
         return 10;
@@ -210,7 +204,6 @@ int main(int argc,char* argv[]) {
             }
             free(TrackList);
         }
-#if defined (ENABLE_LIBASS)
         player->manager->subtitle->Command(player, MANAGER_LIST, &TrackList);
         if (TrackList != NULL) {
             printf("SubtitleTrack List\n");
@@ -221,8 +214,7 @@ int main(int argc,char* argv[]) {
                 free(TrackList[i+1]);
             }
             free(TrackList);
-        }
-#endif        
+        }       
     }
     {
         int AudioTrackId = -1;
@@ -245,7 +237,6 @@ int main(int argc,char* argv[]) {
         free(AudioTrackName);
         AudioTrackEncoding = NULL;
         AudioTrackName = NULL;
-#if defined (ENABLE_LIBASS)
         player->manager->subtitle->Command(player, MANAGER_GET, &AudioTrackId);
         player->manager->subtitle->Command(player, MANAGER_GETENCODING, &AudioTrackEncoding);
         player->manager->subtitle->Command(player, MANAGER_GETNAME, &AudioTrackName);
@@ -254,7 +245,6 @@ int main(int argc,char* argv[]) {
         free(AudioTrackName);
         AudioTrackEncoding = NULL;
         AudioTrackName = NULL;
-#endif
         /*      player->manager->audio->Command(player, MANAGER_SET, 2);
                 player->manager->audio->Command(player, MANAGER_GET, &AudioTrackId);
                 player->manager->audio->Command(player, MANAGER_GETNAME, &AudioTrackName);
@@ -363,7 +353,6 @@ int main(int argc,char* argv[]) {
                 }
                 break;
             }
-#if defined (ENABLE_LIBASS)
             case 's': {
                 int Key2 = getchar();
                 switch (Key2) {
@@ -407,7 +396,6 @@ int main(int argc,char* argv[]) {
                 }
                 break;		
             }
-#endif
 
             case 'q':
                 player->playback->Command(player, PLAYBACK_STOP, NULL);

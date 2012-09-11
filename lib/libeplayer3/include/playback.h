@@ -15,10 +15,8 @@ typedef enum {
 	PLAYBACK_SEEK, 
 	PLAYBACK_PTS, 
 	PLAYBACK_LENGTH, 
-	PLAYBACK_SWITCH_AUDIO, 
-#if defined (ENABLE_LIBASS)	
+	PLAYBACK_SWITCH_AUDIO, 	
 	PLAYBACK_SWITCH_SUBTITLE,
-#endif
 	PLAYBACK_INFO, 
 	PLAYBACK_SLOWMOTION, 
 	PLAYBACK_FASTBACKWARD, 
@@ -46,10 +44,8 @@ typedef struct PlaybackHandler_s {
     int AVSync;
 
     unsigned char isVideo;
-    unsigned char isAudio;
-#if defined (ENABLE_LIBASS)    
-    unsigned char isSubtitle;
-#endif    
+    unsigned char isAudio;    
+    unsigned char isSubtitle;    
 
     int (* Command) (/*Context_t*/void  *, PlaybackCmd_t, void *);
     char * uri;

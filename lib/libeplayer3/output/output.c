@@ -102,11 +102,9 @@ static void OutputAdd(Context_t  *context, char * port) {
                 if (!strcmp("audio", port))
                     context->output->audio = AvailableOutput[i];
                 else if (!strcmp("video", port))
-                    context->output->video = AvailableOutput[i];
-#if defined (ENABLE_LIBASS)		
+                    context->output->video = AvailableOutput[i];	
                 else if (!strcmp("subtitle", port))
-                    context->output->subtitle = AvailableOutput[i];
-#endif		
+                    context->output->subtitle = AvailableOutput[i];	
                 break;
             }
 }
@@ -117,12 +115,9 @@ static void OutputDel(Context_t  *context, char * port) {
     if (!strcmp("audio", port))
         context->output->audio = NULL;
     else if (!strcmp("video", port))
-        context->output->video = NULL;
-#if defined (ENABLE_LIBASS)    
+        context->output->video = NULL;   
     else if (!strcmp("subtitle", port))
         context->output->subtitle = NULL;
-#endif    
-
 }
 
 static int Command(void  *_context, OutputCmd_t command, void * argument) {
@@ -139,11 +134,9 @@ static int Command(void  *_context, OutputCmd_t command, void * argument) {
             if (context->playback->isVideo)
                 ret |= context->output->video->Command(context, OUTPUT_OPEN, "video");
             if (context->playback->isAudio)
-                ret |= context->output->audio->Command(context, OUTPUT_OPEN, "audio");
-#if defined (ENABLE_LIBASS)	    
+                ret |= context->output->audio->Command(context, OUTPUT_OPEN, "audio");	    
             if (context->playback->isSubtitle)
-                ret |= context->output->subtitle->Command(context, OUTPUT_OPEN, "subtitle");
-#endif	    
+                ret |= context->output->subtitle->Command(context, OUTPUT_OPEN, "subtitle");    
         } else
             ret = cERR_OUTPUT_INTERNAL_ERROR;
         break;
@@ -156,11 +149,9 @@ static int Command(void  *_context, OutputCmd_t command, void * argument) {
             if (context->playback->isVideo)
                 ret |= context->output->video->Command(context, OUTPUT_CLOSE, "video");
             if (context->playback->isAudio)
-                ret |= context->output->audio->Command(context, OUTPUT_CLOSE, "audio");
-#if defined (ENABLE_LIBASS)	    
+                ret |= context->output->audio->Command(context, OUTPUT_CLOSE, "audio");	    
             if (context->playback->isSubtitle)
-                ret |= context->output->subtitle->Command(context, OUTPUT_CLOSE, "subtitle");
-#endif	    
+                ret |= context->output->subtitle->Command(context, OUTPUT_CLOSE, "subtitle");	    
         } else
             ret = cERR_OUTPUT_INTERNAL_ERROR;
         break;
@@ -195,13 +186,11 @@ static int Command(void  *_context, OutputCmd_t command, void * argument) {
 	    {	// success or not executed, dunn care
                 if (context->playback->isAudio)
                     ret = context->output->audio->Command(context, OUTPUT_PLAY, "audio");
-#if defined (ENABLE_LIBASS)
                 if (!ret) 
 		{	// success or not executed, dunn care
                     if (context->playback->isSubtitle)
                         ret = context->output->subtitle->Command(context, OUTPUT_PLAY, "subtitle");
-                }
-#endif                
+                }                
             }
         } else
             ret = cERR_OUTPUT_INTERNAL_ERROR;
@@ -215,11 +204,9 @@ static int Command(void  *_context, OutputCmd_t command, void * argument) {
             if (context->playback->isVideo)
                 ret |= context->output->video->Command(context, OUTPUT_STOP, "video");
             if (context->playback->isAudio)
-                ret |= context->output->audio->Command(context, OUTPUT_STOP, "audio");
-#if defined (ENABLE_LIBASS)	    
+                ret |= context->output->audio->Command(context, OUTPUT_STOP, "audio");	    
             if (context->playback->isSubtitle)
-                ret |= context->output->subtitle->Command(context, OUTPUT_STOP, "subtitle");
-#endif	    
+                ret |= context->output->subtitle->Command(context, OUTPUT_STOP, "subtitle");    
         } else
             ret = cERR_OUTPUT_INTERNAL_ERROR;
         break;
@@ -416,9 +403,7 @@ static int Command(void  *_context, OutputCmd_t command, void * argument) {
 OutputHandler_t OutputHandler = {
     "Output",
     NULL,
-    NULL,
-#if defined (ENABLE_LIBASS)    
-    NULL,
-#endif    
+    NULL,    
+    NULL,   
     &Command,
 };

@@ -26,12 +26,10 @@ typedef enum {
     OUTPUT_DISCONTINUITY_REVERSE,
     OUTPUT_GET_FRAME_COUNT,
 /* fixme: e2 */
-#if defined (ENABLE_LIBASS)
     OUTPUT_SUBTITLE_REGISTER_FUNCTION = 222,
     OUTPUT_SUBTITLE_REGISTER_BUFFER = 223,
     OUTPUT_GET_SUBTITLE_OUTPUT,
-    OUTPUT_SET_SUBTITLE_OUTPUT,
-#endif    
+    OUTPUT_SET_SUBTITLE_OUTPUT,   
 } OutputCmd_t;
 
 typedef struct
@@ -62,25 +60,19 @@ typedef struct Output_s {
 } Output_t;
 
 extern Output_t LinuxDvbOutput;
-#if defined (ENABLE_LIBASS)
 extern Output_t SubtitleOutput;
-#endif
 
 static Output_t * AvailableOutput[] = {
-    &LinuxDvbOutput,
-#if defined (ENABLE_LIBASS)    
-    &SubtitleOutput,
-#endif    
+    &LinuxDvbOutput,    
+    &SubtitleOutput,    
     NULL
 };
 
 typedef struct OutputHandler_s {
     char * Name;
     Output_t * audio;
-    Output_t * video;
-#if defined (ENABLE_LIBASS)    
-    Output_t * subtitle;
-#endif    
+    Output_t * video;    
+    Output_t * subtitle;    
     int (* Command) (/*Context_t*/void  *, OutputCmd_t, void *);
 } OutputHandler_t;
 

@@ -171,9 +171,9 @@ static char* Codec2Encoding(enum CodecID id, int* version)
     case CODEC_ID_VC1:
         return "V_VC1";
     case CODEC_ID_H264:
-#if LIBAVCODEC_VERSION_MAJOR < 54
+//#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
     case CODEC_ID_FFH264:
-#endif
+//#endif
         return "V_MPEG4/ISO/AVC";
     case CODEC_ID_AVS:
         return "V_AVS";
@@ -202,7 +202,6 @@ static char* Codec2Encoding(enum CodecID id, int* version)
     case CODEC_ID_FLAC: //86030
         return "A_IPCM"; //return "A_FLAC";
 /* subtitle */
-#if defined (ENABLE_LIBASS)
     case CODEC_ID_SSA:
         return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
     case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
@@ -213,6 +212,7 @@ static char* Codec2Encoding(enum CodecID id, int* version)
     case CODEC_ID_HDMV_PGS_SUBTITLE:
     case CODEC_ID_DVB_TELETEXT:
         return "S_TEXT/SRT"; /* fixme */
+#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
     case CODEC_ID_SRT:
         return "S_TEXT/SRT"; /* fixme */
 #endif        
@@ -246,7 +246,6 @@ long long int calcPts(AVStream* stream, AVPacket* packet)
 }
 
 /*Hellmaster1024: get the Duration of the subtitle from the SSA line*/
-#if defined (ENABLE_LIBASS)
 float getDurationFromSSALine(unsigned char* line){
     int i,h,m,s,ms;
     char* Text = strdup((char*) line);
@@ -273,7 +272,6 @@ float getDurationFromSSALine(unsigned char* line){
     free(Text);
     return (float)msec/1000.0;
 }
-#endif
 
 /* search for metatdata in context and stream
  * and map it to our metadata.
@@ -480,10 +478,8 @@ if(!context->playback->BackWard && audioMute)
         {
             long long int pts;
             Track_t * videoTrack = NULL;
-            Track_t * audioTrack = NULL;
-#if defined (ENABLE_LIBASS)	    
-            Track_t * subtitleTrack = NULL;
-#endif	    
+            Track_t * audioTrack = NULL;	    
+            Track_t * subtitleTrack = NULL;    
 
             int index = packet.stream_index;
 
@@ -498,10 +494,8 @@ if(!context->playback->BackWard && audioMute)
 
             if (context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack) < 0)
                 ffmpeg_err("error getting audio track\n");
-#if defined (ENABLE_LIBASS)
             if (context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack) < 0)
-                ffmpeg_err("error getting subtitle track\n");
-#endif	    
+                ffmpeg_err("error getting subtitle track\n");    
 
             ffmpeg_printf(200, "packet.size %d - index %d\n", packet.size, index);
 
@@ -657,7 +651,6 @@ if(!context->playback->BackWard && audioMute)
                 }
             }
 
-#if defined (ENABLE_LIBASS)
             if (subtitleTrack != NULL) {
                 if (subtitleTrack->Id == index) {
                     float duration=3.0;
@@ -765,8 +758,7 @@ if(!context->playback->BackWard && audioMute)
                         }
                     } /* duration */
                 }
-            }
-#endif            
+            }            
 
             if (packet.data)
                av_free_packet(&packet);
@@ -1173,15 +1165,23 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 ffmpeg_err("codec type audio but codec unknown %d\n", stream->codec->codec_id);
             }
             break;
-#if defined (ENABLE_LIBASS)
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
         case AVMEDIA_TYPE_SUBTITLE:
         {
-            AVDictionaryEntry *lang;
+#if LIBAVCODEC_VERSION_MAJOR < 54
+	    AVMetadataTag *lang;
+#else
+	    AVDictionaryEntry *lang;
+#endif
 
             ffmpeg_printf(10, "CODEC_TYPE_SUBTITLE %d\n",stream->codec->codec_type);
 
-             lang = av_dict_get(stream->metadata, "language", NULL, 0);
+             //lang = av_dict_get(stream->metadata, "language", NULL, 0);
+#if LIBAVCODEC_VERSION_MAJOR < 54
+	      lang = av_metadata_get(stream->metadata, "language", NULL, 0);
+#else
+	      lang = av_dict_get(stream->metadata, "language", NULL, 0);
+#endif	     
 
              if (lang)
                 track.Name        = strdup(lang->value);
@@ -1235,8 +1235,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
         case AVMEDIA_TYPE_NB:
         default:
             ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
-         break;
-#endif	 
+         break;	 
 #endif	 
         }
 
@@ -1629,19 +1628,15 @@ static int container_ffmpeg_get_length(Context_t *context, double * length) {
     }
 
     context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
-    context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
-#if defined (ENABLE_LIBASS)    
-    context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack);
-#endif    
+    context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);    
+    context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack);    
 
     if (videoTrack != NULL)
         current = videoTrack;
     else if (audioTrack != NULL)
-        current = audioTrack;
-#if defined (ENABLE_LIBASS)    
+        current = audioTrack;    
     else if (subtitleTrack != NULL)
-        current = subtitleTrack;
-#endif    
+        current = subtitleTrack;    
 
     *length = 0.0;
 

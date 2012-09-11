@@ -100,9 +100,7 @@ extern Writer_t WriterVideoMSCOMP;
 extern Writer_t WriterVideoH263;
 extern Writer_t WriterVideoFLV;
 extern Writer_t WriterVideoVC1;
-#if defined (ENABLE_LIBASS)
 extern Writer_t WriterFramebuffer;
-#endif
 
 static Writer_t * AvailableWriter[] = {
     &WriterAudioIPCM,
@@ -124,10 +122,8 @@ static Writer_t * AvailableWriter[] = {
     &WriterVideoWMV,
     &WriterVideoH263,
     &WriterVideoFLV,
-    &WriterVideoVC1,
-#if defined (ENABLE_LIBASS)    
-    &WriterFramebuffer,
-#endif    
+    &WriterVideoVC1,   
+    &WriterFramebuffer,   
     NULL
 };
 
@@ -135,8 +131,6 @@ Writer_t* getWriter(char* encoding);
 
 Writer_t* getDefaultVideoWriter();
 Writer_t* getDefaultAudioWriter();
-#if defined (ENABLE_LIBASS)
 Writer_t* getDefaultFramebufferWriter();
-#endif
 
 #endif
