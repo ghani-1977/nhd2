@@ -238,9 +238,9 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, "", moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "fileplayback", LOCALE_HELPTEXT_FILEPLAYBACK ));
 	
 	// movieplayer netstream
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)	
+//#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)	
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, "", moviePlayerGui, "netstream", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "netstream", LOCALE_HELPTEXT_NETSTREAM ));
-#endif	
+//#endif	
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 
 	//PictureViewer
