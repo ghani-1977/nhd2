@@ -390,7 +390,7 @@ void CBouquetManager::sortBouquets(void)
 
 void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 {
-	xmlNodePtr search=root->xmlChildrenNode;
+	xmlNodePtr search = root->xmlChildrenNode;
 	xmlNodePtr channel_node;
 
 	if (search) 
@@ -406,13 +406,12 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		while ((search = xmlGetNextOccurence(search, "Bouquet")) != NULL) 
 		{
 			char * name = xmlGetAttribute(search, (char *) "name");
-			//CZapitBouquet* newBouquet = addBouquet(xmlGetAttribute(search, (char *) "name"), bUser);
 			CZapitBouquet* newBouquet = addBouquet(name, bUser);
 			char* hidden = xmlGetAttribute(search, (char *) "hidden");
 			char* locked = xmlGetAttribute(search, (char *) "locked");
 			newBouquet->bHidden = hidden ? (strcmp(hidden, "1") == 0) : false;
 			newBouquet->bLocked = locked ? (strcmp(locked, "1") == 0) : false;
-			newBouquet->bFav = (strcmp(name, "favorites") == 0);
+			newBouquet->bFav = (strcmp(name, "Favorites") == 0);
 			channel_node = search->xmlChildrenNode;
 
 			while ((channel_node = xmlGetNextOccurence(channel_node, "S")) != NULL) 
@@ -427,7 +426,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 				if(freq > 20000) 
 					freq = freq/1000;
 
-				CZapitChannel* chan;
+				CZapitChannel * chan;
 
 				chan = findChannelByChannelID(CREATE_CHANNEL_ID64);
 
@@ -435,10 +434,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 				{
 					//printf("found\n");
 					DBG("%04x %04x %04x %s\n", transport_stream_id, original_network_id, service_id, xmlGetAttribute(channel_node, (char *) "n"));
-#if 0
-					if(bUser && (name.length() > 1))
-						chan->setName(name);
-#endif
+
 					if(!bUser)
 						chan->pname = (char *) newBouquet->Name.c_str();
 
@@ -563,7 +559,7 @@ void CBouquetManager::renumServices()
 
 CZapitBouquet * CBouquetManager::addBouquet(const std::string & name, bool ub, bool myfav)
 {
-	CZapitBouquet * newBouquet = new CZapitBouquet(myfav ? "favorites" : name);
+	CZapitBouquet * newBouquet = new CZapitBouquet(myfav ? "Favorites" : name);
 	newBouquet->bUser = ub;
 	newBouquet->bFav = myfav;
 
