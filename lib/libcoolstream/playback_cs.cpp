@@ -38,9 +38,6 @@
 #include <system/debug.h>
 
 
-/* globals */
-cPlayback * playback = NULL;
-
 
 static const char * FILENAME = "[playback_cs.cpp]";
 
