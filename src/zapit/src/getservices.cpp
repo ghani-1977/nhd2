@@ -106,8 +106,6 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 			// ???
 			if(feparams.frequency < 20000) 
 				feparams.frequency = feparams.frequency*1000;
-			//else
-			//	feparams.frequency = (int) 1000 * (int) round ((double) feparams.frequency / (double) 1000);
 		}
 
 		/* ??? */
@@ -250,6 +248,8 @@ void FindTransponder(xmlNodePtr search)
 	newtpid = 0xC000;
 	int feindex = 0;
 	
+	sat_iterator_t spos_it;
+	
 	while (search) 
 	{
 		/* type */
@@ -271,16 +271,14 @@ void FindTransponder(xmlNodePtr search)
 			continue;
 		}
 		
-
 		// sat position from services.xml
 		satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
 		
 		// frontend index from sat pos
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		//if ( sit->second.type = Source )
 		feindex = sit->second.feindex;
 			
-		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d fe(%d)\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition, sit->second.feindex);
+		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d fe(%d)\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition, feindex);
 		
 		// parse TP
 		ParseTransponders(search->xmlChildrenNode, satellitePosition, Source, feindex);
@@ -468,15 +466,15 @@ void init_sat(t_satellite_position position)
 	satellitePositions[position].use_usals = 0;
 }
 
-// load sats list
-int loadProviders()
+// load transponders
+int loadTransponders()
 {
 	bool satcleared = 0;
 	scnt = 0;
 	
 	t_satellite_position position = 0; //first postion
 
-	printf("getServices:loadProviders:\n");
+	printf("getServices:loadTransponders:\n");
 	
 	select_transponders.clear();
 	fake_tid = fake_nid = 0;
@@ -785,14 +783,13 @@ void SaveServices(bool tocopy)
 							case DVB_C:
 							{
 								fprintf(fd, "\t<cable name=\"%s\" position=\"%hd\">\n", spos_it->second.name.c_str(), spos_it->first);
-								//fprintf(fd, "\t<cable name=\"%s\">\n", spos_it->second.name.c_str(), spos_it->first);
 							}
 							break;
 
 							case DVB_T:
 							{
 								fprintf(fd, "\t<terrestrial name=\"%s\" position=\"%hd\">\n", spos_it->second.name.c_str(), spos_it->first);
-								//fprintf(fd, "\t<terrestrial name=\"%s\">\n", spos_it->second.name.c_str(), spos_it->first);
+			
 							}
 							break;
 
