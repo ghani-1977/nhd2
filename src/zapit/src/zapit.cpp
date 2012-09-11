@@ -210,7 +210,7 @@ int FrontendCount = 0;
 #define MAKE_FE_KEY(adapter, number) ((adapter << 8) | (number & 0xFF))
 typedef std::map<unsigned short, CFrontend*> fe_map_t;
 typedef fe_map_t::iterator fe_map_iterator_t;
-fe_map_t	femap;
+fe_map_t femap;
 
 // frontend config
 CConfigFile fe_configfile(',', false);
@@ -310,40 +310,43 @@ void saveFrontendConfig(int feindex)
 {
 	printf("zapit: saveFrontendConfig\n");
 	
-	// common
-	setConfigValue(feindex, "mode", getFE(feindex)->mode);
-		
-	// sat
-	if(getFE(feindex)->getInfo()->type == FE_QPSK)
+	//for(int feindex = 0; feindex < FrontendCount; feindex++)
 	{
-		setConfigValue(feindex, "lastSatellitePosition", getFE(feindex)->getCurrentSatellitePosition());
-		setConfigValue(feindex, "diseqcRepeats", getFE(feindex)->getDiseqcRepeats());
-		setConfigValue(feindex, "diseqcType", getFE(feindex)->getDiseqcType() );
+		// common
+		setConfigValue(feindex, "mode", getFE(feindex)->mode);
+			
+		// sat
+		if(getFE(feindex)->getInfo()->type == FE_QPSK)
+		{
+			setConfigValue(feindex, "lastSatellitePosition", getFE(feindex)->getCurrentSatellitePosition());
+			setConfigValue(feindex, "diseqcRepeats", getFE(feindex)->getDiseqcRepeats());
+			setConfigValue(feindex, "diseqcType", getFE(feindex)->getDiseqcType() );
+					
+			char tempd[12];
+			char cfg_key[81];
 				
-		char tempd[12];
-		char cfg_key[81];
-			
-		sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLatitude);
-		sprintf(cfg_key, "fe%d_gotoXXLatitude", feindex);
-		fe_configfile.setString(cfg_key, tempd );
-			
-		sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLongitude);
-		sprintf(cfg_key, "fe%d_gotoXXLongitude", feindex);
-		fe_configfile.setString(cfg_key, tempd );
-			
-		setConfigValue(feindex, "gotoXXLaDirection", getFE(feindex)->gotoXXLaDirection);
-		setConfigValue(feindex, "gotoXXLoDirection", getFE(feindex)->gotoXXLoDirection);
-		setConfigValue(feindex, "useGotoXX", getFE(feindex)->useGotoXX);
-		setConfigValue(feindex, "repeatUsals", getFE(feindex)->repeatUsals);
+			sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLatitude);
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", feindex);
+			fe_configfile.setString(cfg_key, tempd );
+				
+			sprintf(tempd, "%3.6f", getFE(feindex)->gotoXXLongitude);
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", feindex);
+			fe_configfile.setString(cfg_key, tempd );
+				
+			setConfigValue(feindex, "gotoXXLaDirection", getFE(feindex)->gotoXXLaDirection);
+			setConfigValue(feindex, "gotoXXLoDirection", getFE(feindex)->gotoXXLoDirection);
+			setConfigValue(feindex, "useGotoXX", getFE(feindex)->useGotoXX);
+			setConfigValue(feindex, "repeatUsals", getFE(feindex)->repeatUsals);
+		}
 	}
 	
-	if (fe_configfile.getModifiedFlag())
-		fe_configfile.saveConfig(FRONTEND_CONFIGFILE);
+	fe_configfile.saveConfig(FRONTEND_CONFIGFILE);
 }
 
 void loadFrontendConfig()
 {
 	printf("zapit: loadFrontendConfig\n");
+	
 	
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		WARN("%s not found", FRONTEND_CONFIGFILE);
@@ -1082,7 +1085,7 @@ int prepare_channels()
 	allchans.clear();  				// <- this invalidates all bouquets, too!
         
         // load sats/tps
-        loadProviders();
+        loadTransponders();
 
 	// load services
 	if (LoadServices(false) < 0)
@@ -2032,6 +2035,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
 			stopPlayBack();
 			
+#ifdef __sh__			
 			if(audioDecoder)
 			{
 				audioDecoder->Flush();
@@ -2043,6 +2047,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				videoDecoder->Flush();
 				videoDecoder->Close();
 			}
+#endif			
 			
 			playbackStopForced = true;
 			break;
@@ -2050,11 +2055,13 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
 			
+#ifdef __sh__			
 			if(videoDecoder)
 				videoDecoder->Open();
 	
 			if(audioDecoder)
 				audioDecoder->Open();
+#endif			
 	
 			startPlayBack(live_channel);
 			
@@ -2959,7 +2966,7 @@ void leaveStandby(void)
 	if(!standby) 
 		return;
 	
-	/* laod frontend config*/
+	// load frontend config
 	loadFrontendConfig();
 
 	if (!live_cam) 
@@ -3382,9 +3389,6 @@ int zapit_main_thread(void *data)
 	
 	//scan for dvb adapter/frontendand feed them in map
 	initFrontend();
-	
-	// load fe config
-	loadFrontendConfig();
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;
