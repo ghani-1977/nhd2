@@ -108,9 +108,6 @@ class CFrontend
 		diseqc_t diseqcType;
 	  
 	private:
-		/* config file where to store frontend config */
-		//CConfigFile		configfile;
-		
 		int fd;
 		int fe_adapter;
 		int fenumber;
