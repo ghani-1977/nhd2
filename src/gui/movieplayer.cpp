@@ -93,7 +93,7 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-/*static*/ extern cPlayback * playback;
+static cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;				/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -327,12 +327,6 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	g_Zapit->setStandby(false);
 	g_Sectionsd->setPauseScanning(false);
 #endif
-	if(playback)
-	{
-		delete playback;
-	
-		playback = NULL;
-	}
 }
 
 void CMoviePlayerGui::cutNeutrino()
@@ -381,15 +375,6 @@ void CMoviePlayerGui::restoreNeutrino()
 	
 	if (!stopped)
 		return;
-	
-	//TEST
-	if(playback)
-	{
-		delete playback;
-	
-		playback = NULL;
-	}
-	//
 
 	// unlock playback
 	g_Zapit->unlockPlayBack();
@@ -1177,8 +1162,7 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				playstate = CMoviePlayerGui::STOPPED;
 				
-				if(playback)
-					playback->Close();
+				playback->Close();
 			}
 
 			cutNeutrino();
@@ -1195,8 +1179,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3)) 
 			{
 				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
-				if(playback)
-					playback->Close();
+				playback->Close();
 				restoreNeutrino();
 			} 
 			else 
@@ -1217,35 +1200,11 @@ void CMoviePlayerGui::PlayFile(void)
 
 					printf("[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
-				//else
-				//{
-					// TEST
-				//	playback->Play();
-					
-				//	playstate = CMoviePlayerGui::PLAY;
-
-				//	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, true);
-				//}
 
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition(startposition, true);
 				
-				// set speed
-				//if(timeshift)
-				//	playback->SetSpeed(0);
-				//else
-				//playback->SetSpeed(1);
-				
-				
-				// TEST
-				//playback->Play();
-					
-				//playstate = CMoviePlayerGui::PLAY;
-
-				//CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, true);
-				//
-
 				// show movieviewer directly after starting play
 				if( playback->GetPosition(position, duration) ) 
 				{
@@ -2015,8 +1974,7 @@ void CMoviePlayerGui::PlayFile(void)
 	if(FileTime.IsVisible())
 		FileTime.hide();
 	
-	if(playback)
-		playback->Close();
+	playback->Close();
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
