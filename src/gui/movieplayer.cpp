@@ -93,7 +93,7 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-static cPlayback * playback;
+/*static*/ extern cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;				/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -327,8 +327,12 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	g_Zapit->setStandby(false);
 	g_Sectionsd->setPauseScanning(false);
 #endif
-
-	delete playback;
+	if(playback)
+	{
+		delete playback;
+	
+		playback = NULL;
+	}
 }
 
 void CMoviePlayerGui::cutNeutrino()
@@ -377,6 +381,15 @@ void CMoviePlayerGui::restoreNeutrino()
 	
 	if (!stopped)
 		return;
+	
+	//TEST
+	if(playback)
+	{
+		delete playback;
+	
+		playback = NULL;
+	}
+	//
 
 	// unlock playback
 	g_Zapit->unlockPlayBack();
@@ -1163,7 +1176,9 @@ void CMoviePlayerGui::PlayFile(void)
 			if (playstate >= CMoviePlayerGui::PLAY) 
 			{
 				playstate = CMoviePlayerGui::STOPPED;
-				playback->Close();
+				
+				if(playback)
+					playback->Close();
 			}
 
 			cutNeutrino();
@@ -1180,7 +1195,8 @@ void CMoviePlayerGui::PlayFile(void)
 			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3)) 
 			{
 				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
-				playback->Close();
+				if(playback)
+					playback->Close();
 				restoreNeutrino();
 			} 
 			else 
@@ -1304,7 +1320,7 @@ void CMoviePlayerGui::PlayFile(void)
 				current_time.time = time(NULL);
 				p_movie_info->bookmarks.lastPlayStop = position / 1000;
 				
-				//TEST
+				//FIXME:???
 				if(p_movie_info == NULL)
 				{
 					p_movie_info->epgChannel = sel_filename;
@@ -1999,7 +2015,8 @@ void CMoviePlayerGui::PlayFile(void)
 	if(FileTime.IsVisible())
 		FileTime.hide();
 	
-	playback->Close();
+	if(playback)
+		playback->Close();
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
