@@ -44,16 +44,6 @@ AC_ARG_ENABLE(restore-prev-mode,
 #AC_SUBST(VORBISIDEC_CFLAGS)
 #AC_SUBST(VORBISIDEC_LIBS)
 
-# libass
-AC_ARG_ENABLE(libass,
-	AS_HELP_STRING(--enable-libass,include libass to avoid subtitle support),
-	,[enable_libass=no])
-AM_CONDITIONAL(ENABLE_LIBASS,test "$enable_libass" = "yes")
-
-if test "$enable_libass" = "yes"; then
-AC_DEFINE(ENABLE_LIBASS,1,[include libass to avoid subtitle support])
-fi
-
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
 	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),
