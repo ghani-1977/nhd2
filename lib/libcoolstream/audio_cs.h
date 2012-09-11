@@ -68,13 +68,6 @@ enum {
 	AC3_DOWNMIX
 };
 
-// ac3source
-#if 0
-enum {
-	AC3_SPDIF,
-	AC3_PCM
-};
-#endif
 
 class cAudio
 {
