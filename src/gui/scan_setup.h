@@ -61,8 +61,6 @@ class CScanSettings
 		
 		int		bouquetMode;
 		int		scanType;
-		int		diseqcMode;
-		uint32_t	diseqcRepeat;
 		char            satNameNoDiseqc[50];
 		
 		int		scanSectionsd;
@@ -81,10 +79,6 @@ class CScanSettings
 		int		TP_trans;
 		int		TP_guard;
 		int		TP_hierarchy;
-		
-		int femode;
-		
-		//int scan_pids;
 	
 		CScanSettings(int num = 0);
 	
