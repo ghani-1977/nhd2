@@ -264,25 +264,6 @@ struct CmpChannelByFreq: public binary_function <const CZapitChannel * const, co
 	};
 };
 
-//TEST
-struct CmpChannelByFeIndex: public binary_function <const CZapitChannel * const, const CZapitChannel * const, bool>
-{
-        static bool comparetolower(const char a, const char b)
-        {
-		return tolower(a) < tolower(b);
-        };
-
-        bool operator() (const CZapitChannel * const c1, const CZapitChannel * const c2)
-        {
-		if(c1->getFeIndex() == c2->getFeIndex() )
-			return std::lexicographical_compare(c1->getName().begin(), c1->getName().end(), c2->getName().begin(), c2->getName().end(), comparetolower);
-		else
-			return c1->getFeIndex() < c2->getFeIndex();
-;
-	};
-};
-//
-
 void CChannelList::SortAlpha(void)
 {
 	sort(chanlist.begin(), chanlist.end(), CmpChannelByChName());
