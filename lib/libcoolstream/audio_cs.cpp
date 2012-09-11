@@ -643,14 +643,8 @@ void cAudio::SetHdmiDD(int ac3)
 		"downmix",
 	};
 	
-	dprintf(DEBUG_INFO, "%s:%s %s\n", FILENAME, __FUNCTION__, aHDMIDD[ac3]);	
+	dprintf(DEBUG_NORMAL, "%s:%s %s\n", FILENAME, __FUNCTION__, aHDMIDD[ac3]);	
 
-	int fd_ac3 = open("/proc/stb/audio/ac3", O_RDWR);
-	
-	write(fd_ac3, aHDMIDD[ac3], strlen(aHDMIDD[ac3]));
-
-	close(fd_ac3);
-	
 #ifdef __sh__
 	const char *aHDMIDDSOURCE[] = {
 		"spdif",
@@ -663,6 +657,13 @@ void cAudio::SetHdmiDD(int ac3)
 		
 	close(fd);
 #endif
+
+
+	int fd_ac3 = open("/proc/stb/audio/ac3", O_RDWR);
+	
+	write(fd_ac3, aHDMIDD[ac3], strlen(aHDMIDD[ac3]));
+
+	close(fd_ac3);
 }
 
 /* set source */
