@@ -38,23 +38,40 @@
 #include <system/debug.h>
 
 
+/* globals */
+cPlayback * playback = NULL;
+
+
 static const char * FILENAME = "[playback_cs.cpp]";
 
-#if 0
+
+#if defined (ENABLE_GSTREAMER)
+GstElement * m_gst_playbin = NULL;
+GstBus * bus = NULL;;
+GMainLoop * loop = NULL;
+GstElement * audioSink = NULL;
+GstElement * videoSink = NULL;
+gchar * uri = NULL;
+guint watchId = false;
+#endif
+
+#if defined ENABLE_GSTREAMER
 gint match_sinktype(GstElement *element, gpointer type)
 {
 	return strcmp(g_type_name(G_OBJECT_TYPE(element)), (const char*)type);
 }
 
-gboolean cPlayback::Gst_bus_call(GstBus *bus, GstMessage *msg, void *user_data)
+gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, gpointer user_data)
 {
 	//gstplaydata_t * playdata = (gstplaydata_t *) user_data;
+	cPlayback * self=(cPlayback*) user_data; 
 
 	switch (GST_MESSAGE_TYPE(msg)) 
 	{
 		case GST_MESSAGE_EOS: {
 			g_message("End-of-stream");
-			//g_main_loop_quit(playdata->loop);
+			//g_main_loop_quit(loop);
+			self->Close();
 			break;
 		}
 		
@@ -65,7 +82,8 @@ gboolean cPlayback::Gst_bus_call(GstBus *bus, GstMessage *msg, void *user_data)
 			g_error("%s", err->message);
 			g_error_free(err);
 
-			//g_main_loop_quit(playdata->loop);
+			//g_main_loop_quit(loop);
+			self->Close();
 			break;
 		}
 		
@@ -146,11 +164,11 @@ cPlayback::cPlayback(int num)
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
 #if defined (ENABLE_GSTREAMER)
-	m_gst_playbin = NULL;
-	bus = NULL;
-	uri = NULL;
-	audioSink = NULL;
-	videoSink = NULL;
+	//m_gst_playbin = NULL;
+	//bus = NULL;
+	//uri = NULL;
+	//audioSink = NULL;
+	//videoSink = NULL;
 	
 	//loop = NULL;
 #else
@@ -167,39 +185,6 @@ cPlayback::cPlayback(int num)
 cPlayback::~cPlayback()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-	
-#if defined ENABLE_GSTREAMER
-	if (m_gst_playbin)
-	{
-		// disconnect sync handler callback
-		gst_bus_set_sync_handler(bus, NULL, NULL);
-		
-		// unref bus
-		gst_object_unref(bus);
-		bus = NULL;
-	
-		// unref loop
-		//gst_object_unref(GST_OBJECT(loop));
-		//loop = NULL;
-
-		if (audioSink)
-		{
-			gst_object_unref(GST_OBJECT(audioSink));
-			audioSink = NULL;
-		}
-		if (videoSink)
-		{
-			gst_object_unref(GST_OBJECT(videoSink));
-			videoSink = NULL;
-		}
-	
-		// unref m_gst_playbin
-		gst_object_unref (GST_OBJECT (m_gst_playbin));
-		printf("destruct!\n");
-		
-		m_gst_playbin = NULL;
-	}
-#endif
 }
 
 //Used by Fileplay
@@ -247,12 +232,45 @@ bool cPlayback::Open()
 	return true;
 }
 
-//Used by Fileplay
+// used by movieplay
 void cPlayback::Close(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-	Stop();		
+	Stop();
+	
+#if 0
+	if (m_gst_playbin)
+	{
+		// disconnect sync handler callback
+		gst_bus_set_sync_handler(bus, NULL, NULL);
+		
+		// unref bus
+		gst_object_unref(bus);
+		bus = NULL;
+	
+		// unref loop
+		//gst_object_unref(GST_OBJECT(loop));
+		//loop = NULL;
+
+		if (audioSink)
+		{
+			gst_object_unref(GST_OBJECT(audioSink));
+			audioSink = NULL;
+		}
+		if (videoSink)
+		{
+			gst_object_unref(GST_OBJECT(videoSink));
+			videoSink = NULL;
+		}
+	
+		// unref m_gst_playbin
+		gst_object_unref (GST_OBJECT (m_gst_playbin));
+		printf("destruct!\n");
+		
+		m_gst_playbin = NULL;
+	}
+#endif	
 }
 
 // start
@@ -301,19 +319,18 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 	
 	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
 	
+	g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
+	g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
+	g_free(uri);
+
 	if(m_gst_playbin)
 	{
-		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
-		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);
-
 		//gstbus handler
-		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		//gst_bus_set_sync_handler(bus , cPlayback_Gst_bus_call, this);
-		//gst_bus_add_watch(bus, Gst_bus_call, this);
-		
-		// state playing
-		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
-		
+		bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
+		//gst_bus_set_sync_handler(bus , Gst_bus_call, NULL);
+		guint watchId = gst_bus_add_watch(bus, Gst_bus_call, this);
+		gst_object_unref(bus); 
+			
 		// main loop
 		//g_main_loop_run(loop);
 		
@@ -323,22 +340,28 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 		//streaming
 		//buffering
 		
+		// state playing
+		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
+		
 		playing = true;
 		playstate = STATE_PLAY;
 	}
 	else
 	{
+		if (m_gst_playbin)
+			gst_object_unref(GST_OBJECT(m_gst_playbin));
+		
 		printf("failed to create GStreamer pipeline!, sorry we can not play\n");
 		playing = false;
 		
 		return false;
 	}
 	
-	g_free(uri);
+	//g_free(uri);
 	
 	// set buffer size
-	int m_buffer_size = 5*1024*1024;
-	g_object_set(G_OBJECT (m_gst_playbin), "buffer-size", m_buffer_size, NULL);
+	//int m_buffer_size = 5*1024*1024;
+	//g_object_set(G_OBJECT (m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 #else
 	//open file
 	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0) 
@@ -394,23 +417,6 @@ bool cPlayback::Play(void)
 	return playing;
 }
 
-bool cPlayback::SyncAV(void)
-{
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
-
-	if(playing == false ) 
-		return false;
-	
-#if !defined (ENABLE_GSTREAMER)
-	if(player && player->output && player->playback) 
-	{
-        	player->output->Command(player, OUTPUT_AVSYNC, NULL);
-	}
-#endif	
-
-	return true;
-}
-
 bool cPlayback::Stop(void)
 { 
 	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
@@ -422,6 +428,47 @@ bool cPlayback::Stop(void)
 	if(m_gst_playbin)
 	{
 		gst_element_set_state(m_gst_playbin, GST_STATE_NULL);
+	}
+	
+	// close gst
+	if (m_gst_playbin)
+	{
+		// disconnect sync handler callback
+		//gst_bus_set_sync_handler(bus, NULL, NULL);
+		//gst_bus_set_sync_handler(gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin)), NULL, NULL);
+		
+		g_source_remove(watchId); 
+		
+		// unref bus
+		//gst_object_unref(bus);
+		bus = NULL;
+		printf("GST bus handler closed\n");
+	
+		// unref loop
+		//gst_object_unref(GST_OBJECT(loop));
+		//loop = NULL;
+
+		if (audioSink)
+		{
+			gst_object_unref(GST_OBJECT(audioSink));
+			audioSink = NULL;
+			
+			printf("GST audio Sink closed\n");
+		}
+		
+		if (videoSink)
+		{
+			gst_object_unref(GST_OBJECT(videoSink));
+			videoSink = NULL;
+			
+			printf("GST video Sink closed\n");
+		}
+	
+		// unref m_gst_playbin
+		gst_object_unref (GST_OBJECT (m_gst_playbin));
+		printf("GST playbin closed\n");
+		
+		m_gst_playbin = NULL;
 	}
 #else
 	if(player && player->playback && player->output) 
@@ -565,7 +612,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 {
 	if(playing == false) 
 		return false;	
-
+#if 0
 #if defined (ENABLE_GSTREAMER)
 
 	//EOF
@@ -636,7 +683,8 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	{
 		duration = (int)(length*1000);
 	}
-#endif	
+#endif
+#endif
 	
 	return true;
 }
@@ -646,6 +694,7 @@ bool cPlayback::SetPosition(int position, bool absolute)
 	if(playing == false) 
 		return false;
 
+#if 0	
 #if defined (ENABLE_GSTREAMER)
 	gint64 time_nanoseconds;
 	gint64 pos;
@@ -663,6 +712,7 @@ bool cPlayback::SetPosition(int position, bool absolute)
 
 	if(player && player->playback)
 		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
+#endif
 #endif
 
 	return true;
@@ -810,4 +860,23 @@ void cPlayback::getMeta()
        }
 #endif       
 }
+
+bool cPlayback::SyncAV(void)
+{
+	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
+
+	if(playing == false ) 
+		return false;
+	
+#if !defined (ENABLE_GSTREAMER)
+	if(player && player->output && player->playback) 
+	{
+        	player->output->Command(player, OUTPUT_AVSYNC, NULL);
+	}
+#endif	
+
+	return true;
+}
+
+
 

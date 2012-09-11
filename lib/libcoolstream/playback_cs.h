@@ -55,14 +55,13 @@ class cPlayback
 {
 	private:
 #if defined (ENABLE_GSTREAMER)
-		GstElement * m_gst_playbin;
-		GstBus * bus;
+		//GstElement * m_gst_playbin;
+		//GstBus * bus;
 		//GMainLoop * loop;
-		GstElement * audioSink;
-		GstElement * videoSink;
-		gchar * uri;
-		
-		//gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, void *user_data);
+		//GstElement * audioSink;
+		//GstElement * videoSink;
+		//gchar * uri;
+
 #else
 		Context_t * player;
 #endif
