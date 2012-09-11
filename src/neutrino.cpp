@@ -1761,7 +1761,15 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 
 void CNeutrinoApp::SetChannelMode(int newmode)
 {
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::SetChannelMode %d\n", newmode);
+	const char *aLISTMODE[] = {
+		"LIST_MODE_FAV",
+		"LIST_MODE_PROV",
+		"LIST_MODE_SAT",
+		"LIST_MODE_ALL"
+	};
+	
+	
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::SetChannelMode %s\n", aLISTMODE[newmode]);
 
 	if(mode == mode_radio)
 		channelList = RADIOchannelList;
