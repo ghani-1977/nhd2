@@ -89,7 +89,7 @@ CScanTs::CScanTs(int num)
 
 int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 {
-	diseqc_t            diseqcType = NO_DISEQC;
+	//diseqc_t            diseqcType = NO_DISEQC;
 	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -221,18 +221,18 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	
 	// send fe mode
-	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
+	//g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		// send diseqc type to zapit
-		diseqcType = (diseqc_t) scanSettings->diseqcMode;
+		//diseqcType = (diseqc_t) scanSettings->diseqcMode;
 		
-		g_Zapit->setDiseqcType(diseqcType, feindex);
-		printf("scan.cpp send to zapit diseqctype: %d\n", diseqcType);
+		//g_Zapit->setDiseqcType(diseqcType, feindex);
+		//printf("scan.cpp send to zapit diseqctype: %d\n", diseqcType);
 			
 		// send diseqc repeat to zapit
-		g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
+		//g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
 	}
 	
 	// send bouquets mode
