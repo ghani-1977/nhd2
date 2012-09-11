@@ -37,7 +37,10 @@
 // common 32 bits color
 #define COL_DARK_RED			(CFrameBuffer::getInstance()->realcolor[0x02])
 #define COL_DARK_GREEN			(CFrameBuffer::getInstance()->realcolor[0x03])
+#define COL_OLIVE			(CFrameBuffer::getInstance()->realcolor[0x04])
 #define COL_DARK_BLUE			(CFrameBuffer::getInstance()->realcolor[0x05])
+#define COL_PURPLE			(CFrameBuffer::getInstance()->realcolor[0x06])
+#define COL_TEAL			(CFrameBuffer::getInstance()->realcolor[0x07])
 #define COL_LIGHT_GRAY			(CFrameBuffer::getInstance()->realcolor[0x08])
 #define COL_DARK_GRAY			(CFrameBuffer::getInstance()->realcolor[0x09])
 #define COL_RED				(CFrameBuffer::getInstance()->realcolor[0x0A])
@@ -49,9 +52,9 @@
 #define COL_WHITE                       (CFrameBuffer::getInstance()->realcolor[0x10])
 #define COL_BLACK                       (CFrameBuffer::getInstance()->realcolor[0x11])
 
-// neutrino colors
 #define COL_BACKGROUND 			255
 
+// neutrino colors
 #define COL_INFOBAR_SHADOW		254-8*7
 #define COL_INFOBAR			254-8*6
 
