@@ -63,10 +63,7 @@ neutrino_LDADD = \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if !ENABLE_GSTREAMER
-neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a 
-if ENABLE_LIBASS
-neutrino_LDADD += -lass
-endif
+neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a -lass
 else
 neutrino_LDADD += -lgstreamer-0.10
 endif
