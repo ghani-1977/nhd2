@@ -260,7 +260,8 @@ fe_code_rate_t CFrontend::getCodeRate(const uint8_t fec_inner, int system)
 			case f7_8:
 				return FEC_7_8;
 			default:
-				printf("CFrontend::getCodeRate: no valid fec for DVB-S set.. assume auto\n");
+				if (zapit_debug)
+					printf("CFrontend::getCodeRate: no valid fec for DVB-S set...\n");
 			case fAuto:
 				return FEC_AUTO;
 		}
@@ -288,7 +289,9 @@ fe_code_rate_t CFrontend::getCodeRate(const uint8_t fec_inner, int system)
 			case f9_10:
 				return FEC_S2_QPSK_9_10; //9+9
 			default:
-				printf("CFrontend::getCodeRate: no valid fec for DVB-S2 set.. assume auto\n");
+				if (zapit_debug)
+					printf("CFrontend::getCodeRate: no valid fec for DVB-S2 set...\n");
+			case fAuto:
 				return FEC_AUTO;
 		}
 	}
