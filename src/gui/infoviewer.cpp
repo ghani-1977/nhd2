@@ -392,7 +392,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 			//int chanH = g_SignalFont->getHeight();
 				
 			if ( g_settings.infobar_sat_display )
-				g_SignalFont->RenderString ( BoxStartX + 5, BoxStartY + (chanH*3)/2, satNameWidth, sit->second.name, /*COL_INFOBAR*/ COL_MENUCONTENTINACTIVE);
+				g_SignalFont->RenderString ( BoxStartX + 5, BoxStartY + (chanH*3)/2, satNameWidth, sit->second.name, COL_MENUCONTENTINACTIVE);
 		}
 
 		ChanNumYPos += 5;
