@@ -327,6 +327,8 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	g_Zapit->setStandby(false);
 	g_Sectionsd->setPauseScanning(false);
 #endif
+
+      delete playback;
 }
 
 void CMoviePlayerGui::cutNeutrino()
