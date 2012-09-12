@@ -40,7 +40,7 @@ CProgressBar::CProgressBar(int w, int h, int r, int g, int b, bool inv)
 	percent = 255;
 }
 
-void CProgressBar::paint (int x, int y, int pcr)
+void CProgressBar::paint (int x, int y, const unsigned int pcr)
 {
 	int i, j, siglen;
 	int posx, posy;
