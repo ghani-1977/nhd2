@@ -171,9 +171,9 @@ static char* Codec2Encoding(enum CodecID id, int* version)
     case CODEC_ID_VC1:
         return "V_VC1";
     case CODEC_ID_H264:
-//#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
+#if LIBAVCODEC_VERSION_MAJOR < 54
     case CODEC_ID_FFH264:
-//#endif
+#endif
         return "V_MPEG4/ISO/AVC";
     case CODEC_ID_AVS:
         return "V_AVS";
