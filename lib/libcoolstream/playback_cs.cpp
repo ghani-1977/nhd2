@@ -205,14 +205,11 @@ bool cPlayback::Open()
 	if(player && player->output) 
 	{
 		player->output->Command(player,OUTPUT_ADD, (void*)"audio");
-		player->output->Command(player,OUTPUT_ADD, (void*)"video");
-#if defined (ENABLE_LIBASS)		
-		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");
-#endif		
+		player->output->Command(player,OUTPUT_ADD, (void*)"video");		
+		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");		
 	}
 
 	// subtitle
-#if defined (ENABLE_LIBASS)
 	SubtitleOutputDef_t out;
 
 	out.screen_width = CFrameBuffer::getInstance()->getScreenWidth();
@@ -223,7 +220,6 @@ bool cPlayback::Open()
 	out.shareFramebuffer = 1;
     
 	player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-#endif // libass
 #endif
 
 	return true;
@@ -389,8 +385,15 @@ bool cPlayback::Play(void)
 	if(playing == true) 
 		return true;
 	
-#if !defined (ENABLE_GSTREAMER)
-	/* play it baby  */
+#if defined (ENABLE_GSTREAMER)
+	if(m_gst_playbin)
+	{
+		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
+		
+		playing = true;
+		playstate = STATE_PLAY;
+	}
+#else
 	if(player && player->output && player->playback) 
 	{
         	player->output->Command(player, OUTPUT_OPEN, NULL);
@@ -400,14 +403,6 @@ bool cPlayback::Play(void)
 			playing = true;
 			playstate = STATE_PLAY;
 		}
-	}
-#else
-	if(m_gst_playbin)
-	{
-		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
-		
-		playing = true;
-		playstate = STATE_PLAY;
 	}
 #endif	
 
@@ -477,10 +472,8 @@ bool cPlayback::Stop(void)
 	if(player && player->output) 
 	{
 		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-		player->output->Command(player,OUTPUT_DEL, (void*)"video");
-#if defined (ENABLE_LIBASS)		
-		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-#endif		
+		player->output->Command(player,OUTPUT_DEL, (void*)"video");		
+		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");	
 	}
 
 	if(player && player->playback)
@@ -609,7 +602,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 {
 	if(playing == false) 
 		return false;	
-#if 0
+
 #if defined (ENABLE_GSTREAMER)
 
 	//EOF
@@ -681,7 +674,6 @@ bool cPlayback::GetPosition(int &position, int &duration)
 		duration = (int)(length*1000);
 	}
 #endif
-#endif
 	
 	return true;
 }
@@ -690,8 +682,7 @@ bool cPlayback::SetPosition(int position, bool absolute)
 {
 	if(playing == false) 
 		return false;
-
-#if 0	
+	
 #if defined (ENABLE_GSTREAMER)
 	gint64 time_nanoseconds;
 	gint64 pos;
@@ -710,7 +701,6 @@ bool cPlayback::SetPosition(int position, bool absolute)
 	if(player && player->playback)
 		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
 #endif
-#endif
 
 	return true;
 }
@@ -719,53 +709,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-#if !defined (ENABLE_GSTREAMER)
-	// audio pids
-	if(player && player->manager && player->manager->audio) 
-	{
-		char ** TrackList = NULL;
-		player->manager->audio->Command(player, MANAGER_LIST, &TrackList);
-
-		if (TrackList != NULL) 
-		{
-			printf("AudioTrack List\n");
-			int i = 0,j=0;
-
-			for (i = 0, j=0; TrackList[i] != NULL; i+=2,j++) 
-			{
-				printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-				apids[j]=j;
-
-				// atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC
-
-				if( (!strncmp("A_MPEG/L3",   TrackList[i+1], 9)) || (!strncmp("A_MP3",   TrackList[i+1], 5)) )
-					ac3flags[j] = 4;
-				else if(!strncmp("A_AC3",       TrackList[i+1], 5))
-					ac3flags[j] = 1;
-				else if(!strncmp("A_DTS",       TrackList[i+1], 5))
-					ac3flags[j] = 6;
-				else if(!strncmp("A_AAC",       TrackList[i+1], 5))
-					ac3flags[j] = 5;
-				else if(!strncmp("A_PCM",       TrackList[i+1], 5))
-					ac3flags[j] = 0; 	//todo
-				else if(!strncmp("A_VORBIS",    TrackList[i+1], 8))
-					ac3flags[j] = 0;	//todo
-				else if(!strncmp("A_FLAC",      TrackList[i+1], 6))
-					ac3flags[j] = 0;	//todo
-				else
-					ac3flags[j] = 0;	//todo
-
-				language[j]=TrackList[i];
-				
-				free(TrackList[i]);
-				free(TrackList[i+1]);
-			}
-			free(TrackList);
-			*numpida=j;
-		}
-	}
-#else
-	#if 1
+#if defined (ENABLE_GSTREAMER)
 	if(m_gst_playbin)
 	{
 		GstStructure * structure = NULL;
@@ -819,7 +763,51 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 
 		//return atUnknown;
 	}
-	#endif
+#else
+		// audio pids
+	if(player && player->manager && player->manager->audio) 
+	{
+		char ** TrackList = NULL;
+		player->manager->audio->Command(player, MANAGER_LIST, &TrackList);
+
+		if (TrackList != NULL) 
+		{
+			printf("AudioTrack List\n");
+			int i = 0,j=0;
+
+			for (i = 0, j=0; TrackList[i] != NULL; i+=2,j++) 
+			{
+				printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
+				apids[j]=j;
+
+				// atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC
+
+				if( (!strncmp("A_MPEG/L3",   TrackList[i+1], 9)) || (!strncmp("A_MP3",   TrackList[i+1], 5)) )
+					ac3flags[j] = 4;
+				else if(!strncmp("A_AC3",       TrackList[i+1], 5))
+					ac3flags[j] = 1;
+				else if(!strncmp("A_DTS",       TrackList[i+1], 5))
+					ac3flags[j] = 6;
+				else if(!strncmp("A_AAC",       TrackList[i+1], 5))
+					ac3flags[j] = 5;
+				else if(!strncmp("A_PCM",       TrackList[i+1], 5))
+					ac3flags[j] = 0; 	//todo
+				else if(!strncmp("A_VORBIS",    TrackList[i+1], 8))
+					ac3flags[j] = 0;	//todo
+				else if(!strncmp("A_FLAC",      TrackList[i+1], 6))
+					ac3flags[j] = 0;	//todo
+				else
+					ac3flags[j] = 0;	//todo
+
+				language[j]=TrackList[i];
+				
+				free(TrackList[i]);
+				free(TrackList[i+1]);
+			}
+			free(TrackList);
+			*numpida=j;
+		}
+	}
 #endif	
 }
 
