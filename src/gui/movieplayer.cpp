@@ -82,9 +82,6 @@
 #include <zapit/channel.h>
 
 
-//extern cVideo * videoDecoder;
-//extern cAudio * audioDecoder;
-
 #define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
 
@@ -95,10 +92,9 @@ extern int dvbsub_pause();
 
 static cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
-extern CZapitChannel * live_channel;				/* zapit.cpp */
+extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
 
-void strReplace(std::string & orig, const char *fstr, const std::string rstr);
 #define MOVIE_HINT_BOX_TIMER 5	// time to show bookmark hints in seconds
 
 #define MINUTEOFFSET 117*262072
@@ -106,8 +102,8 @@ void strReplace(std::string & orig, const char *fstr, const std::string rstr);
 
 extern char rec_filename[512];		// defined in stream2file.cpp
 
-/*static*/ CMoviePlayerGui::state playstate;
-/*static*/ bool isMovieBrowser = false;
+CMoviePlayerGui::state playstate;
+bool isMovieBrowser = false;
 
 static int file_prozent;
 
@@ -116,9 +112,6 @@ int slow = 0;
 
 int position = 0;
 int duration = 0;
-
-//std::string sub_title;
-//std::string sub_title1;
 
 int startposition;
 int timeshift;
@@ -145,7 +138,7 @@ std::string    g_language[10];
 
 unsigned int g_currentapid = 0, g_currentac3 = 0, apidchanged = 0;
 
-/*static*/ unsigned int ac3state = CInfoViewer::NO_AC3;
+unsigned int ac3state = CInfoViewer::NO_AC3;
 
 
 std::string g_file_epg;
@@ -1503,7 +1496,7 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 			}
 		} 
-		else if ( (msg == (neutrino_msg_t) g_settings.mpkey_audio) || ( msg == CRCInput::RC_audio)) 
+		else if ( (msg == (neutrino_msg_t) g_settings.mpkey_audio) || ( msg == CRCInput::RC_audio) ) 
 		{
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
