@@ -1296,17 +1296,15 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if (playstate >= CMoviePlayerGui::PLAY) 
 			{
-				update_lcd = true;
-				
 				playstate = CMoviePlayerGui::PLAY;
-			
+				update_lcd = true;
 				CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, true);
 				CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
 				
 				speed = 1;
 				playback->SetSpeed(speed);
 			} 
-			else if (!timeshift) 
+			else if (!timeshift) //???
 			{
 				open_filebrowser = true;
 			}
