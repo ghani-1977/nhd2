@@ -31,7 +31,6 @@
 #include <linux/fb.h>
 
 #include <linux/input.h>
-#include <linux/videodev.h>
 
 #include <sys/ioctl.h>
 #include <sys/mman.h>
