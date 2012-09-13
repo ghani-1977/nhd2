@@ -112,7 +112,7 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 
 		if( isChannelInBouquet(itemNr))
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x+8, ypos+4);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MARK, x+8, ypos+4);
 		}
 		else
 		{
