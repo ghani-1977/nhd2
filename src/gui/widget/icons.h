@@ -156,6 +156,8 @@
 #define NEUTRINO_ICON_BUTTON_F3			"f3"
 #define NEUTRINO_ICON_BUTTON_F4			"f4"
 
+#define NEUTRINO_ICON_BUTTON_MARK		"mark"
+
 // menuitem icons
 
 // misc
