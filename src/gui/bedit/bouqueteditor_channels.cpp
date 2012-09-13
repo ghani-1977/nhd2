@@ -82,8 +82,8 @@ void CBEChannelWidget::paintItem(int pos)
 		color   = COL_MENUCONTENTSELECTED;
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
 		
-		frameBuffer->paintBoxRel(x,ypos, width- 15, fheight, COL_MENUCONTENT_PLUS_0);
-		frameBuffer->paintBoxRel(x,ypos, width- 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, COL_MENUCONTENT_PLUS_0);
+		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
 	} 
 	else 
 	{
@@ -99,6 +99,22 @@ void CBEChannelWidget::paintItem(int pos)
 	if(current < Channels->size())
 	{
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10, ypos+ fheight, width- numwidth- 20- 15, (*Channels)[current]->getName(), color, 0, true);
+	}
+	
+	//FIXME???
+	// hd/scrambled icons
+	if (g_settings.channellist_ca)
+	{
+		if(current < Channels->size())
+		{
+			// hd icon
+			if((*Channels)[current]->isHD() ) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 -30, ypos + (fheight - 16)/2 );
+				
+			// scrambled icon
+			if((*Channels)[current]->scrambled) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - 15 - 28, ypos + (fheight - 16)/2 );
+		}
 	}
 }
 

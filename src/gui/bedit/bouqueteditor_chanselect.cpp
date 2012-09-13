@@ -118,6 +118,19 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 		{
 			frameBuffer->paintBoxRel(x+8, ypos+4, NEUTRINO_ICON_BUTTON_GREEN_WIDTH, fheight-4, bgcolor);
 		}
+		
+		//FIXME???
+		// hd/scrambled icons
+		if (g_settings.channellist_ca)
+		{
+			// hd icon
+			if( Channels[itemNr]->isHD() ) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 -30, ypos + (fheight - 16)/2 );
+					
+			// scrambled icon
+			if( Channels[itemNr]->scrambled) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - 15 - 28, ypos + (fheight - 16)/2 );
+		}
 	}
 }
 
