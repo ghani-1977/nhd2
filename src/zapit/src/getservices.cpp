@@ -515,7 +515,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_S;
 					
 					// feindex
-					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+					if( getFE(i)->mode == FE_SINGLE )
 						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "cable"))) 
@@ -537,7 +537,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_C;
 					
 					// feindex
-					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+					if( getFE(i)->mode == FE_SINGLE )
 						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "terrestrial"))) 
@@ -556,7 +556,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_T;
 					
 					// feindex
-					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+					if( getFE(i)->mode == FE_SINGLE )
 						satellitePositions[position].feindex = i;
 				}
 				
