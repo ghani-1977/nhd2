@@ -28,7 +28,43 @@
 #include <stdint.h>
 
 
-#include "client/zapittypes.h"
+//#include "client/zapittypes.h"
+typedef uint16_t t_service_id;
+#define SCANF_SERVICE_ID_TYPE "%hx"
+
+typedef uint16_t t_original_network_id;
+#define SCANF_ORIGINAL_NETWORK_ID_TYPE "%hx"
+
+typedef uint16_t t_transport_stream_id;
+#define SCANF_TRANSPORT_STREAM_ID_TYPE "%hx"
+
+typedef int16_t t_satellite_position;
+#define SCANF_SATELLITE_POSITION_TYPE "%hd"
+
+typedef uint16_t t_network_id;
+//Introduced by Nirvana 11/05. Didn't check if there are similar types
+
+typedef uint16_t t_bouquet_id;
+//Introduced by Nirvana 11/05. Didn't check if there are similar types
+
+typedef uint32_t t_transponder_id;
+
+#define CREATE_TRANSPONDER_ID_FROM_ORIGINALNETWORK_TRANSPORTSTREAM_ID(original_network_id,transport_stream_id) ((((t_original_network_id) original_network_id) << 16) | (t_transport_stream_id) transport_stream_id)
+
+/* unique channel identification */
+typedef uint64_t t_channel_id;
+
+#define CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(service_id,original_network_id,transport_stream_id) ((((t_channel_id)transport_stream_id) << 32) | (((t_channel_id)original_network_id) << 16) | (t_channel_id)service_id)
+#define CREATE_CHANNEL_ID CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(service_id, original_network_id, transport_stream_id)
+#define GET_ORIGINAL_NETWORK_ID_FROM_CHANNEL_ID(channel_id) ((t_original_network_id)((channel_id) >> 16))
+#define GET_SERVICE_ID_FROM_CHANNEL_ID(channel_id) ((t_service_id)(channel_id))
+#define PRINTF_CHANNEL_ID_TYPE "%16llx"
+#define PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS "%llx"
+#define SCANF_CHANNEL_ID_TYPE "%llx"
+#define CREATE_CHANNEL_ID64 (((uint64_t)(satellitePosition+freq*4) << 48) | ((uint64_t) transport_stream_id << 32) | ((uint64_t)original_network_id << 16) | (uint64_t)service_id)
+
+#define SAME_TRANSPONDER(id1, id2) ((id1 >> 16) == (id2 >> 16))
+
 
 typedef uint64_t transponder_id_t;
 typedef uint16_t freq_id_t;
@@ -37,7 +73,6 @@ typedef uint16_t freq_id_t;
 #define PRINTF_TRANSPONDER_ID_TYPE "%12llx"
 #define TRANSPONDER_ID_NOT_TUNED 0
 
-//#define CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id) ( ((uint64_t)freq << 48) |  ((uint64_t) ( satellitePosition > 0 ? satellitePosition : (uint64_t)(0xF000+ abs(satellitePosition))) << 32) | ((uint64_t)transport_stream_id << 16) | (uint64_t)original_network_id)
 #define CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id) ( ((uint64_t)freq << 48) |  ((uint64_t) ( satellitePosition >= 0 ? satellitePosition : (uint64_t)(0xF000+ abs(satellitePosition))) << 32) | ((uint64_t)transport_stream_id << 16) | (uint64_t)original_network_id)
 
 #define GET_ORIGINAL_NETWORK_ID_FROM_TRANSPONDER_ID(transponder_id) ((t_original_network_id)(transponder_id      ))
@@ -47,3 +82,5 @@ typedef uint16_t freq_id_t;
 #define GET_FREQ_FROM_TPID(transponder_id) ((freq_id_t)(transponder_id >> 48))
 
 #endif /* __zapit__types_h__ */
+
+
