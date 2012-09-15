@@ -263,7 +263,7 @@ CFrontend * getFE(int index)
 	if((unsigned int) index < femap.size())
 		return femap[index];
 	
-	printf("Frontend #%d not found", index);
+	printf("getFE: Frontend #%d not found", index);
 	
 	return NULL;
 }
