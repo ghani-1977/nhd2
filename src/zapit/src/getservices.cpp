@@ -189,6 +189,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 
 		map<t_channel_id, audio_map_set_t>::iterator audio_map_it;
 		audio_map_it = audio_map.find(chid);
+		
 		if((audio_map_it != audio_map.end()) && (audio_map_it->second.apid != 0)) 
 		{
 			apid = audio_map_it->second.apid;
