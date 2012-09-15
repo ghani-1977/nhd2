@@ -38,12 +38,6 @@ AC_ARG_ENABLE(restore-prev-mode,
          [  --enable-restore-prev-mode          enable return from graphics mode],
          [AC_DEFINE(RETURN_FROM_GRAPHICS_MODE,1,[enable return from graphics mode])])
 
-
-#AC_SUBST(FREETYPE_CFLAGS)
-#AC_SUBST(FREETYPE_LIBS)
-#AC_SUBST(VORBISIDEC_CFLAGS)
-#AC_SUBST(VORBISIDEC_LIBS)
-
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
 	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),
