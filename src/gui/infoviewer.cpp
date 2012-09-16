@@ -1537,8 +1537,7 @@ CSectionsdClient::CurrentNextInfo CInfoViewer::getEPG(const t_channel_id for_cha
 }
 
 void CInfoViewer::showSNR()
-{
-#if 1  
+{ 
   	char percent[10];
   	uint16_t ssig, ssnr;
   	int sw, snr, sig, posx, posy;
@@ -1596,7 +1595,7 @@ void CInfoViewer::showSNR()
 
 			if (sigscale->getPercent() != sig) 
 			{
-				posx = /*BoxStartX + 10 + satNameWidth + 10*/FreqStartX + freqWidth + 10;
+				posx = FreqStartX + freqWidth + 10;
 				//posy = BoxStartY + (chanH*3)/2;
 
 				sigscale->paint(posx, BoxStartY + 15, sig);
@@ -1611,7 +1610,7 @@ void CInfoViewer::showSNR()
 			//SNR
 			if (snrscale->getPercent() != snr) 
 			{
-				int snr_posx = posx +sw + 10;
+				int snr_posx = posx + sw + 10;
 				//posy = BoxStartY + (chanH*3)/2;
 
 				snrscale->paint(snr_posx, BoxStartY + 15, snr);
@@ -1624,8 +1623,7 @@ void CInfoViewer::showSNR()
 			}
 		
 		}
-  	}
-#endif  	
+  	} 	
 }
 
 void CInfoViewer::show_Data(bool calledFromEvent)
