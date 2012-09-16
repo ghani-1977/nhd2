@@ -93,9 +93,6 @@ CFrontend::CFrontend(int num, int adap)
 	
 	mode = (fe_mode_t)FE_SINGLE;
 
-	/* open frontend */
-	//Open();
-
 	memset(&curfe, 0, sizeof(curfe));
 	
 	/* initialize curfe values */
@@ -118,7 +115,6 @@ bool CFrontend::Open(void)
 	char filename[256];
 
 	sprintf(filename, "/dev/dvb/adapter%d/frontend%d", fe_adapter, fenumber);
-	//printf("CFrontend::Open: fe(%d, %d) %s\n", fe_adapter, fenumber, filename);
 
 	if (fd < 0) 
 	{
@@ -342,7 +338,7 @@ uint8_t CFrontend::getPolarization(void) const
 
 uint32_t CFrontend::getRate()
 {
-	uint32_t rate=0;
+	uint32_t rate = 0;
 
 	if (info.type == FE_QPSK) 
 	{
@@ -381,7 +377,7 @@ struct dvb_frontend_parameters CFrontend::getFrontend(void) const
 
 uint32_t CFrontend::getBitErrorRate(void) const
 {
-	uint32_t ber = 0;
+	uint32_t ber;
 
 	if(ioctl(fd, FE_READ_BER, &ber) < 0)
 	      perror("FE_READ_BER");
@@ -391,7 +387,7 @@ uint32_t CFrontend::getBitErrorRate(void) const
 
 uint16_t CFrontend::getSignalStrength(void) const
 {
-	uint16_t strength = 0;
+	uint16_t strength;
 
 	if(ioctl(fd, FE_READ_SIGNAL_STRENGTH, &strength) < 0)
 	      perror("FE_READ_SIGNAL_STRENGHT");
@@ -401,7 +397,7 @@ uint16_t CFrontend::getSignalStrength(void) const
 
 uint16_t CFrontend::getSignalNoiseRatio(void) const
 {
-	uint16_t snr = 0;
+	uint16_t snr;
 
 	if(ioctl(fd, FE_READ_SNR, &snr) < 0)
 		perror("FE_READ_SNR");
@@ -411,7 +407,7 @@ uint16_t CFrontend::getSignalNoiseRatio(void) const
 
 uint32_t CFrontend::getUncorrectedBlocks(void) const
 {
-	uint32_t blocks = 0;
+	uint32_t blocks;
 
 	if( ioctl(fd, FE_READ_UNCORRECTED_BLOCKS, &blocks) < 0)
 		perror("FE_READ_UNCORRECTED_BLOCKS");
