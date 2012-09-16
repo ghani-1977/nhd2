@@ -346,7 +346,7 @@ void * streamts_live_thread(void *data)
 	int demux_index = 0; //live_channel? live_channel->getDemuxIndex() : 0
 	cDemux * dmx = new cDemux( demux_index );
 	
-	dmx->Open(DMX_TP_CHANNEL, 2 * 3008 * 62, live_channel? live_channel->getFeIndex():0);	
+	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, live_channel? live_channel->getFeIndex():0);	
 	
 	dmx->pesFilter(pids[0]);
 	for(int i = 1; i < demuxfd_count; i++)
