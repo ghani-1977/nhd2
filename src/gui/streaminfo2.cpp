@@ -826,7 +826,7 @@ int CStreamInfo2::ts_setup(int feindex)
 	ts_dmx = new cDemux( demux_index );
 	
 	// open demux
-	ts_dmx->Open(DMX_TP_CHANNEL, 2 *3008 * 62, feindex);
+	ts_dmx->Open(DMX_TP_CHANNEL, 3 *3008 * 62, feindex);
 	
 	if(vpid > 0) 
 	{
