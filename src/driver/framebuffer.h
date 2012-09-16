@@ -44,7 +44,7 @@
 #endif
 
 // 32 bit
-#define fb_pixel_t uint32_t
+#define fb_pixel_t uint32_t		// unsigned int 32 bit data
 
 typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 
