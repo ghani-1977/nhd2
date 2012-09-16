@@ -658,7 +658,6 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 	
 	pmtDemux->sectionFilter(channel->getPmtPid(), filter, mask, 5, 0, mode);
 #else
-	// orig
 	filter[3] = (((channel->getCaPmt()->version_number + 1) & 0x01) << 1) | 0x01;
 	mask[3] = (0x01 << 1) | 0x01;
 	
