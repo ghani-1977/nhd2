@@ -264,7 +264,7 @@ CRemoteControl 		* g_RemoteControl;
 SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 CMoviePlayerGui		* moviePlayerGui;
 CPictureViewer 		* g_PicViewer;
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 CCAMMenuHandler 	* g_CamHandler;
 #endif
 
@@ -307,7 +307,7 @@ static void initGlobals(void)
 	g_EventList     = NULL;
 	g_Locale        = new CLocaleManager;
 	g_PluginList    = NULL;
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler 	= NULL;
 #endif	
 	g_Radiotext     = NULL;
@@ -1130,8 +1130,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
 
-	g_settings.channellist_epgtext_align_right	= configfile.getBool("channellist_epgtext_align_right"          , false);
-	g_settings.channellist_extended		= configfile.getBool("channellist_extended"          , true);
+	g_settings.channellist_epgtext_align_right	= configfile.getBool("channellist_epgtext_align_right", false);
+	g_settings.channellist_extended		= configfile.getBool("channellist_extended", true);
+	g_settings.make_hd_list = configfile.getInt32("make_hd_list", 0);
 	
 	//crypticon on channellist
 	g_settings.channellist_ca = configfile.getInt32("channellist_ca", 1);
@@ -1467,18 +1468,19 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	// END PICVIEWER
 
 	// MISC OPTS
-	configfile.setBool("shutdown_real"        , g_settings.shutdown_real        );
+	configfile.setBool("shutdown_real", g_settings.shutdown_real        );
 	configfile.setBool("shutdown_real_rcdelay", g_settings.shutdown_real_rcdelay);
 	configfile.setString("shutdown_count"           , g_settings.shutdown_count);
 
-	configfile.setBool("infobar_sat_display"  , g_settings.infobar_sat_display  );
-	configfile.setInt32("infobar_subchan_disp_pos"  , g_settings.infobar_subchan_disp_pos  );
+	configfile.setBool("infobar_sat_display", g_settings.infobar_sat_display  );
+	configfile.setInt32("infobar_subchan_disp_pos", g_settings.infobar_subchan_disp_pos  );
 	
 	//crypticon channellist
 	configfile.setInt32("channellist_ca", g_settings.channellist_ca);
 
 	configfile.setBool("channellist_epgtext_align_right", g_settings.channellist_epgtext_align_right);
-	configfile.setBool("channellist_extended"                 , g_settings.channellist_extended);
+	configfile.setBool("channellist_extended", g_settings.channellist_extended);
+	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
 
 	configfile.setString("timezone", g_settings.timezone);
 
@@ -1634,6 +1636,12 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	i = 1;
 
 	int tvi = 0, ri = 0, hi = 0;
+	
+	// hd bouquet
+	CBouquet* hdBouquet;
+	if(g_settings.make_hd_list)
+		hdBouquet = new CBouquet(0, (char *) "HD", 0);
+
 	for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++) 
 	{
 		if (it->second.getServiceType() == ST_DIGITAL_TELEVISION_SERVICE) 
@@ -1642,7 +1650,11 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 			tvi++;
 
 			if(it->second.isHD()) 
+			{
+				if(g_settings.make_hd_list)
+					hdBouquet->channelList->addChannel(&(it->second));
 				hi++;
+			}
 		}
 		else if (it->second.getServiceType() == ST_DIGITAL_RADIO_SOUND_SERVICE) 
 		{
@@ -1650,6 +1662,9 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 			ri++;
 		}
 	}
+	
+	if(g_settings.make_hd_list)
+		hdBouquet->channelList->SortSat();
 
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV (%d is HD) and %d RADIO channels\n", tvi, hi, ri); fflush(stdout);
 
@@ -1708,6 +1723,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 			printf("CNeutrinoApp::channelsInit: created %s (fe%d) with %d TV and %d RADIO channels\n", sit->second.name.c_str(), sit->second.feindex, tvi, ri);
 	}
 
+	// tv fav list
 	bnum = 0;
 	for (i = 0; i < g_bouquetManager->Bouquets.size(); i++) 
 	{
@@ -1729,14 +1745,18 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 		}
 	}
 	
+	if(g_settings.make_hd_list)
+		TVfavList->Bouquets.push_back(hdBouquet);
+	
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV bouquets\n", bnum); fflush(stdout);
 
+	// radio fav list
 	bnum = 0;
 	for (i = 0; i < g_bouquetManager->Bouquets.size(); i++) 
 	{	
 		if (!g_bouquetManager->Bouquets[i]->bHidden && !g_bouquetManager->Bouquets[i]->radioChannels.empty() )
 		{
-			CBouquet* tmp;
+			CBouquet * tmp;
 			if(g_bouquetManager->Bouquets[i]->bUser) 
 				tmp = RADIOfavList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
 			else
@@ -2361,7 +2381,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler = new CCAMMenuHandler();
 	g_CamHandler->init();
 #endif	
@@ -3240,7 +3260,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	}
 
 	// we assume g_CamHandler free/delete data if needed
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	res = g_CamHandler->handleMsg(msg, data);
 	if( res != messages_return::unhandled ) 
 	{
