@@ -902,7 +902,7 @@ movieplayer.defdir start dir.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback Net Stream
 movieplayer.dvdplayback DVD
-movieplayer.fileplayback Media Archiv (Multiformat)
+movieplayer.fileplayback Media Archiv
 movieplayer.showtshelp Help
 movieplayer.goto Jump to ...
 movieplayer.goto.h1 = -> absolute jump
@@ -1489,7 +1489,7 @@ colormenu.helpbar Help bar
 lcdmenu.menutitlevfd Menu title on VFD
 
 scansetup.tunermode Tuner mode
-scansetup.tunermode_single activ(single)
+scansetup.tunermode_activ activ(single)
 scansetup.tunermode_twin twin
 scansetup.tunermode_loop loop
 scansetup.tunermode_notconnected not connected
