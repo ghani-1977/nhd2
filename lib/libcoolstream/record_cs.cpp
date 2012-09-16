@@ -74,7 +74,7 @@ bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int num
 	if (!dmx)
 		dmx = new cDemux( demux_num );
 
-	dmx->Open(DMX_TP_CHANNEL, 2 * 3008 * 62, fe_num );
+	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, fe_num );
 	dmx->pesFilter(vpid);
 
 	for (i = 0; i < numpids; i++)
