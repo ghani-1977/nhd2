@@ -96,8 +96,7 @@ void LcdFontRenderClass::InitFontCache()
 	printf("\n");
 }
 
-FT_Error LcdFontRenderClass::FTC_Face_Requester(FTC_FaceID  face_id,
-                            FT_Face*    aface)
+FT_Error LcdFontRenderClass::FTC_Face_Requester(FTC_FaceID  face_id, FT_Face*    aface)
 {
 	fontListEntry *font=(fontListEntry *)face_id;
 	if (!font)
@@ -182,7 +181,7 @@ LcdFont *LcdFontRenderClass::getFont(const char *family, const char *style, int 
 
 LcdFont::LcdFont(CLCDDisplay * fb, LcdFontRenderClass *render, FTC_FaceID faceid, int isize)
 {
-	framebuffer=fb;
+	framebuffer = fb;
 	renderer=render;
 #ifdef FT_NEW_CACHE_API
 	font.face_id=faceid;
