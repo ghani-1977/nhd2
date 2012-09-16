@@ -204,7 +204,7 @@ int CPictureViewerGui::show()
 	CVFD::getInstance()->setMode(CVFD::MODE_PIC, g_Locale->getText(LOCALE_PICTUREVIEWER_HEAD));
 #endif
 
-	m_state=MENU;
+	m_state = MENU;
 
 	int timeout;
 
@@ -225,8 +225,8 @@ int CPictureViewerGui::show()
 		else
 		{
 			timeout=(m_time+atoi(g_settings.picviewer_slide_time)-(long)time(NULL))*10;
-			if(timeout <0 )
-				timeout=1;
+			if(timeout < 0 )
+				timeout = 1;
 		}
 
 		/* msg */
@@ -303,7 +303,7 @@ int CPictureViewerGui::show()
 			if ((m_state == MENU) && (!playlist.empty()))
 			{
 				int prevselected=selected;
-				if(selected==0)
+				if(selected == 0)
 				{
 					selected = playlist.size()-1;
 				}
@@ -467,13 +467,13 @@ int CPictureViewerGui::show()
 		}
 		else if ( msg == CRCInput::RC_5 )
 		{
-			if(m_state==MENU) 
+			if(m_state == MENU) 
 			{
 				if (!playlist.empty())
 				{
-					if(m_sort==FILENAME)
+					if(m_sort == FILENAME)
 					{
-						m_sort=DATE;
+						m_sort = DATE;
 						std::sort(playlist.begin(),playlist.end(),comparePictureByDate);
 					}
 					else if(m_sort==DATE)
@@ -506,11 +506,11 @@ int CPictureViewerGui::show()
 		}
 		else if(msg==CRCInput::RC_setup)
 		{
-			if(m_state==MENU)
+			if(m_state == MENU)
 			{
 				CNFSSmallMenu nfsMenu;
 				nfsMenu.exec(this, "");
-				update=true;
+				update = true;
 #if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
 				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 #else
@@ -573,6 +573,7 @@ void CPictureViewerGui::hide()
 void CPictureViewerGui::paintItem(int pos)
 {
 	//printf("paintItem{\n");
+	
 	int ypos = y+ theight + 0 + pos*fheight;
 
 	uint8_t    color;
@@ -598,7 +599,7 @@ void CPictureViewerGui::paintItem(int pos)
 
 	frameBuffer->paintBoxRel(x,ypos, width-15, fheight, bgcolor);
 
-	if(liststart+pos<playlist.size())
+	if(liststart + pos < playlist.size())
 	{
 		std::string tmp = playlist[liststart+pos].Name;
 		tmp += " (";
@@ -607,6 +608,7 @@ void CPictureViewerGui::paintItem(int pos)
 		char timestring[18];
 		strftime(timestring, 18, "%d-%m-%Y %H:%M", gmtime(&playlist[liststart+pos].Date));
 		int w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(timestring);
+		
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10,ypos+fheight, width-30 - w, tmp, color, fheight, true);
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+width-20-w,ypos+fheight, w, timestring, color, fheight);
 
@@ -626,7 +628,7 @@ void CPictureViewerGui::paintHead()
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// head icon
-	frameBuffer->paintIcon(NEUTRINO_ICON_PICTURE, x+7, y+10);
+	frameBuffer->paintIcon(NEUTRINO_ICON_PICTURE, x + 7, y + 10);
 	
 	//head title
 	//g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+35,y+theight+0, width- 45, strCaption, COL_MENUHEAD, 0, true); // UTF-8
@@ -634,7 +636,7 @@ void CPictureViewerGui::paintHead()
 	int stringstartposX = x +(width >> 1) - (neededWidth >> 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + theight, width - (stringstartposX - x) , strCaption, COL_MENUHEAD, 0, true); // UTF-8
 	
-	int ypos=y+0;
+	int ypos = y+0;
 	if(theight > 26)
 		ypos = (theight-26) / 2 + y ;
 	
@@ -644,13 +646,12 @@ void CPictureViewerGui::paintHead()
 	//printf("paintHead}\n");
 }
 
-//------------------------------------------------------------------------
 const struct button_label PictureViewerButtons[4] =
 {
 	{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_AUDIOPLAYER_DELETE        },
 	{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_ADD           },
 	{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_DELETEALL     },
-	{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_PICTUREVIEWER_SLIDESHOW }
+	{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_PICTUREVIEWER_SLIDESHOW 	}
 };
 
 void CPictureViewerGui::paintFoot()
@@ -679,8 +680,6 @@ void CPictureViewerGui::paintFoot()
 		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - 2 * buttonHeight) + 4, ButtonWidth, 4, PictureViewerButtons);
 	}
 	else
-		//::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + ButtonWidth + 10, y + (height - 2 * buttonHeight) + 4, ButtonWidth, 1, &(PictureViewerButtons[1]));
-		//test
 		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - 2 * buttonHeight) + 4, ButtonWidth, 1, &(PictureViewerButtons[1]));
 	
 	//printf("paintFoot}\n");
@@ -723,7 +722,7 @@ void CPictureViewerGui::paint()
 
 void CPictureViewerGui::view(unsigned int index, bool unscaled)
 {
-	selected=index;
+	selected = index;
 	
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
 	CVFD::getInstance()->showMenuText(0, playlist[index].Name.c_str());
@@ -755,7 +754,7 @@ void CPictureViewerGui::view(unsigned int index, bool unscaled)
 void CPictureViewerGui::endView()
 {
 	if(m_state != MENU)
-		m_state=MENU;
+		m_state = MENU;
 }
 
 void CPictureViewerGui::showHelp()
