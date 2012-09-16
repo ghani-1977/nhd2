@@ -47,7 +47,8 @@ const char * const file_extension_list[] =
 	"bmp",  
 	"cdr",  
 	"crw",  
-	"flac",  
+	"flac",
+	"flv",
 	"gif",  
 	"imu",  
 	"jpeg", 
@@ -57,8 +58,10 @@ const char * const file_extension_list[] =
 	"mkv",  
 	"mp2",  
 	"mp3",
-	"mpa",   
-	"mpg",  
+	"mp4",
+	"mpa",
+	"mpeg",
+	"mpg",
 	"ogg",  
 	"png",  
 	"sh",   
@@ -79,6 +82,7 @@ const CFile::FileType file_type_list[] =
 	CFile::FILE_CDR, 
 	CFile::FILE_PICTURE, 
 	CFile::FILE_FLAC,
+	CFile::FILE_MPG,
 	CFile::FILE_PICTURE, 
 	CFile::STREAM_PICTURE, 
 	CFile::FILE_PICTURE, 
@@ -88,8 +92,10 @@ const CFile::FileType file_type_list[] =
 	CFile::FILE_MKV, 
 	CFile::FILE_MP3, 
 	CFile::FILE_MP3, 
-	CFile::FILE_MP3, 
 	CFile::FILE_MPG, 
+	CFile::FILE_MP3, 
+	CFile::FILE_MPG,
+	CFile::FILE_MPG,
 	CFile::FILE_OGG, 
 	CFile::FILE_PICTURE, 
 	CFile::FILE_TEXT, 
@@ -127,6 +133,7 @@ CFile::FileType CFile::getType(void) const
 		if (result != NULL)
 			return file_type_list[(const char * *)result - (const char * *)&file_extension_list];
 	}
+	
 	return FILE_UNKNOWN;
 }
 
