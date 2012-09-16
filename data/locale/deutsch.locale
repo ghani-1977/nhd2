@@ -903,7 +903,7 @@ movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback Net Stream
 movieplayer.dvdplayback DVD
-movieplayer.fileplayback Media Archiv (Multiformat)
+movieplayer.fileplayback Media Archiv
 movieplayer.showtshelp Hilfe
 movieplayer.goto Springe zu ...
 movieplayer.goto.h1 = -> absoluter Sprung
