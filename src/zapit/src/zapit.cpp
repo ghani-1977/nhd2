@@ -3546,21 +3546,12 @@ int zapit_main_thread(void *data)
 #endif
 
 	//HOUSEKEPPING
-	//saveFrontendConfig();
-	
 	//save audio map
 	if(live_channel)
 		save_channel_pids(live_channel);
 	
 	saveZapitSettings(true, true);
 	stopPlayBack();
-
-	// save motor position
-	//for(int i = 0; i < FrontendCount; i++)
-	//{
-	//	if( getFE(i)->getInfo()->type == FE_QPSK)
-	//		SaveMotorPositions();
-	//}
 
 	pthread_cancel(tsdt);
 	
