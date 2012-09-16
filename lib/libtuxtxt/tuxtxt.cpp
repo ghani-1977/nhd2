@@ -1507,20 +1507,6 @@ void eval_l25()
 /*
  * main loop
 */
-//TEST
-#if 1
-static void cleanup_fb_pan()
-{
-#ifdef USE_FBPAN
-	if (var_screeninfo.yoffset)
-	{
-		var_screeninfo.yoffset = 0;
-		if (ioctl(fb, FBIOPAN_DISPLAY, &var_screeninfo) == -1)
-			perror("TuxTxt <FBIOPAN_DISPLAY>");
-	}
-#endif
-}
-
 static void * reader_thread(void * /*arg*/)
 {
 	printf("TuxTxt subtitle thread started\n");
@@ -1545,7 +1531,7 @@ static void * reader_thread(void * /*arg*/)
 	
 	if(!ttx_paused)
 		CleanUp();
-	cleanup_fb_pan();
+
 	tuxtxt_close();
 	printf("TuxTxt subtitle thread stopped\n");
 	pthread_exit(NULL);
@@ -1570,7 +1556,6 @@ void tuxtx_pause_subtitle(bool pause, int source)
 		while(!ttx_paused)
 			usleep(10);
 		printf("TuxTxt subtitle paused\n");
-		cleanup_fb_pan();
 	}
 }
 
@@ -1618,8 +1603,6 @@ int tuxtx_subtitle_running(int *pid, int *page, int *running)
 
 	return ret;
 }
-#endif
-//
 
 int tuxtx_main(int _rc, int pid, int page, int source)
 {

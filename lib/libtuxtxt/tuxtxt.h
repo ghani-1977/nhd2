@@ -35,6 +35,8 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <driver/framebuffer.h>
+
 #include "tuxtxt_def.h"
 
 #include <ft2build.h>
@@ -198,7 +200,7 @@ const char *ObjectType[] =
 #define NoServicesFound 3
 
 /* framebuffer stuff */
-static unsigned char *lfb = 0;
+static unsigned char * lfb = 0;
 struct fb_var_screeninfo var_screeninfo;
 
 /* freetype stuff */
