@@ -842,16 +842,24 @@ void SaveServices(bool tocopy)
 					if(ccI->second.getPidsFlag()) 
 					{
 						fprintf(fd, "\t\t\t<S i=\"%04x\" n=\"%s\" v=\"%x\" a=\"%x\" p=\"%x\" pmt=\"%x\" tx=\"%x\" t=\"%x\" vt=\"%d\" s=\"%d\"/>\n",
-								ccI->second.getServiceId(), convert_UTF8_To_UTF8_XML(ccI->second.getName().c_str()).c_str(),
-								ccI->second.getVideoPid(), ccI->second.getPreAudioPid(),
-								ccI->second.getPcrPid(), ccI->second.getPmtPid(), ccI->second.getTeletextPid(),
-								ccI->second.getServiceType(true), ccI->second.type, ccI->second.scrambled);
+								ccI->second.getServiceId(), 
+								convert_UTF8_To_UTF8_XML(ccI->second.getName().c_str()).c_str(),
+								ccI->second.getVideoPid(), 
+								ccI->second.getPreAudioPid(),
+								ccI->second.getPcrPid(), 
+								ccI->second.getPmtPid(), 
+								ccI->second.getTeletextPid(),
+								ccI->second.getServiceType(true), 
+								ccI->second.type, 
+								ccI->second.scrambled);
 					} 
 					else 
 					{
 						fprintf(fd, "\t\t\t<S i=\"%04x\" n=\"%s\" t=\"%x\" s=\"%d\"/>\n",
-								ccI->second.getServiceId(), convert_UTF8_To_UTF8_XML(ccI->second.getName().c_str()).c_str(),
-								ccI->second.getServiceType(true), ccI->second.scrambled);
+								ccI->second.getServiceId(), 
+								convert_UTF8_To_UTF8_XML(ccI->second.getName().c_str()).c_str(),
+								ccI->second.getServiceType(true), 
+								ccI->second.scrambled);
 					}
 					processed++;
 #ifdef SAVE_DEBUG
