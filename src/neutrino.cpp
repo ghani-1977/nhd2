@@ -5081,7 +5081,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 		
 		if ( b.exec(g_settings.epg_dir.c_str())) 
 		{
@@ -5090,8 +5090,8 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 				printf("CNeutrinoApp::exec: Wrong/unsupported epg dir %s\n", newdir);
 			else
 			{
-				//g_settings.epg_dir = b.getSelectedFile()->Name;
-				strcpy((char *)g_settings.epg_dir.c_str(), b.getSelectedFile()->Name.c_str());
+				g_settings.epg_dir = b.getSelectedFile()->Name;
+				//strcpy(g_settings.epg_dir.c_str(), b.getSelectedFile()->Name.c_str());
 				SendSectionsdConfig();
 			}
 		}
@@ -5112,8 +5112,8 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 				printf("CNeutrinoApp::exec: Wrong/unsupported logos dir %s\n", newdir);
 			else
 			{
-				//g_settings.logos_dir = b.getSelectedFile()->Name;
-				strcpy((char *)g_settings.logos_dir.c_str(), b.getSelectedFile()->Name.c_str());
+				g_settings.logos_dir = b.getSelectedFile()->Name;
+				//strcpy(g_settings.logos_dir.c_str(), b.getSelectedFile()->Name.c_str());
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: new logos dir %s\n", b.getSelectedFile()->Name.c_str());
 			}
 		}
