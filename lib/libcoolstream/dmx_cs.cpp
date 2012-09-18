@@ -137,11 +137,13 @@ bool cDemux::Start(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
 
+#ifndef __sh__
         if (ioctl(demux_fd , DMX_START) < 0)
         {
                 perror("DMX_START");
                 return false;
-        }        
+        }  
+#endif        
 
 	return true;
 }
@@ -236,7 +238,7 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 		memcpy(sct.filter.mode, nMask, len );
 	
 	/* flag */
-	sct.flags = DMX_IMMEDIATE_START | DMX_CHECK_CRC;
+	sct.flags = DMX_IMMEDIATE_START;
 	
 	/* timeout */
 	int to = 0;
