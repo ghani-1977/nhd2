@@ -651,7 +651,7 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 
 	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", channel->getFeIndex(), channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
 	
-#if 1
+#if 0
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;

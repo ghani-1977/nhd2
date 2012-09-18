@@ -50,9 +50,9 @@ extern int zapit_debug;						/* defined in zapit.cpp */
 extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 
 extern int FrontendCount;
-CFrontend * getFE(int index);
+extern CFrontend * getFE(int index);
 
-extern void parseScanInputXml(int feindex);
+//extern void parseScanInputXml(int feindex);
 
 
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, uint8_t Source, int FeIndex)
@@ -249,8 +249,6 @@ void FindTransponder(xmlNodePtr search)
 	newtpid = 0xC000;
 	int feindex = 0;
 	
-	sat_iterator_t spos_it;
-	
 	while (search) 
 	{
 		/* type */
@@ -277,7 +275,9 @@ void FindTransponder(xmlNodePtr search)
 		
 		// frontend index from sat pos
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		feindex = sit->second.feindex;
+		
+		if(sit != satellitePositions.end()) 
+			feindex = sit->second.feindex;
 			
 		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d fe(%d)\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition, feindex);
 		
@@ -488,7 +488,39 @@ int loadTransponders()
 	// parse sat tp
 	for(int i = 0; i < FrontendCount; i++)
 	{		
-		parseScanInputXml(i);
+		//parseScanInputXml(i);
+		if(scanInputParser) 
+		{
+			delete scanInputParser;
+			scanInputParser = NULL;
+		}
+		
+		if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
+		{
+			if(scanInputParser) 
+			{
+				delete scanInputParser;
+				scanInputParser = NULL;
+			}
+			
+			switch ( getFE(i)->getInfo()->type) 
+			{
+				case FE_QPSK:
+					scanInputParser = parseXmlFile(SATELLITES_XML);
+					break;
+					
+				case FE_QAM:
+					scanInputParser = parseXmlFile(CABLES_XML);
+					break;
+
+				case FE_OFDM:
+					scanInputParser = parseXmlFile(TERRESTRIALS_XML);
+					break;
+					
+				default:
+					WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
+			}
+		}
 
 		if (scanInputParser != NULL) 
 		{
@@ -515,7 +547,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_S;
 					
 					// feindex
-					if( getFE(i)->mode == FE_SINGLE )
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
 						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "cable"))) 
@@ -537,7 +569,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_C;
 					
 					// feindex
-					if( getFE(i)->mode == FE_SINGLE )
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
 						satellitePositions[position].feindex = i;
 				}
 				else if(!(strcmp(xmlGetName(search), "terrestrial"))) 
@@ -556,7 +588,7 @@ int loadTransponders()
 					satellitePositions[position].type = DVB_T;
 					
 					// feindex
-					if( getFE(i)->mode == FE_SINGLE )
+					if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
 						satellitePositions[position].feindex = i;
 				}
 				

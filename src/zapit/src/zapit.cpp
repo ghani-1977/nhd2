@@ -131,7 +131,7 @@ extern cDemux * videoDemux;			/* defined in dmx_cs.pp (libcoolstream) */
 cDemux * pcrDemux = NULL;			/* defined in dmx_cs.pp (libcoolstream) */
 extern cDemux * pmtDemux;			/* defined in pmt.cpp */
 
-/* the map which stores the wanted cables/satellites/terrestrials */
+/* the map which stores the wanted scanned cables/satellites/terrestrials */
 scan_list_t scanProviders;
 
 /* current zapit mode */
@@ -895,8 +895,8 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	
 	// check if channel feindex und record_fe index maches
-	if(rec_channel->getFeIndex() != record_fe->getFeIndex())
-		rec_channel->setFeIndex(record_fe->getFeIndex());
+	//if(rec_channel->getFeIndex() != record_fe->getFeIndex())
+	//	rec_channel->setFeIndex(record_fe->getFeIndex());
 	
 	// parse pat_pmt
 	if(!parse_record_pat_pmt(rec_channel))
@@ -1100,7 +1100,7 @@ int prepare_channels()
 }
 
 void parseScanInputXml(int feindex)
-{	
+{
 	if(scanInputParser) 
 	{
 		delete scanInputParser;
@@ -1112,7 +1112,7 @@ void parseScanInputXml(int feindex)
 		case FE_QPSK:
 			scanInputParser = parseXmlFile(SATELLITES_XML);
 			break;
-			
+				
 		case FE_QAM:
 			scanInputParser = parseXmlFile(CABLES_XML);
 			break;
