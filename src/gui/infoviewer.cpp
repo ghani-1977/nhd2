@@ -1570,7 +1570,7 @@ void CInfoViewer::showSNR()
 			int freqWidth = g_SignalFont->getRenderWidth(freq);
 			int FreqStartX = BoxStartX + ChanWidth;
 
-			g_SignalFont->RenderString(/*BoxStartX + 10 + satNameWidth + 10*/FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, /*COL_INFOBAR*/ COL_MENUCONTENTINACTIVE);
+			g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENUCONTENTINACTIVE);
 		
 			ssig = live_fe->getSignalStrength();
 			ssnr = live_fe->getSignalNoiseRatio();
