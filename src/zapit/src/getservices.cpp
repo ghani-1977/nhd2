@@ -52,7 +52,7 @@ extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 extern int FrontendCount;
 extern CFrontend * getFE(int index);
 
-//extern void parseScanInputXml(int feindex);
+extern void parseScanInputXml(int feindex);
 
 
 void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, uint8_t Source, int FeIndex)
@@ -487,42 +487,10 @@ int loadTransponders()
 
 	// parse sat tp
 	for(int i = 0; i < FrontendCount; i++)
-	{		
-		//parseScanInputXml(i);
-		if(scanInputParser) 
-		{
-			delete scanInputParser;
-			scanInputParser = NULL;
-		}
-		
-		if( (getFE(i)->mode == FE_SINGLE) || (getFE(i)->mode == FE_NOTCONNECTED) )
-		{
-			if(scanInputParser) 
-			{
-				delete scanInputParser;
-				scanInputParser = NULL;
-			}
+	{
+		parseScanInputXml(i);
 			
-			switch ( getFE(i)->getInfo()->type) 
-			{
-				case FE_QPSK:
-					scanInputParser = parseXmlFile(SATELLITES_XML);
-					break;
-					
-				case FE_QAM:
-					scanInputParser = parseXmlFile(CABLES_XML);
-					break;
-
-				case FE_OFDM:
-					scanInputParser = parseXmlFile(TERRESTRIALS_XML);
-					break;
-					
-				default:
-					WARN("Unknown type %d", getFE(feindex)->getInfo()->type);
-			}
-		}
-
-		if (scanInputParser != NULL) 
+		if ( scanInputParser != NULL ) 
 		{
 			xmlNodePtr search = xmlDocGetRootElement(scanInputParser)->xmlChildrenNode;
 

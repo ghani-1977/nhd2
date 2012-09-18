@@ -1083,6 +1083,9 @@ int prepare_channels()
 	transponders.clear();
 	g_bouquetManager->clearAll();
 	allchans.clear();  				// <- this invalidates all bouquets, too!
+	
+	/* load frontend config */
+	loadFrontendConfig();
         
         // load sats/tps
         loadTransponders();
@@ -2967,7 +2970,7 @@ void leaveStandby(void)
 		return;
 	
 	// load frontend config
-	loadFrontendConfig();
+	//loadFrontendConfig();
 
 	if (!live_cam) 
 	{
@@ -3387,8 +3390,11 @@ int zapit_main_thread(void *data)
 	
 	abort_zapit = 0;
 	
-	//scan for dvb adapter/frontendand feed them in map
+	//scan for dvb adapter/frontend and feed them in map
 	initFrontend();
+	
+	/* load frontend config */
+	loadFrontendConfig();
 		
 	// video/audio decoder
 	int video_mode = ZapStart_arg->video_mode;
