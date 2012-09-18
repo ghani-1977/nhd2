@@ -6239,7 +6239,7 @@ int eit_set_update_filter(int *fd)
 	mask[2] = 0xFF;
 
 	int timeout = 0;
-#if 1
+#if 0
 	filter[3] = (cur_eit << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
