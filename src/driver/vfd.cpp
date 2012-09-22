@@ -45,25 +45,11 @@
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
-#if defined (PLATFORM_DUCKBOX)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 bool blocked = false;
 
 void CVFD::openDevice()
 { 
-	//fd = open("/dev/vfd", O_RDWR);
-	
-	#if 0
-	if(fd < 0)
-	{
-		printf("failed to open vfd\n");
-		
-		fd = open("/dev/fplarge", O_RDWR);
-	    
-		if (fd < 0)
-			printf("failed to open fplarge\n");
-        } 
-        #endif
-        
         if (!blocked)
 	{
 		fd = open("/dev/vfd", O_RDWR);
@@ -81,17 +67,12 @@ void CVFD::openDevice()
 
 void CVFD::closeDevice()
 { 
-	#if 0
-	if (fd)
-		close(fd);
-	fd = -1;
-	#endif
-	
 	if (fd)
 	{
 		close(fd);
 		blocked = false;
 	}
+	
 	fd = -1;
 }
 #endif
@@ -112,22 +93,12 @@ CVFD::CVFD()
         m_progressLocal = 0;
 #endif // VFD_UPDATE
 
-#if defined (PLATFORM_XTREND)
+// xtrend 5XXX has no vfd und dreambox has lcd
+#if defined (PLATFORM_XTREND) || defined (PLATFORM_DREAMBOX)
 	has_vfd = 0;
 #else
 	has_vfd = 1;
 #endif	
-	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	fd = open("/dev/dbox/fp0", O_RDWR);
-
-	if(fd < 0) 
-	{
-		perror("/dev/vfd");
-			
-		has_vfd = 0;	
-	}
-#endif
 	
 	text[0] = 0;
 	clearClock = 0;
@@ -137,10 +108,10 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (PLATFORM_DUCKBOX)
-	if(fd > 0)
-		close(fd);
-#endif	
+//#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
+//	if(fd > 0)
+//		close(fd);
+//#endif	
 }
 
 CVFD * CVFD::getInstance()
@@ -208,8 +179,6 @@ void * CVFD::TimeThread(void *)
 
 void CVFD::init()
 {
-	//InitNewClock(); /FIXME
-
 	brightness = -1;
 	
 	// set mode tv/radio
@@ -218,7 +187,7 @@ void CVFD::init()
 	// time thread
 	if (pthread_create (&thrTime, NULL, TimeThread, NULL) != 0 ) 
 	{
-		perror("[lcdd]: pthread_create(TimeThread)");
+		perror("CVFD::init: pthread_create(TimeThread)");
 		return ;
 	}
 }
@@ -232,14 +201,9 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 	dprintf(DEBUG_DEBUG, "CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
 	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	brightness &= 0x07;
-	
-	if( ioctl(fd, FRONT_IOCS_VFDBRIGHT, &brightness) < 0 )
-		perror("FRONT_IOCS_VFDBRIGHT");
-#elif defined (PLATFORM_DUCKBOX)
-        //struct vfd_ioctl_data data;
-	//data.start_address = dimm;
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+        struct vfd_ioctl_data data;
+	data.start_address = dimm;
 	
 	if(dimm < 1)
 		dimm = 1;
@@ -247,9 +211,8 @@ void CVFD::setlcdparameter(int dimm, const int power)
 	
 	openDevice();
 	
-	//FIXME: why does this ioctl not work???
-	//if( ioctl(fd, VFDBRIGHTNESS, &data) < 0)  
-	//	perror("VFDBRIGHTNESS");
+	if( ioctl(fd, VFDBRIGHTNESS, &data) < 0)  
+		perror("VFDBRIGHTNESS");
 	
 	closeDevice();
 #endif		
@@ -277,7 +240,8 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	if (mode != MODE_TVRADIO)
 		return;
 
-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT]== 1)
+	#if 0
+	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT] == 1)
 	{
 		int len = strlen((char *) servicename.c_str());
 
@@ -299,6 +263,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 		}
 	}
 	else
+	#endif
 	{
 		ShowText( (char *) servicename.c_str() );
 	}
@@ -338,19 +303,16 @@ void CVFD::showTime(bool force)
 		if(clearClock) 
 		{
 			clearClock = 0;
-			//ShowIcon(VFD_ICON_CAM1, false);
 		} 
 		else 
 		{
 			clearClock = 1;
-			//ShowIcon(VFD_ICON_CAM1, true);
 		}
 	} 
 	else if(clearClock) 
 	{ 
 		// in case icon ON after record stopped
 		clearClock = 0;
-		//ShowIcon(VFD_ICON_CAM1, false);
 	}
 }
 
@@ -358,6 +320,7 @@ void CVFD::showRCLock(int duration)
 {
 }
 
+#if ENABLE_LCD
 void CVFD::showVolume(const char vol, const bool perform_update)
 {
 	static int oldpp = 0;
@@ -369,15 +332,11 @@ void CVFD::showVolume(const char vol, const bool perform_update)
 		return;
 
 	volume = vol;
-	wake_up();
-	
-#if !defined (PLATFORM_DUCKBOX)	
-	ShowIcon(VFD_ICON_FRAME, true);
-#endif	
+	wake_up();	
 
 	if ((mode == MODE_TVRADIO) && g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME]) 
 	{
-#if !defined (PLATFORM_DUCKBOX)	  
+#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)  
 		int pp = (int) round((double) vol * (double) 8 / (double) 100);
 		if(pp > 8) pp = 8;
 
@@ -449,7 +408,7 @@ void CVFD::showPercentOver(const unsigned char perc, const bool perform_update)
 	{
 		if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 0) 
 		{
-#if !defined (PLATFORM_DUCKBOX)		  
+#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
 			ShowIcon(VFD_ICON_FRAME, true);
 			int pp;
 			if(perc == 255)
@@ -483,6 +442,7 @@ void CVFD::showPercentOver(const unsigned char perc, const bool perform_update)
 		}
 	}	
 }
+#endif
 
 void CVFD::showMenuText(const int position, const char * text, const int highlight, const bool utf_encoded)
 {
@@ -508,12 +468,6 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 	
 	ShowText((char *) title.c_str());
 	wake_up();
-
-#ifdef HAVE_LCD
-	fonts.menu->RenderString(0,22, 125, artist.c_str() , CLCDDisplay::PIXEL_ON, 0, true); // UTF-8
-	fonts.menu->RenderString(0,35, 125, album.c_str() , CLCDDisplay::PIXEL_ON, 0, true); // UTF-8
-	fonts.menu->RenderString(0,48, 125, title.c_str() , CLCDDisplay::PIXEL_ON, 0, true); // UTF-8
-#endif
 }
 
 void CVFD::showAudioPlayMode(AUDIOMODES m)
@@ -548,7 +502,7 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 	wake_up();
 }
 
-void CVFD::showAudioProgress(const char perc, bool isMuted)
+/*void CVFD::showAudioProgress(const char perc, bool isMuted)
 {
 	if(!has_vfd) 
 		return;
@@ -569,7 +523,7 @@ void CVFD::showAudioProgress(const char perc, bool isMuted)
 		}
 	}
 #endif
-}
+}*/
 
 void CVFD::setMode(const MODES m, const char * const title)
 {
@@ -599,7 +553,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 	switch (m) 
 	{
 		case MODE_TVRADIO:
-
+#if ENABLE_LCD
 			switch (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME])
 			{
 				case 0:
@@ -614,11 +568,13 @@ void CVFD::setMode(const MODES m, const char * const title)
 					showPercentOver(percentOver, false);
 					break;
 			}
+#endif			
 
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE)	
 			showServicename(servicename);
 #endif
-#if !defined (PLATFORM_DUCKBOX)
+
+#if !defined (PLATFORM_DUCKBOX) 
 			ShowIcon(VFD_ICON_TV, true);
 #endif			
 			showclock = true;
@@ -632,7 +588,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
 			showAudioPlayMode(AUDIO_MODE_STOP);
+#if ENABLE_LCD			
 			showVolume(volume, false);
+#endif			
 			showclock = true;
 			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
@@ -643,8 +601,11 @@ void CVFD::setMode(const MODES m, const char * const title)
 		case MODE_SCART:
 #if !defined (PLATFORM_DUCKBOX)		  
 			ShowIcon(VFD_ICON_TV, false);
-#endif			
+#endif
+
+#if ENABLE_LCD
 			showVolume(volume, false);
+#endif			
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 			break;
@@ -662,11 +623,6 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_STANDBY:
-#if 0
-			ShowIcon(VFD_ICON_COL1, true);
-			ShowIcon(VFD_ICON_COL2, true);
-#endif
-
 #if !defined (PLATFORM_DUCKBOX)
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
@@ -692,7 +648,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showclock = false;
 			break;
 		
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 		case MODE_FILEBROWSER:
 			ShowIcon(VFD_ICON_TV, false);
 			showclock = true;
@@ -717,7 +673,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showInfoBox();
 			break;
 			
-#endif // VFD_UPDATE
+#endif // ENABLE_LCD
 	}
 
 	wake_up();
@@ -765,13 +721,16 @@ void CVFD::setPower(int power)
 	if(!has_vfd) 
 		return;
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-	vfd_led_t led;
-	led.type = LED_SET;
-	led.val=(power)? 1 : 0;
-
-	if( ioctl(fd, FRONT_IOCS_VFDLED, &led) < 0)
-		perror("FRONT_IOCS_VFDLED");
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+	struct vfd_ioctl_data data;
+	data.start_address = power;
+	
+	openDevice();
+	
+	if( ioctl(fd, VFDPWRLED, &data) < 0)  
+		perror("VFDPWRLED");
+	
+	closeDevice();
 #endif
 }
 
@@ -780,10 +739,14 @@ void CVFD::setFPTime(void)
 	if(!has_vfd)
 		return;
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-	system("/bin/cubefpctl --setgmtoffset");
-	system("/bin/cubefpctl --syncfptime");
-#endif		
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+	openDevice();
+	
+	if( ioctl(fd, VFDSETTIME) < 0)  
+		perror("VFDPWRLED");
+	
+	closeDevice();
+#endif
 }
 
 int CVFD::getPower()
@@ -806,7 +769,9 @@ void CVFD::setMuted(bool mu)
 		return;
 	
 	muted = mu;
-	showVolume(volume);	
+#if ENABLE_LCD	
+	showVolume(volume);
+#endif	
 }
 
 void CVFD::resume()
@@ -842,482 +807,37 @@ void CVFD::Clear()
 	if(!has_vfd) 
 		return;
 	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-	if( ioctl(fd, FRONT_IOCC_CLRSYMBOL) < 0)
-		perror("FRONT_IOCC_CLRSYMBOL");
-#elif defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE)
 	ShowText("    "); // 4 empty digits
-#elif defined (PLATFORM_DUCKBOX)
-        struct vfd_ioctl_data data;
-	data.start_address = 0x01;
-	data.length = 0x0;
+#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+        //struct vfd_ioctl_data data;
+	//data.start = 0x01;
+	//data.length = 0x0;
+	
+	struct vfd_ioctl_data data;
+   
+	data.start_address = 0;
 	
 	openDevice();
 	
-	if( ioctl(fd, VFDDISPLAYCLR, &data) < 0)
+	if( ioctl(fd, /*VFDDISPLAYCLR*/VFDDISPLAYWRITEONOFF, &data) < 0)
 		perror("VFDDISPLAYCLR");
 	
 	closeDevice();
 #endif
 }
 
-// cuberevo shameless stohlen from tideglo neutrinoHD nightly
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
-/* this is for cuberevo family boxes */
-int CVFD::vfd_symbol( unsigned char grid, unsigned char bit, unsigned char onoff )
-{
-	symbol_t symbol;
-
-	symbol.onoff = onoff; 
-	symbol.grid = grid;
-	symbol.bit = bit;
-
-	if( ioctl(fd, FRONT_IOCS_SYMBOL, &symbol) < 0 )
-	{ 
-		perror("FRONT_IOCS_1GSYMBOL");
-		
-		return -1; 
-	}
-
-	return 0;
-}
-
-int CVFD::vfd_1gsymbol( unsigned char grid, unsigned char bit, unsigned char onoff )
-{
-	symbol_t symbol;
-
-	symbol.onoff = onoff; 
-	symbol.grid = grid;
-	symbol.bit = bit;
-
-	if( ioctl(fd, FRONT_IOCS_1GSYMBOL, &symbol) < 0 )
-	{ 
-		perror("FRONT_IOCS_1GSYMBOL");
-		
-		return -1; 
-	}
-
-	return 0;
-}
-
-int CVFD::vfd_symbol_clear()
-{
-	if( ioctl(fd, FRONT_IOCC_CLRSYMBOL) < 0 )
-	{ 
-		perror("FRONT_IOCC_CLRSYMBOL");
-		
-		return -1; 
-	}
-
-	return 0;
-}
-
-void CVFD::vfd_symbol_sat(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol( 0, 2, onoff );
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol( 1, 3, onoff );
-#endif
-}
-
-void CVFD::vfd_symbol_ter(int onoff)
-{
-	//vfd_1gsymbol(
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(1, 2, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(1, 3, onoff);
-#endif
-		//onoff);
-}
-
-void CVFD::vfd_symbol_480i(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(4, 6, onoff);
-	vfd_1gsymbol(3, 6, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_480p(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(4, 6, onoff);
-	vfd_1gsymbol(2, 6, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_576i(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(1, 6, onoff);
-	vfd_1gsymbol(0, 6, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_576p(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(1, 6, onoff);
-	vfd_1gsymbol(4, 5, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_720p(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(3, 5, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_1080i(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(2, 5, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_1080p(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(1, 5, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_power(int onoff)
-{
-	//debug_Warning("[VFD] never use the power symbol\n");
-	return;
-	
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(0, 3, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_radio(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(4, 2, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_tv(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(3, 2, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_file(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(2, 2, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_rec(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(0, 0, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(0, 2, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_timeshift(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(1, 1, onoff);
-	vfd_symbol(2, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_play(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_1gsymbol(4, 0, onoff);
-	vfd_1gsymbol(0, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(1, 2, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_schedule(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(3, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(0, 3, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_hd(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(4, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(4, 2, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_usb(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(5, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_lock(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(6, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_dolby(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(7, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(3, 2, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_pause(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-	vfd_1gsymbol(2, 2, onoff);
-#endif
-}
-
-void CVFD::vfd_symbol_mute(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(8, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_t1(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(9, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_t2(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(10, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_mp3(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(11, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::vfd_symbol_repeat(int onoff)
-{
-#if defined(PLATFORM_CUBEREVO) || defined(PLATFORM_CUBEREVO_9500HD)
-	vfd_symbol(12, 1, onoff);
-#elif defined(PLATFORM_CUBEREVO_MINI) || defined(PLATFORM_CUBEREVO_MINI2) || defined(PLATFORM_CUBEREVO_2000HD)
-
-#endif
-}
-
-void CVFD::do_vfd_sym( char *s, int onoff )
-{	
-	if(!strcmp(s, "sat"))
-		vfd_symbol_sat(onoff);
-	else if(!strcmp(s, "ter"))
-		vfd_symbol_ter(onoff);
-	else if(!strcmp(s, "480i"))
-		vfd_symbol_480i(onoff);
-	else if(!strcmp(s, "480p"))
-		vfd_symbol_480p(onoff);
-	else if(!strcmp(s, "576i"))
-		vfd_symbol_576i(onoff);
-	else if(!strcmp(s, "576p"))
-		vfd_symbol_576p(onoff);
-	else if(!strcmp(s, "720p"))
-		vfd_symbol_720p(onoff);
-	else if(!strcmp(s, "1080i"))
-		vfd_symbol_1080i(onoff);
-	else if(!strcmp(s, "1080p"))
-		vfd_symbol_1080p(onoff);
-	else if(!strcmp(s, "power"))
-		vfd_symbol_power(onoff);
-	else if(!strcmp(s, "radio"))
-		//vfd_symbol_radio(onoff);
-		vfd_symbol_sat(onoff);
-	else if(!strcmp(s, "tv"))
-		//vfd_symbol_tv(onoff);
-		vfd_symbol_sat(onoff);
-	else if(!strcmp(s, "file"))
-		vfd_symbol_file(onoff);
-	else if(!strcmp(s, "rec"))
-		vfd_symbol_rec(onoff);
-	else if(!strcmp(s, "timeshift"))
-		//vfd_symbol_timeshift(onoff);
-		vfd_symbol_rec(onoff);
-	else if(!strcmp(s, "play"))
-		vfd_symbol_play(onoff);
-	else if(!strcmp(s, "schedule"))
-		vfd_symbol_schedule(onoff);
-	else if(!strcmp(s, "hd"))
-		vfd_symbol_hd(onoff);
-	else if(!strcmp(s, "usb"))
-		vfd_symbol_usb(onoff);
-	else if(!strcmp(s, "lock"))
-		vfd_symbol_lock(onoff);
-	else if(!strcmp(s, "dolby"))
-		vfd_symbol_dolby(onoff);
-	else if(!strcmp(s, "mute"))
-		vfd_symbol_mute(onoff);
-	else if(!strcmp(s, "t1"))
-		vfd_symbol_t1(onoff);
-	else if(!strcmp(s, "t2"))
-		vfd_symbol_t2(onoff);
-	else if(!strcmp(s, "mp3"))
-		vfd_symbol_mp3(onoff);
-	else if(!strcmp(s, "repeat"))
-		vfd_symbol_repeat(onoff);
-	else if(!strcmp(s, "clear"))
-		vfd_symbol_clear();
-	else if(!strcmp(s, "pause"))
-		vfd_symbol_pause(onoff);
-}
-
-void CVFD::vfd_set_icon(vfd_icon icon, bool show)
-{
-	int onoff;
-
-	onoff=(show)?1:0;
-	switch(icon)
-	{
-    		case VFD_ICON_MUTE:
-			do_vfd_sym("mute",onoff);
-			break;
-    		case VFD_ICON_DOLBY:
-			do_vfd_sym("dolby",onoff);
-			break;
-    		case VFD_ICON_POWER:
-			do_vfd_sym("power",onoff);
-			break;
-    		case VFD_ICON_TIMESHIFT:
-			do_vfd_sym("timeshift",onoff);
-			break;
-    		case VFD_ICON_TV:
-			do_vfd_sym("tv",onoff);
-			break;
-    		case VFD_ICON_RADIO:
-			do_vfd_sym("radio",onoff);
-			break;
-    		case VFD_ICON_HD:
-			do_vfd_sym("hd",onoff);
-			break;
-    		case VFD_ICON_1080P:
-			do_vfd_sym("1080p",onoff);
-			break;
-    		case VFD_ICON_1080I:
-			do_vfd_sym("1080i",onoff);
-			break;
-    		case VFD_ICON_720P:
-			do_vfd_sym("720p",onoff);
-			break;
-    		case VFD_ICON_480P:
-			do_vfd_sym("480p",onoff);
-			break;
-    		case VFD_ICON_480I:
-			do_vfd_sym("480i",onoff);
-			break;
-    		case VFD_ICON_USB:
-			do_vfd_sym("usb",onoff);
-			break;
-    		case VFD_ICON_MP3:
-			do_vfd_sym("mp3",onoff);
-			break;
-    		case VFD_ICON_PLAY:
-			do_vfd_sym("play",onoff);
-			break;
-    		case VFD_ICON_PAUSE:
-			do_vfd_sym("pause",onoff);
-			break;
-    		case VFD_ICON_SIGNAL:
-    		case VFD_ICON_HDD:
-    		case VFD_ICON_COL1:
-    		case VFD_ICON_CAM1:
-    		case VFD_ICON_COL2:
-    		case VFD_ICON_CAM2:
-		case VFD_ICON_BAR8:
-		case VFD_ICON_BAR7:
-		case VFD_ICON_BAR6:
-    		case VFD_ICON_BAR5:
-    		case VFD_ICON_BAR4:
-    		case VFD_ICON_BAR3:
-    		case VFD_ICON_BAR2:
-    		case VFD_ICON_BAR1:
-    		case VFD_ICON_FRAME:
-		default:
-			break;
-	}
-}
-#endif
-
 void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD)	
-	vfd_set_icon(icon, show);
-#elif defined (PLATFORM_DUCKBOX)	
-        struct vfd_ioctl_data data;
-
-        data.data[0] = icon;
-	data.data[4] = show ? 1 : 0;
-	
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	openDevice();
+
+	struct vfd_ioctl_data data;
+
+	data.data[0] = (icon - 1) & 0x1F;
+	data.data[4] = show ? 1 : 0;
 	
 	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
 		perror("VFDICONDISPLAYONOFF");
@@ -1330,15 +850,11 @@ void* CVFD::ThreadScrollText(void * arg)
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	int vfd = open("/dev/dbox/fp0", O_RDWR);
-#else
 	int vfd = open("/dev/vfd", O_RDWR);
-#endif
 
 	int i;
 	char *str = (char *)arg;
-	int len= strlen(str);
+	int len = strlen(str);
 	char out[15];
 
 	memset(out, 0, 15);
@@ -1390,48 +906,8 @@ void CVFD::ShowScrollText(char *str)
 void CVFD::ShowText(char *str)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
-	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	// replace
-	std::string r;
-	
-	while ((*str) != 0)
-	{
-		switch (*str)
-		{
-			case 'ö':           
-				r += "oe";
-				break;
-				
-			case 'Ö':
-				r += "Oe";
-				break;
-				
-			case 'ä':
-				r += "ae";
-				break;
-				
-			case 'Ä':
-				r += "Ae";
-				break;
-				
-			case 'ü':
-				r += "ue";
-				break;
-				
-			case 'Ü':
-				r += "Ue";
-				break;
 
-			default:
-				r += *str;
-		}
-		str++;
-	}
-
-	if( write(fd , (const char *)r.c_str(), r.length() ) < 0)
-		perror("write to vfd failed");
-#elif defined (PLATFORM_DUCKBOX)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	int len = strlen(str);
 	int i;
 	
@@ -1442,16 +918,6 @@ void CVFD::ShowText(char *str)
 		else
 			break;
 	}
-
-	#if 0
-	if(!strcmp(str, text) || len > 255)
-	{
-	        //printf("CVFD::ShowText < %s - %s\n", str, text);
-		return;
-        }
-	
-	strcpy(text, str);
-	#endif
 	  
 	openDevice();
 	
@@ -1478,21 +944,17 @@ void CVFD::ShowText(char *str)
 
 void CVFD::setFan(bool enable)
 {
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-	if(enable)
-	{
-		if( ioctl(fd, FRONT_IOCC_FAN_ON) < 0)
-			perror("FRONT_IOCC_FAN_ON");
-	}
-	else
-	{
-		if( ioctl(fd, FRONT_IOCC_FAN_OFF) < 0)
-			perror("FRONT_IOCC_FAN_OFF");
-	}
-#endif
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)  
+	//openDevice();
+	
+	//if( ioctl(fd, VFDSETFAN, enable) < 0)  
+	//	perror("VFDPWRLED");
+	
+	//closeDevice();
+#endif	
 }
 
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 /*****************************************************************************************/
 // showInfoBox
 /*****************************************************************************************/
@@ -1809,6 +1271,7 @@ void CVFD::showProgressBar2(int local,const char * const text_local ,int global 
 #endif
 }
 
-#endif // VFD_UPDATE
+#endif // ENABLE_LCD
+
 
 
