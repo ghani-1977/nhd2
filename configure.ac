@@ -68,6 +68,16 @@ if test "$enable_lcd" = "yes"; then
 AC_DEFINE(ENABLE_LCD,1,[include lcd support])
 fi
 
+# graphlcd
+AC_ARG_ENABLE(graphlcd,
+	AS_HELP_STRING(--enable-graphlcd,include graph lcd support),
+	,[enable_graphlcd=no])
+AM_CONDITIONAL(ENABLE_GRAPHLCD,test "$enable_graphlcd" = "yes")
+
+if test "$enable_graphlcd" = "yes"; then
+AC_DEFINE(ENABLE_GRAPHLCD,1,[include graph lcd support])
+fi
+
 AC_OUTPUT([
 Makefile
 lib/Makefile
