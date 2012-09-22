@@ -1,4 +1,4 @@
-#AM_CPPFLAGS = -fno-rtti -fno-exceptions
+AM_CXXFLAGS = -fno-rtti -fno-exceptions
 
 SUBDIRS = pictureviewer audiodec
 
@@ -46,4 +46,8 @@ libneutrino_driver_a_SOURCES += \
 	crw.cpp
 
 libneutrino_driver_netfile_a_SOURCES = netfile.cpp
+
+if ENABLE_GRAPHLCD
+libneutrino_driver_a_SOURCES += nglcd.cpp
+endif
 
