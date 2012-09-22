@@ -2797,7 +2797,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				StartSubtitles();
 			}
 #endif			
-			else if( msg == CRCInput::RC_setup || msg == CRCInput::RC_vfdmenu) 
+			else if( msg == CRCInput::RC_setup ) 
 			{
 				StopSubtitles();
 
@@ -2822,7 +2822,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				else if(mode == mode_tv)
 					radioMode();
 			}
-			else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) || (msg == CRCInput::RC_vfdup) || (msg == CRCInput::RC_vfddown))
+			else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
 			{
 				quickZap(msg);
 			}
@@ -3137,7 +3137,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else 
 			{
-				if (msg == CRCInput::RC_home || msg == CRCInput::RC_vfdexit)
+				if ( msg == CRCInput::RC_home )
 				{
   					CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 				}
@@ -3147,7 +3147,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 		}
 		else //other modes
 		{
-			if( msg == CRCInput::RC_home || msg == CRCInput::RC_vfdexit) 
+			if( msg == CRCInput::RC_home ) 
 			{
 				if( mode == mode_scart ) 
 				{
@@ -3269,7 +3269,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 #endif	
 
 	// handle Keys
-	if( msg == CRCInput::RC_ok || msg == CRCInput::RC_vfdok || msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
+	if( msg == CRCInput::RC_ok || msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
 	{
 		if( (mode == mode_tv) || (mode == mode_radio))
 		{
@@ -3287,7 +3287,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				old_num = bouquetList->Bouquets[old_b]->channelList->getActiveChannelNumber();
 			}
 
-			if( msg == CRCInput::RC_ok || msg == CRCInput::RC_vfdok ) 
+			if( msg == CRCInput::RC_ok ) 
 			{
 				if(bouquetList->Bouquets.size() && bouquetList->Bouquets[old_b]->channelList->getSize() > 0)
 					nNewChannel = bouquetList->Bouquets[old_b]->channelList->exec();	//with ZAP!
@@ -3338,7 +3338,7 @@ _repeat:
 			return messages_return::handled;
 		}
 	}
-	else if (msg == CRCInput::RC_standby || msg == CRCInput::RC_vfdpower) 
+	else if (msg == CRCInput::RC_standby ) 
 	{
 		if (data == 0) 
 		{
@@ -3396,7 +3396,7 @@ _repeat:
 						
 						if (seconds >= 1) 
 						{
-							if (msg == CRCInput::RC_standby || msg == CRCInput::RC_vfdpower)
+							if ( msg == CRCInput::RC_standby )
 								new_msg = NeutrinoMessages::SHUTDOWN;
 							break;
 						}
@@ -4069,7 +4069,7 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 			{
 				g_RCInput->getMsg(&msg, &data, 100);		//10 sec
 				
-				if( msg == CRCInput::RC_standby || msg == CRCInput::RC_vfdpower) 
+				if( msg == CRCInput::RC_standby ) 
 				{
 					dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: Power key, going to sleep...\n");
 			
