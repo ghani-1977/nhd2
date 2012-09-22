@@ -362,19 +362,17 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 					
 				case (CRCInput::RC_up) :
 				case (CRCInput::RC_down) :
-				case (CRCInput::RC_vfdup):
-				case (CRCInput::RC_vfddown):
 					{
 						//search next / prev selectable item
 						for (unsigned int count=1; count< items.size(); count++) 
 						{
-							if (msg == CRCInput::RC_up || msg == CRCInput::RC_vfdup) 
+							if ( msg == CRCInput::RC_up ) 
 							{
 								pos = selected - count;
 								if ( pos < 0 )
 									pos += items.size();
 							}
-							else if(msg == CRCInput::RC_down || msg == CRCInput::RC_vfddown) 
+							else if( msg == CRCInput::RC_down ) 
 							{
 								pos = (selected+ count)%items.size();
 							}
@@ -404,7 +402,6 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 					break;
 					
 				case (CRCInput::RC_left):
-				case (CRCInput::RC_vfdleft):
 					if(!(items[selected]->can_arrow) || g_settings.menu_left_exit) 
 					{
 						msg = CRCInput::RC_timeout;
@@ -413,8 +410,6 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 					
 				case (CRCInput::RC_right):
 				case (CRCInput::RC_ok):
-				case (CRCInput::RC_vfdright):
-				case (CRCInput::RC_vfdok):
 					{
 						if(hasItem()) 
 						{
@@ -448,7 +443,6 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 					break;
 
 				case (CRCInput::RC_home):
-				case (CRCInput::RC_vfdexit):
 					exit_pressed = true;
 					msg = CRCInput::RC_timeout;
 					break;
@@ -462,7 +456,6 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 					
 				//close any menue on setup-key
 				case (CRCInput::RC_setup):
-				case (CRCInput::RC_vfdmenu):
 					{
 						msg = CRCInput::RC_timeout;
 						retval = menu_return::RETURN_EXIT_ALL;
@@ -732,7 +725,7 @@ CMenuOptionNumberChooser::CMenuOptionNumberChooser(const neutrino_locale_t name,
 
 int CMenuOptionNumberChooser::exec(CMenuTarget*)
 {
-	if(msg == CRCInput::RC_left || msg == CRCInput::RC_vfdleft) 
+	if( msg == CRCInput::RC_left ) 
 	{
 		if (((*optionValue) > upper_bound) || ((*optionValue) <= lower_bound))
 			*optionValue = upper_bound;
@@ -885,7 +878,7 @@ int CMenuOptionChooser::exec(CMenuTarget*)
 	int ret = menu_return::RETURN_NONE;
 
 	// pulldown
-	if((msg == CRCInput::RC_ok  || msg == CRCInput::RC_vfdok) && pulldown) 
+	if( msg == CRCInput::RC_ok && pulldown) 
 	{
 		int select = -1;
 		char cnt[5];
@@ -930,7 +923,7 @@ int CMenuOptionChooser::exec(CMenuTarget*)
 		{
 			if (options[count].key == (*optionValue)) 
 			{
-				if(msg == CRCInput::RC_left  || msg == CRCInput::RC_vfdleft) 
+				if( msg == CRCInput::RC_left ) 
 				{
 					if(count > 0)
 						*optionValue = options[(count-1) % number_of_options].key;
@@ -1112,7 +1105,7 @@ int CMenuOptionStringChooser::exec(CMenuTarget* parent)
 	if (parent)
 		parent->hide();
 
-	if((!parent || msg == CRCInput::RC_ok  || msg == CRCInput::RC_vfdok) && pulldown) 
+	if( (!parent || msg == CRCInput::RC_ok) && pulldown ) 
 	{
 		int select = -1;
 		char cnt[5];
@@ -1146,7 +1139,7 @@ int CMenuOptionStringChooser::exec(CMenuTarget* parent)
 		{
 			if (strcmp(options[count].c_str(), optionValue) == 0) 
 			{
-				if(msg == CRCInput::RC_left  || msg == CRCInput::RC_vfdleft) 
+				if( msg == CRCInput::RC_left ) 
 				{
 					if(count > 0)
 						strcpy(optionValue, options[(count - 1) % options.size()].c_str());
