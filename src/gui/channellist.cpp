@@ -552,7 +552,7 @@ int CChannelList::show()
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
-		if ( ( msg == CRCInput::RC_timeout ) || ( msg == (neutrino_msg_t)g_settings.key_channelList_cancel) || msg == CRCInput::RC_vfdexit) 
+		if ( ( msg == CRCInput::RC_timeout ) || ( msg == (neutrino_msg_t)g_settings.key_channelList_cancel) ) 
 		{
 			if(!actzap)
 				selected = oldselected;
@@ -593,7 +593,7 @@ int CChannelList::show()
 			loop = false;
 			res = -1;
 		}
-		else if ( msg == CRCInput::RC_setup || msg == CRCInput::RC_vfdmenu) 
+		else if ( msg == CRCInput::RC_setup ) 
 		{
 			// chan list setup (add/move)
 			old_b_id = bouquetList->getActiveBouquetNumber();
@@ -636,7 +636,7 @@ int CChannelList::show()
 				zapTo(selected); 
 			}
 		}
-                else if (msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup  || msg == CRCInput::RC_vfdup)
+                else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup )
                 {
                         int step = 0;
                         int prev_selected = selected;
@@ -662,7 +662,7 @@ int CChannelList::show()
 			
                         //paintHead();
                 }
-                else if (msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown  || msg == CRCInput::RC_vfddown)
+                else if ( msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown )
                 {
                         unsigned int step = 0;
                         int prev_selected = selected;
@@ -753,7 +753,7 @@ int CChannelList::show()
 				}
 			}
 		}
-		else if ( msg == CRCInput::RC_ok  || msg == CRCInput::RC_vfdok) 
+		else if ( msg == CRCInput::RC_ok ) 
 		{
 			//TEST
 			#if 0
@@ -1388,7 +1388,7 @@ int CChannelList::numericZap(int key)
 			}
 			chn += CRCInput::getNumericValue(msg);
 		}
-		else if ( msg == CRCInput::RC_ok  || msg == CRCInput::RC_vfdok) 
+		else if ( msg == CRCInput::RC_ok ) 
 		{
 			if ( ( chn > (signed int) chanlist.size() ) || ( chn == 0 ) ) 
 			{
@@ -1414,7 +1414,7 @@ int CChannelList::numericZap(int key)
 			if (chn > (int)chanlist.size())
 				chn = 1;
 		}
-		else if ( ( msg == CRCInput::RC_home ) || ( msg == CRCInput::RC_left ) || ( msg == CRCInput::RC_right)  || (msg == CRCInput::RC_vfdexit) || (msg == CRCInput::RC_vfdleft) || (msg == CRCInput::RC_vfdright))
+		else if ( ( msg == CRCInput::RC_home ) || ( msg == CRCInput::RC_left ) || ( msg == CRCInput::RC_right) )
 		{
 			doZap = false;
 			break;
@@ -1500,7 +1500,7 @@ void CChannelList::virtual_zap_mode(bool up)
 		
                 //printf("%u %u %u\n", msg, NeutrinoMessages::EVT_TIMER, CRCInput::RC_timeout);
 
-                if ( msg == CRCInput::RC_ok || msg == CRCInput::RC_vfdok)
+                if ( msg == CRCInput::RC_ok )
                 {
                         if ( ( chn > (signed int) chanlist.size() ) || ( chn == 0 ) )
                         {
@@ -1508,7 +1508,7 @@ void CChannelList::virtual_zap_mode(bool up)
                         }
                         break;
                 }
-                else if ( msg == CRCInput::RC_left || msg == CRCInput::RC_vfdleft)
+                else if ( msg == CRCInput::RC_left )
                 {
                         if ( chn == 1 )
                                 chn = chanlist.size();
@@ -1520,22 +1520,22 @@ void CChannelList::virtual_zap_mode(bool up)
                                         chn = (int)chanlist.size();
                         }
                 }
-                else if ( msg == CRCInput::RC_right || msg == CRCInput::RC_vfdright)
+                else if ( msg == CRCInput::RC_right )
                 {
                         chn++;
 
                         if (chn > (int)chanlist.size())
                                 chn = 1;
                 }
-                else if ( msg == CRCInput::RC_up || msg == CRCInput::RC_vfdup)
+                else if ( msg == CRCInput::RC_up )
                 {
                         epgpos = -1;
                 }
-                else if ( msg == CRCInput::RC_down || msg == CRCInput::RC_vfddown)
+                else if ( msg == CRCInput::RC_down )
                 {
                         epgpos = 1;
                 }
-                else if ( ( msg == CRCInput::RC_home ) || ( msg == CRCInput::RC_timeout ) || (msg == CRCInput::RC_vfdexit) )
+                else if ( ( msg == CRCInput::RC_home ) || ( msg == CRCInput::RC_timeout ) )
                 {
                         // Abbruch ohne Channel zu wechseln
                         doZap = false;
@@ -1585,14 +1585,14 @@ void CChannelList::quickZap(int key, bool cycle)
         if(chanlist.size() == 0)
                 return;
 
-	if ( (key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) || (key == CRCInput::RC_vfddown))
+	if ( (key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) )
 	{
                 if(selected==0)
                         selected = chanlist.size()-1;
                 else
                         selected--;
         }
-	else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) || (key == CRCInput::RC_vfdup))
+	else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) )
 	{
                 selected = (selected+1)%chanlist.size();
         }

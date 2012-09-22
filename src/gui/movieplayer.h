@@ -34,16 +34,14 @@
 
 #include <config.h>
 #include <configfile.h>
+
 #if HAVE_DVB_API_VERSION >= 1
 #include "driver/framebuffer.h"
 #include "gui/filebrowser.h"
 #include "gui/widget/menue.h"
 #include "gui/moviebrowser.h"
 #include "gui/movieinfo.h"
-
-extern "C" {
-           	#include <driver/ringbuffer.h>
-}           	
+          	
 #include <stdio.h>
 
 #include <string>
@@ -97,11 +95,11 @@ class CMoviePlayerGui : public CMenuTarget
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 };
 
-
 class CAPIDSelectExec : public CMenuTarget
 {
 	public:
 		int exec(CMenuTarget * parent, const std::string & actionKey);
 };
 #endif
+
 #endif

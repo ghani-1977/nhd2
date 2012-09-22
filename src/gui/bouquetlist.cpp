@@ -390,7 +390,7 @@ int CBouquetList::show(bool bShowChannelList)
 		{
 			continue; //FIXME msgs not forwarded to neutrino !!
 		}
-		else if ( msg == CRCInput::RC_setup || msg == CRCInput::RC_vfdmenu) 
+		else if ( msg == CRCInput::RC_setup ) 
 		{
 			int ret = doMenu();
 			if(ret) 
@@ -413,7 +413,7 @@ int CBouquetList::show(bool bShowChannelList)
 			liststart = (selected/listmaxshow)*listmaxshow;
 			paint();
 		}
-		else if (msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup || msg == CRCInput::RC_vfdup )
+		else if (msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup )
 		{
 			int step = 0;
 			int prev_selected = selected;
@@ -431,7 +431,7 @@ int CBouquetList::show(bool bShowChannelList)
 			else
 				paintItem(selected - liststart);
 		}
-		else if (msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown || msg == CRCInput::RC_vfddown)
+		else if ( msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown )
 		{
 			unsigned int step = 0;
 			int prev_selected = selected;
@@ -453,7 +453,7 @@ int CBouquetList::show(bool bShowChannelList)
 			else
 				paintItem(selected - liststart);
 		}
-		else if ( msg == CRCInput::RC_ok || msg == CRCInput::RC_vfdok ) 
+		else if ( msg == CRCInput::RC_ok ) 
 		{
 			if(!bShowChannelList || Bouquets[selected]->channelList->getSize() > 0) 
 			{

@@ -1234,7 +1234,7 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 				// show status
 				int global = 100*listPos / maxProgress;
 				progress.showGlobalStatus(global);
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 				CVFD::getInstance()->showProgressBar(global, "read xmldata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
 #endif // LCD_UPDATE
@@ -1336,7 +1336,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 				int global = 100*currentProgress/maxProgress;
 				progress.showGlobalStatus(global);
 				progress.showStatusMessageUTF(files->Name);
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 				CVFD::getInstance()->showProgressBar(global, "read metadata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
 #endif // LCD_UPDATE
@@ -1534,10 +1534,10 @@ bool CAudioPlayerGui::openSCbrowser(void)
 				int global = 100*currentProgress/maxProgress;
 				progress.showGlobalStatus(global);
 				progress.showStatusMessageUTF(files->Name);			
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 				CVFD::getInstance()->showProgressBar(global, "read metadata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
-#endif // LCD_UPDATE
+#endif
 			}
 			//printf("processPlaylistUrl(%s, %s)\n", files->Url.c_str(), files->Name.c_str());
 			processPlaylistUrl(files->Url.c_str(), files->Name.c_str(), files->Time);
@@ -2394,7 +2394,7 @@ void CAudioPlayerGui::updateTimes(const bool force)
 			}			
 		}
 		
-#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)		
+#if ENABLE_LCD	
 		if((updatePlayed || updateTotal) && m_time_total != 0)
 		{
 			CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, CNeutrinoApp::getInstance()->isMuted());
@@ -2414,7 +2414,7 @@ void CAudioPlayerGui::paintLCD()
 		case CAudioPlayerGui::STOP:
 			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_STOP);
 			
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 			CVFD::getInstance()->showAudioProgress(0, CNeutrinoApp::getInstance()->isMuted());
 #endif
 			break;
@@ -2426,13 +2426,13 @@ void CAudioPlayerGui::paintLCD()
 			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);
 #endif			
 			
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 			if(m_curr_audiofile.FileType != CFile::STREAM_AUDIO && m_time_total != 0)
 				CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, CNeutrinoApp::getInstance()->isMuted());
 #endif
 
 #ifdef INCLUDE_UNUSED_STUFF
-#ifdef VFD_UPDATE
+#if ENABLE_LCD
 			else
 				CVFD::getInstance()->showAudioProgress(100 * CAudioPlayer::getInstance()->getScBuffered() / 65536, CNeutrinoApp::getInstance()->isMuted());
 #endif			

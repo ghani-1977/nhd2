@@ -270,7 +270,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	showButtonBar = !calledFromNumZap;
 	bool fadeIn = false && (!is_visible) && showButtonBar;
-	//bool fadeIn = false;
 
 	is_visible = true;
 	
@@ -290,8 +289,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth (widest_number);
 	time_dot_width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth (":");
 	time_width = time_left_width * 2 + time_dot_width;
-		
-	//int BoxEndInfoY = BoxEndY - InfoHeightY_Info;
 
 	if (!gotTime)
 		gotTime = timeset;
@@ -317,7 +314,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		if ((channel_id != new_channel_id) || (evtlist.empty())) 
 		{
 			evtlist.clear();
-			//evtlist = g_Sectionsd->getEventsServiceKey(new_channel_id & 0xFFFFFFFFFFFFULL);
 			sectionsd_getEventsServiceKey(new_channel_id & 0xFFFFFFFFFFFFULL, evtlist);
 			
 			if (!evtlist.empty())
@@ -350,10 +346,10 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	asize = asize - (NEUTRINO_ICON_BUTTON_RED_WIDTH+6)*4;
 	asize = asize / 4;
 	
-	// shadow
+	// infobar shadow
 	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight + 8, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
-	// box
+	// infobar box
 	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// hline
@@ -361,10 +357,12 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	int HlineYPos = BoxStartY + ChanHeight + 4 - 2 * height;
 	int posx = BoxStartX + 5;
 	int posy = HlineYPos + 3;
+	
+	// event progressbar bg
 	frameBuffer->paintBoxRel(posx, posy, BoxWidth - 10, 6, COL_INFOBAR_BUTTONS_BACKGROUND );
 
 	//time
-	paintTime (show_dot, true);
+	paintTime(show_dot, true);
 
 	//record-icon
 	showRecordIcon(show_dot);
@@ -433,7 +431,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	ButtonWidth = (BoxEndX - ChanInfoX - ICON_OFFSET) >> 2;
 		
 	// show date
-	char datestr[11];
+	char datestr[15];
 			
 	time_t wakeup_time;
 	struct tm *now;
@@ -441,11 +439,11 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	time(&wakeup_time);
 	now = localtime(&wakeup_time);
 		
-	strftime( datestr, sizeof(datestr), "%d.%m.%Y", now);
+	strftime(datestr, sizeof(datestr), "%a %d.%m.%Y", now);
 			
 	int widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
 			
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 -widthtime, BoxStartY + (chanH*3)/2, widthtime, datestr, COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (chanH*3)/2, widthtime, datestr, COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
 		
 	// botton bar
 	frameBuffer->paintBoxRel(BoxStartX, BoxEndY - 20, BoxWidth, 20, COL_INFOBAR_BUTTONS_BACKGROUND );
@@ -551,7 +549,9 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	frameBuffer->blit();
 #endif	
 
+#if ENABLE_LCD
 	showLcdPercentOver();
+#endif	
 
 	if ((g_RemoteControl->current_channel_id == channel_id) && !(((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (info_CurrentNext.flags & (CSectionsdClient::epgflags::has_current | CSectionsdClient::epgflags::has_no_current))) || (info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast))) 
 	{
@@ -585,24 +585,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		while (!(res & (messages_return::cancel_info | messages_return::cancel_all))) 
 		{
 			g_RCInput->getMsgAbsoluteTimeout (&msg, &data, &timeoutEnd);
-			
-#if 0
-			time_t ta, tb;
-			
-			if (!(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_current))) 
-			{
-				if (difftime (time (&tb), ta) > 1.1) 
-				{
-					time (&ta);
-					info_CurrentNext = getEPG(channel_id, info_CurrentNext);
-					if ((info_CurrentNext.flags & (CSectionsdClient::epgflags::has_current))) 
-					{
-						show_Data();
-						showLcdPercentOver ();
-					}
-				}
-			}
-#endif
 
 			if ( msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
 			{
@@ -927,110 +909,115 @@ void CInfoViewer::showIcon_Resolution() const
 	
 	int icon_xres_width = 0;
 	int dummy_h = 0;
-	
-	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_xres_width, &dummy_h);
 
 	// show resolution icon on infobar
-	videoDecoder->getPictureInfo(xres, yres, framerate);
-			
-	switch (yres) 
+	if (is_visible)
 	{
-		case 1920:
-			icon_name = NEUTRINO_ICON_RESOLUTION_1920;
-			break;
-			
-		case 1088:
-		case 1080:
-			icon_name = NEUTRINO_ICON_RESOLUTION_1080;
-			break;
-			
-		case 1440:
-			icon_name = NEUTRINO_ICON_RESOLUTION_1440;
-			break;
-			
-		case 1280:
-			icon_name = NEUTRINO_ICON_RESOLUTION_1280;
-			break;
-			
-		case 720:
-			icon_name = NEUTRINO_ICON_RESOLUTION_720;
-			break;
-			
-		case 704:
-			icon_name = NEUTRINO_ICON_RESOLUTION_704;
-			break;
-			
-		case 576:
-			icon_name = NEUTRINO_ICON_RESOLUTION_576;
-			break;
-			
-		case 544:
-			icon_name = NEUTRINO_ICON_RESOLUTION_544;
-			break;
-			
-		case 528:
-			icon_name = NEUTRINO_ICON_RESOLUTION_528;
-			break;
-			
-		case 480:
-			icon_name = NEUTRINO_ICON_RESOLUTION_480;
-			break;
-			
-		case 382:
-			icon_name = NEUTRINO_ICON_RESOLUTION_382;
-			break;
-			
-		case 352:
-			icon_name = NEUTRINO_ICON_RESOLUTION_352;
-			break;
-			
-		case 288:
-			icon_name = NEUTRINO_ICON_RESOLUTION_288;
-			break;
-			
-		default:
-			icon_name = NEUTRINO_ICON_RESOLUTION_000;
-			break;
-	}
-	frameBuffer->paintBoxRel(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30-30, BoxEndY - ICON_Y_1, icon_xres_width, dummy_h, COL_INFOBAR_BUTTONS_BACKGROUND);
-	if(icon_name !=NEUTRINO_ICON_RESOLUTION_000)
-		frameBuffer->paintIcon(icon_name, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30 -30, BoxEndY - ICON_Y_1 );
+		frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_xres_width, &dummy_h);
 		
-	// show sd/hd icon on infobar		
-	switch (yres) 
-	{
-		case 1920:
-		case 1440:
-		case 1280:
-		case 1088:
-		case 1080:
-		case 720:
-			icon_name_res = NEUTRINO_ICON_RESOLUTION_HD;
-			//test
-			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true); //FIXME: remove this to remotecontrol
-			break;
+		videoDecoder->getPictureInfo(xres, yres, framerate);
 			
-		case 704:
-		case 576:
-		case 544:
-		case 528:
-		case 480:
-		case 382:
-		case 352:
-		case 288:
-			icon_name_res = NEUTRINO_ICON_RESOLUTION_SD;
-			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
-			break;
-			
-		default:
-			icon_name_res = NEUTRINO_ICON_RESOLUTION_000;
-			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
-			break;	
-	}
+		switch (yres) 
+		{
+			case 1920:
+				icon_name = NEUTRINO_ICON_RESOLUTION_1920;
+				break;
+				
+			case 1088:
+			case 1080:
+				icon_name = NEUTRINO_ICON_RESOLUTION_1080;
+				break;
+				
+			case 1440:
+				icon_name = NEUTRINO_ICON_RESOLUTION_1440;
+				break;
+				
+			case 1280:
+				icon_name = NEUTRINO_ICON_RESOLUTION_1280;
+				break;
+				
+			case 720:
+				icon_name = NEUTRINO_ICON_RESOLUTION_720;
+				break;
+				
+			case 704:
+				icon_name = NEUTRINO_ICON_RESOLUTION_704;
+				break;
+				
+			case 576:
+				icon_name = NEUTRINO_ICON_RESOLUTION_576;
+				break;
+				
+			case 544:
+				icon_name = NEUTRINO_ICON_RESOLUTION_544;
+				break;
+				
+			case 528:
+				icon_name = NEUTRINO_ICON_RESOLUTION_528;
+				break;
+				
+			case 480:
+				icon_name = NEUTRINO_ICON_RESOLUTION_480;
+				break;
+				
+			case 382:
+				icon_name = NEUTRINO_ICON_RESOLUTION_382;
+				break;
+				
+			case 352:
+				icon_name = NEUTRINO_ICON_RESOLUTION_352;
+				break;
+				
+			case 288:
+				icon_name = NEUTRINO_ICON_RESOLUTION_288;
+				break;
+				
+			default:
+				icon_name = NEUTRINO_ICON_RESOLUTION_000;
+				break;
+		}
 	
-	frameBuffer->paintBoxRel(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30, BoxEndY - ICON_Y_1, icon_xres_width, dummy_h, COL_INFOBAR_BUTTONS_BACKGROUND);
-	if(icon_name_res !=NEUTRINO_ICON_RESOLUTION_000)
-		frameBuffer->paintIcon(icon_name_res, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30, BoxEndY - ICON_Y_1 );
+
+		frameBuffer->paintBoxRel(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30-30, BoxEndY - ICON_Y_1, icon_xres_width, dummy_h, COL_INFOBAR_BUTTONS_BACKGROUND);
+		if(icon_name !=NEUTRINO_ICON_RESOLUTION_000)
+			frameBuffer->paintIcon(icon_name, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30 -30, BoxEndY - ICON_Y_1 );
+		
+		// show sd/hd icon on infobar		
+		switch (yres) 
+		{
+			case 1920:
+			case 1440:
+			case 1280:
+			case 1088:
+			case 1080:
+			case 720:
+				icon_name_res = NEUTRINO_ICON_RESOLUTION_HD;
+				//test
+				CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true); //FIXME: remove this to remotecontrol
+				break;
+				
+			case 704:
+			case 576:
+			case 544:
+			case 528:
+			case 480:
+			case 382:
+			case 352:
+			case 288:
+				icon_name_res = NEUTRINO_ICON_RESOLUTION_SD;
+				CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
+				break;
+				
+			default:
+				icon_name_res = NEUTRINO_ICON_RESOLUTION_000;
+				CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
+				break;	
+		}
+		
+		frameBuffer->paintBoxRel(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30, BoxEndY - ICON_Y_1, icon_xres_width, dummy_h, COL_INFOBAR_BUTTONS_BACKGROUND);
+		if(icon_name_res !=NEUTRINO_ICON_RESOLUTION_000)
+			frameBuffer->paintIcon(icon_name_res, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) -30, BoxEndY - ICON_Y_1 );
+	}
 }
 
 // dvbsub icon
@@ -1251,7 +1238,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	  		if ( is_visible )
 				show_Data(true);
 			
-	  		showLcdPercentOver ();
+#if ENABLE_LCD			
+	  		showLcdPercentOver();
+#endif			
 		}
 
 		return messages_return::handled;
@@ -1273,7 +1262,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			if ( is_visible )
 				show_Data( true );
 
-	  		showLcdPercentOver ();
+#if ENABLE_LCD
+	  		showLcdPercentOver();
+#endif			
 
 	  		return messages_return::handled;
 		} 
@@ -1351,7 +1342,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				show_Data (true);
 		}
 
-		showLcdPercentOver ();
+#if ENABLE_LCD
+		showLcdPercentOver();
+#endif		
 
 		return messages_return::handled;
   	} 
@@ -1371,7 +1364,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 		showFailure();
 
-		CVFD::getInstance()->showPercentOver (255);		
+#if ENABLE_LCD		
+		CVFD::getInstance()->showPercentOver (255);
+#endif		
 
 		return messages_return::handled;
   	} 
@@ -1393,7 +1388,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	  		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 	  		showFailure ();
 
-	  		CVFD::getInstance()->showPercentOver(255);			
+#if ENABLE_LCD			
+	  		CVFD::getInstance()->showPercentOver(255);
+#endif			
 		}
 		return messages_return::handled;
   	} 
@@ -1456,43 +1453,6 @@ void CInfoViewer::showButton_SubServices ()
 
 CSectionsdClient::CurrentNextInfo CInfoViewer::getEPG(const t_channel_id for_channel_id, CSectionsdClient::CurrentNextInfo &info)
 {
-  #if 0
-	static CSectionsdClient::CurrentNextInfo oldinfo;
-
-	//g_Sectionsd->getCurrentNextServiceKey (for_channel_id & 0xFFFFFFFFFFFFULL, info);
-	sectionsd_getCurrentNextServiceKey(for_channel_id & 0xFFFFFFFFFFFFULL, info);
-
-	dprintf(DEBUG_INFO, "CInfoViewer::getEPG: old uniqueKey %llx new %llx\n", oldinfo.current_uniqueKey, info.current_uniqueKey);
-	
-	if (info.current_uniqueKey != oldinfo.current_uniqueKey || info.next_uniqueKey != oldinfo.next_uniqueKey) 
-	{
-		if (info.flags & (CSectionsdClient::epgflags::has_current | CSectionsdClient::epgflags::has_next)) 
-		{
-			CSectionsdClient::CurrentNextInfo * _info = new CSectionsdClient::CurrentNextInfo;
-			*_info = info;
-			//memcpy(&_info, &info, sizeof(CSectionsdClient::CurrentNextInfo));
-			
-			neutrino_msg_t msg;
-			
-			if (info.flags & CSectionsdClient::epgflags::has_current)
-				msg = NeutrinoMessages::EVT_CURRENTEPG;
-			else
-				msg = NeutrinoMessages::EVT_NEXTEPG;
-			
-			g_RCInput->postMsg(msg, (unsigned) _info, false );
-		} 
-		else 
-		{
-			t_channel_id *p = new t_channel_id;
-			*p = for_channel_id;
-			g_RCInput->postMsg (NeutrinoMessages::EVT_NOEPG_YET, (const neutrino_msg_data_t) p, false);	// data is pointer to allocated memory
-		}
-		oldinfo = info;
-		//memcpy(&oldinfo, &info, sizeof(CSectionsdClient::CurrentNextInfo));
-	}
-
-	return info;
-#endif
 	static CSectionsdClient::CurrentNextInfo oldinfo;
 
 	//g_Sectionsd->getCurrentNextServiceKey (for_channel_id & 0xFFFFFFFFFFFFULL, info);
@@ -1834,23 +1794,21 @@ void CInfoViewer::showIcon_Audio(const int ac3state) const
 	{
 		case AC3_ACTIVE:
 			dd_icon = NEUTRINO_ICON_DD;
-			//test
-			CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true); //FIXME: remove to remotecontrol
 			break;
+			
 		case AC3_AVAILABLE:
 			dd_icon = NEUTRINO_ICON_DD_AVAIL;
-			//test
-			CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false); //FIXME: remove to remotecontrol
 			break;
+			
 		case NO_AC3:
 		default:
 			dd_icon = NEUTRINO_ICON_DD_GREY;
-			//test
-			CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false); //FIXME: remove to remotecontrol
 			break;
 	}
 
 	frameBuffer->paintIcon(dd_icon, BoxEndX - (ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 3*2), BoxEndY - ICON_Y_1 );
+	
+	CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, (ac3state == AC3_ACTIVE)? true:false); //FIXME: remove to remotecontrol
 }
 
 void CInfoViewer::showButton_Audio()
@@ -1919,6 +1877,7 @@ void CInfoViewer::Set_CA_Status (int Status)
 		showIcon_CA_Status(1);
 }
 
+#if ENABLE_LCD
 void CInfoViewer::showLcdPercentOver()
 {
 	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] != 1) 
@@ -1934,9 +1893,10 @@ void CInfoViewer::showLcdPercentOver()
 				runningPercent = MIN ((unsigned) ((float) (jetzt - info_CurrentNext.current_zeit.startzeit) / (float) info_CurrentNext.current_zeit.dauer * 100.), 100);
 		}
 
-		CVFD::getInstance()->showPercentOver(runningPercent);
+		CVFD::getInstance()->showPercentOver(runningPercent);	
 	}
 }
+#endif
 
 extern int pmt_caids[11];
 
@@ -1959,7 +1919,7 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 		}
 			
 		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 85, BoxEndY - ICON_Y_1 );
-#if defined (PLATFORM_DUCKBOX)			
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
 #endif			
 		return;
