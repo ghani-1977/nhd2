@@ -43,7 +43,8 @@
 
 
 // duckbox
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+// token from micom
+//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 enum {
 	ICON_MIN,             // 0x00
 	ICON_STANDBY,
@@ -76,7 +77,7 @@ enum {
 	ICON_PAUSE,   
 	ICON_MAX
 };
-#endif
+//#endif
 
 // neutrino common
 typedef enum
@@ -245,7 +246,6 @@ class CVFD
 		void closeDevice();
 #endif
 
-#if 0
 #if ENABLE_LCD
 	public:
 		void showVolume(const char vol, const bool perform_update = true);
@@ -279,7 +279,6 @@ class CVFD
                 void showProgressBar(int global = -1,const char * const text = NULL,int show_escape = -1,int timer = -1);
                 void showProgressBar2(int local = -1,const char * const text_local = NULL,int global = -1,const char * const text_global = NULL,int show_escape = -1);
 #endif // ENABLE_LCD
-#endif
 
 };
 
