@@ -236,8 +236,7 @@ extern tallchans curchans;
 
 int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id, t_satellite_position satellitePosition, freq_id_t freq, int feindex)
 { 
-	int demux_index = 0; //feindex;
-	cDemux * dmx = new cDemux( demux_index );
+	cDemux * dmx = new cDemux();
 	
 	/* open */
 	dmx->Open(DMX_PSI_CHANNEL, SDT_SIZE, feindex);

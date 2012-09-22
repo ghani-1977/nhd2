@@ -3318,7 +3318,8 @@ void * sdt_thread(void * arg)
 					default:
 						break;
 				}
-			} 
+			}
+			#if 0
 			else if(satfound)
 			{
 				//fprintf(fd, "\t</sat>\n");
@@ -3340,6 +3341,7 @@ void * sdt_thread(void * arg)
 						break;
 				}
 			}
+			#endif
 
 			if(fd1) 
 			{
