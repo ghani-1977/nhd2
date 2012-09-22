@@ -140,6 +140,10 @@
 
 #include "gui/scan_setup.h"
 
+#if ENABLE_GRAPHLCD
+#include <driver/nglcd.h>
+#endif
+
 //libcoolstream
 #include <video_cs.h>
 #include <audio_cs.h>
@@ -1174,6 +1178,20 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy(g_settings.lcd_setting_dim_brightness, configfile.getString("lcd_dim_brightness","0").c_str());
 	// END VFD
 	
+#if ENABLE_GRAPHLCD
+	g_settings.glcd_enable = configfile.getInt32("glcd_enable", 0);
+	g_settings.glcd_color_fg = configfile.getInt32("glcd_color_fg", GLCD::cColor::White);
+	g_settings.glcd_color_bg = configfile.getInt32("glcd_color_bg", GLCD::cColor::Blue);
+	g_settings.glcd_color_bar = configfile.getInt32("glcd_color_bar", GLCD::cColor::Red);
+	g_settings.glcd_percent_channel = configfile.getInt32("glcd_percent_channel", 18);
+	g_settings.glcd_percent_epg = configfile.getInt32("glcd_percent_epg", 8);
+	g_settings.glcd_percent_bar = configfile.getInt32("glcd_percent_bar", 6);
+	g_settings.glcd_percent_time = configfile.getInt32("glcd_percent_time", 22);
+	g_settings.glcd_mirror_osd = configfile.getInt32("glcd_mirror_osd", 0);
+	g_settings.glcd_time_in_standby = configfile.getInt32("glcd_time_in_standby", 0);
+	g_settings.glcd_font = configfile.getString("glcd_font", FONTDIR "/neutrino.ttf");
+#endif	
+	
 	//set OSD resolution
 #define DEFAULT_X_OFF 35
 #define DEFAULT_Y_OFF 35
@@ -1552,6 +1570,20 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setString("lcd_dim_time", g_settings.lcd_setting_dim_time);
 	configfile.setString("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
 	// END VFD
+	
+#if ENABLE_GRAPHLCD
+	configfile.setInt32("glcd_enable", g_settings.glcd_enable);
+	configfile.setInt32("glcd_color_fg", g_settings.glcd_color_fg);
+	configfile.setInt32("glcd_color_bg", g_settings.glcd_color_bg);
+	configfile.setInt32("glcd_color_bar", g_settings.glcd_color_bar);
+	configfile.setInt32("glcd_percent_channel", g_settings.glcd_percent_channel);
+	configfile.setInt32("glcd_percent_epg", g_settings.glcd_percent_epg);
+	configfile.setInt32("glcd_percent_bar", g_settings.glcd_percent_bar);
+	configfile.setInt32("glcd_percent_time", g_settings.glcd_percent_time);
+	configfile.setInt32("glcd_mirror_osd", g_settings.glcd_mirror_osd);
+	configfile.setInt32("glcd_time_in_standby", g_settings.glcd_time_in_standby);
+	configfile.setString("glcd_font", g_settings.glcd_font);
+#endif	
 
 	if(strcmp(fname, NEUTRINO_SETTINGS_FILE))
 		configfile.saveConfig(fname);
@@ -2337,6 +2369,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_HDMI_DD, NULL);
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
+	
+#if ENABLE_GRAPHLCD
+	nGLCD::getInstance();
+#endif	
 
 	// timerd thread
 	pthread_create(&timer_thread, NULL, timerd_main_thread, (void *) NULL);
@@ -3066,6 +3102,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 #endif			
 			else if( msg == CRCInput::RC_video)	// movie browser (recorded files)
 			{
+#ifdef ENABLE_GRAPHLCD
+				std::string c = "MoviePlayer";
+				nGLCD::lockChannel(c);
+#endif			  
+			  
 				StopSubtitles();
 
 				moviePlayerGui->exec(NULL, "tsmoviebrowser");
@@ -3080,8 +3121,12 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				}
 					
 				StartSubtitles();
+				
+#if ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+#endif				
 			}
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
 			else if(msg == CRCInput::RC_picture) 	// picture viewer
 			{
 				StopSubtitles();
@@ -3091,7 +3136,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}
-#endif			
+//#endif			
 			else if (CRCInput::isNumeric(msg) && g_RemoteControl->director_mode ) 
 			{
 				StopSubtitles();
@@ -3121,6 +3166,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					showInfo();
 				}
+				
+#ifdef ENABLE_GRAPHLCD
+				if (msg == NeutrinoMessages::EVT_CURRENTNEXT_EPG)
+					nGLCD::Update();				
+#endif				
 			}
 			else if( (msg == (neutrino_msg_t) g_settings.key_pip) || (msg == (neutrino_msg_t) g_settings.key_pip_subchannel) )
 			{
@@ -3205,6 +3255,10 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			shift_timer = g_RCInput->addTimer( delay*1000*1000, true );
 			g_InfoViewer->handleMsg(NeutrinoMessages::EVT_RECORDMODE, 1);
 		}
+		
+#if ENABLE_GRAPHLCD
+		nGLCD::Update();
+#endif		
 
 		if(scrambled_timer) 
 		{
@@ -5260,6 +5314,10 @@ void stop_daemons(bool stopall)
 	// stop txt
 	tuxtxt_stop();
 	tuxtxt_close();
+	
+#ifdef ENABLE_GRAPHLCD
+	nGLCD::Exit();
+#endif	
 
 	// stop nhttpd	
 	dprintf(DEBUG_NORMAL, "stop_daemons: httpd shutdown\n");
@@ -5557,12 +5615,20 @@ void CNeutrinoApp::StopSubtitles()
 		frameBuffer->blit();
 #endif
 	}
+	
+#if ENABLE_GRAPHLCD	
+	nGLCD::MirrorOSD();
+#endif
 }
 
 // start subtitle
 void CNeutrinoApp::StartSubtitles(bool show)
 {
 	printf("%s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
+	
+#if ENABLE_GRAPHLCD
+	nGLCD::MirrorOSD(false);
+#endif	
 	
 	if(!show)
 		return;

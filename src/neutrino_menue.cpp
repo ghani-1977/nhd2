@@ -146,6 +146,10 @@
 
 #include <zapit/client/zapitclient.h>
 
+#if ENABLE_GRAPHLCD
+#include "gui/glcdsetup.h"
+#endif
+
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
@@ -2166,6 +2170,9 @@ bool CNeutrinoApp::showUserMenu(int button)
         CEventListHandler * tmpEventListHandler                 = NULL;
         CEPGplusHandler * tmpEPGplusHandler                     = NULL;
         CEPGDataHandler * tmpEPGDataHandler                     = NULL;
+#if ENABLE_GRAPHLCD
+	GLCD_Menu * glcdMenu 					= NULL;
+#endif	
 
         std::string txt = g_settings.usermenu_text[button];
 
@@ -2366,6 +2373,19 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu->addItem(menu_item, 0);
 
                                 break;
+				
+#if ENABLE_GRAPHLCD
+			case SNeutrinoSettings::ITEM_GLCD:
+                                menu_items++;
+                                menu_prev = SNeutrinoSettings::ITEM_GLCD;
+                               
+				glcdMenu = new GLCD_Menu();
+				
+                                keyhelper.get(&key,&icon);
+                                menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, glcdMenu, "-1", key, icon);
+                                menu->addItem(menu_item, false);
+                                break;
+#endif
 
                         default:
                                 printf("[neutrino] WARNING! menu wrong item!!\n");
@@ -2435,6 +2455,11 @@ bool CNeutrinoApp::showUserMenu(int button)
 
         if(tmpEPGDataHandler)
 		delete tmpEPGDataHandler;
+	
+#if ENABLE_GRAPHLCD
+	if(glcdMenu)
+		delete glcdMenu;
+#endif	
 
         if(menu)
 		delete menu;

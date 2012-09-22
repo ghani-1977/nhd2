@@ -73,6 +73,11 @@ if ENABLE_LCD
 neutrino_LDADD += $(top_builddir)/lib/liblcddisplay/liblcddisplay.a
 endif
 
+# graph lcd
+if ENABLE_GRAPHLCD
+neutrino_LDADD += -lglcddrivers -lglcdgraphics -lusb
+endif
+
 
 
 
