@@ -2351,7 +2351,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	pthread_create(&sections_thread, NULL, sectionsd_main_thread, (void *) NULL);
 
 	// for boxes with lcd :-)
-#if 0	
+#if ENABLE_LCD	
 	CVFD::getInstance()->showVolume(g_settings.current_volume);
 	CVFD::getInstance()->setMuted(current_muted);
 #endif
@@ -4361,7 +4361,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			}
 		}
 
-#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
+#if ENABLE_LCD
 		CVFD::getInstance()->showVolume(g_settings.current_volume);
 #endif
 
