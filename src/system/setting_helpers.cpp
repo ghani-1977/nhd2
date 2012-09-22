@@ -745,7 +745,9 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS},
         {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT} ,
         {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES} ,
-        //{SNeutrinoSettings::ITEM_SCRIPT, LOCALE_MAINMENU_SCRIPTS} ,
+#if ENABLE_GRAPHLCD        
+        {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD},
+#endif        
 };
 
 int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
@@ -767,7 +769,7 @@ int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
         {
                 snprintf(text,10,"%d:",item);
                 text[9]=0;// terminate for sure
-                //menu.addItem( new CMenuOptionChooser(text, &g_settings.usermenu[button][item], USERMENU_ITEM_OPTIONS, USERMENU_ITEM_OPTION_COUNT,true ));
+                
                 menu.addItem( new CMenuOptionChooser(text, &g_settings.usermenu[button][item], USERMENU_ITEM_OPTIONS, USERMENU_ITEM_OPTION_COUNT,true, NULL, CRCInput::RC_nokey, "", true ));
         }
 

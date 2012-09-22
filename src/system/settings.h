@@ -326,7 +326,9 @@ struct SNeutrinoSettings
                 ITEM_PLUGIN = 14,
                 ITEM_VTXT = 15,
                 ITEM_GAME = 16,
-                //ITEM_SCRIPT = 17,
+#if ENABLE_GRAPHLCD                
+                ITEM_GLCD = 17,
+#endif                
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	
@@ -440,6 +442,20 @@ struct SNeutrinoSettings
 	char lcd_setting_dim_time[4];
 	char lcd_setting_dim_brightness[4];
 	// END VFD
+	
+#if ENABLE_GRAPHLCD
+        int		glcd_enable;
+        uint32_t	glcd_color_fg;
+        uint32_t	glcd_color_bg;
+        uint32_t	glcd_color_bar;
+        std::string	glcd_font;
+        int		glcd_percent_channel;
+        int		glcd_percent_epg;
+        int		glcd_percent_bar;
+        int		glcd_percent_time;
+        int		glcd_mirror_osd;
+        int		glcd_time_in_standby;
+#endif	
 
 #define FILESYSTEM_ENCODING_TO_UTF8(a) (g_settings.filesystem_is_utf8 ? (a) : ZapitTools::Latin1_to_UTF8(a).c_str())
 #define UTF8_TO_FILESYSTEM_ENCODING(a) (g_settings.filesystem_is_utf8 ? (a) : ZapitTools::UTF8_to_Latin1(a).c_str())
