@@ -1302,9 +1302,6 @@ int CFrontend::tuneFrequency(FrontendParameters * feparams, uint8_t polarization
 	return setParameters(&TP, nowait);
 }
 
-//test
-//int readInputPower();
-
 int CFrontend::setParameters(TP_params * TP, bool nowait)
 {
 	int freq_offset = 0;
@@ -1356,9 +1353,9 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 
 		setFrontend(&TP->feparams);
 		
-		struct dvb_frontend_event event;
+		//struct dvb_frontend_event event;
 		
-		event = getEvent();
+		/*event =*/ getEvent();
 	} while (0);
 
 	if (tuned) 
