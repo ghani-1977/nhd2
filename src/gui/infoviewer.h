@@ -77,12 +77,14 @@ class CInfoViewer
 		int satNameWidth;
 		
 		// dimensions of radiotext window
+#if ENABLE_RADIOTEXT		
 		int             rt_dx;
 		int             rt_dy;
 		int             rt_x;
 		int             rt_y;
 		int             rt_h;
 		int             rt_w;
+#endif		
 
 		int		asize;
 
@@ -109,7 +111,9 @@ class CInfoViewer
 		void showButton_SubServices();
 		
 		void showIcon_16_9();
+#if ENABLE_RADIOTEXT		
 		void showIcon_RadioText(bool rt_available) const;
+#endif		
 	
 #ifndef SKIP_CA_STATUS
 		void showIcon_CA_Status(int);
@@ -127,8 +131,10 @@ class CInfoViewer
 		void showLcdPercentOver();
 		void showSNR();
 		
+#if ENABLE_RADIOTEXT		
 		void showRadiotext();
 		void killRadiotext();
+#endif		
 
 		CProgressBar *snrscale, *sigscale, *timescale;
 		char MoviePercent;
