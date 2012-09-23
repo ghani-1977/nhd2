@@ -1235,8 +1235,10 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 				int global = 100*listPos / maxProgress;
 				progress.showGlobalStatus(global);
 #if ENABLE_LCD
+#ifdef LCD_UPDATE
 				CVFD::getInstance()->showProgressBar(global, "read xmldata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
+#endif				
 #endif // LCD_UPDATE
 
 				if (usechild) 
@@ -1337,8 +1339,10 @@ bool CAudioPlayerGui::openFilebrowser(void)
 				progress.showGlobalStatus(global);
 				progress.showStatusMessageUTF(files->Name);
 #if ENABLE_LCD
+#ifdef LCD_UPDATE
 				CVFD::getInstance()->showProgressBar(global, "read metadata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
+#endif				
 #endif // LCD_UPDATE
 			}
 			
@@ -1535,8 +1539,10 @@ bool CAudioPlayerGui::openSCbrowser(void)
 				progress.showGlobalStatus(global);
 				progress.showStatusMessageUTF(files->Name);			
 #if ENABLE_LCD
+#ifdef LCD_UPDATE
 				CVFD::getInstance()->showProgressBar(global, "read metadata...");
 				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
+#endif				
 #endif
 			}
 			//printf("processPlaylistUrl(%s, %s)\n", files->Url.c_str(), files->Name.c_str());
