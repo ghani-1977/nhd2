@@ -33,7 +33,7 @@ static	void	scanip( char *str, unsigned char *to )
 		sp++;
 	}
 }
-	
+
 int	netSetIP( char *dev, char *ip, char *mask, char *brdcast )
 {
 	int					fd;
@@ -53,24 +53,24 @@ int	netSetIP( char *dev, char *ip, char *mask, char *brdcast )
 	scanip( brdcast, adr_brdcast );
 
 	/* init structures */
-	bzero(&req,sizeof(req));
+	memset(&req,0,sizeof(req));
 	strcpy(req.ifr_name,dev);
 
-	bzero(&addr,sizeof(addr));
+	memset(&addr,0,sizeof(addr));
 	addr.sin_family = AF_INET;
 
 	addr.sin_addr.s_addr = *((unsigned long *) adr_ip);
-	memcpy(&req.ifr_addr,&addr,sizeof(addr));
+	memmove(&req.ifr_addr,&addr,sizeof(addr));
 	if( ioctl(fd,SIOCSIFADDR,&req) < 0 )
 		goto abbruch;
 
 	addr.sin_addr.s_addr = *((unsigned long *) adr_mask);
-	memcpy(&req.ifr_addr,&addr,sizeof(addr));
+	memmove(&req.ifr_addr,&addr,sizeof(addr));
 	if( ioctl(fd,SIOCSIFNETMASK,&req) < 0 )
 		goto abbruch;
 
 	addr.sin_addr.s_addr = *((unsigned long *) adr_brdcast);
-	memcpy(&req.ifr_addr,&addr,sizeof(addr));
+	memmove(&req.ifr_addr,&addr,sizeof(addr));
 	if( ioctl(fd,SIOCSIFBRDADDR,&req) < 0 )
 		goto abbruch;
 
@@ -97,7 +97,7 @@ void	netGetIP( char *dev, char *ip, char *mask, char *brdcast )
 		return;
 
 
-	bzero(&req,sizeof(req));
+	memset(&req,0,sizeof(req));
 	strcpy(req.ifr_name,dev);
 	saddr = (struct sockaddr_in *) &req.ifr_addr;
 	addr= (unsigned char*) &saddr->sin_addr.s_addr;
@@ -121,7 +121,7 @@ void	netSetDefaultRoute( char *gw )
 	struct sockaddr_in	*in_addr;
 	unsigned char		*addr;
 	int					fd;
-	unsigned char		adr_gw[4];
+	unsigned char		adr_gw[4] = {0};
 
 	scanip( gw, adr_gw );
 
@@ -142,7 +142,7 @@ void	netSetDefaultRoute( char *gw )
 		return;
 
 	re.rt_flags = RTF_GATEWAY | RTF_UP;
-	memcpy(addr,adr_gw,4);
+	memmove(addr,adr_gw,4);
 
 	ioctl(fd,SIOCADDRT,&re);
 
@@ -205,9 +205,16 @@ char	*netGetHostname( void )
 
 void	netSetHostname( char *host )
 {
+	FILE * fp;
+
 	strcpy(hostbuf,host);
 	hostis=1;
 	sethostname(hostbuf,strlen(hostbuf)+1);
+	fp = fopen("/etc/hostname", "w");
+	if(fp != NULL) {
+		fprintf(fp, "%s\n", hostbuf);
+		fclose(fp);
+	}
 }
 
 void	netSetNameserver(const char * const ip)
@@ -234,7 +241,7 @@ void	netGetNameserver( char *ip )
 {
 	FILE *fp;
 	char zeile[256];
-	char *index;
+	char *indexLocal;
 	unsigned zaehler;
 
 	*ip = 0;
@@ -246,15 +253,35 @@ void	netGetNameserver( char *ip )
 	{
 		if (!strncasecmp(zeile,"nameserver",10))
 		{
-			index = zeile + 10;
-			while ( (*index == ' ') || (*index == '\t') )
-				index++;
+			indexLocal = zeile + 10;
+			while ( (*indexLocal == ' ') || (*indexLocal == '\t') )
+				indexLocal++;
 			zaehler = 0;
-			while ( (zaehler < 15) && ( ((*index >= '0') && (*index <= '9')) || (*index == '.')))
-				ip[zaehler++] = *(index++);
+			while ( (zaehler < 15) && ( ((*indexLocal >= '0') && (*indexLocal <= '9')) || (*indexLocal == '.')))
+				ip[zaehler++] = *(indexLocal++);
 			ip[zaehler] = 0;
 			break;
 		}
 	}
 	fclose(fp);
+}
+
+void netGetMacAddr(char * ifname, unsigned char * mac)
+{
+	int fd;
+	struct ifreq ifr;
+
+
+	memset(mac, 0, 6);
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	if(fd < 0)
+		return;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+
+	if(ioctl(fd, SIOCGIFHWADDR, &ifr) < 0)
+		return;
+
+	memmove(mac, ifr.ifr_hwaddr.sa_data, 6);
 }
