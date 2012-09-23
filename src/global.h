@@ -54,7 +54,9 @@
 #include "gui/infoviewer.h"
 #include "gui/eventlist.h"
 
+#if ENABLE_RADIOTEXT
 #include "driver/radiotext.h"
+#endif
 
 #ifndef NEUTRINO_CPP
   #define NEUTRINO_CPP extern
@@ -92,7 +94,8 @@ NEUTRINO_CPP  EventList			*g_EventList;
 
 NEUTRINO_CPP CLocaleManager		*g_Locale;
 
+#if ENABLE_RADIOTEXT
 NEUTRINO_CPP CRadioText			*g_Radiotext;
-
+#endif
 
 #endif /* __neutrino_global_h__ */

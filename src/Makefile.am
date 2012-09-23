@@ -12,9 +12,12 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libxmltree \
 	-I$(top_srcdir)/lib/libmd5sum \
-	-I$(top_srcdir)/lib/libupnpclient \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
+
+if ENABLE_UPNP
+INCLUDES += -I$(top_srcdir)/lib/libupnpclient
+endif
 
 bin_PROGRAMS = neutrino
 
@@ -52,7 +55,6 @@ neutrino_LDADD = \
 	$(top_builddir)/lib/libmd5sum/libtuxbox-md5sum.a \
 	$(top_builddir)/lib/libdvbsub/libdvbsub.a \
 	$(top_builddir)/lib/libtuxtxt/libtuxtxt.a \
-	$(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a \
 	$(top_builddir)/lib/libcoolstream/libcoolstream.a \
 	@CURL_LIBS@ \
 	@FREETYPE_LIBS@ \
@@ -61,6 +63,10 @@ neutrino_LDADD = \
 	@ID3TAG_LIBS@ \
 	@VORBISIDEC_LIBS@ \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
+
+if ENABLE_UPNP
+neutrino_LDADD += $(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a
+endif
 
 if !ENABLE_GSTREAMER
 neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a -lass
