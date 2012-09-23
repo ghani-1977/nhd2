@@ -44,10 +44,10 @@ void sectionsd_getCurrentNextServiceKey(t_channel_id uniqueServiceKey, CSections
 
 nGLCD::nGLCD() {
 	lcd = NULL;
-	Channel = "Neutrino HD";
-	Epg = "SPARK";
-	scrollChannel = "Neutrino HD";
-	scrollEpg = "SPARK";
+	Channel = "NeutrinoHD";
+	Epg = "NeutrinoHD2";
+	scrollChannel = "NeutrinoHD";
+	scrollEpg = "NeutrinoHD2";
 
 	sem_init(&sem, 0, 1);
 

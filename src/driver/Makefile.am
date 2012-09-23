@@ -37,9 +37,7 @@ libneutrino_driver_a_SOURCES = \
 	audiofile.cpp \
 	shutdown_count.cpp \
 	genpsi.c \
-	streamts.cpp \
-	radiotext.cpp \
-	radiotools.cpp
+	streamts.cpp
 
 if ENABLE_LCD
 libneutrino_driver_a_SOURCES += lcdd.cpp	
@@ -58,5 +56,11 @@ libneutrino_driver_netfile_a_SOURCES = netfile.cpp
 
 if ENABLE_GRAPHLCD
 libneutrino_driver_a_SOURCES += nglcd.cpp
+endif
+
+if ENABLE_RADIOTEXT
+libneutrino_driver_a_SOURCES += \
+	radiotext.cpp \
+	radiotools.cpp
 endif
 

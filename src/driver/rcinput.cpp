@@ -336,7 +336,7 @@ bool CRCInput::saveKeyMap(const char * const fileName)
 	configfile.setInt32("key_vfdexit", key_vfdexit);
 	configfile.setInt32("key_vfdok", key_vfdok);
 	
-	if(configfile.getModifiedFlag())
+	//if(configfile.getModifiedFlag())
 	{
 		/* save neu configuration */
 		configfile.saveConfig(fileName);

@@ -72,6 +72,10 @@ extern "C" {
 #include "radiotext.h"
 #include "radiotools.h"
 
+
+#include <zapit/channel.h>
+extern CZapitChannel * live_channel;			/* zapit.cpp */
+
 rtp_classes rtp_content;
 
 // RDS rest
@@ -2319,7 +2323,7 @@ eOSState cRTplusList::ProcessKey(eKeys Key)
 #endif
 
 
-static int pes_SyncBufferRead (cDemux *RaudioDemux, ringbuffer_t *buf, u_long *skipped_bytes);
+static int pes_SyncBufferRead (cDemux * RaudioDemux, ringbuffer_t *buf, u_long *skipped_bytes);
 
 static bool rtThreadRunning;
 
@@ -2328,7 +2332,7 @@ void *RadioTextThread(void *data)
 	CRadioText * rt = ((CRadioText::s_rt_thread *)data)->rt_object;
 	//int fd = ((CRadioText::s_rt_thread *)data)->fd;
 	//struct dmx_pes_filter_params flt;
-	cDemux *RaudioDemux = rt->RaudioDemux;
+	cDemux * RaudioDemux = rt->RaudioDemux;
 	//printf("in RadioTextThread fd = %d\n", fd);
 
 	//while (1) 
@@ -2506,7 +2510,7 @@ void CRadioText::setPid(uint inPid)
 			{
 				bool ret = false;
 				RaudioDemux = new cDemux();
-				RaudioDemux->Open(DMX_TP_CHANNEL/*DMX_AUDIO_CHANNEL*/, 128*1024);
+				RaudioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_channel?live_channel->getFeIndex():0);
 				if (RaudioDemux->pesFilter(pid) >= 0)
 				{
 					/* start demux filter */
@@ -2687,7 +2691,8 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 	// -- ISO 13818-2 packets
 
 	sync = 0xFFFFFFFF;
-	while (max_len > 0) {
+	while (max_len > 0) 
+	{
 		u_char c;
 		int    n;
 

@@ -210,18 +210,17 @@ void CFrameBuffer::init(const char * const fbDevice)
 
 	struct vt_mode mode;
 
-
-	if (-1 == ioctl(tty,KDGETMODE, &kd_mode)) {
+	if (-1 == ioctl(tty, KDGETMODE, &kd_mode)) {
 		perror("ioctl KDGETMODE");
 		goto nolfb;
 	}
 
-	if (-1 == ioctl(tty,VT_GETMODE, &vt_mode)) {
+	if (-1 == ioctl(tty, VT_GETMODE, &vt_mode)) {
       		perror("ioctl VT_GETMODE");
 		goto nolfb;
 	}
 
-	if (-1 == ioctl(tty,VT_GETMODE, &mode)) {
+	if (-1 == ioctl(tty, VT_GETMODE, &mode)) {
       		perror("ioctl VT_GETMODE");
 		goto nolfb;
 	}
@@ -231,12 +230,12 @@ void CFrameBuffer::init(const char * const fbDevice)
 	mode.relsig = SIGUSR1;
 	mode.acqsig = SIGUSR2;
 
-	if (-1 == ioctl(tty,VT_SETMODE, &mode)) {
+	if (-1 == ioctl(tty, VT_SETMODE, &mode)) {
 		perror("ioctl VT_SETMODE");
 		goto nolfb;
 	}
 
-	if (-1 == ioctl(tty,KDSETMODE, KD_GRAPHICS)) {
+	if (-1 == ioctl(tty, KDSETMODE, KD_GRAPHICS)) {
 		perror("ioctl KDSETMODE");
 		goto nolfb;
 	}
@@ -279,7 +278,7 @@ CFrameBuffer::~CFrameBuffer()
 		perror("ioctl KDSETMODE");
 #endif
 
-	if (-1 == ioctl(tty,VT_SETMODE, &vt_mode))
+	if (-1 == ioctl(tty, VT_SETMODE, &vt_mode))
 		perror("ioctl VT_SETMODE");
 
 	if (available)
