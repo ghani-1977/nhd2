@@ -19,7 +19,10 @@
 
 #include <global.h>
 #include <neutrino.h>
-#include <driver/vfd.h>
+
+#if ENABLE_LCD
+#include <driver/lcdd.h>
+#endif
 
 #include "int_fft.c"
 typedef signed short gint16;
