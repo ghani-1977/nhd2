@@ -22,7 +22,6 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libxmltree \
-	-I$(top_srcdir)/lib/libupnpclient \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@CURL_CFLAGS@ \
 	@FREETYPE_CFLAGS@
@@ -31,6 +30,10 @@ if !ENABLE_GSTREAMER
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 else
 INCLUDES += @GST_CFLAGS@
+endif
+
+if ENABLE_UPNP
+INCLUDES += -I$(top_srcdir)/lib/libupnpclient
 endif
 
 noinst_LIBRARIES = libtimerlist.a libneutrino_gui.a libneutrino_gui2.a
@@ -48,10 +51,11 @@ libneutrino_gui_a_SOURCES = \
 
 libneutrino_gui2_a_SOURCES = \
 	color.cpp motorcontrol.cpp hdd_menu.cpp \
-	alphasetup.cpp dvbsub_select.cpp upnpbrowser.cpp
+	alphasetup.cpp dvbsub_select.cpp psisetup.cpp
 
-libneutrino_gui2_a_SOURCES += \
-	alphasetup.cpp psisetup.cpp
+if ENABLE_UPNP
+libneutrino_gui2_a_SOURCES += upnpbrowser.cpp
+endif
 
 if BOXTYPE_CUBEREVO
 libneutrino_gui2_a_SOURCES += cam_menu.cpp

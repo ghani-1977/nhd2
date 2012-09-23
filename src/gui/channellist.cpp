@@ -1150,11 +1150,13 @@ void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
 	
 	if ( pos !=(int)tuned ) 
 	{
+#if ENABLE_RADIOTEXT	  
 		if ((g_settings.radiotext_enable) && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio) && (g_Radiotext))
 		{
 			// stop radiotext PES decoding before zapping
 			g_Radiotext->radiotext_stop();
 		}
+#endif		
 		
 		tuned = pos;
 		g_RemoteControl->zapTo_ChannelID(chan->channel_id, chan->name, !chan->bAlwaysLocked); // UTF-8
