@@ -119,6 +119,9 @@ data/iso-codes/Makefile
 data/inetradio/Makefile
 data/locale/Makefile
 data/config/Makefile
+data/lcd/Makefile
+data/lcd/icons/Makefile
+data/lcd/clock/Makefile
 src/sectionsd/Makefile
 src/timerd/Makefile
 src/zapit/Makefile
