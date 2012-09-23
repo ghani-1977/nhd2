@@ -108,7 +108,10 @@
 #include "gui/filebrowser.h"
 
 #include "gui/psisetup.h"
+
+#if ENABLE_UPNP
 #include "gui/upnpbrowser.h"
+#endif
 
 #include <system/setting_helpers.h>
 #include <system/settings.h>
@@ -136,10 +139,6 @@
 
 #include <zapit/getservices.h>
 #include <zapit/satconfig.h>
-
-#if ENABLE_TEST_MENU
-#include "gui/test_menu.h"
-#endif
 
 #include "gui/scan_setup.h"
 #include "gui/zapit_setup.h"
@@ -253,7 +252,9 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_PICTUREVIEWER, true, "", new CPictureViewerGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "pictureviewer", LOCALE_HELPTEXT_PICTUREVIEWER ));
 
 	//UPNP Browser
-	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_UPNPBROWSER_HEAD, true, "", new CUpnpBrowserGui(), NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "upnpbrowser", LOCALE_HELPTEXT_UPNPBROWSER ));
+#if ENABLE_UPNP	
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_UPNPBROWSER_HEAD, true, "", new CUpnpBrowserGui(), NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "upnpbrowser", LOCALE_HELPTEXT_UPNPBROWSER ));
+#endif	
 	
 	//Main Setting Menu
 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
@@ -1070,7 +1071,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SAT_DISPLAY, &g_settings.infobar_sat_display, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
 	
 	// radio text
-	//miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT, &g_settings.radiotext_enable, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, false ));
+#if ENABLE_RADIOTEXT	
+	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT, &g_settings.radiotext_enable, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
+#endif	
 	
 	// logos dir
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_LOGOSDIR, true, g_settings.logos_dir , this, "logos_dir" ) );
