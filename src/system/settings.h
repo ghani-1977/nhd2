@@ -102,6 +102,7 @@ struct SNeutrinoSettings
 	std::string network_ntpserver;
 	std::string network_ntprefresh;
 	int network_ntpenable;
+	char ifname[10];
 	// END NETWORK
 
 	// RECORDING

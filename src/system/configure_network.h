@@ -22,37 +22,74 @@
  *
  */
 
+ #include <sys/stat.h>
 #include <string>
+
 
 class CNetworkConfig
 {
- private:
-	bool        orig_automatic_start;
-	std::string orig_address;
-	std::string orig_netmask;
-	std::string orig_broadcast;
-	std::string orig_gateway;
-	std::string orig_nameserver;
-	bool        orig_inet_static;
+	private:
+		bool        orig_automatic_start;
+		std::string orig_address;
+		std::string orig_netmask;
+		std::string orig_broadcast;
+		std::string orig_gateway;
+		std::string orig_nameserver;
+		std::string orig_hostname;
+		
+		bool        orig_inet_static;
+		
+		std::string orig_ifname;
+		std::string orig_ssid;
+		std::string orig_key;
+		std::string orig_encryption;
 
-	void copy_to_orig(void);
-	bool modified_from_orig(void);
+		void copy_to_orig(void);
+		bool modified_from_orig(void);
+		
+		void init_vars(void);
+		void readWpaConfig();
+		void saveWpaConfig();
 
- public:
-	bool        automatic_start;
-	std::string address;
-	std::string netmask;
-	std::string broadcast;
-	std::string gateway;
-	std::string nameserver;
-	bool        inet_static;
+	public:
+		bool        automatic_start;
+		std::string address;
+		std::string netmask;
+		std::string broadcast;
+		std::string gateway;
+		std::string nameserver;
+		
+		std::string hostname;
+		std::string mac_addr;
+		
+		std::string ifname;
+		std::string ssid;
+		std::string key;
+		std::string encryption; // WPA or WPA2
+		
+		bool        inet_static;
+		bool	    wireless;
 
-	CNetworkConfig(void);
+		CNetworkConfig(void);
+		~CNetworkConfig();
+		
+		static CNetworkConfig* getInstance();
 
-	void commitConfig(void);
+		void readConfig(std::string iname);
+		void commitConfig(void);
 
-	void startNetwork(void);
-	void stopNetwork(void);
+		void startNetwork(void);
+		void stopNetwork(void);
+		
+		void setIfName(std::string name) { ifname = name;};
+};
+
+class CNetAdapter
+{
+	private:
+		long mac_addr_sys ( u_char *addr);	
+	public:
+		std::string getMacAddr(void);
 };
 
 #endif /* __configure_network_h__ */

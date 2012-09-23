@@ -63,6 +63,7 @@
 #include <zapit/frontend_c.h>
 #include <gui/scan_setup.h>
 
+
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 extern cVideo *videoDecoder;
@@ -281,23 +282,6 @@ bool CSectionsdConfigNotifier::changeNotify(const neutrino_locale_t, void *)
         return true;
 }
 
-/*
-bool CTouchFileNotifier::changeNotify(const neutrino_locale_t, void * data)
-{
-	if ((*(int *)data) != 0)
-	{
-		FILE * fd = fopen(filename, "w");
-		if (fd)
-			fclose(fd);
-		else
-			return false;
-	}
-	else
-		remove(filename);
-	return true;
-}
-*/
-
 // color setup notifier
 bool CColorSetupNotifier::changeNotify(const neutrino_locale_t, void *)
 {
@@ -443,10 +427,6 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	return true;
 }
 
-//FIXME
-#define IOC_IR_SET_F_DELAY      _IOW(0xDD,  5, unsigned int)            /* set the delay time before the first repetition */
-#define IOC_IR_SET_X_DELAY      _IOW(0xDD,  6, unsigned int)            /* set the delay time between all other repetitions */
-
 bool CKeySetupNotifier::changeNotify(const neutrino_locale_t, void *)
 {
 
@@ -458,23 +438,68 @@ bool CKeySetupNotifier::changeNotify(const neutrino_locale_t, void *)
 
 	int fd = g_RCInput->getFileHandle();
 
-	ioctl(fd, IOC_IR_SET_F_DELAY, fdelay);
-	ioctl(fd, IOC_IR_SET_X_DELAY, xdelay);
+	/* if we have a good input device, we don't need the private ioctl above */
+	struct input_event ie;
+	ie.type = EV_REP;
+	/* increase by 10 ms to trick the repeat checker code in the
+	 * rcinput loop into accepting the key event... */
+	ie.value = fdelay + 10;
+	ie.code = REP_DELAY;
+	if (write(fd, &ie, sizeof(ie)) == -1)
+		perror("CKeySetupNotifier::changeNotify REP_DELAY");
+
+	ie.value = xdelay + 10;
+	ie.code = REP_PERIOD;
+	if (write(fd, &ie, sizeof(ie)) == -1)
+		perror("CKeySetupNotifier::changeNotify REP_PERIOD");
 
 	return false;
 }
 
 // IP notifier
-bool CIPChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
+bool CIPChangeNotifier::changeNotify(const neutrino_locale_t locale, void * Data)
 {
-	char ip[16];
-	unsigned char _ip[4];
-	sscanf((char*) Data, "%hhu.%hhu.%hhu.%hhu", &_ip[0], &_ip[1], &_ip[2], &_ip[3]);
+	if(locale == LOCALE_NETWORKMENU_IPADDRESS) 
+	{
+		char ip[16];
+		unsigned char _ip[4];
+		sscanf((char*) Data, "%hhu.%hhu.%hhu.%hhu", &_ip[0], &_ip[1], &_ip[2], &_ip[3]);
 
-	sprintf(ip, "%hhu.%hhu.%hhu.255", _ip[0], _ip[1], _ip[2]);
-	CNeutrinoApp::getInstance()->networkConfig.broadcast = ip;
+		sprintf(ip, "%hhu.%hhu.%hhu.255", _ip[0], _ip[1], _ip[2]);
+		CNeutrinoApp::getInstance()->networkConfig.broadcast = ip;
 
-	CNeutrinoApp::getInstance()->networkConfig.netmask = (_ip[0] == 10) ? "255.0.0.0" : "255.255.255.0";
+		CNeutrinoApp::getInstance()->networkConfig.netmask = (_ip[0] == 10) ? "255.0.0.0" : "255.255.255.0";
+	}
+	else if(locale == LOCALE_NETWORKMENU_SELECT_IF) 
+	{
+#if 1
+		// Width may change. Clear framebuffer, caller will redraw anyway.
+		//CFrameBuffer::getInstance()->Clear();
+		CFrameBuffer::getInstance()->blit();
+#endif
+		CNeutrinoApp::getInstance()->networkConfig.readConfig(g_settings.ifname);
+		//readNetworkSettings(); //???
+		printf("CNetworkSetup::changeNotify: using %s, static %d\n", g_settings.ifname, CNeutrinoApp::getInstance()->networkConfig.inet_static);
+
+		changeNotify(LOCALE_NETWORKMENU_DHCP, &CNeutrinoApp::getInstance()->networkConfig.inet_static);
+
+#if 1
+		int ecnt = sizeof(CNeutrinoApp::getInstance()->wlanEnable) / sizeof(CMenuItem*);
+#endif
+		for(int i = 0; i < ecnt; i++)
+			CNeutrinoApp::getInstance()->wlanEnable[i]->setActive(CNeutrinoApp::getInstance()->networkConfig.wireless);
+
+	}
+	/*
+	else if(locale == LOCALE_NETWORKMENU_DHCP) 
+	{
+		CNeutrinoApp::getInstance()->networkConfig.inet_static = (network_dhcp == 0 );
+		int ecnt = sizeof(dhcpDisable) / sizeof(CMenuForwarder*);
+
+		for(int i = 0; i < ecnt; i++)
+			dhcpDisable[i]->setActive(CNetworkConfig::getInstance()->inet_static);
+	}
+	*/
 
 	return true;
 }
@@ -685,15 +710,22 @@ void showCurrentNetworkSettings()
 	char broadcast[16];
 	char router[16];
 	char nameserver[16];
+	std::string mac;
 	std::string text;
 
-	netGetIP((char *) "eth0",ip,mask,broadcast);
+	//netGetIP((char *) "eth0",ip,mask,broadcast);
+	netGetIP(g_settings.ifname, ip, mask, broadcast);
+	
 	if (ip[0] == 0) {
 		text = "Network inactive\n";
 	}
 	else {
 		netGetNameserver(nameserver);
 		netGetDefaultRoute(router);
+		//netGetMacAddr(g_settings.ifname, (unsigned char *)mac.c_str());
+		
+		//text = "Box: " + mac + "\n    ";
+		
 		text  = g_Locale->getText(LOCALE_NETWORKMENU_IPADDRESS );
 		text += ": ";
 		text += ip;

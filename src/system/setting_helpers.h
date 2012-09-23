@@ -145,7 +145,7 @@ class CKeySetupNotifier : public CChangeObserver
 class CIPChangeNotifier : public CChangeObserver
 {
 	public:
-		bool changeNotify(const neutrino_locale_t, void * Data);
+		bool changeNotify(const neutrino_locale_t locale, void * Data);
 };
 
 // timing setup notifier
