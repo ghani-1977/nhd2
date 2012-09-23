@@ -55,7 +55,7 @@
 #include <libgen.h>
 
 #include <record_cs.h>
-#include <driver/vfd.h>
+
 #include <zapit/cam.h>
 #include <zapit/channel.h>
 #include <zapit/frontend_c.h>

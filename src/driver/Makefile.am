@@ -14,6 +14,10 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
 
+if ENABLE_LCD
+INCLUDES += -I$(top_srcdir)/lib/liblcddisplay
+endif
+
 noinst_LIBRARIES = libneutrino_driver.a libneutrino_driver_netfile.a
 
 libneutrino_driver_a_SOURCES = \
@@ -25,7 +29,6 @@ libneutrino_driver_a_SOURCES = \
 	rcinput.cpp \
 	vcrcontrol.cpp \
 	audioplay.cpp \
-	vfd.cpp \
 	stream2file.cpp \
 	screen_max.cpp \
 	slotbuffer.c \
@@ -37,6 +40,12 @@ libneutrino_driver_a_SOURCES = \
 	streamts.cpp \
 	radiotext.cpp \
 	radiotools.cpp
+
+if ENABLE_LCD
+libneutrino_driver_a_SOURCES += lcdd.cpp	
+else
+libneutrino_driver_a_SOURCES += vfd.cpp
+endif
 
 libneutrino_driver_a_SOURCES += \
 	png.cpp \

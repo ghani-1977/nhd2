@@ -30,14 +30,6 @@
 #include <config.h>
 #endif
 
-#if ENABLE_LCD
-// TODO Why is USE_FILE_OFFSET64 not defined, if file.h is included here????
-#ifndef __USE_FILE_OFFSET64
-#define __USE_FILE_OFFSET64 1
-#endif
-#include "driver/file.h"
-#endif // ENABLE_LCD
-
 #include <pthread.h>
 #include <string>
 
@@ -147,12 +139,6 @@ class CVFD
 			MODE_AUDIO,
 			MODE_PIC,
 			MODE_TS,
-#if ENABLE_LCD
-                ,       MODE_FILEBROWSER,
-                        MODE_PROGRESSBAR,
-                        MODE_PROGRESSBAR2,
-                        MODE_INFOBOX
-#endif // ENABLE_LCD
 		};
 
 		enum AUDIOMODES
@@ -245,41 +231,6 @@ class CVFD
 		void openDevice();
 		void closeDevice();
 #endif
-
-#if ENABLE_LCD
-	public:
-		void showVolume(const char vol, const bool perform_update = true);
-		void showPercentOver(const unsigned char perc, const bool perform_update = true);
-		
-		void showAudioProgress(const char perc, bool isMuted);
-		
-		void setInverse(int);
-		int getInverse();
-		
-        private:
-                CFileList* m_fileList;
-                int m_fileListPos;
-                std::string m_fileListHeader;
-
-                std::string m_infoBoxText;
-                std::string m_infoBoxTitle;
-                int m_infoBoxTimer;   // for later use
-                bool m_infoBoxAutoNewline;
-
-                bool m_progressShowEscape;
-                std::string  m_progressHeaderGlobal;
-                std::string  m_progressHeaderLocal;
-                int m_progressGlobal;
-                int m_progressLocal;
-        public:
-                MODES getMode(void){return mode;};
-
-                void showFilelist(int flist_pos = -1,CFileList* flist = NULL,const char * const mainDir=NULL);
-                void showInfoBox(const char * const title = NULL,const char * const text = NULL,int autoNewline = -1,int timer = -1);
-                void showProgressBar(int global = -1,const char * const text = NULL,int show_escape = -1,int timer = -1);
-                void showProgressBar2(int local = -1,const char * const text_local = NULL,int global = -1,const char * const text_global = NULL,int show_escape = -1);
-#endif // ENABLE_LCD
-
 };
 
 
