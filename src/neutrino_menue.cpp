@@ -150,6 +150,8 @@
 #include "gui/glcdsetup.h"
 #endif
 
+#include "gui/proxyserver_setup.h"
+
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
@@ -880,6 +882,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	/* versionInfo.getType() returns const char * which is never deallocated */
 	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_CURRENTVERSIONSNAPSHOT, false, versionInfo.getType()));
 
+	#if 0
 	updateSettings->addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_FLASHUPDATE_PROXYSERVER_SEP));
 
 	// proxy server
@@ -893,6 +896,11 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	// proxy pwd
 	CStringInputSMS * updateSettings_proxypass = new CStringInputSMS(LOCALE_FLASHUPDATE_PROXYPASSWORD, g_settings.softupdate_proxypassword, 20, LOCALE_FLASHUPDATE_PROXYPASSWORD_HINT1, LOCALE_FLASHUPDATE_PROXYPASSWORD_HINT2, "abcdefghijklmnopqrstuvwxyz0123456789!""§$%&/()=?-. ");
 	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYPASSWORD, true, g_settings.softupdate_proxypassword, updateSettings_proxypass));
+	#endif
+	
+	//proxyserver submenu
+	updateSettings->addItem(GenericMenuSeparatorLine);
+	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_0, NEUTRINO_ICON_BUTTON_0));
 
 	// check update
 	//FIXME: allow update only when the rootfs is jffs2/squashfs
@@ -1274,15 +1282,69 @@ const CMenuOptionChooser::keyval OPTIONS_NTPENABLE_OPTIONS[OPTIONS_NTPENABLE_OPT
 	{ 1, NONEXISTANT_LOCALE, "NTP" }
 };
 
+#define OPTIONS_WLAN_SECURITY_OPTION_COUNT 2
+const CMenuOptionChooser::keyval OPTIONS_WLAN_SECURITY_OPTIONS[OPTIONS_WLAN_SECURITY_OPTION_COUNT] =
+{
+        { 0, NONEXISTANT_LOCALE, "WPA" },
+        { 1, NONEXISTANT_LOCALE, "WPA2"  }
+};
+
+static int my_filter(const struct dirent * dent)
+{
+	if(dent->d_name[0] == 'l' && dent->d_name[1] == 'o')
+		return 0;
+	if(dent->d_name[0] == '.')
+		return 0;
+	
+	return 1;
+}
+
 void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitNetworkSettings\n");
+	
+	struct dirent **namelist;
+
+	//if select
+	int ifcount = scandir("/sys/class/net", &namelist, my_filter, alphasort);
+
+	CMenuOptionStringChooser * ifSelect = new CMenuOptionStringChooser(LOCALE_NETWORKMENU_SELECT_IF, g_settings.ifname, ifcount > 1, this, CRCInput::RC_nokey, "", true);
+
+	bool found = false;
+
+	for(int i = 0; i < ifcount; i++) 
+	{
+		ifSelect->addOption(namelist[i]->d_name);
+		if(strcmp(g_settings.ifname, namelist[i]->d_name) == 0)
+			found = true;
+		free(namelist[i]);
+	}
+
+	if (ifcount >= 0)
+		free(namelist);
+
+	if(!found)
+		strcpy(g_settings.ifname, "eth0");
+	
+	networkConfig.readConfig(g_settings.ifname);
+
+	network_hostname	= networkConfig.hostname;
+	mac_addr		= networkConfig.mac_addr;
+	network_ssid		= networkConfig.ssid;
+	network_key		= networkConfig.key;
+	network_encryption	= (networkConfig.encryption == "WPA") ? 0 : 1;
+	
+	//eth id
+	CMenuForwarder * mac = new CMenuForwarderNonLocalized("MAC", false, mac_addr);
 	
 	CIPInput * networkSettings_NetworkIP  = new CIPInput(LOCALE_NETWORKMENU_IPADDRESS, networkConfig.address, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2, MyIPChanger);
 	CIPInput * networkSettings_NetMask    = new CIPInput(LOCALE_NETWORKMENU_NETMASK, networkConfig.netmask, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
 	CIPInput * networkSettings_Broadcast  = new CIPInput(LOCALE_NETWORKMENU_BROADCAST, networkConfig.broadcast, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
 	CIPInput * networkSettings_Gateway    = new CIPInput(LOCALE_NETWORKMENU_GATEWAY, networkConfig.gateway, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
 	CIPInput * networkSettings_NameServer = new CIPInput(LOCALE_NETWORKMENU_NAMESERVER, networkConfig.nameserver, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
+	
+	//hostname
+	CStringInputSMS * networkSettings_Hostname = new CStringInputSMS(LOCALE_NETWORKMENU_HOSTNAME, &network_hostname, 30, LOCALE_NETWORKMENU_NTPSERVER_HINT1, LOCALE_NETWORKMENU_NTPSERVER_HINT2, "abcdefghijklmnopqrstuvwxyz0123456789-. ");
 
         CSectionsdConfigNotifier * sectionsdConfigNotifier = new CSectionsdConfigNotifier;
         CStringInputSMS * networkSettings_NtpServer = new CStringInputSMS(LOCALE_NETWORKMENU_NTPSERVER, &g_settings.network_ntpserver, 30, LOCALE_NETWORKMENU_NTPSERVER_HINT1, LOCALE_NETWORKMENU_NTPSERVER_HINT2, "abcdefghijklmnopqrstuvwxyz0123456789-. ", sectionsdConfigNotifier);
@@ -1296,6 +1358,8 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	CMenuForwarder * m5 = new CMenuForwarder(LOCALE_NETWORKMENU_NAMESERVER, networkConfig.inet_static, networkConfig.nameserver, networkSettings_NameServer);
         CMenuForwarder * m6 = new CMenuForwarder( LOCALE_NETWORKMENU_NTPSERVER, true , g_settings.network_ntpserver, networkSettings_NtpServer );
         CMenuForwarder * m7 = new CMenuForwarder( LOCALE_NETWORKMENU_NTPREFRESH, true , g_settings.network_ntprefresh, networkSettings_NtpRefresh );
+	
+	CMenuForwarder * m8 = new CMenuForwarder(LOCALE_NETWORKMENU_HOSTNAME  , true , network_hostname , networkSettings_Hostname  );
 
 	CDHCPNotifier * dhcpNotifier = new CDHCPNotifier(m1, m2, m3, m4, m5);
 
@@ -1313,13 +1377,28 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	networkSettings.addItem( oj );
 	networkSettings.addItem(new CMenuForwarder(LOCALE_NETWORKMENU_TEST, true, NULL, this, "networktest"));
 	networkSettings.addItem(new CMenuForwarder(LOCALE_NETWORKMENU_SHOW, true, NULL, this, "networkshow", CRCInput::RC_info, NEUTRINO_ICON_BUTTON_HELP_SMALL));
+	
+	// setup on start
 	networkSettings.addItem( m0 );
+	
+	// mac id
+	networkSettings.addItem(GenericMenuSeparatorLine);
+	networkSettings.addItem(mac);	//eth id
+	
+	// if select
+	//networkSettings.addItem(GenericMenuSeparatorLine);
+	//------------------------------------------------
+	if(ifcount)
+		networkSettings.addItem(ifSelect);	//if select
+	else
+		delete ifSelect;
 
 	networkSettings.addItem(GenericMenuSeparatorLine);
 
 	network_dhcp = networkConfig.inet_static ? 0 : 1;
 	oj = new CMenuOptionChooser(LOCALE_NETWORKMENU_DHCP, &network_dhcp, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, dhcpNotifier);
 	networkSettings.addItem(oj);
+	networkSettings.addItem( m8);	//hostname
 	networkSettings.addItem(GenericMenuSeparatorLine);
 
 	networkSettings.addItem( m1);
@@ -1329,10 +1408,39 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	networkSettings.addItem(GenericMenuSeparatorLine);
 	networkSettings.addItem( m4);
 	networkSettings.addItem( m5);
+	
+	//
+	if(ifcount > 1) // if there is only one, its probably wired
+	{
+		//ssid
+		CStringInputSMS * networkSettings_ssid = new CStringInputSMS(LOCALE_NETWORKMENU_SSID, &network_ssid, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789 -_/()<>=+.,:!?\\'");
+		CMenuForwarder * m9 = new CMenuForwarder(LOCALE_NETWORKMENU_SSID, networkConfig.wireless, network_ssid , networkSettings_ssid );
+		//key
+		CStringInputSMS *networkSettings_key = new CStringInputSMS(LOCALE_NETWORKMENU_PASSWORD, &network_key, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-.! ");
+		CMenuForwarder *m10 = new CMenuForwarder(LOCALE_NETWORKMENU_PASSWORD, networkConfig.wireless, network_key , networkSettings_key );
+
+		wlanEnable[0] = m9;
+		wlanEnable[1] = m10;
+
+		networkSettings.addItem( m9);	//ssid
+		networkSettings.addItem( m10);	//key
+
+		//encryption
+		CMenuOptionChooser * m11 = new CMenuOptionChooser(LOCALE_NETWORKMENU_WLAN_SECURITY, &network_encryption, OPTIONS_WLAN_SECURITY_OPTIONS, OPTIONS_WLAN_SECURITY_OPTION_COUNT, true);
+		wlanEnable[2] = m11;
+		networkSettings.addItem( m11); //encryption
+		networkSettings.addItem(GenericMenuSeparatorLine);
+	}
+	
+	// ntp
 	networkSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_NETWORKMENU_NTPTITLE));
 	networkSettings.addItem(new CMenuOptionChooser(LOCALE_NETWORKMENU_NTPENABLE, &g_settings.network_ntpenable, OPTIONS_NTPENABLE_OPTIONS, OPTIONS_NTPENABLE_OPTION_COUNT, true, sectionsdConfigNotifier));
         networkSettings.addItem( m6);
         networkSettings.addItem( m7);
+	
+	//proxyserver submenu
+	networkSettings.addItem(GenericMenuSeparatorLine);
+	networkSettings.addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_0, NEUTRINO_ICON_BUTTON_0));
 
 	networkSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_NETWORKMENU_MOUNT));
 	networkSettings.addItem(new CMenuForwarder(LOCALE_NFS_MOUNT , true, NULL, new CNFSMountGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));

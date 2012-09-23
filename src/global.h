@@ -39,7 +39,13 @@
 
 #include "driver/fontrenderer.h"
 #include "driver/rcinput.h"
+
+#if ENABLE_LCD
+#include "driver/lcdd.h"
+#define CVFD CLCD
+#else
 #include "driver/vfd.h"
+#endif
 
 #include "system/localize.h"
 #include "system/settings.h"

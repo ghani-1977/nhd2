@@ -291,8 +291,6 @@ const char* usermenu_button_def[SNeutrinoSettings::BUTTON_MAX]={
 #endif
 };
 
-//CZapitClient::SatelliteList satList;
-
 CVCRControl::CDevice * recordingdevice = NULL;
 
 //extern int FrontendCount;
@@ -832,6 +830,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.network_ntpserver    = configfile.getString("network_ntpserver", "time.fu-berlin.de");
         g_settings.network_ntprefresh   = configfile.getString("network_ntprefresh", "30" );
         g_settings.network_ntpenable    = configfile.getBool("network_ntpenable", false);
+	
+	snprintf(g_settings.ifname, sizeof(g_settings.ifname), "%s", configfile.getString("ifname", "eth0").c_str());
 
 	// nfs entries
 	for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
@@ -1279,6 +1279,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
         configfile.setString( "network_ntpserver", g_settings.network_ntpserver);
         configfile.setString( "network_ntprefresh", g_settings.network_ntprefresh);
         configfile.setBool( "network_ntpenable", g_settings.network_ntpenable);
+	
+	configfile.setString("ifname", g_settings.ifname);
 
 	for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 	{
@@ -2313,8 +2315,12 @@ int CNeutrinoApp::run(int argc, char **argv)
 	colorSetupNotifier = new CColorSetupNotifier;
 	colorSetupNotifier->changeNotify(NONEXISTANT_LOCALE, NULL);
 
-	// init vfd/lcd display 
-	CVFD::getInstance()->init( /*font.filename, font.name*/ ); //FIXME: lcd support: fonts ???
+	// init vfd/lcd display
+#if ENABLE_LCD
+	CVFD::getInstance()->init(font.filename, font.name);
+#else	
+	CVFD::getInstance()->init(); //FIXME: lcd support: fonts ???
+#endif	
 
 	// VFD clear all symbols
 	CVFD::getInstance()->Clear();
@@ -3061,19 +3067,16 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				StartSubtitles();
 			}
 #endif
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 			//music player
 			else if( msg == CRCInput::RC_music) 
 			{
 				StopSubtitles();
 
-				CAudioPlayerGui::CAudioPlayerGui tmpAudioPlayerGui;
+				CAudioPlayerGui tmpAudioPlayerGui;
 				tmpAudioPlayerGui.exec(NULL, "");
 
 				StartSubtitles();
 			}
-#endif	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 			else if( msg == CRCInput::RC_dvbsub)
 			{
 				StopSubtitles();
@@ -3094,12 +3097,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			{
 				StopSubtitles();
 
-				CAudioPlayerGui::CAudioPlayerGui tmpAudioPlayerGui(true);
+				CAudioPlayerGui tmpAudioPlayerGui(true);
 				tmpAudioPlayerGui.exec(NULL, "");
 
 				StartSubtitles();
-			}
-#endif			
+			}			
 			else if( msg == CRCInput::RC_video)	// movie browser (recorded files)
 			{
 #ifdef ENABLE_GRAPHLCD
@@ -3125,18 +3127,16 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 #if ENABLE_GRAPHLCD
 				nGLCD::unlockChannel();
 #endif				
-			}
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
+			}		
 			else if(msg == CRCInput::RC_picture) 	// picture viewer
 			{
 				StopSubtitles();
 				
-				CPictureViewerGui::CPictureViewerGui tmpPictureViewerGui;
+				CPictureViewerGui tmpPictureViewerGui;
 				tmpPictureViewerGui.exec(NULL, "");
 				
 				StartSubtitles();
-			}
-//#endif			
+			}			
 			else if (CRCInput::isNumeric(msg) && g_RemoteControl->director_mode ) 
 			{
 				StopSubtitles();
@@ -3512,11 +3512,6 @@ _repeat:
 	}
 	else if( msg == NeutrinoMessages::EVT_SERVICESCHANGED ) 
 	{
-		//if(!reloadhintBox)
-		//	reloadhintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RELOAD_HINT));
-
-		//reloadhintBox->paint();
-
 		channelsInit();
 
 		channelList->adjustToChannelID(live_channel_id);//FIXME
@@ -3527,8 +3522,6 @@ _repeat:
 			old_b_id = -1;
 			g_RCInput->postMsg(CRCInput::RC_ok, 0);
 		}
-
-		//reloadhintBox->hide();
 	}
 	else if( msg == NeutrinoMessages::EVT_BOUQUETSCHANGED ) 
 	{
@@ -4228,7 +4221,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 	int x = g_settings.screen_EndX - dx;
 	int y = g_settings.screen_StartY + 10;
 
-#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
+#if ENABLE_LCD
 	CVFD::getInstance()->setMuted(newValue);
 #endif
 
@@ -4641,23 +4634,25 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		frameBuffer->setActive(false);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
 		// set vfd in std modus
-		system("/bin/vdstandby -a");
+		//system("/bin/vdstandby -a");
+		//system("fp_control -p");
 			
 		// set fan off
 		CVFD::getInstance()->setFan(false);
-#endif
+//#endif
 	} 
 	else 
 	{
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
 		// set vfd in std modus
-		system("/bin/vdstandby -d");
+		//system("/bin/vdstandby -d");
+		//system("fp_control -d");
 			
 		// set fan on
 		CVFD::getInstance()->setFan(true);
-#endif
+//#endif
 
 		// set fb active
 		frameBuffer->setActive(true);

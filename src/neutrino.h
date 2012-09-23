@@ -107,12 +107,24 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 			norezap = 0x100		/**/
 		};
 
-		CConfigFile			configfile;
-		int                             network_dhcp;
-		int                             network_automatic_start;
+		CConfigFile configfile;
+		
+		// network
+		int network_dhcp;
+		int network_automatic_start;
+		
+		std::string network_hostname;
+		std::string mac_addr;
+		
+		std::string network_ssid;
+		std::string network_key;
+		int network_encryption;
+		//CMenuItem * wlanEnable[3];
 
+		// font
 		neutrino_font_descr_struct      font;
 
+		// modes
 		int				mode;
 		int				lastMode;
 		
@@ -224,6 +236,8 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CNeutrinoApp();
 
 	public:
+		CMenuItem * wlanEnable[3];
+		
 		void saveSetup(const char * fname);
 		int loadSetup(const char * fname);
 		void loadColors(const char * fname);
