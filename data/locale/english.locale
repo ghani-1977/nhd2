@@ -968,6 +968,11 @@ networkmenu.setupnow setup network now
 networkmenu.setuponstartup setup network on startup
 networkmenu.show show active network settings
 networkmenu.test test network now
+networkmenu.select_if Interface
+networkmenu.ssid Network name
+networkmenu.wlan_security Security
+networkmenu.password Key
+networkmenu.hostname Hostname
 neutrino_starting Neutrino starting...
 nfs.alreadymounted directory already mounted
 nfs.automount mount on startup
