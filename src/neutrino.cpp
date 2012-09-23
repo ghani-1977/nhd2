@@ -311,8 +311,11 @@ static void initGlobals(void)
 	g_PluginList    = NULL;
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler 	= NULL;
-#endif	
+#endif
+
+#if ENABLE_RADIOTEXT
 	g_Radiotext     = NULL;
+#endif	
 }
 
 // CNeutrinoApp - Constructor, initialize g_fontRenderer
@@ -1150,7 +1153,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.filebrowser_denydirectoryleave = configfile.getBool("filebrowser_denydirectoryleave", false);
 	
 	// radiotext
-	g_settings.radiotext_enable = configfile.getBool("radiotext_enable"          , false);
+#if ENABLE_RADIOTEXT	
+	g_settings.radiotext_enable = configfile.getBool("radiotext_enable", false);
+#endif	
 	
 	// logos_dir
 	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/icons/logos");
@@ -1545,7 +1550,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32("uselastchannel", g_settings.uselastchannel);
 	
 	// radiotext
+#if ENABLE_RADIOTEXT	
 	configfile.setBool("radiotext_enable", g_settings.radiotext_enable);
+#endif	
 	
 	// logos_dir
 	configfile.setString("logos_dir", g_settings.logos_dir);
@@ -3946,11 +3953,13 @@ skip_message:
 	{
 		if((data & mode_mask) != mode_radio)
 		{
+#if ENABLE_RADIOTEXT		  
 			if (g_Radiotext)
 			{
 				delete g_Radiotext;
 				g_Radiotext = NULL;
 			}
+#endif			
 		}
 
 		if((data & mode_mask) == mode_radio) 
@@ -3961,9 +3970,10 @@ skip_message:
 					radioMode(false);
 				else
 					radioMode(true);
-				
+#if ENABLE_RADIOTEXT				
 				if (g_settings.radiotext_enable)
 					g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
+#endif				
 			}
 		}
 		
@@ -4437,11 +4447,13 @@ void CNeutrinoApp::tvMode( bool rezap )
 {
 	if(mode == mode_radio ) 
 	{
+#if ENABLE_RADIOTEXT	  
 		if (g_settings.radiotext_enable && g_Radiotext) 
 		{
 			delete g_Radiotext;
 			g_Radiotext = NULL;
 		}
+#endif		
 
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_TV_MODE, false );
@@ -4562,11 +4574,13 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		{
 		}
 		
+#if ENABLE_RADIOTEXT		
 		if (mode == mode_radio && g_settings.radiotext_enable && g_Radiotext != NULL)
 		{
 			delete g_Radiotext;
 			g_Radiotext = NULL;
 		}
+#endif		
 
 		StopSubtitles();
 
@@ -4773,10 +4787,12 @@ void CNeutrinoApp::radioMode( bool rezap)
 	frameBuffer->blit();
 #endif	
 
+#if ENABLE_RADIOTEXT
 	if (g_settings.radiotext_enable) 
 	{
 		g_Radiotext = new CRadioText;
 	}
+#endif	
 }
 
 // start next recording
@@ -4961,7 +4977,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 		
 		/* save keymap */
-		//g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
+		g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
 
 		tuxtxt_close();
 		
