@@ -436,12 +436,16 @@ struct SNeutrinoSettings
 		LCD_INVERSE            = 4,
 		LCD_SHOW_VOLUME        = 5,
 		LCD_AUTODIMM           = 6,
-		LCD_SCROLL_TEXT		= 7
+		LCD_SCROLL_TEXT		= 7,
+#if ENABLE_LCD
+		LCD_EPGMODE		= 8,
+#endif		
 	};
 
 	int lcd_setting[LCD_SETTING_COUNT];
 	char lcd_setting_dim_time[4];
-	char lcd_setting_dim_brightness[4];
+	//char lcd_setting_dim_brightness[4];
+	int lcd_setting_dim_brightness;
 	// END VFD
 	
 #if ENABLE_GRAPHLCD
