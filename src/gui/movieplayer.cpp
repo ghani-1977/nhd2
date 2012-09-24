@@ -1290,6 +1290,9 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				FileTime.hide();
 			}
+			
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
 
 			// movie title
 			if(!timeshift)
