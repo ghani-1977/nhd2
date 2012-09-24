@@ -137,20 +137,23 @@ bool cDemux::Start(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
 
-#ifndef __sh__
+//#ifndef __sh__
         if (ioctl(demux_fd , DMX_START) < 0)
         {
                 perror("DMX_START");
                 return false;
         }  
-#endif        
+//#endif        
 
 	return true;
 }
 
 bool cDemux::Stop(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
+	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
+	
+	if(demux_fd < 0)
+		return false;
 	
 	if( ioctl(demux_fd, DMX_STOP) < 0)
 	{
@@ -168,6 +171,12 @@ int cDemux::Read(unsigned char * const buff, int len, int Timeout)
 	ufds.fd = demux_fd;
 	ufds.events = POLLIN;
 	ufds.revents = 0;
+	
+	if (demux_fd < 0)
+		return -1;
+	
+	if (type == DMX_PSI_CHANNEL && Timeout <= 0)
+		Timeout = 60 * 1000;
 
 	if (Timeout > 0)
 	{
