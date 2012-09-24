@@ -6,7 +6,7 @@
 	Copyright (C) 2001 Steffen Hehn 'McClean'
 	Homepage: http://dbox.cyberphoria.org/
 
-	Copyright (C) 2008-2012 Stefan Seyfried
+
 
 	License: GPL
 
@@ -27,6 +27,10 @@
 
 #ifndef __lcdd__
 #define __lcdd__
+
+#ifndef LCD_UPDATE
+#define LCD_UPDATE 1
+#endif
 
 #define LCDDIR_VAR "/var/share/tuxbox/neutrino/lcdd"
 
@@ -63,9 +67,7 @@ typedef enum
 	VFD_ICON_CAM1       = 0x0B000001,
 	VFD_ICON_COL2       = 0x0B000002,
 	VFD_ICON_CAM2       = 0x0C000001,
-	VFD_ICON_RECORD,
 	VFD_ICON_LOCK,
-
 } vfd_icon;
 
 #ifdef LCD_UPDATE
@@ -82,14 +84,11 @@ typedef enum
 #include <configfile.h>
 #include <pthread.h>
 
-#if 0 //TD
-#include <lcddisplay/fontrenderer.h>
+#include <liblcddisplay/fontrenderer.h>
 
 
 class CLCDPainter;
 class LcdFontRenderClass;
-#endif
-
 class CLCD
 {
 	public:
@@ -122,7 +121,7 @@ class CLCD
 
 
 	private:
-#if 0 //TD
+
 		class FontsDef
 		{
 			public:
@@ -170,35 +169,12 @@ class CLCD
 		void setlcdparameter(int dimm, int contrast, int power, int inverse, int bias);
 		void displayUpdate();
 		void showTextScreen(const std::string & big, const std::string & small, int showmode, bool perform_wakeup, bool centered = false);
-#else
-		CLCD();
-		std::string	menutitle;
-		MODES		mode;
-		void setled(int red, int green);
-		static void	*TimeThread(void *);
-		pthread_t	thrTime;
-#if 1 //martii
-		int		fd;
-		int		time_notify_reader;
-		int		time_notify_writer;
-		int		waitSec;
-		bool		showclock;
-		std::string	servicename;
-		bool		timeThreadRunning;
-		unsigned int	timeout_cnt;
-#endif
-#endif
+
 	public:
-#if 1 //martii
-		~CLCD();
-#endif
 		bool has_lcd;
 		void wake_up();
 		void setled(void) { return; };
 		void setlcdparameter(void);
-#if 0 //martii
-		void setlcdparameter(int, int);
-#endif
 
 		static CLCD* getInstance();
 		void init(const char * fontfile, const char * fontname,
@@ -213,7 +189,7 @@ class CLCD
 		void setMovieInfo(const AUDIOMODES playmode, const std::string big, const std::string small, const bool centered = false);
 		void setMovieAudio(const bool is_ac3);
 		std::string getMenutitle() { return menutitle; };
-		void showTime(bool force = false);
+		void showTime();
 		/** blocks for duration seconds */
 		void showRCLock(int duration = 2);
 		void showVolume(const char vol, const bool perform_update = true);
@@ -246,22 +222,14 @@ class CLCD
 
 		void setMuted(bool);
 
-#if 0 //martii
-		void resume(bool showLastServiceName = false);
-#else
 		void resume();
-#endif
 		void pause();
 
 		void Lock();
 		void Unlock();
 		void Clear();
 		void ShowIcon(vfd_icon icon, bool show);
-#if 0 //martii
-		void ShowText(const char * str, bool rescheduleTime = true);
-#else
 		void ShowText(const char *s) { showServicename(std::string(s)); };
-#endif
 #ifdef LCD_UPDATE
 	private:
 		CFileList* m_fileList;

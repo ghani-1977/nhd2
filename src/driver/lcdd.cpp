@@ -40,8 +40,7 @@
 #include <liblcddisplay/lcddisplay.h>
 #include <gui/widget/icons.h>
 
-//#if defined HAVE_DBOX_HARDWARE || defined HAVE_DREAMBOX_HARDWARE || defined HAVE_IPBOX_HARDWARE
-#if defined (PLATFORM_DREAMBOX)
+#if defined HAVE_DBOX_HARDWARE || defined HAVE_DREAMBOX_HARDWARE || defined HAVE_IPBOX_HARDWARE
 #include <dbox/fp.h>
 #endif
 #include <fcntl.h>
@@ -124,27 +123,23 @@ CLCD* CLCD::getInstance()
 	return lcdd;
 }
 
-void CLCD::count_down() 
-{
-	if (timeout_cnt > 0) 
-	{
+void CLCD::count_down() {
+	if (timeout_cnt > 0) {
 		timeout_cnt--;
-		if (timeout_cnt == 0) 
-		{
+		if (timeout_cnt == 0) {
 			setlcdparameter();
 		}
 	} 
 }
 
-void CLCD::wake_up() 
-{
-	if (atoi(g_settings.lcd_setting_dim_time) > 0) 
-	{
+void CLCD::wake_up() {
+	if (atoi(g_settings.lcd_setting_dim_time) > 0) {
 		timeout_cnt = atoi(g_settings.lcd_setting_dim_time);
 		setlcdparameter();
 	}
 }
 
+#ifndef BOXMODEL_DM500
 void* CLCD::TimeThread(void *)
 {
 	while(1)
@@ -159,19 +154,52 @@ void* CLCD::TimeThread(void *)
 	}
 	return NULL;
 }
+#else
+// there is no LCD on DM500, so let's use the timethread for blinking the LED during record
+void* CLCD::TimeThread(void *)
+{
+	int led = 0;
+	int old_led = 0;
+	int led_fd = open("/dev/dbox/fp0", O_RDWR);
+
+	if (led_fd < 0)
+	{
+		perror("CLCD::TimeThread: /dev/dbox/fp0");
+		return NULL;
+	}
+	// printf("CLCD:TimeThread dm500 led_fd: %d\n",led_fd);
+	while(1)
+	{
+		sleep(1);
+		if (CNeutrinoApp::getInstance()->recordingstatus)
+			led = !led;
+		else
+			led = (CLCD::getInstance()->mode == MODE_STANDBY);
+
+		if (led != old_led) {
+			//printf("CLCD:TimeThread ioctl(led_fd,11, &%d)\n",led);
+			ioctl(led_fd, 11, &led);
+			old_led = led;
+		}
+	}
+	return NULL;
+}
+#endif
 
 void CLCD::init(const char * fontfile, const char * fontname,
                 const char * fontfile2, const char * fontname2,
                 const char * fontfile3, const char * fontname3)
 {
-	InitNewClock();
+	//InitNewClock(); //FIXME
 
 	if (!lcdInit(fontfile, fontname, fontfile2, fontname2, fontfile3, fontname3 ))
 	{
 		printf("[lcdd] LCD-Init failed!\n");
 		has_lcd = false;
+#ifndef BOXMODEL_DM500
 		// on the dm500, we need the timethread for the front LEDs
 		return;
+#endif
 	}
 
 	if (pthread_create (&thrTime, NULL, TimeThread, NULL) != 0 )
@@ -196,7 +224,6 @@ const char * const background_name[LCD_NUMBER_OF_BACKGROUNDS] = {
 	"lcd3",
 	"lcd"
 };
-
 #define NUMBER_OF_PATHS 2
 const char * const background_path[NUMBER_OF_PATHS] = {
 	LCDDIR_VAR ,
@@ -270,10 +297,10 @@ void CLCD::displayUpdate()
 		display.update();
 }
 
+#ifndef HAVE_TRIPLEDRAGON
 void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const int inverse, const int bias)
 {
-//#if defined HAVE_DBOX_HARDWARE || defined HAVE_DREAMBOX_HARDWARE || defined HAVE_IPBOX_HARDWARE
-#if defined (PLATFORM_DREAMBOX)
+#if defined HAVE_DBOX_HARDWARE || defined HAVE_DREAMBOX_HARDWARE || defined HAVE_IPBOX_HARDWARE
 	if (!display.isAvailable())
 		return;
 	int fd;
@@ -326,6 +353,23 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 	}
 #endif
 }
+#else
+void CLCD::setlcdparameter(int /*dimm*/, const int contrast, const int /*power*/, const int inverse, const int /*bias*/)
+{
+	int fd = open("/dev/" DEVICE_NAME_LCD, O_RDWR);
+	if (fd < 0)
+	{
+		perror("CLCD::setlcdparameter open " DEVICE_NAME_LCD);
+		return;
+	}
+	if (ioctl(fd, IOC_LCD_INVERS, inverse & 1) < 0)
+		perror("CLCD::setlcdparameter ioctl IOC_LCD_INVERS");
+	if (ioctl(fd, IOC_LCD_POTI, contrast) < 0)
+		perror("CLCD::setlcdparameter ioctl IOC_LCD_POTI");
+
+	close(fd);
+}
+#endif
 
 void CLCD::setlcdparameter(void)
 {
@@ -561,7 +605,7 @@ void CLCD::setMovieAudio(const bool is_ac3)
 	showPercentOver(percentOver, true, MODE_MOVIE);
 }
 
-void CLCD::showTime(bool)
+void CLCD::showTime()
 {
 	if (showclock)
 	{
@@ -575,7 +619,7 @@ void CLCD::showTime(bool)
 		if (mode == MODE_STANDBY)
 		{
 			display.draw_fill_rect(-1, -1, LCD_COLS, 64, CLCDDisplay::PIXEL_OFF); // clear lcd
-			ShowNewClock(&display, t->tm_hour, t->tm_min, t->tm_sec, t->tm_wday, t->tm_mday, t->tm_mon, CNeutrinoApp::getInstance()->recordingstatus);
+			//ShowNewClock(&display, t->tm_hour, t->tm_min, t->tm_sec, t->tm_wday, t->tm_mday, t->tm_mon, CNeutrinoApp::getInstance()->recordingstatus);
 		}
 		else
 		{
@@ -844,7 +888,7 @@ void CLCD::showAudioProgress(const char perc, bool isMuted)
 	if (mode == MODE_AUDIO)
 	{
 		display.draw_fill_rect (11,53,73,61, CLCDDisplay::PIXEL_OFF);
-		int dp = perc * 61 / 100 + 12;
+		int dp = int( perc/100.0*61.0+12.0);
 		display.draw_fill_rect (11,54,dp,60, CLCDDisplay::PIXEL_ON);
 		if(isMuted)
 		{
@@ -1027,9 +1071,31 @@ int CLCD::getInverse()
 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_INVERSE];
 }
 
+#ifdef HAVE_DBOX_HARDWARE
+void CLCD::setAutoDimm(int autodimm)
+{
+	int fd;
+	g_settings.lcd_setting[SNeutrinoSettings::LCD_AUTODIMM] = autodimm;
+
+	if ((fd = open("/dev/dbox/fp0", O_RDWR)) == -1)
+	{
+		perror("[lcdd] open '/dev/dbox/fp0' failed");
+	}
+	else
+	{
+		if( ioctl(fd, FP_IOCTL_LCD_AUTODIMM, &autodimm) < 0 )
+		{
+			perror("[lcdd] set autodimm failed!");
+		}
+
+		close(fd);
+	}
+}
+#else
 void CLCD::setAutoDimm(int /*autodimm*/)
 {
 }
+#endif
 
 int CLCD::getAutoDimm()
 {
