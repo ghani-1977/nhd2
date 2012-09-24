@@ -529,22 +529,6 @@ void updateLcd(const std::string & sel_filename)
 			lcd += sel_filename;
 			break;
 	}
-
-	#if 0 //FIXME: remove this to main control in neutrino.cpp
-	//hide T+S Icon
-	CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-
-	//hide AC3 Icon
-	if (g_RemoteControl->has_ac3)
-		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
-
-	//hide HD Icon
-	if(live_channel)
-	{
-		if(live_channel->type == 1)
-			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
-	}
-	#endif
 	
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
 	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);
@@ -559,9 +543,6 @@ void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
-	
-	//int position = 0, duration = 0;
-	//int file_prozent = 0;
 
 	std::string sel_filename;
 	CTimeOSD FileTime;
@@ -571,7 +552,6 @@ void CMoviePlayerGui::PlayFile(void)
 	bool time_forced = false;
 	playstate = CMoviePlayerGui::STOPPED;
 	bool is_file_player = false;
-	
 
 	if (isHTTP == true)
 	{
@@ -607,7 +587,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 	if (has_hdd)
 	{
-		std::string str = "sda2";
+		std::string str = "sda1";
 		
 		//struct statfs s;
 		//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
@@ -954,10 +934,6 @@ void CMoviePlayerGui::PlayFile(void)
 						was_file = true;
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
 						
-						//playstate = CMoviePlayerGui::PLAY;
-						//if(theBookmark->getUrl() == file->Name)
-						//	sscanf (theBookmark->getTime(), "%lld", &startposition);
-						
 						//
 						g_file_epg = sel_filename;
 						g_file_epg1 = sel_filename;
@@ -1187,7 +1163,6 @@ void CMoviePlayerGui::PlayFile(void)
 				// PlayBack SetStartPosition for timeshift
 				if(timeshift)
 				{
-					//playstate = CMoviePlayerGui::PREPARING /*PAUSE*/;
 					startposition = 0;
 					
 					//wait

@@ -302,12 +302,21 @@ void CDBoxInfoWidget::paint()
 		}
 		fscanf(f, "%d", &removable);
 		fclose(f);
-
-		sprintf(str, "HDD: %s (%s-%s %lld %s)", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, str, COL_MENUCONTENT);
+		// free space on hdd
+		struct statfs s;
+		
+		if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
+		{
+			//strcat(str, ", free %ldKb", (long)(s.f_bfree/1024)*s.f_bsize);
+			sprintf(str, "HDD: %s (%s-%s %lld %s), free %ldMB", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB", (long)( ((s.f_bfree/1024)/1024))*s.f_bsize);
+		}
+		else
+			sprintf(str, "HDD: %s (%s-%s %lld %s)", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
 		
 		free(namelist[i]);
+		
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT);
 	}
 
 	// free space
