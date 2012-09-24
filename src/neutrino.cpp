@@ -1180,7 +1180,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 		g_settings.lcd_setting[i] = configfile.getInt32(lcd_setting[i].name, lcd_setting[i].default_value);
 	
 	strcpy(g_settings.lcd_setting_dim_time, configfile.getString("lcd_dim_time","0").c_str());
-	strcpy(g_settings.lcd_setting_dim_brightness, configfile.getString("lcd_dim_brightness","0").c_str());
+	//strcpy(g_settings.lcd_setting_dim_brightness, configfile.getString("lcd_dim_brightness","0").c_str());
+	g_settings.lcd_setting_dim_brightness = configfile.getInt32("lcd_dim_brightness", 0);
 	// END VFD
 	
 #if ENABLE_GRAPHLCD
@@ -1577,7 +1578,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 		configfile.setInt32(lcd_setting[i].name, g_settings.lcd_setting[i]);
 	
 	configfile.setString("lcd_dim_time", g_settings.lcd_setting_dim_time);
-	configfile.setString("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
+	//configfile.setString("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
+	configfile.setInt32("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
 	// END VFD
 	
 #if ENABLE_GRAPHLCD
@@ -4652,7 +4654,9 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		//system("fp_control -p");
 			
 		// set fan off
+#if !ENABLE_LCD		
 		CVFD::getInstance()->setFan(false);
+#endif		
 //#endif
 	} 
 	else 
@@ -4663,7 +4667,9 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		//system("fp_control -d");
 			
 		// set fan on
+#if !ENABLE_LCD		
 		CVFD::getInstance()->setFan(true);
+#endif		
 //#endif
 
 		// set fb active
