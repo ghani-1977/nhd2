@@ -25,9 +25,13 @@
 #include <sys/time.h>
 #include <sys/select.h>
 
+#include <config.h>
+
 #include <linux/dvb/audio.h>
 
+#if ENABLE_DSP
 #include <linux/soundcard.h>
+#endif
 
 #include "audio_cs.h"
 
@@ -379,11 +383,6 @@ int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample,
 #if defined (ENABLE_DSP)
 	int fmt;
 	
-	if (LittleEndian)
-		fmt = AFMT_S16_BE;
-	else
-		fmt = AFMT_S16_LE;
-	
 #ifdef __sh__
 	clipfd = open("/dev/dsp", O_WRONLY);
 #else
@@ -395,6 +394,13 @@ int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample,
 		printf("%s: clipfd open failed...(%m)\n", __FUNCTION__);
 		return -1;
 	}
+	
+	fcntl(clipfd, F_SETFD, FD_CLOEXEC);
+	
+	if (LittleEndian)
+		fmt = AFMT_S16_BE;
+	else
+		fmt = AFMT_S16_LE;
 	
 	if (ioctl(clipfd, SNDCTL_DSP_RESET))
 		perror("SNDCTL_DSP_RESET");
