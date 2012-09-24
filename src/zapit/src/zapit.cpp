@@ -2652,11 +2652,9 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (thisChannel->getAudioPid() != 0)
 		have_audio = true;
 		
-
 	if ((thisChannel->getVideoPid() != 0) && (currentMode & TV_MODE))
 		have_video = true;
 		
-
 	if (thisChannel->getTeletextPid() != 0)
 		have_teletext = true;
 
@@ -2864,25 +2862,24 @@ int stopPlayBack()
 	{
 		// stop
 		videoDemux->Stop();
-		//delete
-		//delete videoDemux;	//destructor closes dmx
-		//videoDemux = NULL;
+		delete videoDemux;	//destructor closes dmx
+		videoDemux = NULL;
 	}
 	
 	if (audioDemux)
 	{
 		// stop
 		audioDemux->Stop();
-		//delete audioDemux;  //destructor closes dmx
-		//audioDemux = NULL;
+		delete audioDemux;  //destructor closes dmx
+		audioDemux = NULL;
 	}
 	
 	if (pcrDemux)
 	{
 		// stop
 		pcrDemux->Stop();
-		//delete pcrDemux; //destructor closes dmx
-		//pcrDemux = NULL;
+		delete pcrDemux; //destructor closes dmx
+		pcrDemux = NULL;
 	}
 	
 	// audio decoder stop
@@ -2925,34 +2922,8 @@ void enterStandby(void)
 	/* save zapitconfig */
 	saveZapitSettings(true, true);
 	
-	/* save frontend config*/
-	//saveFrontendConfig();
-	
 	/* stop playback */
 	stopPlayBack();
-	
-	/* close demuxes */
-	if (videoDemux)
-	{
-		//delete
-		delete videoDemux;	//destructor closes dmx
-		
-		videoDemux = NULL;
-	}
-	
-	if (audioDemux)
-	{
-		delete audioDemux;  //destructor closes dmx
-		
-		audioDemux = NULL;
-	}
-	
-	if (pcrDemux)
-	{
-		delete pcrDemux; //destructor closes dmx
-		
-		pcrDemux = NULL;
-	}
 	
 	/* delete cam */
 	if (live_cam) 
@@ -2968,9 +2939,6 @@ void leaveStandby(void)
 	
 	if(!standby) 
 		return;
-	
-	// load frontend config
-	//loadFrontendConfig();
 
 	if (!live_cam) 
 	{
