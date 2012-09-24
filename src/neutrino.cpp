@@ -864,7 +864,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	// recording
 	g_settings.recording_type = configfile.getInt32("recording_type", RECORDING_FILE);
-	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda2/record" ).c_str() );
+	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
 	g_settings.temp_timeshift = configfile.getInt32( "temp_timeshift", 0 );
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
 	g_settings.auto_delete = configfile.getInt32( "auto_delete", 0);
@@ -890,7 +890,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end recording
 
 	// movieplayer
-	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda2/movie" ).c_str() );
+	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda1/movie" ).c_str() );
 	
 	// not in GUI
 	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "http://podfiles.zdf.de/podcast/zdf_podcasts/110924_hjo_p.mp4?2011-09-24+21-25");
@@ -1072,7 +1072,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end keysbinding
 
 	// audioplayer
-	strcpy( g_settings.network_nfs_audioplayerdir, configfile.getString( "network_nfs_audioplayerdir", "/media/sda2/music" ).c_str() );
+	strcpy( g_settings.network_nfs_audioplayerdir, configfile.getString( "network_nfs_audioplayerdir", "/media/sda1/music" ).c_str() );
 
 	g_settings.audioplayer_display = configfile.getInt32("audioplayer_display",(int)CAudioPlayerGui::ARTIST_TITLE);
 	g_settings.audioplayer_follow  = configfile.getInt32("audioplayer_follow",0);
@@ -1088,7 +1088,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end audioplayer
 
 	// pictureviewer
-	strcpy( g_settings.network_nfs_picturedir, configfile.getString( "network_nfs_picturedir", "/media/sda2/picture" ).c_str() );
+	strcpy( g_settings.network_nfs_picturedir, configfile.getString( "network_nfs_picturedir", "/media/sda1/picture" ).c_str() );
 
 	strcpy( g_settings.picviewer_slide_time, configfile.getString( "picviewer_slide_time", "10" ).c_str() );
 	g_settings.picviewer_scaling = configfile.getInt32("picviewer_scaling", 1 /*(int)CPictureViewer::SIMPLE*/);
@@ -1132,7 +1132,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
         g_settings.epg_extendedcache    = configfile.getString("epg_extendedcache_time", "360");
         g_settings.epg_old_events       = configfile.getString("epg_old_events", "1");
         g_settings.epg_max_events       = configfile.getString("epg_max_events", "50000");
-        g_settings.epg_dir              = configfile.getString("epg_dir", "/media/sda2/epg");
+        g_settings.epg_dir              = configfile.getString("epg_dir", "/media/sda1/epg");
 	g_settings.epg_save = configfile.getBool("epg_save", false);
 
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
@@ -3785,12 +3785,12 @@ _repeat:
 			//wakeup hdd
 			if(has_hdd) 
 			{
-				std::string str = "sda2";
+				std::string str = "sda1";
 				
 				//struct statfs s;
 				//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
 				//{
-					//std::string str1 = g_settings.network_nfs_recordingdir; // /media/sda2/record
+					//std::string str1 = g_settings.network_nfs_recordingdir; // /media/sda1/record
 					//str = str1.substr(strlen("/media/"), str.length());
 					//str = str1.substr(7, 4);
 				//}
@@ -4592,11 +4592,9 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		CVFD::getInstance()->Clear();
 		
-		//the fp timer 
-#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
-
+		// show time in vfd
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
-#endif		
+		
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_SCART);
 
@@ -4608,7 +4606,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		{
 			g_Zapit->setStandby(true);
 			
-			std::string str = "sda2";
+			std::string str = "sda1";
 			
 			//struct statfs s;
 			//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
