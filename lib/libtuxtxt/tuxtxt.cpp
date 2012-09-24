@@ -6513,19 +6513,11 @@ int GetRCCode()
 				rc_last_key = ev.code;
 				switch (ev.code)
 				{
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)					  
-					case 0x67: 		RCCode = RC_UP;	break;	
-					case 0x6c: 		RCCode = RC_DOWN; break;	
-					case 0x69:		RCCode = RC_LEFT; break;	
-					case 0x6A:		RCCode = RC_RIGHT; break;
-					case 0x160:		RCCode = RC_OK;	break;
-#else
 					case KEY_UP:		RCCode = RC_UP;		break;
 					case KEY_DOWN:		RCCode = RC_DOWN;	break;
 					case KEY_LEFT:		RCCode = RC_LEFT;	break;
 					case KEY_RIGHT:		RCCode = RC_RIGHT;	break;
 					case KEY_OK:		RCCode = RC_OK;		break;
-#endif
 
 					// common
 					case KEY_0:		RCCode = RC_0; 		break;
@@ -6544,16 +6536,6 @@ int GetRCCode()
 					case KEY_YELLOW:	RCCode = RC_YELLOW;	break;
 					case KEY_BLUE:		RCCode = RC_BLUE;	break;
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)						
-					case 0xBB:		RCCode = RC_PLUS;	break;
-					case 0xBC:		RCCode = RC_MINUS;	break;
-					case 0x71:		RCCode = RC_MUTE;	break;
-					case 0x173:		RCCode = RC_TEXT;	break;
-					case 0x166:		RCCode = RC_HELP;	break;
-					case 0x8B:		RCCode = RC_DBOX;	break;
-					case 0x9E:		RCCode = RC_HOME;	break;
-					case 0x74:		RCCode = RC_STANDBY;	break;
-#else
 					case KEY_VOLUMEUP:	RCCode = RC_PLUS;	break;
 					case KEY_VOLUMEDOWN:	RCCode = RC_MINUS;	break;
 					case KEY_MUTE:		RCCode = RC_MUTE;	break;
@@ -6567,7 +6549,6 @@ int GetRCCode()
 					case KEY_HOME:		RCCode = RC_HOME;	break;
 #endif					
 					case KEY_POWER:		RCCode = RC_STANDBY;	break;
-#endif
 				}
 				printf("[tuxtxt] new key, code 0x%X (%d)\n", RCCode, KEY_HOME);
 				return 1;
