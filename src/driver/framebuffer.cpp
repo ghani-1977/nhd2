@@ -79,7 +79,6 @@ CFrameBuffer::CFrameBuffer()
 	backupBackground = NULL;
 	backgroundFilename = "";
 	fd  = 0;
-	tty = 0;
 //FIXME: test
 	memset(red, 0, 256*sizeof(__u16));
 	memset(green, 0, 256*sizeof(__u16));
@@ -188,59 +187,6 @@ void CFrameBuffer::init(const char * const fbDevice)
 
         useBackground(false);
 
-	//console
-#if 0
-#ifdef __sh__
-	if ((tty=open("/dev/ttyAS1", O_RDWR))<0)
-#else 
-	if ((tty=open("/dev/vc/0", O_RDWR))<0)
-#endif
-	{
-		perror("open (tty)");
-		goto nolfb;
-	}
-
-	struct sigaction act;
-
-	memset(&act,0,sizeof(act));
-	act.sa_handler  = switch_signal;
-	sigemptyset(&act.sa_mask);
-	sigaction(SIGUSR1,&act,NULL);
-	sigaction(SIGUSR2,&act,NULL);
-
-	struct vt_mode mode;
-
-	if (-1 == ioctl(tty, KDGETMODE, &kd_mode)) {
-		perror("ioctl KDGETMODE");
-		goto nolfb;
-	}
-
-	if (-1 == ioctl(tty, VT_GETMODE, &vt_mode)) {
-      		perror("ioctl VT_GETMODE");
-		goto nolfb;
-	}
-
-	if (-1 == ioctl(tty, VT_GETMODE, &mode)) {
-      		perror("ioctl VT_GETMODE");
-		goto nolfb;
-	}
-
-	mode.mode   = VT_PROCESS;
-	mode.waitv  = 0;
-	mode.relsig = SIGUSR1;
-	mode.acqsig = SIGUSR2;
-
-	if (-1 == ioctl(tty, VT_SETMODE, &mode)) {
-		perror("ioctl VT_SETMODE");
-		goto nolfb;
-	}
-
-	if (-1 == ioctl(tty, KDSETMODE, KD_GRAPHICS)) {
-		perror("ioctl KDSETMODE");
-		goto nolfb;
-	}
-#endif
-
 	return;
 
 nolfb:
@@ -271,20 +217,6 @@ CFrameBuffer::~CFrameBuffer()
 		delete[] backupBackground;
 	}
 
-	// console
-#if 0
-#ifdef RETURN_FROM_GRAPHICS_MODE
-	if (-1 == ioctl(tty, KDSETMODE, kd_mode))
-		perror("ioctl KDSETMODE");
-#endif
-
-	if (-1 == ioctl(tty, VT_SETMODE, &vt_mode))
-		perror("ioctl VT_SETMODE");
-
-	if (available)
-		ioctl(fd, FBIOPUT_VSCREENINFO, &oldscreen);
-#endif
-
 	if (lfb)
 		munmap(lfb, available);
 	
@@ -292,10 +224,6 @@ CFrameBuffer::~CFrameBuffer()
 		delete[] virtual_fb;
 	
 	close(fd);
-	
-	#if 0
-	close(tty);
-	#endif
 }
 
 int CFrameBuffer::getFileHandle() const
@@ -1411,35 +1339,6 @@ bool CFrameBuffer::loadBackgroundPic(const std::string & filename, bool show)
 	
 	return true;
 }
-
-/*bool CFrameBuffer::loadPic(const std::string & filename, bool show)
-{
-	if ((backgroundFilename == filename) && (background))
-		return true;
-	
-	dprintf(DEBUG_INFO, "CFrameBuffer::loadBackgroundPic: %s\n", filename.c_str());	
-
-	if (background)
-		delete[] background;
-
-	background = getImage(filename, BACKGROUNDIMAGEWIDTH, BACKGROUNDIMAGEHEIGHT);
-
-	if (background == NULL) 
-	{
-		background=0;
-		return false;
-	}
-
-	backgroundFilename = filename;
-	
-	if(show) 
-	{
-		useBackgroundPaint = true;
-		paintBackground();
-	}
-	
-	return true;
-}*/
 
 void CFrameBuffer::useBackground(bool ub)
 {

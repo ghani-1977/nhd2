@@ -112,7 +112,7 @@ class CFrameBuffer
 
 		std::string     iconBasePath;
 
-		int             fd, tty;
+		int             fd;
 		fb_pixel_t *    lfb;
 		int		available;
 		fb_pixel_t *    background;
