@@ -33,11 +33,6 @@ AC_ARG_ENABLE(keyboard-no-rc,
          [  --enable-keyboard-no-rc             enable keyboard control, disable rc control],
          [AC_DEFINE(KEYBOARD_INSTEAD_OF_REMOTE_CONTROL,1,[enable keyboard control, disable rc control])])
 
-# restore prev mode
-AC_ARG_ENABLE(restore-prev-mode,
-         [  --enable-restore-prev-mode          enable return from graphics mode],
-         [AC_DEFINE(RETURN_FROM_GRAPHICS_MODE,1,[enable return from graphics mode])])
-
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
 	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),
@@ -96,6 +91,16 @@ AM_CONDITIONAL(ENABLE_UPNP,test "$enable_upnp" = "yes")
 
 if test "$enable_upnp" = "yes"; then
 AC_DEFINE(ENABLE_UPNP,1,[include upnp support])
+fi
+
+# freesatepg
+AC_ARG_ENABLE(freesatepg,
+	AS_HELP_STRING(--enable-freesatepg,include freesatepg support),
+	,[enable_freesatepg=no])
+AM_CONDITIONAL(ENABLE_FREESATEPG,test "$enable_freesatepg" = "yes")
+
+if test "$enable_freesatepg" = "yes"; then
+AC_DEFINE(ENABLE_FREESATEPG,1,[include freesatepg support])
 fi
 
 AC_OUTPUT([
