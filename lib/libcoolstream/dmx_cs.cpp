@@ -169,7 +169,7 @@ int cDemux::Read(unsigned char * const buff, int len, int Timeout)
 	ufds.events = POLLIN;
 	ufds.revents = 0;
 
-	if (Timeout > 0)	/* used in pmt_update_filter */
+	if (Timeout > 0)
 	{
 retry:	  
 		rc = ::poll(&ufds, 1, Timeout);
@@ -184,30 +184,19 @@ retry:
 			/* we consciously ignore EINTR, since it does not happen in practice */
 			return -1;
 		}
-		#if 0
-		if (ufds.revents & POLLERR) /* POLLERR means buffer error, i.e. buffer overflow */
-		{
-			//fprintf(stderr, "[cDemux::Read] received POLLERR, fd %d\n", demux_fd);
-			return -1;
-		}
-		#endif
 		
 		if (ufds.revents & POLLHUP) /* we get POLLHUP if e.g. a too big DMX_BUFFER_SIZE was set */
 		{
-			//fprintf(stderr, "[cDemux::Read] received POLLHUP, fd %d\n", demux_fd);
 			return -1;
 		}
 		
 		if (!(ufds.revents & POLLIN)) /* we requested POLLIN but did not get it? */
 		{
-			//fprintf(stderr, "cDemux::%s: not ufds.revents&POLLIN, please report! " "revents: 0x%x fd: %d rc: %d '%m'\n", __FUNCTION__, ufds.revents, demux_fd, rc);
 			return 0;
 		}
 	}
 
 	rc = ::read(demux_fd, buff, len);
-	
-	//printf("cDemux::Read: fd %d ret: %d\n", demux_fd, rc);
 	
 	if (rc < 0)
 		perror ("cDemux::Read");
