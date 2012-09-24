@@ -819,7 +819,7 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 
 	if(!fname) // live stream
 	{
-		std::string str = "sda2";
+		std::string str = "sda1";
 		
 		struct statfs s;
 		
