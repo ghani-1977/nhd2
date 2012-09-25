@@ -1524,4 +1524,76 @@ glcd.size_time Uhrzeit-Größe
 glcd.time_in_standby Zeitanzeige in Standby
 glcd.volume Lautstärke
 
+keymap.head Keymap
+keymap.key_0 0
+keymap.key_1 1
+keymap.key_2 2
+keymap.key_3 3
+keymap.key_4 4
+keymap.key_5 5
+keymap.key_6 6
+keymap.key_7 7
+keymap.key_8 8
+keymap.key_9 9
+keymap.key_backspace leezeichen
+keymap.key_up Hoch
+keymap.key_left Links
+keymap.key_right Recht
+keymap.key_down Runter
+keymap.key_spkr Mute
+keymap.key_minus Vol-
+keymap.key_plus Vol+
+keymap.key_standby Power
+keymap.key_home Exit
+keymap.key_setup Menue
+keymap.key_page_up Seite hoch
+keymap.key_page_down Seite runter
+keymap.key_ok OK
+keymap.key_red Rot
+keymap.key_green Grün
+keymap.key_yellow Gelb
+keymap.key_blue Blau
+keymap.key_audio Audio
+keymap.key_video Video
+keymap.key_text Teletext
+keymap.key_info Info
+keymap.key_epg EPG
+keymap.key_recall Letzte Kanal
+keymap.key_favorites Favoriten
+keymap.key_sat Sat
+keymap.key_record Record
+keymap.key_play Play
+keymap.key_pause Pause
+keymap.key_forward Vorspülen
+keymap.key_rewind Zurückspülen
+keymap.key_stop Stop
+keymap.key_timeshift Timeshift
+keymap.key_mode TV/Radio
+keymap.key_next Nächste
+keymap.key_prev Vorhiger
+keymap.key_music Musik
+keymap.key_picture Bilder
+keymap.key_repeat Wiederholen
+keymap.key_slow Langsam
+keymap.key_dvbsub DVBSub
+keymap.key_pip PIP
+keymap.key_pippos PIP Position
+keymap.key_pipswap PIP Swap
+keymap.key_pipsubchan PIP SubChan
+keymap.key_net WWW
+keymap.key_bookmark Bookmark
+keymap.key_multifeed Multifeed
+keymap.key_f1 F1
+keymap.key_f2 F2
+keymap.key_f3 F3
+keymap.key_f4 F4
+keymap.key_aspect Video Format
+keymap.key_vfdup VFD hoch
+keymap.key_vfddown VFD runter
+keymap.key_vfdright VFD recht
+keymap.key_vfdleft VFD links
+keymap.key_vfdpower VFD Power
+keymap.key_vfdmenu VFD Menue
+keymap.key_vfdexit VFD Exit
+keymap.key_vfdok VFD OK
 
