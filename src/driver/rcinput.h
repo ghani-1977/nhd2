@@ -41,6 +41,7 @@
 #include <configfile.h>
 
 
+/*
 #ifndef KEY_OK
 #define KEY_OK           0x160
 #endif
@@ -61,7 +62,7 @@
 #define KEY_BLUE         0x191
 #endif
 
-/* SAGEM remote controls have the following additional keys */
+// SAGEM remote controls have the following additional keys
 #ifndef KEY_TOPLEFT
 #define KEY_TOPLEFT      0x1a2
 #endif
@@ -81,6 +82,7 @@
 #ifndef KEY_GAMES
 #define KEY_GAMES        0x1a1
 #endif
+*/
 
 /* this values are token from cuberevo3000hd */
 #ifndef KEY_PIP	
@@ -268,7 +270,7 @@ class CRCInput
 
 			/* added from cuberevo3000hd so fix it please */
 			RC_music	= KEY_MUSIC,
-			RC_picture	= KEY_PICTURE,			
+			RC_picture	= /*KEY_PICTURE*/KEY_ARCHIVE,			
 			
 			RC_repeat	= KEY_REPEAT,
 			RC_slow		= KEY_SLOW,
@@ -281,15 +283,16 @@ class CRCInput
 			RC_pipsubch	= KEY_PIPSUBCH,
 
 			RC_net		= KEY_NET,
-			RC_bookmark	= KEY_BOOKMARK,
+			RC_bookmark	= KEY_BOOKMARKS,
 			RC_multifeed	= KEY_MULTIFEED,
 
 			/* functions */
-			RC_f1		= 0x3B,
-			RC_f2		= 0x3C,
-			RC_f3		= 0x3D,
-			RC_f4		= 0x3E,
-			RC_aspect	= 0x40,
+			RC_f1		= KEY_F1,
+			RC_f2		= KEY_F2,
+			RC_f3		= KEY_F3,
+			RC_f4		= KEY_F4,
+			
+			//RC_aspect	= 0x40,
 
 			/* frontpanel */
 			RC_vfdup	= VFD_UP,
@@ -425,6 +428,9 @@ class CRCInput
 
 		unsigned long long repeat_block;
 		unsigned long long repeat_block_generic;
+		
+		void setRepeat(unsigned int delay, unsigned int period);
+		
 		CRCInput();      //constructor - opens rc-device and starts needed threads
 		~CRCInput();     //destructor - closes rc-device
 

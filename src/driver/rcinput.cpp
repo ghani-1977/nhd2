@@ -109,20 +109,12 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 	key_standby = configfile.getInt32("key_standby", KEY_POWER);
 			
-#if defined (PLATFORM_GIGABLUE)
-	key_home = configfile.getInt32("key_home", 0xAE);
-#else
 	key_home = configfile.getInt32("key_home", KEY_HOME);
-#endif			
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_setup = configfile.getInt32("key_setup", 0x8B);
-#else
 	key_setup = configfile.getInt32("key_setup", KEY_MENU);
-#endif				
-			
-	key_page_up = configfile.getInt32("key_page_up", 0x192);
-	key_page_down = configfile.getInt32("key_page_down", 0x193);	
+	
+	key_page_up = configfile.getInt32("key_page_up", KEY_PAGEUP);
+	key_page_down = configfile.getInt32("key_page_down", KEY_PAGEDOWN);
 			
 	key_ok = configfile.getInt32("key_ok", KEY_OK);
 			
@@ -131,35 +123,15 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_yellow = configfile.getInt32("key_yellow", KEY_YELLOW);
 	key_blue	= configfile.getInt32("key_blue", KEY_BLUE);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_audio = configfile.getInt32("key_audio", /*0x3D*/0x188);
-	key_video = configfile.getInt32("key_video", /*0x90*/0xE2);		
-	key_text = configfile.getInt32("key_text", /*0x173*/0x184);
-#else
 	key_audio = configfile.getInt32("key_audio", KEY_AUDIO);
 	key_video = configfile.getInt32("key_video", KEY_VIDEO);		
 	key_text = configfile.getInt32("key_text", KEY_TEXT);
-#endif
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_info = configfile.getInt32("key_info", 0x166);
-#elif defined (PLATFORM_DUCKBOX)
-	key_info = configfile.getInt32("key_info", 0x8A);
-#else
 	key_info = configfile.getInt32("key_info", KEY_INFO);
-#endif			
-			
-#if defined (PLATFORM_GIGABLUE)			
-	key_epg = configfile.getInt32("key_epg", 0x8A);
-#else			
+				
 	key_epg = configfile.getInt32("key_epg", KEY_EPG);
-#endif			
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_recall = configfile.getInt32("key_recall", /*0x3C*/0x19C);
-#else
 	key_recall = configfile.getInt32("key_recall", KEY_BACK);
-#endif			
 
 	key_favorites = configfile.getInt32("key_favorites", KEY_FAVORITES);
 	key_sat = configfile.getInt32("key_sat", KEY_SAT);
@@ -171,53 +143,38 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_rewind = configfile.getInt32("key_rewind", KEY_REWIND);
 	key_stop = configfile.getInt32("key_stop", KEY_STOP);
 	key_timeshift = configfile.getInt32("key_timeshift", KEY_TIME);
-			
-#if defined (PLATFORM_GIGABLUE)
-	key_mode = configfile.getInt32("key_mode", 0x181);
-#elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_mode = configfile.getInt32("key_mode", /*0x3B*/0x181);
-#else			
+				
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);
-#endif			
 
-#if defined (PLATFORM_GIGABLUE)
-	key_next = configfile.getInt32("key_next", 0x197);
-	key_prev = configfile.getInt32("key_prev", 0x19C);
-#else
 	key_next = configfile.getInt32("key_next", 0xFFFFFFF0);
 	key_prev = configfile.getInt32("key_prev", 0xFFFFFFF1);
-#endif			
 
 	/* added from cuberevo3000hd so fix it please */
-	key_music = configfile.getInt32("key_music", /*KEY_MUSIC*/0x3F );
-	key_picture = configfile.getInt32("key_picture", /*KEY_PICTURE*/ 0x169 );
+	key_music = configfile.getInt32("key_music", KEY_MUSIC );
+	key_picture = configfile.getInt32("key_picture", KEY_PICTURE );
 			
-	key_repeat = configfile.getInt32("key_repeat", /*KEY_REPEAT*/0x81);
-	key_slow = configfile.getInt32("key_slow", /*KEY_SLOW*/0x199 );
+	key_repeat = configfile.getInt32("key_repeat", KEY_REPEAT);
+	key_slow = configfile.getInt32("key_slow", KEY_SLOW );
 			
 	key_dvbsub = configfile.getInt32("key_dvbsub", KEY_DVBSUB);
 
 	key_pip = configfile.getInt32("key_pip", KEY_PIP);
-	key_pippos = configfile.getInt32("key_pippos", /*KEY_PIPPOS*/0x175);
-	key_pipswap = configfile.getInt32("key_pipswap", /*KEY_PIPSWAP*/0X9E);
-	key_pipsubch = configfile.getInt32("key_pipsubch", /*KEY_PIPSUBCH*/0x188);
+	key_pippos = configfile.getInt32("key_pippos", KEY_PIPPOS);
+	key_pipswap = configfile.getInt32("key_pipswap", KEY_PIPSWAP);
+	key_pipsubch = configfile.getInt32("key_pipsubch", KEY_PIPSUBCH);
 
 	key_net = configfile.getInt32("key_net", KEY_NET);
-			
-	key_bookmark = configfile.getInt32("key_bookmark", /*KEY_BOOKMARK*/0x9C);
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_multifeed = configfile.getInt32("key_multifeed", /*KEY_MULTIFEED*/0x42);
-#else
-	key_multifeed = configfile.getInt32("key_multifeed", 0x165);
-#endif
-				
-	key_f1 = configfile.getInt32("key_f1", 0x3B);
-	key_f2 = configfile.getInt32("key_f2", 0x3C);
-	key_f3 = configfile.getInt32("key_f3", 0x3D);
-	key_f4 = configfile.getInt32("key_f4", 0x3E);
 	
-	key_aspect = configfile.getInt32("key_aspect", 0x40);	
+	key_bookmark = configfile.getInt32("key_bookmark", KEY_BOOKMARK );
+
+	key_multifeed = configfile.getInt32("key_multifeed", KEY_MULTIFEED );
+				
+	key_f1 = configfile.getInt32("key_f1", KEY_F1 );
+	key_f2 = configfile.getInt32("key_f2", KEY_F2 );
+	key_f3 = configfile.getInt32("key_f3", KEY_F2 );
+	key_f4 = configfile.getInt32("key_f4", KEY_F3 );
+	
+	//key_aspect = configfile.getInt32("key_aspect", 0x40);	
 			
 	key_vfdup = configfile.getInt32("key_vfdup", VFD_UP);
 	key_vfddown = configfile.getInt32("key_vfddown", VFD_DOWN);
@@ -325,7 +282,7 @@ bool CRCInput::saveKeyMap(const char * const fileName)
 	configfile.setInt32("key_f3", key_f3);
 	configfile.setInt32("key_f4", key_f4);
 	
-	configfile.setInt32("key_aspect", key_aspect);
+	//configfile.setInt32("key_aspect", key_aspect);
 					
 	configfile.setInt32("key_vfdup", key_vfdup);
 	configfile.setInt32("key_vfddown", key_vfddown);
@@ -336,7 +293,7 @@ bool CRCInput::saveKeyMap(const char * const fileName)
 	configfile.setInt32("key_vfdexit", key_vfdexit);
 	configfile.setInt32("key_vfdok", key_vfdok);
 	
-	//if(configfile.getModifiedFlag())
+	if(configfile.getModifiedFlag())
 	{
 		/* save neu configuration */
 		configfile.saveConfig(fileName);
@@ -396,14 +353,6 @@ CRCInput::CRCInput() : configfile('\t')
 		perror("CRCInput::CRCInput listen failed...\n");
 		exit( -1 );
 	}
-	
-	//save keymap
-	//if( !loadKeyMap(NEUTRINO_KEYMAP_FILE) )
-	//{
-	//	dprintf(DEBUG_NORMAL, "CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
-	//	configfile.setModifiedFlag(true);
-	//	saveKeyMap(NEUTRINO_KEYMAP_FILE);
-	//}
 
 	// open rc
 	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
@@ -1593,6 +1542,36 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 	}
 }
 
+void CRCInput::setRepeat(unsigned int delay,unsigned int period)
+{
+	repeat_block = delay * 1000ULL;
+	repeat_block_generic = period * 1000ULL;
+	//repeat_kernel = false;
+
+	int ret;
+	struct my_repeat {
+		unsigned int delay;	// in ms
+		unsigned int period;	// in ms
+	};
+
+	struct my_repeat n;
+
+	n.delay = delay;
+	n.period = period;
+
+	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
+	{
+		if (fd_rc[i] != -1)
+		{
+			if ((ret = ioctl(fd_rc[i], EVIOCSREP, &n)) < 0)
+				printf("[neutrino] can not use input repeat on fd_rc[%d]: %d\n", i);
+			//else
+			//	repeat_kernel = true;
+		}
+	}
+	printf("[neutrino] %s: delay=%d period=%d\n", __FUNCTION__, delay, period);
+}
+
 void CRCInput::postMsg(const neutrino_msg_t msg, const neutrino_msg_data_t data, const bool Priority)
 {
 //	printf("postMsg %x %x %d\n", msg, data, Priority );
@@ -1716,10 +1695,10 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 			return "ok";
 				
 		case RC_plus:
-			return "vol. inc";
+			return "vol+";
 				
 		case RC_minus:
-			return "vol. dec";
+			return "vol-";
 				
 		case RC_spkr:
 			return "mute";
@@ -1733,13 +1712,11 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 		case RC_video:
 			return "video";
 		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
 		case RC_picture:
 			return "picture";
 				
 		case RC_music:
-			return "music";
-#endif			
+			return "music";			
 
 		case RC_text:
 			return "text";
@@ -1779,14 +1756,12 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 				
 		case RC_pause:
 			return "pause";
-		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
+				
 		case RC_repeat:
 			return "repeat";
 				
 		case RC_slow:
-			return "slow";
-#endif			
+			return "slow";			
 
 		case RC_next:
 			return "next";
@@ -1794,7 +1769,6 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 		case RC_prev:
 			return "prev";
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 		case RC_dvbsub:
 			return "dvbsub";
 				
@@ -1815,12 +1789,10 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 				
 		case RC_net:
 			return "inet";
-#endif
 
 		case RC_multifeed:
 			return "multifeed";
-		
-#if defined (PLATFORM_GIGABLUE)			
+			
 		case RC_f1:
 			return "f1";
 					
@@ -1833,9 +1805,8 @@ const char * CRCInput::getSpecialKeyName(const unsigned int key)
 		case RC_f4:
 			return "f4";
 			
-		case RC_aspect:
-			return "aspect";
-#endif			
+		//case RC_aspect:
+		//	return "aspect";			
 				
 		/* VFD Tasten the generic values are from cuberevo so fix it */
 		case RC_vfdup:
@@ -1966,7 +1937,8 @@ int CRCInput::translate(int code, int num)
 	else if (code == key_pippos) return RC_pippos;
 	else if (code == key_pipswap) return RC_pipswap;
 	else if (code == key_pipsubch) return RC_pipsubch;
-	else if (code == key_aspect) return RC_aspect;
+	
+	//else if (code == key_aspect) return RC_aspect;
 	
 	/* functions */
 	else if (code == key_f1) return RC_f1;
