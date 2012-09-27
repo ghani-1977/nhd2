@@ -1348,14 +1348,27 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		printf("cFrontend::setParameters: fe(%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
 	}
 	
+	#if 1
+	bool auto_inversion = (TP->feparams.inversion == INVERSION_AUTO);
+	
+	if ((!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion))
+		TP->feparams.inversion = INVERSION_OFF;
+	#endif
+	
 	do {
 		tuned = false;
 
 		setFrontend(&TP->feparams);
 		
-		//struct dvb_frontend_event event;
+		getEvent();
 		
-		/*event =*/ getEvent();
+		#if 1
+		if ( (!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion) && (TP->feparams.inversion == INVERSION_OFF) && (!tuned) ) 
+		{
+			TP->feparams.inversion = INVERSION_ON;
+			continue;
+		}
+		#endif
 	} while (0);
 
 	if (tuned) 
