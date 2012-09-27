@@ -76,6 +76,8 @@ extern std::string g_file_epg;
 extern std::string g_file_epg1;
 extern bool isMovieBrowser;
 extern int timeshift;
+extern bool isHTTP;
+
 void CTimeOSD::show(time_t time_show)
 {	
 	// show / update
@@ -119,7 +121,7 @@ void CTimeOSD::show(time_t time_show)
 		// red
 		// movie info
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - 18);
-		if(isMovieBrowser)
+		if( isMovieBrowser || isHTTP)
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 2 + 16 + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 		// green

@@ -77,6 +77,8 @@ class CMoviePlayerGui : public CMenuTarget
 		bool		stopped;
 
 		std::string Path_local;
+		std::string Path_vlc;
+		std::string Path_vlc_settings;		
 
 		CFileBrowser * filebrowser;
 		CMovieBrowser* moviebrowser;
@@ -86,8 +88,10 @@ class CMoviePlayerGui : public CMenuTarget
 		void restoreNeutrino();
 
 		CFileFilter tsfilefilter;
+		CFileFilter vlcfilefilter;
 
 		void showHelpTS(void);
+		void showFileInfoVLC(void);
 
 	public:
 		CMoviePlayerGui();

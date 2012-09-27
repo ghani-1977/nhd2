@@ -162,7 +162,7 @@ static int check_if_mounted(char * dev)
 	return 0;
 }
 
-int CHDDMenuHandler::hddMenu ()
+int CHDDMenuHandler::hddMenu()
 {
 	FILE * f;
 	int fd;
@@ -170,14 +170,6 @@ int CHDDMenuHandler::hddMenu ()
 	int ret;
 
 	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
-
-#if 0
-	if(n <= 0) 
-	{
-		//FIXME no hdd found message
-		return 0;
-	}
-#endif
 
 	if (n < 0) 
 	{
@@ -353,7 +345,7 @@ int CHDDMenuHandler::hddMenu ()
 		hddmenu->addItem(new CMenuForwarderNonLocalized(str, true, NULL, tempMenu[i]));
 
 		/* result */
-		//has_hdd = true;
+		has_hdd = true;
 		
 		//test
 		free(namelist[i]);

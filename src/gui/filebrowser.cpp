@@ -863,12 +863,10 @@ bool CFileBrowser::exec(const char * const dirname)
 	{
 		m_baseurl = base;
 	}
-#if 0
 	else // vlc mode
 	{
 		m_baseurl = "http://" + g_settings.streaming_server_ip + ':' + g_settings.streaming_server_port + "/requests/browse.xml?dir=";
 	}
-#endif
 
 	name = dirname;
 	std::replace(name.begin(), name.end(), '\\', '/');
