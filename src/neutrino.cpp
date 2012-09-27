@@ -893,7 +893,32 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda1/movie" ).c_str() );
 	
 	// not in GUI
-	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "http://podfiles.zdf.de/podcast/zdf_podcasts/110924_hjo_p.mp4?2011-09-24+21-25");
+	//g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "http://podfiles.zdf.de/podcast/zdf_podcasts/110924_hjo_p.mp4?2011-09-24+21-25");
+	//streaming (server)
+	g_settings.streaming_type = configfile.getInt32( "streaming_type", 0 );
+	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "192.168.1.234");
+	strcpy( g_settings.streaming_server_port, configfile.getString( "streaming_server_port", "8080").c_str() );
+	strcpy( g_settings.streaming_server_cddrive, configfile.getString("streaming_server_cddrive", "D:").c_str() );
+	strcpy( g_settings.streaming_videorate,  configfile.getString("streaming_videorate", "1000").c_str() );
+	strcpy( g_settings.streaming_audiorate, configfile.getString("streaming_audiorate", "192").c_str() );
+	strcpy( g_settings.streaming_server_startdir, configfile.getString("streaming_server_startdir", "C:/Movies").c_str() );
+	g_settings.streaming_transcode_audio = configfile.getInt32( "streaming_transcode_audio", 0 );
+	g_settings.streaming_force_transcode_video = configfile.getInt32( "streaming_force_transcode_video", 0 );
+	g_settings.streaming_transcode_video_codec = configfile.getInt32( "streaming_transcode_video_codec", 0 );
+	g_settings.streaming_force_avi_rawaudio = configfile.getInt32( "streaming_force_avi_rawaudio", 0 );
+	g_settings.streaming_resolution = configfile.getInt32( "streaming_resolution", 0 );
+	g_settings.streaming_vlc10 = configfile.getInt32( "streaming_vlc10", 0);
+	#if 0
+	g_settings.streaming_use_buffer = configfile.getInt32("streaming_use_buffer", 1);
+	g_settings.streaming_buffer_segment_size = configfile.getInt32("streaming_buffer_segment_size", 24);
+	g_settings.streaming_stopsectionsd = configfile.getInt32("streaming_stopsectionsd", 1);
+	#endif
+	g_settings.streaming_show_tv_in_browser = configfile.getInt32("streaming_show_tv_in_browser", 0);
+	g_settings.streaming_allow_multiselect = configfile.getBool("streaming_allow_multiselect", false);
+	#if 0
+	g_settings.streaming_use_reclength = configfile.getBool("streaming_use_reclength", false);
+	g_settings.streaming_moviedir = configfile.getString( "streaming_moviedir", "" );
+	#endif
 	// end movieplayer
 
 	// OSD
@@ -1328,6 +1353,32 @@ void CNeutrinoApp::saveSetup(const char * fname)
 
 	// MOVIEPLAYER
 	configfile.setString( "network_nfs_moviedir", g_settings.network_nfs_moviedir);
+	
+	//streaming
+	configfile.setInt32 ( "streaming_type", g_settings.streaming_type );
+	configfile.setString( "streaming_server_ip", g_settings.streaming_server_ip );
+	configfile.setString( "streaming_server_port", g_settings.streaming_server_port );
+	configfile.setString( "streaming_server_cddrive", g_settings.streaming_server_cddrive );
+	configfile.setString( "streaming_videorate", g_settings.streaming_videorate );
+	configfile.setString( "streaming_audiorate", g_settings.streaming_audiorate );
+	configfile.setString( "streaming_server_startdir", g_settings.streaming_server_startdir );
+	configfile.setInt32 ( "streaming_transcode_audio", g_settings.streaming_transcode_audio );
+	configfile.setInt32 ( "streaming_force_avi_rawaudio", g_settings.streaming_force_avi_rawaudio );
+	configfile.setInt32 ( "streaming_force_transcode_video", g_settings.streaming_force_transcode_video );
+	configfile.setInt32 ( "streaming_transcode_video_codec", g_settings.streaming_transcode_video_codec );
+	configfile.setInt32 ( "streaming_resolution", g_settings.streaming_resolution );
+	configfile.setInt32 ( "streaming_vlc10", g_settings.streaming_vlc10 );
+#if 0
+	configfile.setInt32 ( "streaming_use_buffer", g_settings.streaming_use_buffer);
+	configfile.setInt32 ( "streaming_buffer_segment_size", g_settings.streaming_buffer_segment_size);
+	configfile.setInt32 ( "streaming_stopsectionsd", g_settings.streaming_stopsectionsd);
+#endif
+	configfile.setInt32 ( "streaming_show_tv_in_browser", g_settings.streaming_show_tv_in_browser);
+	configfile.setBool ("streaming_allow_multiselect", g_settings.streaming_allow_multiselect);
+#if 0
+	configfile.setBool ("streaming_use_reclength", g_settings.streaming_use_reclength);
+	configfile.setString( "streaming_moviedir", g_settings.streaming_moviedir);
+#endif
 	// END MOVIEPLAYER
 
 	// OSD
@@ -4981,7 +5032,7 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 		
 		/* save keymap */
-		g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
+		//g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
 
 		tuxtxt_close();
 		

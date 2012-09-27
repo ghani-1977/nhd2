@@ -146,6 +146,8 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CIPChangeNotifier		*MyIPChanger;
 		CRCLock                         *rcLock;
                 CTimerList                      *Timerlist;			// for user menu
+                
+                std::vector<CMenuItem*> toNotify;
 
 		/* neutrino_menue.cpp */
                 bool showUserMenu(int button);
