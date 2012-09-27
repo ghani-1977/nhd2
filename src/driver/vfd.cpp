@@ -80,24 +80,11 @@ void CVFD::closeDevice()
 // constructor
 CVFD::CVFD()
 {
-#ifdef VFD_UPDATE
-        m_fileList = NULL;
-        m_fileListPos = 0;
-        m_fileListHeader = "";
-        m_infoBoxText = "";
-        m_infoBoxAutoNewline = 0;
-        m_progressShowEscape = 0;
-        m_progressHeaderGlobal = "";
-        m_progressHeaderLocal = "";
-        m_progressGlobal = 0;
-        m_progressLocal = 0;
-#endif // VFD_UPDATE
-
 // xtrend 5XXX has no vfd und dreambox has lcd
 #if defined (PLATFORM_XTREND) || defined (PLATFORM_DREAMBOX)
-	has_vfd = 0;
+	has_lcd = 0;
 #else
-	has_vfd = 1;
+	has_lcd = 1;
 #endif	
 	
 	text[0] = 0;
@@ -196,7 +183,7 @@ void CVFD::init()
 
 void CVFD::setlcdparameter(int dimm, const int power)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	brightness = dimm;
@@ -222,7 +209,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 void CVFD::setlcdparameter(void)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	last_toggle_state_power = g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
@@ -232,7 +219,7 @@ void CVFD::setlcdparameter(void)
 
 void CVFD::showServicename(const std::string & name) // UTF-8
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	dprintf(DEBUG_DEBUG, "CVFD::showServicename: %s\n", name.c_str());
@@ -275,7 +262,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 
 void CVFD::showTime(bool force)
 {
-	if(!has_vfd)
+	if(!has_lcd)
 		return;
 
 	if (showclock) 
@@ -324,7 +311,7 @@ void CVFD::showRCLock(int duration)
 
 void CVFD::showMenuText(const int position, const char * text, const int highlight, const bool utf_encoded)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	if (mode != MODE_MENU_UTF8)
@@ -336,7 +323,7 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 
 void CVFD::showAudioTrack(const std::string & artist, const std::string & title, const std::string & album)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	if (mode != MODE_AUDIO) 
@@ -350,7 +337,7 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 
 void CVFD::showAudioPlayMode(AUDIOMODES m)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	switch(m) 
@@ -380,43 +367,13 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 	wake_up();
 }
 
-/*void CVFD::showAudioProgress(const char perc, bool isMuted)
-{
-	if(!has_vfd) 
-		return;
-
-#ifdef HAVE_LCD
-	if (mode == MODE_AUDIO) 
-	{
-		int dp = int( perc/100.0*61.0+12.0);
-		if(isMuted) 
-		{
-			if(dp > 12) 
-			{
-				display.draw_line(12, 56, dp-1, 56, CLCDDisplay::PIXEL_OFF);
-				display.draw_line(12, 58, dp-1, 58, CLCDDisplay::PIXEL_OFF);
-			}
-			else
-				display.draw_line (12,55,72,59, CLCDDisplay::PIXEL_ON);
-		}
-	}
-#endif
-}*/
-
 void CVFD::setMode(const MODES m, const char * const title)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	//if(mode == MODE_AUDIO)
 	//	ShowIcon(VFD_ICON_MP3, false);
-#if 0
-	else if(mode == MODE_STANDBY) 
-	{
-		ShowIcon(VFD_ICON_COL1, false);
-		ShowIcon(VFD_ICON_COL2, false);
-	}
-#endif
 
 	// sow title
 	if(strlen(title))
@@ -508,7 +465,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 void CVFD::setBrightness(int bright)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = bright;
@@ -527,7 +484,7 @@ int CVFD::getBrightness()
 
 void CVFD::setBrightnessStandby(int bright)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = bright;
@@ -545,7 +502,7 @@ int CVFD::getBrightnessStandby()
 
 void CVFD::setPower(int power)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 #if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
@@ -563,7 +520,7 @@ void CVFD::setPower(int power)
 
 void CVFD::setFPTime(void)
 {
-	if(!has_vfd)
+	if(!has_lcd)
 		return;
 
 #if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
@@ -583,7 +540,7 @@ int CVFD::getPower()
 
 void CVFD::togglePower(void)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	last_toggle_state_power = 1 - last_toggle_state_power;
@@ -592,7 +549,7 @@ void CVFD::togglePower(void)
 
 void CVFD::setMuted(bool mu)
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 	
 	muted = mu;	
@@ -600,19 +557,19 @@ void CVFD::setMuted(bool mu)
 
 void CVFD::resume()
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 }
 
 void CVFD::pause()
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 }
 
 void CVFD::Lock()
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	creat("/tmp/vfd.locked", 0);
@@ -620,7 +577,7 @@ void CVFD::Lock()
 
 void CVFD::Unlock()
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 
 	unlink("/tmp/vfd.locked");
@@ -628,7 +585,7 @@ void CVFD::Unlock()
 
 void CVFD::Clear()
 {
-	if(!has_vfd) 
+	if(!has_lcd) 
 		return;
 	
 #if defined (PLATFORM_GIGABLUE)

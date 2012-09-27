@@ -36,7 +36,6 @@
 
 // duckbox
 // token from micom
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 enum {
 	ICON_MIN,             // 0x00
 	ICON_STANDBY,
@@ -69,7 +68,6 @@ enum {
 	ICON_PAUSE,   
 	ICON_MAX
 };
-//#endif
 
 // neutrino common
 typedef enum
@@ -181,10 +179,7 @@ class CVFD
 	public:
 
 		~CVFD();
-		bool has_vfd;
-		
-		//bool has_lcd;
-		//bool has_led;
+		bool has_lcd;
 		
 		void setlcdparameter(void);
 
