@@ -133,7 +133,30 @@ struct SNeutrinoSettings
 	// MOVIEPLAYER
 	char network_nfs_moviedir[100];
 	
+	int  streaming_type;
 	std::string streaming_server_ip;
+	char streaming_server_port[10];
+	char streaming_server_cddrive[21];
+	char streaming_videorate[6];
+	char streaming_audiorate[6];
+	char streaming_server_startdir[40];
+	int streaming_transcode_audio;
+	int streaming_force_avi_rawaudio;
+	int streaming_force_transcode_video;
+	int streaming_transcode_video_codec;
+	int streaming_resolution;
+	int streaming_vlc10;
+	#if 0
+	int streaming_use_buffer;
+	int streaming_buffer_segment_size;
+	int streaming_stopsectionsd;
+	#endif
+	int streaming_show_tv_in_browser;
+	int streaming_allow_multiselect;
+	#if 0
+	int streaming_use_reclength;
+	std::string streaming_moviedir;
+	#endif
 	// END MOVIEPLAYER
 
 	// OSD

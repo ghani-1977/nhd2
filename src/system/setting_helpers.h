@@ -69,10 +69,12 @@ class COnOffNotifier : public CChangeObserver
 {
         private:
                 int number;
-                CMenuItem * toDisable[5];
+                CMenuItem * toDisable[15];
         public:
                 COnOffNotifier(CMenuItem* a1, CMenuItem* a2 = NULL, CMenuItem* a3 = NULL, CMenuItem* a4 = NULL, CMenuItem* a5 = NULL);
+		COnOffNotifier(int OffValue = 0);
                 bool changeNotify(const neutrino_locale_t, void *Data);
+		void addItem(CMenuItem* menuItem);
 };
 
 // recording safety notifier

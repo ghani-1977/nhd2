@@ -217,6 +217,11 @@ COnOffNotifier::COnOffNotifier( CMenuItem* a1,CMenuItem* a2,CMenuItem* a3,CMenuI
         if(a5 != NULL){ toDisable[4] =a5;number++;};
 }
 
+COnOffNotifier::COnOffNotifier(int OffValue)
+{
+	number = 0;
+}
+
 bool COnOffNotifier::changeNotify(const neutrino_locale_t, void *Data)
 {
 	if(*(int*)(Data) == 0)
@@ -231,6 +236,15 @@ bool COnOffNotifier::changeNotify(const neutrino_locale_t, void *Data)
 	}
 	
 	return true;
+}
+
+void COnOffNotifier::addItem(CMenuItem* menuItem)
+{
+	if (number < 15)
+	{
+		toDisable[number] = menuItem;
+		number++;
+	}
 }
 
 // recording safety notifier
@@ -429,7 +443,7 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 
 bool CKeySetupNotifier::changeNotify(const neutrino_locale_t, void *)
 {
-
+        #if 0
 	unsigned int fdelay = atoi(g_settings.repeat_blocker);
 	unsigned int xdelay = atoi(g_settings.repeat_genericblocker);
 
@@ -452,6 +466,9 @@ bool CKeySetupNotifier::changeNotify(const neutrino_locale_t, void *)
 	ie.code = REP_PERIOD;
 	if (write(fd, &ie, sizeof(ie)) == -1)
 		perror("CKeySetupNotifier::changeNotify REP_PERIOD");
+	#else
+	g_RCInput->setRepeat(atoi(g_settings.repeat_blocker), atoi(g_settings.repeat_genericblocker));
+	#endif
 
 	return false;
 }
