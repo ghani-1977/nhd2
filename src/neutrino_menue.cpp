@@ -65,6 +65,7 @@
 #include <driver/stream2file.h>
 #include <driver/vcrcontrol.h>
 #include <driver/shutdown_count.h>
+#include <driver/screen_max.h>
 
 #include <gui/epgplus.h>
 #include <gui/streaminfo2.h>
@@ -243,9 +244,12 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, "", moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "fileplayback", LOCALE_HELPTEXT_FILEPLAYBACK ));
 	
 	// movieplayer netstream
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)	
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, "", moviePlayerGui, "netstream", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "netstream", LOCALE_HELPTEXT_NETSTREAM ));
-#endif	
+	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, "", moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "netstream", LOCALE_HELPTEXT_NETSTREAM ));
+	
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, "", moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "netstream", LOCALE_HELPTEXT_NETSTREAM ));
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VCDPLAYBACK, true, "", moviePlayerGui, "vcdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "netstream", LOCALE_HELPTEXT_NETSTREAM ));
+
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 
 	//PictureViewer
@@ -317,10 +321,9 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	//OSD settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_OSD, true, "", &colorSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "osdsettings", LOCALE_HELPTEXT_OSDSETTINGS ));
 
-	//VFD settings
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)
-	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_LCD, true, "", &lcdSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "vfdsettings", LOCALE_HELPTEXT_VFDSETTINGS ));
-#endif	
+	// vfd/lcd settings
+	if(CVFD::getInstance()->has_lcd)
+		mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_LCD, true, "", &lcdSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "vfdsettings", LOCALE_HELPTEXT_VFDSETTINGS ));	
 
 	//Keys settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_KEYBINDING, true, "", &keySettings, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, "keyssettings", LOCALE_HELPTEXT_KEYSSETTINGS ));
@@ -335,7 +338,8 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_MISC, true, "", &miscSettings, NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "miscsettings", LOCALE_HELPTEXT_MISCSETTINGS ));
 
 	//HDD settings
-	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, true, "", new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "hddsettings", LOCALE_HELPTEXT_HDDSETTINGS ));
+	//if(has_hdd)
+		mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, true, "", new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "hddsettings", LOCALE_HELPTEXT_HDDSETTINGS ));
 }
 
 //Video Settings
@@ -1559,6 +1563,31 @@ void CNeutrinoApp::InitRecordingSettings(CMenuWidget &recordingSettings)
 	}
 }
 
+/* for streaming settings menu */
+#define STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTION_COUNT 2
+const CMenuOptionChooser::keyval STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTIONS[STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTION_COUNT] =
+{
+	{ 0, LOCALE_STREAMINGMENU_MPEG1 },
+	{ 1, LOCALE_STREAMINGMENU_MPEG2 }
+};
+
+#define STREAMINGMENU_STREAMING_RESOLUTION_OPTION_COUNT 5
+const CMenuOptionChooser::keyval STREAMINGMENU_STREAMING_RESOLUTION_OPTIONS[STREAMINGMENU_STREAMING_RESOLUTION_OPTION_COUNT] =
+{
+	{ 0, LOCALE_STREAMINGMENU_352X288 },
+	{ 1, LOCALE_STREAMINGMENU_352X576 },
+	{ 2, LOCALE_STREAMINGMENU_480X576 },
+	{ 3, LOCALE_STREAMINGMENU_704X576 },
+	{ 4, LOCALE_STREAMINGMENU_704X288 }
+};
+
+#define STREAMINGMENU_STREAMING_TYPE_OPTION_COUNT 2
+const CMenuOptionChooser::keyval STREAMINGMENU_STREAMING_TYPE_OPTIONS[STREAMINGMENU_STREAMING_TYPE_OPTION_COUNT] =
+{
+	{ 0, LOCALE_STREAMINGMENU_OFF },
+	{ 1, LOCALE_STREAMINGMENU_ON  }
+};
+
 // init streamingssettings
 void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 {
@@ -1574,6 +1603,106 @@ void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 
 	// multiformat Dir
 	streamingSettings.addItem(new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFDIR, true, g_settings.network_nfs_moviedir, this, "moviedir") ); 
+	
+	// streaming setup sub menu
+	CMenuWidget* mp_streaming_setup = new CMenuWidget(LOCALE_MAINSETTINGS_STREAMING, NEUTRINO_ICON_SETTINGS, w_max (500, 100));
+	CMenuForwarder* mp_streaming_setup_mf = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SETTINGS, true, NULL, mp_streaming_setup, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW);
+
+	// intros
+	//mp_setup->addIntroItems(LOCALE_MAINSETTINGS_STREAMING);
+	//mp_streaming_setup->addIntroItems(LOCALE_STREAMINGMENU_STREAMING_SETTINGS);
+	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+	mp_streaming_setup->addItem(GenericMenuBack);
+	mp_streaming_setup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+
+	// server ip
+	CIPInput* mp_setup_server_ip = new CIPInput(LOCALE_STREAMINGMENU_SERVER_IP, g_settings.streaming_server_ip, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
+	CStringInput* mp_setup_server_port = new CStringInput(LOCALE_STREAMINGMENU_SERVER_PORT, g_settings.streaming_server_port, 6, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
+	CStringInputSMS* cddriveInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE, g_settings.streaming_server_cddrive, 20, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789!""\xA7$%&/()=?-:\\ ");
+	CStringInput* mp_setup_videorate = new CStringInput(LOCALE_STREAMINGMENU_STREAMING_VIDEORATE, g_settings.streaming_videorate, 5, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
+	CStringInput* mp_setup_audiorate = new CStringInput(LOCALE_STREAMINGMENU_STREAMING_AUDIORATE, g_settings.streaming_audiorate, 5, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
+	CStringInputSMS* startdirInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_STARTDIR, g_settings.streaming_server_startdir, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE,"abcdefghijklmnopqrstuvwxyz0123456789!""\xA7$%&/()=?-_:\\ ");
+
+	CMenuForwarder* mf1 = new CMenuForwarder(LOCALE_STREAMINGMENU_SERVER_IP                , (g_settings.streaming_type==1), g_settings.streaming_server_ip      , mp_setup_server_ip);
+	CMenuForwarder* mf2 = new CMenuForwarder(LOCALE_STREAMINGMENU_SERVER_PORT              , (g_settings.streaming_type==1), g_settings.streaming_server_port    , mp_setup_server_port);
+	CMenuForwarder* mf3 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE , (g_settings.streaming_type==1), g_settings.streaming_server_cddrive , cddriveInput);
+	CMenuForwarder* mf4 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_VIDEORATE      , (g_settings.streaming_type==1), g_settings.streaming_videorate      , mp_setup_videorate);
+	CMenuForwarder* mf5 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_AUDIORATE      , (g_settings.streaming_type==1), g_settings.streaming_audiorate      , mp_setup_audiorate);
+	CMenuForwarder* mf6 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SERVER_STARTDIR, (g_settings.streaming_type==1), g_settings.streaming_server_startdir, startdirInput);
+
+	// startdir
+#if 0
+	CDirChooser startdir(&g_settings.streaming_moviedir);	
+	CMenuForwarder* mf7 = new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFDIR, true, g_settings.streaming_moviedir, &startdir);
+
+	CMenuForwarder* mf8 = new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFPLUGIN, true, g_settings.movieplayer_plugin,this,"movieplugin");
+#endif
+	CMenuOptionChooser* oj1 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_AUDIO      , &g_settings.streaming_transcode_audio      , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
+
+	CMenuOptionChooser* oj2 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_FORCE_AVI_RAWAUDIO   , &g_settings.streaming_force_avi_rawaudio   , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
+
+	CMenuOptionChooser* oj3 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_FORCE_TRANSCODE_VIDEO, &g_settings.streaming_force_transcode_video, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
+
+	// not yet supported by VLC
+	CMenuOptionChooser* oj4 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC, &g_settings.streaming_transcode_video_codec, STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTIONS, STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTION_COUNT, g_settings.streaming_type);
+
+	CMenuOptionChooser* oj5 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_RESOLUTION           , &g_settings.streaming_resolution           , STREAMINGMENU_STREAMING_RESOLUTION_OPTIONS, STREAMINGMENU_STREAMING_RESOLUTION_OPTION_COUNT, g_settings.streaming_type);
+
+	CMenuOptionChooser* oj10 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_VLC10               , &g_settings.streaming_vlc10                , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
+
+	COnOffNotifier* StreamingNotifier = new COnOffNotifier();
+#if 0
+	if (toNotify != NULL)
+	{
+		for (std::vector<CMenuItem*>::iterator it = toNotify->begin(); it != toNotify->end(); it++)
+			StreamingNotifier->addItem(*it);
+	}
+#endif
+	StreamingNotifier->addItem(mf1);
+	StreamingNotifier->addItem(mf2);
+	StreamingNotifier->addItem(mf3);
+	StreamingNotifier->addItem(mf4);
+	StreamingNotifier->addItem(mf5);
+	StreamingNotifier->addItem(mf6);
+	StreamingNotifier->addItem(oj1);
+	StreamingNotifier->addItem(oj2);
+	StreamingNotifier->addItem(oj3);
+	StreamingNotifier->addItem(oj4);
+	StreamingNotifier->addItem(oj5);
+	StreamingNotifier->addItem(oj10);
+
+#if 0
+#ifndef ENABLE_MOVIEPLAYER2
+	CIntInput mp_setup_buffer_size(LOCALE_STREAMINGMENU_STREAMING_BUFFER_SEGMENT_SIZE, (long&)g_settings.streaming_buffer_segment_size,3, LOCALE_STREAMINGMENU_STREAMING_BUFFER_SEGMENT_SIZE_HINT1, LOCALE_STREAMINGMENU_STREAMING_BUFFER_SEGMENT_SIZE_HINT2);
+	CMenuForwarder* mf9 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_BUFFER_SEGMENT_SIZE, g_settings.streaming_use_buffer, mp_setup_buffer_size.getValue(), &mp_setup_buffer_size);
+	COnOffNotifier bufferNotifier;
+	bufferNotifier.addItem(mf9);
+	CMenuOptionChooser* oj6 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_USE_BUFFER, &g_settings.streaming_use_buffer, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true, &bufferNotifier);
+#endif
+	CMenuOptionChooser* oj7 = new CMenuOptionChooser(LOCALE_RECORDINGMENU_SECTIONSD , &g_settings.streaming_stopsectionsd  , STREAMINGMENU_STOPSECTIONSD_OPTIONS, STREAMINGMENU_STOPSECTIONSD_OPTION_COUNT, true);
+	CMenuOptionChooser* oj8 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_SHOW_TV_IN_BROWSER , &g_settings.streaming_show_tv_in_browser  , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true);
+	CMenuOptionChooser* oj9 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_FILEBROWSER_ALLOW_MULTISELECT , &g_settings.streaming_allow_multiselect  , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true);
+#endif
+
+	CMenuOptionChooser* oj0 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TYPE, &g_settings.streaming_type, STREAMINGMENU_STREAMING_TYPE_OPTIONS, STREAMINGMENU_STREAMING_TYPE_OPTION_COUNT, true, StreamingNotifier);
+
+	streamingSettings.addItem(mp_streaming_setup_mf);		//streaming server settings
+	mp_streaming_setup->addItem(oj0);		//enable/disable streamingserver
+	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator	
+	mp_streaming_setup->addItem(mf1);		//Server IP
+	mp_streaming_setup->addItem(mf2);		//Server Port
+	mp_streaming_setup->addItem(mf3);		//CD-Drive
+	mp_streaming_setup->addItem(mf6);		//vlc Startdir
+	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator	
+	mp_streaming_setup->addItem(mf4);		//Video-Rate
+	mp_streaming_setup->addItem(oj3);		//transcode
+	mp_streaming_setup->addItem(oj4);		//codec
+	mp_streaming_setup->addItem(oj5);		//definition
+	mp_streaming_setup->addItem(oj10);		//vlc10
+	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator
+	mp_streaming_setup->addItem(mf5);		//Audiorate
+	mp_streaming_setup->addItem(oj1);		//transcode audio
+	mp_streaming_setup->addItem(oj2);		//ac3 on avi	
 }
 
 // Init Color Settings
@@ -1997,34 +2126,34 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	key_vfdok
 */
 enum keymap {
-	KEYMAP_KEY_0,
-	KEYMAP_KEY_1,
-	KEYMAP_KEY_2,
-	KEYMAP_KEY_3,
-	KEYMAP_KEY_4,
-	KEYMAP_KEY_5,
-	KEYMAP_KEY_6,
-	KEYMAP_KEY_7,
-	KEYMAP_KEY_8,
-	KEYMAP_KEY_9,
-	KEYMAP_KEY_BACKSPACE,
-	KEYMAP_KEY_UP,
-	KEYMAP_KEY_LEFT,
-	KEYMAP_KEY_RIGHT,
-	KEYMAP_KEY_DOWN,
+	//KEYMAP_KEY_0,
+	//KEYMAP_KEY_1,
+	//KEYMAP_KEY_2,
+	//KEYMAP_KEY_3,
+	//KEYMAP_KEY_4,
+	//KEYMAP_KEY_5,
+	//KEYMAP_KEY_6,
+	//KEYMAP_KEY_7,
+	//KEYMAP_KEY_8,
+	//KEYMAP_KEY_9,
+	//KEYMAP_KEY_BACKSPACE,
+	//KEYMAP_KEY_UP,
+	//KEYMAP_KEY_LEFT,
+	//KEYMAP_KEY_RIGHT,
+	//KEYMAP_KEY_DOWN,
 	KEYMAP_KEY_SPKR,
 	KEYMAP_KEY_MINUS,
 	KEYMAP_KEY_PLUS,
-	KEYMAP_KEY_STANDBY,
-	KEYMAP_KEY_HOME,
-	KEYMAP_KEY_SETUP,
-	KEYMAP_KEY_PAGE_UP,
-	KEYMAP_KEY_PAGE_DOWN,
-	KEYMAP_KEY_OK,
-	KEYMAP_KEY_RED,
-	KEYMAP_KEY_GREEN,
-	KEYMAP_KEY_YELLOW,
-	KEYMAP_KEY_BLUE,
+	//KEYMAP_KEY_STANDBY,
+	//KEYMAP_KEY_HOME,
+	//KEYMAP_KEY_SETUP,
+	//KEYMAP_KEY_PAGE_UP,
+	//KEYMAP_KEY_PAGE_DOWN,
+	//KEYMAP_KEY_OK,
+	//KEYMAP_KEY_RED,
+	//KEYMAP_KEY_GREEN,
+	//KEYMAP_KEY_YELLOW,
+	//KEYMAP_KEY_BLUE,
 	KEYMAP_KEY_AUDIO,
 	KEYMAP_KEY_VIDEO,
 	KEYMAP_KEY_TEXT,
@@ -2055,11 +2184,11 @@ enum keymap {
 	KEYMAP_KEY_NET,
 	KEYMAP_KEY_BOOKMARK,
 	KEYMAP_KEY_MULTIFEED,
-	KEYMAP_KEY_F1,
-	KEYMAP_KEY_F2,
-	KEYMAP_KEY_F3,
-	KEYMAP_KEY_F4,
-	KEYMAP_KEY_ASPECT,
+	//KEYMAP_KEY_F1,
+	//KEYMAP_KEY_F2,
+	//KEYMAP_KEY_F3,
+	//KEYMAP_KEY_F4,
+	//KEYMAP_KEY_ASPECT,
 	KEYMAP_KEY_VFDUP,
 	KEYMAP_KEY_VFDDOWN,
 	KEYMAP_KEY_VFDRIGHT,
@@ -2073,34 +2202,34 @@ enum keymap {
 #define KEYMAP_COUNT 71
 const neutrino_locale_t keymap_head[KEYMAP_COUNT] = 
 {
-	LOCALE_KEYMAP_KEY_0,
-	LOCALE_KEYMAP_KEY_1,
-	LOCALE_KEYMAP_KEY_2,
-	LOCALE_KEYMAP_KEY_3,
-	LOCALE_KEYMAP_KEY_4,
-	LOCALE_KEYMAP_KEY_5,
-	LOCALE_KEYMAP_KEY_6,
-	LOCALE_KEYMAP_KEY_7,
-	LOCALE_KEYMAP_KEY_8,
-	LOCALE_KEYMAP_KEY_9,
-	LOCALE_KEYMAP_KEY_BACKSPACE,
-	LOCALE_KEYMAP_KEY_UP,
-	LOCALE_KEYMAP_KEY_LEFT,
-	LOCALE_KEYMAP_KEY_RIGHT,
-	LOCALE_KEYMAP_KEY_DOWN,
+	//LOCALE_KEYMAP_KEY_0,
+	//LOCALE_KEYMAP_KEY_1,
+	//LOCALE_KEYMAP_KEY_2,
+	//LOCALE_KEYMAP_KEY_3,
+	//LOCALE_KEYMAP_KEY_4,
+	//LOCALE_KEYMAP_KEY_5,
+	//LOCALE_KEYMAP_KEY_6,
+	//LOCALE_KEYMAP_KEY_7,
+	//LOCALE_KEYMAP_KEY_8,
+	//LOCALE_KEYMAP_KEY_9,
+	//LOCALE_KEYMAP_KEY_BACKSPACE,
+	//LOCALE_KEYMAP_KEY_UP,
+	//LOCALE_KEYMAP_KEY_LEFT,
+	//LOCALE_KEYMAP_KEY_RIGHT,
+	//LOCALE_KEYMAP_KEY_DOWN,
 	LOCALE_KEYMAP_KEY_SPKR,
 	LOCALE_KEYMAP_KEY_MINUS,
 	LOCALE_KEYMAP_KEY_PLUS,
-	LOCALE_KEYMAP_KEY_STANDBY,
-	LOCALE_KEYMAP_KEY_HOME,
-	LOCALE_KEYMAP_KEY_SETUP,
-	LOCALE_KEYMAP_KEY_PAGE_UP,
-	LOCALE_KEYMAP_KEY_PAGE_DOWN,
-	LOCALE_KEYMAP_KEY_OK,
-	LOCALE_KEYMAP_KEY_RED,
-	LOCALE_KEYMAP_KEY_GREEN,
-	LOCALE_KEYMAP_KEY_YELLOW,
-	LOCALE_KEYMAP_KEY_BLUE,
+	//LOCALE_KEYMAP_KEY_STANDBY,
+	//LOCALE_KEYMAP_KEY_HOME,
+	//LOCALE_KEYMAP_KEY_SETUP,
+	//LOCALE_KEYMAP_KEY_PAGE_UP,
+	//LOCALE_KEYMAP_KEY_PAGE_DOWN,
+	//LOCALE_KEYMAP_KEY_OK,
+	//LOCALE_KEYMAP_KEY_RED,
+	//LOCALE_KEYMAP_KEY_GREEN,
+	//LOCALE_KEYMAP_KEY_YELLOW,
+	//LOCALE_KEYMAP_KEY_BLUE,
 	LOCALE_KEYMAP_KEY_AUDIO,
 	LOCALE_KEYMAP_KEY_VIDEO,
 	LOCALE_KEYMAP_KEY_TEXT,
@@ -2131,11 +2260,11 @@ const neutrino_locale_t keymap_head[KEYMAP_COUNT] =
 	LOCALE_KEYMAP_KEY_NET,
 	LOCALE_KEYMAP_KEY_BOOKMARK,
 	LOCALE_KEYMAP_KEY_MULTIFEED,
-	LOCALE_KEYMAP_KEY_F1,
-	LOCALE_KEYMAP_KEY_F2,
-	LOCALE_KEYMAP_KEY_F3,
-	LOCALE_KEYMAP_KEY_F4,
-	LOCALE_KEYMAP_KEY_ASPECT,
+	//LOCALE_KEYMAP_KEY_F1,
+	//LOCALE_KEYMAP_KEY_F2,
+	//LOCALE_KEYMAP_KEY_F3,
+	//LOCALE_KEYMAP_KEY_F4,
+	//LOCALE_KEYMAP_KEY_ASPECT,
 	LOCALE_KEYMAP_KEY_VFDUP,
 	LOCALE_KEYMAP_KEY_VFDDOWN,
 	LOCALE_KEYMAP_KEY_VFDRIGHT,
@@ -2148,34 +2277,34 @@ const neutrino_locale_t keymap_head[KEYMAP_COUNT] =
 
 const neutrino_locale_t keymap[KEYMAP_COUNT] =
 {
-	LOCALE_KEYMAP_KEY_0,
-	LOCALE_KEYMAP_KEY_1,
-	LOCALE_KEYMAP_KEY_2,
-	LOCALE_KEYMAP_KEY_3,
-	LOCALE_KEYMAP_KEY_4,
-	LOCALE_KEYMAP_KEY_5,
-	LOCALE_KEYMAP_KEY_6,
-	LOCALE_KEYMAP_KEY_7,
-	LOCALE_KEYMAP_KEY_8,
-	LOCALE_KEYMAP_KEY_9,
-	LOCALE_KEYMAP_KEY_BACKSPACE,
-	LOCALE_KEYMAP_KEY_UP,
-	LOCALE_KEYMAP_KEY_LEFT,
-	LOCALE_KEYMAP_KEY_RIGHT,
-	LOCALE_KEYMAP_KEY_DOWN,
+	//LOCALE_KEYMAP_KEY_0,
+	//LOCALE_KEYMAP_KEY_1,
+	//LOCALE_KEYMAP_KEY_2,
+	//LOCALE_KEYMAP_KEY_3,
+	//LOCALE_KEYMAP_KEY_4,
+	//LOCALE_KEYMAP_KEY_5,
+	//LOCALE_KEYMAP_KEY_6,
+	//LOCALE_KEYMAP_KEY_7,
+	//LOCALE_KEYMAP_KEY_8,
+	//LOCALE_KEYMAP_KEY_9,
+	//LOCALE_KEYMAP_KEY_BACKSPACE,
+	//LOCALE_KEYMAP_KEY_UP,
+	//LOCALE_KEYMAP_KEY_LEFT,
+	//LOCALE_KEYMAP_KEY_RIGHT,
+	//LOCALE_KEYMAP_KEY_DOWN,
 	LOCALE_KEYMAP_KEY_SPKR,
 	LOCALE_KEYMAP_KEY_MINUS,
 	LOCALE_KEYMAP_KEY_PLUS,
-	LOCALE_KEYMAP_KEY_STANDBY,
-	LOCALE_KEYMAP_KEY_HOME,
-	LOCALE_KEYMAP_KEY_SETUP,
-	LOCALE_KEYMAP_KEY_PAGE_UP,
-	LOCALE_KEYMAP_KEY_PAGE_DOWN,
-	LOCALE_KEYMAP_KEY_OK,
-	LOCALE_KEYMAP_KEY_RED,
-	LOCALE_KEYMAP_KEY_GREEN,
-	LOCALE_KEYMAP_KEY_YELLOW,
-	LOCALE_KEYMAP_KEY_BLUE,
+	//LOCALE_KEYMAP_KEY_STANDBY,
+	//LOCALE_KEYMAP_KEY_HOME,
+	//LOCALE_KEYMAP_KEY_SETUP,
+	//LOCALE_KEYMAP_KEY_PAGE_UP,
+	//LOCALE_KEYMAP_KEY_PAGE_DOWN,
+	//LOCALE_KEYMAP_KEY_OK,
+	//LOCALE_KEYMAP_KEY_RED,
+	//LOCALE_KEYMAP_KEY_GREEN,
+	//LOCALE_KEYMAP_KEY_YELLOW,
+	//LOCALE_KEYMAP_KEY_BLUE,
 	LOCALE_KEYMAP_KEY_AUDIO,
 	LOCALE_KEYMAP_KEY_VIDEO,
 	LOCALE_KEYMAP_KEY_TEXT,
@@ -2206,11 +2335,11 @@ const neutrino_locale_t keymap[KEYMAP_COUNT] =
 	LOCALE_KEYMAP_KEY_NET,
 	LOCALE_KEYMAP_KEY_BOOKMARK,
 	LOCALE_KEYMAP_KEY_MULTIFEED,
-	LOCALE_KEYMAP_KEY_F1,
-	LOCALE_KEYMAP_KEY_F2,
-	LOCALE_KEYMAP_KEY_F3,
-	LOCALE_KEYMAP_KEY_F4,
-	LOCALE_KEYMAP_KEY_ASPECT,
+	//LOCALE_KEYMAP_KEY_F1,
+	//LOCALE_KEYMAP_KEY_F2,
+	//LOCALE_KEYMAP_KEY_F3,
+	//LOCALE_KEYMAP_KEY_F4,
+	//LOCALE_KEYMAP_KEY_ASPECT,
 	LOCALE_KEYMAP_KEY_VFDUP,
 	LOCALE_KEYMAP_KEY_VFDDOWN,
 	LOCALE_KEYMAP_KEY_VFDRIGHT,
@@ -2332,36 +2461,37 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	bindSettings.addItem(new CMenuOptionChooser(LOCALE_EXTRA_MENU_LEFT_EXIT, &g_settings.menu_left_exit, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
 	
 	//
+	#if 0
 	neutrino_msg_t * keyvalue_map[KEYMAP_COUNT] =
 	{
-		&g_RCInput->key_0,
-		&g_RCInput->key_1,
-		&g_RCInput->key_2,
-		&g_RCInput->key_3,
-		&g_RCInput->key_4,
-		&g_RCInput->key_5,
-		&g_RCInput->key_6,
-		&g_RCInput->key_7,
-		&g_RCInput->key_8,
-		&g_RCInput->key_9,
-		&g_RCInput->key_backspace,
-		&g_RCInput->key_up,
-		&g_RCInput->key_left,
-		&g_RCInput->key_right,
-		&g_RCInput->key_down,
+		//&g_RCInput->key_0,
+		//&g_RCInput->key_1,
+		//&g_RCInput->key_2,
+		//&g_RCInput->key_3,
+		//&g_RCInput->key_4,
+		//&g_RCInput->key_5,
+		//&g_RCInput->key_6,
+		//&g_RCInput->key_7,
+		//&g_RCInput->key_8,
+		//&g_RCInput->key_9,
+		//&g_RCInput->key_backspace,
+		//&g_RCInput->key_up,
+		//&g_RCInput->key_left,
+		//&g_RCInput->key_right,
+		//&g_RCInput->key_down,
 		&g_RCInput->key_spkr,
 		&g_RCInput->key_minus,
 		&g_RCInput->key_plus,
-		&g_RCInput->key_standby,
-		&g_RCInput->key_home,
-		&g_RCInput->key_setup,
-		&g_RCInput->key_page_up,
-		&g_RCInput->key_page_down,
-		&g_RCInput->key_ok,
-		&g_RCInput->key_red,
-		&g_RCInput->key_green,
-		&g_RCInput->key_yellow,
-		&g_RCInput->key_blue,
+		//&g_RCInput->key_standby,
+		//&g_RCInput->key_home,
+		//&g_RCInput->key_setup,
+		//&g_RCInput->key_page_up,
+		//&g_RCInput->key_page_down,
+		//&g_RCInput->key_ok,
+		//&g_RCInput->key_red,
+		//&g_RCInput->key_green,
+		//&g_RCInput->key_yellow,
+		//&g_RCInput->key_blue,
 		&g_RCInput->key_audio,
 		&g_RCInput->key_video,
 		&g_RCInput->key_text,
@@ -2392,11 +2522,11 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_RCInput->key_net,
 		&g_RCInput->key_bookmark,
 		&g_RCInput->key_multifeed,
-		&g_RCInput->key_f1,
-		&g_RCInput->key_f2,
-		&g_RCInput->key_f3,
-		&g_RCInput->key_f4,
-		&g_RCInput->key_aspect,
+		//&g_RCInput->key_f1,
+		//&g_RCInput->key_f2,
+		//&g_RCInput->key_f3,
+		//&g_RCInput->key_f4,
+		//&g_RCInput->key_aspect,
 		&g_RCInput->key_vfdup,
 		&g_RCInput->key_vfddown,
 		&g_RCInput->key_vfdright,
@@ -2414,8 +2544,9 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_KEYMAP));
 	
-	for (int i = KEYMAP_KEY_0; i <= KEYMAP_KEY_VFDOK; i++)
+	for (int i = KEYMAP_KEY_SPKR; i <= KEYMAP_KEY_VFDOK; i++)
 		bindSettings.addItem(new CMenuForwarder(keymap[i], true, NULL, keymapchooser[i]));
+	#endif
 	//
 
 	keySettings.addItem(new CMenuForwarder(LOCALE_KEYBINDINGMENU_HEAD, true, NULL, &bindSettings, NULL, CRCInput::convertDigitToKey(shortcutkeysettings++)));
@@ -2735,9 +2866,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 keyhelper.get(&key,&icon,CRCInput::RC_red);
                                 menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_RECORDING, &recordingstatus, MAINMENU_RECORDING_OPTIONS, MAINMENU_RECORDING_OPTION_COUNT, true, this, key, icon);
                                 menu->addItem(menu_item, false);
-				
-				//if(has_hdd)
-				//	menu->addItem(new CMenuForwarder(LOCALE_EXTRA_AUTO_TO_RECORD, autoshift, NULL, this, "autolink"), false);
                                 break;
 
                         case SNeutrinoSettings::ITEM_MOVIEPLAYER_MB:
