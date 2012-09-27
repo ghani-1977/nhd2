@@ -301,7 +301,10 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 #if defined (ENABLE_GSTREAMER)
 	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
 	
-	uri = g_filename_to_uri(filename, NULL, NULL);
+	if (isHTTP)
+		uri = g_uri_escape_string(filename, G_URI_RESERVED_CHARS_GENERIC_DELIMITERS, true);
+	else
+		uri = g_filename_to_uri(filename, NULL, NULL);
 	
 	// init gstreamer
 	int argc = 1;
