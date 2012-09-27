@@ -131,7 +131,7 @@ xmlDocPtr parseXml(const char * data)
 
 	if (doc == NULL)
 	{
-		WARN("Error parsing XML Data");
+		printf("Error parsing XML Data");
 		return NULL;
 	}
 	else
@@ -139,7 +139,7 @@ xmlDocPtr parseXml(const char * data)
 		cur = xmlDocGetRootElement(doc);
 		if (cur == NULL)
 		{
-			WARN("Empty document\n");
+			printf("Empty document\n");
 			xmlFreeDoc(doc);
 			return NULL;
 		}
