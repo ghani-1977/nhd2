@@ -901,7 +901,7 @@ movieplayer.bookmarkname_hint2
 movieplayer.buffering Puffern...
 movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
-movieplayer.vlcplayback Net Stream
+movieplayer.vlcplayback Vlc Player
 movieplayer.dvdplayback DVD
 movieplayer.fileplayback Media Archiv
 movieplayer.showtshelp Hilfe
@@ -1235,6 +1235,7 @@ streaming.write_error_open Die Aufnahme wurde leider abgebrochen,\nda die entspr
 streamingmenu.352x288 352x288
 streamingmenu.352x576 352x576
 streamingmenu.480x576 480x576
+streamingmenu.704x288 704x288
 streamingmenu.704x576 704x576
 streamingmenu.head Movieplayer Einstellungen
 streamingmenu.mpeg1 MPEG1
@@ -1249,10 +1250,12 @@ streamingmenu.streaming_force_transcode_video Transkod. auch mpg/vcd Video
 streamingmenu.streaming_resolution Auflösung
 streamingmenu.streaming_server_cddrive DVD Laufwerk
 streamingmenu.streaming_server_startdir Verzeichnis (VLC)
+streamingmenu.streaming_settings StreamingServer Einstellungen
 streamingmenu.streaming_transcode_audio Transkod. Audio (dvd/vcd/mpg)
 streamingmenu.streaming_transcode_video_codec MPEG Video Codec
 streamingmenu.streaming_type Streamingserver
 streamingmenu.streaming_videorate Datenrate Video
+streamingmenu.streaming_vlc10 Nutze VLC 1.x
 streamingserver.noconnect Keine Verbindung zum Streamingserver.\nAufnahme wird abgebrochen.
 stringinput.caps Groß-/Kleinbuchstaben
 stringinput.clear Alles löschen
@@ -1425,7 +1428,7 @@ osd.roundedcornersoff eckig
 osd.roundedcornerson abgerundet
 extra.volume_pos Lautstärkeanzeige
 progressbar.color Fortschrittsbalken Farbe
-movieplayer.netstream Net Stream
+movieplayer.vlcplayback Vlc Player
 miscsettings.reset Werkseinstellungen
 videosettings.wss Wide Screen Auto
 zapitsetup.lastuse Kanal beim Runterfahren speichern
