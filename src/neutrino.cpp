@@ -5030,9 +5030,6 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		networkConfig.commitConfig();
 		
 		saveSetup(NEUTRINO_SETTINGS_FILE);
-		
-		/* save keymap */
-		//g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
 
 		tuxtxt_close();
 		
