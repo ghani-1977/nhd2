@@ -672,6 +672,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	return true;
 }
 
+#if 0
 static bool parse_record_pat_pmt(CZapitChannel * thischannel)
 {
 	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
@@ -707,6 +708,7 @@ static bool parse_record_pat_pmt(CZapitChannel * thischannel)
 	
 	return true;
 }
+#endif
 
 static void restore_channel_pids(CZapitChannel * thischannel)
 {
@@ -899,7 +901,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	//	rec_channel->setFeIndex(record_fe->getFeIndex());
 	
 	// parse pat_pmt
-	if(!parse_record_pat_pmt(rec_channel))
+	if(!parse_channel_pat_pmt(rec_channel))
 		return -1;
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
@@ -2672,7 +2674,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ );
+			pcrDemux = new cDemux( thisChannel->getDemuxIndex() );
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2690,7 +2692,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ );
+			audioDemux = new cDemux( thisChannel->getDemuxIndex() );
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
@@ -2708,7 +2710,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( /*thisChannel->getDemuxIndex()*/ ); 
+			videoDemux = new cDemux( thisChannel->getDemuxIndex() ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )

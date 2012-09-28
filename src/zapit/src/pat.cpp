@@ -27,13 +27,12 @@
 #define PAT_SIZE 1024
 
 
-int parse_pat(CZapitChannel * const channel, int dmx_num)
+int parse_pat(CZapitChannel * const channel)
 {
 	if (!channel)
 		return -1;
 
-	int demux_index = dmx_num; //channel->getDemuxIndex();
-	cDemux * dmx = new cDemux( demux_index );
+	cDemux * dmx = new cDemux( channel->getDemuxIndex() );
 	
 	//open
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, channel->getFeIndex() );
@@ -94,7 +93,6 @@ static unsigned char pbuffer[PAT_SIZE];
 int parse_pat(int feindex)
 {
 	int ret = 0;
-	int dmx_num = 0; //feindex;
 
 	printf("parse_pat: Parsing pat ...\n");
 	
