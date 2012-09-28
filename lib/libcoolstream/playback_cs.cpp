@@ -37,10 +37,13 @@
 #include <driver/framebuffer.h>
 #include <system/debug.h>
 
+#if defined (ENABLE_GSTREAMER)
+#include <gst/gst.h>
+#include <gst/pbutils/missing-plugins.h>
+#endif
 
 
 static const char * FILENAME = "[playback_cs.cpp]";
-
 
 #if defined (ENABLE_GSTREAMER)
 GstElement * m_gst_playbin = NULL;

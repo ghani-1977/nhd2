@@ -26,10 +26,7 @@
 #include <config.h>
 
 
-#if defined (ENABLE_GSTREAMER)
-#include <gst/gst.h>
-#include <gst/pbutils/missing-plugins.h>
-#else // eplayer3 default
+#if !defined (ENABLE_GSTREAMER)  // eplayer3 default
 #include <common.h>
 #include <subtitle.h>
 #include <linux/fb.h>
@@ -54,15 +51,7 @@ typedef enum {
 class cPlayback
 {
 	private:
-#if defined (ENABLE_GSTREAMER)
-		//GstElement * m_gst_playbin;
-		//GstBus * bus;
-		//GMainLoop * loop;
-		//GstElement * audioSink;
-		//GstElement * videoSink;
-		//gchar * uri;
-
-#else
+#if !defined (ENABLE_GSTREAMER)
 		Context_t * player;
 #endif
 		bool playing;
