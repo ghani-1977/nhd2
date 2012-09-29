@@ -92,15 +92,14 @@ bool in_proc_filesystems(const char * const fsname)
 bool insert_modules(const CFSMounter::FSType fstype)
 {
 	if (fstype == CFSMounter::NFS)
-	{
 		return (system("modprobe nfs") == 0);
-	}
 	else if (fstype == CFSMounter::CIFS)
 		return (system("modprobe cifs") == 0);
 	else if (fstype == CFSMounter::LUFS)
 		return (system("modprobe lufs") == 0);
 	else if (fstype == CFSMounter::SMBFS)
 		return (system("modprobe smbfs") == 0);
+
 	return false;
 }
 
@@ -109,9 +108,7 @@ bool nfs_mounted_once = false;
 bool remove_modules(const CFSMounter::FSType fstype)
 {
 	if (fstype == CFSMounter::NFS)
-	{
 		return ((system("rmmod nfs") == 0) && (system("rmmod lockd") == 0) && (system("rmmod sunrpc") == 0));
-	}
 	else if (fstype == CFSMounter::CIFS)
 		return (system("rmmod cifs") == 0);
 	else if (fstype == CFSMounter::LUFS)
@@ -155,6 +152,7 @@ CFSMounter::FS_Support CFSMounter::fsSupported(const CFSMounter::FSType fstype, 
 		}
 	}
 	remove_modules(fstype);
+	
 	return CFSMounter::FS_UNSUPPORTED;
 }
 
@@ -173,10 +171,12 @@ bool CFSMounter::isMounted(const char * const local_dir)
 	path_max = 4096;
 #endif
 	char mount_point[path_max];
-	if (realpath(local_dir, mount_point) == NULL) {
+	if (realpath(local_dir, mount_point) == NULL) 
+	{
 		printf("[CFSMounter] could not resolve dir: %s: %s\n",local_dir, strerror(errno));
 		return false;
 	}
+	
 	in.open("/proc/mounts", std::ifstream::in);
 	while(in.good())
 	{
@@ -218,7 +218,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 
 	if(options1[0] == '\0')
 	{
-		strcpy(options1,options2);
+		strcpy(options1, options2);
 		options2[0] = '\0';
 	}
 	
@@ -226,23 +226,23 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 	{
 		if(fstype == NFS)
 		{
-			strcpy(options1,"ro,soft,udp");
-			strcpy(options2,"nolock,rsize=8192,wsize=8192");
+			strcpy(options1, "ro,soft,udp");
+			strcpy(options2, "nolock,rsize=8192,wsize=8192");
 		}
 		else if(fstype == CIFS)
 		{
-			strcpy(options1,"ro");
-			strcpy(options2,"");
+			strcpy(options1, "ro");
+			strcpy(options2, "");
 		}
 		else if(fstype == LUFS)
 		{
-			strcpy(options1,"");
-			strcpy(options2,"");
+			strcpy(options1, "");
+			strcpy(options2, "");
 		}
 		else if(fstype == SMBFS)
 		{
-			strcpy(options1,"");
-			strcpy(options2,"");
+			strcpy(options1, "");
+			strcpy(options2, "");
 		}
 	}
 	
