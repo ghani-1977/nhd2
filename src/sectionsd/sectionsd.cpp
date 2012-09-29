@@ -6213,13 +6213,15 @@ int eit_set_update_filter(int *fd)
 		", current version 0x%x got events %d\n",
 		messaging_current_servicekey, cur_eit, messaging_have_CN);
 
-	if (cur_eit == 0xff) {
+	if (cur_eit == 0xff) 
+	{
 		*fd = -1;
 		return -1;
 	}
 
-	if(eitDmx == NULL) {
-		eitDmx = new cDemux();
+	if(eitDmx == NULL) 
+	{
+		eitDmx = new cDemux( live_channel? live_channel->getDemuxIndex() : 0 );
 		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_channel? live_channel->getFeIndex() : 0);
 	}
 
@@ -6239,17 +6241,11 @@ int eit_set_update_filter(int *fd)
 	mask[2] = 0xFF;
 
 	int timeout = 0;
-#if 0
+
 	filter[3] = (cur_eit << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
 	eitDmx->sectionFilter(0x12, filter, mask, 4, timeout, mode);
-#else
-	/* coolstream drivers broken? */
-	filter[3] = (((cur_eit + 1) & 0x01) << 1) | 0x01;
-	mask[3] = (0x01 << 1) | 0x01;
-	eitDmx->sectionFilter(0x12, filter, mask, 4, timeout, NULL);
-#endif
 
 	//printf("[sectionsd] start EIT update filter: current version %02X, filter %02X %02X %02X %02X, mask %02X mode %02X \n", cur_eit, dsfp.filter.filter[0], dsfp.filter.filter[1], dsfp.filter.filter[2], dsfp.filter.filter[3], dsfp.filter.mask[3], dsfp.filter.mode[3]);
 	
@@ -6260,6 +6256,7 @@ int eit_set_update_filter(int *fd)
 int eit_stop_update_filter(int *fd)
 {
 	printf("[sectionsd] stop eit update filter\n");
+	
 	if(eitDmx)
 	{
 		eitDmx->Stop();
