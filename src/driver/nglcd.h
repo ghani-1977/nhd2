@@ -36,6 +36,7 @@
 #include <glcddrivers/driver.h>
 #include <glcddrivers/drivers.h>
 
+
 class nGLCD
 {
 	private:
