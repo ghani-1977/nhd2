@@ -80,12 +80,14 @@ void CVFD::closeDevice()
 // constructor
 CVFD::CVFD()
 {
-// xtrend 5XXX has no vfd und dreambox has lcd
-#if defined (PLATFORM_XTREND) || defined (PLATFORM_DREAMBOX)
+// xtrend 5XXX has no vfd
+#if defined (PLATFORM_XTREND)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
-#endif	
+#endif
+	
+	fd = -1;
 	
 	text[0] = 0;
 	clearClock = 0;
@@ -95,10 +97,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-//#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)
-//	if(fd > 0)
-//		close(fd);
-//#endif	
+	
 }
 
 CVFD * CVFD::getInstance()
