@@ -990,7 +990,7 @@ void CMoviePlayerGui::PlayFile(void)
 			cdDvd = true;
 		}
 							
-		sel_filename = "Net Stream";
+		sel_filename = "VLC Player";
 		//sel_filename = std::string(rindex(filename, '/') + 1);
 		update_lcd = true;
 		start_play = true;
@@ -1359,25 +1359,17 @@ void CMoviePlayerGui::PlayFile(void)
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
 #endif				
 			} 
-			else
-			if(isVlc && !cdDvd)
+			else if(isVlc && !cdDvd)
 			{
 				filename = NULL;
 				filebrowser->Filter = &vlcfilefilter;
 				if(filebrowser->exec(Path_vlc.c_str()))
 				{
 					Path_vlc = filebrowser->getCurrentDir ();
-					#if 0
-					if (g_settings.streaming_allow_multiselect) {
-						_filelist = filebrowser->getSelectedFiles();
-					} else {
-					#endif
+
 					CFile *file = filebrowser->getSelectedFile();
 					_filelist.clear();
 					_filelist.push_back(*file);
-					#if 0
-					}
-					#endif
 
 					if(!_filelist.empty())
 					{
@@ -1681,8 +1673,11 @@ void CMoviePlayerGui::PlayFile(void)
 					playback->SetPosition(startposition, true);
 				
 				// show movieviewer directly after starting play
-				if( playback->GetPosition(position, duration) ) 
+				if(isVlc)
 				{
+					duration = VlcGetStreamLength();
+					position = VlcGetStreamTime();
+					
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
 				
@@ -1716,6 +1711,44 @@ void CMoviePlayerGui::PlayFile(void)
 						}
 					}
 				}
+				else 
+				{
+					if( playback->GetPosition(position, duration) ) 
+					{
+						if(duration > 100)
+							file_prozent = (unsigned char) (position / (duration / 100));
+					
+						if(!timeshift)
+						{
+							if (FileTime.IsVisible()) 
+							{
+								if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
+								{
+									if(timeshift)
+										FileTime.hide();
+									else
+									{
+										FileTime.SetMode(CTimeOSD::MODE_DESC);
+										FileTime.update((duration - position) / 1000);
+										
+										FileTime.updatePos(file_prozent);
+									}
+								} 
+								else 
+								{
+									FileTime.hide();
+								}
+							}
+							else 
+							{
+								FileTime.SetMode(CTimeOSD::MODE_ASC);
+								FileTime.show(position / 1000);
+								
+								FileTime.updatePos(file_prozent);
+							}
+						}
+					}
+				}
 			}
 		}
 		
@@ -1725,7 +1758,7 @@ void CMoviePlayerGui::PlayFile(void)
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
 		{
-			if(!isHTTP)
+			if(!isVlc)
 			{
 				if(playback->GetPosition(position, duration)) 
 				{
@@ -1746,6 +1779,9 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				duration = VlcGetStreamLength();
 				position = VlcGetStreamTime();
+				
+				if(duration > 100)
+					file_prozent = (unsigned char) (position / (duration / 100));
 			}
 		}
 		
@@ -2408,8 +2444,7 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if(isHTTP)
 				showFileInfoVLC();
-			else
-			if (p_movie_info != NULL)
+			else if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);
 		}
 		else if(msg == CRCInput::RC_home)
