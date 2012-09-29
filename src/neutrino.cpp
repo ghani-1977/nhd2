@@ -2379,7 +2379,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 #if ENABLE_LCD
 	CVFD::getInstance()->init(font.filename, font.name);
 #else	
-	CVFD::getInstance()->init(); //FIXME: lcd support: fonts ???
+	CVFD::getInstance()->init();
 #endif	
 
 	// VFD clear all symbols
