@@ -356,7 +356,7 @@ std::string CUPnPDevice::HTTP(std::string url, std::string post, std::string act
 	std::string portname;
 	std::string hostname;
 	std::string path;
-	int port, t_socket, result, received;
+	int port, t_socket, received;
 	std::stringstream command, reply;
 	std::string commandstr, line;
 	struct sockaddr_in socktcp;
@@ -422,7 +422,7 @@ std::string CUPnPDevice::HTTP(std::string url, std::string post, std::string act
 	memset(&socktcp, 0, sizeof(struct sockaddr_in));
 	socktcp.sin_family = AF_INET;
 	socktcp.sin_port = htons(port);
-	memcpy((char *)&socktcp.sin_addr, hp->h_addr, hp->h_length);
+	memmove((char *)&socktcp.sin_addr, hp->h_addr, hp->h_length);
 
 	if (connect(t_socket, (struct sockaddr*) &socktcp, sizeof(struct sockaddr_in)))
 	{
@@ -431,7 +431,7 @@ std::string CUPnPDevice::HTTP(std::string url, std::string post, std::string act
 	}
 
 	commandstr = command.str();
-	result = send(t_socket, commandstr.c_str(), commandstr.size(), 0);
+	send(t_socket, commandstr.c_str(), commandstr.size(), 0);
 	while ((received = recv(t_socket, buf, sizeof(buf)-1, 0)) > 0)
 	{
 		buf[received] = 0;
@@ -445,7 +445,7 @@ std::list<UPnPAttribute> CUPnPDevice::SendSOAP(std::string servicename, std::str
 	std::list<CUPnPService>::iterator i;
 	std::list<UPnPAttribute> empty;
 
-	for (i=services.begin(); i != services.end(); i++)
+	for (i=services.begin(); i != services.end(); ++i)
 	{
 		if (i->servicename == servicename)
 			return i->SendSOAP(action, attribs);
@@ -458,7 +458,7 @@ std::list<std::string> CUPnPDevice::GetServices(void)
 	std::list<CUPnPService>::iterator i;
 	std::list<std::string> result;
 
-	for (i=services.begin(); i != services.end(); i++)
+	for (i=services.begin(); i != services.end(); ++i)
 		result.push_back(i->servicename);
 	return result;
 }
