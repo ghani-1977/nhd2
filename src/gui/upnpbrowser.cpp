@@ -36,6 +36,7 @@
 
 #include <sstream>
 #include <stdexcept>
+
 #include <gui/upnpbrowser.h>
 
 #include <global.h>
@@ -360,7 +361,7 @@ void CUpnpBrowserGui::selectDevice()
 	catch (std::runtime_error error)
 	{
 		delete scanBox;
-		ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
+		//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
 		return;
 	}
 #endif
@@ -373,6 +374,10 @@ void CUpnpBrowserGui::selectDevice()
 		delete scanBox;
 		return;
 	}
+	
+#ifdef FB_BLIT	
+	m_frameBuffer->blit();
+#endif	
 
 	// control loop
 	while (loop)
@@ -426,7 +431,7 @@ void CUpnpBrowserGui::selectDevice()
 			catch (std::runtime_error error)
 			{
 				delete scanBox;
-				ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
+				//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
 				return;
 			}
 #endif
@@ -460,7 +465,7 @@ void CUpnpBrowserGui::selectDevice()
 			changed=true;
 		}
 #ifdef FB_BLIT	
-		m_frameBuffer->blit();//FIXME
+		m_frameBuffer->blit();
 #endif		
 	}
 	
@@ -495,7 +500,7 @@ void CUpnpBrowserGui::playnext(void)
 		}
 		catch (std::runtime_error error)
 		{
-			ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
+			//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
 			m_folderplay = false;
 			return;
 		}
@@ -610,11 +615,11 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 #if 0
 			try
 			{
-				results=m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
+				results = m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
 			}
 			catch (std::runtime_error error)
 			{
-				ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
+				//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
 				if (entries)
 					delete entries;
 				return endall;
@@ -845,7 +850,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			playnext();
 		
 #ifdef FB_BLIT	
-		m_frameBuffer->blit();//FIXME
+		//m_frameBuffer->blit();
 #endif		
 	}
 	if (entries)
@@ -885,7 +890,7 @@ void CUpnpBrowserGui::paintDevicePos(unsigned int pos)
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, name, color, m_fheight, true); // UTF-8
 	
 #ifdef FB_BLIT
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 }
 
@@ -947,7 +952,7 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 30, ypos + m_fheight, m_width - 50 - w, name, color, m_fheight, true); // UTF-8
 	
 #ifdef FB_BLIT
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 
 }
@@ -956,7 +961,6 @@ void CUpnpBrowserGui::paintDevice()
 {
 	std::string tmp;
 	int w, xstart, ypos, top;
-	int c_rad_mid = RADIUS_MID;
 
 	// LCD
 	if(g_settings.menutitle_vfd)
@@ -970,8 +974,8 @@ void CUpnpBrowserGui::paintDevice()
 	}
 
 	// Info
-	m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10, COL_MENUCONTENT_PLUS_6, c_rad_mid);
-	m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2, m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0, c_rad_mid);
+	m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10, COL_MENUCONTENT_PLUS_6 );
+	m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2, m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0 );
 
 	// first line
 	tmp = m_devices[m_selecteddevice].manufacturer + " " + m_devices[m_selecteddevice].manufacturerurl;
@@ -1002,7 +1006,7 @@ void CUpnpBrowserGui::paintDevice()
 
 	// Head
 	tmp = g_Locale->getText(LOCALE_UPNPBROWSER_HEAD);
-	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, c_rad_mid, CORNER_TOP);
+	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_UPNP, m_x + 7, m_y + m_title_height + 6);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(m_x + 35, m_y + m_theight + m_title_height + 0,
 		m_width - 45, tmp, COL_MENUHEAD, 0, true); // UTF-8
@@ -1038,15 +1042,15 @@ void CUpnpBrowserGui::paintDevice()
 	top = m_y + (m_height - m_info_height - 2 * m_buttonHeight);
 
 	int ButtonWidth = (m_width - 20) / 4;
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight, COL_MENUHEAD_PLUS_0, c_rad_mid, CORNER_BOTTOM);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_0);
 	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
 		m_x + 10, top + 4, ButtonWidth, 1, &RescanButton);
 
-	clearItem2DetailsLine(); // clear it
+	//clearItem2DetailsLine(); // clear it
 	
 #ifdef FB_BLIT
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 }
 
@@ -1184,7 +1188,7 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 3 * ButtonWidth + 40, top + 19 + 4, ButtonWidth - 40, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR, 0, true); // UTF-8
 	
 #ifdef FB_BLIT
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 }
 
@@ -1197,7 +1201,7 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 	{
 		m_frameBuffer->paintBackgroundBoxRel(m_x, top + 2, m_width, 2 * m_buttonHeight);
 #ifdef FB_BLIT
-		m_frameBuffer->blit();
+		//m_frameBuffer->blit();
 #endif
 	}
 	else
@@ -1287,7 +1291,7 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 // -- 2002-03-17 rasc
 //
 
-void CUpnpBrowserGui::clearItem2DetailsLine ()
+void CUpnpBrowserGui::clearItem2DetailsLine()
 {
 	paintItem2DetailsLine (-1, 0);
 }
@@ -1306,14 +1310,14 @@ void CUpnpBrowserGui::paintItem2DetailsLine (int pos, unsigned int /*ch_index*/)
 	// Clear
 	m_frameBuffer->paintBackgroundBoxRel(xpos, m_y + m_title_height, ConnectLineBox_Width, m_height+m_info_height-(m_y + m_title_height));
 #ifdef FB_BLIT
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 	
 	if (pos < 0) 
 	{
 		m_frameBuffer->paintBackgroundBoxRel(m_x - 10, m_y + (m_height - m_info_height - 1 * m_buttonHeight) -8, m_width + 10, m_info_height + 10);
 #ifdef FB_BLIT
-		m_frameBuffer->blit();
+		//m_frameBuffer->blit();
 #endif
 	}
 	// paint Line if detail info (and not valid list pos)
