@@ -87,13 +87,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
  
-static bool isBookmark;
-bool bufferfilled;
-short ac3;
-bool avpids_found;
-std::string skipvalue;
 
-int            g_percent     = 0;
 static int streamtype;
 
 #define STREAMTYPE_DVD	1
@@ -765,8 +759,6 @@ void * VlcReceiveStreamStart (void *mrl)
 	printf ("[movieplayer.cpp] ReceiveStreamThread started\n");
 	int skt;
 
-	int nothingreceived=0;
-
 	// Get Server and Port from Config
 	std::string response;
 	std::string baseurl = "http://";
@@ -989,7 +981,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 		else if(streamtype == STREAMTYPE_SVCD)
 		{
-			strcpy (mrl, "vcd:");
+			strcpy (mrl, "vcd://");
 			strcat (mrl, g_settings.streaming_server_cddrive);
 			printf ("[movieplayer.cpp] Generated MRL: %s\n", mrl);
 			title = "(S)VCD";
