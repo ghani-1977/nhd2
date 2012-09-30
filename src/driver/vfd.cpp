@@ -683,7 +683,7 @@ void CVFD::ShowScrollText(char *str)
 	pthread_create(&vfd_scrollText, NULL, ThreadScrollText, (void *)str);
 }
 
-void CVFD::ShowText(char *str)
+void CVFD::ShowText(char * str)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
 
