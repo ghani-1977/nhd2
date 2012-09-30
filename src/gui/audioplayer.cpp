@@ -293,8 +293,8 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	//pause epg scanning
 	g_Sectionsd->setPauseScanning(true);
 	
-	//TEST
-	//audioDecoder->Open();
+	//
+	audioDecoder->Open();
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -315,8 +315,8 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	m_frameBuffer->blit();
 #endif	
 
-	//TEST
-	//audioDecoder->Close();
+	//
+	audioDecoder->Close();
 
 	//AP end-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_END_SCRIPT "."); 
