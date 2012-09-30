@@ -3920,7 +3920,7 @@ _repeat:
 	{
 		if(!skipShutdownTimer) 
 		{
-			ExitRun(true);
+			ExitRun(true, 1);
 		}
 		else 
 		{
