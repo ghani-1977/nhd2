@@ -119,8 +119,6 @@ bool CConfigFile::saveConfig(const std::string & filename)
 	return saveConfig(filename.c_str());
 }
 
-
-
 //
 // private "store" methods
 // 
@@ -150,8 +148,6 @@ void CConfigFile::storeString(const std::string & key, const std::string & val)
 {
 	configData[key] = val;
 }
-
-
 
 //
 // public "get" methods
@@ -307,8 +303,6 @@ std::vector <std::string> CConfigFile::getStringVector(const std::string & key)
 
 	return vec;
 }
-
-
 
 //
 // public "set" methods
