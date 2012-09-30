@@ -5493,7 +5493,6 @@ void CNeutrinoApp::loadColors(const char * fname)
 // save color
 void CNeutrinoApp::saveColors(const char * fname)
 {
-	//bool res;
 	CConfigFile tconfig(',', true);
 	
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::saveColors: %s\n", fname);
