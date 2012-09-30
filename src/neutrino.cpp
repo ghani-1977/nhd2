@@ -3880,7 +3880,7 @@ _repeat:
 	else if( msg == NeutrinoMessages::SLEEPTIMER) 
 	{
 		if(g_settings.shutdown_real)
-			ExitRun(true);
+			ExitRun(true, 1);
 		else
 			standbyMode( true );
 		
