@@ -154,6 +154,7 @@
 #include <zapit/channel.h>
 #include <zapit/bouquets.h>
 
+
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 
