@@ -443,32 +443,7 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 
 bool CKeySetupNotifier::changeNotify(const neutrino_locale_t, void *)
 {
-        #if 0
-	unsigned int fdelay = atoi(g_settings.repeat_blocker);
-	unsigned int xdelay = atoi(g_settings.repeat_genericblocker);
-
-	g_RCInput->repeat_block = fdelay * 1000;
-	g_RCInput->repeat_block_generic = xdelay * 1000;
-
-	int fd = g_RCInput->getFileHandle();
-
-	/* if we have a good input device, we don't need the private ioctl above */
-	struct input_event ie;
-	ie.type = EV_REP;
-	/* increase by 10 ms to trick the repeat checker code in the
-	 * rcinput loop into accepting the key event... */
-	ie.value = fdelay + 10;
-	ie.code = REP_DELAY;
-	if (write(fd, &ie, sizeof(ie)) == -1)
-		perror("CKeySetupNotifier::changeNotify REP_DELAY");
-
-	ie.value = xdelay + 10;
-	ie.code = REP_PERIOD;
-	if (write(fd, &ie, sizeof(ie)) == -1)
-		perror("CKeySetupNotifier::changeNotify REP_PERIOD");
-	#else
 	g_RCInput->setRepeat(atoi(g_settings.repeat_blocker), atoi(g_settings.repeat_genericblocker));
-	#endif
 
 	return false;
 }
