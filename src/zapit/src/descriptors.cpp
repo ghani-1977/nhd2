@@ -424,7 +424,7 @@ uint8_t fix_service_type(uint8_t type)
 
 int parse_pat(int feindex = 0);
 int pat_get_pmt_pid(CZapitChannel * const channel);
-int parse_pmt(CZapitChannel * const channel);
+int parse_pmt(CZapitChannel * const channel, int dmx_num = 0);
 
 /* 0x48 */
 void service_descriptor(const unsigned char * const buffer, const t_service_id service_id, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, bool free_ca, int feindex)
@@ -599,7 +599,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 
 		if(tpchange) 
 		{
-			cDemux * dmx = new cDemux( feindex ); 
+			cDemux * dmx = new cDemux(); 
 			dmx->Open(DMX_PSI_CHANNEL, 1024, feindex);
 			
 			if (!((dmx->sectionFilter(0x10, filter, mask, 5, 10000) < 0) || (dmx->Read(buff, 1024) < 0))) 
@@ -697,7 +697,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 			break;
 	}
 
-	if( /*scanSettings->scan_pids &&*/ channel) 
+	if(channel) 
 	{
 		if(tpchange)
 			parse_pat(feindex);

@@ -420,7 +420,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 int curpmtpid;
 int pmt_caids[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int parse_pmt(CZapitChannel * const channel)
+int parse_pmt(CZapitChannel * const channel, int dmx_num)
 {
 	unsigned short i;
 	unsigned char buffer[PMT_SIZE];
@@ -442,7 +442,7 @@ int parse_pmt(CZapitChannel * const channel)
 		return -1;
 	}
 	
-	cDemux * dmx = new cDemux( channel->getDemuxIndex() ); 
+	cDemux * dmx = new cDemux( dmx_num ); 
 	
 	// open
 	dmx->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex());
@@ -616,7 +616,7 @@ int parse_pmt(CZapitChannel * const channel)
 /* globals */
 cDemux * pmtDemux;
 
-int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
+int pmt_set_update_filter( CZapitChannel * const channel, int * fd )
 {
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];
@@ -624,7 +624,7 @@ int pmt_set_update_filter(CZapitChannel * const channel, int * fd )
 
 	if(pmtDemux == NULL) 
 	{
-		pmtDemux = new cDemux( channel->getDemuxIndex() );
+		pmtDemux = new cDemux();
 		
 		// open 
 		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex() ); // this indicate fe num
@@ -668,9 +668,9 @@ int pmt_stop_update_filter(int * fd)
 	{
 		pmtDemux->Stop();
 		
-		delete pmtDemux; // delte closes demuxes
-
-		pmtDemux = NULL;
+		//delete pmtDemux; // delte closes demuxes
+		//pmtDemux = NULL;
+		//FIXME: dont know if this is the reason why pmt update is not working???
 	}
 
 	*fd = -1;
