@@ -62,6 +62,8 @@
 #include <system/debug.h>
 
 
+#define ENABLE_REPEAT_CHECK
+
 const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {
 	"/dev/input/event0", 
 	"/dev/input/event1", 
@@ -1589,8 +1591,8 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 {
 	repeat_block = delay * 1000ULL;
 	repeat_block_generic = period * 1000ULL;
-	//repeat_kernel = false;
 
+	#if 1
 	int ret;
 	struct my_repeat {
 		unsigned int delay;	// in ms
@@ -1607,12 +1609,43 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 		if (fd_rc[i] != -1)
 		{
 			if ((ret = ioctl(fd_rc[i], EVIOCSREP, &n)) < 0)
-				printf("[neutrino] can not use input repeat on fd_rc[%d]: %d\n", i);
-			//else
-			//	repeat_kernel = true;
+				printf("CRCInput::setRepeat: can not use input repeat on fd_rc[%d]: %d\n", i);
 		}
 	}
-	printf("[neutrino] %s: delay=%d period=%d\n", __FUNCTION__, delay, period);
+	
+	printf("%s: delay=%d period=%d\n", __FUNCTION__, delay, period);
+	#else
+	//
+	/* if we have a good input device, we don't need the private ioctl above */
+	struct input_event ie;
+	ie.type = EV_REP;
+	/* increase by 10 ms to trick the repeat checker code in the
+	 * rcinput loop into accepting the key event... */
+	ie.value = delay + 10;
+	ie.code = REP_DELAY;
+	
+	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
+	{
+		if (fd_rc[i] != -1)
+		{
+			if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
+				perror("CRCInput::setRepeat: REP_DELAY");
+		}
+	}
+
+	ie.value = period + 10;
+	ie.code = REP_PERIOD;
+	
+	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
+	{
+		if (fd_rc[i] != -1)
+		{
+			if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
+				perror("CRCInput::setRepeat: REP_PERIOD");
+		}
+	}
+	#endif
+	//
 }
 
 void CRCInput::postMsg(const neutrino_msg_t msg, const neutrino_msg_data_t data, const bool Priority)
