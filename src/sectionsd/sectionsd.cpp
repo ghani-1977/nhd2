@@ -6221,7 +6221,7 @@ int eit_set_update_filter(int *fd)
 
 	if(eitDmx == NULL) 
 	{
-		eitDmx = new cDemux( live_channel? live_channel->getDemuxIndex() : 0 );
+		eitDmx = new cDemux();
 		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_channel? live_channel->getFeIndex() : 0);
 	}
 
@@ -6261,8 +6261,8 @@ int eit_stop_update_filter(int *fd)
 	{
 		eitDmx->Stop();
 		
-		delete eitDmx;
-		eitDmx = NULL;
+		//delete eitDmx;
+		//eitDmx = NULL;
 	}
 
 	*fd = -1;
