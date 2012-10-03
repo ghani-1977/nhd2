@@ -543,10 +543,22 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 {	
         char fname[255];
 	bool ret = false;
-
-        sprintf(fname, "%s/%llx.jpg", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL);
-
-        if(!access(fname, F_OK)) 
+	bool logo_ok = false;
+	
+	// first png, then jpg, then gif
+	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
+	
+	for (int i = 0; i < 3; i++)
+	{
+		sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
+		if(!access(fname, F_OK)) 
+		{
+			logo_ok = true;
+			break;
+		}
+	}
+	
+	if(logo_ok)
 	{
 		dprintf(DEBUG_INFO, "CPictureViewer::DisplayLogo file: %s\n", fname);
                 ret = DisplayImage(fname, posx, posy, width, height);
@@ -554,5 +566,4 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 
 	return ret;
 }
-
 
