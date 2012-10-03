@@ -1701,7 +1701,7 @@ void CFrameBuffer::init_handlers (void)
 	add_format (fh_crw_getsize, fh_crw_load, fh_crw_id);
 }
 
-CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize (const char *name, int *x, int *y, int width_wanted, int height_wanted)
+CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize(const char *name, int *x, int *y, int width_wanted, int height_wanted)
 {
 	CFormathandler *fh;
 	for (fh = fh_root; fh != NULL; fh = fh->next) 
