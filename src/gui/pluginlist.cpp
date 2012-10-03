@@ -278,7 +278,6 @@ void CPluginList::paintItem(int pos)
 		ypos -= (fheight / 2) - 15;
 		if(pos==(int)listmaxshow-1)
 			frameBuffer->paintBoxRel(x,ypos+itemheight, width, (fheight / 2)-15, COL_MENUCONTENT_PLUS_0);
-
 	}
 	
 	frameBuffer->paintBoxRel(x, ypos, width, itemheight, bgcolor );
@@ -402,6 +401,6 @@ CPluginChooser::CPluginChooser(const neutrino_locale_t Name, const uint32_t list
 
 CPluginList::result_ CPluginChooser::pluginSelected()
 {
-	strcpy(selected_plugin,g_PluginList->getFileName(pluginlist[selected]->number));
+	strcpy(selected_plugin, g_PluginList->getFileName(pluginlist[selected]->number));
 	return CPluginList::close;
 }
