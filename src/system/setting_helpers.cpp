@@ -63,6 +63,8 @@
 #include <zapit/frontend_c.h>
 #include <gui/scan_setup.h>
 
+#include <gui/filebrowser.h>
+
 
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
@@ -849,28 +851,38 @@ extern Zapit_config zapitCfg;
 void loadZapitSettings();
 void getZapitConfig(Zapit_config *Cfg);
 
-int CDataResetNotifier::exec(CMenuTarget* parent, const std::string& actionKey)
+int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 {
-	bool delete_all = (actionKey == "all");
-	bool delete_chan = (actionKey == "channels") || delete_all;
-	bool delete_set = (actionKey == "settings") || delete_all;
-	neutrino_locale_t msg = delete_all ? LOCALE_RESET_ALL : delete_chan ? LOCALE_RESET_CHANNELS : LOCALE_RESET_SETTINGS;
+	//bool delete_all = (actionKey == "all");
+	//bool delete_chan = (actionKey == "channels");
+	//bool delete_set = (actionKey == "settings");
+	//bool backup = (actionKey ==);
+	
+	//neutrino_locale_t msg = delete_all ? LOCALE_RESET_ALL : delete_chan ? LOCALE_RESET_CHANNELS : LOCALE_RESET_SETTINGS;
 
-	int result = ShowMsgUTF(msg, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
-	if(result != CMessageBox::mbrYes) 
-		return true;
+	//int result = ShowMsgUTF(msg, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
+	//if(result != CMessageBox::mbrYes) 
+	//	return true;
+	
+	CFileBrowser fileBrowser;
+	CFileFilter fileFilter;
 
-	if(delete_all) 
+	if(actionKey == "channels") 
 	{
-		system("rm -f /var/tuxbox/config/zapit/*.conf");
-		loadZapitSettings();
-		getZapitConfig(&zapitCfg);
+		int result = ShowMsgUTF(LOCALE_RESET_CHANNELS, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
+		if(result != CMessageBox::mbrYes) 
+			return true;
+	
+		system("rm -f /var/tuxbox/config/zapit/*.xml");
+		g_Zapit->reinitChannels();
 	}
-
-	if(delete_set) 
+	else if( actionKey == "settings") 
 	{
+		int result = ShowMsgUTF(LOCALE_RESET_SETTINGS, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
+		if(result != CMessageBox::mbrYes) 
+			return true;
+		
 		unlink(NEUTRINO_SETTINGS_FILE);
-		//unlink(NEUTRINO_SCAN_SETTINGS_FILE);
 		CNeutrinoApp::getInstance()->loadSetup(NEUTRINO_SETTINGS_FILE);
 		CNeutrinoApp::getInstance()->saveSetup(NEUTRINO_SETTINGS_FILE);
 		
@@ -900,14 +912,58 @@ int CDataResetNotifier::exec(CMenuTarget* parent, const std::string& actionKey)
 
 		CNeutrinoApp::getInstance()->SetupTiming();
 		
-		ShowHintUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MISCSETTINGS_RESET));
+		//ShowHintUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MISCSETTINGS_RESET));
 	}
-
-	if(delete_chan) 
+	else if(actionKey == "backup") 
 	{
-		system("rm -f /var/tuxbox/config/zapit/*.xml");
-		
-		g_Zapit->reinitChannels();
+		fileBrowser.Dir_Mode = true;
+		if (fileBrowser.exec("/media") == true) 
+		{
+			char  fname[256];
+			struct statfs s;
+			int ret = ::statfs(fileBrowser.getSelectedFile()->Name.c_str(), &s);
+
+			if(ret == 0 && s.f_type != 0x72b6L/*jffs2*/ && s.f_type != 0x5941ff53L /*yaffs2*/)
+			{ 
+				char datestr[15];
+				time_t d_time;
+				struct tm * now;
+						
+				time(&d_time);
+				now = localtime(&d_time);
+					
+				strftime(datestr, sizeof(datestr), "%d_%m_%Y", now);
+				
+				sprintf(fname, "tar -cf %s/settings_%s.tar %s", fileBrowser.getSelectedFile()->Name.c_str(), datestr, CONFIGDIR);
+				printf("CDataResetNotifier::exec: executing %s\n", fname);
+				system(fname);
+			} 
+			else
+				ShowMsgUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_SETTINGS_BACKUP_FAILED),CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_ERROR);
+		}
+	}
+	else if(actionKey == "restore") 
+	{
+		fileFilter.addFilter("tar");
+		fileBrowser.Filter = &fileFilter;
+		if (fileBrowser.exec("/media") == true) 
+		{
+			int result = ShowMsgUTF(LOCALE_SETTINGS_RESTORE, g_Locale->getText(LOCALE_SETTINGS_RESTORE_WARN), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
+			if(result == CMessageBox::mbrYes) 
+			{
+				char  fname[256];
+				
+				sprintf(fname, "tar xf %s", fileBrowser.getSelectedFile()->Name.c_str());
+				
+				
+				printf("restore: executing %s\n", fname);
+				system(fname);
+				
+				CNeutrinoApp::getInstance()->exec(NULL, "restart");
+			}
+			
+			
+		}
 	}
 
 	return true;

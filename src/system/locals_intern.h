@@ -1536,5 +1536,10 @@ const char *locale_real_names[] = {
 	"glcd.size_time",
 	"glcd.time_in_standby",
 	"glcd.volume",
+	
+	"miscsettings.backup",
+	"miscsettings.backupfailed",
+	"miscsettings.restore",
+	"miscsettings.restorewarn",
 };
 #endif
