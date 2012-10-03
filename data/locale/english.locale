@@ -1525,3 +1525,7 @@ glcd.size_time Time height
 glcd.time_in_standby Display time in standby
 glcd.volume Volume
 
+miscsettings.backup Settings backup
+miscsettings.backupfailed Backup failed
+miscsettings.restore Settings restore
+miscsettings.restorewarn Do you want to restore the previous settings?

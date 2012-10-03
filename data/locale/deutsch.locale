@@ -1527,3 +1527,8 @@ glcd.size_time Uhrzeit-Größe
 glcd.time_in_standby Zeitanzeige in Standby
 glcd.volume Lautstärke
 
+miscsettings.backup Image Einstellungen speichern
+miscsettings.backupfailed Backup fehlgeschalgen
+miscsettings.restore Image Einstellungen: Wiederherstellen
+miscsettings.restorewarn Alle Settings werden ersetzt?
+
