@@ -589,278 +589,278 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 
 		switch (iMode)
 		{
-		case 0x00:
-			if (0 == (iData>>5))
-			{
-				int newcolor = iData & 0x1f;
-				if (*endcol < 0) /* passive object */
-					attrPassive->fg = newcolor;
-				else if (*endcol == 40) /* active object */
+			case 0x00:
+				if (0 == (iData>>5))
 				{
-					tstPageAttr *p = &page_atrb[offset];
-					int oldcolor = (p)->fg; /* current color (set-after) */
-					int c = *pAPx0 + *pAPx;	/* current column absolute */
-					do
+					int newcolor = iData & 0x1f;
+					if (*endcol < 0) /* passive object */
+						attrPassive->fg = newcolor;
+					else if (*endcol == 40) /* active object */
 					{
-						p->fg = newcolor;
-						p++;
-						c++;
-					} while (c < 40 && p->fg == oldcolor);	/* stop at change by level 1 page */
-				}
-				else /* adaptive object */
-				{
-					tstPageAttr *p = &page_atrb[offset];
-					int c = *pAPx;	/* current column relative to object origin */
-					do
+						tstPageAttr *p = &page_atrb[offset];
+						int oldcolor = (p)->fg; /* current color (set-after) */
+						int c = *pAPx0 + *pAPx;	/* current column absolute */
+						do
+						{
+							p->fg = newcolor;
+							p++;
+							c++;
+						} while (c < 40 && p->fg == oldcolor);	/* stop at change by level 1 page */
+					}
+					else /* adaptive object */
 					{
-						p->fg = newcolor;
-						p++;
-						c++;
-					} while (c <= *endcol);
-				}
+						tstPageAttr *p = &page_atrb[offset];
+						int c = *pAPx;	/* current column relative to object origin */
+						do
+						{
+							p->fg = newcolor;
+							p++;
+							c++;
+						} while (c <= *endcol);
+					}
 #if TUXTXT_DEBUG
-				if (dumpl25)
-					printf("  ,%02d FGCol T%x#%x", iAddress, (iData>>3)&0x03, iData&0x07);
+					if (dumpl25)
+						printf("  ,%02d FGCol T%x#%x", iAddress, (iData>>3)&0x03, iData&0x07);
 #endif
-			}
-			break;
-		case 0x01:
-			if (iData >= 0x20)
-			{
+				}
+				break;
+			case 0x01:
+				if (iData >= 0x20)
+				{
+#if TUXTXT_DEBUG
+					if (dumpl25)
+						printf("  ,%02d BlockMosaic G1 #%02x", iAddress, iData);
+#endif
+					page_char[offset] = iData;
+					if (*endcol < 0) /* passive object */
+					{
+						attrPassive->charset = C_G1C; /* FIXME: separated? */
+						page_atrb[offset] = *attrPassive;
+					}
+					else if (page_atrb[offset].charset != C_G1S)
+						page_atrb[offset].charset = C_G1C; /* FIXME: separated? */
+				}
+				break;
+			case 0x02:
+			case 0x0b:
 #if TUXTXT_DEBUG
 				if (dumpl25)
-					printf("  ,%02d BlockMosaic G1 #%02x", iAddress, iData);
+					printf("  ,%02d G3 #%02x f%db%d", iAddress, iData,attrPassive->fg, attrPassive->bg);
 #endif
 				page_char[offset] = iData;
 				if (*endcol < 0) /* passive object */
 				{
-					attrPassive->charset = C_G1C; /* FIXME: separated? */
+					attrPassive->charset = C_G3;
 					page_atrb[offset] = *attrPassive;
 				}
-				else if (page_atrb[offset].charset != C_G1S)
-					page_atrb[offset].charset = C_G1C; /* FIXME: separated? */
-			}
-			break;
-		case 0x02:
-		case 0x0b:
+				else
+					page_atrb[offset].charset = C_G3;
+				break;
+			case 0x03:
+				if (0 == (iData>>5))
+				{
+					int newcolor = iData & 0x1f;
+					if (*endcol < 0) /* passive object */
+						attrPassive->bg = newcolor;
+					else if (*endcol == 40) /* active object */
+					{
+						tstPageAttr *p = &page_atrb[offset];
+						int oldcolor = (p)->bg; /* current color (set-after) */
+						int c = *pAPx0 + *pAPx;	/* current column absolute */
+						do
+						{
+							p->bg = newcolor;
+							if (newcolor == black)
+								p->IgnoreAtBlackBgSubst = 1;
+							p++;
+							c++;
+						} while (c < 40 && p->bg == oldcolor);	/* stop at change by level 1 page */
+					}
+					else /* adaptive object */
+					{
+						tstPageAttr *p = &page_atrb[offset];
+						int c = *pAPx;	/* current column relative to object origin */
+						do
+						{
+							p->bg = newcolor;
+							if (newcolor == black)
+								p->IgnoreAtBlackBgSubst = 1;
+							p++;
+							c++;
+						} while (c <= *endcol);
+					}
 #if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d G3 #%02x f%db%d", iAddress, iData,attrPassive->fg, attrPassive->bg);
+					if (dumpl25)
+						printf("  ,%02d BGCol T%x#%x", iAddress, (iData>>3)&0x03, iData&0x07);
 #endif
-			page_char[offset] = iData;
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->charset = C_G3;
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-				page_atrb[offset].charset = C_G3;
-			break;
-		case 0x03:
-			if (0 == (iData>>5))
-			{
-				int newcolor = iData & 0x1f;
-				if (*endcol < 0) /* passive object */
-					attrPassive->bg = newcolor;
-				else if (*endcol == 40) /* active object */
-				{
-					tstPageAttr *p = &page_atrb[offset];
-					int oldcolor = (p)->bg; /* current color (set-after) */
-					int c = *pAPx0 + *pAPx;	/* current column absolute */
-					do
-					{
-						p->bg = newcolor;
-						if (newcolor == black)
-							p->IgnoreAtBlackBgSubst = 1;
-						p++;
-						c++;
-					} while (c < 40 && p->bg == oldcolor);	/* stop at change by level 1 page */
 				}
-				else /* adaptive object */
-				{
-					tstPageAttr *p = &page_atrb[offset];
-					int c = *pAPx;	/* current column relative to object origin */
-					do
-					{
-						p->bg = newcolor;
-						if (newcolor == black)
-							p->IgnoreAtBlackBgSubst = 1;
-						p++;
-						c++;
-					} while (c <= *endcol);
-				}
+				break;
+			case 0x06:
 #if TUXTXT_DEBUG
 				if (dumpl25)
-					printf("  ,%02d BGCol T%x#%x", iAddress, (iData>>3)&0x03, iData&0x07);
+					printf("  PDC");
 #endif
-			}
-			break;
-		case 0x06:
+				/* ignore */
+				break;
+			case 0x07:
 #if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  PDC");
+				if (dumpl25)
+					printf("  ,%02d Flash M%xP%x", iAddress, iData & 0x03, (iData >> 2) & 0x07);
 #endif
-			/* ignore */
-			break;
-		case 0x07:
-#if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d Flash M%xP%x", iAddress, iData & 0x03, (iData >> 2) & 0x07);
-#endif
-			if ((iData & 0x60) != 0) break; // reserved data field
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->flashing=iData & 0x1f;
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-				page_atrb[offset].flashing=iData & 0x1f;
-			break;
-		case 0x08:
-#if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d G0+G2 set #%02x (p105)", iAddress, iData);
-#endif
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->setG0G2=iData & 0x3f;
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-				page_atrb[offset].setG0G2=iData & 0x3f;
-			break;
-		case 0x09:
-#if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d G0 #%02x '%c'", iAddress, iData, iData);
-#endif
-			page_char[offset] = iData;
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->charset = C_G0P; /* FIXME: secondary? */
-				attrPassive->setX26  = 1;
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-			{
-				page_atrb[offset].charset = C_G0P; /* FIXME: secondary? */
-				page_atrb[offset].setX26  = 1;
-			}
-			break;
-//		case 0x0b: (see 0x02)
-		case 0x0c:
-		{
-#if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d Attribute%s%s%s%s%s%s", iAddress,
-						 (iData & 0x40) ? " DoubleWidth" : "",
-						 (iData & 0x20) ? " UnderlineSep" : "",
-						 (iData & 0x10) ? " InvColour" : "",
-						 (iData & 0x04) ? " Conceal" : "",
-						 (iData & 0x02) ? " Boxing" : "",
-						 (iData & 0x01) ? " DoubleHeight" : "");
-#endif
-			int conc = (iData & 0x04);
-			int inv  = (iData & 0x10);
-			int dw   = (iData & 0x40 ?1:0);
-			int dh   = (iData & 0x01 ?1:0);
-			int sep  = (iData & 0x20);
-			int bw   = (iData & 0x02 ?1:0);
-			if (*endcol < 0) /* passive object */
-			{
-				if (conc)
+				if ((iData & 0x60) != 0) break; // reserved data field
+				if (*endcol < 0) /* passive object */
 				{
-					attrPassive->concealed = 1;
-					attrPassive->fg = attrPassive->bg;
+					attrPassive->flashing=iData & 0x1f;
+					page_atrb[offset] = *attrPassive;
 				}
-				attrPassive->inverted = (inv ? 1- attrPassive->inverted : 0);
-				attrPassive->doubleh = dh;
-				attrPassive->doublew = dw;
-				attrPassive->boxwin = bw;
-				if (bw) attrPassive->IgnoreAtBlackBgSubst = 0;
-				if (sep)
+				else
+					page_atrb[offset].flashing=iData & 0x1f;
+				break;
+			case 0x08:
+#if TUXTXT_DEBUG
+				if (dumpl25)
+					printf("  ,%02d G0+G2 set #%02x (p105)", iAddress, iData);
+#endif
+				if (*endcol < 0) /* passive object */
 				{
-					if (attrPassive->charset == C_G1C)
-						attrPassive->charset = C_G1S;
-					else
-						attrPassive->underline = 1;
+					attrPassive->setG0G2=iData & 0x3f;
+					page_atrb[offset] = *attrPassive;
+				}
+				else
+					page_atrb[offset].setG0G2=iData & 0x3f;
+				break;
+			case 0x09:
+#if TUXTXT_DEBUG
+				if (dumpl25)
+					printf("  ,%02d G0 #%02x '%c'", iAddress, iData, iData);
+#endif
+				page_char[offset] = iData;
+				if (*endcol < 0) /* passive object */
+				{
+					attrPassive->charset = C_G0P; /* FIXME: secondary? */
+					attrPassive->setX26  = 1;
+					page_atrb[offset] = *attrPassive;
 				}
 				else
 				{
-					if (attrPassive->charset == C_G1S)
-						attrPassive->charset = C_G1C;
-					else
-						attrPassive->underline = 0;
+					page_atrb[offset].charset = C_G0P; /* FIXME: secondary? */
+					page_atrb[offset].setX26  = 1;
 				}
-			}
-			else
+				break;
+			//case 0x0b: (see 0x02)
+			case 0x0c:
 			{
-
-				int c = *pAPx0 + (*endcol == 40 ? *pAPx : 0);	/* current column */
-				int c1 = offset;
-				tstPageAttr *p = &page_atrb[offset];
-				do
+#if TUXTXT_DEBUG
+				if (dumpl25)
+					printf("  ,%02d Attribute%s%s%s%s%s%s", iAddress,
+							(iData & 0x40) ? " DoubleWidth" : "",
+							(iData & 0x20) ? " UnderlineSep" : "",
+							(iData & 0x10) ? " InvColour" : "",
+							(iData & 0x04) ? " Conceal" : "",
+							(iData & 0x02) ? " Boxing" : "",
+							(iData & 0x01) ? " DoubleHeight" : "");
+#endif
+				int conc = (iData & 0x04);
+				int inv  = (iData & 0x10);
+				int dw   = (iData & 0x40 ?1:0);
+				int dh   = (iData & 0x01 ?1:0);
+				int sep  = (iData & 0x20);
+				int bw   = (iData & 0x02 ?1:0);
+				if (*endcol < 0) /* passive object */
 				{
-					p->inverted = (inv ? 1- p->inverted : 0);
 					if (conc)
 					{
-						p->concealed = 1;
-						p->fg = p->bg;
+						attrPassive->concealed = 1;
+						attrPassive->fg = attrPassive->bg;
 					}
+					attrPassive->inverted = (inv ? 1- attrPassive->inverted : 0);
+					attrPassive->doubleh = dh;
+					attrPassive->doublew = dw;
+					attrPassive->boxwin = bw;
+					if (bw) attrPassive->IgnoreAtBlackBgSubst = 0;
 					if (sep)
 					{
-						if (p->charset == C_G1C)
-							p->charset = C_G1S;
+						if (attrPassive->charset == C_G1C)
+							attrPassive->charset = C_G1S;
 						else
-							p->underline = 1;
+							attrPassive->underline = 1;
 					}
 					else
 					{
-						if (p->charset == C_G1S)
-							p->charset = C_G1C;
+						if (attrPassive->charset == C_G1S)
+							attrPassive->charset = C_G1C;
 						else
-							p->underline = 0;
+							attrPassive->underline = 0;
 					}
-					p->doublew = dw;
-					p->doubleh = dh;
-					p->boxwin = bw;
-					if (bw) p->IgnoreAtBlackBgSubst = 0;
-					p++;
-					c++;
-					c1++;
-				} while (c < *endcol);
+				}
+				else
+				{
+
+					int c = *pAPx0 + (*endcol == 40 ? *pAPx : 0);	/* current column */
+					int c1 = offset;
+					tstPageAttr *p = &page_atrb[offset];
+					do
+					{
+						p->inverted = (inv ? 1- p->inverted : 0);
+						if (conc)
+						{
+							p->concealed = 1;
+							p->fg = p->bg;
+						}
+						if (sep)
+						{
+							if (p->charset == C_G1C)
+								p->charset = C_G1S;
+							else
+								p->underline = 1;
+						}
+						else
+						{
+							if (p->charset == C_G1S)
+								p->charset = C_G1C;
+							else
+								p->underline = 0;
+						}
+						p->doublew = dw;
+						p->doubleh = dh;
+						p->boxwin = bw;
+						if (bw) p->IgnoreAtBlackBgSubst = 0;
+						p++;
+						c++;
+						c1++;
+					} while (c < *endcol);
+				}
+				break;
 			}
-			break;
-		}
-		case 0x0d:
+			case 0x0d:
 #if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d %cDRCS #%02x", iAddress, (iData & 0x40) ? ' ' : 'G', iData & 0x3f);
+				if (dumpl25)
+					printf("  ,%02d %cDRCS #%02x", iAddress, (iData & 0x40) ? ' ' : 'G', iData & 0x3f);
 #endif
-			page_char[offset] = iData & 0x3f;
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->charset = C_OFFSET_DRCS + ((iData & 0x40) ? (0x10 + *drcssubp) : *gdrcssubp);
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-				page_atrb[offset].charset = C_OFFSET_DRCS + ((iData & 0x40) ? (0x10 + *drcssubp) : *gdrcssubp);
-			break;
-		case 0x0f:
+				page_char[offset] = iData & 0x3f;
+				if (*endcol < 0) /* passive object */
+				{
+					attrPassive->charset = C_OFFSET_DRCS + ((iData & 0x40) ? (0x10 + *drcssubp) : *gdrcssubp);
+					page_atrb[offset] = *attrPassive;
+				}
+				else
+					page_atrb[offset].charset = C_OFFSET_DRCS + ((iData & 0x40) ? (0x10 + *drcssubp) : *gdrcssubp);
+				break;
+			case 0x0f:
 #if TUXTXT_DEBUG
-			if (dumpl25)
-				printf("  ,%02d G2 #%02x", iAddress, iData);
+				if (dumpl25)
+					printf("  ,%02d G2 #%02x", iAddress, iData);
 #endif
-			page_char[offset] = iData;
-			if (*endcol < 0) /* passive object */
-			{
-				attrPassive->charset = C_G2;
-				page_atrb[offset] = *attrPassive;
-			}
-			else
-				page_atrb[offset].charset = C_G2;
-			break;
-		default:
+				page_char[offset] = iData;
+				if (*endcol < 0) /* passive object */
+				{
+					attrPassive->charset = C_G2;
+					page_atrb[offset] = *attrPassive;
+				}
+				else
+					page_atrb[offset].charset = C_G2;
+				break;
+			default:
 			if (iMode == 0x10 && iData == 0x2a)
 				iData = '@';
 			if (iMode >= 0x10)
@@ -895,7 +895,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 #endif
 		switch (iMode)
 		{
-		case 0x00:
+			case 0x00:
 			if (0 == (iData>>5))
 			{
 #if TUXTXT_DEBUG
@@ -905,7 +905,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 				FullScrColor = iData & 0x1f;
 			}
 			break;
-		case 0x01:
+			case 0x01:
 			if (*endcol == 40) /* active object */
 			{
 				*pAPy = RowAddress2Row(iAddress);	/* new Active Row */
@@ -934,7 +934,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 				*endcol = -1;
 			}
 			break;
-		case 0x04:
+			case 0x04:
 #if TUXTXT_DEBUG
 			if (dumpl25)
 				printf(" AP=%d,%d", RowAddress2Row(iAddress), iData);
@@ -944,7 +944,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 				*pAPx = iData;	/* new Active Column */
 			*endcol = -1; /* FIXME: check if row changed? */
 			break;
-		case 0x07:
+			case 0x07:
 #if TUXTXT_DEBUG
 			if (dumpl25)
 			{
@@ -977,21 +977,21 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 				*endcol = -1;
 			}
 			break;
-		case 0x08:
-		case 0x09:
-		case 0x0a:
-		case 0x0b:
-		case 0x0c:
-		case 0x0d:
-		case 0x0e:
-		case 0x0f:
+			case 0x08:
+			case 0x09:
+			case 0x0a:
+			case 0x0b:
+			case 0x0c:
+			case 0x0d:
+			case 0x0e:
+			case 0x0f:
 #if TUXTXT_DEBUG
 			if (dumpl25)
 				printf("  PDC");
 #endif
 			/* ignore */
 			break;
-		case 0x10:
+			case 0x10:
 #if TUXTXT_DEBUG
 			if (dumpl25)
 				printf("  AP=%d,%d  temp. Origin Modifier", iAddress - 40, iData);
@@ -999,9 +999,9 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 			tAPy = iAddress - 40;
 			tAPx = iData;
 			break;
-		case 0x11:
-		case 0x12:
-		case 0x13:
+			case 0x11:
+			case 0x12:
+			case 0x13:
 			if (iAddress & 0x10)	/* POP or GPOP */
 			{
 				unsigned char APx = 0, APy = 0;
@@ -1062,9 +1062,9 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 #endif
 			}
 			break;
-		case 0x15:
-		case 0x16:
-		case 0x17:
+			case 0x15:
+			case 0x16:
+			case 0x17:
 			if (0 == (iAddress & 0x08))	/* Object Definition illegal or only level 3.5 */
 				break; /* ignore */
 #if TUXTXT_DEBUG
@@ -1094,7 +1094,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 			*endcol = -1;
 			return 0xFF; /* termination by object definition */
 			break;
-		case 0x18:
+			case 0x18:
 			if (0 == (iData & 0x10)) /* DRCS Mode reserved or only level 3.5 */
 				break; /* ignore */
 #if TUXTXT_DEBUG
@@ -1106,7 +1106,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 			else
 				*gdrcssubp = iData & 0x0f;
 			break;
-		case 0x1f:
+			case 0x1f:
 #if TUXTXT_DEBUG
 			if (dumpl25)
 				printf("  Termination Marker %x\n", iData);	/* subpage */
@@ -1115,7 +1115,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 			*endcol = -1;
 			return 0x80 | iData; /* explicit termination */
 			break;
-		default:
+			default:
 			break; /* unsupported or not yet implemented mode: ignore */
 		} /* switch (iMode) */
 	} /* (iAddress >= 40): row addresses */
@@ -1134,41 +1134,35 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 
 int setnational(unsigned char sec)
 {
-
-	debugf(20, "%s: >\n", __func__);
-
-	switch (sec)
-	{
-		case 0x08:
-			return NAT_PL; //polish
-		case 0x16:
-		case 0x36:
-			return NAT_TR; //turkish
-		case 0x1d:
-			return NAT_SR; //serbian, croatian, slovenian
-		case 0x20:
-		case 0x24:
-		case 0x25:
-			return NAT_RU; // cyrillic
-		case 0x22:
-			return NAT_ET; // estonian
-		case 0x23:
-			return NAT_LV; // latvian, lithuanian
-		case 0x37:
-			return NAT_GR; // greek
-		case 0x47:
-		case 0x57:
-			// TODO : arabic
-			break;
-		case 0x55:
-			// TODO : hebrew
-			break;
-
-	}
-
-	debugf(20, "%s: <\n", __func__);
-
-	return countryconversiontable[sec & 0x07];
+        switch (sec)
+        {
+                case 0x08:
+                        return NAT_PL; //polish
+                case 0x16:
+                case 0x36:
+                        return NAT_TR; //turkish
+                case 0x1d:
+                        return NAT_SR; //serbian, croatian, slovenian
+                case 0x20:
+                        return NAT_SC; // serbian, croatian
+                case 0x24:
+                        return NAT_RB; // russian, bulgarian
+                case 0x25:
+                        return NAT_UA; // ukrainian
+                case 0x22:
+                        return NAT_ET; // estonian
+                case 0x23:
+                        return NAT_LV; // latvian, lithuanian
+                case 0x37:
+                        return NAT_GR; // greek
+                case 0x55:
+                        return NAT_HB; // hebrew
+                case 0x47:
+                case 0x57:
+                        return NAT_AR; // arabic
+        }
+        
+        return countryconversiontable[sec & 0x07];
 }
 
 /* evaluate level 2.5 information */
@@ -2499,50 +2493,54 @@ skip_pid:
 */
 int GetNationalSubset(const char *cc)
 {
-	if (memcmp(cc, "cze", 3) == 0 || memcmp(cc, "ces", 3) == 0 ||
-	    memcmp(cc, "slo", 3) == 0 || memcmp(cc, "slk", 3) == 0)
-		return 0;
-	if (memcmp(cc, "eng", 3) == 0)
-		return 1;
-	if (memcmp(cc, "est", 3) == 0)
-		return 2;
-	if (memcmp(cc, "fre", 3) == 0 || memcmp(cc, "fra", 3) == 0)
-		return 3;
-	if (memcmp(cc, "ger", 3) == 0 || memcmp(cc, "deu", 3) == 0)
-		return 4;
-	if (memcmp(cc, "ita", 3) == 0)
-		return 5;
-	if (memcmp(cc, "lav", 3) == 0 || memcmp(cc, "lit", 3) == 0)
-		return 6;
-	if (memcmp(cc, "pol", 3) == 0)
-		return 7;
-	if (memcmp(cc, "spa", 3) == 0 || memcmp(cc, "por", 3) == 0)
-		return 8;
-	if (memcmp(cc, "rum", 3) == 0 || memcmp(cc, "ron", 3) == 0)
-		return 9;
-	if (memcmp(cc, "scc", 3) == 0 || memcmp(cc, "srp", 3) == 0 ||
-	    memcmp(cc, "scr", 3) == 0 || memcmp(cc, "hrv", 3) == 0 ||
-	    memcmp(cc, "slv", 3) == 0)
-		return 10;
-	if (memcmp(cc, "swe", 3) == 0 ||
-	    memcmp(cc, "dan", 3) == 0 ||
-	    memcmp(cc, "nor", 3) == 0 ||
-	    memcmp(cc, "fin", 3) == 0 ||
-	    memcmp(cc, "hun", 3) == 0)
-		return 11;
-	if (memcmp(cc, "tur", 3) == 0)
-		return 12;
-	if (memcmp(cc, "rus", 3) == 0 ||
-	    memcmp(cc, "bul", 3) == 0 ||
-	    memcmp(cc, "ser", 3) == 0 ||
-	    memcmp(cc, "cro", 3) == 0 ||
-	    memcmp(cc, "ukr", 3) == 0)
-		return NAT_RU;
-	if (memcmp(cc, "gre", 3) == 0)
-		return NAT_GR;
-
-	return NAT_DEFAULT;	/* use default charset */
+        if (memcmp(cc, "cze", 3) == 0 || memcmp(cc, "ces", 3) == 0 ||
+            memcmp(cc, "slo", 3) == 0 || memcmp(cc, "slk", 3) == 0)
+                return NAT_CZ;
+        if (memcmp(cc, "eng", 3) == 0)
+                return NAT_UK;
+        if (memcmp(cc, "est", 3) == 0)
+                return NAT_ET;
+        if (memcmp(cc, "fre", 3) == 0 || memcmp(cc, "lb", 3) == 0 || memcmp(cc, "ltz", 3) == 0 || memcmp(cc, "fra", 3) == 0)
+                return NAT_FR;
+        if (memcmp(cc, "ger", 3) == 0 || memcmp(cc, "deu", 3) == 0)
+                return NAT_DE;
+        if (memcmp(cc, "ita", 3) == 0)
+                return NAT_IT;
+        if (memcmp(cc, "lav", 3) == 0 || memcmp(cc, "lit", 3) == 0)
+                return NAT_LV;
+        if (memcmp(cc, "pol", 3) == 0)
+                return NAT_PL;
+        if (memcmp(cc, "spa", 3) == 0 || memcmp(cc, "por", 3) == 0)
+                return NAT_SP;
+        if (memcmp(cc, "rum", 3) == 0 || memcmp(cc, "ron", 3) == 0)
+                return NAT_RO;
+        if (memcmp(cc, "scc", 3) == 0 || memcmp(cc, "srp", 3) == 0 ||
+            memcmp(cc, "scr", 3) == 0 || memcmp(cc, "hrv", 3) == 0 ||
+            memcmp(cc, "slv", 3) == 0)
+                return NAT_SR;
+        if (memcmp(cc, "swe", 3) == 0 ||
+            memcmp(cc, "dan", 3) == 0 ||
+            memcmp(cc, "nor", 3) == 0 ||
+            memcmp(cc, "fin", 3) == 0 ||
+            memcmp(cc, "hun", 3) == 0)
+                return NAT_SW;
+        if (memcmp(cc, "tur", 3) == 0)
+                return NAT_TR;
+        if (memcmp(cc, "rus", 3) == 0 || memcmp(cc, "bul", 3) == 0)
+		return NAT_RB;
+        if (memcmp(cc, "ser", 3) == 0 || memcmp(cc, "cro", 3) == 0)
+		return NAT_SC;
+        if (memcmp(cc, "ukr", 3) == 0)
+		return NAT_UA;
+        if (memcmp(cc, "gre", 3) == 0)
+                return NAT_GR;
+        if (memcmp(cc, "heb", 3) == 0)
+                return NAT_HB;
+        if (memcmp(cc, "ara", 3) == 0)
+                return NAT_AR;
+        return NAT_DEFAULT;     /* use default charset */
 }
+
 
 /*
  * ConfigMenu
@@ -4606,26 +4604,34 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	}
 
 	// G0+G2 set designation
-	if (Attribute->setG0G2 != 0x3f)
-	{
-		switch (Attribute->setG0G2)
-		{
-			case 0x20 :
-			case 0x24 :
-			case 0x25 :
-				national_subset_local = NAT_RU;
-				break;
-			case 0x37:
-				national_subset_local = NAT_GR;
-				break;
-				//TODO: arabic and hebrew
-			default:
-				national_subset_local = countryconversiontable[Attribute->setG0G2 & 0x07];
-				break;
-
-		}
-
-	}
+        if (Attribute->setG0G2 != 0x3f)
+        {
+                switch (Attribute->setG0G2)
+                {
+                        case 0x20 :
+                                national_subset_local = NAT_SC;
+                                break;
+                        case 0x24 :
+                                national_subset_local = NAT_RB;
+                                break;
+                        case 0x25 :
+                                national_subset_local = NAT_UA;
+                                break;
+                        case 0x37:
+                                national_subset_local = NAT_GR;
+                                break;
+                        case 0x55:
+                                national_subset_local = NAT_HB;
+                                break;
+                        case 0x47:
+                        case 0x57:
+                                national_subset_local = NAT_AR;
+                                break;
+                        default:
+                                national_subset_local = countryconversiontable[Attribute->setG0G2 & 0x07];
+                                break;
+                }
+        }
 	
 	if (Attribute->charset == C_G0S) // use secondary charset
 		national_subset_local = national_subset_secondary;
@@ -4674,10 +4680,11 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	else
 		bgcolor = Attribute->bg;
 
-/*
-fprintf(stderr, "charset = %d\n", Attribute->charset);		
-fprintf(stderr, "national_subset_local = %d\n", national_subset_local);		
-*/
+	/*
+	fprintf(stderr, "charset = %d\n", Attribute->charset);		
+	fprintf(stderr, "national_subset_local = %d\n", national_subset_local);		
+	*/
+	
 	/* handle mosaic ->space*/
 	if ((Attribute->charset == C_G1C || Attribute->charset == C_G1S) && ((Char&0xA0) == 0x20))
 	{
@@ -4735,7 +4742,7 @@ fprintf(stderr, "national_subset_local = %d\n", national_subset_local);
 						for (x=0; x<curfontwidth*xfactor;x++)
 						{
 							c = (y&4 ? (x/3)&1 :((x+3)/3)&1);
-							//setPixel(x + PosX, y + PosY + yoffset, (c ? fgcolor : bgcolor));
+							
 							memcpy((p+x*4),bgra[(c ? fgcolor : bgcolor)],4);
 						}
 						
@@ -4775,7 +4782,7 @@ fprintf(stderr, "national_subset_local = %d\n", national_subset_local);
 			
 			axdrcs[12] = curfontwidth; /* adjust last x-offset according to position, FIXME: double width */
 			
-			RenderDRCS(p,lfb + PosX*4 + (yoffset + PosY) * (CFrameBuffer::getInstance()->getScreenWidth(true)*4), axdrcs, fgcolor, bgcolor);
+			RenderDRCS(p, lfb + PosX*4 + (yoffset + PosY) * (CFrameBuffer::getInstance()->getScreenWidth(true)*4), axdrcs, fgcolor, bgcolor);
 		}
 		else
 		{
@@ -4786,31 +4793,28 @@ fprintf(stderr, "national_subset_local = %d\n", national_subset_local);
 	}
 	else if (Attribute->charset == C_G2 && Char >= 0x20 && Char <= 0x7F)
 	{
-		if (national_subset_local == NAT_GR)
-			Char = G2table[2][Char-0x20];
-		else if (national_subset_local == NAT_RU)
+		if ((national_subset_local == NAT_SC) || (national_subset_local == NAT_RB) || (national_subset_local == NAT_UA))
 			Char = G2table[1][Char-0x20];
+		else if (national_subset_local == NAT_GR)
+			Char = G2table[2][Char-0x20];
+		else if (national_subset_local == NAT_AR)
+			Char = G2table[3][Char-0x20];
 		else
 			Char = G2table[0][Char-0x20];
-
-		if (Char == 0x7F)
-		{
-			FillRect(PosX, PosY + yoffset, curfontwidth, factor*ascender, fgcolor);
-			FillRect(PosX, PosY + yoffset + factor*ascender, curfontwidth, factor*(fontheight-ascender), bgcolor);
-			PosX += curfontwidth;
-			return;
-		}
 	}
-	else if (national_subset_local == NAT_GR && Char >= 0x40 && Char <= 0x7E)	/* remap complete areas for greek */
-		Char += 0x390 - 0x40;
-	else if (national_subset_local == NAT_GR && Char == 0x3c)
-		Char = '�';
-	else if (national_subset_local == NAT_GR && Char == 0x3e)
-		Char = '�';
-	else if (national_subset_local == NAT_GR && Char >= 0x23 && Char <= 0x24)
-		Char = nationaltable23[NAT_DE][Char-0x23]; /* #$ as in german option */
-	else if (national_subset_local == NAT_RU && Char >= 0x40 && Char <= 0x7E) /* remap complete areas for cyrillic */
-		Char = G0tablecyrillic[Char-0x20];
+	else if (national_subset_local == NAT_SC && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for serbian/croatian */
+		Char = G0table[0][Char-0x20];
+	else if (national_subset_local == NAT_RB && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for russian/bulgarian */
+		Char = G0table[1][Char-0x20];
+	else if (national_subset_local == NAT_UA && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for ukrainian */
+		Char = G0table[2][Char-0x20];
+	else if (national_subset_local == NAT_GR && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for greek */
+		Char = G0table[3][Char-0x20];
+	else if (national_subset_local == NAT_HB && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for hebrew */
+		Char = G0table[4][Char-0x20];
+	else if (national_subset_local == NAT_AR && Char >= 0x20 && Char <= 0x7F) /* remap complete areas for arabic */
+		Char = G0table[5][Char-0x20];
+	
 	else
 	{
 		/* load char */
@@ -4974,116 +4978,114 @@ fprintf(stderr, "national_subset_local = %d\n", national_subset_local);
 	{
 		FTC_SBit        sbit_diacrit;
 
-		if (national_subset_local == NAT_GR)
-			Char = G2table[2][0x20+ Attribute->diacrit];
-		else if (national_subset_local == NAT_RU)
-			Char = G2table[1][0x20+ Attribute->diacrit];
-		else
-			Char = G2table[0][0x20+ Attribute->diacrit];
+		if ((national_subset_local == NAT_SC) || (national_subset_local == NAT_RB) || (national_subset_local == NAT_UA))
+                        Char = G2table[1][0x20+ Attribute->diacrit];
+                else if (national_subset_local == NAT_GR)
+                        Char = G2table[2][0x20+ Attribute->diacrit];
+		else if (national_subset_local == NAT_AR)
+                        Char = G2table[3][0x20+ Attribute->diacrit];
+                else
+                        Char = G2table[0][0x20+ Attribute->diacrit];
 		
 		if ((glyph = FT_Get_Char_Index(face, Char)))
 		{
 			if ((error = FTC_SBitCache_Lookup(cache, &typettf, glyph, &sbit_diacrit, NULL)) == 0)
 			{
-					sbitbuffer = localbuffer;
-					memcpy(sbitbuffer,sbit->buffer,sbit->pitch*sbit->height);
+				sbitbuffer = localbuffer;
+				memcpy(sbitbuffer,sbit->buffer,sbit->pitch*sbit->height);
 
-					for (Row = 0; Row < sbit->height; Row++)
+				for (Row = 0; Row < sbit->height; Row++)
+				{
+					for (Pitch = 0; Pitch < sbit->pitch; Pitch++)
 					{
-						for (Pitch = 0; Pitch < sbit->pitch; Pitch++)
-						{
-							if (sbit_diacrit->pitch > Pitch && sbit_diacrit->height > Row)
-								sbitbuffer[Row*sbit->pitch+Pitch] |= sbit_diacrit->buffer[Row*sbit->pitch+Pitch];
-						}
+						if (sbit_diacrit->pitch > Pitch && sbit_diacrit->height > Row)
+							sbitbuffer[Row*sbit->pitch+Pitch] |= sbit_diacrit->buffer[Row*sbit->pitch+Pitch];
 					}
 				}
 			}
 		}
+	}
 
-		unsigned char *p;
-		int f; /* running counter for zoom factor */
+	unsigned char *p;
+	int f; /* running counter for zoom factor */
 
-		Row = factor * (ascender - sbit->top + TTFShiftY);
-		FillRect(PosX, PosY + yoffset, curfontwidth, Row, bgcolor); /* fill upper margin */
+	Row = factor * (ascender - sbit->top + TTFShiftY);
+	FillRect(PosX, PosY + yoffset, curfontwidth, Row, bgcolor); /* fill upper margin */
 
-		if (ascender - sbit->top + TTFShiftY + sbit->height > fontheight)
-			sbit->height = fontheight - ascender + sbit->top - TTFShiftY; /* limit char height to defined/calculated fontheight */
+	if (ascender - sbit->top + TTFShiftY + sbit->height > fontheight)
+		sbit->height = fontheight - ascender + sbit->top - TTFShiftY; /* limit char height to defined/calculated fontheight */
 
-		//fprintf(stderr, "PosX = %d, yoffset = %d, PosY %d, Row %d\n", PosX, yoffset, PosY, Row);
+	//fprintf(stderr, "PosX = %d, yoffset = %d, PosY %d, Row %d\n", PosX, yoffset, PosY, Row);
 
-		p = lfb + PosX*4 + (yoffset + PosY + Row) * (CFrameBuffer::getInstance()->getScreenWidth(true) *4); /* running pointer into framebuffer */
+	p = lfb + PosX*4 + (yoffset + PosY + Row) * (CFrameBuffer::getInstance()->getScreenWidth(true) *4); /* running pointer into framebuffer */
 
-		int saveRow = Row;
-		for (Row = sbit->height; Row; Row--) /* row counts up, but down may be a little faster :) */
+	int saveRow = Row;
+	for (Row = sbit->height; Row; Row--) /* row counts up, but down may be a little faster :) */
+	{
+		int pixtodo = (usettf ? sbit->width : curfontwidth);
+		unsigned char *pstart = p;
+		int x = PosX;
+
+		for (Bit = xfactor * (sbit->left + TTFShiftX); Bit > 0; Bit--) /* fill left margin */
 		{
-			int pixtodo = (usettf ? sbit->width : curfontwidth);
-			unsigned char *pstart = p;
-			int x = PosX;
-
-			for (Bit = xfactor * (sbit->left + TTFShiftX); Bit > 0; Bit--) /* fill left margin */
-			{
-				for (f = factor-1; f >= 0; f--)
-					memcpy((p + f * CFrameBuffer::getInstance()->getStride() ), bgra[bgcolor], 4);/*bgcolor*/
+			for (f = factor-1; f >= 0; f--)
+				memcpy((p + f * CFrameBuffer::getInstance()->getStride() ), bgra[bgcolor], 4);/*bgcolor*/
 				
-				p += 4;
-				x += 1;
-				if (!usettf)
-					pixtodo--;
-			}
+			p += 4;
+			x += 1;
+			if (!usettf)
+				pixtodo--;
+		}
 
-			for (Pitch = sbit->pitch; Pitch; Pitch--)
+		for (Pitch = sbit->pitch; Pitch; Pitch--)
+		{
+			for (Bit = 0x80; Bit; Bit >>= 1)
 			{
-				for (Bit = 0x80; Bit; Bit >>= 1)
+				int color;
+
+				if (--pixtodo < 0)
+					break;
+
+				if (*sbitbuffer & Bit) /* bit set -> foreground */
+					color = fgcolor;
+				else /* bit not set -> background */
+					color = bgcolor;
+
+				for (f = factor-1; f >= 0; f--)
+					memcpy((p + f * CFrameBuffer::getInstance()->getStride() ),bgra[color],4);
+				p+=4;
+				x+=1;
+				if (xfactor > 1) /* double width */
 				{
-					int color;
-
-					if (--pixtodo < 0)
-						break;
-
-					if (*sbitbuffer & Bit) /* bit set -> foreground */
-						color = fgcolor;
-					else /* bit not set -> background */
-						color = bgcolor;
-
 					for (f = factor-1; f >= 0; f--)
-						//setPixel(x, saveRow + f + yoffset + PosY + ((sbit->height - Row) * factor), color);
 						memcpy((p + f * CFrameBuffer::getInstance()->getStride() ),bgra[color],4);
 					p+=4;
 					x+=1;
-					if (xfactor > 1) /* double width */
-					{
-						for (f = factor-1; f >= 0; f--)
-							//setPixel(x, saveRow + f + yoffset + PosY + ((sbit->height - Row) * factor), color);
-							memcpy((p + f * CFrameBuffer::getInstance()->getStride() ),bgra[color],4);
-						p+=4;
-						x+=1;
 
-						if (!usettf)
-							pixtodo--;
-					}
+					if (!usettf)
+						pixtodo--;
 				}
-				sbitbuffer++;
 			}
+			sbitbuffer++;
+		}
 			
-			for (Bit = (usettf ? (curfontwidth - xfactor*(sbit->width + sbit->left + TTFShiftX)) : pixtodo); Bit > 0; Bit--) /* fill rest of char width */
-			{
-				for (f = factor-1; f >= 0; f--)
-					//setPixel(x, saveRow + f + yoffset + PosY + ((sbit->height - Row) * factor), bgcolor);
-					memcpy((p + f * CFrameBuffer::getInstance()->getStride()),bgra[bgcolor],4);
-				p+=4;
-				x+=1;
-			}
-
-			p = pstart + factor*(CFrameBuffer::getInstance()->getScreenWidth(true) *4);
+		for (Bit = (usettf ? (curfontwidth - xfactor*(sbit->width + sbit->left + TTFShiftX)) : pixtodo); Bit > 0; Bit--) /* fill rest of char width */
+		{
+			for (f = factor-1; f >= 0; f--)
+				memcpy((p + f * CFrameBuffer::getInstance()->getStride()),bgra[bgcolor],4);
+			p+=4;
+			x+=1;
 		}
 
-		Row = ascender - sbit->top + sbit->height + TTFShiftY;
-		FillRect(PosX, PosY + yoffset + Row*factor, curfontwidth, (fontheight - Row) * factor, bgcolor); /* fill lower margin */
-		if (Attribute->underline)
-			FillRect(PosX, PosY + yoffset + (fontheight-2)* factor, curfontwidth,2*factor, fgcolor); /* underline char */
+		p = pstart + factor*(CFrameBuffer::getInstance()->getScreenWidth(true) *4);
+	}
 
-		PosX += curfontwidth;
-	//}
+	Row = ascender - sbit->top + sbit->height + TTFShiftY;
+	FillRect(PosX, PosY + yoffset + Row*factor, curfontwidth, (fontheight - Row) * factor, bgcolor); /* fill lower margin */
+	if (Attribute->underline)
+		FillRect(PosX, PosY + yoffset + (fontheight-2)* factor, curfontwidth,2*factor, fgcolor); /* underline char */
+
+	PosX += curfontwidth;
 
 	debugf(20, "%s: <\n", __func__);
 }
