@@ -1532,3 +1532,5 @@ miscsettings.backupfailed Backup fehlgeschalgen
 miscsettings.restore Image Einstellungen: Wiederherstellen
 miscsettings.restorewarn Alle Settings werden ersetzt?
 
+opkgmanager.head OPKG Manager
+
