@@ -249,7 +249,6 @@ bool CFlashUpdate::getUpdateImage(const std::string & version)
 
 	printf("get update (url): %s - %s\n", filename.c_str(), dest_name);
 	return httpTool.downloadFile(filename, dest_name, 40 );
-	//return httpTool.downloadFile(filename, gTmpPath UPDATE_LOCAL_FILENAME, 40 );
 }
 
 bool CFlashUpdate::checkVersion4Update()
@@ -275,7 +274,6 @@ bool CFlashUpdate::checkVersion4Update()
 		showGlobalStatus(20);
 		hide();
 		
-		//msg_body = LOCALE_FLASHUPDATE_MSGBOX;
 		msg_body = (fileType < '3')? LOCALE_FLASHUPDATE_FLASHMSGBOX : LOCALE_FLASHUPDATE_PACKAGEMSGBOX;
 		
 #ifdef SQUASHFS
@@ -290,7 +288,6 @@ bool CFlashUpdate::checkVersion4Update()
 			(ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_FLASHUPDATE_WRONGBASE), CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) != CMessageBox::mbrYes))
 			{
 				delete versionInfo;
-				//ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_WRONGBASE)); // UTF-8
 				return false;
 			}
 
@@ -572,7 +569,7 @@ void CFlashExpert::writemtd(const std::string & filename, int mtdNumber)
 	if (ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, message, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) != CMessageBox::mbrYes) // UTF-8
 		return;
 
-#ifdef VFD_UPDATE
+#ifdef ENABLE_LCD
         CVFD::getInstance()->showProgressBar2(0,"checking",0,"Update Neutrino");
         CVFD::getInstance()->setMode(CLCD::MODE_PROGRESSBAR2);	
 #endif // VFD_UPDATE
