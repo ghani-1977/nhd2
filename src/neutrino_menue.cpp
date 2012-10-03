@@ -151,6 +151,7 @@
 #endif
 
 #include "gui/proxyserver_setup.h"
+#include "gui/opkg_manager.h"
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
@@ -2399,7 +2400,8 @@ bool CNeutrinoApp::showUserMenu(int button)
         CEPGDataHandler * tmpEPGDataHandler                     = NULL;
 #if ENABLE_GRAPHLCD
 	GLCD_Menu * glcdMenu 					= NULL;
-#endif	
+#endif
+	COPKGManager * tmpOPKGManager				= NULL;
 
         std::string txt = g_settings.usermenu_text[button];
 
@@ -2611,6 +2613,17 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 #endif
 
+			case SNeutrinoSettings::ITEM_OPKG:
+                                menu_items++;
+                                menu_prev = SNeutrinoSettings::ITEM_OPKG;
+                               
+				tmpOPKGManager = new COPKGManager();
+				
+                                keyhelper.get(&key,&icon);
+                                menu_item = new CMenuForwarder(LOCALE_OPKG_MANAGER, true, NULL, tmpOPKGManager, "-1", key, icon);
+                                menu->addItem(menu_item, false);
+                                break;
+
                         default:
                                 printf("[neutrino] WARNING! menu wrong item!!\n");
                                 break;
@@ -2683,7 +2696,9 @@ bool CNeutrinoApp::showUserMenu(int button)
 #if ENABLE_GRAPHLCD
 	if(glcdMenu)
 		delete glcdMenu;
-#endif	
+#endif
+	if(tmpOPKGManager)
+		delete tmpOPKGManager;
 
         if(menu)
 		delete menu;

@@ -352,7 +352,8 @@ struct SNeutrinoSettings
                 ITEM_GAME = 16,
 #if ENABLE_GRAPHLCD                
                 ITEM_GLCD = 17,
-#endif                
+#endif 
+		ITEM_OPKG = 18,
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	

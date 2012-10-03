@@ -773,7 +773,8 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES} ,
 #if ENABLE_GRAPHLCD        
         {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD},
-#endif        
+#endif
+	{SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER},
 };
 
 int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)

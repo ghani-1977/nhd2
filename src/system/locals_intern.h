@@ -1541,5 +1541,7 @@ const char *locale_real_names[] = {
 	"miscsettings.backupfailed",
 	"miscsettings.restore",
 	"miscsettings.restorewarn",
+	
+	"opkgmanager.head"
 };
 #endif
