@@ -57,20 +57,6 @@
 #define VLC_URI "vlc://"
 
 
-//test
-#if 0
-#if 1
-#define SC_BASE_DIR   "http://api.shoutcast.com"
-#define SC_INIT_DIR   "/sbin/newxml.phtml"
-#else
-#define SC_DEV_ID      "???"
-#define SC_BASE_DIR      "http://api.shoutcast.com"
-#define SC_TUNE_IN_BASE      "http://yp.shoutcast.com"
-#define SC_INIT_DIR      "/legacy/genrelist?k="SC_DEV_ID
-#define SC_GET_GENRE      "/legacy/stationsearch?k="SC_DEV_ID"&search="
-#define SC_GET_TOP500      "/legacy/Top500?k="SC_DEV_ID
-#endif
-#endif
 
 /**
  * Converts input of numeric keys to SMS style char input.
@@ -240,7 +226,7 @@ class CFileBrowser
 				return Path;
 			}
 
-//		size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data);
+		//size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data);
 	private:
 		tFileBrowserMode 	m_Mode;
 };
