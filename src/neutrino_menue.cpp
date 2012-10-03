@@ -1107,8 +1107,11 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	}
 	
 	// reset factory setup
+	miscSettingsGeneral.addItem(GenericMenuSeparatorLine);
 	CDataResetNotifier * resetNotifier = new CDataResetNotifier();
 	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_MISCSETTINGS_RESET, true, NULL, resetNotifier, "settings", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW ));
+	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_SETTINGS_BACKUP,  true, NULL, resetNotifier, "backup", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
+	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_SETTINGS_RESTORE, true, NULL, resetNotifier, "restore" ));
 
 	miscSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MISCSETTINGS_GENERAL, true, "", &miscSettingsGeneral, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, "miscsettingsgeneral", LOCALE_HELPTEXT_MISCSETTINGSGENERAL ));
 	
