@@ -232,7 +232,7 @@ void CTimeOSD::GetDimensions()
 	BoxStartX = m_xstart;
 	BoxWidth = m_xend - m_xstart;
 	BoxHeight = TIMEBARH * 3;
-	BoxStartY = g_settings.screen_EndY - BoxHeight -10;
+	BoxStartY = g_settings.screen_EndY - BoxHeight - 10;
 	BoxEndY = BoxStartY + BoxHeight;
 	BoxEndX = m_xend;
 }
