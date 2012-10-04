@@ -55,16 +55,14 @@ class CInfoViewer
 #ifndef SKIP_CA_STATUS
 		bool           CA_Status;
 #endif
-	
-		int            InfoHeightY;
-		int            InfoHeightY_Info;
 		
-		bool         showButtonBar;
+		bool         	showButtonBar;
 		
 		int            BoxEndX;
 		int            BoxEndY;
 		int            BoxStartX;
 		int            BoxStartY;
+		
 		int            ButtonWidth;
 
 		int            ChanWidth;
@@ -88,8 +86,6 @@ class CInfoViewer
 
 		int		asize;
 
-		int ChanLogoX;
-		int ChanLogoY;
 		int PIC_X;
 		int PIC_Y;
 

@@ -149,14 +149,13 @@ void CInfoViewer::Init()
 {
 	frameBuffer = CFrameBuffer::getInstance ();
 	
-	//BoxStartX = BoxStartY = BoxEndX = BoxEndY = 0;
 	// get dimensions
-	BoxHeight = 150;
+	BoxHeight = 160;
 	
 	BoxStartX = g_settings.screen_StartX + 10;
 	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10;
-	BoxStartY = BoxEndY - BoxHeight - 10;
+	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
 	//
 	recordModeActive = false;
@@ -176,8 +175,7 @@ void CInfoViewer::Init()
 
 void CInfoViewer::start()
 {
-	ChanWidth = 130;
-	//ChanWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00") + 30;
+	ChanWidth = 100;
 	ChanHeight = 70;
 	
 	lcdUpdateTimer = g_RCInput->addTimer(LCD_UPDATE_TIME_TV_MODE, false, true);
@@ -266,8 +264,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	int fadeValue;
 	bool new_chan = false;
 
-	//dprintf(DEBUG_NORMAL, "CInfoViewer::showTitle: chan num %d name %s (%llx)\n", ChanNum, Channel.c_str(), (new_channel_id& 0xFFFFFFFFFFFFULL));
-
 	showButtonBar = !calledFromNumZap;
 	bool fadeIn = false && (!is_visible) && showButtonBar;
 
@@ -281,9 +277,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	sigscale->reset(); 
 	snrscale->reset(); 
 	timescale->reset();
-
-	InfoHeightY = NUMBER_H * 9 / 8 + 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight () + 25;
-	InfoHeightY_Info = 40;
 
 	time_height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight () + 5;
 	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth (widest_number);
@@ -347,7 +340,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	asize = asize / 4;
 	
 	// infobar shadow
-	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight + 8, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
+	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// infobar box
 	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -369,7 +362,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	show_dot = !show_dot;
 
 	//sat name
-	int ChanNumYPos = BoxStartY + ChanHeight;
 	int chanH = g_SignalFont->getHeight();
 
 	char strChanNum[10];
@@ -381,24 +373,17 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 		if(sit != satellitePositions.end()) 
 		{
-			//satNameWidth = g_SignalFont->getRenderWidth(sit->second.name);
-			satNameWidth = ChanWidth - 5;
+			satNameWidth = g_SignalFont->getRenderWidth(sit->second.name);
 			
-			//if (satNameWidth > (ChanWidth - 4))
-			//	satNameWidth = ChanWidth - 4;
-
-			//int chanH = g_SignalFont->getHeight();
+			if (satNameWidth > (ChanWidth + 70))
+				satNameWidth = ChanWidth + 70;
 				
 			if ( g_settings.infobar_sat_display )
 				g_SignalFont->RenderString ( BoxStartX + 5, BoxStartY + (chanH*3)/2, satNameWidth, sit->second.name, COL_MENUCONTENTINACTIVE);
 		}
-
-		ChanNumYPos += 5;
 	}
 
-	/* paint logo */
-	bool logo_ok = false;
-
+	// channel logo/number/name
 #define PIC_W 52
 #define PIC_H 39
 
@@ -407,31 +392,21 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		PIC_X = (BoxStartX + 10);
 		PIC_Y = (ChanNameY + time_height - PIC_H);
 
-		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H);
+		// display channel picon
+		g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H);
 
-		if(logo_ok)
-		{
-			/* ChannelNumber */
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
+		// ChannelNumber
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
 	
-			/* ChannelName */
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth + 20 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth(strChanNum), ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
-		}
-		else	
-		{
-			/* ChannelNumber */
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
-	
-			/* ChannelName */
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth + 20 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth(strChanNum), ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
-		}
+		// ChannelName
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth + 20 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth(strChanNum), ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 	}
 
 	int ChanInfoY = BoxStartY + ChanHeight + 10;
 	ButtonWidth = (BoxEndX - ChanInfoX - ICON_OFFSET) >> 2;
 		
 	// show date
-	char datestr[15];
+	char datestr[11];
 			
 	time_t wakeup_time;
 	struct tm *now;
@@ -439,7 +414,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	time(&wakeup_time);
 	now = localtime(&wakeup_time);
 		
-	strftime(datestr, sizeof(datestr), "%a %d.%m.%Y", now);
+	strftime(datestr, sizeof(datestr), "%d.%m.%Y", now);
 			
 	int widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
 			
@@ -1513,7 +1488,7 @@ void CInfoViewer::showSNR()
   	char percent[10];
   	uint16_t ssig, ssnr;
   	int sw, snr, sig, posx, posy;
-  	int height, ChanNumYPos;
+  	int height/*, ChanNumYPos*/;
   	int barwidth = BAR_WIDTH;
 	
   	if (is_visible && g_settings.infobar_sat_display) 
@@ -1540,7 +1515,7 @@ void CInfoViewer::showSNR()
 
 			int chanH = g_SignalFont->getHeight();
 			int freqWidth = g_SignalFont->getRenderWidth(freq);
-			int FreqStartX = BoxStartX + ChanWidth;
+			int FreqStartX = BoxStartX + ChanWidth + 80;
 
 			g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENUCONTENTINACTIVE);
 		
@@ -1563,12 +1538,10 @@ void CInfoViewer::showSNR()
 			posy = BoxStartY + (chanH*3)/2;
 			
 			height = g_SignalFont->getHeight() - 1;
-			ChanNumYPos = BoxStartY + ChanHeight + 4 - 2 * height;
 
 			if (sigscale->getPercent() != sig) 
 			{
 				posx = FreqStartX + freqWidth + 10;
-				//posy = BoxStartY + (chanH*3)/2;
 
 				sigscale->paint(posx, BoxStartY + 15, sig);
 
@@ -1583,7 +1556,6 @@ void CInfoViewer::showSNR()
 			if (snrscale->getPercent() != snr) 
 			{
 				int snr_posx = posx + sw + 10;
-				//posy = BoxStartY + (chanH*3)/2;
 
 				snrscale->paint(snr_posx, BoxStartY + 15, snr);
 
@@ -1647,8 +1619,8 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				sprintf (runningRest, "%d / %d min", seit, rest);
 	  		}
 
-	  		struct tm *pStartZeit = localtime(&info_CurrentNext.current_zeit.startzeit);
-	  		sprintf (runningStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
+	  		struct tm * pStartZeit = localtime(&info_CurrentNext.current_zeit.startzeit);
+	  		sprintf(runningStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
 			
 			//FIXME
 			//long int EndTime( info_CurrentNext.current_zeit.startzeit + info_CurrentNext.current_zeit.dauer );
@@ -1665,7 +1637,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 	  		unsigned dauer = info_CurrentNext.next_zeit.dauer / 60;
 	  		sprintf (nextDuration, "%d min", dauer);
 	  		struct tm *pStartZeit = localtime (&info_CurrentNext.next_zeit.startzeit);
-	  		sprintf (nextStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
+	  		sprintf(nextStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
 			
 			//FIXME
 			//long int EndTime( info_CurrentNext.next_zeit.startzeit + info_CurrentNext.next_zeit.dauer );
@@ -1725,6 +1697,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 	  		// no EPG available
 	  		ChanInfoY += height;
 			
+			// refresh box
 	  		frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 			
 			// noepg/waiting for time
@@ -1742,6 +1715,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 	  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
 			{
 				// there are later events available - yet no current
+				//refresh box
 				frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, BoxEndX - xStart, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_INFOBAR, 0, true);	// UTF-8
 
@@ -1750,6 +1724,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 
 				if(last_next_id != info_CurrentNext.next_uniqueKey) 
 				{
+					// refresh box
 					frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + height, /*100*/EPGTimeWidth, nextStart, COL_MENUCONTENTINACTIVE ); //TEST
@@ -1773,6 +1748,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 			  		last_curr_id = info_CurrentNext.current_uniqueKey;
 		  		}
 		  		
+		  		// refresh box
 		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
 		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + height, duration1Width, runningRest, COL_INFOBAR);
 
