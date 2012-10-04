@@ -1310,6 +1310,7 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	for(int i = 0; i < ifcount; i++) 
 	{
 		ifSelect->addOption(namelist[i]->d_name);
+		
 		if(strcmp(g_settings.ifname, namelist[i]->d_name) == 0)
 			found = true;
 		free(namelist[i]);
@@ -1381,8 +1382,6 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	networkSettings.addItem(mac);	//eth id
 	
 	// if select
-	//networkSettings.addItem(GenericMenuSeparatorLine);
-	//------------------------------------------------
 	if(ifcount)
 		networkSettings.addItem(ifSelect);	//if select
 	else
