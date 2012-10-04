@@ -138,7 +138,7 @@ int COPKGManager::showMenu()
 //returns true if opkg support is available
 bool COPKGManager::hasOpkgSupport()
 {
-	std::string deps[] = {"/bin/opkg-cl","/bin/opkg-key", "/etc/opkg/opkg.conf", "/var/lib/opkg"};
+	std::string deps[] = {"/bin/opkg-cl", "/bin/opkg-key", "/etc/opkg/opkg.conf", "/var/lib/opkg"};
 	bool ret = true;
 	
 	for (uint i = 0; i < (sizeof(deps) / sizeof(deps[0])); i++)
@@ -232,7 +232,7 @@ std::string COPKGManager::getBlankPkgName(const std::string& line)
 	return name;
 }
 
-bool COPKGManager::execCmd(const char* cmdstr)
+bool COPKGManager::execCmd(const char * cmdstr)
 {
 	char cmd[100];
 	FILE * f;
