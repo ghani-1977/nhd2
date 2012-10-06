@@ -1071,6 +1071,9 @@ const char *locale_real_names[] = {
 	"streamingmenu.streaming_type",
 	"streamingmenu.streaming_videorate",
 	"streamingmenu.streaming_vlc10",
+	"streamingmenu.streaming_vlcver08",
+	"streamingmenu.streaming_vlcver10",
+	"streamingmenu.streaming_vlcver20",
 	"streamingserver.noconnect",
 	"stringinput.caps",
 	"stringinput.clear",
@@ -1437,7 +1440,6 @@ const char *locale_real_names[] = {
 	"osd.roundedcornerson",
 	"extra.volume_pos",
 	"progressbar.color",
-	"movieplayer.vlcplayback",
 	"miscsettings.reset",
 	"videosettings.wss",
 	"zapitsetup.lastuse",
@@ -1542,6 +1544,12 @@ const char *locale_real_names[] = {
 	"miscsettings.restore",
 	"miscsettings.restorewarn",
 	
-	"opkgmanager.head"
+	"opkgmanager.head",
+	
+	"keybinding.key_video",
+	"keybinding.key_music",
+	"keybinding.key_picture",
+	"keybinding.key_timelist",
+	"keybinding.key_net",
 };
 #endif
