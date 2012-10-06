@@ -275,7 +275,8 @@ void CMoviePlayerGui::Init(void)
 		Path_local = "/";
 	
 	Path_vlc  = "vlc://";
-	Path_vlc += g_settings.streaming_server_startdir;
+	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
+		Path_vlc += g_settings.streaming_server_startdir;
 	Path_vlc_settings = g_settings.streaming_server_startdir;	
 
 	if (g_settings.filebrowser_denydirectoryleave)
@@ -447,7 +448,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
 	{
 		Path_vlc  = "vlc://";
-		Path_vlc += g_settings.streaming_server_startdir;
+		if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
+			Path_vlc += g_settings.streaming_server_startdir;
 		Path_vlc_settings = g_settings.streaming_server_startdir;
 	}	
 
@@ -505,7 +507,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		showHelpTS();
 	}
-	#if 1 //FIXME: for testing
 	else if ( actionKey == "vlcplayback" ) 
 	{
 		isHTTP = true;
@@ -530,7 +531,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		PlayFile();
 	}
-	#endif
 	
 	// Restore previous background
 	if (usedBackground) 
@@ -674,7 +674,12 @@ bool VlcRequestStream(char* mrl, int  transcodeVideo, int transcodeAudio)
 	std::string url = baseurl;
 	url += "requests/status.xml?command=in_play&input=";
 	url += mrl;	
-	url += "%20%3Asout%3D";
+	
+	if (g_settings.streaming_vlc10 > 1)
+		url += "&option=";
+	else
+		url += "%20";
+	url += "%3Asout%3D";
 	url += tmp;
 	curl_free(tmp);
 	printf("[movieplayer.cpp] URL(enc) : %s\n", url.c_str());
@@ -976,7 +981,6 @@ void CMoviePlayerGui::PlayFile(void)
 			printf ("[movieplayer.cpp] Generated MRL: %s\n", mrl);
 			title = "DVD";
 			open_filebrowser = false;
-			//start_play = true;
 			cdDvd = true;
 		}
 		else if(streamtype == STREAMTYPE_SVCD)
@@ -986,12 +990,10 @@ void CMoviePlayerGui::PlayFile(void)
 			printf ("[movieplayer.cpp] Generated MRL: %s\n", mrl);
 			title = "(S)VCD";
 			open_filebrowser = false;
-			//start_play = true;
 			cdDvd = true;
 		}
 							
 		sel_filename = "VLC Player";
-		//sel_filename = std::string(rindex(filename, '/') + 1);
 		update_lcd = true;
 		start_play = true;
 		
@@ -1006,22 +1008,15 @@ void CMoviePlayerGui::PlayFile(void)
 #endif		
 	}
 
+	//FIXME: do we really need this???
+	#if 0
 	if (has_hdd)
 	{
-		std::string str = "sda1";
-		
-		//struct statfs s;
-		//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
-		//{
-			//std::string str1 = g_settings.network_nfs_recordingdir;
-			//str = str1.substr(7, 4);
-			//std::string str = str1.substr(str1.length() - 4, str1.length()); //FIXME: substr() are suking
-		//}
-		
 		char cmd[100];
-		sprintf(cmd, "(rm /media/%s/.wakeup; touch /media/%s/.wakeup; sync) > /dev/null  2> /dev/null &", (char *)str.c_str(), (char *)str.c_str() );
+		sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
 		system(cmd);
 	}
+	#endif
 
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info
@@ -1377,7 +1372,12 @@ void CMoviePlayerGui::PlayFile(void)
 						sel_filename = _filelist[0].getFileName();
 						//printf ("[movieplayer.cpp] sel_filename: %s\n", filename);
 						int namepos = _filelist[0].Name.rfind("vlc://");
-						std::string mrl_str = _filelist[0].Name.substr(namepos + 6);
+						std::string mrl_str = "";
+						if (g_settings.streaming_vlc10 > 1)
+							mrl_str += "file://";
+							if (filename[namepos + 6] != '/')
+								mrl_str += "/";
+						mrl_str += _filelist[0].Name.substr(namepos + 6);
 						char *tmp = curl_escape (mrl_str.c_str (), 0);
 						strncpy (mrl, tmp, sizeof (mrl) - 1);
 						curl_free (tmp);

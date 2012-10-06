@@ -567,7 +567,8 @@ bool CFileBrowser::readDir_vlc(const std::string & dirname, CFileList* flist)
 				{
 					CFile file;
 					ptr = xmlGetAttribute(element, (char *) "type");
-					if (strcmp(ptr, "directory")==0)
+
+					if ((strcmp(ptr, "directory") == 0) || (strcmp(ptr, "dir") == 0))
 						file.Mode = S_IFDIR + 0777 ;
 					else
 						file.Mode = S_IFREG + 0777 ;
