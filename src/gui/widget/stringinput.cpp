@@ -181,22 +181,6 @@ void CStringInput::NormalKeyPressed(const neutrino_msg_t key)
 	}
 }
 
-void CStringInput::keyBackspacePressed(void)
-{
-	if (selected > 0)
-	{
-		selected--;
-		for (int i = selected; i < size - 1; i++)
-		{
-			value[i] = value[i + 1];
-			paintChar(i);
-		}
-		value[size - 1] = ' ';
-		paintChar(size - 1);
-	}
-}
-
-
 void CStringInput::keyRedPressed()
 {
 	if (index(validchars, ' ') != NULL)
@@ -365,10 +349,6 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		else if (CRCInput::getUnicodeValue(msg) != -1)
 		{
 			NormalKeyPressed(msg);
-		}
-		else if (msg==CRCInput::RC_backspace)
-		{
-			keyBackspacePressed();
 		}
 		else if (msg==CRCInput::RC_red)
 		{
@@ -626,12 +606,6 @@ void CStringInputSMS::NormalKeyPressed(const neutrino_msg_t key)
 		keyRedPressed();   /* to lower, paintChar */
 		keyRightPressed(); /* last_digit = -1, move to next position */
 	}
-}
-
-void CStringInputSMS::keyBackspacePressed(void)
-{
-	last_digit = -1;
-	CStringInput::keyBackspacePressed();
 }
 
 void CStringInputSMS::keyRedPressed()		// switch between lower & uppercase

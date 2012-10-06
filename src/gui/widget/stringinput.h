@@ -72,7 +72,6 @@ class CStringInput : public CMenuTarget
 		virtual void paintChar(int pos);
 
 		virtual void NormalKeyPressed(const neutrino_msg_t key);
-		virtual void keyBackspacePressed(void);
 		virtual void keyRedPressed();
 		virtual void keyYellowPressed();
 		virtual void keyBluePressed();
@@ -107,7 +106,6 @@ class CStringInputSMS : public CStringInput
 		int last_digit;
 
 		virtual void NormalKeyPressed(const neutrino_msg_t key);
-		virtual void keyBackspacePressed(void);
 		virtual void keyRedPressed();
 		virtual void keyYellowPressed();
 		virtual void keyUpPressed();
