@@ -7783,6 +7783,7 @@ void sectionsd_main_thread(void */*data*/)
 	struct sched_param parm;
 
 	printf("$Id: sectionsd.cpp,v 1.305 2009/07/30 12:41:39 seife Exp $\n");
+	
 	/* "export NO_SLOW_ADDEVENT=true" to disable this */
 	slow_addevent = (getenv("NO_SLOW_ADDEVENT") == NULL);
 	if (slow_addevent)
@@ -7835,8 +7836,7 @@ void sectionsd_main_thread(void */*data*/)
 		fprintf(stderr, "[sectionsd] failed to prepare basic server\n");
 		return;
 	}
-	// from here on forked
-	//signal(SIGHUP, signalHandler);
+	
 	eventServer = new CEventServer;
 
 	// time-Thread starten
@@ -7952,8 +7952,7 @@ void sectionsd_main_thread(void */*data*/)
 		sched_yield();
 		/* 10 ms is the minimal timeslice anyway (HZ = 100), so let's
 		wait 20 ms at least to lower the CPU load */
-		//usleep(20000);
-		usleep(0);
+		usleep(20000);
 	}
 
 	printf("[sectionsd] stopping...\n");

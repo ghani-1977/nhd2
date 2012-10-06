@@ -125,8 +125,7 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 	unsigned char buf[1023+3];
 
 	if(dmxUTC == NULL) {
-		int demux_index = 0; //live_channel? live_channel->getDemuxIndex() : 0
-		dmxUTC = new cDemux( demux_index );
+		dmxUTC = new cDemux();
 		dmxUTC->Open(DMX_PSI_CHANNEL, 1026, live_channel? live_channel->getFeIndex() : 0 );
 	}
 
