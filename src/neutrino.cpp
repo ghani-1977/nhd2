@@ -894,7 +894,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda1/movie" ).c_str() );
 	
 	// not in GUI
-	//g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "http://podfiles.zdf.de/podcast/zdf_podcasts/110924_hjo_p.mp4?2011-09-24+21-25");
 	//streaming (server)
 	g_settings.streaming_type = configfile.getInt32( "streaming_type", 0 );
 	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "192.168.1.234");
@@ -1011,8 +1010,24 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_channelList_addremind = configfile.getInt32( "key_channelList_addremind", CRCInput::RC_yellow );
 	g_settings.key_list_start = configfile.getInt32( "key_list_start", CRCInput::RC_nokey );
 	g_settings.key_list_end = configfile.getInt32( "key_list_end", CRCInput::RC_nokey );
-	g_settings.menu_left_exit = configfile.getInt32( "menu_left_exit", 0 );
+	
+	g_settings.key_bouquet_up = configfile.getInt32( "key_bouquet_up",  CRCInput::RC_right);
+	g_settings.key_bouquet_down = configfile.getInt32( "key_bouquet_down",  CRCInput::RC_left);
 
+	g_settings.key_quickzap_up = configfile.getInt32( "key_quickzap_up",  CRCInput::RC_up );
+	g_settings.key_quickzap_down = configfile.getInt32( "key_quickzap_down",  CRCInput::RC_down );
+	g_settings.key_subchannel_up = configfile.getInt32( "key_subchannel_up",  CRCInput::RC_right );
+	g_settings.key_subchannel_down = configfile.getInt32( "key_subchannel_down",  CRCInput::RC_left );
+	g_settings.key_zaphistory = configfile.getInt32( "key_zaphistory",  CRCInput::RC_home );	
+	g_settings.key_lastchannel = configfile.getInt32( "key_lastchannel",  CRCInput::RC_recall );
+	
+	// pip keys
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
+	g_settings.key_pip = configfile.getInt32("key_pip", CRCInput::RC_pip);
+	g_settings.key_pip_subchannel = configfile.getInt32("key_pip_subchannel", CRCInput::RC_pipsubch);
+//#endif
+
+	// mpkeys
 	g_settings.mpkey_rewind = configfile.getInt32( "mpkey.rewind", CRCInput::RC_rewind );
 	g_settings.mpkey_forward = configfile.getInt32( "mpkey.forward", CRCInput::RC_forward );
 	g_settings.mpkey_pause = configfile.getInt32( "mpkey.pause", CRCInput::RC_pause );
@@ -1021,29 +1036,18 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.mpkey_audio = configfile.getInt32( "mpkey.audio", CRCInput::RC_green );
 	g_settings.mpkey_time = configfile.getInt32( "mpkey.time", CRCInput::RC_setup );
 	g_settings.mpkey_bookmark = configfile.getInt32( "mpkey.bookmark", CRCInput::RC_blue );
-	g_settings.key_timeshift = configfile.getInt32( "key_timeshift", CRCInput::RC_pause );
-	g_settings.key_unlock = configfile.getInt32( "key_unlock", CRCInput::RC_setup );
-
-	g_settings.key_bouquet_up = configfile.getInt32( "key_bouquet_up",  CRCInput::RC_right);
-	g_settings.key_bouquet_down = configfile.getInt32( "key_bouquet_down",  CRCInput::RC_left);
-
-	g_settings.key_quickzap_up = configfile.getInt32( "key_quickzap_up",  CRCInput::RC_up );
-	g_settings.key_quickzap_down = configfile.getInt32( "key_quickzap_down",  CRCInput::RC_down );
-	g_settings.key_subchannel_up = configfile.getInt32( "key_subchannel_up",  CRCInput::RC_right );
-	g_settings.key_subchannel_down = configfile.getInt32( "key_subchannel_down",  CRCInput::RC_left );
-	g_settings.key_zaphistory = configfile.getInt32( "key_zaphistory",  CRCInput::RC_home );
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
-	g_settings.key_lastchannel = configfile.getInt32( "key_lastchannel",  CRCInput::RC_0 );
-#else	
-	g_settings.key_lastchannel = configfile.getInt32( "key_lastchannel",  CRCInput::RC_recall );
-#endif	
+	g_settings.key_timeshift = configfile.getInt32( "key_timeshift", CRCInput::RC_pause );	
 	
-	//pip
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
-	g_settings.key_pip = configfile.getInt32("key_pip", CRCInput::RC_pip);
-	g_settings.key_pip_subchannel = configfile.getInt32("key_pip_subchannel", CRCInput::RC_pipsubch);
-#endif	
+	// misc keys
+	g_settings.key_unlock = configfile.getInt32( "key_unlock", CRCInput::RC_setup );
+	g_settings.menu_left_exit = configfile.getInt32( "menu_left_exit", 0 );
 
+	// media keys
+	g_settings.key_video = configfile.getInt32( "key_video", CRCInput::RC_video );
+	g_settings.key_music = configfile.getInt32( "key_music", CRCInput::RC_music );
+	g_settings.key_picture = configfile.getInt32( "key_picture", CRCInput::RC_picture );
+	g_settings.key_timelist = configfile.getInt32( "key_timelist", CRCInput::RC_bookmark );
+	g_settings.key_net = configfile.getInt32( "key_net", CRCInput::RC_net );
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
@@ -1482,8 +1486,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_list_start", g_settings.key_list_start );
 	configfile.setInt32( "key_list_end", g_settings.key_list_end );
 	
-	configfile.setInt32( "menu_left_exit", g_settings.menu_left_exit );
-
+	// mp keys
 	configfile.setInt32( "mpkey.rewind", g_settings.mpkey_rewind );
 	configfile.setInt32( "mpkey.forward", g_settings.mpkey_forward );
 	configfile.setInt32( "mpkey.pause", g_settings.mpkey_pause );
@@ -1492,10 +1495,18 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "mpkey.audio", g_settings.mpkey_audio );
 	configfile.setInt32( "mpkey.time", g_settings.mpkey_time );
 	configfile.setInt32( "mpkey.bookmark", g_settings.mpkey_bookmark );
-
 	configfile.setInt32( "key_timeshift", g_settings.key_timeshift );
-
+	
+	// misc keys
+	configfile.setInt32( "menu_left_exit", g_settings.menu_left_exit );
 	configfile.setInt32( "key_unlock", g_settings.key_unlock );
+	
+	// media keys
+	configfile.setInt32( "key_video", g_settings.key_video );
+	configfile.setInt32( "key_music", g_settings.key_music );
+	configfile.setInt32( "key_picture", g_settings.key_picture );
+	configfile.setInt32( "key_timelist", g_settings.key_timelist );
+	configfile.setInt32( "key_net", g_settings.key_net );
 
         // USERMENU
         char txt1[81];
@@ -2889,17 +2900,15 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				AudioMute(current_muted, true);
 
 				StartSubtitles();
-			}
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			
-			else if( msg == CRCInput::RC_bookmark) 
+			}			
+			else if( (msg == CRCInput::RC_bookmark) || (msg == (neutrino_msg_t)g_settings.key_timelist)) 
 			{
 				StopSubtitles();
 				
 				Timerlist->exec(NULL, "");
 				
 				StartSubtitles();
-			}
-#endif			
+			}		
 			else if( msg == CRCInput::RC_setup ) 
 			{
 				StopSubtitles();
@@ -3102,7 +3111,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
 				StartSubtitles();
 			}
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE)			
 			else if( msg == CRCInput::RC_f1 ) 
 			{
 				StopSubtitles();
@@ -3127,9 +3136,9 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				showUserMenu(SNeutrinoSettings::BUTTON_F4);
 				StartSubtitles();
 			}
-#endif
+#endif			
 			//music player
-			else if( msg == CRCInput::RC_music) 
+			else if( (msg == CRCInput::RC_music) || (msg == (neutrino_msg_t)g_settings.key_music) ) 
 			{
 				StopSubtitles();
 
@@ -3154,7 +3163,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}			
-			else if(msg == CRCInput::RC_net) 	// internet radio
+			else if( (msg == CRCInput::RC_net) || (msg == (neutrino_msg_t)g_settings.key_net) ) 	// internet radio
 			{
 				StopSubtitles();
 
@@ -3163,7 +3172,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}			
-			else if( msg == CRCInput::RC_video)	// movie browser (recorded files)
+			else if( (msg == CRCInput::RC_video) || (msg == (neutrino_msg_t)g_settings.key_video) )	// movie browser (recorded files)
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "MoviePlayer";
@@ -3189,7 +3198,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				nGLCD::unlockChannel();
 #endif				
 			}		
-			else if(msg == CRCInput::RC_picture) 	// picture viewer
+			else if( (msg == CRCInput::RC_picture) || (msg == (neutrino_msg_t)g_settings.key_picture) ) 	// picture viewer
 			{
 				StopSubtitles();
 				
@@ -3814,9 +3823,9 @@ _repeat:
 			char * recDir = ((CTimerd::RecordingInfo*)data)->recordingDir;
 
 			// ether-wake
-			for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+			for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 			{
-				if (strcmp(g_settings.network_nfs_local_dir[i],recDir) == 0) 
+				if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
 				{
 					dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: waking up %s (%s)\n",g_settings.network_nfs_ip[i].c_str(),recDir);
 					
@@ -3839,17 +3848,8 @@ _repeat:
 			//wakeup hdd
 			if(has_hdd) 
 			{
-				std::string str = "sda1";
-				
-				//struct statfs s;
-				//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
-				//{
-					//std::string str1 = g_settings.network_nfs_recordingdir; // /media/sda1/record
-					//str = str1.substr(strlen("/media/"), str.length());
-					//str = str1.substr(7, 4);
-				//}
 				char cmd[100];	
-				sprintf(cmd, "(rm /media/%s/.wakeup; touch /media/%s/.wakeup; sync) > /dev/null  2> /dev/null &", (char *)str.c_str(), (char *)str.c_str() );
+				sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
 				system(cmd);
 			}
 		}
@@ -4166,8 +4166,6 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 
 			// stop all deamons threads
 			stop_daemons(true);
-			
-			system("/etc/init.d/rcK");
 
 			// check for events
 			neutrino_msg_t      msg;
@@ -4236,8 +4234,6 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 				delete frameBuffer;
 
 			stop_daemons();
-			
-			system("/etc/init.d/rcK");
 
 			dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
 
@@ -4530,9 +4526,9 @@ void CNeutrinoApp::tvMode( bool rezap )
 	}
 	else if( mode == mode_standby ) 
 	{
-#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)	  
+//#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-#endif		
+//#endif		
 		if(audioDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
 	}
@@ -4660,18 +4656,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		{
 			g_Zapit->setStandby(true);
 			
-			std::string str = "sda1";
-			
-			//struct statfs s;
-			//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
-			//{
-				//std::string str1 = g_settings.network_nfs_recordingdir;
-				//str = str1.substr(7, 4);
-				//std::string str = str1.substr(str1.length() - 4, str1.length());
-			//}
-			
 			char cmd[100];	
-			sprintf(cmd, "hdparm -y /dev/%s > /dev/null 2>/dev/null", (char *)str.c_str() );
+			sprintf(cmd, "hdparm -y /dev/sda1 > /dev/null 2>/dev/null");
 			system(cmd);
 		} 
 		else
@@ -4699,30 +4685,18 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		mode = mode_standby;
 
 		frameBuffer->setActive(false);
-
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// set vfd in std modus
-		//system("/bin/vdstandby -a");
-		//system("fp_control -p");
 			
 		// set fan off
 #if !ENABLE_LCD		
 		CVFD::getInstance()->setFan(false);
 #endif		
-//#endif
 	} 
 	else 
-	{
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// set vfd in std modus
-		//system("/bin/vdstandby -d");
-		//system("fp_control -d");
-			
+	{	
 		// set fan on
 #if !ENABLE_LCD		
 		CVFD::getInstance()->setFan(true);
 #endif		
-//#endif
 
 		// set fb active
 		frameBuffer->setActive(true);
@@ -4812,7 +4786,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 	}
 	else if( mode == mode_standby ) 
 	{
-#if 0	  
+#if 1	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 #endif		
 		if(videoDecoder)
@@ -5328,8 +5302,8 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		hintBox->paint();
 		
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		system("/bin/cubefpctl --setgmtoffset");
-		system("/bin/cubefpctl --syncfptime");
+		//system("/bin/cubefpctl --setgmtoffset");
+		//system("/bin/cubefpctl --syncfptime");
 #endif		
 		
 		sleep(2);
