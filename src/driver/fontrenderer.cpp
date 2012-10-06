@@ -189,7 +189,7 @@ const char * const FBFontRenderClass::AddFont(const char * const filename, const
 	n->style    = strdup(make_italics ? "Italic" : face->style_name);
 	FT_Done_Face(face);
 	n->next=font;
-	dprintf(DEBUG_INFO, "[FONT] adding font %s... family %s, style %s ok\n", filename, n->family, n->style);
+	dprintf(DEBUG_DEBUG, "[FONT] adding font %s... family %s, style %s ok\n", filename, n->family, n->style);
 	font=n;
 	
 	return n->style;
@@ -363,12 +363,6 @@ int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on 
 	}
 	else
 		unicode_value = (unsigned char)(*text);
-	
-	//TEST
-	//std::vector<unsigned long> uc_shape;
-
-	// character -> glyph conversion
-	//shape(uc_shape, text);
 
 	return unicode_value;
 }
