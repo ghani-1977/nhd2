@@ -311,8 +311,13 @@ struct SNeutrinoSettings
 	int mpkey_bookmark;
 
 	int key_timeshift;
-	
 	int key_unlock;
+	
+	int key_video;
+	int key_music;
+	int key_picture;
+	int key_timelist;
+	int key_net;
 	// END KEYBINDING
 
 	// USERMENU
@@ -350,10 +355,10 @@ struct SNeutrinoSettings
                 ITEM_PLUGIN = 14,
                 ITEM_VTXT = 15,
                 ITEM_GAME = 16,
+                ITEM_OPKG = 17,
 #if ENABLE_GRAPHLCD                
-                ITEM_GLCD = 17,
+                ITEM_GLCD = 18,
 #endif 
-		ITEM_OPKG = 18,
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	
