@@ -120,6 +120,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 			for (pos2 = pos + 5; pos2 < pos + descriptors_loop_length + 5; pos2 += buffer[pos2 + 1] + 2) 
 			{
 				//printf("[sdt] descriptor %X\n", buffer[pos2]);
+				
 				switch (buffer[pos2]) 
 				{
 					case 0x0A:
@@ -224,7 +225,6 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 			}
 		}
 	} while(sectotal < buffer[7]);
-	//while (filter[4]++ != buffer[7]);
 
 	delete dmx;
 
