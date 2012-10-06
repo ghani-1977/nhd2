@@ -1234,7 +1234,7 @@ streaming.write_error_open The recording was aborted,\nbecause the target file c
 streamingmenu.352x288 352x288
 streamingmenu.352x576 352x576
 streamingmenu.480x576 480x576
-streamingmenu.704.288 704x288
+streamingmenu.704x288 704x288
 streamingmenu.704x576 704x576
 streamingmenu.head Movieplayer Settings
 streamingmenu.mpeg1 MPEG1
@@ -1254,7 +1254,10 @@ streamingmenu.streaming_transcode_audio Transcode audio (DVD/VCD/MPG)
 streamingmenu.streaming_transcode_video_codec MPEG video codec
 streamingmenu.streaming_type Streamingserver
 streamingmenu.streaming_videorate Datarate Video
-streamingmenu.streaming_vlc10 Use VLC 1.x
+streamingmenu.streaming_vlc10 Use VLC version
+streamingmenu.streaming_vlcver08 0.x
+streamingmenu.streaming_vlcver10 1.x
+streamingmenu.streaming_vlcver20 2.x
 streamingserver.noconnect No connection to streamingserver.\nRecording canceled.
 stringinput.caps caps / no caps
 stringinput.clear clear all
@@ -1362,7 +1365,7 @@ usermenu.button_f4 Benutzermenü F4
 usermenu.head User menu
 usermenu.item_bar ---- Border ----
 usermenu.item_epg_misc EPG functions
-usermenu.item_none Nothing
+usermenu.item_none 
 usermenu.item_vtxt Videotext
 usermenu.item_plugins Plugins
 usermenu.name Name
@@ -1426,7 +1429,6 @@ osd.roundedcornersoff angular
 osd.roundedcornerson rounded
 extra.volume_pos Volumebar
 progressbar.color Progressbar Color
-movieplayer.vlcplayback Vlc Player
 miscsettings.reset Factory reset
 videosettings.wss Wide Screen Auto
 zapitsetup.lastuse from last Channel
@@ -1531,4 +1533,10 @@ miscsettings.restore Settings restore
 miscsettings.restorewarn Do you want to restore the previous settings?
 
 opkgmanager.head OPKG Manager
+
+keybinding.key_video Moviebrowser
+keybinding.key_music Audioplayer
+keybinding.key_picture PictureViewer
+keybinding.key_timelist Timelist
+keybinding.key_net Internet Radio
 

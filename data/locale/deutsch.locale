@@ -1255,7 +1255,10 @@ streamingmenu.streaming_transcode_audio Transkod. Audio (dvd/vcd/mpg)
 streamingmenu.streaming_transcode_video_codec MPEG Video Codec
 streamingmenu.streaming_type Streamingserver
 streamingmenu.streaming_videorate Datenrate Video
-streamingmenu.streaming_vlc10 Nutze VLC 1.x
+streamingmenu.streaming_vlc10 Nutze VLC Version
+streamingmenu.streaming_vlcver08 0.x
+streamingmenu.streaming_vlcver10 1.x
+streamingmenu.streaming_vlcver20 2.x
 streamingserver.noconnect Keine Verbindung zum Streamingserver.\nAufnahme wird abgebrochen.
 stringinput.caps Groß-/Kleinbuchstaben
 stringinput.clear Alles löschen
@@ -1428,7 +1431,6 @@ osd.roundedcornersoff eckig
 osd.roundedcornerson abgerundet
 extra.volume_pos Lautstärkeanzeige
 progressbar.color Fortschrittsbalken Farbe
-movieplayer.vlcplayback Vlc Player
 miscsettings.reset Werkseinstellungen
 videosettings.wss Wide Screen Auto
 zapitsetup.lastuse Kanal beim Runterfahren speichern
@@ -1533,4 +1535,10 @@ miscsettings.restore Image Einstellungen: Wiederherstellen
 miscsettings.restorewarn Alle Settings werden ersetzt?
 
 opkgmanager.head OPKG Manager
+
+keybinding.key_video Moviebrowser
+keybinding.key_music Audioplayer
+keybinding.key_picture PictureViewer
+keybinding.key_timelist Timelist
+keybinding.key_net Internet Radio
 
