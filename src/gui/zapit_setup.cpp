@@ -33,8 +33,10 @@
 #include <neutrino.h>
 
 #include <driver/screen_max.h>
+#include "gui/bouquetlist.h"
 
 
+extern CBouquetList * bouquetList;
 //extern Zapit_config zapitCfg;	//defined in neutrino.cpp
 //void setZapitConfig(Zapit_config * Cfg);
 //void getZapitConfig(Zapit_config *Cfg);
@@ -234,7 +236,7 @@ void CSelectChannelWidget::InitZapitChannelHelper(CZapitClient::channelsMode mod
 		{
 			CZapitChannel * channel = channels[j];
 			char cChannelId[60] = {0};
-			snprintf(cChannelId,sizeof(cChannelId),"ZC%c:%d|%llx#",(mode==CZapitClient::MODE_TV)?'T':'R',channel->number, channel->channel_id);
+			snprintf(cChannelId, sizeof(cChannelId),"ZC%c:%d|%llx#",(mode==CZapitClient::MODE_TV)?'T':'R',channel->number, channel->channel_id);
 
 			CMenuForwarderNonLocalized * chan_item = new CMenuForwarderNonLocalized(channel->getName().c_str(), true, NULL, this, (std::string(cChannelId) + channel->getName()).c_str(), CRCInput::RC_nokey, channel->scrambled ?NEUTRINO_ICON_SCRAMBLED:NULL );
 			mwtv->addItem(chan_item);

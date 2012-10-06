@@ -396,7 +396,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		}
 		#endif
 		
-		//TEST
+		// epg reload
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_reload)
 		{
 			hide();
