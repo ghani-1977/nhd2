@@ -41,12 +41,14 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/time.h>
-//#define RCDEBUG
+
 #include <utime.h>
 #include <stdlib.h>
+
 #ifdef KEYBOARD_INSTEAD_OF_REMOTE_CONTROL
 #include <termio.h>
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
+
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -84,7 +86,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	
 	/* if keymap.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
-		printf("%s not found\n", fileName);
+		printf("CRCInput::loadKeyMap: %s not found, using default\n", fileName);
 	
 	key_0 = configfile.getInt32("key_0", KEY_0);
 	key_1 = configfile.getInt32("key_1", KEY_1);
@@ -96,8 +98,6 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_7 = configfile.getInt32("key_7", KEY_7);
 	key_8 = configfile.getInt32("key_8", KEY_8);
 	key_9 = configfile.getInt32("key_9", KEY_9);
-			
-	key_backspace = configfile.getInt32("key_backspace", KEY_BACKSPACE);
 			
 	key_up = configfile.getInt32("key_up", KEY_UP);
 	key_left = configfile.getInt32("key_left", KEY_LEFT);
@@ -219,7 +219,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_f3 = configfile.getInt32("key_f3", 0x3D);
 	key_f4 = configfile.getInt32("key_f4", 0x3E);
 	
-	key_aspect = configfile.getInt32("key_aspect", 0x40);	
+	//key_aspect = configfile.getInt32("key_aspect", 0x40);	
 			
 	key_vfdup = configfile.getInt32("key_vfdup", VFD_UP);
 	key_vfddown = configfile.getInt32("key_vfddown", VFD_DOWN);
@@ -247,8 +247,6 @@ bool CRCInput::saveKeyMap(const char * const fileName)
 	configfile.setInt32("key_7", key_7);
 	configfile.setInt32("key_8", key_8);
 	configfile.setInt32("key_9", key_9);
-			
-	configfile.setInt32("key_backspace", key_backspace);
 			
 	configfile.setInt32("key_up", key_up);
 	configfile.setInt32("key_left", key_left);
@@ -349,7 +347,7 @@ bool CRCInput::saveKeyMap(const char * const fileName)
 
 CRCInput::CRCInput() : configfile('\t')
 {
-	timerid= 1;
+	timerid = 1;
 
 	// pipe for internal event-queue
 	if (pipe(fd_pipe_high_priority) < 0)
@@ -437,14 +435,6 @@ void CRCInput::open()
 #else
 	fd_keyb = 0;
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
-
-	 /*::open("/dev/dbox/rc0", O_RDONLY);
-	if (fd_keyb<0)
-	{
-		perror("/dev/stdin");
-		exit(-1);
-	}
-	*/
 	 
 #ifdef KEYBOARD_INSTEAD_OF_REMOTE_CONTROL
 	::fcntl(fd_keyb, F_SETFL, O_NONBLOCK);
@@ -465,8 +455,6 @@ void CRCInput::open()
 
 #else
 	//fcntl(fd_keyb, F_SETFL, O_NONBLOCK );
-
-	//+++++++++++++++++++++++++++++++++++++++
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
 	
 	calculateMaxFd();
@@ -474,6 +462,7 @@ void CRCInput::open()
 
 void CRCInput::close()
 {
+	// fd_rc
 	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++) 
 	{
 		if (fd_rc[i] != -1) 
@@ -482,6 +471,8 @@ void CRCInput::close()
 			fd_rc[i] = -1;
 		}
 	}
+	
+	// fd_kb
 #ifdef KEYBOARD_INSTEAD_OF_REMOTE_CONTROL
 	if (saved_orig_termio)
 	{
@@ -489,13 +480,6 @@ void CRCInput::close()
 				
 		dprintf(DEBUG_DEBUG, "Original terminal settings restored.\n");	
 	}
-#else
-/*
-	if(fd_keyb)
-	{
-		::close(fd_keyb);
-	}
-*/
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
 
 	calculateMaxFd();
@@ -671,7 +655,6 @@ int CRCInput::checkTimers()
 	gettimeofday( &tv, NULL );
 	unsigned long long timeNow = (unsigned long long) tv.tv_usec + (unsigned long long)((unsigned long long) tv.tv_sec * (unsigned long long) 1000000);
 
-
 	std::vector<timer>::iterator e;
 	for ( e= timers.begin(); e!= timers.end(); ++e )
 	{
@@ -706,8 +689,6 @@ int CRCInput::checkTimers()
 			break;
 		}
 	}
-	//else
-		//printf("skipped timer %d %llx %llx\n",e->id,e->times_out, timeNow );
 
 	dprintf(DEBUG_DEBUG, "checkTimers: return %d\n", _id);
 
@@ -772,7 +753,6 @@ void CRCInput::getMsg_ms(neutrino_msg_t * msg, neutrino_msg_data_t * data, int T
 	getMsg_us(msg, data, (unsigned long long) Timeout * 1000, bAllowRepeatLR);
 }
 
-#define ENABLE_REPEAT_CHECK
 void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsigned long long Timeout, bool bAllowRepeatLR)
 {
 	static unsigned long long last_keypress = 0ULL;
@@ -987,6 +967,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				default:
 					trkey = RC_nokey;
 			}
+			
 			if (trkey != RC_nokey)
 			{
 				*msg = trkey;
@@ -1028,7 +1009,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				bool dont_delete_p = false;
 
 				unsigned char* p;
-				p= new unsigned char[ emsg.dataSize + 1 ];
+				p = new unsigned char[ emsg.dataSize + 1 ];
 
 				if ( p!=NULL )
 				{
@@ -1111,15 +1092,12 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 									gettimeofday( &tv, NULL );
 									long long timeOld = (long long) tv.tv_usec + (long long)((long long) tv.tv_sec * (long long) 1000000);
 
-									//printf("[neutrino] event TIMESET from SECTIONSD %x %x\n", emsg.eventID, *(unsigned*) p);
-									//g_Sectionsd->registerEvent(CSectionsdClient::EVT_TIMESET, 222, NEUTRINO_UDS_NAME);
-
 									stime((time_t*) p);
 
 									gettimeofday( &tv, NULL );
 									long long timeNew = (long long) tv.tv_usec + (long long)((long long) tv.tv_sec * (long long) 1000000);
 
-									delete[] p;//new [] delete []
+									delete[] p;
 									p= new unsigned char[ sizeof(long long) ];
 									*(long long*) p = timeNew - timeOld;
 
@@ -1138,7 +1116,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								break;
 								
 							case CSectionsdClient::EVT_GOT_CN_EPG:
-								//printf("CRCInput::getMsg_us: CSectionsdClient::EVT_GOT_CN_EPG\n");
 								*msg          = NeutrinoMessages::EVT_CURRENTNEXT_EPG;
 								*data         = (neutrino_msg_data_t) p;
 								dont_delete_p = true;
@@ -1310,6 +1287,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 							default:
 								printf("CRCInput::getMsg_us: event INITID_ZAPIT - unknown eventID 0x%x\n",  emsg.eventID );
 						}
+						
 						if (((*msg) >= CRCInput::RC_WithData) && ((*msg) < CRCInput::RC_WithData + 0x10000000))
 						{
 							*data         = (neutrino_msg_data_t) p;
@@ -1436,7 +1414,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 					
 					if ( !dont_delete_p )
 					{
-						delete[] p;//new [] delete []
+						delete[] p;
 						p= NULL;
 					}
 				}
@@ -1467,7 +1445,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				if(ret != sizeof(t_input_event)) 
 					continue;
 								
-				dprintf(DEBUG_NORMAL, "CRCInput::getMsg_us: key: 0x%X value %d, translate: 0x%X -%s-\n", ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str());				
+				dprintf(DEBUG_NORMAL, "CRCInput::getMsg_us: key: 0x%X value %d, translate: 0x%X -%s-\n", ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str() );				
 
 				uint32_t trkey = translate(ev.code, i);
 
@@ -1635,7 +1613,6 @@ void CRCInput::postMsg(const neutrino_msg_t msg, const neutrino_msg_data_t data,
 	else
 		write(fd_pipe_low_priority[1], &buf, sizeof(buf));
 }
-
 
 void CRCInput::clearRCMsg()
 {
@@ -1939,7 +1916,6 @@ int CRCInput::translate(int code, int num)
 	else if (code == key_recall) return RC_recall;
 	else if (code == key_info) return RC_info;
 	else if (code == key_bookmark) return RC_bookmark;
-	else if (code == key_backspace) return RC_backspace;
 	
 	/* colored */
 	else if (code == key_red) return RC_red;

@@ -41,7 +41,6 @@
 #include <configfile.h>
 
 
-/*
 #ifndef KEY_OK
 #define KEY_OK           0x160
 #endif
@@ -82,7 +81,6 @@
 #ifndef KEY_GAMES
 #define KEY_GAMES        0x1a1
 #endif
-*/
 
 /* this values are token from cuberevo3000hd */
 #ifndef KEY_PIP	
@@ -181,8 +179,8 @@ class CRCInput
 		int         	fd_rc[NUMBER_OF_EVENT_DEVICES];
 		int		fd_keyb;
 		int		fd_event;
-
 		int		fd_max;
+		
 		__u16 rc_last_key;
 
 		void open();
@@ -216,8 +214,6 @@ class CRCInput
 			RC_8		= KEY_8,	    /* /include/linux/input.h: #define KEY_8			  0x9   */
 			RC_9		= KEY_9,	    /* /include/linux/input.h: #define KEY_9			 0xa   */
 			
-			RC_backspace	= KEY_BACKSPACE,    /* /include/linux/input.h: #define KEY_BACKSPACE		 0xe   */
-			
 			RC_up		= KEY_UP,	    /* /include/linux/input.h: #define KEY_UP			0x67   */
 			RC_left		= KEY_LEFT,	    /* /include/linux/input.h: #define KEY_LEFT			0x69   */
 			RC_right	= KEY_RIGHT,	    /* /include/linux/input.h: #define KEY_RIGHT		0x6a   */
@@ -231,7 +227,6 @@ class CRCInput
 			RC_standby	= KEY_POWER,	    /* /include/linux/input.h: #define KEY_POWER		0x74   */			
 			
 			RC_home         = KEY_HOME,         /* /include/linux/input.h: #define KEY_HOME                	0x66   */
-
 			RC_setup	= KEY_MENU,	    /* /include/linux/input.h: #define KEY_SETUP		0x8d   */
 			
 			RC_page_up	= KEY_PAGEUP,	    /* /include/linux/input.h: #define KEY_PAGEUP		0x68   */
@@ -321,8 +316,6 @@ class CRCInput
 		neutrino_msg_t key_8;
 		neutrino_msg_t key_9;
 			
-		neutrino_msg_t key_backspace;
-			
 		neutrino_msg_t key_up;
 		neutrino_msg_t key_left;
 		neutrino_msg_t key_right;
@@ -397,7 +390,8 @@ class CRCInput
 		neutrino_msg_t key_f2;
 		neutrino_msg_t key_f3;
 		neutrino_msg_t key_f4;
-		neutrino_msg_t key_aspect;
+		
+		//neutrino_msg_t key_aspect;
 			
 		neutrino_msg_t key_vfdup;
 		neutrino_msg_t key_vfddown;
