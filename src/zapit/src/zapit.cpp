@@ -672,44 +672,6 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	return true;
 }
 
-#if 0
-static bool parse_record_pat_pmt(CZapitChannel * thischannel)
-{
-	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
-	
-	// get program map table pid from program association table
-	if (thischannel->getPmtPid() == 0) 
-	{
-		printf("[zapit] no pmt pid, going to parse pat\n");
-		
-		if (parse_pat( thischannel, thischannel->getFeIndex() ) < 0) 
-		{
-			printf("[zapit] pat parsing failed\n");
-			return false;
-		}
-	}
-
-	/* parse program map table and store pids */
-	if (parse_pmt( thischannel, thischannel->getFeIndex() ) < 0) 
-	{
-		printf("[zapit] pmt parsing failed\n");
-		
-		if (parse_pat( thischannel, thischannel->getFeIndex() ) < 0) 
-		{
-			printf("pat parsing failed\n");
-			return false;
-		}
-		else if (parse_pmt( thischannel, thischannel->getFeIndex() ) < 0) 
-		{
-			printf("[zapit] pmt parsing failed\n");
-			return false;
-		}
-	}
-	
-	return true;
-}
-#endif
-
 static void restore_channel_pids(CZapitChannel * thischannel)
 {
 	audio_map_it = audio_map.find(live_channel_id);
