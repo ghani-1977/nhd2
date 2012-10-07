@@ -35,7 +35,6 @@
 #define NIT_SIZE 1024
 
 
-
 void * nit_thread(void * data)
 {
 	printf("[nit.cpp] nit_thread: starting... tid %ld\n", syscall(__NR_gettid));
