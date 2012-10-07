@@ -165,9 +165,7 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
 	// free picviewer mem
 	m_viewer->Cleanup();
 
-	// Restore previous background
-	//bool usedBackground = frameBuffer->getuseBackground();
-		
+	// Restore previous background	
 	if (usedBackground) 
 	{
 		frameBuffer->restoreBackgroundImage();
