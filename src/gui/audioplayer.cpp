@@ -2267,42 +2267,11 @@ void CAudioPlayerGui::updateMetaData()
 		m_metainfo = meta.type_info + info.str();
 		updateMeta = true;
 
-		if (!meta.artist.empty()  &&
-				meta.artist != m_curr_audiofile.MetaData.artist)
+		if (!meta.artist.empty()  && meta.artist != m_curr_audiofile.MetaData.artist)
 		{
 			m_curr_audiofile.MetaData.artist = meta.artist;
 			updateScreen = true;
 			updateLcd = true;
-			
-			//TEST
-			//TEST: show artist/album background pic
-			#if 0
-			printf("%s\n", (char *)m_curr_audiofile.MetaData.artist.c_str());
-			char TESTfilename[512]; // UTF-8
-			
-			if (!m_curr_audiofile.MetaData.artist.empty())
-			{
-				strcpy(&(TESTfilename[strlen(TESTfilename)]), m_curr_audiofile.MetaData.artist.c_str());
-				
-				char * p_act = &(TESTfilename[strlen(TESTfilename)]);
-				do {
-					p_act +=  strcspn(p_act, "/ \"%&-\t`'~<>!,:;?^�$\\=*#@�|");
-
-					if (*p_act) 
-					{
-						*p_act++ = '_';
-					}
-				} while (*p_act);
-					
-				std::string artist_pic;
-				
-				sprintf((char *)artist_pic.c_str(), "/var/share/music/%s.jpg", (char *)TESTfilename);
-				
-				if( !artist_pic.empty() )
-					m_frameBuffer->loadBackgroundPic(artist_pic.c_str());
-			}
-			#endif
-			//
 		}
 		if (!meta.title.empty() &&
 				meta.title != m_curr_audiofile.MetaData.title)
