@@ -373,7 +373,7 @@ void CScanSetup::showScanService()
 			if(sit->second.type == DVB_S)
 			{
 				satSelect->addOption(sit->second.name.c_str());
-				dprintf(DEBUG_DEBUG, "[neutrino] fe(%d) Adding sat menu for %s position %d\n", sit->second.feindex, sit->second.name.c_str(), sit->first);
+				dprintf(DEBUG_DEBUG, "[neutrino] fe(%d) Adding sat menu for %s position %d\n", feindex, sit->second.name.c_str(), sit->first);
 
 				CMenuWidget * tempsat = new CMenuWidget(sit->second.name.c_str(), NEUTRINO_ICON_SETTINGS);
 				
@@ -435,7 +435,7 @@ void CScanSetup::showScanService()
 			if(sit->second.type == DVB_C)
 			{
 				satSelect->addOption(sit->second.name.c_str());
-				dprintf(DEBUG_DEBUG, "[neutrino] fe(%d) Adding cable menu for %s position %d\n", sit->second.feindex, sit->second.name.c_str(), sit->first);
+				dprintf(DEBUG_DEBUG, "[neutrino] fe(%d) Adding cable menu for %s position %d\n", feindex, sit->second.name.c_str(), sit->first);
 			}
 		}
 	}
@@ -448,7 +448,7 @@ void CScanSetup::showScanService()
 			if(sit->second.type == DVB_T)
 			{
 				satSelect->addOption(sit->second.name.c_str());
-				dprintf(DEBUG_DEBUG, "CNeutrinoApp::InitScanSettings fe(%d) Adding terrestrial menu for %s position %d\n", sit->second.feindex, sit->second.name.c_str(), sit->first);
+				dprintf(DEBUG_DEBUG, "CNeutrinoApp::InitScanSettings fe(%d) Adding terrestrial menu for %s position %d\n", feindex, sit->second.name.c_str(), sit->first);
 			}
 		}
 	}
