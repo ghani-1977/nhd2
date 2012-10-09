@@ -137,13 +137,13 @@ bool cDemux::Start(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
 
-//#ifndef __sh__
+#ifndef __sh__
         if (ioctl(demux_fd , DMX_START) < 0)
         {
                 perror("DMX_START");
                 return false;
         }  
-//#endif        
+#endif        
 
 	return true;
 }
@@ -164,7 +164,7 @@ bool cDemux::Stop(void)
 	return true;
 }
 
-int cDemux::Read(unsigned char * const buff, int len, int Timeout)
+int cDemux::Read(unsigned char * const buff, const size_t len, int Timeout)
 {
 	int rc;
 	struct pollfd ufds;
