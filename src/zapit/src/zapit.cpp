@@ -269,7 +269,6 @@ CFrontend * getFE(int index)
 }
 
 /* compare polarization and band with fe values */
-/*
 bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
 	if(fe->getInfo()->type != FE_QPSK)
@@ -290,6 +289,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
+/*
 CFrontend * getLoopFE(CZapitChannel * channel)
 {
 	CFrontend * free_frontend = NULL;
@@ -362,7 +362,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN) ) //FIXME: what about loop/twin they can also tune???
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 				free_frontend = fe;
 		}
 	}
