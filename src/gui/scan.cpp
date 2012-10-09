@@ -89,8 +89,6 @@ CScanTs::CScanTs(int num)
 
 int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 {
-	//diseqc_t            diseqcType = NO_DISEQC;
-	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
