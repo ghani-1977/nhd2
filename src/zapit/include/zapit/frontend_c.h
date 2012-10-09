@@ -115,6 +115,11 @@ class CFrontend
 		
 		/* tuned to record flag */
 		bool locked;
+		
+		/* lnb offsets */
+		int32_t lnbOffsetLow;
+		int32_t lnbOffsetHigh;
+		int32_t lnbSwitch;
 	  
 	private:
 		int fd;
@@ -142,9 +147,11 @@ class CFrontend
 		uint8_t uncommitedInput;
 		
 		/* lnb offsets */
+		/*
 		int32_t lnbOffsetLow;
 		int32_t lnbOffsetHigh;
 		int32_t lnbSwitch;
+		*/
 
 		/* current Transponderdata */
 		TP_params currentTransponder;
@@ -240,6 +247,8 @@ class CFrontend
 		int getDeliverySystem();
 		//satellite_map_t getSatellites(); // { return satellites /*satellitePositions*/; }
 		//void				setSatellites(satellite_map_t satmap) { satellites = satmap; }
+		
+		bool				getHighBand()				{ return (int) getFrequency() >= lnbSwitch; }
 };
 
 
