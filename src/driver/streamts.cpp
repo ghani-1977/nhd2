@@ -28,6 +28,7 @@
 #include <dmx_cs.h>
 #include <zapit/cam.h>
 #include <zapit/channel.h>
+#include <zapit/frontend_c.h>
 
 
 #define TS_SIZE 188
@@ -42,7 +43,7 @@
 #define PACKET_SIZE	7*TS_SIZE
 
 
-extern CZapitChannel * live_channel;
+extern CFrontend * live_fe;
 
 
 static unsigned char exit_flag = 0;
@@ -345,7 +346,7 @@ void * streamts_live_thread(void *data)
 
 	cDemux * dmx = new cDemux();
 	
-	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, live_channel? live_channel->getFeIndex():0);	
+	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, live_fe? live_fe->fenumber:0);	
 	
 	dmx->pesFilter(pids[0]);
 	for(int i = 1; i < demuxfd_count; i++)

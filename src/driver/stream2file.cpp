@@ -68,6 +68,7 @@ extern "C" {
 
 static cRecord * record = NULL;
 extern CZapitChannel * rec_channel;
+extern CFrontend * live_fe;
 
 extern bool autoshift;
 extern bool autoshift_delete;
@@ -132,7 +133,7 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 	// init record
 	if(!record)
 	{
-			record = new cRecord( rec_channel?rec_channel->getFeIndex():0 );
+			record = new cRecord( live_fe? live_fe->fenumber:0);
 	}
 	
 
