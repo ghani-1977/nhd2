@@ -37,8 +37,8 @@
 #include "SIutils.hpp"
 #include "debug.h"
 
-#include <zapit/channel.h>
-extern CZapitChannel * live_channel;			/* zapit.cpp */
+#include <zapit/frontend_c.h>
+extern CFrontend * live_fe;
 
 #ifndef DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
 bool setfilter(const int fd, const uint16_t pid, const uint8_t filter, const uint8_t mask, const uint32_t  flags)
@@ -126,7 +126,7 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 	if(dmxUTC == NULL) {
 		dmxUTC = new cDemux();
-		dmxUTC->Open(DMX_PSI_CHANNEL, 1026, live_channel? live_channel->getFeIndex() : 0 );
+		dmxUTC->Open(DMX_PSI_CHANNEL, 1026, live_fe?live_fe->fenumber : 0);
 	}
 
 	memset(&filter, 0, DMX_FILTER_SIZE);

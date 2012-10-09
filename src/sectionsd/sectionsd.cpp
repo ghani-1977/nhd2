@@ -209,8 +209,8 @@ static pthread_rwlock_t messagingLock = PTHREAD_RWLOCK_INITIALIZER;
 static pthread_cond_t timeThreadSleepCond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t timeThreadSleepMutex = PTHREAD_MUTEX_INITIALIZER;
 
-#include <zapit/channel.h>
-extern CZapitChannel * live_channel;			/* zapit.cpp */
+#include <zapit/frontend_c.h>
+extern CFrontend * live_fe;
 
 
 static DMX dmxEIT(0x12, 3000 );
@@ -6222,7 +6222,7 @@ int eit_set_update_filter(int *fd)
 	if(eitDmx == NULL) 
 	{
 		eitDmx = new cDemux();
-		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_channel? live_channel->getFeIndex() : 0);
+		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_fe? live_fe->fenumber : 0);
 	}
 
 	unsigned char filter[DMX_FILTER_SIZE];
