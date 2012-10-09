@@ -182,7 +182,7 @@ bool makeRemainingChannelsBouquet;
 void setZapitConfig(Zapit_config * Cfg);
 void sendConfig(int connfd);
 
-#define UPDATE_PMT
+// pmt update filter
 static int pmt_update_fd = -1;
 
 // dvbsub
@@ -268,23 +268,48 @@ CFrontend * getFE(int index)
 	return NULL;
 }
 
-CFrontend * liveFrontend(CZapitChannel * thischannel)
+/* we prefer same tid fe */
+CFrontend * getFrontend(CZapitChannel * thischannel)
 {
-	CFrontend * fe = NULL;
+	/* check for frontend */
+	CFrontend * free_frontend = NULL;
+	CFrontend * same_tid_fe = NULL;
 	
-	/* index methode */
-	fe = femap[thischannel->getFeIndex()];
+	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 	
-	return fe;
-}
+	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+	{
+		CFrontend * fe = fe_it->second;
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		
+		printf("fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d]\n",
+				fe->fenumber, 
+				fe->getFrequency(), 
+				fe->getTsidOnid(), 
+				thischannel->getFreqId(), 
+				thischannel->getTransponderId(), 
+				satellitePosition,
+				sit->second.name.c_str(),
+				sit->second.type);
 
-CFrontend * recordFrontend(CZapitChannel * thischannel)
-{
-	CFrontend * fe = NULL;
+		/* we prefer same tid fe*/
+		// same tid
+		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
+		{
+			same_tid_fe = fe;
+			break;
+		}
+		else if (sit != satellitePositions.end()) 
+		{
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend)/*&& (fe->mode == (fe_mode_t)FE_SINGLE)*/ ) //FIXME: what about loop/twin they can also tune???
+				free_frontend = fe;
+		}
+	}
 	
-	fe = femap[thischannel->getFeIndex()];
+	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
+	printf("Selected fe: %d\n", ret ? ret->fenumber : -1);
 	
-	return fe;
+	return ret;
 }
 
 // borrowed from cst neutrino-hd (femanager.cpp)
@@ -645,7 +670,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel) < 0) 
+		if (parse_pat(thischannel, live_fe->fenumber) < 0) 
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -653,16 +678,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel) < 0) 
+	if (parse_pmt(thischannel, live_fe->fenumber) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel) < 0) 
+		if (parse_pat(thischannel, live_fe->fenumber) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel) < 0) 
+		else if (parse_pmt(thischannel, live_fe->fenumber) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -727,8 +752,8 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	//audioDecoder->setVolume(volume_left, volume_right);
 	
 	// audio mode
-	//if(audioDecoder)
-	//	audioDecoder->setChannel(audio_mode);
+	if(audioDecoder)
+		audioDecoder->setChannel(audio_mode);
 }
 
 // return 0, -1 fails
@@ -749,11 +774,24 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	// find live_fe
+	#if 0
 	if(( live_fe = liveFrontend(newchannel)) == NULL)
 	{
 		printf("%s can not allocate live fe;-(\n", __FUNCTION__);
 		return -1;
 	}
+	#endif
+	
+	#if 1
+	CFrontend * fe = getFrontend(newchannel);
+	if(fe == NULL) 
+	{
+		printf("%s can not allocate live frontend\n", __FUNCTION__);
+		return -1;
+	}
+	
+	live_fe = fe;
+	#endif
 	
 	// save pids
 	if (!firstzap && live_channel)
@@ -762,9 +800,9 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// firstzap right now does nothing but control saving the audio channel
 	firstzap = false;
 
-#ifdef UPDATE_PMT
+	// stop update pmt filter
 	pmt_stop_update_filter(&pmt_update_fd);
-#endif	
+	
 	// how to stop ci capmt
 	stopPlayBack();
 
@@ -779,8 +817,9 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
 	//FIXME: add condition if we allow to tune when we are recording to protect record file
-	if(!tune_to_channel(live_fe, live_channel, transponder_change))
-		return -1;
+	if ( !(currentMode & RECORD_MODE) )
+		if(!tune_to_channel(live_fe, live_channel, transponder_change))
+			return -1;
 
 	// check if nvod
 	if (live_channel->getServiceType() == ST_NVOD_REFERENCE_SERVICE) 
@@ -825,9 +864,8 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	eventServer->sendEvent(CZapitClient::EVT_ZAP_CA_ID, CEventServer::INITID_ZAPIT, &caid, sizeof(int));
 
-#ifdef UPDATE_PMT
-	pmt_set_update_filter(live_channel, &pmt_update_fd);
-#endif	
+	// start pmt update filter
+	pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe->fenumber);	
 
 	return 0;
 }
@@ -839,28 +877,40 @@ int zapit_to_record(const t_channel_id channel_id)
 	// find channel
 	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
 	{
-		printf("zapit_to_record: channel_id (%llx) fe(%d) not found\n", channel_id, rec_channel->getFeIndex() );
+		printf("zapit_to_record: channel_id (%llx) not found\n", channel_id);
 		return -1;
 	}
 	
 	rec_channel_id = rec_channel->getChannelID();
 	
 	// find record fe
-	if(( record_fe = recordFrontend(rec_channel)) == NULL)
+	#if 0
+	if(( record_fe = liveFrontend(rec_channel)) == NULL)
 	{
 		printf("%s can not allocate record fe;-(\n", __FUNCTION__);
 		return -1;
 	}
+	#endif
+	//
+	#if 1
+	CFrontend * frontend = getFrontend(rec_channel);
+	if(frontend == NULL) 
+	{
+		printf("%s can not allocate record frontend\n", __FUNCTION__);
+		return -1;
+	}
+	#endif
 	
-	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->getFeIndex());
+	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, frontend->fenumber);
+	
+	record_fe = frontend;
 	
 	// tune to rec channel
-	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+	if(!tune_to_channel(frontend, rec_channel, transponder_change))
 		return -1;
 	
-	// check if channel feindex und record_fe index maches
-	//if(rec_channel->getFeIndex() != record_fe->getFeIndex())
-	//	rec_channel->setFeIndex(record_fe->getFeIndex());
+	if(frontend->tuned)
+		frontend->locked == true;
 	
 	// parse pat_pmt
 	if(!parse_channel_pat_pmt(rec_channel))
@@ -870,7 +920,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	// ci cam
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-	ci->SendCaPMT(rec_channel->getCaPmt(), rec_channel->getFeIndex());
+	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber );
 #endif	
 
 	// dual decoding is brocken
@@ -882,23 +932,9 @@ int zapit_to_record(const t_channel_id channel_id)
 
 int zapTo_RecordID(const t_channel_id channel_id)
 {
-	// same channel_id
-	// same tp_id
-	// twin
-	bool twin = false;
-	
-	if(FrontendCount > 1)
-	{
-		for (int i = 1; i < FrontendCount; i++)
-		{
-			// twin
-			if(femap[0]->getInfo()->type == femap[i]->getInfo()->type)
-				twin = true;
-		}
-	}
-	
-	// multi
-	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) && !twin)
+	// zap
+	/* zapto if we dont have the same channel or not the same TP */
+	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) )
 		zapTo_ChannelID(channel_id, false);
 
 	zapit_to_record(channel_id);
@@ -1037,6 +1073,10 @@ void unsetRecordMode(void)
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
+	
+	//TEST
+	if(record_fe)
+		record_fe->locked = false;	
 }
 
 int prepare_channels()
@@ -1121,9 +1161,8 @@ int start_scan(CZapitMessages::commandStartScan StartScan)
 	//stop playback
 	stopPlayBack();
 	
-#ifdef UPDATE_PMT	
-        pmt_stop_update_filter(&pmt_update_fd);
-#endif	
+	// stop pmt update filter
+        pmt_stop_update_filter(&pmt_update_fd);	
 
 	found_transponders = 0;
 	found_channels = 0;
@@ -1180,6 +1219,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if(msgZaptoServiceID.record) 
 			{
 				//msgResponseZapComplete.zapStatus = zapit_to_record(msgZaptoServiceID.channel_id);
+				//FIXME??? i dont know any more why i ve done this
 				msgResponseZapComplete.zapStatus = zapTo_RecordID(msgZaptoServiceID.channel_id);
 			} 
 			else 
@@ -1279,7 +1319,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				
 				msgCurrentServiceInfo.vtype = live_channel->type;
 				
-				msgCurrentServiceInfo.FeIndex = live_channel->getFeIndex();
+				//msgCurrentServiceInfo.FeIndex = live_channel->getFeIndex();
 			}
 			
 			if(!msgCurrentServiceInfo.fec)
@@ -1290,6 +1330,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		}
 		
 		//TEST
+		#if 1
 		case CZapitMessages::CMD_GET_RECORD_SERVICEID: 
 		{
 			CZapitMessages::responseGetRecordServiceID msgRecordSID;
@@ -1317,18 +1358,18 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				
 				msgRecordServiceInfo.pcrpid = rec_channel->getPcrPid();
 				
-				msgRecordServiceInfo.tsfrequency = record_fe->getFrequency();
-				msgRecordServiceInfo.rate = record_fe->getRate();
-				msgRecordServiceInfo.fec = record_fe->getCFEC();
+				msgRecordServiceInfo.tsfrequency = live_fe->getFrequency();
+				msgRecordServiceInfo.rate = live_fe->getRate();
+				msgRecordServiceInfo.fec = live_fe->getCFEC();
 					
-				if ( record_fe->getInfo()->type == FE_QPSK)
-					msgRecordServiceInfo.polarisation = record_fe->getPolarization();
+				if ( live_fe->getInfo()->type == FE_QPSK)
+					msgRecordServiceInfo.polarisation = live_fe->getPolarization();
 				else
 					msgRecordServiceInfo.polarisation = 2;
 				
 				msgRecordServiceInfo.vtype = rec_channel->type;
 				
-				msgRecordServiceInfo.FeIndex = rec_channel->getFeIndex();
+				//msgRecordServiceInfo.FeIndex = rec_channel->getFeIndex();
 			}
 			
 			if(!msgRecordServiceInfo.fec)
@@ -1337,6 +1378,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &msgRecordServiceInfo, sizeof(msgRecordServiceInfo));
 			break;
 		}
+		#endif
 		//
 		
 		/* used by neutrino at start, this deliver infos only about the first tuner */
@@ -1637,22 +1679,15 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 				if(scanProviders.size() > 0)
 					scanProviders.clear();
-#if 0
-				std::map<string, t_satellite_position>::iterator spos_it;
-				for (spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++)
-					if(spos_it->second == live_channel->getSatellitePosition())
-						scanProviders[transponder->second.DiSEqC] = spos_it->first.c_str();
-#endif
-				//FIXME not ready
-				//if(satellitePositions.find(live_channel->getSatellitePosition()) != satellitePositions.end()) 
+ 
 				live_channel = 0;
 			}
 	
 			stopPlayBack();
-			
-#ifdef UPDATE_PMT			
+				
+			// stop update pmt filter
 			pmt_stop_update_filter(&pmt_update_fd);
-#endif			
+	
 			scan_runs = 1;
 	
 			if (pthread_create(&scan_thread, 0, scan_transponder,  (void*) &ScanTP)) 
@@ -1702,7 +1737,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				sat.motorPosition = sit->second.motor_position;
 
 				sat.type = sit->second.type;
-				sat.feindex = sit->second.feindex;
+				//sat.feindex = sit->second.feindex;
 				
 				CBasicServer::send_data(connfd, &satlength, sizeof(satlength));
 				CBasicServer::send_data(connfd, (char *)&sat, satlength);
@@ -2129,8 +2164,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					original_network_id,
 					1,
 					live_channel ? live_channel->getSatellitePosition() : 0,
-					0,
-					live_channel->getFeIndex()	     
+					0/*,
+					live_channel->getFeIndex()*/	     
 					) //FIXME: global for more than one tuner???
 				)
 				);
@@ -2451,7 +2486,7 @@ void internalSendChannels(int connfd, ZapitChannelList* channels, const unsigned
 	for (uint32_t  i = 0; i < channels->size();i++) 
 	{
 #if RECORD_RESEND // old, before tv/radio resend
-		if ((currentMode & RECORD_MODE) && ((*channels)[i]->getTransponderId() != record_fe->getTsidOnid()))
+		if ((currentMode & RECORD_MODE) && ((*channels)[i]->getTransponderId() != live_fe->getTsidOnid()))
 			continue;
 #endif
 
@@ -2605,7 +2640,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if ((playbackStopForced == true) || (!thisChannel) || playing)
 		return -1;
 
-	printf("zapit:startPlayBack: vpid 0x%X apid 0x%X pcrpid 0x%X fe(%d)\n", thisChannel->getVideoPid(), thisChannel->getAudioPid(), thisChannel->getPcrPid(), thisChannel->getFeIndex() );
+	printf("zapit:startPlayBack: vpid 0x%X apid 0x%X pcrpid 0x%X\n", thisChannel->getVideoPid(), thisChannel->getAudioPid(), thisChannel->getPcrPid() );
 
 	if(standby) 
 		return 0;
@@ -2639,7 +2674,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			pcrDemux = new cDemux();
 		
 		// open pcr demux
-		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
+		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
 			return -1;
 		
 		// set pes filter
@@ -2657,7 +2692,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			audioDemux = new cDemux();
 		
 		// open audio demux
-		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
+		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
 			return -1;
 		
 		// set pes filter
@@ -2675,7 +2710,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			videoDemux = new cDemux(); 
 		
 		// open Video Demux
-		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, thisChannel->getFeIndex() ) < 0 )
+		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
 			return -1;
 		
 		// video pes filter
@@ -3096,7 +3131,7 @@ void * sdt_thread(void * arg)
 
 			if(live_channel) 
 			{
-				ret = parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_channel->getFeIndex());
+				ret = parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe->fenumber );
 				if(ret)
 					continue;
 			}
@@ -3426,8 +3461,7 @@ int zapit_main_thread(void *data)
 	bool check_lock = true;
 	time_t lastlockcheck = 0;
 #endif	
-
-#ifdef UPDATE_PMT	
+	
 	while (zapit_server.run(zapit_parse_command, CZapitMessages::ACTVERSION, true)) 
 	{
 		//check for lock
@@ -3462,16 +3496,29 @@ int zapit_main_thread(void *data)
 				{
 					t_channel_id channel_id = live_channel->getChannelID();
 					int vpid = live_channel->getVideoPid();
+					int apid = live_channel->getAudioPid();
+					
 					parse_pmt(live_channel);
-						
-					if(vpid != live_channel->getVideoPid()) 
+					
+					bool apid_found = false;
+					// check if selected audio pid still present
+					for (int i = 0; i <  live_channel->getAudioChannelCount(); i++) 
+					{
+						if (live_channel->getAudioChannel(i)->pid == apid) 
+						{
+							apid_found = true;
+							break;
+						}
+					}
+					
+					if(!apid_found || vpid != live_channel->getVideoPid()) 
 					{
 						zapit(live_channel->getChannelID(), current_is_nvod, true);
 					} 
 					else 
 					{
 						sendCaPmt(true);
-						pmt_set_update_filter(live_channel, &pmt_update_fd);
+						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe->fenumber);
 					}
 						
 					eventServer->sendEvent(CZapitClient::EVT_PMT_CHANGED, CEventServer::INITID_ZAPIT, &channel_id, sizeof(channel_id));
@@ -3481,9 +3528,6 @@ int zapit_main_thread(void *data)
 
 		usleep(0);
 	}
-#else
-	zapit_server.run(zapit_parse_command, CZapitMessages::ACTVERSION);
-#endif
 
 	//HOUSEKEPPING
 	//save audio map

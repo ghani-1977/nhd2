@@ -420,7 +420,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 int curpmtpid;
 int pmt_caids[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int parse_pmt(CZapitChannel * const channel, int dmx_num)
+int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 {
 	unsigned short i;
 	unsigned char buffer[PMT_SIZE];
@@ -445,7 +445,7 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 	cDemux * dmx = new cDemux( dmx_num ); 
 	
 	// open
-	dmx->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex());
+	dmx->Open( DMX_PSI_CHANNEL, PMT_SIZE, feindex );
 
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
@@ -556,7 +556,7 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 	caPmt->current_next_indicator = buffer[5] & 0x01;
 	caPmt->reserved2 = buffer[10] >> 4;
 
-	printf("[pmt]parse_pmt: fe(%d) pcr pid: old 0x%x new 0x%x\n", channel->getFeIndex(), channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
+	printf("[pmt]parse_pmt: fe(%d) pcr pid: old 0x%x new 0x%x\n", feindex, channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
 
 	// ci
 	if(channel->getCaPmt() != 0) 
@@ -616,7 +616,7 @@ int parse_pmt(CZapitChannel * const channel, int dmx_num)
 /* globals */
 cDemux * pmtDemux;
 
-int pmt_set_update_filter( CZapitChannel * const channel, int * fd )
+int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex )
 {
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];
@@ -627,7 +627,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd )
 		pmtDemux = new cDemux();
 		
 		// open 
-		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, channel->getFeIndex() ); // this indicate fe num
+		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, feindex ); // this indicate fe num
 	}
 
 	if (channel->getPmtPid() == 0)
@@ -647,7 +647,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd )
 	mask[2] = 0xFF;
 	mask[4] = 0xFF;
 
-	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", channel->getFeIndex(), channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
+	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", feindex, channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
 	
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;

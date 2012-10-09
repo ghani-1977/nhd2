@@ -92,6 +92,7 @@ CFrontend::CFrontend(int num, int adap)
 	diseqcType = NO_DISEQC;
 	
 	mode = (fe_mode_t)FE_SINGLE;
+	locked = false;
 
 	memset(&curfe, 0, sizeof(curfe));
 	
@@ -1180,6 +1181,7 @@ bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t frequency, uint8_t polarization)
 {
 	sat_iterator_t sit = satellitePositions.find(satellitePosition);
+	//sat_iterator_t sit = satellites.find(satellitePosition);
 
 	printf("CFrontend::setInput: fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
 
@@ -1624,7 +1626,9 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 		bool moved = false;
 
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		//sat_iterator_t sit = satellites.find(satellitePosition);
 		if (sit == satellitePositions.end()) 
+		//if (sit == satellites.end()) 
 		{
 			printf("CFrontend::driveToSatellitePosition: fe(%d) satellite position %d not found!\n", fenumber, satellitePosition);
 			return 0;
@@ -1636,6 +1640,7 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 		}
 		
 		sit = satellitePositions.find(currentSatellitePosition);
+		//sit = satellites.find(currentSatellitePosition);
 		if (sit != satellitePositions.end())
 			old_position = sit->second.motor_position;
 
@@ -1925,5 +1930,26 @@ void CFrontend::gotoXX(t_satellite_position pos)
 	sendMotorCommand(0xE0, 0x31, 0x6E, 2, ((RotorCmd & 0xFF00) / 0x100), RotorCmd & 0xFF, repeatUsals);
 }
 
+int CFrontend::getDeliverySystem()
+{
+	delivery_system_t system = DVB_S;
+	
+	switch ( info.type ) 
+	{
+		case FE_QAM:
+			system = DVB_C;
+			break;
+
+		case FE_QPSK:
+			system = DVB_S;
+			break;
+
+		case FE_OFDM:
+			system = DVB_T;
+			break;
+	}
+	
+	return system;
+}
 
 

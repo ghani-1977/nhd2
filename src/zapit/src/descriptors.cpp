@@ -424,7 +424,7 @@ uint8_t fix_service_type(uint8_t type)
 
 int parse_pat(int feindex = 0);
 int pat_get_pmt_pid(CZapitChannel * const channel);
-int parse_pmt(CZapitChannel * const channel, int dmx_num = 0);
+int parse_pmt(CZapitChannel * const channel, int feindex = 0, int dmx_num = 0);
 
 /* 0x48 */
 void service_descriptor(const unsigned char * const buffer, const t_service_id service_id, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, bool free_ca, int feindex)
@@ -551,12 +551,12 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 	if(service_wr) 
 	{
 		pair<map<t_channel_id, CZapitChannel>::iterator,bool> ret;
-		DBG("New channel ===== %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str());
+		DBG("New channel %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str());
 		if(freq == 11758 || freq == 11778) 
-			printf("New channel ===== %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str()); //FIXME debug
+			printf("New channel %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str()); //FIXME debug
 
 		ret = allchans.insert (
-				std::pair <t_channel_id, CZapitChannel> (channel_id, CZapitChannel (serviceName, service_id, transport_stream_id, original_network_id, real_type, satellitePosition, freq, feindex )));
+				std::pair <t_channel_id, CZapitChannel> (channel_id, CZapitChannel (serviceName, service_id, transport_stream_id, original_network_id, real_type, satellitePosition, freq )));
 
 		ret.first->second.scrambled = free_ca;
 		channel = &ret.first->second;
@@ -706,7 +706,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		
 		if(!pat_get_pmt_pid(channel)) 
 		{
-			if(!parse_pmt(channel)) 
+			if(!parse_pmt(channel, feindex)) 
 			{
 				if ((channel->getPreAudioPid() != 0) || (channel->getVideoPid() != 0)) 
 				{
@@ -820,9 +820,8 @@ void current_service_descriptor(const unsigned char * const buffer, const t_serv
 		serviceName  = CDVBString((const char*)&(buffer[4 + service_provider_name_length + 1]), (2 + buffer[1]) - (4 + service_provider_name_length + 1)).getContent();
 	}
 
-	//curchans.insert (std::pair <t_channel_id, CZapitChannel> (CREATE_CHANNEL_ID64,CZapitChannel (serviceName,service_id,transport_stream_id,original_network_id,real_type,satellitePosition,freq)));
-	//test
-	curchans.insert (std::pair <t_channel_id, CZapitChannel> (CREATE_CHANNEL_ID64,CZapitChannel (serviceName, service_id, transport_stream_id, original_network_id, real_type, satellitePosition, freq, I->second.getFeIndex() )));
+	// insert new channel
+	curchans.insert (std::pair <t_channel_id, CZapitChannel> (CREATE_CHANNEL_ID64,CZapitChannel (serviceName, service_id, transport_stream_id, original_network_id, real_type, satellitePosition, freq )));
 }
 
 /* 0x49 */
