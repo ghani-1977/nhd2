@@ -1826,7 +1826,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 			RADIOsatList->deleteBouquet(tmp2);
 
 		if(tvi || ri)
-			printf("CNeutrinoApp::channelsInit: created %s (fe%d) with %d TV and %d RADIO channels\n", sit->second.name.c_str(), sit->second.feindex, tvi, ri);
+			printf("CNeutrinoApp::channelsInit: created %s with %d TV and %d RADIO channels\n", sit->second.name.c_str(), tvi, ri);
 	}
 
 	// tv fav list
