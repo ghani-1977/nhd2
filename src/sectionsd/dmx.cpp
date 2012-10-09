@@ -45,8 +45,8 @@
 #define DEBUG_CACHED_SECTIONS 1
 */
 
-#include <zapit/channel.h>
-extern CZapitChannel * live_channel;			/* zapit.cpp */
+#include <zapit/frontend_c.h>
+extern CFrontend * live_fe;			/* zapit.cpp */
 
 typedef std::map<sections_id_t, version_number_t, std::less<sections_id_t> > MyDMXOrderUniqueKey;
 static MyDMXOrderUniqueKey myDMXOrderUniqueKey;
@@ -56,7 +56,7 @@ extern void showProfiling(std::string text);
 DMX::DMX(const unsigned short p, const unsigned short bufferSizeInKB, const bool c, int dmx_source)
 {
 	fd = -1;
-	dmx_num = dmx_source; //live_channel? live_channel->getDemuxIndex() : 0//dmx_source;
+	dmx_num = dmx_source;
 	lastChanged = time_monotonic();
 	filter_index = 0;
 	pID = p;
@@ -476,7 +476,7 @@ int DMX::immediate_start(void)
 	if(dmx == NULL) 
 	{
 		dmx = new cDemux( dmx_num );
-		dmx->Open(DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_channel? live_channel->getFeIndex() : 0);
+		dmx->Open(DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_fe? live_fe->fenumber : 0);
 	}
 
 	fd = 1;
