@@ -475,7 +475,7 @@ int DMX::immediate_start(void)
 
 	if(dmx == NULL) 
 	{
-		dmx = new cDemux( dmx_num/*live_channel? live_channel->getDemuxIndex() : 0*/ );
+		dmx = new cDemux( dmx_num );
 		dmx->Open(DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_channel? live_channel->getFeIndex() : 0);
 	}
 
@@ -577,33 +577,6 @@ int DMX::request_unpause(void)
 
 	return 0;
 }
-
-#if 0
-to be removed....
-int DMX::pause(void)
-{
-	pthread_mutex_lock(&pauselock);
-
-	//dprintf("lock from pc: %d\n", pauseCounter);
-	pauseCounter++;
-
-	pthread_mutex_unlock(&pauselock);
-
-	return 0;
-}
-
-int DMX::unpause(void)
-{
-	pthread_mutex_lock(&pauselock);
-
-	//dprintf("unlock from pc: %d\n", pauseCounter);
-	--pauseCounter;
-
-	pthread_mutex_unlock(&pauselock);
-
-	return 0;
-}
-#endif
 
 const char *dmx_filter_types [] = {
 	"dummy filter",
