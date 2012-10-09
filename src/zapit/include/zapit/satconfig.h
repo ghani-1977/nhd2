@@ -20,7 +20,6 @@ typedef struct sat_config {
 	std::string name;
 	int have_channels;
 
-	int feindex;	//to order channels 
 	int type; 	//needed to dont rewrite services.xml by scan
 } sat_config_t;
 

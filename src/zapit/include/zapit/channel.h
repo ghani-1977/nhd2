@@ -154,9 +154,6 @@ class CZapitChannel
 		/* the conditional access program map table of this channel */
 		CCaPmt * 			caPmt;
 		
-		/* frontend index */
-		int 				FeIndex;
-		
 		/* from neutrino CChannel class */
 		uint64_t      last_unlocked_EPGid;
 		time_t        last_unlocked_time;
@@ -176,7 +173,7 @@ class CZapitChannel
 		char * pname;
 
 		/* constructor, desctructor */
-		CZapitChannel(const std::string & p_name, t_service_id p_sid, t_transport_stream_id p_tsid, t_original_network_id p_onid, unsigned char p_service_type, t_satellite_position p_satellite_position, freq_id_t freq, int FeIndex);
+		CZapitChannel(const std::string & p_name, t_service_id p_sid, t_transport_stream_id p_tsid, t_original_network_id p_onid, unsigned char p_service_type, t_satellite_position p_satellite_position, freq_id_t freq );
 
 		~CZapitChannel(void);
 
@@ -236,11 +233,6 @@ class CZapitChannel
 		CZapitAbsSub* getChannelSub(int index = -1);
 		int getChannelSubIndex(void);
 		void setChannelSub(int subIdx);
-		
-		int getFeIndex() const { return FeIndex; }
-		void setFeIndex(int pFeIndex)				{ FeIndex = pFeIndex; }
-		
-		int getDemuxIndex() const {return FeIndex; }
 };
 
 #endif /* __zapit_channel_h__ */

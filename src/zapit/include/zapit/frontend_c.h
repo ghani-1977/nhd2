@@ -25,6 +25,7 @@
 #include <inttypes.h>
 #include "types.h"
 #include "channel.h"
+#include <zapit/satconfig.h>
 
 
 #define FEC_S2_QPSK_1_2 (fe_code_rate_t)(FEC_AUTO+1)			//10
@@ -88,6 +89,8 @@ typedef struct dvb_frontend_parameters FrontendParameters;
 class CFrontend
 {
 	public:
+		int fenumber;
+		
 		fe_mode_t	mode;
 		
 		/* usals config */
@@ -106,16 +109,22 @@ class CFrontend
 		
 		/* DiSEqC type of attached hardware */
 		diseqc_t diseqcType;
+		
+		/* tuning finished flag */
+		bool tuned;
+		
+		/* tuned to record flag */
+		bool locked;
 	  
 	private:
 		int fd;
 		int fe_adapter;
-		int fenumber;
+		//int fenumber;
 		bool slave;
 		bool standby;
 		
 		/* tuning finished flag */
-		bool tuned;
+		//bool tuned;
 		
 		/* information about the used frontend type */
 		struct dvb_frontend_info info;
@@ -139,6 +148,9 @@ class CFrontend
 
 		/* current Transponderdata */
 		TP_params currentTransponder;
+		
+		/* satellites */
+		//satellite_map_t satellites;
 		
 		struct dvb_frontend_parameters curfe;
 		uint32_t getDiseqcReply(const int timeout_ms) const;
@@ -224,6 +236,10 @@ class CFrontend
 
 		struct dvb_frontend_event getEvent(void);
 		int getFeIndex() {return fenumber;}
+		
+		int getDeliverySystem();
+		//satellite_map_t getSatellites(); // { return satellites /*satellitePositions*/; }
+		//void				setSatellites(satellite_map_t satmap) { satellites = satmap; }
 };
 
 
