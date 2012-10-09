@@ -108,10 +108,6 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 				feparams.frequency = feparams.frequency*1000;
 		}
 
-		/* ??? */
-		//if(feparams.frequency < 20000) 
-		//	feparams.frequency = feparams.frequency*1000;
-
 		if(Source == DVB_C)
 			freq = feparams.frequency/100;
 		else
@@ -130,7 +126,7 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 			printf("[zapit] duplicate transponder id %llx freq %d\n", tid, feparams.frequency);
 
 		/* read channels that belong to the current transponder */
-		ParseChannels(node->xmlChildrenNode, transport_stream_id, original_network_id, satellitePosition, freq );
+		ParseChannels(node->xmlChildrenNode, transport_stream_id, original_network_id, satellitePosition, freq, polarization );
 
 		/* hop to next transponder */
 		node = node->xmlNextNode;
@@ -139,7 +135,7 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 	return;
 }
 
-void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq )
+void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, uint8_t polarisation )
 {
 	t_service_id service_id;
 	std::string  name;
@@ -217,6 +213,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 			tallchans_iterator cit1 = ret.first;
 			cit1->second.scrambled = scrambled;
 			service_type = cit1->second.getServiceType();
+			cit1->second.polarization = polarisation;
 
 			if(pmtpid != 0 && (((service_type == 2) && (apid > 0)) || ( (service_type == 1)  && (vpid > 0) && (apid > 0))) ) 
 			{
@@ -347,10 +344,10 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		else
 			freq = feparams.frequency/1000;
 			
-		
 		transponder_id_t tid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid);
 
-		polarization &= 1;
+		//polarization &= 1;
+		polarization &= 7;
 		
 		// insert TPs list
 		select_transponders.insert( std::pair <transponder_id_t, transponder> (tid, transponder(fake_tid, feparams, polarization, fake_nid)));

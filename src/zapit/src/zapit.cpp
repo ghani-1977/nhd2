@@ -268,6 +268,66 @@ CFrontend * getFE(int index)
 	return NULL;
 }
 
+/* compare polarization and band with fe values */
+/*
+bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
+{
+	if(fe->getInfo()->type != FE_QPSK)
+		return true;
+
+	if(fe->tuned && (fe->getCurrentSatellitePosition() != thischannel->getSatellitePosition()))
+		return false;
+
+	bool tp_band = ((int)thischannel->getFreqId()*1000 >= fe->lnbSwitch);
+	uint8_t tp_pol = thischannel->polarization & 1;
+	uint8_t fe_pol = fe->getPolarization() & 1;
+
+	printf("fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
+	
+	if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
+		return true;
+	
+	return false;
+}
+
+CFrontend * getLoopFE(CZapitChannel * channel)
+{
+	CFrontend * free_frontend = NULL;
+	CFrontend * same_tid_fe = NULL;
+
+	// check is there any locked fe, remember fe with same transponder
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		CFrontend * fe = it->second;
+		
+		printf("fe%d: locked %d freq %d TP %llx - channel freq %d TP %llx", fe->fenumber, fe->locked, fe->getFrequency(), fe->getTsidOnid(), channel->getFreqId(), channel->getTransponderId());
+
+		if(fe->locked) 
+		{
+			printf("fe %d locked\n", fe->fenumber);
+			
+			if(!loopCanTune(fe, channel)) 
+			{
+				free_frontend = NULL;
+				break;
+			}
+			
+			//
+			if(fe->tuned && fe->sameTsidOnid(channel->getTransponderId())) 
+			{
+				same_tid_fe = fe; // first with same tp id
+			}
+		} 
+		else if(!free_frontend)
+			free_frontend = fe; // first unlocked
+	}
+
+	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
+	//INFO("Selected fe: %d", ret ? ret->fenumber : -1);
+	return ret;
+}
+*/
+
 /* we prefer same tid fe */
 CFrontend * getFrontend(CZapitChannel * thischannel)
 {
@@ -299,9 +359,10 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 			same_tid_fe = fe;
 			break;
 		}
+		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend)/*&& (fe->mode == (fe_mode_t)FE_SINGLE)*/ ) //FIXME: what about loop/twin they can also tune???
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN) ) //FIXME: what about loop/twin they can also tune???
 				free_frontend = fe;
 		}
 	}
