@@ -362,7 +362,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN /*|| (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))*/ ) )
 				free_frontend = fe;
 		}
 	}
