@@ -343,6 +343,7 @@ pal
 1080p24 
 1080p25 
 1080p30 
+1080p50
 PC
 */
 	const char *aVideoSystems[][2] = {
@@ -356,6 +357,7 @@ PC
 		{"VIDEO_STD_1080P24", "1080p24"},
 		{"VIDEO_STD_1080P25", "1080p25"},
 		{"VIDEO_STD_1080P30", "1080p30"},
+		{"VIDEO_STD_1080P50", "1080p50"},
 		{"VIDEO_STD_PC", "PC"},
 	};
 #else
