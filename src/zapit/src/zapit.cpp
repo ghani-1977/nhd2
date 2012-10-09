@@ -774,15 +774,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	// find live_fe
-	#if 0
-	if(( live_fe = liveFrontend(newchannel)) == NULL)
-	{
-		printf("%s can not allocate live fe;-(\n", __FUNCTION__);
-		return -1;
-	}
-	#endif
-	
-	#if 1
 	CFrontend * fe = getFrontend(newchannel);
 	if(fe == NULL) 
 	{
@@ -791,7 +782,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	live_fe = fe;
-	#endif
 	
 	// save pids
 	if (!firstzap && live_channel)
@@ -816,9 +806,8 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	printf("%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
 
-	//FIXME: add condition if we allow to tune when we are recording to protect record file
-	if ( !(currentMode & RECORD_MODE) )
-		if(!tune_to_channel(live_fe, live_channel, transponder_change))
+	// tune to
+	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 			return -1;
 
 	// check if nvod
@@ -884,33 +873,23 @@ int zapit_to_record(const t_channel_id channel_id)
 	rec_channel_id = rec_channel->getChannelID();
 	
 	// find record fe
-	#if 0
-	if(( record_fe = liveFrontend(rec_channel)) == NULL)
-	{
-		printf("%s can not allocate record fe;-(\n", __FUNCTION__);
-		return -1;
-	}
-	#endif
-	//
-	#if 1
 	CFrontend * frontend = getFrontend(rec_channel);
 	if(frontend == NULL) 
 	{
 		printf("%s can not allocate record frontend\n", __FUNCTION__);
 		return -1;
 	}
-	#endif
 	
 	printf("%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, frontend->fenumber);
 	
 	record_fe = frontend;
 	
 	// tune to rec channel
-	if(!tune_to_channel(frontend, rec_channel, transponder_change))
+	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
 	
-	if(frontend->tuned)
-		frontend->locked == true;
+	if(record_fe->tuned)
+		record_fe->locked = true;
 	
 	// parse pat_pmt
 	if(!parse_channel_pat_pmt(rec_channel))
@@ -920,12 +899,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	// ci cam
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber );
+	ci->SendCaPMT(rec_channel->getCaPmt(), record_fe->fenumber );
 #endif	
-
-	// dual decoding is brocken
-	//if( !SAME_TRANSPONDER(rec_channel_id, live_channel_id) )
-	//	rec_channel->getCaPmt()->ca_pmt_list_management = transponder_change ? 0x03 : 0x04;
 
 	return 0;
 }
