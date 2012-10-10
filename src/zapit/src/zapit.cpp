@@ -218,8 +218,6 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
-
-
 /* variables for EN 50494 (a.k.a Unicable) */
 //int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
 //int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
@@ -250,7 +248,7 @@ bool initFrontend()
 	
 	FrontendCount = femap.size();
 	
-	printf("found %d frontends\n", femap.size());
+	printf("%s found %d frontends\n", __FUNCTION__, femap.size());
 	
 	if(femap.size() == 0)
 		return false;
@@ -271,62 +269,26 @@ CFrontend * getFE(int index)
 /* compare polarization and band with fe values */
 bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
-	if(fe->getInfo()->type != FE_QPSK)
-		return true;
+	if(currentMode & RECORD_MODE)
+	{
+		if(fe->getInfo()->type != FE_QPSK)
+			return true;
 
-	if(fe->tuned && (fe->getCurrentSatellitePosition() != thischannel->getSatellitePosition()))
-		return false;
+		if(fe->tuned && (fe->getCurrentSatellitePosition() != thischannel->getSatellitePosition()))
+			return false;
 
-	bool tp_band = ((int)thischannel->getFreqId()*1000 >= fe->lnbSwitch);
-	uint8_t tp_pol = thischannel->polarization & 1;
-	uint8_t fe_pol = fe->getPolarization() & 1;
+		bool tp_band = ((int)thischannel->getFreqId()*1000 >= fe->lnbSwitch);
+		uint8_t tp_pol = thischannel->polarization & 1;
+		uint8_t fe_pol = fe->getPolarization() & 1;
 
-	printf("fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
-	
-	if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
-		return true;
+		printf("%s fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
+		
+		if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
+			return true;
+	}
 	
 	return false;
 }
-
-/*
-CFrontend * getLoopFE(CZapitChannel * channel)
-{
-	CFrontend * free_frontend = NULL;
-	CFrontend * same_tid_fe = NULL;
-
-	// check is there any locked fe, remember fe with same transponder
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
-	{
-		CFrontend * fe = it->second;
-		
-		printf("fe%d: locked %d freq %d TP %llx - channel freq %d TP %llx", fe->fenumber, fe->locked, fe->getFrequency(), fe->getTsidOnid(), channel->getFreqId(), channel->getTransponderId());
-
-		if(fe->locked) 
-		{
-			printf("fe %d locked\n", fe->fenumber);
-			
-			if(!loopCanTune(fe, channel)) 
-			{
-				free_frontend = NULL;
-				break;
-			}
-			
-			//
-			if(fe->tuned && fe->sameTsidOnid(channel->getTransponderId())) 
-			{
-				same_tid_fe = fe; // first with same tp id
-			}
-		} 
-		else if(!free_frontend)
-			free_frontend = fe; // first unlocked
-	}
-
-	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
-	//INFO("Selected fe: %d", ret ? ret->fenumber : -1);
-	return ret;
-}
-*/
 
 /* we prefer same tid fe */
 CFrontend * getFrontend(CZapitChannel * thischannel)
@@ -342,7 +304,8 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		printf("fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d]\n",
+		printf("%s fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+				__FUNCTION__,
 				fe->fenumber, 
 				fe->getFrequency(), 
 				fe->getTsidOnid(), 
@@ -362,13 +325,13 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN /*|| (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))*/ ) )
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 				free_frontend = fe;
 		}
 	}
 	
 	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
-	printf("Selected fe: %d\n", ret ? ret->fenumber : -1);
+	printf("%s Selected fe: %d\n", __FUNCTION__, ret ? ret->fenumber : -1);
 	
 	return ret;
 }
@@ -396,7 +359,7 @@ void saveFrontendConfig(int feindex)
 {
 	printf("zapit: saveFrontendConfig\n");
 	
-	//for(int feindex = 0; feindex < FrontendCount; feindex++)
+	for(int feindex = 0; feindex < FrontendCount; feindex++)
 	{
 		// common
 		setConfigValue(feindex, "mode", getFE(feindex)->mode);
@@ -719,9 +682,9 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 	return true;
 }
 
-static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
+static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 {
-	if(live_fe->mode == FE_NOTCONNECTED)
+	if(fe->mode == FE_NOTCONNECTED)
 		return false;
 	
 	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
@@ -731,7 +694,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel, live_fe->fenumber) < 0) 
+		if (parse_pat(thischannel, fe->fenumber) < 0) // live demux is always 0
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -739,16 +702,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, live_fe->fenumber) < 0) 
+	if (parse_pmt(thischannel, fe->fenumber) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, live_fe->fenumber) < 0) 
+		if (parse_pat(thischannel, fe->fenumber) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, live_fe->fenumber) < 0) 
+		else if (parse_pmt(thischannel, fe->fenumber) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -854,7 +817,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// stop update pmt filter
 	pmt_stop_update_filter(&pmt_update_fd);
 	
-	// how to stop ci capmt
+	// FIXME: how to stop ci capmt or we dont need this???
 	stopPlayBack();
 
 	if(!forupdate && live_channel)
@@ -879,7 +842,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 
 	// parse pat pmt
-	failed = !parse_channel_pat_pmt(live_channel);
+	failed = !parse_channel_pat_pmt(live_channel, live_fe);
 
 	if ((!failed) && (live_channel->getAudioPid() == 0) && (live_channel->getVideoPid() == 0)) 
 	{
@@ -953,7 +916,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		record_fe->locked = true;
 	
 	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel))
+	if(!parse_channel_pat_pmt(rec_channel, record_fe))
 		return -1;
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
@@ -3380,13 +3343,7 @@ void * sdt_thread(void * arg)
 }
 
 //#define CHECK_FOR_LOCK
-/*
-* init frontend
-* init demuxes
-* init dvbci
-* init dvbsub
-* 
-*/
+
 int zapit_main_thread(void *data)
 {
 	Z_start_arg *ZapStart_arg = (Z_start_arg *) data;
@@ -3423,7 +3380,7 @@ int zapit_main_thread(void *data)
 	//CI init
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
 	ci = cDvbCi::getInstance();
-#endif	
+#endif
 
 	//dvbsub
 	dvbsub_init();
@@ -3534,7 +3491,7 @@ int zapit_main_thread(void *data)
 					int vpid = live_channel->getVideoPid();
 					int apid = live_channel->getAudioPid();
 					
-					parse_pmt(live_channel);
+					parse_pmt(live_channel, live_fe->fenumber);
 					
 					bool apid_found = false;
 					// check if selected audio pid still present
