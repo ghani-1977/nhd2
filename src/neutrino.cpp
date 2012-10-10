@@ -4417,15 +4417,15 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				if (g_settings.current_volume < 100 - 2)
-					g_settings.current_volume += 2;
+				if (g_settings.current_volume < 100 - 5)
+					g_settings.current_volume += 5;
 				else
 					g_settings.current_volume = 100;
 			}
 			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				if (g_settings.current_volume > 2)
-					g_settings.current_volume -= 2;
+				if (g_settings.current_volume > 5)
+					g_settings.current_volume -= 5;
 				else
 					g_settings.current_volume = 0;
 			}
