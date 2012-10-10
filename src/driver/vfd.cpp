@@ -371,9 +371,6 @@ void CVFD::setMode(const MODES m, const char * const title)
 	if(!has_lcd) 
 		return;
 
-	//if(mode == MODE_AUDIO)
-	//	ShowIcon(VFD_ICON_MP3, false);
-
 	// sow title
 	if(strlen(title))
 	{
