@@ -529,11 +529,6 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 	if (g_RemoteControl->current_PIDs.PIDs.selected_apid != sel )
 	{
 		g_RemoteControl->setAPID(sel);
-		
-		//if( g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].is_ac3 )
-		//	CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true);
-		//else
-		//	CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
 	}
 
 	return menu_return::RETURN_EXIT;
@@ -625,7 +620,7 @@ int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & act
 	{
 		g_RCInput->postMsg(CRCInput::RC_text, 0);
 	}
-	else if (sel>=0)
+	else if (sel >= 0)
 	{
 		g_PluginList->startPlugin(sel, 0);
 	}
@@ -854,17 +849,6 @@ void getZapitConfig(Zapit_config *Cfg);
 
 int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 {
-	//bool delete_all = (actionKey == "all");
-	//bool delete_chan = (actionKey == "channels");
-	//bool delete_set = (actionKey == "settings");
-	//bool backup = (actionKey ==);
-	
-	//neutrino_locale_t msg = delete_all ? LOCALE_RESET_ALL : delete_chan ? LOCALE_RESET_CHANNELS : LOCALE_RESET_SETTINGS;
-
-	//int result = ShowMsgUTF(msg, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
-	//if(result != CMessageBox::mbrYes) 
-	//	return true;
-	
 	CFileBrowser fileBrowser;
 	CFileFilter fileFilter;
 
