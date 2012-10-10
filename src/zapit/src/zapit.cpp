@@ -290,43 +290,41 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
-bool feCanTune(CFrontend * fe, CZapitChannel * thischannel)
+bool feCanTune(CZapitChannel * thischannel)
 {
-	bool ret = false;
-	
-	if(currentMode & RECORD_MODE)
+	// sme tid
+	if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
+		return true;
+	#if 1
+	else
 	{
-		//live_chan frontend type is different from selected channel frontend type
 		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		
+			
 		if (sit != satellitePositions.end()) 
 		{
-			if( sit->second.type != fe->getDeliverySystem() ) 
-				ret = true;
-		}
-		// same tid
-		else if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
-			ret = true;
-		// twin
-		else
-		{
-			// twin
-			for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+			// multi
+			if( sit->second.type != live_fe->getDeliverySystem() ) 
+				return true;
+			#if 0
+			else
 			{
-				if(fe_it->second->mode == (fe_mode_t)FE_TWIN )
+				// twin
+				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 				{
 					if (sit != satellitePositions.end()) 
 					{
 						if( sit->second.type == fe_it->second->getDeliverySystem() ) 
-							ret = true;
+							return true;
 					}
 				}
 			}
+			#endif
 		}
 	}
+	#endif
 	
-	return ret;
+	return false;
 }
 
 /* we prefer same tid fe */
@@ -732,7 +730,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel, fe->fenumber) < 0) // live demux is always 0
+		if (parse_pat(thischannel, fe->fenumber, fe->fenumber) < 0) // live demux is always 0
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -740,16 +738,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, fe->fenumber) < 0) 
+	if (parse_pmt(thischannel, fe->fenumber, fe->fenumber) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, fe->fenumber) < 0) 
+		if (parse_pat(thischannel, fe->fenumber, fe->fenumber) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, fe->fenumber) < 0) 
+		else if (parse_pmt(thischannel, fe->fenumber, fe->fenumber) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -2708,7 +2706,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux();
+			pcrDemux = new cDemux( live_fe->fenumber);
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2726,7 +2724,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux();
+			audioDemux = new cDemux( live_fe->fenumber);
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2744,7 +2742,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux(); 
+			videoDemux = new cDemux( live_fe->fenumber ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )

@@ -599,7 +599,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 
 		if(tpchange) 
 		{
-			cDemux * dmx = new cDemux(); 
+			cDemux * dmx = new cDemux( feindex ); 
 			dmx->Open(DMX_PSI_CHANNEL, 1024, feindex);
 			
 			if (!((dmx->sectionFilter(0x10, filter, mask, 5, 10000) < 0) || (dmx->Read(buff, 1024) < 0))) 

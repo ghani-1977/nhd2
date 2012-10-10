@@ -624,7 +624,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex 
 
 	if(pmtDemux == NULL) 
 	{
-		pmtDemux = new cDemux();
+		pmtDemux = new cDemux( feindex );
 		
 		// open 
 		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, feindex ); // this indicate fe num

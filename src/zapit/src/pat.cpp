@@ -96,7 +96,7 @@ int parse_pat(int feindex)
 
 	printf("parse_pat: scan pat Parsing\n");
 	
-	cDemux * dmx = new cDemux();
+	cDemux * dmx = new cDemux( feindex );
 	
 	// open
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, feindex);
