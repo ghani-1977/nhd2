@@ -171,12 +171,12 @@ int CStreamInfo2::doSignalStrengthLoop()
 #endif	
 	
 	//channel
-	CChannelList *channelList = CNeutrinoApp::getInstance ()->channelList;
-	int curnum = channelList->getActiveChannelNumber();
-	CZapitChannel * channel = channelList->getChannel(curnum);
-	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+	//CChannelList *channelList = CNeutrinoApp::getInstance ()->channelList;
+	//int curnum = channelList->getActiveChannelNumber();
+	//CZapitChannel * channel = channelList->getChannel(curnum);
+	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 	
-	ts_setup(si.FeIndex);
+	ts_setup();
 
 	while (1) 
 	{
@@ -813,7 +813,7 @@ long delta_time_ms (struct timeval *tv, struct timeval *last_tv)
 
 unsigned long long b_total;
 
-int CStreamInfo2::ts_setup(int feindex)
+int CStreamInfo2::ts_setup()
 {
 	unsigned short vpid, apid = 0;
 
@@ -827,10 +827,10 @@ int CStreamInfo2::ts_setup(int feindex)
 	if(vpid == 0 && apid == 0)
 		return -1;
 
-	ts_dmx = new cDemux();
+	ts_dmx = new cDemux( live_fe? live_fe->fenumber:0 );
 	
 	// open demux
-	ts_dmx->Open(DMX_TP_CHANNEL, 3 *3008 * 62, feindex);
+	ts_dmx->Open(DMX_TP_CHANNEL, 3 *3008 * 62, live_fe? live_fe->fenumber:0);
 	
 	if(vpid > 0) 
 	{

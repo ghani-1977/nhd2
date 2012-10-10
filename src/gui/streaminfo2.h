@@ -83,7 +83,7 @@ class CStreamInfo2 : public CMenuTarget
 		unsigned long long b_total;
 
 		int update_rate();
-		int ts_setup(int feindex = 0);
+		int ts_setup();
 		int ts_close();
 
 		void paint(int mode);
