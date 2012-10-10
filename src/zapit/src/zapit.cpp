@@ -304,8 +304,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		printf("%s fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
-				__FUNCTION__,
+		printf("getFrontend: fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fenumber, 
 				fe->getFrequency(), 
 				fe->getTsidOnid(), 
