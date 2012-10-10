@@ -82,7 +82,11 @@ cDemux::~cDemux()
 
 bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 {
+	int flags = O_RDWR;
 	type = Type;
+	
+	if (type != DMX_PSI_CHANNEL)
+		flags |= O_NONBLOCK;
 	
 	if (demux_fd > -1)
 		return true;
@@ -92,7 +96,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	//Open Demux()
 	sprintf(devname, "/dev/dvb/adapter%d/demux%d", adapter_num, demux_num);
 
-	demux_fd = open(devname, O_RDWR);
+	demux_fd = open(devname, flags);
 
 	if (demux_fd < 0)
 		return false;
@@ -137,13 +141,13 @@ bool cDemux::Start(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
 
-#ifndef __sh__
+//#ifndef __sh__
         if (ioctl(demux_fd , DMX_START) < 0)
         {
                 perror("DMX_START");
                 return false;
         }  
-#endif        
+//#endif        
 
 	return true;
 }
