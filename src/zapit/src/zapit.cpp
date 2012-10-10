@@ -290,6 +290,19 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
+bool feCanTune(CFrontend * fe, CZapitChannel * thischannel)
+{
+	if(currentMode & RECORD_MODE)
+	{
+		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
+			return true;
+		else if( !fe->locked && (fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))) )
+			return true;
+	}
+	
+	return false;
+}
+
 /* we prefer same tid fe */
 CFrontend * getFrontend(CZapitChannel * thischannel)
 {
