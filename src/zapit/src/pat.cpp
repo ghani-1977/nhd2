@@ -94,7 +94,7 @@ int parse_pat(int feindex)
 {
 	int ret = 0;
 
-	printf("parse_pat: Parsing pat ...\n");
+	printf("parse_pat: scan pat Parsing\n");
 	
 	cDemux * dmx = new cDemux();
 	
