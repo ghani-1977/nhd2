@@ -292,15 +292,41 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 
 bool feCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
+	bool ret = false;
+	
 	if(currentMode & RECORD_MODE)
 	{
-		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
-			return true;
-		else if( !fe->locked && (fe->mode == (fe_mode_t)FE_SINGLE || fe->mode == (fe_mode_t)FE_TWIN || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))) )
-			return true;
+		//live_chan frontend type is different from selected channel frontend type
+		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		
+		if (sit != satellitePositions.end()) 
+		{
+			if( sit->second.type != fe->getDeliverySystem() ) 
+				ret = true;
+		}
+		// same tid
+		else if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
+			ret = true;
+		// twin
+		else
+		{
+			// twin
+			for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+			{
+				if(fe_it->second->mode == (fe_mode_t)FE_TWIN )
+				{
+					if (sit != satellitePositions.end()) 
+					{
+						if( sit->second.type == fe_it->second->getDeliverySystem() ) 
+							ret = true;
+					}
+				}
+			}
+		}
 	}
 	
-	return false;
+	return ret;
 }
 
 /* we prefer same tid fe */
