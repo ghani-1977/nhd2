@@ -12,6 +12,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/connection \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libcoolstream \
+	-I$(top_srcdir)/lib/libxmltree \
 	@FREETYPE_CFLAGS@
 
 if ENABLE_LCD
