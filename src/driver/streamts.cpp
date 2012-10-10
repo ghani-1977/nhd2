@@ -344,7 +344,7 @@ void * streamts_live_thread(void *data)
 		return 0;
 	}
 
-	cDemux * dmx = new cDemux();
+	cDemux * dmx = new cDemux( live_fe? live_fe->fenumber:0 );
 	
 	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, live_fe? live_fe->fenumber:0);	
 	
