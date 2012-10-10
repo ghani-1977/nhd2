@@ -185,9 +185,12 @@ int CStreamInfo2::doSignalStrengthLoop()
 		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd_MS (100);
 		g_RCInput->getMsgAbsoluteTimeout (&msg, &data, &timeoutEnd);
 
-		ssig = live_fe->getSignalStrength();
-		ssnr = live_fe->getSignalNoiseRatio();
-		ber = live_fe->getBitErrorRate();
+		if(live_fe != NULL)
+		{
+			ssig = live_fe->getSignalStrength();
+			ssnr = live_fe->getSignalNoiseRatio();
+			ber = live_fe->getBitErrorRate();
+		}
 
 		signal.sig = ssig & 0xFFFF;
 		signal.snr = ssnr & 0xFFFF;
@@ -691,12 +694,15 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 	ypos += iheight;
 	char * f=NULL, *s=NULL, *m=NULL;
 	
-	if( live_fe->getInfo()->type == FE_QPSK) 
+	if(live_fe != NULL)
 	{
-		live_fe->getDelSys((fe_code_rate_t)si.fec, dvbs_get_modulation((fe_code_rate_t)si.fec), f, s, m);
-		sprintf ((char *) buf,"%d.%d (%c) %d %s %s %s", si.tsfrequency / 1000, si.tsfrequency % 1000, si.polarisation ? 'V' : 'H', si.rate / 1000,f,m,s=="DVB-S2"?"S2":"S1");
-		g_Font[font_info]->RenderString(xpos, ypos, width*2/3-10, "Tp. Freq.:" , COL_MENUCONTENTDARK, 0, true); // UTF-8
-		g_Font[font_info]->RenderString(xpos + spaceoffset, ypos, width*2/3-10, buf, COL_MENUCONTENTDARK, 0, true); // UTF-8	
+		if( live_fe->getInfo()->type == FE_QPSK) 
+		{
+			live_fe->getDelSys((fe_code_rate_t)si.fec, dvbs_get_modulation((fe_code_rate_t)si.fec), f, s, m);
+			sprintf ((char *) buf,"%d.%d (%c) %d %s %s %s", si.tsfrequency / 1000, si.tsfrequency % 1000, si.polarisation ? 'V' : 'H', si.rate / 1000,f,m,s=="DVB-S2"?"S2":"S1");
+			g_Font[font_info]->RenderString(xpos, ypos, width*2/3-10, "Tp. Freq.:" , COL_MENUCONTENTDARK, 0, true); // UTF-8
+			g_Font[font_info]->RenderString(xpos + spaceoffset, ypos, width*2/3-10, buf, COL_MENUCONTENTDARK, 0, true); // UTF-8	
+		}
 	}
 	
 	// paint labels
