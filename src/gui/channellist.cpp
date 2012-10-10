@@ -1755,8 +1755,8 @@ bool CChannelList::SameTP(CZapitChannel * channel)
 	{
 		if(channel == NULL)
 			channel = chanlist[selected];
-		
-		iscurrent = feCanTune(live_fe, channel);
+		if(live_fe != NULL)
+			iscurrent = feCanTune(live_fe, channel);
 	}
 	
 	return iscurrent;
