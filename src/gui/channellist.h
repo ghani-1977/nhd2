@@ -133,5 +133,7 @@ class CChannelList
 		void SortSat(void);
 		void ClearList(void);
 		//friend class CZapitChannel;
+		
+		bool SameTP(CZapitChannel * channel = NULL);
 };
 #endif

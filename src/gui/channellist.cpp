@@ -95,6 +95,8 @@ bool new_mode_active = 0;
 
 extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);		// defined in zapit.cpp
+extern CFrontend * live_fe;
+extern bool feCanTune(CFrontend * fe, CZapitChannel * thischannel);
 
 extern CBouquetManager *g_bouquetManager;
 
@@ -1745,6 +1747,21 @@ void CChannelList::paintItem2DetailsLine(int pos, int ch_index)
 	}
 }
 
+bool CChannelList::SameTP(CZapitChannel * channel)
+{
+	bool iscurrent = true;
+
+	if(CNeutrinoApp::getInstance()->recordingstatus) 
+	{
+		if(channel == NULL)
+			channel = chanlist[selected];
+		
+		iscurrent = feCanTune(live_fe, channel);
+	}
+	
+	return iscurrent;
+}
+
 void CChannelList::paintItem(int pos)
 {
 	int ypos = y + theight + 0 + pos*fheight;
@@ -1753,6 +1770,7 @@ void CChannelList::paintItem(int pos)
 	bool iscurrent = true;
 	unsigned int curr = liststart + pos;
 
+	#if 0
 	if(!autoshift && CNeutrinoApp::getInstance()->recordingstatus && curr < chanlist.size()) 
 	{
 		CZapitChannel * live_chan = getChannel(live_channel_id);
@@ -1773,6 +1791,12 @@ void CChannelList::paintItem(int pos)
 	
 		dprintf(DEBUG_INFO, "CChannelList::paintItem: recording %llx current %llx current = %s\n", rec_channel_id, chanlist[liststart + pos]->channel_id, iscurrent? "yes" : "no");
 	}
+	#endif
+	
+	#if 1
+	if(curr < chanlist.size())
+		iscurrent = SameTP(chanlist[curr]);
+	#endif
 	
 	if (curr == selected) 
 	{
