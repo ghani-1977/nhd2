@@ -1504,13 +1504,16 @@ void CInfoViewer::showSNR()
 	  		CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 			
 			/* freq */
-			if( live_fe->getInfo()->type == FE_QPSK || live_fe->getInfo()->type == FE_QAM)
+			if(live_fe != NULL)
 			{
-				sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
-			}
-			else if( live_fe->getInfo()->type == FE_OFDM)
-			{
-				sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
+				if( live_fe->getInfo()->type == FE_QPSK || live_fe->getInfo()->type == FE_QAM)
+				{
+					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
+				}
+				else if( live_fe->getInfo()->type == FE_OFDM)
+				{
+					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
+				}
 			}
 
 			int chanH = g_SignalFont->getHeight();
@@ -1519,15 +1522,19 @@ void CInfoViewer::showSNR()
 
 			g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENUCONTENTINACTIVE);
 		
-			ssig = live_fe->getSignalStrength();
-			ssnr = live_fe->getSignalNoiseRatio();
+			if(live_fe != NULL)
+			{
+				ssig = live_fe->getSignalStrength();
+				ssnr = live_fe->getSignalNoiseRatio();
+			}
 					
 			//show aktiv tuner
 			if( FrontendCount > 1 )
 			{
 				char AktivTuner[255];
 				
-				sprintf(AktivTuner, "T%d", (live_fe->getFeIndex() + 1));
+				if(live_fe != NULL)
+					sprintf(AktivTuner, "T%d", (live_fe->getFeIndex() + 1));
 				
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 120, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 			}
