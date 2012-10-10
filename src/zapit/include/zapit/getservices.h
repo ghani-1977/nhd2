@@ -30,7 +30,7 @@
 #include "descriptors.h"
 #include "sdt.h"
 #include "types.h"
-#include "xmlinterface.h"
+#include <xmlinterface.h>
 
 #include <map>
 #define zapped_chan_is_nvod 0x80
