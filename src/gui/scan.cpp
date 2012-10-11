@@ -125,6 +125,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 
         g_Zapit->stopPlayBack();
 
+	#if 0
 	bool usedBackground = frameBuffer->getuseBackground();
 	if (usedBackground)
 		frameBuffer->saveBackgroundImage();
@@ -132,7 +133,8 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	frameBuffer->loadBackgroundPic("scan.jpg");
 #ifdef FB_BLIT	
 	frameBuffer->blit();
-#endif	
+#endif
+	#endif
 
 	g_Sectionsd->setPauseScanning(true);
 
@@ -218,20 +220,22 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
                 	perror(NEUTRINO_SCAN_START_SCRIPT " failed");
 	}
 	
+	#if 0
 	// send fe mode
-	//g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
+	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
 		// send diseqc type to zapit
-		//diseqcType = (diseqc_t) scanSettings->diseqcMode;
+		diseqcType = (diseqc_t) scanSettings->diseqcMode;
 		
-		//g_Zapit->setDiseqcType(diseqcType, feindex);
+		g_Zapit->setDiseqcType(diseqcType, feindex);
 		//printf("scan.cpp send to zapit diseqctype: %d\n", diseqcType);
 			
 		// send diseqc repeat to zapit
-		//g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
+		g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
 	}
+	#endif
 	
 	// send bouquets mode
 	g_Zapit->setScanBouquetMode( (CZapitClient::bouquetMode) scanSettings->bouquetMode);
@@ -374,6 +378,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	hide();
 	
 	// Restore previous background
+	#if 0
 	if (usedBackground)
 		frameBuffer->restoreBackgroundImage();
 	
@@ -383,6 +388,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 #ifdef FB_BLIT
 	frameBuffer->blit();
 #endif
+	#endif
 	
 	/* start sectionsd */
 	g_Sectionsd->setPauseScanning(false);
