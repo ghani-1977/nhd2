@@ -26,11 +26,7 @@
 
 // stm_ioctl
 #ifdef __sh__
-#if defined (PLATFORM_DUCKBOX)
 #include <linux/dvb/stm_ioctls.h>
-#else
-#include <player2/linux/include/linux/dvb/stm_ioctls.h>
-#endif
 #endif
 
 // bcm

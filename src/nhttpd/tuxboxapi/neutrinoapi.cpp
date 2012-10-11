@@ -62,7 +62,7 @@ void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode = t
 bool _initialize_iso639_map(void)
 {
 	std::string s, t, u, v;
-#if defined (PLATFORM_DUCKBOX)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK_7162)
 	std::ifstream in("/usr/local/share/iso-codes/iso-639.tab");
 #else
 	std::ifstream in("/share/iso-codes/iso-639.tab");

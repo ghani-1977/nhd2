@@ -425,7 +425,7 @@ elif test "$BOXTYPE" = "dreambox"; then
 elif test "$BOXTYPE" = "xtrend"; then
 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
 elif test "$BOXTYPE" = "spark_7162"; then
-	AC_DEFINE(PLATFORM_SPARK_7162, 1, [building for xtrend])
+	AC_DEFINE(PLATFORM_SPARK_7162, 1, [building for fulan spark 7162])
 fi
 ])
 

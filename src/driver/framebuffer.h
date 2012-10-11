@@ -36,11 +36,7 @@
 
 // stmfb
 #ifdef __sh__
-#if defined (PLATFORM_DUCKBOX)
 #include <linux/stmfb.h>
-#else
-#include <stgfb/stmfb/linux/video/stmfb.h>
-#endif
 #endif
 
 // 32 bit
