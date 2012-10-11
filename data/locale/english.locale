@@ -1488,7 +1488,7 @@ helptext.miscsettingspsisetup Here you can set up video contrast
 
 miscsettings.logosdir Sender logos Dir
 
-videomenu.psisetup PSI Setup
+videomenu.psisetup Video fine Setup
 psisetup.contrast Contrast
 psisetup.saturation Saturation
 psisetup.brightness Brightness
