@@ -1499,9 +1499,9 @@ colormenu.helpbar Help bar
 lcdmenu.menutitlevfd Menu title on VFD
 
 scansetup.tunermode Tuner mode
-scansetup.tunermode_activ activ(single)
-scansetup.tunermode_twin twin
-scansetup.tunermode_loop loop
+scansetup.tunermode_activ direct connected
+scansetup.tunermode_twin twin to
+scansetup.tunermode_loop loop to
 scansetup.tunermode_notconnected not connected
 
 glcd.color.black Black
