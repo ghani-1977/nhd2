@@ -2066,34 +2066,30 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
 			stopPlayBack();
-			
-#ifdef __sh__			
+						
 			if(audioDecoder)
 			{
-				audioDecoder->Flush();
-				audioDecoder->Close();
+				audioDecoder->Flush();					
+				audioDecoder->Close();				
 			}
 			
 			if(videoDecoder)
 			{
-				videoDecoder->Flush();
-				videoDecoder->Close();
-			}
-#endif			
+				videoDecoder->Flush();					
+				videoDecoder->Close();				
+			}			
 			
 			playbackStopForced = true;
 			break;
 	
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
-			
-#ifdef __sh__			
+						
 			if(videoDecoder)
 				videoDecoder->Open();
 	
 			if(audioDecoder)
-				audioDecoder->Open();
-#endif			
+				audioDecoder->Open();			
 	
 			startPlayBack(live_channel);
 			
