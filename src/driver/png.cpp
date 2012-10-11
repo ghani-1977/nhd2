@@ -26,7 +26,7 @@ int fh_png_id(const char *name)
 }
 
 
-int fh_png_load(const char *name,unsigned char **buffer,int* xp,int* yp)
+int fh_png_load(const char *name, unsigned char **buffer, int* xp, int* yp)
 {
 	static const png_color_16 my_background = {0, 0, 0, 0, 0};
 
@@ -54,7 +54,6 @@ int fh_png_load(const char *name,unsigned char **buffer,int* xp,int* yp)
 		return(FH_ERROR_FORMAT);
 	}
 
-	//if(setjmp(png_ptr->jmpbuf))
 #if (PNG_LIBPNG_VER < 10500)
 	if (setjmp(png_ptr->jmpbuf))
 #else
