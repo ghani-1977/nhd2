@@ -208,13 +208,13 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 
 // 
 #define FRONTEND_MODE_SINGLE_OPTION_COUNT 2
-#define FRONTEND_MODE_OPTION_COUNT 4
+#define FRONTEND_MODE_OPTION_COUNT 3
 const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
 {
 	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_ACTIV },
 	{ (fe_mode_t)FE_NOTCONNECTED, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
 	
-	{ (fe_mode_t)FE_TWIN, LOCALE_SCANSETUP_FEMODE_TWIN },
+	//{ (fe_mode_t)FE_TWIN, LOCALE_SCANSETUP_FEMODE_TWIN },
 	{ (fe_mode_t)FE_LOOP, LOCALE_SCANSETUP_FEMODE_LOOP },
 };
 
@@ -507,6 +507,7 @@ void CScanSetup::showScanService()
 	}
 	
 	// frontend mode
+	// FIXME:check for loop
 	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, (getFE(feindex)->getInfo()->type == FE_QPSK)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
