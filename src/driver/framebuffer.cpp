@@ -79,6 +79,10 @@ CFrameBuffer::CFrameBuffer()
 	backupBackground = NULL;
 	backgroundFilename = "";
 	fd  = 0;
+	//m_transparent_default = /*CFrameBuffer::TM_BLACK*/CFrameBuffer::TM_INI; // TM_BLACK: Transparency when black content ('pseudo' transparency)
+							// TM_NONE:  No 'pseudo' transparency
+							// TM_INI:   Transparency depends on g_settings.infobar_alpha ???
+	//m_transparent         = m_transparent_default;
 //FIXME: test
 	memset(red, 0, 256*sizeof(__u16));
 	memset(green, 0, 256*sizeof(__u16));
@@ -186,6 +190,8 @@ void CFrameBuffer::init(const char * const fbDevice)
         paletteSet();
 
         useBackground(false);
+	
+	//m_transparent = m_transparent_default;
 
 	return;
 
@@ -959,7 +965,7 @@ bool CFrameBuffer::paintIconRaw(const std::string & filename, const int x, const
 	if (h != 0)
 		yy += (h - height) / 2;	
 
-	blit2FB(data, width, height, x, yy, 0, 0, true);
+	blit2FB(data, width, height, x, yy, 0, 0, true );
 
 	return true;
 }
@@ -1039,7 +1045,7 @@ _display:
 	if (h != 0)
 		yy += (h - height) / 2;	
 
-	blit2FB(data, width, height, x, yy, 0, 0, true);
+	blit2FB(data, width, height, x, yy, 0, 0, true );
 
 	return true;
 }
@@ -1468,7 +1474,7 @@ void CFrameBuffer::ClearFrameBuffer()
 	paintBackground();
 }
 
-void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, bool alpha)
+void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, int m_transparent, bool alpha)
 {
 	unsigned long i;
 	unsigned int *fbbuff;
@@ -1492,18 +1498,36 @@ void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsi
 	}
 	else
 	{
-		for(i = 0; i < count ; i++)
-			fbbuff[i] = (transp << 24) | 
-				    ((rgbbuff[i*3] << 16) & 0xFF0000) | 
-				    ((rgbbuff[i*3+1] << 8) & 0xFF00)  | 
-				    (rgbbuff[i*3+2] & 0xFF);
+		switch (m_transparent) 
+		{
+			case CFrameBuffer::TM_BLACK:
+				for(i = 0; i < count ; i++) 
+				{
+					transp = 0;
+					if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
+						transp = 0xFF;
+					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				}
+				break;
+				
+			case CFrameBuffer::TM_INI:
+				for(i = 0; i < count ; i++)
+					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				break;
+				
+			case CFrameBuffer::TM_NONE:
+			default:
+				for(i = 0; i < count ; i++)
+					fbbuff[i] = 0xFF000000 | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				break;
+		}
 	}
 
 	return (void *) fbbuff;
 }
 
 // blit2fb
-void CFrameBuffer::blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp, uint32_t yp, bool transp)
+void CFrameBuffer::blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp, uint32_t yp, bool transp )
 { 
 	int xc = (width > xRes) ? xRes : width;
 	int yc = (height > yRes) ? yRes : height;
@@ -1714,14 +1738,14 @@ CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize(const char *name, int *x
 	return (NULL);
 }
 
-fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int height)
+fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int height, int m_transparent)
 {
 	int x, y;
 	CFormathandler *fh;
 	unsigned char * buffer;
 	fb_pixel_t * ret = NULL;
 
-  	fh = fh_getsize(name.c_str (), &x, &y, INT_MAX, INT_MAX);
+  	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
   	if (fh) 
 	{
@@ -1746,7 +1770,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			} 
 			
 			// convert RGB2FB
-			ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
+			ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha), m_transparent );
 			free(buffer);
 		} 
 		else 
@@ -1783,15 +1807,15 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 		return NULL;
 	}
 	
-	if (fh->get_pic (name.c_str (), &rgbbuff, &x, &y) == FH_ERROR_OK) 
+	if (fh->get_pic(name.c_str (), &rgbbuff, &x, &y) == FH_ERROR_OK) 
 	{
+		// convert RGB2FB
 		int count = x*y;
 
 		fbbuff = (fb_pixel_t *) malloc(count * sizeof(fb_pixel_t));
 		
 		//printf("CFrameBuffer::getIcon: %s, %d x %d buf %x\n", name.c_str (), x, y, fbbuff);
-
-		// convert RGB2FB
+		
 		for(int i = 0; i < count ; i++) 
 		{
 			int transp = 0;
