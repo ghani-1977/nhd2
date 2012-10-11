@@ -134,7 +134,7 @@
 #include "gui/hdd_menu.h"
 #include "gui/audio_select.h"
 
-#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA)
+#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_SPARK_7162)
 #include "gui/cam_menu.h"
 #endif
 
@@ -162,7 +162,7 @@ extern bool has_hdd;				// defined in hdd_menu.cpp
 extern bool parentallocked;			// defined neutrino.cpp
 
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
-#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA)
+#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_SPARK_7162)
 extern CCAMMenuHandler * g_CamHandler;		// defined neutrino.cpp
 #endif
 
@@ -1900,7 +1900,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	lcdSettings.addItem(oj2);
 	
 	//scroll text ein/aus (250hd has only 4 digits)
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_DUCKBOX)
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK_7162)
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #endif
 
