@@ -37,12 +37,9 @@
 
 
 extern cVideo *videoDecoder;
-
+extern CFrontend * live_fe;
 
 static const char * FILENAME = "[dmx_cs.cpp]";
-
-extern int AdapterCount;
-
 
 cDemux *videoDemux = NULL;
 cDemux *audioDemux = NULL;
@@ -70,7 +67,28 @@ cDemux::cDemux(int num)
 	adapter_num = 0;	//AdapterIndex
 	
 	// demux index
+#if defined (PLATFORM_SPARK_7162)
+	if(live_fe != NULL)
+	{
+		switch(live_fe->fenumber)
+		{
+			case 0:
+				demux_num = 1;
+				break;
+				
+			case 1:
+				demux_num = 0;
+				break;
+				
+			case 2:
+				demux_num = 2;
+		}
+	}
+	else
+		demux_num = 0;
+#else
 	demux_num = num;
+#endif
 }
 
 cDemux::~cDemux()
