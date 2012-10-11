@@ -295,7 +295,6 @@ bool feCanTune(CZapitChannel * thischannel)
 	// sme tid
 	if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
 		return true;
-	#if 1
 	else
 	{
 		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
@@ -306,23 +305,19 @@ bool feCanTune(CZapitChannel * thischannel)
 			// multi
 			if( sit->second.type != live_fe->getDeliverySystem() ) 
 				return true;
-			#if 0
+			#if 1
 			else
 			{
-				// twin
+				// if any an other tuner (twin) have same type and is as twin set up
 				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 				{
-					if (sit != satellitePositions.end()) 
-					{
-						if( sit->second.type == fe_it->second->getDeliverySystem() ) 
-							return true;
-					}
+					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) && (fe_it->second->mode == (fe_mode_t)FE_TWIN) )
+						return true;
 				}
 			}
 			#endif
 		}
 	}
-	#endif
 	
 	return false;
 }
