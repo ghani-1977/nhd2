@@ -45,7 +45,7 @@
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 bool blocked = false;
 
 void CVFD::openDevice()
@@ -189,7 +189,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 	dprintf(DEBUG_DEBUG, "CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
 	
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
         struct vfd_ioctl_data data;
 	data.start_address = dimm;
 	
@@ -388,7 +388,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showServicename(servicename);
 #endif
 
-#if !defined (PLATFORM_DUCKBOX) 
+#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK_7162)
 			ShowIcon(VFD_ICON_TV, true);
 #endif			
 			showclock = true;
@@ -398,7 +398,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 		case MODE_AUDIO:
 		{
 			ShowIcon(VFD_ICON_MP3, true);
-#if !defined (PLATFORM_DUCKBOX)			
+#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK_7162)			
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
 			showAudioPlayMode(AUDIO_MODE_STOP);			
@@ -410,7 +410,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 		}
 
 		case MODE_SCART:
-#if !defined (PLATFORM_DUCKBOX)		  
+#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK_7162)	  
 			ShowIcon(VFD_ICON_TV, false);
 #endif	
 			showclock = true;
@@ -430,7 +430,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_STANDBY:
-#if !defined (PLATFORM_DUCKBOX)
+#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK_7162)
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
 			showclock = true;
@@ -439,7 +439,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 		
 		case MODE_PIC:
-#if !defined (PLATFORM_DUCKBOX)		  
+#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK_7162)	  
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
 			ShowIcon(VFD_ICON_HD, false);
@@ -449,7 +449,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 			
 		case MODE_TS:
-#if !defined (PLATFORM_DUCKBOX)		  
+#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK_7162)	  
 			ShowIcon(VFD_ICON_TV, false);
 #endif			
 			showclock = false;
@@ -501,7 +501,7 @@ void CVFD::setPower(int power)
 	if(!has_lcd) 
 		return;
 
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 	struct vfd_ioctl_data data;
 	data.start_address = power;
 	
@@ -519,7 +519,7 @@ void CVFD::setFPTime(void)
 	if(!has_lcd)
 		return;
 
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 	openDevice();
 	
 	if( ioctl(fd, VFDSETTIME) < 0)  
@@ -586,7 +586,7 @@ void CVFD::Clear()
 	
 #if defined (PLATFORM_GIGABLUE)
 	ShowText("    "); // 4 empty digits
-#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
         //struct vfd_ioctl_data data;
 	//data.start = 0x01;
 	//data.length = 0x0;
@@ -608,7 +608,7 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 	openDevice();
 
 	struct vfd_ioctl_data data;
@@ -684,7 +684,7 @@ void CVFD::ShowText(char * str)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
 
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 	int len = strlen(str);
 	int i;
 	
@@ -721,7 +721,7 @@ void CVFD::ShowText(char * str)
 
 void CVFD::setFan(bool enable)
 {
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)  
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK_7162)
 	//openDevice();
 	
 	//if( ioctl(fd, VFDSETFAN, enable) < 0)  

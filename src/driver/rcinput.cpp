@@ -145,7 +145,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	key_info = configfile.getInt32("key_info", 0x166);
-#elif defined (PLATFORM_DUCKBOX)
+#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK_7162)
 	key_info = configfile.getInt32("key_info", 0x8A);
 #else
 	key_info = configfile.getInt32("key_info", KEY_INFO);
