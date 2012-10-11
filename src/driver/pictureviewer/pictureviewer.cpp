@@ -521,16 +521,17 @@ void CPictureViewer::Cleanup ()
 }
 
 // display image
-bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height)
+bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height, bool alpha)
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::DisplayImage\n");
 	
-	/* TODO: cache or check for same */
-	fb_pixel_t * data = CFrameBuffer::getInstance()->getImage(name, width, height);
+	fb_pixel_t * data;
+	
+	data = CFrameBuffer::getInstance()->getImage(name, width, height, alpha?CFrameBuffer::TM_BLACK : CFrameBuffer::TM_NONE);
 
 	if(data) 
 	{
-		CFrameBuffer::getInstance()->blit2FB(data, width, height, posx, posy);
+		CFrameBuffer::getInstance()->blit2FB( data, width, height, posx, posy, 0, 0, alpha? true:false );
 		free(data);
 		return true;
 	}
@@ -561,7 +562,13 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 	if(logo_ok)
 	{
 		dprintf(DEBUG_INFO, "CPictureViewer::DisplayLogo file: %s\n", fname);
-                ret = DisplayImage(fname, posx, posy, width, height);
+		
+		std::string logo_name = fname; // UTF-8
+		
+		if( logo_name.find(".png") == (logo_name.length() - 4) )
+			ret = DisplayImage(fname, posx, posy, width, height, true); 	// with alpha channal
+		else
+			ret = DisplayImage(fname, posx, posy, width, height);		//jpg/gif without alpha channel	
         }
 
 	return ret;
