@@ -346,7 +346,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 				sit->second.name.c_str(),
 				sit->second.type);
 
-		/* we prefer same tid fe*/
+		/* we prefer on same tid same fe*/
 		// same tid
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		{
@@ -3411,6 +3411,29 @@ int zapit_main_thread(void *data)
 	//CI init
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
 	ci = cDvbCi::getInstance();
+#endif
+
+#if defined (PLATFORM_SPARK_7162)
+	//lib-stb-hal/libspark
+	/* 
+	* this is a strange hack: the drivers seem to only work correctly after
+	* demux0 has been used once. After that, we can use demux1,2,... 
+	*/
+	struct dmx_pes_filter_params p;
+	int dmx = open("/dev/dvb/adapter0/demux0", O_RDWR );
+	if (dmx < 0)
+		printf("%s: ERROR open /dev/dvb/adapter0/demux0 (%m)\n", __func__);
+	else
+	{
+		memset(&p, 0, sizeof(p));
+		p.output = DMX_OUT_DECODER;
+		p.input  = DMX_IN_FRONTEND;
+		p.flags  = DMX_IMMEDIATE_START;
+		p.pes_type = DMX_PES_VIDEO;
+		ioctl(dmx, DMX_SET_PES_FILTER, &p);
+		ioctl(dmx, DMX_STOP);
+		close(dmx);
+	}
 #endif
 
 	//dvbsub
