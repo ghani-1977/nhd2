@@ -311,7 +311,7 @@ bool feCanTune(CZapitChannel * thischannel)
 				// if any an other tuner (twin) have same type and is as twin set up
 				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 				{
-					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) /*&& (fe_it->second->mode == (fe_mode_t)FE_TWIN)*/ )
+					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
 						return true;
 				}
 			}
@@ -356,7 +356,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE /*|| fe->mode == (fe_mode_t)FE_TWIN*/ || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 				free_frontend = fe;
 		}
 	}
@@ -2066,18 +2066,18 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
 			stopPlayBack();
-						
+					
 			if(audioDecoder)
 			{
-				audioDecoder->Flush();					
-				audioDecoder->Close();				
+				audioDecoder->Flush();
+				audioDecoder->Close();
 			}
 			
 			if(videoDecoder)
 			{
-				videoDecoder->Flush();					
-				videoDecoder->Close();				
-			}			
+				videoDecoder->Flush();
+				videoDecoder->Close();
+			}		
 			
 			playbackStopForced = true;
 			break;
