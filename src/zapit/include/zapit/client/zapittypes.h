@@ -137,7 +137,7 @@ typedef struct ZAPIT_start_arg
 
 typedef enum {
 	FE_SINGLE,
-	FE_TWIN,
+	//FE_TWIN,
 	FE_LOOP,
 	FE_NOTCONNECTED, // do we really need this
 } fe_mode_t;
