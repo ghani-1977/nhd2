@@ -67,9 +67,6 @@ cDemux::cDemux(int num)
 
 	// dmx file descriptor
 	demux_fd = -1;
-	
-	// demux index
-	demux_num = num;
 
 	// last dmx source
 	last_source = -1;
