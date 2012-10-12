@@ -308,11 +308,14 @@ bool feCanTune(CZapitChannel * thischannel)
 			#if 1
 			else
 			{
-				// if any an other tuner (twin) have same type and is as twin set up
-				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+				// check if we have other same frontend type
+				for(int i = 0; i < FrontendCount; i++) 
 				{
-					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
+					//FIXME: fe index is not always fenumber: think about usb tuner
+					if( i != live_fe->fenumber && getFE(i)->getInfo()->type == live_fe->getInfo()->type )
+					{
 						return true;
+					}
 				}
 			}
 			#endif
