@@ -1769,33 +1769,9 @@ void CChannelList::paintItem(int pos)
 	bool iscurrent = true;
 	unsigned int curr = liststart + pos;
 
-	#if 0
-	if(!autoshift && CNeutrinoApp::getInstance()->recordingstatus && curr < chanlist.size()) 
-	{
-		CZapitChannel * live_chan = getChannel(live_channel_id);
-		CZapitChannel * rec_chan = getChannel(rec_channel_id);
-		
-		/*
-		if(FrontendCount > 1)
-		{
-			// twin
-			if( getFE(rec_chan->getFeIndex())->mode == FE_LOOP)
-				iscurrent = SAME_TRANSPONDER(chanlist[curr]->channel_id, rec_channel_id);
-			else if( (rec_chan->getFeIndex() != live_chan->getFeIndex()) && getFE(rec_chan->getFeIndex())->mode != FE_LOOP)
-				iscurrent = true;
-		}
-		else
-		*/
-			iscurrent = SAME_TRANSPONDER(chanlist[curr]->channel_id, rec_channel_id);
-	
-		dprintf(DEBUG_INFO, "CChannelList::paintItem: recording %llx current %llx current = %s\n", rec_channel_id, chanlist[liststart + pos]->channel_id, iscurrent? "yes" : "no");
-	}
-	#endif
-	
-	#if 1
+
 	if(curr < chanlist.size())
 		iscurrent = SameTP(chanlist[curr]);
-	#endif
 	
 	if (curr == selected) 
 	{
