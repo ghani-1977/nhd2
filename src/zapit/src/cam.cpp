@@ -62,7 +62,7 @@ bool CCam::sendMessage(const char * const data, const size_t length, bool update
 	return send_data(data, length);
 }
 
-/*
+#if 0
 bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 {
 	if (!caPmt)
@@ -76,8 +76,9 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 
 	return sendMessage((char *)buffer, pos, update);
 }
-*/
+#endif
 
+#if 1
 bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 {
 	if (!caPmt)
@@ -91,5 +92,6 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 
 	return sendMessage((char *)buffer, pos, update);
 }
+#endif
 
 
