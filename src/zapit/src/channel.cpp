@@ -33,6 +33,7 @@ CZapitChannel::CZapitChannel(const std::string & p_name, t_service_id p_sid, t_t
 	freq = p_freq;
 	channel_id = CREATE_CHANNEL_ID64;
 	caPmt = NULL;
+	rawPmt = NULL;
 	type = 0;
 	number = 0;
 	scrambled = 0;
@@ -57,8 +58,11 @@ CZapitChannel::~CZapitChannel(void)
 	//if(currentEvent)
 		//delete currentEvent;
 
-	if (caPmt)
-		delete caPmt;
+	//if (caPmt)
+	//	delete caPmt;
+	
+	setCaPmt(NULL);
+	setRawPmt(NULL);
 }
 
 CZapitAudioChannel *CZapitChannel::getAudioChannel(unsigned char index)
@@ -296,4 +300,19 @@ void CZapitChannel::setChannelSub(int subIdx)
 int CZapitChannel::getChannelSubIndex(void)
 {
     	return currentSub < getSubtitleCount() ? currentSub : -1;
+}
+
+void CZapitChannel::setCaPmt(CCaPmt *pCaPmt)
+{ 
+	if(caPmt)
+		delete caPmt;
+	caPmt = pCaPmt; 
+}
+
+void CZapitChannel::setRawPmt(unsigned char * pmt, int len)
+{
+	if(rawPmt)
+		delete[] rawPmt;
+	rawPmt = pmt;
+	pmtLen = len;
 }
