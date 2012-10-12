@@ -47,7 +47,7 @@
 #include <iostream>
 #include <map>
 
-#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK_7162)
+#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK7162)
 static const char * iso639filename = "/usr/local/share/iso-codes/iso-639.tab";
 #else
 static const char * iso639filename = "/share/iso-codes/iso-639.tab";
