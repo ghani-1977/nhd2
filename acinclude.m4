@@ -376,9 +376,9 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_9500hd, duckbox, gigablue, dreambox, xtrend, spark_7162],
+	[  --with-boxtype          valid values: cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_9500hd, duckbox, gigablue, dreambox, xtrend, spark7162],
 	[case "${withval}" in
-		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|duckbox|gigablue|dreambox|xtrend|spark_7162)
+		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|duckbox|gigablue|dreambox|xtrend|spark7162)
 			BOXTYPE="$withval"
 			;;
 		*)
@@ -400,7 +400,7 @@ AM_CONDITIONAL(BOXTYPE_DUCKBOX, test "$BOXTYPE" = "duckbox")
 AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
 AM_CONDITIONAL(BOXTYPE_DREAMBOX, test "$BOXTYPE" = "dreambox")
 AM_CONDITIONAL(BOXTYPE_XTREND, test "$BOXTYPE" = "xtrend")
-AM_CONDITIONAL(BOXTYPE_SPARK_7162, test "$BOXTYPE" = "spark_7162")
+AM_CONDITIONAL(BOXTYPE_SPARK7162, test "$BOXTYPE" = "spark7162")
 
 if test "$BOXTYPE" = "cuberevo"; then
 	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
@@ -424,8 +424,8 @@ elif test "$BOXTYPE" = "dreambox"; then
 	AC_DEFINE(PLATFORM_DREAMBOX, 1, [building for dreambox])
 elif test "$BOXTYPE" = "xtrend"; then
 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
-elif test "$BOXTYPE" = "spark_7162"; then
-	AC_DEFINE(PLATFORM_SPARK_7162, 1, [building for fulan spark 7162])
+elif test "$BOXTYPE" = "spark7162"; then
+	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for fulan spark 7162])
 fi
 ])
 
