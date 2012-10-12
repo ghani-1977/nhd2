@@ -308,14 +308,11 @@ bool feCanTune(CZapitChannel * thischannel)
 			#if 1
 			else
 			{
-				// check if we have other same frontend type
-				for(int i = 0; i < FrontendCount; i++) 
+				// if any an other tuner (twin) have same type and is as twin set up
+				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 				{
-					//FIXME: fe index is not always fenumber: think about usb tuner
-					if( i != live_fe->fenumber && getFE(i)->getInfo()->type == live_fe->getInfo()->type )
-					{
+					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
 						return true;
-					}
 				}
 			}
 			#endif
@@ -606,11 +603,11 @@ CZapitClient::responseGetLastChannel load_settings(void)
 
 void sendCaPmt(bool forupdate = false)
 {
-	if(!live_channel)
-		return;
+	//if(!live_channel)
+	//	return;
 	
 	// cam
-	live_cam->setCaPmt(live_channel->getCaPmt());
+	live_cam->setCaPmt(live_channel->getCaPmt(), live_fe->fenumber, 1);
 	
 	// ci cam
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
@@ -3412,7 +3409,7 @@ int zapit_main_thread(void *data)
 	ci = cDvbCi::getInstance();
 #endif
 
-#if defined (PLATFORM_SPARK7162)
+#if defined (PLATFORM_SPARK_7162)
 	//lib-stb-hal/libspark
 	/* 
 	* this is a strange hack: the drivers seem to only work correctly after
