@@ -153,6 +153,8 @@ class CZapitChannel
 
 		/* the conditional access program map table of this channel */
 		CCaPmt * 			caPmt;
+		unsigned char			* rawPmt;
+		int				pmtLen;
 		
 		/* from neutrino CChannel class */
 		uint64_t      last_unlocked_EPGid;
@@ -202,6 +204,7 @@ class CZapitChannel
 		unsigned short		getPreAudioPid(void)		{ return audioPid; }
 		bool			getPidsFlag(void)		{ return pidsFlag; }
 		CCaPmt *		getCaPmt(void)			{ return caPmt; }
+		unsigned char *		getRawPmt(int &len)		{ len = pmtLen; return rawPmt; };
 
 		CZapitAudioChannel * 	getAudioChannel(unsigned char index = 0xFF);
 		unsigned short 		getAudioPid(unsigned char index = 0xFF);
@@ -221,7 +224,8 @@ class CZapitChannel
 		void setAudioPid(unsigned short pAudioPid)		{ audioPid = pAudioPid; }
 		void setPrivatePid(unsigned short pPrivatePid)		{ privatePid = pPrivatePid; }
 		void setPidsFlag(void)					{ pidsFlag = true; }
-		void setCaPmt(CCaPmt * pCaPmt)				{ caPmt = pCaPmt; }
+		void setCaPmt(CCaPmt * pCaPmt);				//{ caPmt = pCaPmt; }
+		void setRawPmt(unsigned char * pmt, int len = 0);
 		
 		/* cleanup methods */
 		void resetPids(void);
