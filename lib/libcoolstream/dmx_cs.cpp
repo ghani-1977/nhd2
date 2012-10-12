@@ -45,6 +45,11 @@ cDemux *videoDemux = NULL;
 cDemux *audioDemux = NULL;
 
 
+/* did we already DMX_SET_SOURCE on that demux device? */
+#define NUM_DEMUXDEV 3
+static bool init[NUM_DEMUXDEV] = { false, false, false };
+
+
 static const char * aDMXCHANNELTYPE[] = {
 	"",
 	"DMX_VIDEO_CHANNEL",
@@ -58,37 +63,16 @@ static const char * aDMXCHANNELTYPE[] = {
 
 cDemux::cDemux(int num)
 {  
-	dprintf(DEBUG_INFO, "%s:%s(%d)\n", FILENAME, __FUNCTION__, num);	
+	//dprintf(DEBUG_INFO, "%s:%s(%d)\n", FILENAME, __FUNCTION__, num);	
 
 	// dmx file descriptor
 	demux_fd = -1;
 	
-	// adapter index
-	adapter_num = 0;	//AdapterIndex
-	
 	// demux index
-#if defined (PLATFORM_SPARK_7162)
-	if(live_fe != NULL)
-	{
-		switch(live_fe->fenumber)
-		{
-			case 0:
-				demux_num = 1;
-				break;
-				
-			case 1:
-				demux_num = 0;
-				break;
-				
-			case 2:
-				demux_num = 2;
-		}
-	}
-	else
-		demux_num = 0;
-#else
 	demux_num = num;
-#endif
+
+	// last dmx source
+	last_source = -1;
 }
 
 cDemux::~cDemux()
@@ -106,13 +90,25 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
-	if (demux_fd > -1)
-		return true;
+	demux_num = feindex;
+	
+	if (last_source == feindex) 
+	{
+		printf("%s #%d: source (%d) did not change\n", __func__, feindex, last_source);
+		if (demux_fd > -1)
+			return true;
+	}
+	
+	if (demux_fd > -1) 
+	{
+		printf("%s #%d: FD ALREADY OPENED fd = %d lastsource %d devnum %d\n", __func__, feindex, demux_fd, last_source, demux_num);
+		close(demux_fd);
+	}
 	
 	char devname[256];
 
 	//Open Demux()
-	sprintf(devname, "/dev/dvb/adapter%d/demux%d", adapter_num, demux_num);
+	sprintf(devname, "/dev/dvb/adapter0/demux%d", demux_num);
 
 	demux_fd = open(devname, flags);
 
@@ -122,23 +118,31 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// Set Demux Source (default FRONT0)
-	fe_num = feindex;
-	int n = DMX_SOURCE_FRONT0 + fe_num;
-	
-	if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
+	if (!init[demux_num])
 	{
-		perror("DMX_SET_SOURCE");
-		return false;
+		printf("dmx(%d) source(%d) not set yet\n", demux_num, feindex);
+		
+		int n = DMX_SOURCE_FRONT0 + feindex;
+		
+		if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
+		{
+			perror("DMX_SET_SOURCE");
+		}
+		else
+			init[demux_num] = true;
 	}
 	
 	dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
 
 	// Set Buffer Size
-	if (ioctl(demux_fd, DMX_SET_BUFFER_SIZE, uBufferSize) < 0)
+	if (uBufferSize > 0)
 	{
-		perror("DMX_SET_BUFFER_SIZE");
-		return false;
+		if (ioctl(demux_fd, DMX_SET_BUFFER_SIZE, uBufferSize) < 0)
+			perror("DMX_SET_BUFFER_SIZE");
 	}
+	
+	//
+	last_source = feindex;
 
 	return true;
 }
@@ -157,15 +161,16 @@ void cDemux::Close(void)
 
 bool cDemux::Start(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);	
+	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
+	
+	if (demux_fd < 0)
+	{
+		printf("%s #%d: not open!\n", __FUNCTION__, demux_num);
+		return false;
+	}
 
-//#ifndef __sh__
         if (ioctl(demux_fd , DMX_START) < 0)
-        {
-                perror("DMX_START");
-                return false;
-        }  
-//#endif        
+                perror("DMX_START");       
 
 	return true;
 }
@@ -175,13 +180,13 @@ bool cDemux::Stop(void)
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
 	
 	if(demux_fd < 0)
-		return false;
-	
-	if( ioctl(demux_fd, DMX_STOP) < 0)
 	{
-		perror("DMX_STOP");
+		printf("%s #%d: not open!\n", __FUNCTION__, demux_num);
 		return false;
 	}
+	
+	if( ioctl(demux_fd, DMX_STOP) < 0)
+		perror("DMX_STOP");
 	
 	return true;
 }
@@ -195,7 +200,10 @@ int cDemux::Read(unsigned char * const buff, const size_t len, int Timeout)
 	ufds.revents = 0;
 	
 	if (demux_fd < 0)
+	{
+		printf("%s #%d: not open!\n", __func__, demux_num);
 		return -1;
+	}
 	
 	if (type == DMX_PSI_CHANNEL && Timeout <= 0)
 		Timeout = 60 * 1000;
@@ -241,54 +249,58 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 	
 	dmx_sct_filter_params sct;
 	memset(&sct, 0, sizeof(dmx_sct_filter_params));
+	
+	if (len > DMX_FILTER_SIZE)
+	{
+		printf("%s #%d: len too long: %d, DMX_FILTER_SIZE %d\n", __func__, demux_num, len, DMX_FILTER_SIZE);
+		len = DMX_FILTER_SIZE;
+	}
 
 	/* Pid */
-	sct.pid= Pid;
+	sct.pid = Pid;
 
 	/* filter */
-	if(Tid)
-		memcpy(sct.filter.filter, Tid, len );
+	memcpy(sct.filter.filter, Tid, len );
 
 	/* mask */
-	if(Mask)
-		memcpy(sct.filter.mask, Mask, len );
+	memcpy(sct.filter.mask, Mask, len );
 
 	/* mode */
 	if(nMask)
 		memcpy(sct.filter.mode, nMask, len );
 	
 	/* flag */
-	sct.flags = DMX_IMMEDIATE_START;
+	sct.flags = DMX_IMMEDIATE_START|DMX_CHECK_CRC;
 	
 	/* timeout */
 	int to = 0;
 	switch (Tid[0]) 
 	{
 		case 0x00: /* program_association_section */
-			sct.timeout = 2000;
-			//to = 2000;
+			//sct.timeout = 2000;
+			to = 2000;
 			break;
 
 		case 0x01: /* conditional_access_section */
-			sct.timeout = 6000;
-			//to = 6000;
+			//sct.timeout = 6000;
+			to = 6000;
 			break;
 
 		case 0x02: /* program_map_section */
-			sct.timeout = 1500;
-			//to = 1500;
+			//sct.timeout = 1500;
+			to = 1500;
 			break;
 
 		case 0x03: /* transport_stream_description_section */
-			sct.timeout = 10000;
-			//to = 10000;
+			//sct.timeout = 10000;
+			to = 10000;
 			break;
 
 		/* 0x04 - 0x3F: reserved */
 
 		case 0x40: /* network_information_section - actual_network */
-			sct.timeout = 10000;
-			//to = 10000;
+			//sct.timeout = 10000;
+			to = 10000;
 			break;
 
 		case 0x41: /* network_information_section - other_network */
@@ -297,72 +309,74 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 			break;
 
 		case 0x42: /* service_description_section - actual_transport_stream */
-			sct.timeout = 10000;
-			//to = 10000;
+			//sct.timeout = 10000;
+			to = 10000;
 			break;
 
 		/* 0x43 - 0x45: reserved for future use */
 
 		case 0x46: /* service_description_section - other_transport_stream */
-			sct.timeout = 10000;
-			//to = 10000;
+			//sct.timeout = 10000;
+			to = 10000;
 			break;
 
 		/* 0x47 - 0x49: reserved for future use */
 
 		case 0x4A: /* bouquet_association_section */
-			sct.timeout = 11000;
-			//to = 11000;
+			//sct.timeout = 11000;
+			to = 11000;
 			break;
 
 		/* 0x4B - 0x4D: reserved for future use */
 
 		case 0x4E: /* event_information_section - actual_transport_stream, present/following */
-			sct.timeout = 2000; 
-			//to = 2000;
+			//sct.timeout = 2000; 
+			to = 2000;
 			break;
 
 		case 0x4F: /* event_information_section - other_transport_stream, present/following */
-			sct.timeout = 10000;
-			//to = 10000;
+			//sct.timeout = 10000;
+			to = 10000;
 			break;
 
 		case 0x70: /* time_date_section */ /* UTC */
-			//sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			sct.pid     = 0x0014;
-			sct.timeout = 31000;
-			//to = 31000;
+			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
+			sct.flags |= DMX_ONESHOT;
+			//sct.pid     = 0x0014;
+			//sct.timeout = 30000;
+			to = 30000;
 			break;
 
 		case 0x71: /* running_status_section */
-			//sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			sct.timeout = 0;
-			//to = 0;
+			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
+			//sct.timeout = 0;
+			to = 0;
 			break;
 
 		case 0x72: /* stuffing_section */
-			//sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			sct.timeout = 0;
-			//to = 0;
+			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
+			//sct.timeout = 0;
+			to = 0;
 			break;
 
 		case 0x73: /* time_offset_section */ /* UTC */
-			sct.pid     = 0x0014;
-			sct.timeout = 31000;
-			//to = 31000;
+			sct.flags |= DMX_ONESHOT;
+			//sct.pid     = 0x0014;
+			//sct.timeout = 30000;
+			to = 30000;
 			break;
 
 		/* 0x74 - 0x7D: reserved for future use */
 
 		case 0x7E: /* discontinuity_information_section */
-			//sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			sct.timeout = 0;
-			//to = 0;
+			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
+			//sct.timeout = 0;
+			to = 0;
 			break;
 
 		case 0x7F: /* selection_information_section */
-			sct.timeout = 0;
-			//to = 0;
+			//sct.timeout = 0;
+			to = 0;
 			break;
 
 		/* 0x80 - 0x8F: ca_message_section */
@@ -373,10 +387,12 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 			break;
 	}
 	
-	//if (Timeout == 0 /*&& nMask == NULL*/)
-	//	sct.timeout = to;
+	if (Timeout == 0 && nMask == NULL)
+		sct.timeout = to;
 	
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x Len=%d Timeout=%d\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid, len, sct.timeout);
+	
+	//ioctl (demux_fd, DMX_STOP);
 
 	/* Set Demux Section Filter() */
 	if (ioctl(demux_fd, DMX_SET_FILTER, &sct) < 0)
@@ -388,9 +404,18 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 	return true;
 }
 
-bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
+bool cDemux::pesFilter(const unsigned short Pid/*, const dmx_input_t Input*/)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid);
+	
+	/* allow PID 0 for web streaming e.g.
+	 * this check originally is from tuxbox cvs but I'm not sure
+	 * what it is good for...
+	if (pid <= 0x0001 && dmx_type != DMX_PCR_ONLY_CHANNEL)
+		return false;
+	 */
+	if ((Pid >= 0x0002 && Pid <= 0x000f) || Pid >= 0x1fff)
+		return false;
 	
 	if(demux_fd <= 0)
 		return false;
@@ -401,8 +426,8 @@ bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
 	pid = Pid;
 
 	pes.pid      	= Pid;
-	//pes.input    = DMX_IN_FRONTEND;
-	pes.input 	= Input;
+	pes.input    = DMX_IN_FRONTEND;
+	//pes.input 	= Input;
 	pes.output   	= DMX_OUT_DECODER;
 	
 	pes.flags    	= DMX_IMMEDIATE_START;

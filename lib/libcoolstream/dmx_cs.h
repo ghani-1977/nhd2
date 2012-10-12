@@ -30,7 +30,7 @@
 #define DMX_BUFFER_SIZE			8192
 #define AUDIO_STREAM_BUFFER_SIZE     	64*1024 	//65536
 #define VIDEO_STREAM_BUFFER_SIZE     	64*1024 	//65536
-#define RECORD_STREAM_BUFFER_SIZE	256*1024 	//262144)
+#define RECORD_STREAM_BUFFER_SIZE	512*1024 	//262144)
 
 
 typedef enum
@@ -50,11 +50,11 @@ class cDemux
 	private:
 		int demux_num;
 		int demux_fd;
-		int adapter_num;
-		int fe_num;
 		
 		DMX_CHANNEL_TYPE type;
 		unsigned short pid;
+		
+		int last_source;
 
 	public:
 		bool Open(DMX_CHANNEL_TYPE Type, int uBufferSize = DMX_BUFFER_SIZE, int feindex = 0);
@@ -63,7 +63,7 @@ class cDemux
 		bool Stop(void);
 		int Read(unsigned char * const buff, const size_t len, int Timeout = 0);
 		bool sectionFilter(unsigned short Pid, const unsigned char * const Tid, const unsigned char * const Mask, int len, int Timeout = DEMUX_POLL_TIMEOUT, const unsigned char * const nMask = 0);
-		bool pesFilter(const unsigned short Pid, const dmx_input_t Input = DMX_IN_FRONTEND);
+		bool pesFilter(const unsigned short Pid/*, const dmx_input_t Input = DMX_IN_FRONTEND*/);
 		void addPid(unsigned short Pid);
 		void removePid(unsigned short Pid);
 		void getSTC(int64_t * STC);

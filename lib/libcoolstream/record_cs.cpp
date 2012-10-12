@@ -57,12 +57,6 @@ cRecord::~cRecord()
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	Stop();
-	
-	if (dmx)
-	{
-		delete dmx;
-		dmx = NULL;
-	}
 }
 
 bool cRecord::Open(int numpids)
@@ -80,7 +74,7 @@ bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int num
 	if (!dmx)
 		dmx = new cDemux( demux_num );
 
-	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, fe_num );
+	dmx->Open(DMX_TP_CHANNEL, /*3 * 3008 * 62*/RECORD_STREAM_BUFFER_SIZE, fe_num );
 	dmx->pesFilter(vpid);
 
 	for (i = 0; i < numpids; i++)
@@ -122,8 +116,8 @@ bool cRecord::Stop(void)
 	if (dmx)
 	{
 		dmx->Stop();
-		//delete dmx;
-		//dmx = NULL;
+		delete dmx;
+		dmx = NULL;
 	}
 
 	if (file_fd != -1)
