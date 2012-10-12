@@ -506,8 +506,22 @@ void CScanSetup::showScanService()
 	}
 	
 	// frontend mode
-	// FIXME:check for loop
-	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, (getFE(feindex)->getInfo()->type == FE_QPSK)? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
+	// check for twin
+	// mode loop can be used if we hat twice sat tuner, otherwise direct connected or not connected
+	// FIXME:
+	bool sat_twin = false;
+	if( getFE(feindex)->getInfo()->type == FE_QPSK )
+	{
+		for(int i = 0; i < FrontendCount; i++) 
+		{
+			if( i != feindex && getFE(i)->getInfo()->type == FE_QPSK )
+			{
+				sat_twin = true;
+				break;
+			}
+		}
+	}
+	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, /*(getFE(feindex)->getInfo()->type == FE_QPSK)*/sat_twin? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
