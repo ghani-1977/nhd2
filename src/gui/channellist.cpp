@@ -1747,7 +1747,7 @@ void CChannelList::paintItem2DetailsLine(int pos, int ch_index)
 	}
 }
 
-bool CChannelList::SameTP(CZapitChannel * channel)
+bool CChannelList::canZap(CZapitChannel * channel)
 {
 	bool iscurrent = true;
 
@@ -1755,6 +1755,7 @@ bool CChannelList::SameTP(CZapitChannel * channel)
 	{
 		if(channel == NULL)
 			channel = chanlist[selected];
+		
 		iscurrent = feCanTune(channel);
 	}
 	
@@ -1771,7 +1772,7 @@ void CChannelList::paintItem(int pos)
 
 
 	if(curr < chanlist.size())
-		iscurrent = SameTP(chanlist[curr]);
+		iscurrent = canZap(chanlist[curr]);
 	
 	if (curr == selected) 
 	{

@@ -134,6 +134,6 @@ class CChannelList
 		void ClearList(void);
 		//friend class CZapitChannel;
 		
-		bool SameTP(CZapitChannel * channel = NULL);
+		bool canZap(CZapitChannel * channel = NULL);
 };
 #endif
