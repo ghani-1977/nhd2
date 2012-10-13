@@ -128,9 +128,6 @@ class CFrontend
 		bool slave;
 		bool standby;
 		
-		/* tuning finished flag */
-		//bool tuned;
-		
 		/* information about the used frontend type */
 		struct dvb_frontend_info info;
 		
