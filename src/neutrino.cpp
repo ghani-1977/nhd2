@@ -113,9 +113,9 @@
 #include "gui/filebrowser.h"
 #include "gui/widget/progressbar.h"
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 #include "gui/cam_menu.h"
-#endif
+//#endif
 
 #include "gui/hdd_menu.h"
 
@@ -269,9 +269,9 @@ CRemoteControl 		* g_RemoteControl;
 SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 CMoviePlayerGui		* moviePlayerGui;
 CPictureViewer 		* g_PicViewer;
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 CCAMMenuHandler 	* g_CamHandler;
-#endif
+//#endif
 
 bool parentallocked = false;
 static char **global_argv;
@@ -310,9 +310,9 @@ static void initGlobals(void)
 	g_EventList     = NULL;
 	g_Locale        = new CLocaleManager;
 	g_PluginList    = NULL;
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler 	= NULL;
-#endif
+//#endif
 
 #if ENABLE_RADIOTEXT
 	g_Radiotext     = NULL;
@@ -1022,10 +1022,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_lastchannel = configfile.getInt32( "key_lastchannel",  CRCInput::RC_recall );
 	
 	// pip keys
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
 	g_settings.key_pip = configfile.getInt32("key_pip", CRCInput::RC_pip);
 	g_settings.key_pip_subchannel = configfile.getInt32("key_pip_subchannel", CRCInput::RC_pipsubch);
-//#endif
 
 	// mpkeys
 	g_settings.mpkey_rewind = configfile.getInt32( "mpkey.rewind", CRCInput::RC_rewind );
@@ -2495,10 +2493,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler = new CCAMMenuHandler();
 	g_CamHandler->init();
-#endif	
+//#endif	
 
 	// plugins
 	g_PluginList = new CPlugins;
@@ -2780,9 +2778,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	SHTDCNT::getInstance()->init();
 
 	// Cam-Ci
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	cDvbCi::getInstance()->SetHook(CISendMessage);
-#endif	
+//#endif	
 
 	// real run ;-)
 	RealRun(mainMenu);
@@ -3384,13 +3382,13 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	}
 
 	// we assume g_CamHandler free/delete data if needed
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	res = g_CamHandler->handleMsg(msg, data);
 	if( res != messages_return::unhandled ) 
 	{
 		return(res & (0xFFFFFFFF - messages_return::unhandled));
 	}
-#endif	
+//#endif	
 
 	// handle Keys
 	if( msg == CRCInput::RC_ok || msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
@@ -4526,9 +4524,8 @@ void CNeutrinoApp::tvMode( bool rezap )
 	}
 	else if( mode == mode_standby ) 
 	{
-//#if !defined (PLATFORM_CUBEREVO) && !defined (PLATFORM_CUBEREVO_MINI) && !defined (PLATFORM_CUBEREVO_MINI2) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_9500HD)	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-//#endif		
+		
 		if(audioDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
 	}

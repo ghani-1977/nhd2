@@ -55,37 +55,7 @@ if ENABLE_UPNP
 libneutrino_gui2_a_SOURCES += upnpbrowser.cpp
 endif
 
-if BOXTYPE_CUBEREVO
 libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_CUBEREVO_MINI
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_CUBEREVO_MINI2
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_CUBEREVO_9500HD
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_DUCKBOX
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_GIGABLUE
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_DREAMBOX
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
-
-if BOXTYPE_XTREND
-libneutrino_gui2_a_SOURCES += cam_menu.cpp
-endif
 
 libtimerlist_a_SOURCES = timerlist.cpp
 
