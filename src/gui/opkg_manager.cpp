@@ -46,6 +46,7 @@
 #include <neutrino.h>
 
 #include <gui/widget/icons.h>
+#include <gui/widget/hintbox.h>
 #include <gui/widget/messagebox.h>
 #include "gui/widget/progresswindow.h"
 #include <driver/screen_max.h>
@@ -58,7 +59,10 @@
 COPKGManager::COPKGManager()
 {
 	width = 560;
+	vp_pkg_menu = NULL;
+	v_pkg_list.clear();
 	v_pkg_installed.clear();
+	v_pkg_upgradable.clear();
 }
 
 
@@ -76,6 +80,14 @@ const opkg_cmd_struct_t pkg_types[OM_MAX] =
 	{OM_UPGRADE,		"opkg-cl upgrade"},
 };
 
+const char *pkg_menu_names[] = {
+	"List All",
+	"List Installed",
+	"List Upgradable",
+	"Update Package List",
+	"Upgrade System",
+};
+
 int COPKGManager::exec(CMenuTarget* parent, const std::string &actionKey)
 {
 	int   res = menu_return::RETURN_REPAINT;
@@ -83,24 +95,49 @@ int COPKGManager::exec(CMenuTarget* parent, const std::string &actionKey)
 	if (parent)
 		parent->hide();
 	
-	for(uint i = 0; i < v_pkg_list.size(); i++)
+	for(uint pi = 0; pi < OM_MAX; pi++)
 	{
-		if(actionKey == v_pkg_list[i]) 
+		if(actionKey == pkg_types[pi].cmdstr)
 		{
-			if(execCmd(pkg_types[OM_UPDATE].cmdstr))
+			if (pi < OM_UPDATE)
+				res = showPkgMenu(pi);
+			else
 			{
-				std::string action_name = "opkg-cl -V 3 install " + getBlankPkgName(v_pkg_list[i]);
-				if(execCmd(action_name.c_str()))
+				if(execCmd(pkg_types[pi].cmdstr))
 				{
-					DisplayInfoMessage("Update successfull, restart of Neutrino required...");
+					DisplayInfoMessage("Command successfull, restart of Neutrino may be required...");
 					//CNeutrinoApp::getInstance()->exec(NULL, "restart");
 					return res;
 				}
+				else
+					DisplayInfoMessage("Command failed");
 			}
-			else
-				DisplayInfoMessage("Update failed");
 			
 			return res;
+		}
+	}
+	
+	if (vp_pkg_menu)
+	{
+		for(uint i = 0; i < vp_pkg_menu->size(); i++)
+		{
+			if(actionKey == vp_pkg_menu->at(i)) 
+			{
+				if(execCmd(pkg_types[OM_UPDATE].cmdstr))
+				{
+					std::string action_name = "opkg-cl -V 3 install " + getBlankPkgName(vp_pkg_menu->at(i));
+					if(execCmd(action_name.c_str()))
+					{
+						DisplayInfoMessage("Update successfull, restart of Neutrino required...");
+						//CNeutrinoApp::getInstance()->exec(NULL, "restart");
+						return res;
+					}
+				}
+				else
+					DisplayInfoMessage("Update failed");
+				
+				return res;
+			}
 		}
 	}
 	
@@ -112,20 +149,46 @@ int COPKGManager::exec(CMenuTarget* parent, const std::string &actionKey)
 
 
 //show items
-int COPKGManager::showMenu()
+int COPKGManager::showPkgMenu(const int pkg_content_id)
 {
+	CHintBox * loadingBox;
+
+	loadingBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, "Loading package list");	// UTF-8	
+	loadingBox->paint();
+
 	if(!execCmd(pkg_types[OM_UPDATE].cmdstr))
 		DisplayInfoMessage("Update failed");
 		
 	CMenuWidget *menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
 	
 	//menu->addIntroItems();
-	getPkgData(OM_LIST);
-	for(uint i = 0; i < v_pkg_list.size(); i++)
+	getPkgData(pkg_content_id);
+	if (vp_pkg_menu)
 	{
-		printf("Update to %s\n", v_pkg_list[i].c_str());
-		//std::string action_name = getBlankPkgName(v_pkg_list[i]);
-		menu->addItem( new CMenuForwarderNonLocalized(v_pkg_list[i].c_str(), true, NULL , this, v_pkg_list[i].c_str()));
+		for(uint i = 0; i < vp_pkg_menu->size(); i++)
+		{
+			printf("Update to %s\n", vp_pkg_menu->at(i).c_str());
+			//std::string action_name = getBlankPkgName(vp_pkg_menu->at(i));
+			menu->addItem( new CMenuForwarderNonLocalized(vp_pkg_menu->at(i).c_str(), true, NULL , this, vp_pkg_menu->at(i).c_str()));
+		}
+	}
+
+	loadingBox->hide();
+	int res = menu->exec (NULL, "");
+	menu->hide ();
+	delete menu;
+	delete loadingBox;
+	return res;
+}
+
+int COPKGManager::showMenu()
+{
+	CMenuWidget *menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
+	
+	//menu->addIntroItems();
+	for(uint i = 0; i < OM_MAX; i++)
+	{
+		menu->addItem( new CMenuForwarderNonLocalized(pkg_menu_names[i], true, NULL , this, pkg_types[i].cmdstr));
 	}
 
 
@@ -171,11 +234,37 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 		return;
 	}
 	
-	char buf[256];
+	char buf[OM_MAX_LINE_LENGTH];
 	setbuf(f, NULL);
 	int in, pos;
+	bool is_pkgline;
 	pos = 0;
-	v_pkg_installed.clear();
+	
+	switch (pkg_content_id) 
+	{
+		case OM_LIST: //list of pkgs
+		{
+			v_pkg_list.clear();
+			vp_pkg_menu = &v_pkg_list;
+			break;
+		}
+		case OM_LIST_INSTALLED: //installed pkgs
+		{
+			v_pkg_installed.clear();
+			vp_pkg_menu = &v_pkg_installed;
+			break;
+		}
+		case OM_LIST_UPGRADEABLE:
+		{
+			v_pkg_upgradable.clear();
+			vp_pkg_menu = &v_pkg_upgradable;
+			break;
+		}
+		default:
+			vp_pkg_menu = NULL;
+			printf("unknown content id! \n\t");
+			break;
+	}
 
 	while (true)
 	{
@@ -184,13 +273,19 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 			break;
 
 		buf[pos] = (char)in;
-		pos++;
+		if (pos == 0)
+			is_pkgline = ((in != ' ') && (in != '\t'));
+		/* avoid buffer overflow */
+		if (pos+1 > OM_MAX_LINE_LENGTH)
+			in = '\n';
+		else
+			pos++;
 		buf[pos] = 0;
 		
 		if (in == '\b' || in == '\n')
 		{
 			pos = 0; /* start a new line */
-			if (in == '\n')
+			if ((in == '\n') && is_pkgline)
 			{
 				//clean up string
 				int ipos = -1;
@@ -210,6 +305,12 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 					case OM_LIST_INSTALLED: //installed pkgs
 					{
 						v_pkg_installed.push_back(line);
+						//printf("%s\n", buf);
+						break;
+					}
+					case OM_LIST_UPGRADEABLE:
+					{
+						v_pkg_upgradable.push_back(line);
 						//printf("%s\n", buf);
 						break;
 					}

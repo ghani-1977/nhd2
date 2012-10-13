@@ -42,6 +42,9 @@
 
 #include <string>
 
+
+#define OM_MAX_LINE_LENGTH 512
+
 typedef enum 
 {
 	OM_LIST,
@@ -65,6 +68,7 @@ class COPKGManager : public CMenuTarget
 	private:
 		int width;
 		
+		std::vector<std::string>* vp_pkg_menu;
 		std::vector<std::string> v_pkg_list;
 		std::vector<std::string> v_pkg_installed;
 		std::vector<std::string> v_pkg_upgradable;
@@ -72,6 +76,7 @@ class COPKGManager : public CMenuTarget
 		bool execCmd(const char* cmdstr);
 		void getPkgData(const int pkg_content_id);
 		std::string getBlankPkgName(const std::string& line);
+		int showPkgMenu(const int pkg_content_id);
 		int showMenu();
 
 	public:	
