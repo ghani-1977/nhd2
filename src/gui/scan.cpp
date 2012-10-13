@@ -125,17 +125,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 
         g_Zapit->stopPlayBack();
 
-	#if 0
-	bool usedBackground = frameBuffer->getuseBackground();
-	if (usedBackground)
-		frameBuffer->saveBackgroundImage();
-	
-	frameBuffer->loadBackgroundPic("scan.jpg");
-#ifdef FB_BLIT	
-	frameBuffer->blit();
-#endif
-	#endif
-
 	g_Sectionsd->setPauseScanning(true);
 
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
@@ -376,19 +365,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 
 	hide();
-	
-	// Restore previous background
-	#if 0
-	if (usedBackground)
-		frameBuffer->restoreBackgroundImage();
-	
-	frameBuffer->useBackground(usedBackground);
-	frameBuffer->paintBackground();
-	
-#ifdef FB_BLIT
-	frameBuffer->blit();
-#endif
-	#endif
 	
 	/* start sectionsd */
 	g_Sectionsd->setPauseScanning(false);
