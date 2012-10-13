@@ -1374,9 +1374,11 @@ void CMoviePlayerGui::PlayFile(void)
 						int namepos = _filelist[0].Name.rfind("vlc://");
 						std::string mrl_str = "";
 						if (g_settings.streaming_vlc10 > 1)
+						{
 							mrl_str += "file://";
 							if (filename[namepos + 6] != '/')
 								mrl_str += "/";
+						}
 						mrl_str += _filelist[0].Name.substr(namepos + 6);
 						char *tmp = curl_escape (mrl_str.c_str (), 0);
 						strncpy (mrl, tmp, sizeof (mrl) - 1);
