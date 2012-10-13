@@ -102,6 +102,7 @@ bool sdt_wakeup;
 
 /* the conditional access module */
 CCam * live_cam = NULL;
+CCam * record_cam = NULL;
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -248,7 +249,7 @@ bool initFrontend()
 	
 	FrontendCount = femap.size();
 	
-	printf("%s found %d frontends\n", __FUNCTION__, femap.size());
+	DBG("%s found %d frontends\n", __FUNCTION__, femap.size());
 	
 	if(femap.size() == 0)
 		return false;
@@ -261,7 +262,7 @@ CFrontend * getFE(int index)
 	if((unsigned int) index < femap.size())
 		return femap[index];
 	
-	printf("getFE: Frontend #%d not found", index);
+	DBG("getFE: Frontend #%d not found\n", index);
 	
 	return NULL;
 }
@@ -281,7 +282,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 		uint8_t tp_pol = thischannel->polarization & 1;
 		uint8_t fe_pol = fe->getPolarization() & 1;
 
-		printf("%s fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
+		DBG("%s fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
 		
 		if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
 			return true;
@@ -292,30 +293,35 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 
 bool feCanTune(CZapitChannel * thischannel)
 {
-	// sme tid
-	if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
-		return true;
-	else
+	if(currentMode & RECORD_MODE)
 	{
-		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-			
-		if (sit != satellitePositions.end()) 
+		// sme tp id
+		if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
+			return true;
+		else // not same tp id
 		{
-			// multi
-			if( sit->second.type != live_fe->getDeliverySystem() ) 
-				return true;
-			#if 1
-			else
+			t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+			sat_iterator_t sit = satellitePositions.find(satellitePosition);
+				
+			if (sit != satellitePositions.end()) 
 			{
-				// if any an other tuner (twin) have same type and is as twin set up
-				for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+				// multi
+				if( sit->second.type != live_fe->getDeliverySystem() ) 
+					return true;
+				// twin
+				else
 				{
-					if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
-						return true;
+					// if any an other tuner (twin) have same type and is as twin set up
+					//for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+					for(int i = 0; i < FrontendCount; i++)
+					{
+						//if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
+						//FIXME: fenumber is not feindex???
+						if( (i != live_fe->fenumber) && (getFE(i)->getInfo()->type == live_fe->getInfo()->type) )
+							return true;
+					}
 				}
 			}
-			#endif
 		}
 	}
 	
@@ -336,7 +342,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		printf("getFrontend: fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		DBG("getFrontend: fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fenumber, 
 				fe->getFrequency(), 
 				fe->getTsidOnid(), 
@@ -362,7 +368,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	}
 	
 	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
-	printf("%s Selected fe: %d\n", __FUNCTION__, ret ? ret->fenumber : -1);
+	DBG("%s Selected fe: %d\n", __FUNCTION__, ret ? ret->fenumber : -1);
 	
 	return ret;
 }
@@ -426,7 +432,6 @@ void saveFrontendConfig(int feindex)
 void loadFrontendConfig()
 {
 	printf("zapit: loadFrontendConfig\n");
-	
 	
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		WARN("%s not found", FRONTEND_CONFIGFILE);
@@ -601,17 +606,44 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
 
-void sendCaPmt(bool forupdate = false)
+void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 1, bool forupdate = false)
 {
-	//if(!live_channel)
-	//	return;
+	#if 0
+	// dual decoding
+	//FIXME: broken???
+	if(currentMode & RECORD_MODE) 
+	{
+		if(rec_channel_id != live_channel_id) 
+		{
+			/* zap from rec. channel */
+			record_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask); // demux 0
+                } 
+                else if(forupdate) 
+		{ 
+			//FIXME broken!
+			/* forupdate means pmt update  for live channel, using old camask */
+                        live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask/*, true*/ );// update
+		} 
+		else 
+		{
+			/* zap back to rec. channel */
+			live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask/*, true*/); // update
+			record_cam->sendMessage(0,0); // stop/close
+		}
+	} 
+	else 
+	{
+		//camask = 1;
+		live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask);
+	}
+	#endif
 	
 	// cam
-	live_cam->setCaPmt(live_channel->getCaPmt(), live_fe->fenumber, 1);
+	live_cam->setCaPmt(thischannel->getCaPmt(), fe->fenumber);
 	
 	// ci cam
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-	ci->SendCaPMT(live_channel->getCaPmt());
+	ci->SendCaPMT(thischannel->getCaPmt());
 #endif	
 }
 
@@ -898,10 +930,10 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// start playback (live)
 	startPlayBack(live_channel);
 
+	// send ca pmt
 	printf("%s sending capmt....\n", __FUNCTION__);
 
-	// cam
-	sendCaPmt(forupdate);
+	sendCaPmt(live_channel, live_fe/*, 1, forupdate*/);
 	
 	// send caid
 	int caid = 1;
@@ -952,10 +984,12 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
 	
+	sendCaPmt(rec_channel, record_fe);
+	
 	// ci cam
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-	ci->SendCaPMT(rec_channel->getCaPmt(), record_fe->fenumber );
-#endif	
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
+//	ci->SendCaPMT(rec_channel->getCaPmt(), record_fe->fenumber );
+//#endif	
 
 	return 0;
 }
@@ -2094,7 +2128,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			startPlayBack(live_channel);
 			
 			//start cam
-			sendCaPmt();
+			printf("%s sending capmt....\n", __FUNCTION__);
+			sendCaPmt(live_channel, live_fe);
 			
 			break;
 	
@@ -2956,6 +2991,15 @@ void enterStandby(void)
 		delete live_cam;
 		live_cam = NULL;
 	}
+	
+	if(!(currentMode & RECORD_MODE))
+	{
+		if(record_cam)
+		{
+			delete record_cam;
+			record_cam = NULL;
+		}
+	}
 }
 
 void leaveStandby(void)
@@ -2965,9 +3009,15 @@ void leaveStandby(void)
 	if(!standby) 
 		return;
 
+	// live cam
 	if (!live_cam) 
 	{
 		live_cam = new CCam();
+	}
+	
+	if(record_cam)
+	{
+		record_cam = new CCam();
 	}
 
 	standby = false;
@@ -3560,7 +3610,8 @@ int zapit_main_thread(void *data)
 					} 
 					else 
 					{
-						sendCaPmt(true);
+						printf("%s sending capmt....\n", __FUNCTION__);
+						sendCaPmt(live_channel, live_fe/*, 1, true*/);
 						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe->fenumber);
 					}
 						
