@@ -91,14 +91,14 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	
 	if (last_source == feindex) 
 	{
-		printf("%s #%d: source (%d) did not change\n", __func__, feindex, last_source);
+		dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __func__, feindex, last_source);
 		if (demux_fd > -1)
 			return true;
 	}
 	
 	if (demux_fd > -1) 
 	{
-		printf("%s #%d: FD ALREADY OPENED fd = %d lastsource %d devnum %d\n", __func__, feindex, demux_fd, last_source, demux_num);
+		dprintf(DEBUG_INFO, "%s #%d: FD ALREADY OPENED fd = %d lastsource %d devnum %d\n", __func__, feindex, demux_fd, last_source, demux_num);
 		close(demux_fd);
 	}
 	
@@ -112,7 +112,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (demux_fd < 0)
 		return false;
 
-	dprintf(DEBUG_NORMAL, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
+	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// Set Demux Source (default FRONT0)
 	if (!init[demux_num])
