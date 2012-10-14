@@ -94,6 +94,8 @@ CMenuWidget::CMenuWidget()
         selected = -1;
         iconOffset = 0;
 	offx = offy = 0;
+	//savescreen	= false;
+	//background	= NULL;
 }
 
 CMenuWidget::CMenuWidget(const neutrino_locale_t Name, const std::string & Icon, const int mwidth, const int mheight )
@@ -188,6 +190,11 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
         }
         else
 		fadeValue = g_settings.gtx_alpha;
+	
+	//if(savescreen) 
+	//{
+	//	saveScreen();
+	//}
 
 	paint();
 	
@@ -524,6 +531,9 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 
 void CMenuWidget::hide()
 {
+	//if( savescreen && background)
+	//	restoreScreen();//FIXME
+	//else
 	frameBuffer->paintBackgroundBoxRel(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5); //15=sb_width, ((RADIUS_MID * 3) + 1)= foot 
 	
 #ifdef FB_BLIT
@@ -700,6 +710,57 @@ void CMenuWidget::paintItems()
 			item->init(-1, 0, 0, 0);
 		}	
 	} 
+}
+
+void CMenuWidget::saveScreen()
+{
+	#if 0
+	//if(!savescreen)
+	//	return;
+
+	//delete[] background;
+	
+	if(background) 
+	{
+		delete [] background;
+		background = NULL;
+	}
+
+	background = new fb_pixel_t[(width + SCROLLBAR_WIDTH)*(height + ((RADIUS_MID * 3) + 1) + 5)];
+	
+	if(background)
+	{
+		frameBuffer->SaveScreen(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5, background);
+		//frameBuffer->blit();
+	}
+	#endif
+}
+
+void CMenuWidget::restoreScreen()
+{
+	#if 0
+	if(background) 
+	{
+		if(savescreen)
+			frameBuffer->RestoreScreen(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5, background);
+		
+		//delete [] background;
+		//background = NULL;
+	}
+	#endif
+}
+
+void CMenuWidget::enableSaveScreen(bool enable)
+{
+	#if 0
+	savescreen = enable;
+	
+	if(!enable && background) 
+	{
+		delete[] background;
+		background = NULL;
+	}
+	#endif
 }
 
 //CMenuOptionNumberChooser

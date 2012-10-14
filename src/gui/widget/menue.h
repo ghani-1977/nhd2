@@ -392,13 +392,20 @@ class CMenuWidget : public CMenuTarget
 		unsigned int         	current_page;
 		unsigned int         	total_pages;
 		bool		     	exit_pressed;
+		
+		fb_pixel_t		*background;
+		bool			savescreen;
+		
 		void Init(const std::string & Icon, const int mwidth, const int mheight);
 		virtual void paintItems();
+		
+		void saveScreen();
+		void restoreScreen();
 
 	public:
 		CMenuWidget();
-		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = 500, const int mheight = 576 );
-		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 500, const int mheight = 576 );
+		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576 );
+		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576 );
 		
 		~CMenuWidget();
 
@@ -416,6 +423,8 @@ class CMenuWidget : public CMenuTarget
 		{
 			return height;
 		}
+		
+		void enableSaveScreen(bool enable);
 };
 
 class CPINProtection
