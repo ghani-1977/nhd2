@@ -217,8 +217,8 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
 	buffer[22] = 0x00; 			//22
 	buffer[23] = 0x82;  			// demuxer kram..
 	buffer[24] = 0x02;
-	buffer[25] = camask; 			// descramble on demux0 and demux1
-	buffer[26] = demux; 			// get section data from demux index
+	buffer[25] = camask; 			// descramble on caNum
+	buffer[26] = demux; 			// get section data from demuxNum
 	buffer[27] = 0x84;  			// pmt pid
 	buffer[28] = 0x02;
 	buffer[29] = (curpmtpid >> 8) & 0xFF;
