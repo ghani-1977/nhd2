@@ -18,6 +18,11 @@
 #include "helpers.hpp"
 #include "dvbsubtitle.h"
 
+#include <zapit/frontend_c.h>
+
+
+extern CFrontend * live_fe;
+
 #define Log2File	printf
 #define RECVBUFFER_STEPSIZE 1024
 
@@ -278,7 +283,7 @@ static void* reader_thread(void * /*arg*/)
 
         dmx = new cDemux();
 
-	dmx->Open(DMX_PES_CHANNEL, 64*1024);	
+	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe? live_fe->fenumber:0);	
 
 	while (reader_running) 
 	{
