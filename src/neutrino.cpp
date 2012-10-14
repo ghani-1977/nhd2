@@ -4369,7 +4369,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	{
 		pixbuf = new fb_pixel_t[dx * dy];
 
-		if(pixbuf!= NULL)
+		if(pixbuf != NULL)
 		{
 			frameBuffer->SaveScreen(x, y, dx, dy, pixbuf);
 #ifdef FB_BLIT
@@ -4480,7 +4480,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 #endif		
 	} while (msg != CRCInput::RC_timeout);
 
-	if( (bDoPaint) && (pixbuf!= NULL) ) 
+	if( (bDoPaint) && (pixbuf != NULL) ) 
 	{
 		frameBuffer->RestoreScreen(x, y, dx, dy, pixbuf);
 #ifdef FB_BLIT
