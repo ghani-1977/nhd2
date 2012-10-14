@@ -200,7 +200,6 @@ extern int dvbsub_close();
 extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 extern int dvbsub_getpid();
-//extern int dvbsub_getpid(int *pid, int *running);
 extern void dvbsub_setpid(int pid);
 extern int dvbsub_terminate();
 
