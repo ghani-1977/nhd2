@@ -587,7 +587,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		tuxtx_set_pid(pid, page, ptr);
 		
 		// start tuxtxt
-		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->getFeIndex() : 0 ); // this 
+		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->fenumber : 0 ); // this 
 	}
 	
         return menu_return::RETURN_EXIT;
