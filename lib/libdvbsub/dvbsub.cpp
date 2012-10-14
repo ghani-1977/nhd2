@@ -281,9 +281,9 @@ static void* reader_thread(void * /*arg*/)
 	uint16_t packlen;
 	uint8_t* buf;
 
-        dmx = new cDemux();
+        dmx = new cDemux(live_fe?live_fe->fenumber:0);
 
-	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe? live_fe->fenumber:0);	
+	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe?live_fe->fenumber:0);	
 
 	while (reader_running) 
 	{
@@ -315,6 +315,9 @@ static void* reader_thread(void * /*arg*/)
 			pid_change_req = 0;
 			clear_queue();
 			dmx->Stop();
+			//
+			dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe?live_fe->fenumber:0);	
+			//
 			dmx->pesFilter(dvbsub_pid);
 			dmx->Start();
 			sub_debug.print(Debug::VERBOSE, "%s changed to pid 0x%x\n", __FUNCTION__, dvbsub_pid);
