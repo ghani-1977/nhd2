@@ -112,7 +112,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (demux_fd < 0)
 		return false;
 
-	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
+	dprintf(DEBUG_NORMAL, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// Set Demux Source (default FRONT0)
 	if (!init[demux_num])
@@ -511,6 +511,7 @@ void cDemux::getSTC(int64_t * STC)
 	*STC = (int64_t)stc.stc;
 	#endif
 	
+	#if 1
 	// seifes
 	/* apparently I can only get the PTS of the video decoder,
 	 * but that's good enough for dvbsub */
@@ -518,6 +519,7 @@ void cDemux::getSTC(int64_t * STC)
 	if (videoDecoder)
 		pts = videoDecoder->GetPTS();
 	*STC = pts;
+	#endif
 }
 
 
