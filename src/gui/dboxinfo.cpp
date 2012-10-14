@@ -110,7 +110,7 @@ int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 
 	int res = g_RCInput->messageLoop();
 
-	hide();
+	hide();	
 
 	return res;
 }
@@ -177,7 +177,7 @@ void CDBoxInfoWidget::paint()
 			if (i > 4)
 				continue;
 
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width - 10, buffer, COL_MENUCONTENT);
+			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width - 10, buffer, COL_MENUCONTENT, true);
 			ypos+= mheight;
 		}
 		fclose(fd);
@@ -226,7 +226,7 @@ void CDBoxInfoWidget::paint()
 
 	strcat(sbuf, ubuf);
 	ypos += mheight/2;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, sbuf, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, sbuf, COL_MENUCONTENT, true);
 	
 	// mem
 	ypos += mheight;
@@ -234,7 +234,7 @@ void CDBoxInfoWidget::paint()
 	sprintf(ubuf, "memory total %dKb, free %dKb", (int) info.totalram/1024, (int) info.freeram/1024);
 	ypos += mheight/2;
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, ubuf, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, ubuf, COL_MENUCONTENT, true);
     	
     	//hdd devices
 	FILE * f;
@@ -316,7 +316,7 @@ void CDBoxInfoWidget::paint()
 		
 		free(namelist[i]);
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT, true);
 	}
 
 	// free space
@@ -329,6 +329,6 @@ void CDBoxInfoWidget::paint()
 		char tbuf[255];
 		
 		sprintf(tbuf, "Tuner-%d: %s", i + 1, getFE(i)->getInfo()->name);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
 	}	
 }
