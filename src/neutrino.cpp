@@ -2879,13 +2879,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				StopSubtitles();
 				
 				tuxtx_stop_subtitle();
-				
-				// get current service info
-				//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
-				
-				//printf("current service fe(%d)\n", si.FeIndex);
 
-				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe->getFeIndex() );
+				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe->fenumber );
 
 				frameBuffer->paintBackground();
 
