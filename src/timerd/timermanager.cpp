@@ -86,7 +86,7 @@ void CTimerManager::Init(void)
 			creat("/tmp/.wakeup", 0);
 
 			//clear wakeup event
-			system("/bin/cubefpctl --cleartimers");
+			//system("/bin/cubefpctl --cleartimers");
 		}
 	}
 
@@ -778,17 +778,13 @@ bool CTimerManager::shutdown()
 	
 			if(fwrite("1\n", 2, 1, fd) != 1)
 				printf("[timerd] failed to write to /proc/stb/fp/was_timer_wakeup\n");
-			/*else
-			{
-				printf("[timerd] set /proc/stb/fp/was_timer_wakeup to 1\n");
-			}*/
 
 			fclose(fd);
 			
 			//set RTC
-			system("/bin/cubefpctl --setgmtoffset");
+			//system("/bin/cubefpctl --setgmtoffset");
 			
-			status=true;
+			status = true;
 		}
 		
 		#if 0 //abip
