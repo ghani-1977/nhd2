@@ -5756,8 +5756,8 @@ int main(int argc, char *argv[])
 	// build date
 	printf(">>> NeutrinoHD2 (compiled %s %s) <<<\n", __DATE__, __TIME__);
 	
-	// set debug level
-	setDebugLevel(DEBUG_INFO);
+	// set debug level (default normal)
+	setDebugLevel(DEBUG_NORMAL);
 
 	// sighandler
         signal(SIGTERM, sighandler);
