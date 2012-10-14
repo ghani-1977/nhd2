@@ -283,10 +283,12 @@ static void* reader_thread(void * /*arg*/)
 
         dmx = new cDemux(live_fe?live_fe->fenumber:0);
 
-	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe?live_fe->fenumber:0);	
+	//dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe?live_fe->fenumber:0);	
 
 	while (reader_running) 
 	{
+		dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe?live_fe->fenumber:0);
+		
 		if(dvbsub_stopped /*dvbsub_paused*/) 
 		{
 			sub_debug.print(Debug::VERBOSE, "%s stopped\n", __FUNCTION__);
