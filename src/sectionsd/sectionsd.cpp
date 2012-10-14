@@ -177,11 +177,7 @@ static bool dvb_time_update = false;
 //NTP-Config
 #define CONF_FILE CONFIGDIR "/neutrino.conf"
 
-#ifdef __sh__
 const std::string ntp_system_cmd_prefix = "/sbin/rdate ";
-#else
-const std::string ntp_system_cmd_prefix = "/sbin/ntpdate ";
-#endif
 
 std::string ntp_system_cmd;
 CConfigFile ntp_config(',');
@@ -228,7 +224,7 @@ static DMX dmxNIT(0x10, 128);
 #ifdef ENABLE_PPT
 // Houdini: added for Premiere Private EPG section for Sport/Direkt Portal
 static DMX dmxPPT(0x00, 256);
-unsigned int privatePid=0;
+unsigned int privatePid = 0;
 #endif
 
 int sectionsd_stop = 0;
