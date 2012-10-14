@@ -428,12 +428,8 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	FT_Vector kerning;
 	int pen1=-1; // "pen" positions for kerning, pen2 is "x"
 
-	//static fb_pixel_t oldbgcolor = 0, oldfgcolor = 0;
-	//static fb_pixel_t colors[256];
-	
-	//TEST
 	static fb_pixel_t oldbgcolor = 0, oldfgcolor = 0;
-	static fb_pixel_t colors[256]={0};
+	static fb_pixel_t colors[256] = {0};
 
 	fb_pixel_t bgcolor = frameBuffer->realcolor[color];
 	fb_pixel_t fgcolor = frameBuffer->realcolor[(((((int)color) + 2) | 7) - 2)];
@@ -460,7 +456,6 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		int deltab = (((int)bgcolor >> bo) & ((1 << bl) - 1)) - fgb;
 		int deltat = (((int)bgcolor >> to) & ((1 << tl) - 1)) - fgt;
 
-
 		for (int i = 0; i < 256; i++) 
 		{
 			colors[255 - i] =
@@ -468,6 +463,10 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				 (((fgg + deltag * i / 255) & ((1 << gl) - 1)) << go) |
 				 (((fgb + deltab * i / 255) & ((1 << bl) - 1)) << bo) |
 				 (((fgt + deltat * i / 255) & ((1 << tl) - 1)) << to));
+				 
+			/* font bg blending */
+			if(((255-i) > 128))
+				colors[255 - i] |=  0xFF << to;
 		}
 	}
 	
@@ -517,9 +516,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		}
 
 		int stride  = frameBuffer->getStride();
-		//uint8_t * d = ((uint8_t *)frameBuffer->getFrameBufferPointer()) + (x + glyph->left) * sizeof(fb_pixel_t) + stride * (y - glyph->top);
-		//TEST
-		int ap=(x + glyph->left) * sizeof(fb_pixel_t) + stride * (y - glyph->top);
+		int ap = (x + glyph->left) * sizeof(fb_pixel_t) + stride * (y - glyph->top);
 		uint8_t * d = ((uint8_t *)frameBuffer->getFrameBufferPointer()) + ap;
 		
 		uint8_t * s = glyph->buffer;
@@ -539,13 +536,10 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				{
 					if (stylemodifier != Font::Embolden)
 					{
-						//
 						if(*s != 0)
 							*td = colors[*s];
 						td++; 
 						s++;
-						//
-						//*td++= colors[*s++];
 					}
 					else
 					{
@@ -566,12 +560,9 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 							if (color < *(s - i))
 								color = *(s - i);
 						
-						//
 						if (color != 0)
 							*td = colors[color];
 						td++;
-						//
-						//*td++= colors[color];
 
 						s++;
 					}
