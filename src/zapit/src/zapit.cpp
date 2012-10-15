@@ -315,7 +315,7 @@ bool feCanTune(CZapitChannel * thischannel)
 					//for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 					for(int i = 0; i < FrontendCount; i++)
 					{
-						//if( (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
+						//if( (fe_it != live_fe) && (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
 						//FIXME: fenumber is not feindex???
 						if( (i != live_fe->fenumber) && (getFE(i)->getInfo()->type == live_fe->getInfo()->type) )
 							return true;
