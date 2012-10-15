@@ -548,8 +548,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 {
 	struct dvb_frontend_event event;
 	struct pollfd pfd;
-	
-	//static unsigned int timedout = 0;
+	static unsigned int timedout = 0;
 
 	TIMER_INIT();
 	
@@ -560,7 +559,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 	pfd.events = POLLIN | POLLPRI;
 	pfd.revents = 0;
 	
-	//memset(&event, 0, sizeof(struct dvb_frontend_event));
+	memset(&event, 0, sizeof(struct dvb_frontend_event));
 	
 	printf("cFrontend::getEvent: fe(%d) max timeout: %d\n", fenumber, TIMEOUT_MAX_MS);
 	
@@ -607,8 +606,8 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 			} 
 			else if (event.status & FE_TIMEDOUT) 
 			{
-				//if(timedout < timer_msec)
-					//timedout = timer_msec;
+				if(timedout < timer_msec)
+					timedout = timer_msec;
 				printf("cFrontend::getEvent fe(%d) FE_TIMEDOUT\n", fenumber);
 			} 
 			else 
@@ -630,11 +629,12 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 			TIMER_STOP("poll hup after");
 			reset();
 		}
-		msec += TIME_STEP;
-		tmsec += TIME_STEP;
 		
-		if (tmsec >= TIMEOUT_MAX_MS)
-			break;
+		//msec += TIME_STEP;
+		//tmsec += TIME_STEP;
+		
+		//if (tmsec >= TIMEOUT_MAX_MS)
+		//	break;
 	}
 
 	return event;
@@ -905,10 +905,9 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 	
 	printf("cFrontend::setFrontend fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
 
-	TIMER_INIT();
-	
+	//TIMER_INIT();
 	// clear event queue
-	TIMER_START();
+	//TIMER_START();
 	struct dvb_frontend_event event;
 	struct pollfd pfd;
 	pfd.fd = fd;
@@ -926,19 +925,19 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 		
 		printf("CFrontend::setFrontend: fe(%d) CLEAR DEMOD: event status %d\n", fenumber, event.status);
 	}
-	TIMER_STOP("clear events took");
+	//TIMER_STOP("clear events took");
 
 	// set frontend
-	TIMER_START();
+	//TIMER_START();
 	if ((ioctl(fd, FE_SET_FRONTEND, feparams)) < 0) 
 		perror("FE_SET_FRONTEND");
-	TIMER_STOP("FE_SET_FRONTEND took");
+	//TIMER_STOP("FE_SET_FRONTEND took");
 }
 #endif
 
 void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 {
-	if ( /*slave*/ (mode == FE_LOOP) || info.type != FE_QPSK)
+	if ( mode == FE_LOOP || info.type != FE_QPSK)
 		return;
 
 	if (currentToneMode == toneMode)
@@ -972,7 +971,7 @@ void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 
 void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
 {
-	if (/*slave*/ (mode == FE_LOOP) || info.type != FE_QPSK)
+	if ( mode == FE_LOOP || info.type != FE_QPSK)
 		return;
 	
 	if (currentVoltage == voltage)
@@ -1009,7 +1008,7 @@ void CFrontend::secResetOverload(void)
 
 void CFrontend::sendDiseqcCommand(const struct dvb_diseqc_master_cmd *cmd, const uint32_t ms)
 {
-	if ( /*slave*/ (mode == FE_LOOP) || info.type != FE_QPSK) 
+	if ( (mode == FE_LOOP) || info.type != FE_QPSK) 
 		return;
 	
 	printf("CFrontend::sendDiseqcCommand: fe(%d) Diseqc cmd: ", fenumber);
@@ -1028,7 +1027,7 @@ uint32_t CFrontend::getDiseqcReply(const int timeout_ms) const
 
 void CFrontend::sendToneBurst(const fe_sec_mini_cmd_t burst, const uint32_t ms)
 {
-	if ( /*slave*/ (mode == FE_LOOP) || info.type != FE_QPSK) 
+	if ( (mode == FE_LOOP) || info.type != FE_QPSK) 
 		return;
 	
 	if (ioctl(fd, FE_DISEQC_SEND_BURST, burst) == 0)
@@ -1181,7 +1180,6 @@ bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t frequency, uint8_t polarization)
 {
 	sat_iterator_t sit = satellitePositions.find(satellitePosition);
-	//sat_iterator_t sit = satellites.find(satellitePosition);
 
 	printf("CFrontend::setInput: fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
 
