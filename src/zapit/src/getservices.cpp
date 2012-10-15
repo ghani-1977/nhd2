@@ -256,6 +256,7 @@ void FindTransponder(xmlNodePtr search)
 		else if ( !(strcmp(xmlGetName(search), "sat")) ) 
 		{
 			Source = DVB_S;
+			satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
 		}
 		else
 		{
@@ -263,8 +264,18 @@ void FindTransponder(xmlNodePtr search)
 			continue;
 		}
 		
-		// sat position from services.xml
-		satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
+		// cable/terrestrial position
+		if( Source == DVB_T || Source == DVB_C )
+		{
+			for (sat_iterator_t spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++) 
+			{
+				if( !strcmp(spos_it->second.name.c_str(), xmlGetAttribute(search, "name")) ) 
+				{
+					satellitePosition = spos_it->first;
+					break;
+				}
+			}
+		}
 			
 		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
 		
@@ -758,14 +769,13 @@ void SaveServices(bool tocopy)
 
 							case DVB_C:
 							{
-								fprintf(fd, "\t<cable name=\"%s\" position=\"%hd\">\n", spos_it->second.name.c_str(), spos_it->first);
+								fprintf(fd, "\t<cable name=\"%s\">\n", spos_it->second.name.c_str());
 							}
 							break;
 
 							case DVB_T:
 							{
-								fprintf(fd, "\t<terrestrial name=\"%s\" position=\"%hd\">\n", spos_it->second.name.c_str(), spos_it->first);
-			
+								fprintf(fd, "\t<terrestrial name=\"%s\">\n", spos_it->second.name.c_str());
 							}
 							break;
 
