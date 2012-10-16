@@ -177,7 +177,7 @@ static bool dvb_time_update = false;
 //NTP-Config
 #define CONF_FILE CONFIGDIR "/neutrino.conf"
 
-const std::string ntp_system_cmd_prefix = "/sbin/ntpdate ";
+const std::string ntp_system_cmd_prefix = "/sbin/rdate ";
 
 std::string ntp_system_cmd;
 CConfigFile ntp_config(',');
