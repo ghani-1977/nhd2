@@ -1445,7 +1445,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				if(ret != sizeof(t_input_event)) 
 					continue;
 								
-				dprintf(DEBUG_NORMAL, "CRCInput::getMsg_us: key: 0x%X value %d, translate: 0x%X -%s-\n", ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str() );				
+				dprintf(DEBUG_INFO, "CRCInput::getMsg_us: key: 0x%X value %d, translate: 0x%X -%s-\n", ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str() );				
 
 				uint32_t trkey = translate(ev.code, i);
 
