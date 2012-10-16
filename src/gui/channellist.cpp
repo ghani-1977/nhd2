@@ -95,7 +95,6 @@ bool new_mode_active = 0;
 
 extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);		// defined in zapit.cpp
-//extern CFrontend * live_fe;
 extern bool feCanTune(CZapitChannel * thischannel);
 
 extern CBouquetManager *g_bouquetManager;
