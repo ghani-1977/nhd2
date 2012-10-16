@@ -140,8 +140,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 			{
 				sat.position = sit->first;
 				strncpy(sat.satName, scanSettings->satNameNoDiseqc, 50);
-				// feindex
-				sat.feindex = feindex;
 			
 				satList.push_back(sat);
 				break;
@@ -193,8 +191,6 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 				sat.position = sit->first;
 				// name
 				strncpy(sat.satName, sit->second.name.c_str(), 50);
-				// feindex
-				sat.feindex = feindex;
 				
 				satList.push_back(sat);
 			}
