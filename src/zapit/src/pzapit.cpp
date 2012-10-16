@@ -441,12 +441,12 @@ int main (int argc, char** argv)
 		std::vector<CZapitClient::responseGetSatelliteList> satelliteList;
 		zapit.getScanSatelliteList(satelliteList);
 		
-		printf("    Name  pos  feindex\n");
+		printf("    Name  pos\n");
 
 		std::vector<CZapitClient::responseGetSatelliteList>::const_iterator rI;
 		for ( ii = 0, rI = satelliteList.begin(); rI != satelliteList.end(); ii++, rI++)
 		{
-			printf("%lld : %s %d fe(%d)\n", ii, rI->satName, rI->satPosition, rI->feindex);
+			printf("%lld : %s %d\n", ii, rI->satName, rI->satPosition);
 			//std::cout << (1 << ii) << ": " << rI->satName << std::endl;
 		}
 
@@ -538,7 +538,6 @@ int main (int argc, char** argv)
 		printf("pcrpid = 0x%04x\n", si.pcrpid);
 		printf("vtxtpid = 0x%04x\n", si.vtxtpid);
 		
-		printf("fe-index = %d\n", si.FeIndex);
 		return 0;
 	}
 	//
