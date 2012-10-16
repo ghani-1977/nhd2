@@ -22,9 +22,7 @@
 #include <cstdio>               /* perror... */
 #include <sys/wait.h>
 #include <sys/types.h>          /* u_char */
-#ifdef MARTII
 #include <sys/stat.h>
-#endif
 #include <string.h>
 #include "configure_network.h"
 #include "libnet.h"             /* netGetNameserver, netSetNameserver   */
@@ -42,8 +40,6 @@ CNetworkConfig::CNetworkConfig(void)
 	char our_nameserver[16];
 	netGetNameserver(our_nameserver);
 	nameserver = our_nameserver;
-	//inet_static = getInetAttributes("eth0", automatic_start, address, netmask, broadcast, gateway);
-	//copy_to_orig();
 	
 	ifname = "eth0";
 }
@@ -120,15 +116,6 @@ void CNetworkConfig::init_vars(void)
 
 void CNetworkConfig::copy_to_orig(void)
 {
-	#if 0
-	orig_automatic_start = automatic_start;
-	orig_address         = address;
-	orig_netmask         = netmask;
-	orig_broadcast       = broadcast;
-	orig_gateway         = gateway;
-	orig_inet_static     = inet_static;
-	#endif
-	
 	orig_automatic_start = automatic_start;
 	orig_address         = address;
 	orig_netmask         = netmask;
@@ -152,17 +139,6 @@ bool CNetworkConfig::modified_from_orig(void)
 	}
 	
 	/* wired */
-	#if 0
-	return (
-		(orig_automatic_start != automatic_start) ||
-		(orig_address         != address        ) ||
-		(orig_netmask         != netmask        ) ||
-		(orig_broadcast       != broadcast      ) ||
-		(orig_gateway         != gateway        ) ||
-		(orig_inet_static     != inet_static    )
-		);
-	#endif
-	
 	/* check for following changes with dhcp enabled trigger apply question on menu quit, 
 	 * even if apply already done */
 	if (inet_static) 
@@ -184,30 +160,6 @@ bool CNetworkConfig::modified_from_orig(void)
 
 void CNetworkConfig::commitConfig(void)
 {
-	#if 0
-	if (modified_from_orig())
-	{
-		copy_to_orig();
-
-		if (inet_static)
-		{
-			addLoopbackDevice("lo", true);
-			setStaticAttributes("eth0", automatic_start, address, netmask, broadcast, gateway);
-		}
-		else
-		{
-			addLoopbackDevice("lo", true);
-			setDhcpAttributes("eth0", automatic_start);
-		}
-	}
-	
-	if (nameserver != orig_nameserver)
-	{
-		orig_nameserver = nameserver;
-		netSetNameserver(nameserver.c_str());
-	}
-	#endif
-	
 	if (modified_from_orig())
 	{
 		if(orig_hostname != hostname)
@@ -264,11 +216,6 @@ int mysystem(char * cmd, char * arg1, char * arg2)
 
 void CNetworkConfig::startNetwork(void)
 {
-	#if 0
-	system("/sbin/ifup -v eth0");
-	//mysystem((char *) "ifup",  (char *) "-v",  (char *) "eth0");
-	#endif
-	
 	std::string cmd = "/sbin/ifup " + ifname;
 
 	safe_system(cmd.c_str());
@@ -281,11 +228,6 @@ void CNetworkConfig::startNetwork(void)
 
 void CNetworkConfig::stopNetwork(void)
 {
-	#if 0
-	//mysystem("ifdown eth0", NULL, NULL);
-	system("/sbin/ifdown eth0");
-	#endif
-	
 	std::string cmd = "/sbin/ifdown " + ifname;
 
 	safe_system(cmd.c_str());

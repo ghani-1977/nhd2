@@ -685,8 +685,8 @@ void testNetworkSettings(const char* ip, const char* netmask, const char* broadc
 	text += our_nameserver;
 	text += ' ';
 	text += mypinghost(our_nameserver);
-	text += "\ndboxupdate.berlios.de: ";
-	text += mypinghost("195.37.77.138");
+	text += "\nwww.google.de: ";
+	text += mypinghost("173.194.35.152");
 
 	ShowMsgUTF(LOCALE_NETWORKMENU_TEST, text, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
 }
