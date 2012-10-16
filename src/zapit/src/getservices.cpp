@@ -32,7 +32,6 @@
 #include <set>
 
 
-
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */
 extern transponder_list_t transponders;				/* defined in zapit.cpp */ // from services.xml
 extern tallchans allchans;					/* defined in zapit.cpp */
@@ -242,31 +241,27 @@ void FindTransponder(xmlNodePtr search)
 	uint8_t Source;
 	newtpid = 0xC000;
 	
+	bool have_s = false;
+	bool have_c = false;
+	bool have_t = false;
+	
+	/* frontend type */
+	for(int i = 0; i < FrontendCount; i++)
+	{
+		if( getFE(i)->getDeliverySystem() == DVB_S ) 
+			have_s = true;
+		if( getFE(i)->getDeliverySystem() == DVB_C ) 
+			have_c = true;
+		if( getFE(i)->getDeliverySystem() == DVB_T ) 
+			have_t = true;
+	}
+	
 	while (search) 
 	{
-		/* type */
-		if ( !(strcmp(xmlGetName(search), "cable")) )
+		if ( !(strcmp(xmlGetName(search), "cable")) && have_c)
 		{
 			Source = DVB_C;
-		}
-		else if ( !(strcmp(xmlGetName(search), "terrestrial")) )
-		{
-			Source = DVB_T;
-		}
-		else if ( !(strcmp(xmlGetName(search), "sat")) ) 
-		{
-			Source = DVB_S;
-			satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
-		}
-		else
-		{
-			search = search->xmlNextNode;
-			continue;
-		}
-		
-		// cable/terrestrial position
-		if( Source == DVB_T || Source == DVB_C )
-		{
+			
 			for (sat_iterator_t spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++) 
 			{
 				if( !strcmp(spos_it->second.name.c_str(), xmlGetAttribute(search, "name")) ) 
@@ -275,6 +270,29 @@ void FindTransponder(xmlNodePtr search)
 					break;
 				}
 			}
+		}
+		else if ( !(strcmp(xmlGetName(search), "terrestrial")) && have_t)
+		{
+			Source = DVB_T;
+			
+			for (sat_iterator_t spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++) 
+			{
+				if( !strcmp(spos_it->second.name.c_str(), xmlGetAttribute(search, "name")) ) 
+				{
+					satellitePosition = spos_it->first;
+					break;
+				}
+			}
+		}
+		else if ( !(strcmp(xmlGetName(search), "sat")) && have_s) 
+		{
+			Source = DVB_S;
+			satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
+		}
+		else // unknow
+		{
+			search = search->xmlNextNode;
+			continue;
 		}
 			
 		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
@@ -690,7 +708,9 @@ void SaveServices(bool tocopy)
 		return;
 	}
 
-	fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
+	/* headers */ 
+	//fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
+	fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit api=\"3\">\n");
 	
 	/* loop througth satpos */
 	for (spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++) 
