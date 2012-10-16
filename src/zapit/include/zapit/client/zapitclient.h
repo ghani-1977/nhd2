@@ -128,7 +128,6 @@ class CZapitClient : public CBasicClient
 			int  position;
 			
 			int type;
-			int feindex;
 		};
 		typedef std::vector<commandSetScanSatelliteList> ScanSatelliteList;
 
@@ -231,8 +230,6 @@ class CZapitClient : public CBasicClient
 				unsigned short  pmt_version;
 				uint32_t	rate;
 				fe_code_rate	fec;
-
-				int FeIndex;
 		};
 		
 		//TEST
@@ -254,8 +251,6 @@ class CZapitClient : public CBasicClient
 				unsigned short  pmt_version;
 				uint32_t	rate;
 				fe_code_rate	fec;
-
-				int FeIndex;
 		};
 		//
 
@@ -281,24 +276,8 @@ class CZapitClient : public CBasicClient
 			int satDiseqc;
 
 			int type;
-			int feindex;
 		};
 		typedef std::vector<responseGetSatelliteList> SatelliteList;
-
-		#if 0
-		struct responseFESignal
-		{
-			unsigned int  sig;
-			unsigned int  snr;
-			unsigned long ber;
-			// maybe later... 
-			// int          has_lock;
-			// int          has_signal;
-			// int          has_sync;
-			// int          has_carrier;
-		};
-		#endif
-
 
 	public:
 		/*****************************/
@@ -450,14 +429,10 @@ class CZapitClient : public CBasicClient
 		bool setConfig(Zapit_config Cfg);
 		void getConfig(Zapit_config * Cfg);
 		bool Rezap();
-		bool startScan(int scan_mode, int feindex=0);
+		bool startScan(int scan_mode, int feindex = 0);
 		bool stopScan();
 		/* start manual scan */
-		#if 0
-		bool scan_TP(TP_params TP);
-		#endif
-		//test
-		bool scan_TP(TP_params TP, int feindex=0);
+		bool scan_TP(TP_params TP, int feindex = 0);
 
 		/* query if ts-scan is ready - response gives status */
 		bool isScanReady(unsigned int &satellite, unsigned int &processed_transponder, unsigned int &transponder, unsigned int &services );
@@ -472,10 +447,10 @@ class CZapitClient : public CBasicClient
 		void setScanMotorPosList( ScanMotorPosList& motorPosList );
 
 		/* set diseqcType*/
-		void setDiseqcType(const diseqc_t diseqc, int feindex=0);
+		void setDiseqcType(const diseqc_t diseqc, int feindex = 0);
 
 		/* set diseqcRepeat*/
-		void setDiseqcRepeat(const uint32_t repeat, int feindex=0);
+		void setDiseqcRepeat(const uint32_t repeat, int feindex = 0);
 
 		/* set diseqcRepeat*/
 		void setScanBouquetMode(const bouquetMode mode);
@@ -563,7 +538,7 @@ class CZapitClient : public CBasicClient
 		void lockPlayBack();
 		void unlockPlayBack();
 
-		bool tune_TP(TP_params TP, int feindex=0);
+		bool tune_TP(TP_params TP, int feindex = 0);
 		
 		bool isPlayBackActive();
 		//void setDisplayFormat(const video_display_format_t mode);
