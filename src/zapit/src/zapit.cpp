@@ -1382,8 +1382,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					msgCurrentServiceInfo.polarisation = 2;
 				
 				msgCurrentServiceInfo.vtype = live_channel->type;
-				
-				//msgCurrentServiceInfo.FeIndex = live_channel->getFeIndex();
 			}
 			
 			if(!msgCurrentServiceInfo.fec)
@@ -1432,8 +1430,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					msgRecordServiceInfo.polarisation = 2;
 				
 				msgRecordServiceInfo.vtype = rec_channel->type;
-				
-				//msgRecordServiceInfo.FeIndex = rec_channel->getFeIndex();
 			}
 			
 			if(!msgRecordServiceInfo.fec)
@@ -1801,7 +1797,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				sat.motorPosition = sit->second.motor_position;
 
 				sat.type = sit->second.type;
-				//sat.feindex = sit->second.feindex;
 				
 				CBasicServer::send_data(connfd, &satlength, sizeof(satlength));
 				CBasicServer::send_data(connfd, (char *)&sat, satlength);
@@ -3459,7 +3454,7 @@ int zapit_main_thread(void *data)
 	ci = cDvbCi::getInstance();
 //#endif
 
-#if defined (PLATFORM_SPARK_7162)
+#if defined (PLATFORM_SPARK7162)
 	//lib-stb-hal/libspark
 	/* 
 	* this is a strange hack: the drivers seem to only work correctly after
