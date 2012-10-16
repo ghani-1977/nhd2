@@ -2220,9 +2220,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					original_network_id,
 					1,
 					live_channel ? live_channel->getSatellitePosition() : 0,
-					0/*,
-					live_channel->getFeIndex()*/	     
-					) //FIXME: global for more than one tuner???
+					0) //FIXME: global for more than one tuner???
 				)
 				);
 			}

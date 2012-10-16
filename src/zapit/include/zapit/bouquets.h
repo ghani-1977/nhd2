@@ -19,6 +19,7 @@
 #include "channel.h"
 #include <libxmltree/xmlinterface.h>
 
+
 using namespace std;
 
 typedef map<t_channel_id, CZapitChannel> tallchans;
