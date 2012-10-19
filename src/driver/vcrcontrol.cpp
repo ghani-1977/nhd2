@@ -912,9 +912,8 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		}
 	
 #ifdef __sh__		
-		sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 %s", fname, spos, (char *)file_name.c_str());
+		sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 \"%s\"", fname, spos, (char *)file_name.c_str());
 #else
-		//sprintf(cmd, "grab -v %s", filename);
 		sprintf(cmd, "grab -v %s", (char *)file_name.c_str());
 #endif
 	}
