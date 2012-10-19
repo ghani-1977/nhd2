@@ -3838,12 +3838,12 @@ _repeat:
 			}
 
 			//wakeup hdd
-			if(has_hdd) 
-			{
-				char cmd[100];	
-				sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
-				system(cmd);
-			}
+			//if(has_hdd) 
+			//{
+			//	char cmd[100];	
+			//	sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
+			//	system(cmd);
+			//}
 		}
 		
 		if( g_settings.recording_zap_on_announce ) 
@@ -5001,8 +5001,6 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		
 		zapitCfg.saveLastChannel = g_settings.uselastchannel;
 		setZapitConfig(&zapitCfg);
-		
-		//g_Zapit->reinitChannels();
 
 		hintBox->hide();
 		delete hintBox;
