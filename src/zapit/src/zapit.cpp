@@ -606,7 +606,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
 
-void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 1, bool forupdate = false)
+void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 0, bool forupdate = false)
 {
 	#if 0
 	// dual decoding
@@ -638,8 +638,11 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 1, bool
 	}
 	#endif
 	
+	// socket
+	live_cam->setCaSocket( /*fe->fenumber*/ );
+	
 	// cam
-	live_cam->setCaPmt(thischannel->getCaPmt(), fe->fenumber);
+	live_cam->setCaPmt(thischannel->getCaPmt()/*, fe->fenumber*/ );
 	
 	// ci cam
 //#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
@@ -745,7 +748,7 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 	return true;
 }
 
-static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
+static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, int dmx_num = 0)
 {
 	if(fe->mode == FE_NOTCONNECTED)
 		return false;
@@ -757,7 +760,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, fe->fenumber) < 0) // live demux is always 0
+		if (parse_pat(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) // live demux is always 0
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -765,16 +768,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, fe->fenumber, fe->fenumber) < 0) 
+	if (parse_pmt(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, fe->fenumber) < 0) 
+		if (parse_pat(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, fe->fenumber, fe->fenumber) < 0) 
+		else if (parse_pmt(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -972,24 +975,19 @@ int zapit_to_record(const t_channel_id channel_id)
 	record_fe = frontend;
 	
 	// tune to rec channel
-	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+	if(!tune_to_channel(frontend, rec_channel, transponder_change))
 		return -1;
 	
-	if(record_fe->tuned)
-		record_fe->locked = true;
+	if(frontend->tuned)
+		frontend->locked = true;
 	
 	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel, record_fe))
+	if(!parse_channel_pat_pmt(rec_channel, frontend, frontend->fenumber))
 		return -1;
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
 	
-	sendCaPmt(rec_channel, record_fe);
-	
-	// ci cam
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-//	ci->SendCaPMT(rec_channel->getCaPmt(), record_fe->fenumber );
-//#endif	
+	//sendCaPmt(rec_channel, frontend);	
 
 	return 0;
 }
@@ -2725,7 +2723,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( live_fe->fenumber);
+			pcrDemux = new cDemux( /*live_fe->fenumber*/ );
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2743,7 +2741,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( live_fe->fenumber);
+			audioDemux = new cDemux( /*live_fe->fenumber*/ );
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2761,7 +2759,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( live_fe->fenumber ); 
+			videoDemux = new cDemux( /*live_fe->fenumber*/ ); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )

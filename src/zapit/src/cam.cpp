@@ -25,6 +25,8 @@
 #include <zapit/settings.h> /* CAMD_UDS_NAME         */
 #include <messagetools.h>   /* get_length_field_size */
 
+#include <string.h>
+
 
 const unsigned char CCam::getVersion(void) const
 {
@@ -75,5 +77,26 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 
 	return sendMessage((char *)buffer, pos, update);
 }
+
+bool CCam::setCaSocket(int demux)
+{
+	printf("CCam::setCaSocket: dmx %d\n", demux);
+	
+	unsigned char buffer[8];
+	
+	memset(buffer, 0, 8);
+	
+	buffer[0] = 0x9F; // ca_pmt_tag
+        buffer[1] = 0x80; // ca_pmt_tag
+        buffer[2] = 0x3f; // ca_pmt_tag
+        buffer[3] = 0x04; // ca_pmt_tag
+        buffer[4] = 0x83; // ca_pmt_tag
+        buffer[5] = 0x02; // ca_pmt_tag
+        buffer[6] = 0x00; // ca_pmt_tag
+	buffer[7] = demux; //demux_dev_nr
+
+	return sendMessage((char *)buffer, 8, true);
+}
+
 
 
