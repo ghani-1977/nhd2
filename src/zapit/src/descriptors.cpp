@@ -706,7 +706,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		
 		if(!pat_get_pmt_pid(channel)) 
 		{
-			if(!parse_pmt(channel, feindex)) 
+			if(!parse_pmt(channel, feindex, feindex)) 
 			{
 				if ((channel->getPreAudioPid() != 0) || (channel->getVideoPid() != 0)) 
 				{
