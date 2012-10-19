@@ -3450,8 +3450,7 @@ int zapit_main_thread(void *data)
 	ci = cDvbCi::getInstance();
 //#endif
 
-//#if defined (PLATFORM_SPARK7162)
-#if 0
+#if defined (PLATFORM_SPARK7162)
 	//lib-stb-hal/libspark
 	/* 
 	* this is a strange hack: the drivers seem to only work correctly after
