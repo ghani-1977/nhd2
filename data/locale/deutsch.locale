@@ -1531,7 +1531,7 @@ glcd.volume Lautstärke
 
 miscsettings.backup Image Einstellungen speichern
 miscsettings.backupfailed Backup fehlgeschalgen
-miscsettings.restore Image Einstellungen: Wiederherstellen
+miscsettings.restore Image Einstellungen wiederherstellen
 miscsettings.restorewarn Alle Settings werden ersetzt?
 
 opkgmanager.head OPKG Manager
@@ -1541,4 +1541,7 @@ keybinding.key_music Audioplayer
 keybinding.key_picture PictureViewer
 keybinding.key_timelist Timelist
 keybinding.key_net Internet Radio
+
+audiomenu.volumebar_audiosteps Lautstärke Schrittweite
+
 

@@ -1023,6 +1023,18 @@ const CMenuOptionChooser::keyval SECTIONSD_SCAN_OPTIONS[SECTIONSD_SCAN_OPTIONS_C
 	{ 2, LOCALE_OPTIONS_ON_WITHOUT_MESSAGES  }
 };
 
+/* volbar position */
+#define VOLUMEBAR_DISP_POS_OPTIONS_COUNT 6
+const CMenuOptionChooser::keyval  VOLUMEBAR_DISP_POS_OPTIONS[VOLUMEBAR_DISP_POS_OPTIONS_COUNT]=
+{
+	{ 0 , LOCALE_SETTINGS_POS_TOP_RIGHT },
+	{ 1 , LOCALE_SETTINGS_POS_TOP_LEFT },
+	{ 2 , LOCALE_SETTINGS_POS_BOTTOM_LEFT },
+	{ 3 , LOCALE_SETTINGS_POS_BOTTOM_RIGHT },
+	{ 4 , LOCALE_SETTINGS_POS_DEFAULT_CENTER },
+	{ 5 , LOCALE_SETTINGS_POS_HIGHER_CENTER }
+};
+
 CMenuOptionStringChooser * tzSelect;
 
 void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &miscSettingsGeneral, CMenuWidget &miscSettingsChannelList, CMenuWidget &miscSettingsEPG, CMenuWidget &miscSettingsFileBrowser )
@@ -1074,6 +1086,14 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 
 	// subchan pos
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_INFOVIEWER_SUBCHAN_DISP_POS, &g_settings.infobar_subchan_disp_pos, INFOBAR_SUBCHAN_DISP_POS_OPTIONS, INFOBAR_SUBCHAN_DISP_POS_OPTIONS_COUNT, true, NULL, CRCInput::RC_nokey, "", true));
+	
+	// volumebar position
+	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_EXTRA_VOLUME_POS, &g_settings.volume_pos, VOLUMEBAR_DISP_POS_OPTIONS, VOLUMEBAR_DISP_POS_OPTIONS_COUNT, true, NULL, CRCInput::RC_nokey, "", true ));
+	
+	// volume bar steps
+	CStringInput * audio_step = new CStringInput(LOCALE_AUDIOMENU_VOLUMEBAR_AUDIOSTEPS,g_settings.audio_step, 2, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789 " );
+	CMenuForwarder *as = new CMenuForwarder(LOCALE_AUDIOMENU_VOLUMEBAR_AUDIOSTEPS, true, g_settings.audio_step, audio_step );
+	miscSettingsGeneral.addItem(as);
 
 	// timezone
 	xmlDocPtr parser;
@@ -1681,18 +1701,6 @@ void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 }
 
 // Init Color Settings
-/* volbar position */
-#define VOLUMEBAR_DISP_POS_OPTIONS_COUNT 6
-const CMenuOptionChooser::keyval  VOLUMEBAR_DISP_POS_OPTIONS[VOLUMEBAR_DISP_POS_OPTIONS_COUNT]=
-{
-	{ 0 , LOCALE_SETTINGS_POS_TOP_RIGHT },
-	{ 1 , LOCALE_SETTINGS_POS_TOP_LEFT },
-	{ 2 , LOCALE_SETTINGS_POS_BOTTOM_LEFT },
-	{ 3 , LOCALE_SETTINGS_POS_BOTTOM_RIGHT },
-	{ 4 , LOCALE_SETTINGS_POS_DEFAULT_CENTER },
-	{ 5 , LOCALE_SETTINGS_POS_HIGHER_CENTER }
-};
-
 void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitColorSettings\n");
@@ -1739,9 +1747,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 
 	// OSD
 	colorSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_VIDEOMENU_OSD));
-	
-	// volumebar position
-	colorSettings.addItem(new CMenuOptionChooser(LOCALE_EXTRA_VOLUME_POS, &g_settings.volume_pos, VOLUMEBAR_DISP_POS_OPTIONS, VOLUMEBAR_DISP_POS_OPTIONS_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++), "", true ));
 	
 	// help text
 	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPTXT, &g_settings.help_txt, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));

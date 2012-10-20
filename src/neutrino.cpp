@@ -907,24 +907,14 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.streaming_force_avi_rawaudio = configfile.getInt32( "streaming_force_avi_rawaudio", 0 );
 	g_settings.streaming_resolution = configfile.getInt32( "streaming_resolution", 0 );
 	g_settings.streaming_vlc10 = configfile.getInt32( "streaming_vlc10", 0);
-	#if 0
-	g_settings.streaming_use_buffer = configfile.getInt32("streaming_use_buffer", 1);
-	g_settings.streaming_buffer_segment_size = configfile.getInt32("streaming_buffer_segment_size", 24);
-	g_settings.streaming_stopsectionsd = configfile.getInt32("streaming_stopsectionsd", 1);
-	#endif
 	g_settings.streaming_show_tv_in_browser = configfile.getInt32("streaming_show_tv_in_browser", 0);
 	g_settings.streaming_allow_multiselect = configfile.getBool("streaming_allow_multiselect", false);
-	#if 0
-	g_settings.streaming_use_reclength = configfile.getBool("streaming_use_reclength", false);
-	g_settings.streaming_moviedir = configfile.getString( "streaming_moviedir", "" );
-	#endif
 	// end movieplayer
 
 	// OSD
 	g_settings.gtx_alpha = configfile.getInt32( "gtx_alpha", 255);
 	
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
-	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.help_txt = configfile.getInt32( "help_txt", 1);		//on
 	g_settings.help_bar = configfile.getInt32( "help_bar", 0);		//off
 	g_settings.menutitle_vfd = configfile.getInt32( "menutitle_vfd", 0);	// off
@@ -1122,7 +1112,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end pictureviewer
 
 	// misc opts
-	g_settings.current_volume = configfile.getInt32("current_volume", 100);
 	g_settings.channel_mode = configfile.getInt32("channel_mode", LIST_MODE_ALL);
 
 	//misc
@@ -1186,6 +1175,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// logos_dir
 	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/icons/logos");
+	
+	// vol
+	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
+	g_settings.current_volume = configfile.getInt32("current_volume", 100);
+	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "2" ).c_str() );
 	// END MISC OPTS
 
 	// HDD
@@ -1452,7 +1446,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		configfile.setInt32(locale_real_names[timing_setting_name[i]], g_settings.timing[i]);
 	
-	configfile.setInt32( "volume_pos", g_settings.volume_pos);
 	configfile.setInt32( "help_txt", g_settings.help_txt);
 	configfile.setInt32( "help_bar", g_settings.help_bar);
 	configfile.setInt32( "menutitle_vfd", g_settings.menutitle_vfd);
@@ -1585,7 +1578,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setBool("filebrowser_denydirectoryleave", g_settings.filebrowser_denydirectoryleave);
 
 	//
-	configfile.setInt32( "current_volume", g_settings.current_volume );
 	configfile.setInt32( "channel_mode", g_settings.channel_mode );
 
 	//misc
@@ -1617,6 +1609,11 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	// logos_dir
 	configfile.setString("logos_dir", g_settings.logos_dir);
+	
+	// vol
+	configfile.setInt32( "volume_pos", g_settings.volume_pos);
+	configfile.setInt32( "current_volume", g_settings.current_volume );
+	configfile.setString( "audio_step"	, g_settings.audio_step);
 	// END MISC OPTS
 
 	// HDD
@@ -4329,6 +4326,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	int sw = frameBuffer->getScreenWidth();
 	int sh = frameBuffer->getScreenHeight();
 	
+	int a_step = atoi(g_settings.audio_step);
+	
 	switch( g_settings.volume_pos )
 	{
 		case 0:// upper right
@@ -4409,15 +4408,15 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				if (g_settings.current_volume < 100 - 5)
-					g_settings.current_volume += 5;
+				if (g_settings.current_volume < 100 - /*5*/ a_step )
+					g_settings.current_volume += /*5*/ a_step;
 				else
 					g_settings.current_volume = 100;
 			}
 			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				if (g_settings.current_volume > 5)
-					g_settings.current_volume -= 5;
+				if (g_settings.current_volume > /*5*/ a_step)
+					g_settings.current_volume -= /*5*/ a_step;
 				else
 					g_settings.current_volume = 0;
 			}
@@ -4447,16 +4446,19 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			{
 				vol = g_settings.current_volume;
 
-				//g_volscale->reset();
-				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), g_settings.current_volume);
+				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), /*g_settings.current_volume*/ vol);
 
 				char p[4]; // 3 digits + '\0'
-				sprintf(p, "%3d", g_settings.current_volume);
+				sprintf(p, "%3d", /*g_settings.current_volume*/ vol);
 
 				// erase the numbers
 				frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);
 
 				g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p, COL_MENUHEAD);
+				
+#ifdef FB_BLIT
+				frameBuffer->blit();
+#endif				
 			}
 		}
 

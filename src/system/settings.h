@@ -437,8 +437,11 @@ struct SNeutrinoSettings
 	int uselastchannel;
 	
 	// inter without GUI setup
-	char current_volume;
 	int channel_mode;
+	
+	// vol
+	char current_volume;
+	char audio_step[3];
 	// MISC OPTS
 
 	// HDD

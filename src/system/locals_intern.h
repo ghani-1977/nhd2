@@ -1551,5 +1551,7 @@ const char *locale_real_names[] = {
 	"keybinding.key_picture",
 	"keybinding.key_timelist",
 	"keybinding.key_net",
+	
+	"audiomenu.volumebar_audiosteps",
 };
 #endif

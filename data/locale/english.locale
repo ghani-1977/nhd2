@@ -1540,3 +1540,6 @@ keybinding.key_picture PictureViewer
 keybinding.key_timelist Timelist
 keybinding.key_net Internet Radio
 
+audiomenu.volumebar_audiosteps Volume Step Size
+
+

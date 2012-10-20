@@ -1257,11 +1257,14 @@ int CMenuOptionStringChooser::paint( bool selected )
 	int stringstartposName = x + offx + BORDER_LEFT;
 
 	// stringstartposOption
-	int stringstartposOption = x + dx - stringwidth - BORDER_RIGHT  - BORDER_LEFT/2; //+ offx
+	int stringstartposOption = stringstartposName + optionwidth + 10;
 	
 	// recalculate stringstartposOption if stringWidth > dx
-	if(stringwidth > dx)
-		stringstartposOption = x + offx + BORDER_LEFT + BORDER_RIGHT + optionwidth;
+	//if(stringwidth > dx)
+	{	
+		// option value width
+		stringwidth = dx - BORDER_LEFT - BORDER_RIGHT - optionwidth - 50; // FIXME:50???
+	}
 
 	if (!(iconName.empty()))
 	{
@@ -1296,13 +1299,10 @@ int CMenuOptionStringChooser::paint( bool selected )
         }
 
 	// option name
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y + height, dx- (stringstartposName - x),  l_optionName, color, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName, y + height, optionwidth,  l_optionName, color, 0, true); // UTF-8
 	
 	// option value
-	if(stringwidth > dx)
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx- BORDER_RIGHT - (stringstartposOption - x), optionValue, color, 0, true);
-	else
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx- (stringstartposOption - x), optionValue, color, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, stringwidth, optionValue, color, 0, true); // UTF-8
 
 	// help bar
 	if(g_settings.help_bar)
