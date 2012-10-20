@@ -177,8 +177,7 @@ static bool dvb_time_update = false;
 //NTP-Config
 #define CONF_FILE CONFIGDIR "/neutrino.conf"
 
-//const std::string ntp_system_cmd_prefix = "/sbin/rdate -s ";
-const std::string ntp_system_cmd_prefix = "/sbin/ntpdate ";
+std::string ntp_system_cmd_prefix = "/sbin/ntpdate ";
 
 std::string ntp_system_cmd;
 CConfigFile ntp_config(',');
@@ -3723,6 +3722,7 @@ static void commandSetConfig(int connfd, char *data, const unsigned /*dataLength
 		oldEventsAre = (long)(pmsg->epg_old_events)*60L*60L;
 		unlockEvents();
 	}
+	
 	if (secondsExtendedTextCache != (long)(pmsg->epg_extendedcache)*60L*60L) {
 		dprintf("new epg_extendedcache = %d\n", pmsg->epg_extendedcache);
 //		lockEvents();
@@ -3730,6 +3730,7 @@ static void commandSetConfig(int connfd, char *data, const unsigned /*dataLength
 		secondsExtendedTextCache = (long)(pmsg->epg_extendedcache)*60L*60L;
 		unlockEvents();
 	}
+	
 	if (max_events != pmsg->epg_max_events) {
 		dprintf("new epg_max_events = %d\n", pmsg->epg_max_events);
 		writeLockEvents();
@@ -3762,6 +3763,11 @@ static void commandSetConfig(int connfd, char *data, const unsigned /*dataLength
 	if (ntpserver.compare((std::string)&data[sizeof(struct sectionsd::commandSetConfig)])) {
 		ntpserver = (std::string)&data[sizeof(struct sectionsd::commandSetConfig)];
 		dprintf("new network_ntpserver = %s\n", ntpserver.c_str());
+		
+		static const char * ntp_system = "/sbin/rdate";
+	
+		if(!access(ntp_system, F_OK)) 
+			ntp_system_cmd_prefix = "/sbin/rdate -s ";
 		ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 	}
 
@@ -7809,6 +7815,13 @@ void sectionsd_main_thread(void */*data*/)
 	ntpserver = ntp_config.getString("network_ntpserver", "de.pool.ntp.org");
 	ntprefresh = atoi(ntp_config.getString("network_ntprefresh","30").c_str() );
 	ntpenable = ntp_config.getBool("network_ntpenable", false);
+	
+	// ntp server
+	static const char * ntp_system = "/sbin/rdate";
+	
+	if(!access(ntp_system, F_OK)) 
+		ntp_system_cmd_prefix = "/sbin/rdate -s ";
+	
 	ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 
 	//EPG Einstellungen laden
