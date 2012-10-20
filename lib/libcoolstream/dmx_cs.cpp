@@ -69,7 +69,7 @@ cDemux::cDemux(int num)
 	demux_fd = -1;
 	
 	// demux num
-	demux_num = num;
+	//demux_num = num;
 
 	// last dmx source
 	last_source = -1;
@@ -90,7 +90,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
-	#if 0
+	#if 1
 	demux_num = feindex;
 	
 	if (last_source == feindex) 
@@ -120,7 +120,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// Set Demux Source (default FRONT0)
-	//if (!init[demux_num])
+	if (!init[demux_num])
 	{
 		//printf("dmx(%d) source(%d) not set yet\n", demux_num, feindex);
 		
@@ -130,8 +130,8 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		{
 			perror("DMX_SET_SOURCE");
 		}
-		//else
-		//	init[demux_num] = true;
+		else
+			init[demux_num] = true;
 	}
 	
 	dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
