@@ -639,10 +639,10 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 0, bool
 	#endif
 	
 	// socket
-	live_cam->setCaSocket( /*fe->fenumber*/ );
+	live_cam->setCaSocket( fe->fenumber );
 	
 	// cam
-	live_cam->setCaPmt(thischannel->getCaPmt()/*, fe->fenumber*/ );
+	live_cam->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
 	
 	// ci cam
 //#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
