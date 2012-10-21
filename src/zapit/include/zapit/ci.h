@@ -89,11 +89,11 @@ class CCaPmt : public CCaTable
 	public:
 		~CCaPmt(void);
 		unsigned getLength(void);
-		unsigned writeToBuffer(unsigned char * const buffer, int demux = 1, int camask = 3);
+		unsigned writeToBuffer(unsigned char * const buffer, int demux = 0, int camask = 1);
 		
 		//cam
 		unsigned CamgetLength(void);
-		unsigned CamwriteToBuffer(unsigned char * const buffer, int demux = 1, int camask = 3);
+		unsigned CamwriteToBuffer(unsigned char * const buffer, int demux = 0, int camask = 1);
 
 		unsigned ca_pmt_list_management	: 8;
 		unsigned program_number		: 16;

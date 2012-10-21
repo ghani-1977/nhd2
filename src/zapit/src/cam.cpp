@@ -86,14 +86,14 @@ bool CCam::setCaSocket(int demux)
 	
 	memset(buffer, 0, 8);
 	
-	buffer[0] = 0x9F; // ca_pmt_tag
-        buffer[1] = 0x80; // ca_pmt_tag
-        buffer[2] = 0x3f; // ca_pmt_tag
-        buffer[3] = 0x04; // ca_pmt_tag
-        buffer[4] = 0x83; // ca_pmt_tag
-        buffer[5] = 0x02; // ca_pmt_tag
-        buffer[6] = 0x00; // ca_pmt_tag
-	buffer[7] = demux; //demux_dev_nr
+	buffer[0] = 0x9F;
+        buffer[1] = 0x80;
+        buffer[2] = 0x3f;
+        buffer[3] = 0x04;
+        buffer[4] = 0x83;
+        buffer[5] = 0x02;
+        buffer[6] = 0x00;
+	buffer[7] = demux; //demux index
 
 	return sendMessage((char *)buffer, 8, true);
 }

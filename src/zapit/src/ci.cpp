@@ -125,41 +125,11 @@ unsigned int CEsInfo::writeToBuffer(unsigned char * const buffer) // returns num
 // cam
 unsigned int CEsInfo::CamwriteToBuffer(unsigned char * const buffer) // returns number of bytes written
 {
-	int len = 0;
-	
 	buffer[0] = stream_type;
 	buffer[1] = ((reserved1 << 5) | (elementary_PID >> 8)) & 0xff;
 	buffer[2] = elementary_PID & 0xff;
 	
-	/* len! */
-	#if 0
-	len = CCaTable::writeToBuffer(&(buffer[6]));
-	
-	if(len) 
-	{
-		buffer[5] = 0x1; // ca_pmt_cmd_id: ok_descrambling= 1;
-		len++;
-	}
-	
-	buffer[3] = ((len & 0xf00)>>8);
-	buffer[4] = (len & 0xff);
-	
-	return len + 5;
-	#else
-	/* len! */
-	len = CCaTable::writeToBuffer(&(buffer[4]));
-	
-	//if(len) 
-	{
-	//	buffer[2] = 0x1; // ca_pmt_cmd_id: ok_descrambling= 1;
-	//	len++;
-	}
-	
-	//buffer[1] = ((len & 0xf00)>>8);
-	//buffer[2] = (len & 0xff);
-	
-	return 3 + len;	
-	#endif
+	return 3 + CCaTable::writeToBuffer(&(buffer[4]));	
 }
 
 /*
@@ -196,87 +166,32 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 	return pos;
 }
 
-// ci
-unsigned int CCaPmt::getLength(void)  // the (3 + length_field()) initial bytes are not counted !
-{
-	unsigned int size = 4 + CCaTable::getLength();
-
-	for (unsigned int i = 0; i < es_info.size(); i++)
-		size += es_info[i]->getLength();
-
-	return size;	
-}
-
 // Cam
 unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
 {
 	unsigned int i;
 
-	#if 0
-	memcpy(buffer, "\x9f\x80\x32\x82\x00\x00", 6);
-
-	buffer[6] = ca_pmt_list_management; 	//6
-	buffer[7] = program_number >> 8; 	//7 
-	buffer[8] = program_number; 		// 8
-	buffer[9] = (reserved1 << 6) | (version_number << 1) | current_next_indicator;
-	buffer[10] = 0x00; 			// //reserved - prg-info len
-	buffer[11] = 0x00; 			// prg-info len
-	buffer[12] = 0x01;  			// ca pmt command id
-	buffer[13] = 0x81;  			// private descr.. dvbnamespace
-	buffer[14] = 0x08; 			//14
-	buffer[15] = 0x00;
-	buffer[16] = 0x00;
-	buffer[17] = 0x00;
-	buffer[18] = 0x00;
-	buffer[19] = 0x00;
-	buffer[20] = 0x00;
-	buffer[21] = 0x00;
-	buffer[22] = 0x00; 			//22
-	buffer[23] = 0x82;  			// demuxer kram..
-	buffer[24] = 0x02;
-	buffer[25] = camask; 			// descramble on caNum
-	buffer[26] = demux; 			// get section data from demuxNum
-	buffer[27] = 0x84;  			// pmt pid
-	buffer[28] = 0x02;
-	buffer[29] = (curpmtpid >> 8) & 0xFF;
-	buffer[30] = curpmtpid & 0xFF; 		// 30
-
-        int lenpos = 10;
-        int len = 19;
-        int wp = 31;
-
-	i = CCaTable::CamwriteToBuffer(&(buffer[wp]));
-	wp += i;
-	len += i;
-
-	buffer[lenpos]=((len & 0xf00)>>8);
-	buffer[lenpos+1]=(len & 0xff);
-
-	for (i = 0; i < es_info.size(); i++) {
-		wp += es_info[i]->writeToBuffer(&(buffer[wp]));
-	}
-	buffer[4] = ((wp-6)>>8) & 0xff;
-	buffer[5]=(wp-6) & 0xff;
-	#else
 	memcpy(buffer, "\x9f\x80\x32\x00", 4);
 
-	buffer[4] = ca_pmt_list_management; 	//6
-	buffer[5] = program_number >> 8; 	//7 
-	buffer[6] = program_number; 		// 8
+	buffer[4] = ca_pmt_list_management; 	//4
+	buffer[5] = program_number >> 8; 	//5 
+	buffer[6] = program_number; 		// 6
 	buffer[7] = (reserved1 << 6) | (version_number << 1) | current_next_indicator;
 	buffer[8] = 0x00; 			// //reserved - prg-info len
 	buffer[9] = 0x00; 			// prg-info len
 	buffer[10] = 0x01;  			// ca pmt command id
 	buffer[11] = 0x81;  			// private descr.. dvbnamespace
-	buffer[12] = 0x08; 			//14
-	buffer[13] = 0x00;
-	buffer[14] = 0x00;
-	buffer[15] = 0x00;
-	buffer[16] = 0x00;
-	buffer[17] = 0x00;
-	buffer[18] = 0x00;
-	buffer[19] = 0x00;
-	buffer[20] = 0x00; 			//22
+	buffer[12] = 0x08; 			//12
+
+	buffer[13] = 0x00;			// getSatellitePosition() >> 8;	
+	buffer[14] = 0x00;			// getSatellitePosition() & 0xFF;
+	buffer[15] = 0x00;			// getFreqId() >> 8;
+	buffer[16] = 0x00;			// getFreqId() & 0xFF;
+	buffer[17] = 0x00;			// getTransportStreamId() >> 8;
+	buffer[18] = 0x00;			// getTransportStreamId() & 0xFF;
+	buffer[19] = 0x00;			// getOriginalNetworkId() >> 8;
+	buffer[20] = 0x00; 			// getOriginalNetworkId() & 0xFF;
+	
 	buffer[21] = 0x82;  			// demuxer kram..
 	buffer[22] = 0x02;
 	buffer[23] = camask; 			// descramble on caNum
@@ -284,7 +199,7 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
 	buffer[25] = 0x84;  			// pmt pid
 	buffer[26] = 0x02;
 	buffer[27] = (curpmtpid >> 8) & 0xFF;
-	buffer[28] = curpmtpid & 0xFF; 		// 30
+	buffer[28] = curpmtpid & 0xFF; 		// 28
 
         int lenpos = 8;
         int len = 19;
@@ -297,24 +212,31 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
 	buffer[lenpos]=((len & 0xf00)>>8);
 	buffer[lenpos+1]=(len & 0xff);
 
-	for (i = 0; i < es_info.size(); i++) {
+	for (i = 0; i < es_info.size(); i++) 
+	{
 		wp += es_info[i]->writeToBuffer(&(buffer[wp]));
 	}
 	
-	buffer[3]=(wp-4) & 0xff;
-	#endif
+	buffer[3] = (wp-4) & 0xff;
 
 	return wp;
 }
 
-// Cam
-unsigned int CCaPmt::CamgetLength(void) 
+// ci
+unsigned int CCaPmt::getLength(void)  // the (3 + length_field()) initial bytes are not counted !
 {
-	#if 1
+	unsigned int size = 4 + CCaTable::getLength();
+
+	for (unsigned int i = 0; i < es_info.size(); i++)
+		size += es_info[i]->getLength();
+
+	return size;	
+}
+
+// Cam
+unsigned int CCaPmt::CamgetLength(void) // 25 private tags
+{
 	unsigned int size = 25 + CCaTable::getLength();
-	#else
-	unsigned int size = 23 + CCaTable::getLength();
-	#endif
 	
 	for (unsigned int i = 0; i < es_info.size(); i++)
 		size += es_info[i]->getLength();
