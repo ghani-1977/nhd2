@@ -63,13 +63,8 @@ static const char * aDMXCHANNELTYPE[] = {
 
 cDemux::cDemux(int num)
 {  
-	//dprintf(DEBUG_INFO, "%s:%s(%d)\n", FILENAME, __FUNCTION__, num);	
-
 	// dmx file descriptor
 	demux_fd = -1;
-	
-	// demux num
-	//demux_num = num;
 
 	// last dmx source
 	last_source = -1;
@@ -90,7 +85,6 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
-	#if 1
 	demux_num = feindex;
 	
 	if (last_source == feindex) 
@@ -99,7 +93,6 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		if (demux_fd > -1)
 			return true;
 	}
-	#endif
 	
 	if (demux_fd > -1) 
 	{

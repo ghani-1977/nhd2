@@ -80,6 +80,12 @@ bool cAudio::Open(int num)
 
 	// Open audio device
 	sprintf(devname, "/dev/dvb/adapter0/audio%d", audio_num);
+	
+	if(audio_fd > 0)
+	{
+		printf("%s %s already opened\n", __FUNCTION__, devname);
+		return true;
+	}
 
 	audio_fd = open(devname, O_RDWR);
 

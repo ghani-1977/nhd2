@@ -70,6 +70,12 @@ bool cVideo::Open(int num)
 
 	// Open video device
 	sprintf(devname, "/dev/dvb/adapter0/video%d", video_num);
+	
+	if(video_fd > 0)
+	{
+		printf("%s %s already opened\n", __FUNCTION__, devname);
+		return true;
+	}
 
 	video_fd = open(devname, O_RDWR);
 
