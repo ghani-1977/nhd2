@@ -642,10 +642,8 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 0, bool
 	// cam
 	live_cam->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
 	
-	// ci cam
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-	ci->SendCaPMT(thischannel->getCaPmt());
-//#endif	
+	// ci cam //FIXME: boxes without ci cam
+	ci->SendCaPMT(thischannel->getCaPmt());	
 }
 
 // save pids
@@ -836,12 +834,14 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 		tuxtx_set_pid(0, 0, (char *) thischannel->getTeletextLang());
 	}
 	
+	#if 0
 	/* set saved vol */
-	//audioDecoder->setVolume(volume_left, volume_right);
+	audioDecoder->setVolume(volume_left, volume_right);
 	
 	// audio mode
 	if(audioDecoder)
 		audioDecoder->setChannel(audio_mode);
+	#endif
 }
 
 // return 0, -1 fails
@@ -2222,7 +2222,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandBoolean msgBoolean;
 			CBasicServer::receive_data(connfd, &msgBoolean, sizeof(msgBoolean));
-			//if(!audioDecoder) audioDecoder = new CAudio();
+
 			if(!audioDecoder) break;
 			//printf("[zapit] mute %d\n", msgBoolean.truefalse);
 			if (msgBoolean.truefalse)
@@ -3411,25 +3411,27 @@ int zapit_main_thread(void *data)
 	int video_mode = ZapStart_arg->video_mode;
 	
 	// video decoder
-	videoDecoder = new cVideo();
+	if(!videoDecoder)
+		videoDecoder = new cVideo();
 		
 	// set video system
 	videoDecoder->SetVideoSystem(video_mode);
 	
 	// audio decoder
-	audioDecoder = new cAudio();
+	if(!audioDecoder)
+		audioDecoder = new cAudio();
 	
-	//
+	// open video decoder
 	if( videoDecoder->Open() < 0)
 		return -1;
 	
+	// open audiodecoder
 	if( audioDecoder->Open() < 0)
 		return -1;
 
 	//CI init
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
+	//FIXME: platform without ci cam
 	ci = cDvbCi::getInstance();
-//#endif
 
 #if defined (PLATFORM_SPARK7162)
 	//lib-stb-hal/libspark
@@ -3607,7 +3609,7 @@ int zapit_main_thread(void *data)
 	
 	zapit_ready = 0;
 	
-	// stop sdt htread
+	// stop sdt thread
 	pthread_join (tsdt, NULL);
 	
 	printf("zapit: shutdown started\n\n");
