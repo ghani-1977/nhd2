@@ -757,17 +757,9 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt, int source)
         return true;
 }
 
-/*
-bool cDvbCi::SendDateTime(void)
-{
-	printf("%s:%s\n", FILENAME, __FUNCTION__);
-
-        return false;
-}
-*/
-
 //
-cDvbCi::cDvbCi(int Slots) {
+cDvbCi::cDvbCi(int Slots) 
+{
 	printf("%s:%s %d\n", FILENAME, __FUNCTION__, Slots);
 
 	int fd, i;
@@ -775,7 +767,11 @@ cDvbCi::cDvbCi(int Slots) {
 
 	for (i = 0; i < Slots; i++)
 	{
+#if defined (PLATFORM_GIGABLUE)
+	    sprintf(filename, "/dev/ci%d", i);
+#else
 	    sprintf(filename, "/dev/dvb/adapter0/ci%d", i);
+#endif	    
 	    fd = open(filename, O_RDWR | O_NONBLOCK);
 	    
 	    if (fd < 0)
