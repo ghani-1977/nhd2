@@ -144,7 +144,5 @@ typedef enum {
 typedef std::map <uint32_t, TP_map> TP_map_t;
 typedef std::map <uint32_t, TP_map>::iterator TP_iterator;
 
-#define LIVE_DEMUX	0
-
 
 #endif /* __zapittypes_h__ */
