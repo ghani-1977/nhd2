@@ -494,7 +494,7 @@ void cDvbCi::slot_pollthread(void *c)
 		          if (ioctl(slot->fd, CA_GET_SLOT_INFO, &info) < 0)
 			     printf("IOCTL CA_GET_SLOT_INFO failed for slot %d\n", slot->slot);
 
-                          printf("flags %d %d %d ->slot %d\n", info.flags, CA_CI_MODULE_READY, info.flags & CA_CI_MODULE_READY, slot->slot);
+                          //printf("flags %d %d %d ->slot %d\n", info.flags, CA_CI_MODULE_READY, info.flags & CA_CI_MODULE_READY, slot->slot);
 
 	                  if (info.flags & CA_CI_MODULE_READY)
 			  {
