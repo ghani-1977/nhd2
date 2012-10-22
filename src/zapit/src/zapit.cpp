@@ -69,9 +69,7 @@ int zapit_ready;
 int abort_zapit;
 
 /* ci */
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
-cDvbCi * ci;
-//#endif
+cDvbCi * ci; //FIXME: boxes without ci cam
 
 /* audio conf */
 #define AUDIO_CONFIG_FILE "/var/tuxbox/config/zapit/audio.conf"
@@ -750,7 +748,7 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 
 static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, int dmx_num = 0)
 {
-	if(fe->mode == FE_NOTCONNECTED)
+	if(fe->mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
 	
 	printf("%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
@@ -2183,21 +2181,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 	
-		#if 0
-		case CZapitMessages::CMD_GET_FE_SIGNAL: 
-		{
-			CZapitClient::responseFESignal response_FEsig;
-	
-			response_FEsig.sig = CFrontend::getInstance()->getSignalStrength();
-			response_FEsig.snr = CFrontend::getInstance()->getSignalNoiseRatio();
-			response_FEsig.ber = CFrontend::getInstance()->getBitErrorRate();
-	
-			CBasicServer::send_data(connfd, &response_FEsig, sizeof(CZapitClient::responseFESignal));
-			//sendAPIDs(connfd);
-			break;
-		}
-		#endif
-	
 		case CZapitMessages::CMD_SETSUBSERVICES: 
 		{
 			CZapitClient::commandAddSubServices msgAddSubService;
@@ -3353,7 +3336,6 @@ void * sdt_thread(void * arg)
 						break;
 				}
 			}
-			#if 0
 			else if(satfound)
 			{
 				//fprintf(fd, "\t</sat>\n");
@@ -3375,7 +3357,6 @@ void * sdt_thread(void * arg)
 						break;
 				}
 			}
-			#endif
 
 			if(fd1) 
 			{

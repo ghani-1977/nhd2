@@ -164,10 +164,10 @@ bool CFrontend::Open(void)
 
 void CFrontend::Close(void)
 {
-	if (/* !slave*/ (mode != FE_LOOP) && diseqcType > MINI_DISEQC)
+	if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
 		sendDiseqcStandby();
 
-//FIXME FEQAM
+	//FIXME FEQAM
 	if(info.type == FE_QPSK || info.type == FE_OFDM)
 	{
 		secSetVoltage(SEC_VOLTAGE_OFF, 0);
@@ -937,7 +937,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 
 void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 {
-	if ( mode == FE_LOOP || info.type != FE_QPSK)
+	if ( mode == (fe_mode_t)FE_LOOP || info.type != FE_QPSK)
 		return;
 
 	if (currentToneMode == toneMode)
@@ -971,7 +971,7 @@ void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 
 void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
 {
-	if ( mode == FE_LOOP || info.type != FE_QPSK)
+	if ( mode == (fe_mode_t)FE_LOOP || info.type != FE_QPSK)
 		return;
 	
 	if (currentVoltage == voltage)
@@ -1008,7 +1008,7 @@ void CFrontend::secResetOverload(void)
 
 void CFrontend::sendDiseqcCommand(const struct dvb_diseqc_master_cmd *cmd, const uint32_t ms)
 {
-	if ( (mode == FE_LOOP) || info.type != FE_QPSK) 
+	if ( (mode == (fe_mode_t)FE_LOOP) || info.type != FE_QPSK) 
 		return;
 	
 	printf("CFrontend::sendDiseqcCommand: fe(%d) Diseqc cmd: ", fenumber);
@@ -1027,7 +1027,7 @@ uint32_t CFrontend::getDiseqcReply(const int timeout_ms) const
 
 void CFrontend::sendToneBurst(const fe_sec_mini_cmd_t burst, const uint32_t ms)
 {
-	if ( (mode == FE_LOOP) || info.type != FE_QPSK) 
+	if ( (mode == (fe_mode_t)FE_LOOP) || info.type != FE_QPSK) 
 		return;
 	
 	if (ioctl(fd, FE_DISEQC_SEND_BURST, burst) == 0)
@@ -1141,7 +1141,7 @@ void CFrontend::positionMotor(uint8_t motorPosition)
 
 bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 {
-	if(mode == FE_NOTCONNECTED)
+	if(mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
 	
 	transponder_list_t::iterator tpI;
@@ -1233,7 +1233,7 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 	{
 		fprintf(stderr, "VOLT18=%d TONE_ON=%d, freq=%d bpf=%d ret=%d\n", currentVoltage == SEC_VOLTAGE_18, currentToneMode == SEC_TONE_ON, frequency, bpf, (t + 350) * 4000 - frequency);
 		
-		if (/* !slave*/ (mode != FE_LOOP) && info.type == FE_QPSK) 
+		if (/* !slave*/ (mode != (fe_mode_t)FE_LOOP) && info.type == FE_QPSK) 
 		{
 			cmd.msg[3] = (t >> 8)		|	/* highest 3 bits of t */
 				    (uni_scr << 5)	|	/* adress */
@@ -1257,7 +1257,7 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 
 const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 {
-	if(mode == FE_NOTCONNECTED)
+	if(mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
 	
 	printf("CFrontend::tuneChannel: fe(%d) tpid %llx\n", fenumber, currentTransponder.TP_id);
@@ -1415,8 +1415,7 @@ bool CFrontend::setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t fr
 	printf("CFrontend::setDiseqcSimple: fe(%d) diseqc input  %d -> %d\n", fenumber, diseqc, sat_no);
 	currentTransponder.diseqc = sat_no;
 	
-	//if (slave)
-	if(mode == FE_LOOP)
+	if(mode == (fe_mode_t)FE_LOOP)
 		return true;
 
 	if ((sat_no >= 0) && (diseqc != sat_no)) 
@@ -1451,8 +1450,10 @@ void CFrontend::setDiseqc(int sat_no, const uint8_t pol, const uint32_t frequenc
 	uint8_t loop;
 	bool high_band = ((int)frequency >= lnbSwitch);
 	struct dvb_diseqc_master_cmd cmd = { {0xE0, 0x10, 0x38, 0xF0, 0x00, 0x00}, 4 };
+	
 	//fe_sec_voltage_t polarity = (pol & 1) ? SEC_VOLTAGE_13 : SEC_VOLTAGE_18;
 	//fe_sec_tone_mode_t tone = high_band ? SEC_TONE_ON : SEC_TONE_OFF;//seems needed?
+	
 	fe_sec_mini_cmd_t b = (sat_no & 1) ? SEC_MINI_B : SEC_MINI_A;
 	int delay = 0;
 	
@@ -1460,8 +1461,7 @@ void CFrontend::setDiseqc(int sat_no, const uint8_t pol, const uint32_t frequenc
 	if (info.type != FE_QPSK) 
 		return;
 
-	//if (slave)
-	if(mode == FE_LOOP)
+	if(mode == (fe_mode_t)FE_LOOP)
 		return;
 
 	//secSetVoltage(polarity, 15);	/* first of all set the "polarization" */
