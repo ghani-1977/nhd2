@@ -57,9 +57,9 @@ int g_mntstatus;
 void *mount_thread(void* cmd)
 {
 	int ret;
-	ret=system((const char *) cmd);
+	ret = system((const char *) cmd);
 	pthread_mutex_lock(&g_mut);
-	g_mntstatus=ret;
+	g_mntstatus = ret;
 	pthread_cond_broadcast(&g_cond);
 	pthread_mutex_unlock(&g_mut);
 	pthread_exit(NULL);
@@ -182,7 +182,7 @@ bool CFSMounter::isMounted(const char * const local_dir)
 	{
 		MountInfo mi;
 		in >> mi.device >> mi.mountPoint >> mi.type;
-		if (strcmp(mi.mountPoint.c_str(),mount_point) == 0)
+		if (strcmp(mi.mountPoint.c_str(), mount_point) == 0)
 		{
 			return true;
 		}
