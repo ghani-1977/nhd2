@@ -593,9 +593,9 @@ void cVideo::SetInput(int val)
 	
 	printf("cVideo::SetInput: %s\n", input[val]);	
 
-	int fd_avs_input;
+	int fd_avs_input = open("/proc/stb/avs/0/input", O_RDWR);
 	
-	if( fd_avs_input = open("/proc/stb/avs/0/input", O_RDWR) < 0)
+	if( fd_avs_input < 0)
 		perror("cannot open /proc/stb/avs/0/input");
 
 	if(fd_avs_input > 0)
@@ -606,17 +606,16 @@ void cVideo::SetInput(int val)
 	}
 	else
 		printf("error %m\n");
+		
+	int fd_sb = open("/proc/stb/avs/0/standby", O_RDWR);
 	
-//#if defined (PLATFORM_DUCKBOX)	
-	int fd_sb;
-	if(fd_sb = open("/proc/stb/avs/0/standby", O_RDWR) < 0)
+	if(fd_sb < 0)
 		perror("cannot open /proc/stb/avs/0/standby");
 	
 	if(fd_sb > 0)
 	{
 		write(fd_sb, sb[val], strlen(sb[val]));
-	}
-//#endif	
+	}	
 }
 
 /* Pig */
