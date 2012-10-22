@@ -294,6 +294,10 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	g_Sectionsd->setPauseScanning(true);
 	
 	//
+	if(!audioDecoder)
+		audioDecoder = new cAudio();
+	
+	// open
 	audioDecoder->Open();
 
 	//start AP start-script
