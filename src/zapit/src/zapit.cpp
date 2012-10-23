@@ -882,7 +882,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	pmt_stop_update_filter(&pmt_update_fd);
 	
 	// FIXME: how to stop ci capmt or we dont need this???
-	stopPlayBack();
+	stopPlayBack(!forupdate);
 
 	if(!forupdate && live_channel)
 		live_channel->resetPids();
@@ -1131,10 +1131,28 @@ void unsetRecordMode(void)
  
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 	
+	/* 
+	* if we on rec. channel, just update pmt with new camask,
+	* else we must stop cam1 and start cam0 for current live channel
+	* in standby should be no cam1 running.
+	*/
+	#if 0
+	if(standby)
+		live_cam->sendMessage(0, 0); // stop
+	else if(live_channel_id == rec_channel_id) 
+	{
+		live_cam->setCaPmt(live_channel->getCaPmt(), live_fe->fenumber, 1, true); // demux 0, update
+	} 
+	else 
+	{
+		record_cam->sendMessage(0, 0); // stop
+		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
+	}
+	#endif
+	
 	rec_channel_id = 0;
 	rec_channel = NULL;
 	
-	//TEST
 	if(record_fe)
 		record_fe->locked = false;	
 }
@@ -1219,7 +1237,7 @@ int start_scan(CZapitMessages::commandStartScan StartScan)
 	scan_runs = 1;
 	
 	//stop playback
-	stopPlayBack();
+	stopPlayBack(true);
 	
 	// stop pmt update filter
         pmt_stop_update_filter(&pmt_update_fd);	
@@ -1739,7 +1757,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				live_channel = 0;
 			}
 	
-			stopPlayBack();
+			stopPlayBack(true);
 				
 			// stop update pmt filter
 			pmt_stop_update_filter(&pmt_update_fd);
@@ -2083,14 +2101,17 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
-			stopPlayBack();
+			stopPlayBack(false);
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			break;
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
-			stopPlayBack();
+			/* hack. if standby true, dont blank video */
+			standby = true;
+			stopPlayBack(false);
+			standby = false;
 					
 			if(audioDecoder)
 			{
@@ -2882,8 +2903,28 @@ int startPlayBack(CZapitChannel * thisChannel)
 	return 0;
 }
 
-int stopPlayBack()
+int stopPlayBack( bool sendPmt)
 {
+	if(sendPmt) 
+	{
+		#if 0
+		if(currentMode & RECORD_MODE) 
+		{
+			/* if we recording and rec == live, only update camask on cam0,
+			 * else stop cam1
+			 */
+			if(live_channel_id == rec_channel_id)
+				live_cam->setCaPmt(channel->getCaPmt(), live_fe->fenumber, 1, true); 
+			else
+				record_cam->sendMessage(0, 0);
+		} 
+		else 
+		{
+			live_cam->sendMessage(0, 0);
+		}
+		#endif
+	}
+
 	printf("[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
 
 	if (!playing)
@@ -2920,8 +2961,8 @@ int stopPlayBack()
 	audioDecoder->Stop();
 	
 	// video decoder stop
-	//videoDecoder->Stop(standby ? false : true);
-	videoDecoder->Stop();
+	videoDecoder->Stop(standby ? false : true);
+	//videoDecoder->Stop();
 
 	playing = false;
 	
@@ -2957,7 +2998,7 @@ void enterStandby(void)
 	saveZapitSettings(true, true);
 	
 	/* stop playback */
-	stopPlayBack();
+	stopPlayBack(true);
 	
 	/* delete cam */
 	if (live_cam) 
@@ -2974,6 +3015,15 @@ void enterStandby(void)
 			record_cam = NULL;
 		}
 	}
+	
+	// close frontend
+	if(!(currentMode & RECORD_MODE)) 
+	{
+		pmt_stop_update_filter(&pmt_update_fd);
+		
+		for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
+			it->second->Close();
+	}
 }
 
 void leaveStandby(void)
@@ -2982,6 +3032,10 @@ void leaveStandby(void)
 	
 	if(!standby) 
 		return;
+	
+	// open frontend
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
+		it->second->Open();
 
 	// live cam
 	if (!live_cam) 
@@ -2989,7 +3043,7 @@ void leaveStandby(void)
 		live_cam = new CCam();
 	}
 	
-	if(record_cam)
+	if(!record_cam)
 	{
 		record_cam = new CCam();
 	}
@@ -3603,7 +3657,7 @@ int zapit_main_thread(void *data)
 		save_channel_pids(live_channel);
 	
 	saveZapitSettings(true, true);
-	stopPlayBack();
+	stopPlayBack(true);
 
 	pthread_cancel(tsdt);
 	
