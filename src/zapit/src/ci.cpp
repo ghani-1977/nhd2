@@ -129,7 +129,17 @@ unsigned int CEsInfo::CamwriteToBuffer(unsigned char * const buffer) // returns 
 	buffer[1] = ((reserved1 << 5) | (elementary_PID >> 8)) & 0xff;
 	buffer[2] = elementary_PID & 0xff;
 	
-	return 3 + CCaTable::writeToBuffer(&(buffer[4]));	
+	//return 3 + CCaTable::writeToBuffer(&(buffer[4]));
+	
+	int len = 0;
+	len = CCaTable::writeToBuffer(&(buffer[4]));
+	if(len) {
+		buffer[3] = 0x1; // ca_pmt_cmd_id: ok_descrambling= 1;
+		len++;
+	}
+	//buffer[3] = ((len & 0xf00)>>8);
+	//buffer[4] = (len & 0xff);
+	return len + 3;
 }
 
 /*
@@ -214,7 +224,7 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
 
 	for (i = 0; i < es_info.size(); i++) 
 	{
-		wp += es_info[i]->writeToBuffer(&(buffer[wp]));
+		wp += es_info[i]->CamwriteToBuffer(&(buffer[wp]));
 	}
 	
 	buffer[3] = (wp-4) & 0xff;
