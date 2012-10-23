@@ -133,12 +133,12 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 	// init record
 	if(!record)
 	{
-			record = new cRecord( live_fe? live_fe->fenumber:0);
+		record = new cRecord( live_fe? live_fe->fenumber:0);
 	}
 	
 
 	// open
-	record->Open(numpids);
+	record->Open();
 
 	// start_recording
 	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids)) 
