@@ -592,15 +592,6 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 
 	if(scan_runs) 
 	{
-		#if 0
-		if(channel->getCaPmt() != 0)
-			delete channel->getCaPmt();
-		
-		channel->setCaPmt(NULL);
-		
-		delete caPmt;
-		#endif
-		
 		channel->setCaPmt(NULL);
 		channel->setRawPmt(NULL);
 		
@@ -608,18 +599,10 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	} 
 	else 
 	{
-		#if 0
-		if(channel->getCaPmt() != 0) 
-			delete channel->getCaPmt();
-		
-		channel->setCaPmt(caPmt);
-		#endif
-		#if 1
 		channel->setCaPmt(caPmt);
 		unsigned char * p = new unsigned char[pmtlen];
 		memmove(p, buffer, pmtlen);
 		channel->setRawPmt(p, pmtlen);
-		#endif
 	}
 
 	channel->setPidsFlag();
