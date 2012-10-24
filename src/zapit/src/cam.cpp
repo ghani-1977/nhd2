@@ -95,7 +95,7 @@ bool CCam::setCaSocket(int demux)
         buffer[6] = 0x00;
 	buffer[7] = demux; //demux index
 
-	return sendMessage((char *)buffer, 8, true);
+	return sendMessage((char *)buffer, 8);
 }
 
 

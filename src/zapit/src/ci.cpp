@@ -108,11 +108,9 @@ CCaTable::~CCaTable(void)
 		delete ca_descriptor[i];
 }
 
-
 /*
  * elementary stream information
  */
-// ci
 unsigned int CEsInfo::writeToBuffer(unsigned char * const buffer) // returns number of bytes written
 {
 	buffer[0] = stream_type;
@@ -120,26 +118,6 @@ unsigned int CEsInfo::writeToBuffer(unsigned char * const buffer) // returns num
 	buffer[2] = elementary_PID;
 	
 	return 3 + CCaTable::writeToBuffer(&(buffer[3]));
-}
-
-// cam
-unsigned int CEsInfo::CamwriteToBuffer(unsigned char * const buffer) // returns number of bytes written
-{
-	buffer[0] = stream_type;
-	buffer[1] = ((reserved1 << 5) | (elementary_PID >> 8)) & 0xff;
-	buffer[2] = elementary_PID & 0xff;
-	
-	//return 3 + CCaTable::writeToBuffer(&(buffer[4]));
-	
-	int len = 0;
-	len = CCaTable::writeToBuffer(&(buffer[4]));
-	if(len) {
-		buffer[3] = 0x1; // ca_pmt_cmd_id: ok_descrambling= 1;
-		len++;
-	}
-	//buffer[3] = ((len & 0xf00)>>8);
-	//buffer[4] = (len & 0xff);
-	return len + 3;
 }
 
 /*
@@ -179,10 +157,15 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 // Cam
 unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
 {
+	unsigned int pos = 0;
 	unsigned int i;
 
-	memcpy(buffer, "\x9f\x80\x32\x00", 4);
+	buffer[0] = 0x9F;			// ca_pmt_tag
+	buffer[1] = 0x80;			// ca_pmt_tag
+	buffer[2] = 0x32,			// ca_pmt_tag
 
+	buffer[3] = 0x00;			// ???
+	
 	buffer[4] = ca_pmt_list_management; 	//4
 	buffer[5] = program_number >> 8; 	//5 
 	buffer[6] = program_number; 		// 6
@@ -215,19 +198,20 @@ unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, i
         int len = 19;
         int wp = 29;
 
-	i = CCaTable::CamwriteToBuffer(&(buffer[wp]));
-	wp += i;
-	len += i;
+	pos = CCaTable::CamwriteToBuffer(&(buffer[wp]));
+	
+	wp += pos;
+	len += pos;
 
-	buffer[lenpos]=((len & 0xf00)>>8);
-	buffer[lenpos+1]=(len & 0xff);
+	buffer[lenpos] = ((len & 0xf00)>>8);	// 8 prog info len
+	buffer[lenpos+1] = (len & 0xff);	// 9 prog info len
 
 	for (i = 0; i < es_info.size(); i++) 
 	{
-		wp += es_info[i]->CamwriteToBuffer(&(buffer[wp]));
+		wp += es_info[i]->writeToBuffer(&(buffer[wp]));
 	}
 	
-	buffer[3] = (wp-4) & 0xff;
+	buffer[3] = (wp - 4) & 0xff;
 
 	return wp;
 }

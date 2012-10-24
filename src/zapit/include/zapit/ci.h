@@ -70,12 +70,7 @@ class CEsInfo : public CCaTable
 {
 	protected:
 		unsigned getLength(void)	{ return CCaTable::getLength() + 3; }
-		
-		// ci
 		unsigned writeToBuffer(unsigned char * const buffer);
-		
-		//cam
-		unsigned CamwriteToBuffer(unsigned char * const buffer);
 
 	public:
 		unsigned stream_type		: 8;
