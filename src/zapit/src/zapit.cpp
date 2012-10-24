@@ -99,8 +99,8 @@ pthread_mutex_t chan_mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP;
 bool sdt_wakeup;
 
 /* the conditional access module */
-CCam * live_cam = NULL;
-CCam * record_cam = NULL;
+CCam * cam0 = NULL;
+CCam * cam1 = NULL;
 
 /* the configuration file */
 CConfigFile config(',', false);
@@ -604,43 +604,13 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
 
-void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe, int camask = 0, bool forupdate = false)
+void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
-	#if 0
-	// dual decoding
-	//FIXME: broken???
-	if(currentMode & RECORD_MODE) 
-	{
-		if(rec_channel_id != live_channel_id) 
-		{
-			/* zap from rec. channel */
-			record_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask); // demux 0
-                } 
-                else if(forupdate) 
-		{ 
-			//FIXME broken!
-			/* forupdate means pmt update  for live channel, using old camask */
-                        live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask/*, true*/ );// update
-		} 
-		else 
-		{
-			/* zap back to rec. channel */
-			live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask/*, true*/); // update
-			record_cam->sendMessage(0,0); // stop/close
-		}
-	} 
-	else 
-	{
-		//camask = 1;
-		live_cam->setCaPmt(thischannel->getCaPmt(), live_fe->fenumber, camask);
-	}
-	#endif
-	
 	// socket
-	live_cam->setCaSocket( fe->fenumber );
+	cam0->setCaSocket( fe->fenumber );
 	
 	// cam
-	live_cam->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
+	cam0->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(thischannel->getCaPmt());	
@@ -934,7 +904,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// send ca pmt
 	printf("%s sending capmt....\n", __FUNCTION__);
 
-	sendCaPmt(live_channel, live_fe/*, 1, forupdate*/);
+	sendCaPmt(live_channel, live_fe);
 	
 	// send caid
 	int caid = 1;
@@ -984,8 +954,15 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	
 	printf("%s sending capmt....\n", __FUNCTION__);
+	// socket
+	cam1->setCaSocket( frontend->fenumber );
 	
-	//sendCaPmt(rec_channel, frontend);	
+	// cam
+	cam1->setCaPmt(rec_channel->getCaPmt(), frontend->fenumber );
+	
+	// ci cam //FIXME: boxes without ci cam
+	ci->SendCaPMT(rec_channel->getCaPmt());	
+		
 
 	return 0;
 }
@@ -1131,24 +1108,8 @@ void unsetRecordMode(void)
  
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 	
-	/* 
-	* if we on rec. channel, just update pmt with new camask,
-	* else we must stop cam1 and start cam0 for current live channel
-	* in standby should be no cam1 running.
-	*/
-	#if 0
-	if(standby)
-		live_cam->sendMessage(0, 0); // stop
-	else if(live_channel_id == rec_channel_id) 
-	{
-		live_cam->setCaPmt(live_channel->getCaPmt(), live_fe->fenumber, 1, true); // demux 0, update
-	} 
-	else 
-	{
-		record_cam->sendMessage(0, 0); // stop
-		live_cam->setCaPmt(live_channel->getCaPmt(), 0, 1); // start
-	}
-	#endif
+	// cam1 stop
+	cam1->sendMessage(0, 0); // stop
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -2083,16 +2044,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandInt msg;
 			CBasicServer::receive_data(connfd, &msg, sizeof(msg));
-			setVideoSystem_t(msg.val);
+			
+			if(videoDecoder)
+				videoDecoder->SetVideoSystem(msg.val);
 			break;
-		}
-#ifndef __sh__	
-		case CZapitMessages::CMD_SET_NTSC: 
-		{
-			setVideoSystem_t(VIDEO_STD_NTSC);
-			break;
-		}
-#endif		
+		}		
 	
 		case CZapitMessages::CMD_SB_START_PLAYBACK:
 			//playbackStopForced = false;
@@ -2285,10 +2241,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if (msgBoolean.truefalse) 
 			{
 				enterStandby();
-				
-				//CZapitMessages::responseCmd response;
-				//response.cmd = CZapitMessages::CMD_READY;
-				//CBasicServer::send_data(connfd, &response, sizeof(response));
 			} 
 			else
 			{
@@ -2907,22 +2859,17 @@ int stopPlayBack( bool sendPmt)
 {
 	if(sendPmt) 
 	{
-		#if 0
 		if(currentMode & RECORD_MODE) 
 		{
-			/* if we recording and rec == live, only update camask on cam0,
-			 * else stop cam1
-			 */
-			if(live_channel_id == rec_channel_id)
-				live_cam->setCaPmt(channel->getCaPmt(), live_fe->fenumber, 1, true); 
-			else
-				record_cam->sendMessage(0, 0);
+			//if(live_channel_id == rec_channel_id)
+			//	cam0->setCaPmt(channel->getCaPmt(), live_fe->fenumber, 1, true); 
+			//else
+			//	cam1->sendMessage(0, 0);
 		} 
 		else 
 		{
-			live_cam->sendMessage(0, 0);
+			cam0->sendMessage(0, 0);
 		}
-		#endif
 	}
 
 	printf("[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
@@ -2961,8 +2908,8 @@ int stopPlayBack( bool sendPmt)
 	audioDecoder->Stop();
 	
 	// video decoder stop
-	videoDecoder->Stop(standby ? false : true);
-	//videoDecoder->Stop();
+	//videoDecoder->Stop(standby ? false : true);
+	videoDecoder->Stop();
 
 	playing = false;
 	
@@ -2975,16 +2922,9 @@ int stopPlayBack( bool sendPmt)
 	else
 	{
 		dvbsub_stop();
-		//dvbsub_close();
 	}
 
 	return 0;
-}
-
-void setVideoSystem_t(int video_system)
-{
-	if(videoDecoder)
-		videoDecoder->SetVideoSystem(video_system);
 }
 
 void enterStandby(void)
@@ -2999,31 +2939,6 @@ void enterStandby(void)
 	
 	/* stop playback */
 	stopPlayBack(true);
-	
-	/* delete cam */
-	if (live_cam) 
-	{
-		delete live_cam;
-		live_cam = NULL;
-	}
-	
-	if(!(currentMode & RECORD_MODE))
-	{
-		if(record_cam)
-		{
-			delete record_cam;
-			record_cam = NULL;
-		}
-	}
-	
-	// close frontend
-	if(!(currentMode & RECORD_MODE)) 
-	{
-		pmt_stop_update_filter(&pmt_update_fd);
-		
-		for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
-			it->second->Close();
-	}
 }
 
 void leaveStandby(void)
@@ -3032,20 +2947,16 @@ void leaveStandby(void)
 	
 	if(!standby) 
 		return;
-	
-	// open frontend
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
-		it->second->Open();
 
 	// live cam
-	if (!live_cam) 
+	if (!cam0) 
 	{
-		live_cam = new CCam();
+		cam0 = new CCam();
 	}
 	
-	if(!record_cam)
+	if(!cam1)
 	{
-		record_cam = new CCam();
+		cam1 = new CCam();
 	}
 
 	standby = false;

@@ -41,7 +41,5 @@ void sendRecordSubPIDs(int connfd);
 void enterStandby(void);
 void leaveStandby(void);
 
-void setVideoSystem_t(int video_system);
-
 
 #endif /* __zapit_h__ */
