@@ -113,9 +113,7 @@
 #include "gui/filebrowser.h"
 #include "gui/widget/progressbar.h"
 
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 #include "gui/cam_menu.h"
-//#endif
 
 #include "gui/hdd_menu.h"
 
@@ -268,9 +266,7 @@ CRemoteControl 		* g_RemoteControl;
 SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 CMoviePlayerGui		* moviePlayerGui;
 CPictureViewer 		* g_PicViewer;
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 CCAMMenuHandler 	* g_CamHandler;
-//#endif
 
 bool parentallocked = false;
 static char **global_argv;
@@ -309,9 +305,7 @@ static void initGlobals(void)
 	g_EventList     = NULL;
 	g_Locale        = new CLocaleManager;
 	g_PluginList    = NULL;
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler 	= NULL;
-//#endif
 
 #if ENABLE_RADIOTEXT
 	g_Radiotext     = NULL;
@@ -2489,10 +2483,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	g_CamHandler = new CCAMMenuHandler();
-	g_CamHandler->init();
-//#endif	
+	g_CamHandler->init();	
 
 	// plugins
 	g_PluginList = new CPlugins;
@@ -2774,9 +2766,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	SHTDCNT::getInstance()->init();
 
 	// Cam-Ci
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
-	cDvbCi::getInstance()->SetHook(CISendMessage);
-//#endif	
+	cDvbCi::getInstance()->SetHook(CISendMessage);	
 
 	// real run ;-)
 	RealRun(mainMenu);
@@ -3373,13 +3363,11 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	}
 
 	// we assume g_CamHandler free/delete data if needed
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND)
 	res = g_CamHandler->handleMsg(msg, data);
 	if( res != messages_return::unhandled ) 
 	{
 		return(res & (0xFFFFFFFF - messages_return::unhandled));
-	}
-//#endif	
+	}	
 
 	// handle Keys
 	if( msg == CRCInput::RC_ok || msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
@@ -5292,10 +5280,9 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
 		hintBox->paint();
 		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		//system("/bin/cubefpctl --setgmtoffset");
-		//system("/bin/cubefpctl --syncfptime");
-#endif		
+#ifdef __sh__
+		CVFD::getInstance()->setFPTime();
+#endif
 		
 		sleep(2);
 		
