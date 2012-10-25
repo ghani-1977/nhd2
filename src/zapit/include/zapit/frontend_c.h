@@ -23,6 +23,7 @@
 #define __zapit_frontend_h__
 
 #include <inttypes.h>
+
 #include "types.h"
 #include "channel.h"
 #include <zapit/satconfig.h>
@@ -48,7 +49,6 @@
 #define FEC_S2_8PSK_4_5 (fe_code_rate_t)(FEC_S2_8PSK_3_5+1)		//26
 #define FEC_S2_8PSK_9_10 (fe_code_rate_t)(FEC_S2_8PSK_4_5+1)		//27
 #define FEC_S2_AUTO      (fe_code_rate_t)(FEC_S2_8PSK_9_10+1)		//28
-
 
 
 static inline fe_modulation_t dvbs_get_modulation(fe_code_rate_t fec)

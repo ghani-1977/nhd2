@@ -29,6 +29,7 @@
 #include "zapittypes.h"
 #include <connection/basicclient.h>
 
+
 #define CHANNEL_NAME_SIZE 40
 
 class CZapitClient : public CBasicClient

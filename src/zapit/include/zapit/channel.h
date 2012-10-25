@@ -31,6 +31,7 @@
 #include <sectionsdclient/sectionsdclient.h>
 
 /* zapit */
+#include <zapit/client/zapitclient.h>
 #include "ci.h"
 #include "types.h"
 
@@ -114,6 +115,7 @@ class CZapitAudioChannel
 };
 
 class CChannelList;	// defined gui/channellist.cpp
+class CCaPmt;
 
 class CZapitChannel
 {

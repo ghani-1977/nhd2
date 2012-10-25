@@ -614,7 +614,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	//cam0->setCaSocket( fe->fenumber );
 	
 	// cam
-	cam0->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
+	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), fe->fenumber );
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(thischannel->getCaPmt());	
@@ -962,7 +962,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	cam1->setCaSocket( frontend->fenumber );
 	
 	// cam
-	cam1->setCaPmt(rec_channel->getCaPmt(), frontend->fenumber );
+	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), frontend->fenumber );
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(rec_channel->getCaPmt());	
@@ -2862,7 +2862,7 @@ int stopPlayBack( bool sendPmt)
 		if(currentMode & RECORD_MODE) 
 		{
 			//if(live_channel_id == rec_channel_id)
-			//	cam0->setCaPmt(channel->getCaPmt(), live_fe->fenumber, 1, true); 
+			//	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), live_fe->fenumber, 1, true); 
 			//else
 			//	cam1->sendMessage(0, 0);
 		} 

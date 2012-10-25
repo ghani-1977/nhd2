@@ -35,7 +35,7 @@ class CCam : public CBasicClient
 
 	public:
 		bool sendMessage(const char * const data, const size_t length, bool update = false);
-		bool setCaPmt(CCaPmt * const caPmt, int demux = 0, int camask = 1, bool update = false);
+		bool setCaPmt(CZapitChannel * thischannel, CCaPmt * const caPmt, int demux = 0, int camask = 1, bool update = false);
 		bool setCaSocket(int demux = 0);
 };
 

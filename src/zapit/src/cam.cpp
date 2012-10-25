@@ -64,7 +64,7 @@ bool CCam::sendMessage(const char * const data, const size_t length, bool update
 	return send_data(data, length);
 }
 
-bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
+bool CCam::setCaPmt(CZapitChannel * thischannel, CCaPmt * const caPmt, int demux, int camask, bool update)
 {
 	if (!caPmt)
 		return true;
@@ -73,7 +73,7 @@ bool CCam::setCaPmt(CCaPmt * const caPmt, int demux, int camask, bool update)
 	
 	unsigned int size = caPmt->CamgetLength();
 	unsigned char buffer[3 + get_length_field_size(size) + size];
-	size_t pos = caPmt->CamwriteToBuffer(buffer, demux, camask);
+	size_t pos = caPmt->CamwriteToBuffer(thischannel, buffer, demux, camask);
 
 	return sendMessage((char *)buffer, pos, update);
 }

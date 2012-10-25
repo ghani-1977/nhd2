@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = gnu
 
-SUBDIRS = lib src
+SUBDIRS = include lib src

@@ -155,44 +155,44 @@ unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int 
 }
 
 // Cam
-unsigned int CCaPmt::CamwriteToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
+unsigned int CCaPmt::CamwriteToBuffer(CZapitChannel * thischannel, unsigned char * const buffer, int demux, int camask) // returns number of bytes written
 {
 	unsigned int pos = 0;
 	unsigned int i;
 
-	buffer[0] = 0x9F;			// ca_pmt_tag
-	buffer[1] = 0x80;			// ca_pmt_tag
-	buffer[2] = 0x32,			// ca_pmt_tag
+	buffer[0] = 0x9F;								// ca_pmt_tag
+	buffer[1] = 0x80;								// ca_pmt_tag
+	buffer[2] = 0x32,								// ca_pmt_tag
 
-	buffer[3] = 0x00;			// ???
+	buffer[3] = 0x00;								// ???
 	
-	buffer[4] = ca_pmt_list_management; 	//4
-	buffer[5] = program_number >> 8; 	//5 
-	buffer[6] = program_number; 		// 6
+	buffer[4] = ca_pmt_list_management; 						//4
+	buffer[5] = program_number >> 8; 						//5 
+	buffer[6] = program_number; 							// 6
 	buffer[7] = (reserved1 << 6) | (version_number << 1) | current_next_indicator;
-	buffer[8] = 0x00; 			// //reserved - prg-info len
-	buffer[9] = 0x00; 			// prg-info len
-	buffer[10] = 0x01;  			// ca pmt command id
-	buffer[11] = 0x81;  			// private descr.. dvbnamespace
-	buffer[12] = 0x08; 			//12
+	buffer[8] = 0x00; 								// //reserved - prg-info len
+	buffer[9] = 0x00; 								// prg-info len
+	buffer[10] = 0x01;  								// ca pmt command id
+	buffer[11] = 0x81;  								// private descr.. dvbnamespace
+	buffer[12] = 0x08; 								//12
 
-	buffer[13] = 0x00;			// getSatellitePosition() >> 8;	
-	buffer[14] = 0x00;			// getSatellitePosition() & 0xFF;
-	buffer[15] = 0x00;			// getFreqId() >> 8;
-	buffer[16] = 0x00;			// getFreqId() & 0xFF;
-	buffer[17] = 0x00;			// getTransportStreamId() >> 8;
-	buffer[18] = 0x00;			// getTransportStreamId() & 0xFF;
-	buffer[19] = 0x00;			// getOriginalNetworkId() >> 8;
-	buffer[20] = 0x00; 			// getOriginalNetworkId() & 0xFF;
+	buffer[13] = thischannel->getSatellitePosition() >> 8;				// getSatellitePosition() >> 8;	
+	buffer[14] = thischannel->getSatellitePosition() & 0xFF;			// getSatellitePosition() & 0xFF;
+	buffer[15] = thischannel->getFreqId() >> 8;					// getFreqId() >> 8;
+	buffer[16] = thischannel->getFreqId() & 0xFF;					// getFreqId() & 0xFF;
+	buffer[17] = thischannel->getTransportStreamId() >> 8;				// getTransportStreamId() >> 8;
+	buffer[18] = thischannel->getTransportStreamId() & 0xFF;			// getTransportStreamId() & 0xFF;
+	buffer[19] = thischannel->getOriginalNetworkId() >> 8;				// getOriginalNetworkId() >> 8;
+	buffer[20] = thischannel->getOriginalNetworkId() & 0xFF; 			// getOriginalNetworkId() & 0xFF;
 	
-	buffer[21] = 0x82;  			// demuxer kram..
+	buffer[21] = 0x82;  								// demuxer kram..
 	buffer[22] = 0x02;
-	buffer[23] = camask; 			// descramble on caNum
-	buffer[24] = demux; 			// get section data from demuxNum
-	buffer[25] = 0x84;  			// pmt pid
+	buffer[23] = camask; 								// descramble on caNum
+	buffer[24] = demux; 								// get section data from demuxNum
+	buffer[25] = 0x84;  								// pmt pid
 	buffer[26] = 0x02;
 	buffer[27] = (curpmtpid >> 8) & 0xFF;
-	buffer[28] = curpmtpid & 0xFF; 		// 28
+	buffer[28] = curpmtpid & 0xFF; 							// 28
 
         int lenpos = 8;
         int len = 19;

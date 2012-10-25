@@ -28,7 +28,6 @@
 #include <stdint.h>
 
 
-//#include "client/zapittypes.h"
 typedef uint16_t t_service_id;
 #define SCANF_SERVICE_ID_TYPE "%hx"
 

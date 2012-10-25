@@ -24,6 +24,9 @@
 
 #include <vector>
 
+#include "channel.h"
+
+
 class CCaDescriptor
 {
 	private:
@@ -80,6 +83,8 @@ class CEsInfo : public CCaTable
 	friend class CCaPmt;
 };
 
+class CZapitChannel;
+
 class CCaPmt : public CCaTable
 {
 	protected:
@@ -94,7 +99,7 @@ class CCaPmt : public CCaTable
 		
 		//cam
 		unsigned CamgetLength(void);
-		unsigned CamwriteToBuffer(unsigned char * const buffer, int demux = 0, int camask = 1);
+		unsigned CamwriteToBuffer(CZapitChannel * thischannel, unsigned char * const buffer, int demux = 0, int camask = 1);
 
 		unsigned ca_pmt_list_management	: 8;
 		unsigned program_number		: 16;
