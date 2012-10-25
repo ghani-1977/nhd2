@@ -45,7 +45,6 @@
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
 bool blocked = false;
 
@@ -120,12 +119,10 @@ void CVFD::count_down()
 		timeout_cnt--;
 		if (timeout_cnt == 0) 
 		{
-			//if (atoi(g_settings.lcd_setting_dim_brightness) > 0) 
 			if (g_settings.lcd_setting_dim_brightness > 0) 
 			{
 				// save lcd brightness, setBrightness() changes global setting
 				int b = g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
-				//setBrightness(atoi(g_settings.lcd_setting_dim_brightness));
 				setBrightness(g_settings.lcd_setting_dim_brightness);
 				g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = b;
 			} 
@@ -190,7 +187,6 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 	dprintf(DEBUG_DEBUG, "CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
 	
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
         struct vfd_ioctl_data data;
 	data.start_address = dimm;
@@ -390,19 +386,15 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showServicename(servicename);
 #endif
 
-//#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK7162)
-			ShowIcon(VFD_ICON_TV, true);
-//#endif			
+			ShowIcon(VFD_ICON_TV, true);			
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 			break;
 
 		case MODE_AUDIO:
 		{
-			ShowIcon(VFD_ICON_MP3, true);
-//#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK7162)			
-			ShowIcon(VFD_ICON_TV, false);
-//#endif			
+			ShowIcon(VFD_ICON_MP3, true);			
+			ShowIcon(VFD_ICON_TV, false);			
 			showAudioPlayMode(AUDIO_MODE_STOP);			
 			showclock = true;
 			ShowIcon(VFD_ICON_HD, false);
@@ -411,17 +403,14 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 		}
 
-		case MODE_SCART:
-//#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK7162)	  
-			ShowIcon(VFD_ICON_TV, false);
-//#endif	
+		case MODE_SCART:	  
+			ShowIcon(VFD_ICON_TV, false);	
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 			break;
 
 		case MODE_MENU_UTF8:
 			showclock = false;
-			//fonts.menutitle->RenderString(0,28, 140, title, CLCDDisplay::PIXEL_ON, 0, true); // UTF-8
 			break;
 
 		case MODE_SHUTDOWN:
@@ -432,28 +421,22 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_STANDBY:
-//#if !defined (PLATFORM_DUCKBOX) && !defined (PLATFORM_SPARK7162)
-			ShowIcon(VFD_ICON_TV, false);
-//#endif			
+			ShowIcon(VFD_ICON_TV, false);			
 			showclock = true;
 			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 						/* "showTime()" clears the whole lcd in MODE_STANDBY */
 			break;
 		
-		case MODE_PIC:
-//#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK7162)	  
-			ShowIcon(VFD_ICON_TV, false);
-//#endif			
+		case MODE_PIC:	  
+			ShowIcon(VFD_ICON_TV, false);			
 			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
 			
 			showclock = false;
 			break;
 			
-		case MODE_TS:
-//#if !defined (PLATFORM_DUCKBOX)	&& !defined (PLATFORM_SPARK7162)	  
-			ShowIcon(VFD_ICON_TV, false);
-//#endif			
+		case MODE_TS:  
+			ShowIcon(VFD_ICON_TV, false);			
 			showclock = false;
 			break;
 	}
@@ -503,7 +486,6 @@ void CVFD::setPower(int power)
 	if(!has_lcd) 
 		return;
 
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
 	struct vfd_ioctl_data data;
 	data.start_address = power;
@@ -522,7 +504,6 @@ void CVFD::setFPTime(void)
 	if(!has_lcd)
 		return;
 
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
 	openDevice();
 	
@@ -727,14 +708,13 @@ void CVFD::ShowText(char * str)
 
 void CVFD::setFan(bool enable)
 {
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
-	//openDevice();
+	openDevice();
 	
-	//if( ioctl(fd, VFDSETFAN, enable) < 0)  
-	//	perror("VFDPWRLED");
+	if( ioctl(fd, VFDSETFAN, enable) < 0)  
+		perror("VFDPWRLED");
 	
-	//closeDevice();
+	closeDevice();
 #endif	
 }
 
