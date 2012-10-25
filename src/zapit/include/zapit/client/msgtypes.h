@@ -96,7 +96,6 @@ class CZapitMessages
 			CMD_BQ_RENUM_CHANNELLIST           = 47,
 			CMD_BQ_RESTORE                     = 48,
 			
-			//CMD_BQ_COMMIT_CHANGE               = 49, //unused
 			CMD_BQ_SAVE_BOUQUETS               = 50,
 
 			CMD_SET_RECORD_MODE                = 51,
@@ -104,8 +103,6 @@ class CZapitMessages
 			CMD_SB_START_PLAYBACK              = 53,
 			CMD_SB_STOP_PLAYBACK               = 54,
 			CMD_SB_GET_PLAYBACK_ACTIVE         = 55,
-			
-			//CMD_SET_DISPLAY_FORMAT             = 56, // unused
 			
 			CMD_SET_AUDIO_MODE                 = 57,
 			CMD_READY                          = 58,
@@ -123,15 +120,6 @@ class CZapitMessages
 
 			CMD_GET_CHANNEL_NAME               = 69,
 			CMD_IS_TV_CHANNEL                  = 70,
-
-			//CMD_GET_FE_SIGNAL                  = 71,
-
-			//CMD_SET_AE_IEC_ON                  = 73,
-			//CMD_SET_AE_IEC_OFF                 = 74,
-			//CMD_GET_AE_IEC_STATE               = 75,
-			//CMD_SET_AE_PLAYBACK_SPTS           = 76,
-			//CMD_SET_AE_PLAYBACK_PES            = 77,
-			//CMD_GET_AE_PLAYBACK_STATE          = 78,
 
 			CMD_SCANSETTYPE                    = 79,
 			CMD_RELOAD_CURRENTSERVICES	   = 80,
@@ -155,7 +143,6 @@ class CZapitMessages
 			
 			CMD_GETRECORDPIDS		  = 109,
 			
-			CMD_ADD_FRONTEND		  = 110,
 			CMD_SCANSETFEMODE              = 111,
 		};
 

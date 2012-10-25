@@ -124,8 +124,6 @@ class CFrontend
 	private:
 		int fd;
 		int fe_adapter;
-		//int fenumber;
-		bool slave;
 		bool standby;
 		
 		/* information about the used frontend type */
@@ -142,19 +140,9 @@ class CFrontend
 		/**/
 		int diseqc;
 		uint8_t uncommitedInput;
-		
-		/* lnb offsets */
-		/*
-		int32_t lnbOffsetLow;
-		int32_t lnbOffsetHigh;
-		int32_t lnbSwitch;
-		*/
 
 		/* current Transponderdata */
 		TP_params currentTransponder;
-		
-		/* satellites */
-		//satellite_map_t satellites;
 		
 		struct dvb_frontend_parameters curfe;
 		uint32_t getDiseqcReply(const int timeout_ms) const;
@@ -234,7 +222,7 @@ class CFrontend
 		void setInput(t_satellite_position satellitePosition, uint32_t frequency, uint8_t polarization);
 		bool setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t frequency);
 		void setDiseqc(int sat_no, const uint8_t pol, const uint32_t frequency);
-		void setMasterSlave(bool _slave) { slave = _slave; };
+		//void setMasterSlave(bool _slave) { slave = _slave; };
 		int driveToSatellitePosition(t_satellite_position satellitePosition, bool from_scan = false);
 		void setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int32_t _lnbSwitch);
 
@@ -242,9 +230,6 @@ class CFrontend
 		int getFeIndex() {return fenumber;}
 		
 		int getDeliverySystem();
-		//satellite_map_t getSatellites(); // { return satellites /*satellitePositions*/; }
-		//void				setSatellites(satellite_map_t satmap) { satellites = satmap; }
-		
 		bool				getHighBand()				{ return (int) getFrequency() >= lnbSwitch; }
 };
 

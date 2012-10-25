@@ -229,6 +229,10 @@ bool initFrontend()
 	CFrontend * fe;
 	unsigned short fekey;
 	
+	// clear map
+	femap.clear();
+	
+	// fill map
 	for(i = 0; i < DVBADAPTER_MAX; i++)
 	{
 		for(j = 0; j < FRONTEND_MAX; j++)
@@ -607,7 +611,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	// socket
-	cam0->setCaSocket( fe->fenumber );
+	//cam0->setCaSocket( fe->fenumber );
 	
 	// cam
 	cam0->setCaPmt(thischannel->getCaPmt(), fe->fenumber );
@@ -2272,10 +2276,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			//  frontend->satFind(msgMotor.cmdtype, live_channel);
 			break;
 		}
-		
-		case CZapitMessages::CMD_ADD_FRONTEND:
-			initFrontend();
-			break;
 		
 		default:
 			WARN("unknown command %d (version %d)", rmsg.cmd, CZapitMessages::ACTVERSION);

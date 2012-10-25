@@ -63,8 +63,7 @@ int usage (const char * basename)
         	<< "\t--1080\t\tswitch to hd 1080i mode: " << std::endl
         	<< "\t--pal\t\tswitch to pal mode: " << std::endl
         	<< "\t--720\t\tswitch to hd 720p mode: " << std::endl
-		<< "\t-m <cmdtype> <addr> <cmd> <number of parameters> <parameter 1> <parameter 2>\t\tsend diseqc 1.2 motor command: " << std::endl
-		<< "\t-af\t\tadd tuner: " << std::endl;
+		<< "\t-m <cmdtype> <addr> <cmd> <number of parameters> <parameter 1> <parameter 2>\t\tsend diseqc 1.2 motor command: " << std::endl;
 
 	return -1;
 }
@@ -118,8 +117,6 @@ int main (int argc, char** argv)
 	uint32_t  diseqc[5];
 	unsigned int tmp;
 	int scan_mode = 1;
-	
-	bool add_tuner = false;
 
 	/* command line */
 	for (i = 1; i < argc; i++)
@@ -319,11 +316,6 @@ int main (int argc, char** argv)
 		{
 			if ((sscanf(argv[i], "%d", &bouquet) > 0) && (sscanf(argv[++i], "%u", &channel) > 0))
 				continue;
-		}
-		else if (!strncmp(argv[i], "-af", 4))
-		{
-			add_tuner = true;
-			continue;
 		}
 		else if (sscanf(argv[i], "%d", &bouquet) > 0)
 			continue;
@@ -644,12 +636,6 @@ int main (int argc, char** argv)
 				std::cout << ", ac3";
 			std::cout << ")" << std::endl;
 		}
-	}
-	
-	if(add_tuner)
-	{
-		zapit.addFrontend();
-		return 0;
 	}
 
 	return 0;

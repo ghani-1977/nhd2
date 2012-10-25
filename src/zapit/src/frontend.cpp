@@ -78,21 +78,17 @@ extern transponder_list_t transponders;
 
 CFrontend::CFrontend(int num, int adap)
 {
-	printf("CFrontend:: CFrontend(%d, %d)\n", adap, num);
-	
 	fd = -1;
 	
 	/* dvb adapter index */
-	fe_adapter = adap; // now we are supporting only one adapter
+	fe_adapter = adap;
 	
 	/* frontend index */
 	fenumber = num;
 	
-	slave = false;	// FIXME
-	diseqcType = NO_DISEQC;
-	
 	mode = (fe_mode_t)FE_SINGLE;
 	locked = false;
+	standby = true;
 
 	memset(&curfe, 0, sizeof(curfe));
 	
@@ -100,6 +96,20 @@ CFrontend::CFrontend(int num, int adap)
 	curfe.u.qpsk.fec_inner = FEC_3_4;
 	curfe.u.qam.fec_inner = FEC_3_4;
 	curfe.u.qam.modulation = QAM_64;
+	
+	tuned = false;
+	
+	diseqcType = NO_DISEQC;
+	uncommitedInput = 255;
+	diseqc = 255;
+	currentTransponder.polarization = 1;
+	currentTransponder.feparams.frequency = 0;
+	currentTransponder.TP_id = 0;
+	currentTransponder.diseqc = 255;
+	
+	// to allow Open() switch it off
+	currentVoltage = SEC_VOLTAGE_OFF; //SEC_VOLTAGE_13;
+	currentToneMode = SEC_TONE_ON;
 }
 
 CFrontend::~CFrontend(void)
@@ -112,6 +122,8 @@ CFrontend::~CFrontend(void)
 
 bool CFrontend::Open(void)
 {
+	if(!standby)
+		return false;
 
 	char filename[256];
 
@@ -122,7 +134,6 @@ bool CFrontend::Open(void)
 		/* open front-end */
 		if( (fd = open(filename, O_RDWR | O_NONBLOCK) ) < 0)
 		{
-			perror(filename);
 			return false;
 		}
 		
@@ -135,28 +146,15 @@ bool CFrontend::Open(void)
 	else
 		printf("CFrontend::Open fe(%d) already opened\n", fenumber);
 
-	/* initialize some SAT values */
-	if(info.type == FE_QPSK || info.type == FE_OFDM)
-	{
-		currentVoltage = SEC_VOLTAGE_OFF;
-		secSetTone(SEC_TONE_OFF, 15);
-		secSetVoltage(SEC_VOLTAGE_13, 15);
-	}
+	// sec
+	secSetVoltage(SEC_VOLTAGE_13, 15);
+	secSetTone(SEC_TONE_OFF, 15);
 	
-	if(info.type == FE_QPSK)
-	{
-		sendDiseqcPowerOn();
-	}
-
-	tuned = false;
-	uncommitedInput = 255;
-	diseqc = 255;
-	currentTransponder.polarization = 1;
-	currentTransponder.feparams.frequency = 0;
+	// diseqc
+	setDiseqcType(diseqcType);
+	
 	currentTransponder.TP_id = 0;
-	currentTransponder.diseqc = 255;
-	//diseqcType = NO_DISEQC;
-	//currentSatellitePosition = 0xFFFF;
+	
 	standby = false;
 	
 	return true;
@@ -958,15 +956,12 @@ void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 	#endif
 
 	printf("CFrontend::secSetTone: fe(%d) tone %s\n", fenumber, toneMode == SEC_TONE_ON ? "on" : "off");
-	//TIMER_INIT();
-	//TIMER_START();
 
 	if (ioctl(fd, FE_SET_TONE, toneMode) == 0) 
 	{
 		currentToneMode = toneMode;
 		usleep(1000 * ms);
 	}
-	//TIMER_STOP("FE_SET_TONE took");
 }
 
 void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
@@ -990,16 +985,11 @@ void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
 
 	printf("CFrontend::secSetVoltage: fe(%d) voltage %s\n", fenumber, voltage == SEC_VOLTAGE_OFF ? "OFF" : voltage == SEC_VOLTAGE_13 ? "13" : "18");
 
-	//TIMER_INIT();
-	//TIMER_START();
-
 	if (ioctl(fd, FE_SET_VOLTAGE, voltage) == 0) 
 	{
 		currentVoltage = voltage;
 		usleep(1000 * ms);	// FIXME : is needed ?
 	}
-
-	//TIMER_STOP("FE_SET_VOLTAGE took");
 }
 
 void CFrontend::secResetOverload(void)
@@ -1233,7 +1223,7 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 	{
 		fprintf(stderr, "VOLT18=%d TONE_ON=%d, freq=%d bpf=%d ret=%d\n", currentVoltage == SEC_VOLTAGE_18, currentToneMode == SEC_TONE_ON, frequency, bpf, (t + 350) * 4000 - frequency);
 		
-		if (/* !slave*/ (mode != (fe_mode_t)FE_LOOP) && info.type == FE_QPSK) 
+		if ( (mode != (fe_mode_t)FE_LOOP) && info.type == FE_QPSK) 
 		{
 			cmd.msg[3] = (t >> 8)		|	/* highest 3 bits of t */
 				    (uni_scr << 5)	|	/* adress */
