@@ -23,18 +23,17 @@ $Id: genpsi.c,v 1.2 2006/01/16 12:45:54 sat_man Exp $
  Mit diesem Programm koennen Neutrino TS Streams f�r das Abspielen unter Enigma gepatched werden 
  */
 //#include <mpegtools/transform.h>
-
 #include <string.h>
 #include <unistd.h>
 #include <driver/genpsi.h>
 
-#define SIZE_TS_PKT		188
-#define OFS_HDR_2		5
+#define SIZE_TS_PKT			188
+#define OFS_HDR_2			5
 #define OFS_PMT_DATA		13
 #define OFS_STREAM_TAB		17
 #define SIZE_STREAM_TAB_ROW	5 
 #define OFS_ENIGMA_TAB		31
-#define SIZE_ENIGMA_TAB_ROW   	4  
+#define SIZE_ENIGMA_TAB_ROW   4  
 
 #define ES_TYPE_MPEG12		0x02
 #define ES_TYPE_AVC		0x1b
@@ -47,7 +46,7 @@ typedef struct
 	 uint16_t	vpid;
 	 uint8_t	vtype;
 	 uint16_t	apid[10];
-	 short	isAC3[10];
+	 short		isAC3[10];
 } T_AV_PIDS;
 
 T_AV_PIDS avPids;
@@ -155,13 +154,14 @@ static uint8_t pkt_enigma[] =
 	0x01, 0x03, 0x00, 0x78, 0x00,			// cAPID(8), len(8), PID(16), ac3flag(8)
 // 0x02, 0x02, 0x00, 0x82,// cTPID(8), len(8), ...
 	0x03, 0x02, 0x00, 0x6e				// cPCRPID(8), ...
-};  
+}; 
+
 //-- PAT packet for at least 1 PMT --
 //----------------------------------------------------------
 static uint8_t pkt_pat[] =
 {
 	0x47, 0x40, 0x00, 0x10, 0x00,			// HEADER-1
-	0x00, 0xB0, 0x0D,				// HEADER-2
+	0x00, 0xB0, 0x0D,					// HEADER-2
 	0x04, 0x37, 0xE9, 0x00, 0x00,			// HEADER-3 sid
 	0x6D, 0x66, 0xEF, 0xFF,				// PAT-DATA - PMT (PID=0xFFF) entry
 };
@@ -171,7 +171,7 @@ static uint8_t pkt_pat[] =
 static uint8_t pkt_pmt[] =
 {
 	0x47, 0x4F, 0xFF, 0x10, 0x00,		// HEADER-1
-	0x02, 0xB0, 0x17,			// HEADER-2
+	0x02, 0xB0, 0x17,				// HEADER-2
 	0x6D, 0x66, 0xE9, 0x00, 0x00,		// HEADER-3
 	0xE0, 0x00, 0xF0, 0x00,			// PMT-DATA  
 	0x02, 0xE0, 0x00, 0xF0, 0x00,		//   (video stream 1)
@@ -189,14 +189,13 @@ static int copy_template(uint8_t *dst, uint8_t *src, int len)
 //-- reset buffer --
 	memset(dst, 0xFF, SIZE_TS_PKT);
 //-- copy PMT template --
-	memcpy(dst, src, len);
+	memmove(dst, src, len);
 	
 	return len;
 }
-
 int genpsi(int fd2)
 {
-	int  bytes = 0;
+//	int  bytes = 0;
 	uint8_t   pkt[SIZE_TS_PKT];
 	int       i, data_len, patch_len, ofs;
 
@@ -236,13 +235,13 @@ int genpsi(int fd2)
 //-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
 //-- write TS packet --
-	bytes += write(fd2, pkt, SIZE_TS_PKT);
+	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
 //-- (II) build PAT --
 	data_len = COPY_TEMPLATE(pkt, pkt_pat);
 //-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
 //-- write TS packet --
-	bytes += write(fd2, pkt, SIZE_TS_PKT);
+	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
 
 //-- (III) build PMT --
 	data_len = COPY_TEMPLATE(pkt, pkt_pmt);
@@ -276,9 +275,10 @@ int genpsi(int fd2)
 //-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
 //-- write TS packet --
-	bytes += write(fd2, pkt, SIZE_TS_PKT);
+	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
 //-- finish --
 	avPids.vpid=0;
 	avPids.nba=0;
+	fdatasync(fd2);
 	return 1;
 }
