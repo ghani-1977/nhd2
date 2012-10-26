@@ -739,6 +739,8 @@ int CAudioPlayerGui::show()
 					//InputSelector.addItem(GenericMenuSeparator);
 					hide();
 					InputSelector.exec(NULL, "");
+					delete InetRadioInputChanger;
+					
 					if(select >= 0)
 						old_select = select;
 					
