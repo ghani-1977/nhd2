@@ -41,9 +41,7 @@
 #include <driver/vcrcontrol.h>
 
 #include <driver/encoding.h>
-
 #include <system/debug.h>
-
 #include <zapit/bouquets.h>
 
 
@@ -52,6 +50,17 @@ extern tallchans allchans;	// defined in bouquets.h
 //FIXME: auto-timeshift
 extern bool autoshift;
 extern uint32_t scrambled_timer;
+
+// tuxtxt
+//extern int  tuxtxt_init();
+//extern void tuxtxt_start(int tpid, int source = 0);
+extern int  tuxtxt_stop();
+//extern void tuxtxt_close();
+//extern void tuxtx_pause_subtitle(bool pause, int source);
+//extern void tuxtx_stop_subtitle();
+//extern void tuxtx_set_pid(int pid, int page, const char * cc);
+//extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
+//extern int tuxtx_main(int _rc, int pid, int page, int source );
 
 bool sectionsd_getComponentTagsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::ComponentTagList& tags);
 bool sectionsd_getLinkageDescriptorsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::LinkageDescriptorList& descriptors);
@@ -238,6 +247,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 		{
 			//CURRENT-EPG for current channel arrived!;
 			//CVFD::getInstance()->setEPGTitle(info_CN.current_name);
+			
 			if (info_CN.current_uniqueKey != current_EPGid)
 			{
 				if ( current_EPGid != 0 )
@@ -327,12 +337,20 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			
 			// sectionsd set pid
 #ifdef ENABLE_PPT			
-			//g_Sectionsd->setPrivatePid( current_PIDs.PIDs.privatepid );
 			sectionsd_setPrivatePid( current_PIDs.PIDs.privatepid );
-#endif			
+#endif
+
+			//tuxtxt
+#if 1
+			tuxtxt_stop();
+#endif
+
 			
-			t_channel_id * p = new t_channel_id;
-			*p = current_channel_id;
+			//t_channel_id * p = new t_channel_id;
+			//*p = current_channel_id;
+			char *p = new char[sizeof(t_channel_id)];
+			memcpy(p, &current_channel_id, sizeof(t_channel_id));
+
 			g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 
 			processAPIDnames();
@@ -419,8 +437,11 @@ void CRemoteControl::getSubChannels()
 				}
 				copySubChannelsToZapit();
 
-				t_channel_id * p = new t_channel_id;
-				*p = current_channel_id;
+				//t_channel_id * p = new t_channel_id;
+				//*p = current_channel_id;
+				char *p = new char[sizeof(t_channel_id)];
+				memcpy(p, &current_channel_id, sizeof(t_channel_id));
+			
 				g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOT_SUBSERVICES, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 			}
 		}
@@ -463,8 +484,10 @@ void CRemoteControl::getNVODs()
 
 			copySubChannelsToZapit();
 
-			t_channel_id * p = new t_channel_id;
-			*p = current_channel_id;
+			//t_channel_id * p = new t_channel_id;
+			//*p = current_channel_id;
+			char *p = new char[sizeof(t_channel_id)];
+			memcpy(p, &current_channel_id, sizeof(t_channel_id));
 			
 			g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOT_SUBSERVICES, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 
@@ -625,8 +648,11 @@ void CRemoteControl::processAPIDnames()
 		setAPID( 0 );
 	}
 
-	t_channel_id * p = new t_channel_id;
-	*p = current_channel_id;
+	//t_channel_id * p = new t_channel_id;
+	//*p = current_channel_id;
+	char *p = new char[sizeof(t_channel_id)];
+	memcpy(p, &current_channel_id, sizeof(t_channel_id));
+			
 	g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTAPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 }
 
