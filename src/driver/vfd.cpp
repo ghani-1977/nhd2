@@ -505,12 +505,12 @@ void CVFD::setFPTime(void)
 		return;
 
 #ifdef __sh__
-	openDevice();
+	//openDevice();
 	
-	if( ioctl(fd, VFDSETTIME) < 0)  
-		perror("VFDPWRLED");
+	//if( ioctl(fd, VFDSETTIME) < 0)  
+	//	perror("VFDPWRLED");
 	
-	closeDevice();
+	//closeDevice();
 #endif
 }
 
