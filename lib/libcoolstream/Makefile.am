@@ -18,7 +18,7 @@ endif
 
 noinst_LIBRARIES = libcoolstream.a
 
-libcoolstream_a_SOURCES = audio_cs.cpp dmx_cs.cpp playback_cs.cpp ringbuffer.c record_cs.cpp \
+libcoolstream_a_SOURCES = audio_cs.cpp dmx_cs.cpp playback_cs.cpp record_cs.cpp \
 	video_cs.cpp
 
 # dvb-ci
