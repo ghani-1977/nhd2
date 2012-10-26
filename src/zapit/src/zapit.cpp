@@ -443,6 +443,10 @@ void loadFrontendConfig()
 		// common
 		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
 		
+		// setmasterslave
+		if( getFE(i)->mode == (fe_mode_t)FE_LOOP )
+			getFE(i)->setMasterSlave();
+		
 		// sat
 		if(getFE(i)->getInfo()->type == FE_QPSK)
 		{

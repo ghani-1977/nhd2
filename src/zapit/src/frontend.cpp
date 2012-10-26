@@ -117,7 +117,11 @@ CFrontend::~CFrontend(void)
 	if (diseqcType > MINI_DISEQC)
 		sendDiseqcStandby();
 
-	close(fd);
+	if(fd >= 0) 
+	{
+		Close();
+		close(fd);
+	}
 }
 
 bool CFrontend::Open(void)
@@ -162,18 +166,20 @@ bool CFrontend::Open(void)
 
 void CFrontend::Close(void)
 {
+	if(standby)
+		return;
+	
 	if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
 		sendDiseqcStandby();
 
-	//FIXME FEQAM
-	if(info.type == FE_QPSK || info.type == FE_OFDM)
-	{
-		secSetVoltage(SEC_VOLTAGE_OFF, 0);
-		secSetTone(SEC_TONE_OFF, 15);
-	}
+	secSetVoltage(SEC_VOLTAGE_OFF, 0);
+	secSetTone(SEC_TONE_OFF, 15);
 
 	tuned = false;
 	standby = true;
+	
+	close(fd);
+	fd = -1;
 }
 
 void CFrontend::reset(void)
@@ -193,6 +199,12 @@ void CFrontend::reset(void)
 	
 	usleep(150000);
 #endif
+}
+
+void CFrontend::setMasterSlave()
+{
+	secSetVoltage(SEC_VOLTAGE_OFF, 0);
+	secSetTone(SEC_TONE_OFF, 15);
 }
 
 fe_code_rate_t CFrontend::getCFEC()

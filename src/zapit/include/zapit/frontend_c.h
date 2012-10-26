@@ -231,6 +231,8 @@ class CFrontend
 		
 		int getDeliverySystem();
 		bool				getHighBand()				{ return (int) getFrequency() >= lnbSwitch; }
+		
+		void setMasterSlave();
 };
 
 
