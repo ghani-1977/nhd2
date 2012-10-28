@@ -34,11 +34,14 @@
 #include <configfile.h>
 
 #include <zapit/bouquets.h>
-#include <zapit/debug.h>
 #include <zapit/getservices.h> /* LoadServices */
 #include <zapit/sdt.h>
 #include <zapit/settings.h>
 #include <xmlinterface.h>
+
+/* system */
+#include <system/debug.h>
+
 
 extern tallchans allchans;   			//  defined in zapit.cpp
 extern CConfigFile config;   			//  defined in zapit.cpp
@@ -103,10 +106,8 @@ CZapitChannel * CZapitBouquet::getChannelByChannelID(const t_channel_id channel_
 
 void CZapitBouquet::sortBouquet(void)
 {
-	//printf("sorting %s TV\n", Name.c_str());fflush(stdout);//FIXME
 	sort(tvChannels.begin(), tvChannels.end(), CmpChannelByChName());
 	
-	//printf("sorting %s RADIO\n", Name.c_str());fflush(stdout);//FIXME
 	sort(radioChannels.begin(), radioChannels.end(), CmpChannelByChName());
 }
 
@@ -202,8 +203,6 @@ size_t CZapitBouquet::recModeTVSize(const transponder_id_t transponder_id)
 
 void CBouquetManager::writeBouquetHeader(FILE * bouq_fd, uint32_t i, const char * bouquetName)
 {
-	//printf("[bouquets] writing bouquet header: %s\n", bouquetName);
-
 	fprintf(bouq_fd, "\t<Bouquet name=\"%s\" hidden=\"%d\" locked=\"%d\">\n", bouquetName, Bouquets[i]->bHidden ? 1 : 0, Bouquets[i]->bLocked ? 1 : 0);
 }
 
@@ -274,7 +273,8 @@ void CBouquetManager::saveBouquets(void)
 	{
 		if (Bouquets[i] != remainChannels) 
 		{
-			DBG("save Bouquets: name %s user: %d\n", Bouquets[i]->Name.c_str(), Bouquets[i]->bUser);
+			dprintf(DEBUG_DEBUG, "save Bouquets: name %s user: %d\n", Bouquets[i]->Name.c_str(), Bouquets[i]->bUser);
+			
 			if(!Bouquets[i]->bUser) 
 			{
 				writeBouquetHeader(bouq_fd, i, convert_UTF8_To_UTF8_XML(Bouquets[i]->Name.c_str()).c_str());
@@ -317,7 +317,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 {
 	if (bouquetMode == CZapitClient::BM_DELETEBOUQUETS) 
 	{
-		INFO("removing existing bouquets");
+		dprintf(DEBUG_INFO, "removing existing bouquets");
 		//unlink(BOUQUETS_XML);
 		g_bouquetManager->clearAll();
 	}
@@ -345,7 +345,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 		{
 			CZapitBouquet* bouquet;
 			int dest = g_bouquetManager->existsBouquet(Bouquets[0]->Name.c_str());
-			DBG("save Bouquets: dest %d for name %s\n", dest, Bouquets[0]->Name.c_str());
+			dprintf(DEBUG_DEBUG, "save Bouquets: dest %d for name %s\n", dest, Bouquets[0]->Name.c_str());
 
 			if(dest == -1) 
 			{
@@ -362,7 +362,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 				{
 					bouquet->addService(Bouquets[0]->tvChannels[i]);
 					//Bouquets[0]->tvChannels[i]->pname = (char *) bouquet->Name.c_str();
-					DBG("save Bouquets: adding channel %s\n", Bouquets[0]->tvChannels[i]->getName().c_str());
+					dprintf(DEBUG_DEBUG, "save Bouquets: adding channel %s\n", Bouquets[0]->tvChannels[i]->getName().c_str());
 				}
 			}
 
@@ -372,7 +372,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 				{
 					bouquet->addService(Bouquets[0]->radioChannels[i]);
 					//Bouquets[0]->tvChannels[i]->pname = (char *) bouquet->Name.c_str();
-					DBG("save Bouquets: adding channel %s\n", Bouquets[0]->radioChannels[i]->getName().c_str());
+					dprintf(DEBUG_DEBUG, "save Bouquets: adding channel %s\n", Bouquets[0]->radioChannels[i]->getName().c_str());
 				}
 			}
 
@@ -401,7 +401,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		int16_t satellitePosition;
 		freq_id_t freq;
 
-		INFO("reading bouquets");
+		dprintf(DEBUG_INFO, "reading bouquets\n");
 
 		while ((search = xmlGetNextOccurence(search, "Bouquet")) != NULL) 
 		{
@@ -432,9 +432,6 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 
 				if (chan != NULL) 
 				{
-					//printf("found\n");
-					DBG("%04x %04x %04x %s\n", transport_stream_id, original_network_id, service_id, xmlGetAttribute(channel_node, (char *) "n"));
-
 					if(!bUser)
 						chan->pname = (char *) newBouquet->Name.c_str();
 
@@ -450,15 +447,13 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 			search = search->xmlNextNode;
 		}
 
-		INFO("found %d bouquets", Bouquets.size());
+		dprintf(DEBUG_INFO, "found %d bouquets\n", Bouquets.size());
 	}
 }
 
 void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 {
 	xmlDocPtr parser;
-
-	//TIMER_START();
 	
 	if (ignoreBouquetFile == false) 
 	{
@@ -481,8 +476,6 @@ void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 	}
 
 	renumServices();
-	
-	//TIMER_STOP("[zapit] bouquet loading took");
 }
 
 void CBouquetManager::makeRemainingChannelsBouquet(void)
@@ -562,8 +555,6 @@ CZapitBouquet * CBouquetManager::addBouquet(const std::string & name, bool ub, b
 	CZapitBouquet * newBouquet = new CZapitBouquet(myfav ? "Favorites" : name);
 	newBouquet->bUser = ub;
 	newBouquet->bFav = myfav;
-
-	//printf("CBouquetManager::addBouquet: %s, user %s\n", name.c_str(), ub ? "YES" : "NO");
 
 	if(ub) 
 	{

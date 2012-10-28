@@ -139,7 +139,7 @@ int open_incoming_port (int port)
 
 	if ((handle = socket (AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		fprintf (stderr, "network port %u open: ", port);
+		fprintf (stderr, "network port %u open: \n", port);
 		perror ("socket");
 		return -1;
 	}
@@ -157,7 +157,7 @@ int open_incoming_port (int port)
 
 	if (bind (handle, (struct sockaddr *) &socketAddr, sizeof (socketAddr)) < 0)
 	{
-		fprintf (stderr, "network port %u open: ", port);
+		fprintf (stderr, "network port %u open: \n", port);
 		perror ("bind");
 		close (handle);
 		return -1;
@@ -165,7 +165,7 @@ int open_incoming_port (int port)
 
 	if (listen (handle, 5) < 0)
 	{
-		fprintf (stderr, "network port %u open: ", port);
+		fprintf (stderr, "network port %u open: \n", port);
 		perror ("listen");
 		close (handle);
 		return -1;

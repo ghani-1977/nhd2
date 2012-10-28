@@ -79,6 +79,13 @@ bool CCam::setCaPmt(CZapitChannel * thischannel, CCaPmt * const caPmt, int demux
 	unsigned int size = caPmt->CamgetLength();
 	unsigned char buffer[3 + get_length_field_size(size) + size];
 	size_t pos = caPmt->CamwriteToBuffer(thischannel, buffer, demux, camask);
+	
+	#if 1
+	printf("%s:(%d)\n", __FUNCTION__, pos);
+	for(unsigned int i=0; i < pos; i++)
+	   printf("0x%02x ",buffer[i]);
+	printf("\n");
+	#endif
 
 	return sendMessage((char *)buffer, pos, update);
 }
@@ -99,6 +106,13 @@ bool CCam::setCaSocket(int demux)
         buffer[5] = 0x02;
         buffer[6] = 0x00;
 	buffer[7] = demux; //demux index
+	
+	#if 1
+	printf("%s:(%d)\n", __FUNCTION__, 8);
+	for(unsigned int i=0; i < 8; i++)
+	   printf("0x%02x ",buffer[i]);
+	printf("\n");
+	#endif
 
 	return sendMessage((char *)buffer, 8);
 }

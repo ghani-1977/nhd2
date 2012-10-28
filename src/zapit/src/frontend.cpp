@@ -28,8 +28,14 @@
 #include <unistd.h>
 #include <cmath>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+/* system */
+#include <system/debug.h>
+
 /* zapit */
-#include <zapit/debug.h>
 #include <zapit/settings.h>
 #include <zapit/getservices.h>
 #include <connection/basicserver.h>
@@ -145,10 +151,8 @@ bool CFrontend::Open(void)
 		if(ioctl(fd, FE_GET_INFO, &info) < 0)
 			perror("FE_GET_INFO");
 		
-		printf("CFrontend::Open fe(%d) %s\n", fenumber, info.name);
+		dprintf(DEBUG_NORMAL, "CFrontend::Open fe(%d) %s\n", fenumber, info.name);
 	}
-	else
-		printf("CFrontend::Open fe(%d) already opened\n", fenumber);
 
 	// sec
 	secSetVoltage(SEC_VOLTAGE_13, 15);
@@ -192,7 +196,8 @@ void CFrontend::reset(void)
 	char filename[128];
 
 	sprintf(filename, "/dev/dvb/adapter%d/frontend%d", fe_adapter, fenumber);
-	printf("cFrontend(%d) reset %s\n", fenumber, filename);
+	
+	dprintf(DEBUG_INFO, "cFrontend(%d) reset %s\n", fenumber, filename);
 
 	if ((fd = open(filename, O_RDWR | O_NONBLOCK | O_SYNC)) < 0)
 		perror(filename);
@@ -267,8 +272,7 @@ fe_code_rate_t CFrontend::getCodeRate(const uint8_t fec_inner, int system)
 			case f7_8:
 				return FEC_7_8;
 			default:
-				if (zapit_debug)
-					printf("CFrontend::getCodeRate: no valid fec for DVB-S set...\n");
+				dprintf(DEBUG_INFO, "CFrontend::getCodeRate: no valid fec for DVB-S set...\n");
 			case fAuto:
 				return FEC_AUTO;
 		}
@@ -296,8 +300,7 @@ fe_code_rate_t CFrontend::getCodeRate(const uint8_t fec_inner, int system)
 			case f9_10:
 				return FEC_S2_QPSK_9_10; //9+9
 			default:
-				if (zapit_debug)
-					printf("CFrontend::getCodeRate: no valid fec for DVB-S2 set...\n");
+				dprintf(DEBUG_INFO, "CFrontend::getCodeRate: no valid fec for DVB-S2 set...\n");
 			case fAuto:
 				return FEC_AUTO;
 		}
@@ -370,7 +373,7 @@ fe_status_t CFrontend::getStatus(void) const
 	if( ioctl(fd, FE_READ_STATUS, &status) < 0)
 		perror("FE_READ_STATUS");
 	
-	printf("CFrontend::getStatus: 0x%x\n", status);
+	dprintf(DEBUG_INFO, "CFrontend::getStatus: 0x%x\n", status);
 
 	return (fe_status_t) (status & FE_HAS_LOCK);
 }
@@ -543,7 +546,7 @@ void CFrontend::getDelSys(int f, int m, char *&fec, char *&sys, char *&mod)
 			break;			
 			
 		default:
-			printf("CFrontend::getDelSys: fe(%d) getDelSys: unknown FEC: %d !!!\n", fenumber, f);
+			dprintf(DEBUG_INFO, "CFrontend::getDelSys: fe(%d) getDelSys: unknown FEC: %d !!!\n", fenumber, f);
 		
 		case FEC_AUTO:
 			fec = (char *)"AUTO";
@@ -571,7 +574,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 	
 	memset(&event, 0, sizeof(struct dvb_frontend_event));
 	
-	printf("cFrontend::getEvent: fe(%d) max timeout: %d\n", fenumber, TIMEOUT_MAX_MS);
+	dprintf(DEBUG_INFO, "cFrontend::getEvent: fe(%d) max timeout: %d\n", fenumber, TIMEOUT_MAX_MS);
 	
 	TIMER_START();
 
@@ -604,13 +607,13 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 			if (ret < 0) 
 			{
 				perror("CFrontend::getEvent ioctl");
-				printf("FD=%d RET=%d errno=%d\n", fd, ret, errno);
+				dprintf(DEBUG_DEBUG, "FD=%d RET=%d errno=%d\n", fd, ret, errno);
 				continue;
 			}
 
 			if (event.status & FE_HAS_LOCK) 
 			{
-				printf("cFrontend::getEvent fe(%d) FE_HAS_LOCK: freq %lu\n", fenumber, (long unsigned int)event.parameters.frequency);
+				dprintf(DEBUG_NORMAL, "cFrontend::getEvent fe(%d) FE_HAS_LOCK: freq %lu\n", fenumber, (long unsigned int)event.parameters.frequency);
 				tuned = true;
 				break;
 			} 
@@ -618,7 +621,8 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 			{
 				if(timedout < timer_msec)
 					timedout = timer_msec;
-				printf("cFrontend::getEvent fe(%d) FE_TIMEDOUT\n", fenumber);
+				
+				dprintf(DEBUG_INFO, "cFrontend::getEvent fe(%d) FE_TIMEDOUT\n", fenumber);
 			} 
 			else 
 			{
@@ -639,12 +643,6 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 			TIMER_STOP("poll hup after");
 			reset();
 		}
-		
-		//msec += TIME_STEP;
-		//tmsec += TIME_STEP;
-		
-		//if (tmsec >= TIMEOUT_MAX_MS)
-		//	break;
 	}
 
 	return event;
@@ -683,7 +681,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 			break;
 
 		default:
-			printf("CFrontend::setFrontend: unknown frontend type, exiting\n");
+			dprintf(DEBUG_INFO, "CFrontend::setFrontend: unknown frontend type, exiting\n");
 			return;
 	}
 
@@ -765,7 +763,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 				break;
 				
 			default:
-				printf("CFrontend::setFrontend: fe(%d) DEMOD: unknown FEC: %d\n", fenumber, fec_inner);
+				dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) DEMOD: unknown FEC: %d\n", fenumber, fec_inner);
 			
 			case FEC_AUTO:			  
 			case FEC_S2_AUTO:			  
@@ -820,11 +818,9 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 	{
 		if (ioctl(fd, FE_GET_EVENT, &ev) < 0)
 			tuned = false;
-		else
-			printf("CFrontend::setFrontend: fe(%d) CLEAR DEMOD: event status %d\n", fenumber, ev.status);
 	}
 	
-	printf("CFrontend::setFrontend: fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
+	dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
 
 	//tune to
 	if(info.type == FE_QPSK)
@@ -868,7 +864,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 	}
 	else
 	{
-		printf("CFrontend::setFrontend: Unknow Frontend Type\n");
+		dprintf(DEBUG_INFO, "CFrontend::setFrontend: Unknow Frontend Type\n");
 	}
 
 	//tune
@@ -904,7 +900,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 			
 		case FE_ATSC:
 		default:
-			printf("CFrontend::setFrontend: unknown frontend type, exiting\n");
+			dprintf(DEBUG_INFO, "CFrontend::setFrontend: unknown frontend type, exiting\n");
 			break;
 	}
 	
@@ -913,11 +909,9 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 	
 	getDelSys(fec_inner, modulation, f, s, m);
 	
-	printf("cFrontend::setFrontend fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
+	dprintf(DEBUG_INFO, "cFrontend::setFrontend fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
 
-	//TIMER_INIT();
 	// clear event queue
-	//TIMER_START();
 	struct dvb_frontend_event event;
 	struct pollfd pfd;
 	pfd.fd = fd;
@@ -933,15 +927,12 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 		if(ioctl(fd, FE_GET_EVENT, &event) < 0)
 			perror("FE_GET_EVENT");
 		
-		printf("CFrontend::setFrontend: fe(%d) CLEAR DEMOD: event status %d\n", fenumber, event.status);
+		dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) CLEAR DEMOD: event status %d\n", fenumber, event.status);
 	}
-	//TIMER_STOP("clear events took");
 
 	// set frontend
-	//TIMER_START();
 	if ((ioctl(fd, FE_SET_FRONTEND, feparams)) < 0) 
 		perror("FE_SET_FRONTEND");
-	//TIMER_STOP("FE_SET_FRONTEND took");
 }
 #endif
 
@@ -967,7 +958,7 @@ void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 	}
 	#endif
 
-	printf("CFrontend::secSetTone: fe(%d) tone %s\n", fenumber, toneMode == SEC_TONE_ON ? "on" : "off");
+	dprintf(DEBUG_INFO, "CFrontend::secSetTone: fe(%d) tone %s\n", fenumber, toneMode == SEC_TONE_ON ? "on" : "off");
 
 	if (ioctl(fd, FE_SET_TONE, toneMode) == 0) 
 	{
@@ -995,7 +986,7 @@ void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
 	}
 	#endif
 
-	printf("CFrontend::secSetVoltage: fe(%d) voltage %s\n", fenumber, voltage == SEC_VOLTAGE_OFF ? "OFF" : voltage == SEC_VOLTAGE_13 ? "13" : "18");
+	dprintf(DEBUG_INFO, "CFrontend::secSetVoltage: fe(%d) voltage %s\n", fenumber, voltage == SEC_VOLTAGE_OFF ? "OFF" : voltage == SEC_VOLTAGE_13 ? "13" : "18");
 
 	if (ioctl(fd, FE_SET_VOLTAGE, voltage) == 0) 
 	{
@@ -1012,11 +1003,6 @@ void CFrontend::sendDiseqcCommand(const struct dvb_diseqc_master_cmd *cmd, const
 {
 	if ( (mode == (fe_mode_t)FE_LOOP) || info.type != FE_QPSK) 
 		return;
-	
-	printf("CFrontend::sendDiseqcCommand: fe(%d) Diseqc cmd: ", fenumber);
-	for (int i = 0; i < cmd->msg_len; i++)
-		printf("0x%X ", cmd->msg[i]);
-	printf("\n");
 
 	if (ioctl(fd, FE_DISEQC_SEND_MASTER_CMD, cmd) == 0)
 		usleep(1000 * ms);
@@ -1044,35 +1030,35 @@ void CFrontend::setDiseqcType(const diseqc_t newDiseqcType)
 	switch (newDiseqcType) 
 	{
 		case NO_DISEQC:
-			printf("CFrontend::setDiseqcType: NO_DISEQC\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: NO_DISEQC\n");
 			break;
 			
 		case MINI_DISEQC:
-			printf("CFrontend::setDiseqcType: MINI_DISEQC\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: MINI_DISEQC\n");
 			break;
 			
 		case SMATV_REMOTE_TUNING:
-			printf("CFrontend::setDiseqcType: SMATV_REMOTE_TUNING\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: SMATV_REMOTE_TUNING\n");
 			break;
 			
 		case DISEQC_1_0:
-			printf("CFrontend::setDiseqcType: DISEQC_1_0\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: DISEQC_1_0\n");
 			break;
 			
 		case DISEQC_1_1:
-			printf("CFrontend::setDiseqcType: DISEQC_1_1\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: DISEQC_1_1\n");
 			break;
 			
 		case DISEQC_1_2:
-			printf("CFrontend::setDiseqcType: DISEQC_1_2\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: DISEQC_1_2\n");
 			break;
 			
 		case DISEQC_ADVANCED:
-			printf("CFrontend::setDiseqcType: DISEQC_ADVANCED\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: DISEQC_ADVANCED\n");
 			break;
 			
 		default:
-			printf("CFrontend::setDiseqcType: Invalid DiSEqC type\n");
+			dprintf(DEBUG_INFO, "CFrontend::setDiseqcType: Invalid DiSEqC type\n");
 			return;
 	}
 	
@@ -1091,7 +1077,7 @@ void CFrontend::setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int
 	lnbOffsetHigh = _lnbOffsetHigh * 1000;
 	lnbSwitch = _lnbSwitch * 1000;
 
-	printf("CFrontend::setLnbOffsets: fe(%d) setLnbOffsets %d/%d/%d\n", fenumber, lnbOffsetLow, lnbOffsetHigh, lnbSwitch);
+	dprintf(DEBUG_INFO, "CFrontend::setLnbOffsets: fe(%d) setLnbOffsets %d/%d/%d\n", fenumber, lnbOffsetLow, lnbOffsetHigh, lnbSwitch);
 }
 
 void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t command, uint8_t num_parameters, uint8_t parameter1, uint8_t parameter2, int repeat)
@@ -1102,8 +1088,8 @@ void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t comma
 	struct dvb_diseqc_master_cmd cmd;
 	int i;
 
-	printf("CFrontend::sendMotorCommand: fe(%d) sendMotorCommand: cmdtype   = %x, address = %x, cmd   = %x\n", fenumber, cmdtype, address, command);
-	printf("CFrontend::sendMotorCommand fe(%d) sendMotorCommand: num_parms = %d, parm1   = %x, parm2 = %x\n", fenumber, num_parameters, parameter1, parameter2);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d) sendMotorCommand: cmdtype   = %x, address = %x, cmd   = %x\n", fenumber, cmdtype, address, command);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d) sendMotorCommand: num_parms = %d, parm1   = %x, parm2 = %x\n", fenumber, num_parameters, parameter1, parameter2);
 
 	cmd.msg[0] = cmdtype;	//command type
 	cmd.msg[1] = address;	//address
@@ -1117,7 +1103,7 @@ void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t comma
 	for(i = 0; i <= repeat; i++)
 		sendDiseqcCommand(&cmd, 50);
 
-	printf("CFrontend::sendMotorCommand: fe(%d) motor command sent.\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d) motor command sent.\n", fenumber);
 	
 }
 
@@ -1137,7 +1123,8 @@ void CFrontend::positionMotor(uint8_t motorPosition)
 		secSetTone(SEC_TONE_OFF, 15);
 		cmd.msg[3] = motorPosition;
 		sendDiseqcCommand(&cmd, 15);
-		printf("CFrontend::sendMotorCommand fe(%d) motor positioning command sent.\n", fenumber);
+		
+		dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d) motor positioning command sent.\n", fenumber);
 	}
 }
 
@@ -1168,7 +1155,7 @@ bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 
 	if (tpI == transponders.end()) 
 	{
-		printf("CFrontend::setInput: Transponder %llx for channel %llx not found\n", ct, channel->getChannelID());
+		dprintf(DEBUG_INFO, "CFrontend::setInput: Transponder %llx for channel %llx not found\n", ct, channel->getChannelID());
 		return false;
 	}
 
@@ -1183,7 +1170,7 @@ void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t freque
 {
 	sat_iterator_t sit = satellitePositions.find(satellitePosition);
 
-	printf("CFrontend::setInput: fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
+	dprintf(DEBUG_INFO, "CFrontend::setInput: fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
 
 	// set lnb offset
 	if(info.type == FE_QPSK)
@@ -1262,7 +1249,7 @@ const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 	if(mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
 	
-	printf("CFrontend::tuneChannel: fe(%d) tpid %llx\n", fenumber, currentTransponder.TP_id);
+	dprintf(DEBUG_INFO, "CFrontend::tuneChannel: fe(%d) tpid %llx\n", fenumber, currentTransponder.TP_id);
 
 	transponder_list_t::iterator transponder = transponders.find(currentTransponder.TP_id);
 
@@ -1329,7 +1316,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		/* set Sec for Sat */
 		setSec(TP->diseqc, TP->polarization, high_band);
 
-		printf("CFrontend::setParameters: fe(%d) freq= %d (offset= %d) fec= %d\n", fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
+		dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d) freq= %d (offset= %d) fec= %d\n", fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
 	}
 
 	if (info.type == FE_QAM) 
@@ -1338,7 +1325,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		if (TP->feparams.frequency < 1000*1000)
 			TP->feparams.frequency = TP->feparams.frequency * 1000;
 		
-		printf("cFrontend::setParameters: fe(%d) freq= %d fec= %d mod= %d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
+		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d) freq= %d fec= %d mod= %d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
 	}
 
 	if (info.type == FE_OFDM) 
@@ -1347,15 +1334,14 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		if (TP->feparams.frequency < 1000*1000)
 			TP->feparams.frequency = TP->feparams.frequency * 1000;	//convert to HZ
 		
-		printf("cFrontend::setParameters: fe(%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
+		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
 	}
 	
-	#if 1
+	// auto inversion for stupid tuner
 	bool auto_inversion = (TP->feparams.inversion == INVERSION_AUTO);
 	
 	if ((!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion))
 		TP->feparams.inversion = INVERSION_OFF;
-	#endif
 	
 	do {
 		tuned = false;
@@ -1364,19 +1350,15 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		
 		getEvent();
 		
-		#if 1
+		// auto inversion for stupid tuner
 		if ( (!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion) && (TP->feparams.inversion == INVERSION_OFF) && (!tuned) ) 
 		{
 			TP->feparams.inversion = INVERSION_ON;
 			continue;
 		}
-		#endif
 	} while (0);
 
-	if (tuned) 
-		printf("CFrontend::setParameters: fe(%d) tuned\n", fenumber);
-	else
-		printf("CFrontend::setParameters: fe(%d) tune failed\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d) %s\n", fenumber, tuned? "tuned" : "tune failed");
 
 	if (info.type == FE_QPSK)
 		TP->feparams.frequency += freq_offset;
@@ -1390,7 +1372,8 @@ bool CFrontend::sendUncommittedSwitchesCommand(int input)
 		{0xe0, 0x10, 0x39, 0x00, 0x00, 0x00}, 4
 	};
 
-	printf("CFrontend::sendUncommittedSwitchesCommand fe(%d) uncommitted  %d -> %d\n", fenumber, uncommitedInput, input);
+	dprintf(DEBUG_INFO, "CFrontend::sendUncommittedSwitchesCommand fe(%d) uncommitted  %d -> %d\n", fenumber, uncommitedInput, input);
+	
 	if ((input < 0) || (uncommitedInput == input))
 		return false;
 
@@ -1414,7 +1397,8 @@ bool CFrontend::setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t fr
 		{0xe0, 0x10, 0x38, 0x00, 0x00, 0x00}, 4
 	};
 
-	printf("CFrontend::setDiseqcSimple: fe(%d) diseqc input  %d -> %d\n", fenumber, diseqc, sat_no);
+	dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d) diseqc input  %d -> %d\n", fenumber, diseqc, sat_no);
+	
 	currentTransponder.diseqc = sat_no;
 	
 	if(mode == (fe_mode_t)FE_LOOP)
@@ -1423,7 +1407,7 @@ bool CFrontend::setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t fr
 	if ((sat_no >= 0) && (diseqc != sat_no)) 
 	{
 		diseqc = sat_no;
-		printf("CFrontend::setDiseqcSimple: fe(%d) diseqc no. %d\n", fenumber, sat_no);
+		dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d) diseqc no. %d\n", fenumber, sat_no);
 
 		cmd.msg[3] = 0xf0 | (((sat_no * 4) & 0x0f) | (high_band ? 1 : 0) | ((pol & 1) ? 0 : 2));
 
@@ -1547,7 +1531,8 @@ void CFrontend::sendDiseqcPowerOn(void)
 	// FIXME power on can take a while. Should be wait
 	// more time here ? 15 ms enough for some switches ?
 #if 1
-	printf("CFrontend::sendDiseqcPowerOn: fe(%d) diseqc power on\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcPowerOn: fe(%d) diseqc power on\n", fenumber);
+	
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x03);
 #else
 	struct dvb_diseqc_master_cmd cmd = {
@@ -1562,7 +1547,7 @@ void CFrontend::sendDiseqcReset(void)
 	if (info.type != FE_QPSK) 
 		return;
 	
-	printf("CFrontend::sendDiseqcReset: fe(%d) diseqc reset\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcReset: fe(%d) diseqc reset\n", fenumber);
 	
 	/* Reset && Clear Reset */
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x00);
@@ -1575,7 +1560,8 @@ void CFrontend::sendDiseqcStandby(void)
 	if (info.type != FE_QPSK) 
 		return;
 	
-	printf("CFrontend::sendDiseqcStandby: fe(%d) diseqc standby\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcStandby: fe(%d) diseqc standby\n", fenumber);
+	
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x02);
 }
 
@@ -1622,15 +1608,15 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 
 	if(diseqcType == DISEQC_ADVANCED) //FIXME testing
 	{
-		printf("CFrontend::driveToSatellitePosition fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
+		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
+		
 		bool moved = false;
 
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		//sat_iterator_t sit = satellites.find(satellitePosition);
 		if (sit == satellitePositions.end()) 
-		//if (sit == satellites.end()) 
 		{
-			printf("CFrontend::driveToSatellitePosition: fe(%d) satellite position %d not found!\n", fenumber, satellitePosition);
+			dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition: fe(%d) satellite position %d not found!\n", fenumber, satellitePosition);
+			
 			return 0;
 		} 
 		else 
@@ -1640,11 +1626,10 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 		}
 		
 		sit = satellitePositions.find(currentSatellitePosition);
-		//sit = satellites.find(currentSatellitePosition);
 		if (sit != satellitePositions.end())
 			old_position = sit->second.motor_position;
 
-		printf("CFrontend::driveToSatellitePosition fe(%d) motorPosition %d -> %d usals %s\n", fenumber, old_position, new_position, use_usals ? "on" : "off");
+		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d) motorPosition %d -> %d usals %s\n", fenumber, old_position, new_position, use_usals ? "on" : "off");
 
 		if (currentSatellitePosition == satellitePosition)
 			return 0;
@@ -1900,13 +1885,16 @@ void CFrontend::gotoXX(t_satellite_position pos)
 		SiteLon = 360 - SiteLon;
 	if (satDir == WEST)
 		SatLon = 360 - SatLon;
-	printf("CFrontend::gotoXX: fe(%d) siteLatitude = %f, siteLongitude = %f, %f degrees\n", fenumber, SiteLat, SiteLon, SatLon);
+	
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) siteLatitude = %f, siteLongitude = %f, %f degrees\n", fenumber, SiteLat, SiteLon, SatLon);
 
 	double azimuth = calcAzimuth(SatLon, SiteLat, SiteLon);
 	double elevation = calcElevation(SatLon, SiteLat, SiteLon);
 	double declination = calcDeclination(SiteLat, azimuth, elevation);
 	double satHourAngle = calcSatHourangle(azimuth, elevation, declination, SiteLat);
-	printf("CFrontend::gotoXX: fe(%d) azimuth=%f, elevation=%f, declination=%f, PolarmountHourAngle=%f\n", fenumber, azimuth, elevation, declination, satHourAngle);
+	
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) azimuth=%f, elevation=%f, declination=%f, PolarmountHourAngle=%f\n", fenumber, azimuth, elevation, declination, satHourAngle);
+	
 	if (SiteLat >= 0) {
 		int tmp = (int)round(fabs(180 - satHourAngle) * 10.0);
 		RotorCmd = (tmp / 10) * 0x10 + gotoXTable[tmp % 10];
@@ -1926,7 +1914,8 @@ void CFrontend::gotoXX(t_satellite_position pos)
 		}
 	}
 
-	printf("CFrontend::gotoXX: fe(%d) RotorCmd = %04x\n", fenumber, RotorCmd);
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) RotorCmd = %04x\n", fenumber, RotorCmd);
+	
 	sendMotorCommand(0xE0, 0x31, 0x6E, 2, ((RotorCmd & 0xFF00) / 0x100), RotorCmd & 0xFF, repeatUsals);
 }
 

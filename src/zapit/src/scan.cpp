@@ -25,12 +25,18 @@
 #include <sys/time.h>
 #include <syscall.h>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+/* system */
+#include <system/debug.h>
+
 /* libevent */
 #include <eventserver.h>
 
 #include <zapit/bouquets.h>
 #include <zapit/client/zapitclient.h>
-#include <zapit/debug.h>
 #include <zapit/getservices.h>
 #include <zapit/nit.h>
 #include <zapit/scan.h>
@@ -42,6 +48,7 @@
 #include <xmlinterface.h>
 
 #include <zapit/client/msgtypes.h>
+
 
 extern CBouquetManager *g_bouquetManager;
 extern transponder_list_t transponders; 		//  defined in zapit.cpp
@@ -114,7 +121,8 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 		
 		if(ret > 0) 
 		{
-			printf("[scan] waiting %d seconds for motor to turn satellite dish.\n", ret);
+			dprintf(DEBUG_INFO, "[scan] waiting %d seconds for motor to turn satellite dish.\n", ret);
+			
 			eventServer->sendEvent(CZapitClient::EVT_SCAN_PROVIDER, CEventServer::INITID_ZAPIT, (void *) "moving rotor", 13);
 		
 			for(int i = 0; i < ret; i++) 
@@ -132,7 +140,7 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 
 int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t polarity, bool fromnit = 0, int feindex = 0)
 {
-	printf("[scan] add_to_scan: freq %d pol %d tpid %llx from (nit:%d) fe(%d)\n", feparams->frequency, polarity, TsidOnid, fromnit, feindex);
+	dprintf(DEBUG_INFO, "[scan] add_to_scan: freq %d pol %d tpid %llx from (nit:%d) fe(%d)\n", feparams->frequency, polarity, TsidOnid, fromnit, feindex);
 
 	freq_id_t freq;
 
@@ -168,7 +176,7 @@ int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t
 			
 			TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID( freq1, satellitePosition, original_network_id, transport_stream_id);
 
-			printf("[scan] add_to_scan: SAME freq %d pol1 %d pol2 %d tpid %llx\n", feparams->frequency, poltmp1, poltmp2, TsidOnid);
+			dprintf(DEBUG_INFO, "[scan] add_to_scan: SAME freq %d pol1 %d pol2 %d tpid %llx\n", feparams->frequency, poltmp1, poltmp2, TsidOnid);
 
 			feparams->frequency = feparams->frequency + 1000;
 			tI = scanedtransponders.find(TsidOnid);
@@ -185,14 +193,10 @@ int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t
 
 	if(tI == scanedtransponders.end()) 
 	{
-		//printf("[scan] insert tp-id %llx freq %d rate %d\n", TsidOnid, feparams->frequency, cable? feparams->u.qam.symbol_rate : feparams->u.qpsk.symbol_rate );
-
 		if(fromnit) 
 		{
 			if(nittransponders.find(TsidOnid) == nittransponders.end()) 
 			{
-				//printf("[scan] insert tp-id %llx freq %d pol %d rate %d\n", TsidOnid, feparams->frequency, polarity, cable? feparams->u.qam.symbol_rate : feparams->u.qpsk.symbol_rate );
-
 				nittransponders.insert (std::pair <transponder_id_t, transponder> (TsidOnid, transponder ( (TsidOnid >> 16) &0xFFFF, TsidOnid &0xFFFF, *feparams, polarity)));
 			}
 		}
@@ -222,7 +226,7 @@ int get_sdts(t_satellite_position satellitePosition, int feindex)
 	stiterator stI;
 	std::map <transponder_id_t, transponder>::iterator sT;
 
-	printf("[scan] scanning tp from sat/service\n");
+	dprintf(DEBUG_INFO, "[scan] scanning tp from sat/service\n");
 
 _repeat:
 	for (tI = scantransponders.begin(); tI != scantransponders.end(); tI++) 
@@ -230,7 +234,7 @@ _repeat:
 		if(abort_scan)
 			return 0;
 
-		printf("[scan] scanning: %llx\n", tI->first);
+		dprintf(DEBUG_INFO, "[scan] scanning: %llx\n", tI->first);
 
 		/* msg to neutrino */
 		if( getFE(feindex)->getInfo()->type == FE_QAM)
@@ -274,7 +278,7 @@ _repeat:
 		{
 			if(pthread_create(&nthread, 0, nit_thread,  (void *)&nit_data)) 
 			{
-				ERROR("pthread_create");
+				dprintf(DEBUG_INFO, "pthread_create\n");
 				nthread = 0;
 			}
 		}
@@ -287,13 +291,13 @@ _repeat:
 		else
 			freq = tI->second.feparams.frequency/1000;
 		
-		printf("parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
+		dprintf(DEBUG_INFO, "parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
 
 		int status = parse_sdt(&tI->second.transport_stream_id, &tI->second.original_network_id, satellitePosition, freq, feindex);
 
 		if(status < 0) 
 		{
-			printf("[scan] SDT failed !\n");
+			dprintf(DEBUG_INFO, "[scan] SDT failed !\n");
 			continue;
 		}
 
@@ -314,18 +318,20 @@ _repeat:
 #else
 		if(!scan_mode) 
 		{
-			printf("[scan] trying to parse NIT\n");
+			dprintf(DEBUG_INFO, "[scan] trying to parse NIT\n");
+			
 			int status = parse_nit(satellitePosition, freq, feindex);
-			if(status < 0)
-				printf("[scan] NIT failed !\n");
+			
+			dprintf(DEBUG_INFO, "[scan] NIT %s\n", (status < 0)? "failed" : "success");
 		}
 #endif
-		printf("[scan] tpid ready: %llx\n", TsidOnid);
+		dprintf(DEBUG_INFO, "[scan] tpid ready: %llx\n", TsidOnid);
 	}
 
 	if(!scan_mode) 
 	{
-		printf("[scan] found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
+		dprintf(DEBUG_INFO, "[scan] found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
+		
 		scantransponders.clear();
 		for (tI = nittransponders.begin(); tI != nittransponders.end(); tI++) 
 		{
@@ -333,7 +339,8 @@ _repeat:
 		}
 
 		nittransponders.clear();
-		printf("\n\n[scan] found %d additional transponders from nit\n", scantransponders.size());
+		
+		dprintf(DEBUG_INFO, "\n\n[scan] found %d additional transponders from nit\n", scantransponders.size());
 		
 		if(scantransponders.size()) 
 		{
@@ -422,7 +429,8 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 
 	if(sit == satellitePositions.end()) 
 	{
-		printf("[zapit] WARNING satellite position %d not found!\n", satellitePosition);
+		dprintf(DEBUG_INFO, "[zapit] WARNING satellite position %d not found!\n", satellitePosition);
+		
 		return;
 	}
 
@@ -484,8 +492,10 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 					case ST_NVOD_TIME_SHIFTED_SERVICE:
 						break;
 					default:
-						INFO("setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " from %02x to %02x", stI->first, scI->second.getServiceType(), stI->second);
-						DBG("setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " %s from %02x to %02x", stI->first, scI->second.getName().c_str(), scI->second.getServiceType(), stI->second);
+						dprintf(DEBUG_INFO, "setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " from %02x to %02x", stI->first, scI->second.getServiceType(), stI->second);
+						
+						dprintf(DEBUG_DEBUG, "setting service_type of channel_id " PRINTF_CHANNEL_ID_TYPE " %s from %02x to %02x", stI->first, scI->second.getName().c_str(), scI->second.getServiceType(), stI->second);
+						
 						scI->second.setServiceType(stI->second);
 						break;
 				}
@@ -510,7 +520,7 @@ void stop_scan(const bool success)
 	
 void * start_scanthread(void *scanmode)
 {
-	printf("[scan.cpp] start_scanthread: starting... tid %ld\n", syscall(__NR_gettid));
+	dprintf(DEBUG_INFO, "[scan.cpp] start_scanthread: starting... tid %ld\n", syscall(__NR_gettid));
 	
 	CZapitMessages::commandStartScan StartScan = *(CZapitMessages::commandStartScan *) scanmode;
 	
@@ -541,7 +551,8 @@ void * start_scanthread(void *scanmode)
 	scan_mode = mode & 0xFF;	// NIT (0) or fast (1)
 	scan_sat_mode = mode & 0xFF00; 	// single = 0, all = 1
 
-	printf("scan.cpp:start_scanthread: scan mode %s, satellites %s\n", scan_mode ? "fast" : "NIT", scan_sat_mode ? "all" : "single");
+	dprintf(DEBUG_INFO, "scan.cpp:start_scanthread: scan mode %s, satellites %s\n", scan_mode ? "fast" : "NIT", scan_sat_mode ? "all" : "single");
+	
 	CZapitClient myZapitClient;
 
 	fake_tid = fake_nid = 0;
@@ -613,7 +624,7 @@ void * start_scanthread(void *scanmode)
 			scanedtransponders.clear();
 			nittransponders.clear();
 
-			printf("scan.cpp:scanthread: scanning %s at %d bouquetMode %d\n", providerName, position, bouquetMode);
+			dprintf(DEBUG_INFO, "scan.cpp:scanthread: scanning %s at %d bouquetMode %d\n", providerName, position, bouquetMode);
 				
 			scan_provider(search, position, diseqc_pos, satfeed, feindex);
 					
@@ -636,21 +647,22 @@ void * start_scanthread(void *scanmode)
 	}
 
 	// report status
-	printf("scan.cpp:scanthread: found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
+	dprintf(DEBUG_INFO, "scan.cpp:scanthread: found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
 
 	if (found_channels) 
 	{
 		SaveServices(true);
 		
-		printf("scan.cpp:scanthread: save services done\n"); 
-		fflush(stdout);
+		dprintf(DEBUG_INFO, "scan.cpp:scanthread: save services done\n"); 
 		
 	        g_bouquetManager->saveBouquets();
 	        //g_bouquetManager->sortBouquets();
 	        //g_bouquetManager->renumServices();
 	        g_bouquetManager->clearAll();
 		g_bouquetManager->loadBouquets();
-		printf("scan.cpp:scanthread: save bouquets done\n");
+		
+		dprintf(DEBUG_INFO, "scan.cpp:scanthread: save bouquets done\n");
+		
 		stop_scan(true);
 		myZapitClient.reloadCurrentServices();
 	} 
@@ -672,7 +684,7 @@ void * start_scanthread(void *scanmode)
 
 void * scan_transponder(void * arg)
 {
-	printf("[scan.cpp] scan_transponder: starting... tid %ld\n", syscall(__NR_gettid));
+	dprintf(DEBUG_INFO, "[scan.cpp] scan_transponder: starting... tid %ld\n", syscall(__NR_gettid));
 	
 	CZapitMessages::commandScanTP ScanTP = *(CZapitMessages::commandScanTP *) arg;
 	TP_params * TP = &ScanTP.TP;
@@ -696,7 +708,7 @@ void * scan_transponder(void * arg)
 	strcpy(providerName, scanProviders.size() > 0 ? scanProviders.begin()->second.c_str() : "unknown provider");
 
 	satellitePosition = scanProviders.begin()->first;
-	printf("[scan] scan_transponder: scanning sat %s position %d fe(%d)\n", providerName, satellitePosition, ScanTP.feindex);
+	dprintf(DEBUG_INFO, "[scan] scan_transponder: scanning sat %s position %d fe(%d)\n", providerName, satellitePosition, ScanTP.feindex);
 	
 	eventServer->sendEvent(CZapitClient::EVT_SCAN_SATELLITE, CEventServer::INITID_ZAPIT, providerName, strlen(providerName) + 1);
 
@@ -705,15 +717,15 @@ void * scan_transponder(void * arg)
 
 	if( getFE(ScanTP.feindex)->getInfo()->type == FE_QAM)
 	{
-		printf("[scan] fe(%d) scan_transponder: freq %d rate %d fec %d mod %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qam.symbol_rate, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation);
+		dprintf(DEBUG_NORMAL, "[scan] fe(%d) scan_transponder: freq %d rate %d fec %d mod %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qam.symbol_rate, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation);
 	}
 	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_OFDM)
 	{
-		printf("[scan] fe(%d) scan_transponder: freq %d band %d HP %d LP %d const %d trans %d guard %d hierarchy %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information);
+		dprintf(DEBUG_NORMAL, "[scan] fe(%d) scan_transponder: freq %d band %d HP %d LP %d const %d trans %d guard %d hierarchy %d\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information);
 	}
 	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_QPSK)
 	{
-		printf("[scan] fe(%d) scan_transponder: freq %d rate %d fec %d pol %d NIT %s\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qpsk.symbol_rate, TP->feparams.u.qpsk.fec_inner, TP->polarization, scan_mode ? "no" : "yes");
+		dprintf(DEBUG_NORMAL, "[scan] fe(%d) scan_transponder: freq %d rate %d fec %d pol %d NIT %s\n", ScanTP.feindex, TP->feparams.frequency, TP->feparams.u.qpsk.symbol_rate, TP->feparams.u.qpsk.fec_inner, TP->polarization, scan_mode ? "no" : "yes");
 	}
 
 	freq_id_t freq;

@@ -23,6 +23,13 @@
 #include <map>
 #include <string>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+/* system */
+#include <system/debug.h>
+
 /* libevent */
 #include <eventserver.h>
 
@@ -34,7 +41,6 @@
 #include <zapit/getservices.h>
 #include <zapit/scan.h>
 #include <zapit/sdt.h>
-#include <zapit/debug.h>
 #include <dmx_cs.h>
 #include <math.h>
 
@@ -551,7 +557,9 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 	if(service_wr) 
 	{
 		pair<map<t_channel_id, CZapitChannel>::iterator,bool> ret;
-		DBG("New channel %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str());
+		
+		dprintf(DEBUG_DEBUG, "New channel %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str());
+		
 		if(freq == 11758 || freq == 11778) 
 			printf("New channel %llx:::%llx %s\n", channel_id, tpid, serviceName.c_str()); //FIXME debug
 
@@ -617,7 +625,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 							break;
 
 						default:
-							DBG("first_descriptor_tag: %02x\n", buff[pos]);
+							dprintf(DEBUG_DEBUG, "first_descriptor_tag: %02x\n", buff[pos]);
 							break;
 					}
 				}

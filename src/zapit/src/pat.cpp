@@ -19,7 +19,11 @@
  *
  */
 
-#include <zapit/debug.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+#include <system/debug.h>
 #include <zapit/pat.h>
 #include <dmx_cs.h>
 #include <zapit/frontend_c.h>
@@ -57,7 +61,7 @@ int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
 		/* read section */
 		if ( (dmx->sectionFilter(0, filter, mask, 5) < 0) || (i = dmx->Read(buffer, PAT_SIZE) < 0))
 		{
-			printf("parse_pat: dmx read failed\n");
+			dprintf(DEBUG_NORMAL, "parse_pat: dmx read failed\n");
 			
 			delete dmx;
 			return -1;
@@ -82,7 +86,7 @@ int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
 	
 	delete dmx;
 
-	printf("parse_pat: sid 0x%X not found..\n", feindex, channel->getServiceId());
+	dprintf(DEBUG_NORMAL, "parse_pat: sid 0x%X not found..\n", channel->getServiceId());
 	
 	return -1;
 }
@@ -94,7 +98,7 @@ int parse_pat(int feindex)
 {
 	int ret = 0;
 
-	printf("parse_pat: scan pat Parsing\n");
+	dprintf(DEBUG_NORMAL, "parse_pat: scan pat Parsing\n");
 	
 	cDemux * dmx = new cDemux( feindex );
 	
@@ -113,7 +117,7 @@ int parse_pat(int feindex)
 	memset(pbuffer, 0x00, PAT_SIZE);
 	if ((dmx->sectionFilter(0, filter, mask, 5) < 0) || (dmx->Read(pbuffer, PAT_SIZE) < 0))
 	{
-		printf("[pat.cpp] dmx read failed\n");
+		dprintf(DEBUG_NORMAL, "[pat.cpp] dmx read failed\n");
 		ret = -1;
 	}
 	
@@ -136,7 +140,7 @@ int pat_get_pmt_pid (CZapitChannel * const channel)
 		}
 	}
 	
-	printf("pat_get_pmt_pid: sid 0x%X not found..\n", channel->getServiceId());
+	dprintf(DEBUG_NORMAL, "pat_get_pmt_pid: sid 0x%X not found..\n", channel->getServiceId());
 	
 	return -1;
 }

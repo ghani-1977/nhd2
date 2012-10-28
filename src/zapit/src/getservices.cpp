@@ -21,7 +21,6 @@
 
 #include <zapit/bouquets.h>
 #include <zapit/channel.h>
-#include <zapit/debug.h>
 #include <zapit/frontend_c.h>
 #include <zapit/getservices.h>
 #include <zapit/settings.h>
@@ -30,6 +29,9 @@
 #include <math.h>
 #include <sys/time.h>
 #include <set>
+
+/* system */
+#include <system/debug.h>
 
 
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */
@@ -45,7 +47,6 @@ int newtpid;
 int tcnt = 0;
 int scnt = 0;
 
-extern int zapit_debug;						/* defined in zapit.cpp */
 extern map<t_channel_id, audio_map_set_t> audio_map;		/* defined in zapit.cpp */
 
 extern int FrontendCount;
@@ -118,8 +119,6 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 		pair<map<transponder_id_t, transponder>::iterator, bool> ret;
 
 		ret = transponders.insert (std::pair <transponder_id_t, transponder> ( tid, transponder(transport_stream_id, feparams, polarization, original_network_id)));
-
-		DBG("add transponder id %llx freq %d\n", tid, feparams.frequency);
 		
 		if (ret.second == false)
 			printf("[zapit] duplicate transponder id %llx freq %d\n", tid, feparams.frequency);
@@ -173,7 +172,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 		if (remove) 
 		{
 			int result = allchans.erase(chid);
-			printf("%s '%s' (sid=0x%x): %s", add ? "replacing" : "removing", name.c_str(), service_id, result ? "succeded.\n" : "FAILED!\n");
+			dprintf(DEBUG_INFO, "%s '%s' (sid=0x%x): %s", add ? "replacing" : "removing", name.c_str(), service_id, result ? "succeded.\n" : "FAILED!\n");
 		}
 
 		if(!add) 
@@ -200,11 +199,9 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 												     satellitePosition, 
 												     freq)));
 
-		DBG("getServicess:ParseChannels: add %s %x\n", name.c_str(), &ret.first->second);
-
 		if(ret.second == false) 
 		{
-			DBG("getSevices:ParseChannels: duplicate channel %s id %llx freq %d (old %s at %d)\n", name.c_str(), chid, freq, ret.first->second.getName().c_str(), ret.first->second.getFreqId());
+			dprintf(DEBUG_DEBUG, "getSevices:ParseChannels: duplicate channel %s id %llx freq %d (old %s at %d)\n", name.c_str(), chid, freq, ret.first->second.getName().c_str(), ret.first->second.getFreqId());
 		} 
 		else 
 		{
@@ -215,9 +212,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 			cit1->second.polarization = polarisation;
 
 			if(pmtpid != 0 && (((service_type == 2) && (apid > 0)) || ( (service_type == 1)  && (vpid > 0) && (apid > 0))) ) 
-			{
-				DBG("[getservices] preset chan %s vpid %X sid %X tpid %X onid %X\n", name.c_str(), vpid, service_id, transport_stream_id, transport_stream_id);
-							
+			{			
 				cit1->second.setVideoPid(vpid);
 				cit1->second.setAudioPid(apid);
 				cit1->second.setPcrPid(pcrpid);
@@ -295,7 +290,7 @@ void FindTransponder(xmlNodePtr search)
 			continue;
 		}
 			
-		printf("getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
+		dprintf(DEBUG_NORMAL, "getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
 		
 		// parse TP
 		ParseTransponders(search->xmlChildrenNode, satellitePosition, Source );
@@ -381,8 +376,6 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		// insert TPs list
 		select_transponders.insert( std::pair <transponder_id_t, transponder> (tid, transponder(fake_tid, feparams, polarization, fake_nid)));
 		
-		DBG("add transponder id %llx freq %d\n", tid, feparams.frequency);
-		
 		fake_nid ++; 
 		fake_tid ++;
 
@@ -398,7 +391,7 @@ int LoadMotorPositions(void)
 	int spos = 0, mpos = 0, diseqc = 0, uncom = 0, com = 0, usals = 0, inuse;
 	int offH = 10600, offL = 9750, sw = 11700;
 
-	printf("getservices:loadingmotorpositions...\n");
+	dprintf(DEBUG_NORMAL, "getservices:loadingmotorpositions...\n");
 
 	if ((fd = fopen(SATCONFIG, "r"))) 
 	{
@@ -437,7 +430,8 @@ void SaveMotorPositions()
 {
 	FILE * fd;
 	sat_iterator_t sit;
-	printf("[getservices] saving motor positions...\n");
+	
+	dprintf(DEBUG_NORMAL, "[getservices] saving motor positions...\n");
 
 	fd = fopen(SATCONFIG, "w");
 	if(fd == NULL) 
@@ -491,7 +485,7 @@ int loadTransponders()
 	
 	t_satellite_position position = 0; //first postion
 
-	printf("getServices:loadTransponders:\n");
+	dprintf(DEBUG_NORMAL, "getServices:loadTransponders:\n");
 	
 	select_transponders.clear();
 	fake_tid = fake_nid = 0;
@@ -563,8 +557,6 @@ int loadTransponders()
 					// type //needed to resort list for scan menue
 					satellitePositions[position].type = DVB_T;
 				}
-				
-				DBG("parse provider %s position %d\n", xmlGetAttribute(search, "name"), position);
 
 				// parse sat TP
 				ParseSatTransponders( getFE(i)->getInfo()->type, search, position);
@@ -585,7 +577,7 @@ int LoadServices(bool only_current)
 	xmlDocPtr parser;
 	scnt = 0;
 
-	printf("getServices:LoadServices:\n");
+	dprintf(DEBUG_NORMAL, "getServices:LoadServices:\n");
 
 	if(only_current)
 		goto do_current;
@@ -628,23 +620,17 @@ int LoadServices(bool only_current)
 			LoadMotorPositions();
 	}
 
-	printf("[zapit] %d services loaded (%d)...\n", scnt, allchans.size());
-
-	if(zapit_debug) 
-	{
-		//FIXME
-		sat_iterator_t sit;
-		for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++)
-			printf("satelliteName = %s (%d), satellitePosition = %d motor position = %d usals %d\n", sit->second.name.c_str(), sit->second.name.size(), sit->first, sit->second.motor_position, sit->second.use_usals);
-	}
+	dprintf(DEBUG_NORMAL, "[zapit] %d services loaded (%d)...\n", scnt, allchans.size());
 
 do_current:
-	DBG("Loading current..\n");
+	dprintf(DEBUG_DEBUG, "Loading current..\n");
 
 	if (scanSDT && (parser = parseXmlFile(CURRENTSERVICES_XML))) 
 	{
 		newfound = 0;
-		printf("[getservices] " CURRENTSERVICES_XML "  found.\n");
+		
+		dprintf(DEBUG_INFO, "[getservices] " CURRENTSERVICES_XML "  found.\n");
+		
 		FindTransponder( xmlDocGetRootElement(parser)->xmlChildrenNode );
 		
 		xmlFreeDoc(parser);
@@ -668,7 +654,6 @@ do_current:
 	return 0;
 }
 
-//#define SAVE_DEBUG
 void zapit_cp(char * from, char * to)
 {
         char cmd[256] = "cp -f ";
@@ -694,12 +679,8 @@ void SaveServices(bool tocopy)
 	int processed = 0;
 	sat_iterator_t spos_it;
 	updated = 0;
-	
-#ifdef SAVE_DEBUG
-	set<t_channel_id> chans_processed;
-	DBG("\nChannel size: %d\n", sizeof(CZapitChannel));
-#endif
-	printf("total channels: %d\n", allchans.size());
+
+	dprintf(DEBUG_INFO, "total channels: %d\n", allchans.size());
 	
 	fd = fopen(SERVICES_TMP, "w");
 	if(!fd) 
@@ -709,19 +690,12 @@ void SaveServices(bool tocopy)
 	}
 
 	/* headers */ 
-	//fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
 	fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit api=\"3\">\n");
 	
 	/* loop througth satpos */
 	for (spos_it = satellitePositions.begin(); spos_it != satellitePositions.end(); spos_it++) 
 	{
 		satdone = 0;
-		
-#ifdef SAVE_DEBUG
-		printf("Process sat: %s\n", spos_it->second.name.c_str());
-		printf("processed channels: %d\n", chans_processed.size());
-		printf("tp count: %d\n", transponders.size());
-#endif
 
 		/* loop througth TPs */
 		for(tI = transponders.begin(); tI != transponders.end(); tI++) 
@@ -734,9 +708,8 @@ void SaveServices(bool tocopy)
 
 			if(satpos != spos_it->first) 
 			{
-#ifdef SAVE_DEBUG
-				printf("Sat position %d not found !!\n", satpos);
-#endif
+				dprintf(DEBUG_DEBUG, "Sat position %d not found !!\n", satpos);
+
 				continue;
 			}
 			
@@ -835,9 +808,6 @@ void SaveServices(bool tocopy)
 								ccI->second.scrambled);
 					}
 					processed++;
-#ifdef SAVE_DEBUG
-					chans_processed.insert(ccI->second.getChannelID());
-#endif
 				}
 			}
 			if(tpdone) fprintf(fd, "\t\t</TS>\n");
@@ -871,13 +841,6 @@ void SaveServices(bool tocopy)
 		zapit_cp((char *) SERVICES_TMP, (char *) SERVICES_XML);
 		unlink(SERVICES_TMP);
 	}
-#ifdef SAVE_DEBUG
-	printf("processed channels: %d\n", chans_processed.size());
-	int i = 0;
-	for (tallchans::iterator it = allchans.begin(); it != allchans.end(); it++)
-		if (chans_processed.find(it->first) == chans_processed.end())
-			printf("unused channel %d sat %d freq %d sid %04X: %s\n", ++i, it->second.getSatellitePosition(), it->second.getFreqId(), it->second.getServiceId(), it->second.getName().c_str());
-	chans_processed.clear();
-#endif
-	printf("processed channels: %d\n", processed);
+
+	dprintf(DEBUG_INFO, "processed channels: %d\n", processed);
 }

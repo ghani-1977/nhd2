@@ -24,8 +24,14 @@
 /* system c++ */
 #include <map>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+/* system */
+#include <system/debug.h>
+
 /* zapit */
-#include <zapit/debug.h>
 #include <zapit/descriptors.h>
 #include <zapit/getservices.h>
 #include <dmx_cs.h>
@@ -37,7 +43,7 @@
 
 void * nit_thread(void * data)
 {
-	printf("[nit.cpp] nit_thread: starting... tid %ld\n", syscall(__NR_gettid));
+	dprintf(DEBUG_INFO, "[nit.cpp] nit_thread: starting... tid %ld\n", syscall(__NR_gettid));
 	
 	struct nit_Data nit_data = *(struct nit_Data *) data;
 	
@@ -46,10 +52,7 @@ void * nit_thread(void * data)
 
 	int status = parse_nit(satellitePosition, 0, feindex);
 
-	if(status < 0)
-		printf("[NIT]nit_thread: failed !\n");
-	else
-		printf("[NIT]nit_thread: finished.\n");
+	dprintf(DEBUG_NORMAL, "[NIT]nit_thread: %s\n", (status < 0)? "failed":"finished");
 
 	pthread_exit(NULL);
 }
@@ -103,7 +106,8 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	do {
 		if (dmx->Read(buffer, NIT_SIZE) < 0) 
 		{
-			printf("parse_nit: dmx read failed\n");
+			dprintf(DEBUG_NORMAL, "parse_nit: dmx read failed\n");
+			
 			delete dmx;
 			return -1;
 		}
@@ -116,7 +120,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 		network_descriptors_length = ((buffer[8] & 0x0F) << 8) | buffer[9];
 		unsigned char secnum = buffer[6];
 		
-		printf("parse_nit: fe(%d) section 0x%x last 0x%x network_id 0x%x -> %s\n", feindex, secnum, buffer[7], network_id, secdone[secnum] ? "skip" : "use");
+		dprintf(DEBUG_NORMAL, "parse_nit: section 0x%x last 0x%x network_id 0x%x -> %s\n", secnum, buffer[7], network_id, secdone[secnum] ? "skip" : "use");
 
 		if(secdone[secnum]) // mark sec XX done
 			continue;
@@ -155,7 +159,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 					break;
 
 				default:
-					DBG("parse_nit: first_descriptor_tag: %02x\n", buffer[pos]);
+					dprintf(DEBUG_DEBUG, "parse_nit: first_descriptor_tag: %02x\n", buffer[pos]);
 					break;
 			}
 		}
@@ -223,7 +227,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 							break;
 
 						default:
-							DBG("parse_nit: second_descriptor_tag: %02x\n", buffer[pos2]);
+							dprintf(DEBUG_DEBUG, "parse_nit: second_descriptor_tag: %02x\n", buffer[pos2]);
 							break;
 					}
 				}

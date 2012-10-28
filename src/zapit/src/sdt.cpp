@@ -23,9 +23,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+#include <system/debug.h>
+
 /* zapit */
 #include <zapit/descriptors.h>
-#include <zapit/debug.h>
 #include <zapit/sdt.h>
 #include <zapit/settings.h>
 #include <zapit/types.h>
@@ -84,7 +89,8 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	do {
 		if (dmx->Read(buffer, SDT_SIZE) < 0) 
 		{
-			printf("parse_sdt: dmx read failed\n");
+			dprintf(DEBUG_NORMAL, "parse_sdt: dmx read failed\n");
+			
 			delete dmx;
 			return -1;
 		}
@@ -97,7 +103,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 		original_network_id = (buffer[8] << 8) | buffer[9];
 
 		unsigned char secnum = buffer[6];
-		printf("parse_sdt: fe(%d) section %X last %X tsid 0x%x onid 0x%x -> %s\n", feindex, buffer[6], buffer[7], transport_stream_id, original_network_id, secdone[secnum] ? "skip" : "use");
+		dprintf(DEBUG_NORMAL, "parse_sdt: section %X last %X tsid 0x%x onid 0x%x -> %s\n", buffer[6], buffer[7], transport_stream_id, original_network_id, secdone[secnum] ? "skip" : "use");
 
 		if(secdone[secnum])
 			continue;
@@ -287,7 +293,8 @@ int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const 
 	do {
 		if ((dmx->sectionFilter(0x11, filter, mask, 8) < 0) || (dmx->Read(buffer, SDT_SIZE) < 0)) 
 		{
-			printf("parse_current_sdt: dmx read failed\n");
+			dprintf(DEBUG_NORMAL, "parse_current_sdt: dmx read failed\n");
+			
 			delete dmx;
 			return ret;
 		}

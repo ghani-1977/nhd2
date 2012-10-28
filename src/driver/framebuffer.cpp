@@ -771,8 +771,6 @@ void CFrameBuffer::getIconSize(const char* const filename, int * width, int * he
 
 	if (icon_fd == -1)
 	{
-		//printf("Framebuffer getIconSize: error while loading icon: %s\n", iconfile.c_str());
-		
 		std::string      iconfile = iconBasePath + filename + ".raw";
 		
 		icon_fd = open(iconfile.c_str(), O_RDONLY);
@@ -793,8 +791,6 @@ void CFrameBuffer::getIconSize(const char* const filename, int * width, int * he
 		
 			x = (header.width_hi << 8) | header.width_lo;
 			y = (header.height_hi << 8) | header.height_lo;
-			
-			dprintf(DEBUG_DEBUG, "CFrameBuffer::getIconSize: %s %d x %d\n", iconfile.c_str(), x, y);
 			
 			*width = x;
 			*height = y;
@@ -817,8 +813,6 @@ void CFrameBuffer::getIconSize(const char* const filename, int * width, int * he
 		{
 			*width = x;
 			*height = y;
-			
-			dprintf(DEBUG_DEBUG, "CFrameBuffer::getIconSize: %s %d x %d\n", iconfile.c_str(), x, y);
 		}
 	}
 
@@ -993,8 +987,6 @@ bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const in
 	it = icon_cache.find(filename);
 	if(it == icon_cache.end()) 
 	{
-		dprintf(DEBUG_DEBUG, "CFrameBuffer::paintIcon: check for %s\n", filename.c_str());fflush(stdout);
-
 		data = getIcon(filename, &width, &height);
 
 		if(data) 
@@ -1018,7 +1010,6 @@ found_icon:
 		else
 		{
 			std::string newname = iconBasePath + filename.c_str() + ".png";
-			dprintf(DEBUG_DEBUG, "CFrameBuffer::paintIcon: check for %s\n", newname.c_str());fflush(stdout);
 			
 			data = getIcon(newname, &width, &height);
 			

@@ -158,7 +158,6 @@ extern CBouquetManager * g_bouquetManager;
 
 // debug
 extern int sections_debug;
-extern int zapit_debug;
 
 int old_b_id = -1;
 
@@ -1968,12 +1967,6 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 			sections_debug = 1;
 			x++;
 		}
-		else if ((!strcmp(argv[x], "-zd"))) 
-		{
-			dprintf(DEBUG_NORMAL, "Zapit debug enabled\n");
-			zapit_debug = 1;
-			x++;
-		} 
 		else 
 		{
 			dprintf(DEBUG_NORMAL, "Usage: neutrino [-sd] [-zd] [-v | --verbose 0..3]\n");

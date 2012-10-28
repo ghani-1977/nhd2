@@ -23,10 +23,15 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+#include <system/debug.h>
+
 /* zapit */
 #include <zapit/settings.h>
 #include <zapit/descriptors.h>
-#include <zapit/debug.h>
 #include <zapit/pmt.h>
 #include <dmx_cs.h>
 
@@ -42,9 +47,7 @@
 extern int currentMode;
 extern short scan_runs;
 
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_DREAMBOX)
 extern cDvbCi * ci;
-//#endif
 
 
 /*
@@ -255,7 +258,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			default:
-				DBG("[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
+				dprintf(DEBUG_DEBUG, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
 				break;
 		}
 	}
@@ -268,7 +271,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			channel->setVideoPid(esInfo->elementary_PID);
 			descramble = true;
 			channel->type = (esInfo->stream_type == 0x1b); //FIXME
-			printf("[pmt]parse_ES_info: vpid 0x%x stream %d type %d\n", esInfo->elementary_PID, esInfo->stream_type, channel->type);
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: vpid 0x%x stream %d type %d\n", esInfo->elementary_PID, esInfo->stream_type, channel->type);
 			break;
 
 		case 0x03:
@@ -286,7 +289,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			
 			descramble = true;
 			
-			printf("[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			break;
 
 		case 0x05:// private section
@@ -318,7 +321,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				if ( tmp == 3 ) 
 				{
 					channel->setPrivatePid(esInfo->elementary_PID);
-					printf("[pmt]parse_ES_info: channel->setPrivatePid(0x%x)\n", esInfo->elementary_PID);
+					dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setPrivatePid(0x%x)\n", esInfo->elementary_PID);
 				}
 				descramble = true;
 				break;
@@ -335,7 +338,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			if(!scan_runs)
 				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::AC3, description, componentTag);
 			
-			printf("[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			break;
 			
 		case 0x06:
@@ -368,7 +371,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				}
 				descramble = true;
 				
-				printf("[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+				dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			}
 			break;
 			
@@ -383,7 +386,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			if(!scan_runs)
 				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::AAC, description, componentTag);
 			
-			printf("[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			break;
 
 		case 0x0B:
@@ -405,7 +408,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			break;
 
 		default:
-			printf("[pmt]parse_ES_info: stream_type: %02x\n", esInfo->stream_type);
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: stream_type: %02x\n", esInfo->stream_type);
 			break;
 	}
 
@@ -435,7 +438,7 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];
 
-	printf("[pmt]parse_pmt: parsing pmt pid 0x%X\n", channel->getPmtPid());
+	dprintf(DEBUG_NORMAL, "[pmt]parse_pmt: parsing pmt pid 0x%X\n", channel->getPmtPid());
 
 	if (channel->getPmtPid() == 0)
 	{
@@ -463,7 +466,7 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 
 	if ( (dmx->sectionFilter(channel->getPmtPid(), filter, mask, 5) < 0) || (dmx->Read(buffer, PMT_SIZE) < 0) ) 
 	{
-		printf("[pmt]parse_pmt: dmx read failed\n");
+		dprintf(DEBUG_NORMAL, "[pmt]parse_pmt: dmx read failed\n");
 		
 		delete dmx;
 		return -1;
@@ -479,6 +482,13 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	int pmtlen;
 	
 	pmtlen= ((buffer[1]&0xf)<<8) + buffer[2] + 3;
+	
+	#if 1
+	printf("%s:(%d)\n", __FUNCTION__, pmtlen);
+	for(i=0; i < pmtlen; i++)
+	   printf("0x%02x ",buffer[i]);
+	printf("\n");
+	#endif
 
 	if( !(currentMode & RECORD_MODE) && !scan_runs) 
 	{
@@ -556,7 +566,7 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	caPmt->current_next_indicator = buffer[5] & 0x01;
 	caPmt->reserved2 = buffer[10] >> 4;
 
-	printf("[pmt]parse_pmt: pcr pid: old 0x%x new 0x%x\n", channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
+	dprintf(DEBUG_NORMAL, "[pmt]parse_pmt: pcr pid: old 0x%x new 0x%x\n", channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
 
 	// ci
 	if(channel->getCaPmt() != 0) 
@@ -580,7 +590,7 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 					caPmt->addCaDescriptor(buffer + i);
 					break;
 				default:
-					DBG("decriptor_tag: %02x\n", buffer[i]);
+					dprintf(DEBUG_DEBUG, "decriptor_tag: %02x\n", buffer[i]);
 					break;
 			}
 		}
@@ -642,7 +652,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex 
 	mask[2] = 0xFF;
 	mask[4] = 0xFF;
 
-	printf("[pmt] pmt_set_update_filter: sid 0x%x pid 0x%x version 0x%x\n", channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
+	dprintf(DEBUG_NORMAL, "[pmt] pmt_set_update_filter: sid 0x%x pid 0x%x version 0x%x\n", channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
 	
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
@@ -657,7 +667,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex 
 
 int pmt_stop_update_filter(int * fd)
 {
-	printf("[pmt] stop update filter\n");
+	dprintf(DEBUG_NORMAL, "[pmt] stop update filter\n");
 
 	if (pmtDemux)
 		pmtDemux->Stop();

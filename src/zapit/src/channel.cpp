@@ -21,6 +21,9 @@
 
 #include <zapit/channel.h>
 
+/* system */
+#include <system/debug.h>
+
 
 CZapitChannel::CZapitChannel(const std::string & p_name, t_service_id p_sid, t_transport_stream_id p_tsid, t_original_network_id p_onid, unsigned char p_service_type, t_satellite_position p_satellite_position, freq_id_t p_freq )
 {
@@ -45,21 +48,11 @@ CZapitChannel::CZapitChannel(const std::string & p_name, t_service_id p_sid, t_t
 	ttx_language_code = "";
 	last_unlocked_EPGid = 0;
 	last_unlocked_time = 0;	
-	
-	//printf("CZapitChannel::CZapitChannel add %s\n", name.c_str());
 }
 
 CZapitChannel::~CZapitChannel(void)
 {
-	//printf("DEL CHANNEL %s %x\n", name.c_str(), this);
-	
 	resetPids();
-
-	//if(currentEvent)
-		//delete currentEvent;
-
-	//if (caPmt)
-	//	delete caPmt;
 	
 	setCaPmt(NULL);
 	setRawPmt(NULL);
@@ -162,7 +155,6 @@ bool CZapitChannel::isHD()
 	{
 		case 0x11: 
 		case 0x19:
-			//printf("[zapit] HD channel: %s type 0x%X\n", name.c_str(), serviceType);
 			return true;
 			
 		case 0x1: 
@@ -171,8 +163,7 @@ bool CZapitChannel::isHD()
 				int len = name.size();
 				if((len > 1) && temp[len-2] == 'H' && temp[len-1] == 'D') 
 				{
-					//printf("[zapit] HD channel: %s type 0x%X\n", name.c_str(), serviceType);
-					 return true;
+					return true;
 				}
 				return false;
 		}
@@ -180,7 +171,6 @@ bool CZapitChannel::isHD()
 		  
 			return false;
 		default:
-			//printf("[zapit] Unknown channel type 0x%X name %s !!!!!!\n", serviceType, name.c_str());
 			return false;
 	}
 }
@@ -191,7 +181,8 @@ void CZapitChannel::addTTXSubtitle(const unsigned int pid, const std::string lan
 	CZapitTTXSub* tmpSub = 0;
 	unsigned char mag_nr = magazine_number ? magazine_number : 8;
 
-	printf("[channel] [subtitle] TTXSub: PID=0x%04x, lang=%3.3s, page=%1X%02X\n", pid, langCode.c_str(), mag_nr, page_number);
+	dprintf(DEBUG_NORMAL, "[channel] [subtitle] TTXSub: PID=0x%04x, lang=%3.3s, page=%1X%02X\n", pid, langCode.c_str(), mag_nr, page_number);
+	
 	std::vector<CZapitAbsSub*>::iterator subI;
 	for (subI=channelSubs.begin(); subI!=channelSubs.end();subI++)
 	{
@@ -232,7 +223,9 @@ void CZapitChannel::addDVBSubtitle(const unsigned int pid, const std::string lan
 	CZapitDVBSub* oldSub = 0;
 	CZapitDVBSub* tmpSub = 0;
 	std::vector<CZapitAbsSub*>::iterator subI;
-	printf("[channel] [subtitles] DVBSub: PID=0x%04x, lang=%3.3s, cpageid=%04x, apageid=%04x\n", pid, langCode.c_str(), composition_page_id, ancillary_page_id);
+	
+	dprintf(DEBUG_NORMAL, "[channel] [subtitles] DVBSub: PID=0x%04x, lang=%3.3s, cpageid=%04x, apageid=%04x\n", pid, langCode.c_str(), composition_page_id, ancillary_page_id);
+	
 	for (subI=channelSubs.begin(); subI!=channelSubs.end();subI++)
 	{
 		if ((*subI)->thisSubType==CZapitAbsSub::DVB)

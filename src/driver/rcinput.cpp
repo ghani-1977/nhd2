@@ -407,7 +407,7 @@ CRCInput::CRCInput() : configfile('\t')
 	
 	//load keymap
 	if( !loadKeyMap(NEUTRINO_KEYMAP_FILE) )
-		dprintf(DEBUG_NORMAL, "CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
+		printf("CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
 	
 	open();
 	
@@ -660,8 +660,6 @@ int CRCInput::checkTimers()
 	{
 		if ( e->times_out< timeNow+ 2000 )
 		{
-			dprintf(DEBUG_DEBUG, "timeout timer %d %llx %llx\n",e->id,e->times_out,timeNow );
-			
 			_id = e->id;
 			if ( e->interval != 0 )
 			{
@@ -689,8 +687,6 @@ int CRCInput::checkTimers()
 			break;
 		}
 	}
-
-	dprintf(DEBUG_DEBUG, "checkTimers: return %d\n", _id);
 
 	return _id;
 }
@@ -728,8 +724,6 @@ void CRCInput::getMsgAbsoluteTimeout(neutrino_msg_t * msg, neutrino_msg_data_t *
 		diff = 100;  // Minimum Differenz...
 	else
 		diff = ( *TimeoutEnd - timeNow );
-
-	dprintf(DEBUG_DEBUG, "CRCInput::getMsgAbsoluteTimeout diff %llx TimeoutEnd %llx now %llx\n", diff, *TimeoutEnd, timeNow);
 	
 	getMsg_us( msg, data, diff, bAllowRepeatLR );
 
@@ -738,8 +732,6 @@ void CRCInput::getMsgAbsoluteTimeout(neutrino_msg_t * msg, neutrino_msg_data_t *
 		// recalculate timeout....
 		//unsigned long long ta= *TimeoutEnd;
 		*TimeoutEnd= *TimeoutEnd + *(long long*) *data;
-
-		dprintf(DEBUG_DEBUG, "[getMsgAbsoluteTimeout]: EVT_TIMESET - recalculate timeout\n%llx/%llx - %llx\n", timeNow, *(long long*) *data, *TimeoutEnd);
 	}
 }
 
@@ -988,8 +980,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 
 		if(FD_ISSET(fd_event, &rfds)) 
 		{
-			dprintf(DEBUG_DEBUG, "CRCInput::getMsg_us: event - accept!\n");
-			
 			socklen_t          clilen;
 			struct sockaddr_in cliaddr;
 			clilen = sizeof(cliaddr);
@@ -997,12 +987,8 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 
 			*msg = RC_nokey;
 			
-			dprintf(DEBUG_DEBUG, "CRCInput::getMsg_us: network event - read!\n");
-			
 			CEventServer::eventHead emsg;
 			int read_bytes= recv(fd_eventclient, &emsg, sizeof(emsg), MSG_WAITALL);
-						
-			dprintf(DEBUG_DEBUG, "CRCInput::getMsg_us: event read %d bytes - following %d bytes\n", read_bytes, emsg.dataSize );			
 
 			if ( read_bytes == sizeof(emsg) ) 
 			{
@@ -1014,8 +1000,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				if ( p!=NULL )
 				{
 					read_bytes= recv(fd_eventclient, p, emsg.dataSize, MSG_WAITALL);
-					
-					dprintf(DEBUG_DEBUG, "CRCInput::getMsg_us: eventbody read %d bytes - initiator %x\n", read_bytes, emsg.initiatorID );
 
 					/* nhttp event msg */
 					if ( emsg.initiatorID == CEventServer::INITID_HTTPD )
@@ -1454,9 +1438,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				
 				if (ev.value) 
 				{
-					dprintf(DEBUG_DEBUG, "got keydown native key: %04x %04x, translate: %04x -%s-\n", ev.code, ev.code&0x1f, translate(ev.code, 0), getKeyName(translate(ev.code, 0)).c_str());
-					dprintf(DEBUG_DEBUG, "rc_last_key %04x rc_last_repeat_key %04x\n\n", rc_last_key, rc_last_repeat_key);
-
 					unsigned long long now_pressed;
 					bool keyok = true;
 
@@ -1513,8 +1494,6 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				else 
 				{
 					// clear rc_last_key on keyup event
-					dprintf(DEBUG_DEBUG, "got keyup native key: %04x %04x, translate: %04x -%s-\n", ev.code, ev.code&0x1f, translate(ev.code, 0), getKeyName(translate(ev.code, 0)).c_str() );
-
 					rc_last_key = KEY_MAX;
 					if (trkey == RC_standby) 
 					{
@@ -1581,8 +1560,6 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 	{
 		if (fd_rc[i] != -1)
 		{
-			//if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
-			//	perror("CRCInput::setRepeat: REP_DELAY");
 			write(fd_rc[i], &ie, sizeof(ie));
 		}
 	}
@@ -1595,8 +1572,6 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 	{
 		if (fd_rc[i] != -1)
 		{
-			//if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
-			//	perror("CRCInput::setRepeat: REP_PERIOD");
 			write(fd_rc[i], &ie, sizeof(ie));
 		}
 	}
