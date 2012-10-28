@@ -1028,6 +1028,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_picture = configfile.getInt32( "key_picture", CRCInput::RC_picture );
 	g_settings.key_timelist = configfile.getInt32( "key_timelist", CRCInput::RC_bookmark );
 	g_settings.key_net = configfile.getInt32( "key_net", CRCInput::RC_net );
+	g_settings.key_video_player = configfile.getInt32( "key_video_player", CRCInput::RC_nokey );
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
@@ -1490,6 +1491,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_picture", g_settings.key_picture );
 	configfile.setInt32( "key_timelist", g_settings.key_timelist );
 	configfile.setInt32( "key_net", g_settings.key_net );
+	configfile.setInt32( "key_video_player", g_settings.key_video_player );
 
         // USERMENU
         char txt1[81];
@@ -3169,7 +3171,33 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 #if ENABLE_GRAPHLCD
 				nGLCD::unlockChannel();
 #endif				
-			}		
+			}
+			else if( msg == (neutrino_msg_t)g_settings.key_video_player )	// fileplayer
+			{
+#ifdef ENABLE_GRAPHLCD
+				std::string c = "MoviePlayer";
+				nGLCD::lockChannel(c);
+#endif			  
+			  
+				StopSubtitles();
+
+				moviePlayerGui->exec(NULL, "fileplayback");
+
+				if( mode == mode_radio )
+				{
+					frameBuffer->loadBackgroundPic("radio.jpg");
+						
+#ifdef FB_BLIT
+					frameBuffer->blit();
+#endif						
+				}
+					
+				StartSubtitles();
+				
+#if ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+#endif				
+			}	
 			else if( (msg == CRCInput::RC_picture) || (msg == (neutrino_msg_t)g_settings.key_picture) ) 	// picture viewer
 			{
 				StopSubtitles();

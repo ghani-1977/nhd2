@@ -318,6 +318,7 @@ struct SNeutrinoSettings
 	int key_picture;
 	int key_timelist;
 	int key_net;
+	int key_video_player;
 	// END KEYBINDING
 
 	// USERMENU

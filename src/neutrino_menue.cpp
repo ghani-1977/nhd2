@@ -1969,12 +1969,13 @@ enum keynames {
 	KEY_EXTRAS_PICTURE,
 	KEY_EXTRAS_TIMELIST,
 	KEY_EXTRAS_NET,
+	KEY_EXTRAS_VIDEO_PLAYER,
 	
 	// misc
 	KEY_UNLOCK,
 };
 
-#define KEYBINDS_COUNT 32
+#define KEYBINDS_COUNT 33
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2013,6 +2014,7 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_PICTURE,
 	LOCALE_KEYBINDINGMENU_TIMELIST,
 	LOCALE_KEYBINDINGMENU_NET,
+	LOCALE_KEYBINDINGMENU_VIDEO_PLAYER,
 	
 	// misc
 	LOCALE_EXTRA_KEY_UNLOCK,
@@ -2056,6 +2058,7 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_PICTURE,
 	LOCALE_KEYBINDINGMENU_TIMELIST,
 	LOCALE_KEYBINDINGMENU_NET,
+	LOCALE_KEYBINDINGMENU_VIDEO_PLAYER,
 	
 	// misc
 	LOCALE_EXTRA_KEY_UNLOCK,
@@ -2134,6 +2137,7 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_picture,
 		&g_settings.key_timelist,
 		&g_settings.key_net,
+		&g_settings.key_video_player,
 		
 		// misc
 		&g_settings.key_unlock,
@@ -2171,7 +2175,7 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	
 	// media
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINMENU_MEDIAPLAYER));
-	for (int i = KEY_EXTRAS_VIDEO; i <= KEY_EXTRAS_NET; i++)
+	for (int i = KEY_EXTRAS_VIDEO; i <= KEY_EXTRAS_VIDEO_PLAYER; i++)
 		bindSettings.addItem(new CMenuForwarder(keydescription[i], true, NULL, keychooser[i]));
 
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINSETTINGS_MISC));
