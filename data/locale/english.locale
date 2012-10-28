@@ -1539,6 +1539,7 @@ keybinding.key_music Audioplayer
 keybinding.key_picture PictureViewer
 keybinding.key_timelist Timelist
 keybinding.key_net Internet Radio
+keybinding.key_video_player File Player
 
 audiomenu.volumebar_audiosteps Volume Step Size
 

@@ -1541,6 +1541,7 @@ keybinding.key_music Audioplayer
 keybinding.key_picture PictureViewer
 keybinding.key_timelist Timelist
 keybinding.key_net Internet Radio
+keybinding.key_video_player Datei Player
 
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 
