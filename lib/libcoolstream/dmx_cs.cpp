@@ -71,6 +71,7 @@ cDemux::cDemux(int num)
 
 	// last dmx source
 	last_source = -1;
+	last_index = -1;
 }
 
 cDemux::~cDemux()
@@ -88,29 +89,31 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
+	dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __FUNCTION__, last_source, feindex, last_index, demux_num);
+	
 	//demux_num = feindex;
 	// dont open twice when index source dont change
-	if (last_source == feindex && last_index == demux_num) 
-	{
-		dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)did not change\n", __func__, last_source, feindex, last_index, demux_num);
+	//if (last_source == feindex && last_index == demux_num) 
+	//{
+		//dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __func__, last_source, feindex, last_index, demux_num);
 		//if (demux_fd > -1)
 		//	return true;
-	}
+	//}
 	
-	// reopen ???
+	// close device
 	if (demux_fd > -1) 
 	{
-		dprintf(DEBUG_INFO, "%s #%d: FD ALREADY OPENED fd = %d lastsource %d devnum %d\n", __func__, feindex, demux_fd, last_source, demux_num);
 		close(demux_fd);
 	}
 	
 	char devname[256];
 
-	//Open Demux()
+	// open/reopen
 	sprintf(devname, "/dev/dvb/adapter0/demux%d", demux_num);
 
 	demux_fd = open(devname, flags);
 
+	// can not open
 	if (demux_fd < 0)
 		return false;
 
@@ -119,7 +122,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	// Set Demux Source (default FRONT0)
 	//if (!init[demux_num])
 	{
-		dprintf(DEBUG_INFO, "dmx(%d) source(%d) not set yet\n", demux_num, feindex);
+		//dprintf(DEBUG_INFO, "dmx(%d) source(%d) not set yet\n", demux_num, feindex);
 		
 		int n = DMX_SOURCE_FRONT0 + feindex;
 		
@@ -131,7 +134,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		//	init[demux_num] = true;
 	}
 	
-	dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
+	//dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
 
 	// Set Buffer Size
 	if (uBufferSize > 0)
@@ -142,6 +145,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	
 	//
 	last_source = feindex;
+	last_index = demux_num;
 
 	return true;
 }
