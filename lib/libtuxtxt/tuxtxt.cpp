@@ -2294,7 +2294,7 @@ int GetTeletextPIDs(int source)
         unsigned char mask[DMX_FILTER_SIZE];
 	int res;
 
-        cDemux * dmx = new cDemux( source );
+        cDemux * dmx = new cDemux();
 	dmx->Open(DMX_PSI_CHANNEL, 1024, source );
 
         memset(filter, 0x00, DMX_FILTER_SIZE);

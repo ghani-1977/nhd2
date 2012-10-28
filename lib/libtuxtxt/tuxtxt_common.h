@@ -431,7 +431,7 @@ int tuxtxt_init_demuxer( int source )
 
 	if(dmx == NULL) 
 	{
-		dmx = new cDemux( source );
+		dmx = new cDemux();
 		
 		printf("TuxTxt: source demux %d\n", source);
 

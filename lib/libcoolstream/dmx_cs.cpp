@@ -65,6 +65,9 @@ cDemux::cDemux(int num)
 {  
 	// dmx file descriptor
 	demux_fd = -1;
+	
+	// demux num
+	demux_num = num;
 
 	// last dmx source
 	last_source = -1;
@@ -85,15 +88,16 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
-	demux_num = feindex;
-	
-	if (last_source == feindex) 
+	//demux_num = feindex;
+	// dont open twice when index source dont change
+	if (last_source == feindex && last_index == demux_num) 
 	{
-		dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __func__, feindex, last_source);
-		if (demux_fd > -1)
-			return true;
+		dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)did not change\n", __func__, last_source, feindex, last_index, demux_num);
+		//if (demux_fd > -1)
+		//	return true;
 	}
 	
+	// reopen ???
 	if (demux_fd > -1) 
 	{
 		dprintf(DEBUG_INFO, "%s #%d: FD ALREADY OPENED fd = %d lastsource %d devnum %d\n", __func__, feindex, demux_fd, last_source, demux_num);
@@ -113,9 +117,9 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// Set Demux Source (default FRONT0)
-	if (!init[demux_num])
+	//if (!init[demux_num])
 	{
-		//printf("dmx(%d) source(%d) not set yet\n", demux_num, feindex);
+		dprintf(DEBUG_INFO, "dmx(%d) source(%d) not set yet\n", demux_num, feindex);
 		
 		int n = DMX_SOURCE_FRONT0 + feindex;
 		
@@ -123,8 +127,8 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		{
 			perror("DMX_SET_SOURCE");
 		}
-		else
-			init[demux_num] = true;
+		//else
+		//	init[demux_num] = true;
 	}
 	
 	dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
