@@ -615,10 +615,10 @@ CZapitClient::responseGetLastChannel load_settings(void)
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	// socket
-	//cam0->setCaSocket( fe->fenumber );
+	cam0->setCaSocket();
 	
 	// cam
-	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), fe->fenumber );
+	cam0->setCaPmt(thischannel, thischannel->getCaPmt());
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(thischannel->getCaPmt());	
@@ -734,7 +734,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, i
 	{
 		printf("[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) // live demux is always 0
+		if (parse_pat(thischannel, fe->fenumber, dmx_num) < 0) // live demux is always 0
 		{
 			printf("[zapit] pat parsing failed\n");
 			return false;
@@ -742,16 +742,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, i
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
+	if (parse_pmt(thischannel, fe->fenumber, dmx_num) < 0) 
 	{
 		printf("[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
+		if (parse_pat(thischannel, fe->fenumber, dmx_num) < 0) 
 		{
 			printf("pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, fe->fenumber, /*fe->fenumber*/dmx_num) < 0) 
+		else if (parse_pmt(thischannel, fe->fenumber, dmx_num) < 0) 
 		{
 			printf("[zapit] pmt parsing failed\n");
 			return false;
@@ -1117,7 +1117,13 @@ void unsetRecordMode(void)
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 	
 	// cam1 stop
-	cam1->sendMessage(0, 0); // stop
+	cam1->sendMessage(0, 0);
+	
+	// cam0 update
+	printf("%s sending capmt....\n", __FUNCTION__);
+	// socket
+	cam0->setCaSocket();
+	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), 0, 1, true);
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -2683,7 +2689,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_pcr) 
 	{
 		if(!pcrDemux)
-			pcrDemux = new cDemux( /*live_fe->fenumber*/ );
+			pcrDemux = new cDemux();
 		
 		// open pcr demux
 		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2701,7 +2707,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_audio) 
 	{
 		if( !audioDemux )
-			audioDemux = new cDemux( /*live_fe->fenumber*/ );
+			audioDemux = new cDemux();
 		
 		// open audio demux
 		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2719,7 +2725,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	if (have_video) 
 	{
 		if( !videoDemux )
-			videoDemux = new cDemux( /*live_fe->fenumber*/ ); 
+			videoDemux = new cDemux(); 
 		
 		// open Video Demux
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
@@ -2866,7 +2872,7 @@ int stopPlayBack( bool sendPmt)
 		if(currentMode & RECORD_MODE) 
 		{
 			//if(live_channel_id == rec_channel_id)
-			//	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), live_fe->fenumber, 1, true); 
+			//	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), live_fe->fenumber); 
 			//else
 			//	cam1->sendMessage(0, 0);
 		} 
@@ -3170,9 +3176,9 @@ void * sdt_thread(void * arg)
 
 			if(live_channel) 
 			{
-				switch ( live_fe->getInfo()->type) 
+				switch(spos_it->second.type)
 				{
-					case FE_QPSK: /* satellite */
+					case DVB_S: /* satellite */
 						sprintf(satstr, "\t<%s name=\"%s\" position=\"%hd\">\n", "sat", spos_it->second.name.c_str(), satellitePosition);
 						sprintf(tpstr, "\t\t<TS id=\"%04x\" on=\"%04x\" frq=\"%u\" inv=\"%hu\" sr=\"%u\" fec=\"%hu\" pol=\"%hu\">\n",
 						tI->second.transport_stream_id, tI->second.original_network_id,
@@ -3181,7 +3187,7 @@ void * sdt_thread(void * arg)
 						tI->second.polarization);
 						break;
 
-					case FE_QAM: /* cable */
+					case DVB_C: /* cable */
 						sprintf(satstr, "\t<%s name=\"%s\">\n", "cable", spos_it->second.name.c_str());
 						sprintf(tpstr, "\t\t<TS id=\"%04x\" on=\"%04x\" frq=\"%u\" inv=\"%hu\" sr=\"%u\" fec=\"%hu\" mod=\"%hu\">\n",
 						tI->second.transport_stream_id, tI->second.original_network_id,
@@ -3190,7 +3196,7 @@ void * sdt_thread(void * arg)
 						tI->second.feparams.u.qam.modulation);
 						break;
 						
-					case FE_OFDM: /* terrestrial */
+					case DVB_T: /* terrestrial */
 						sprintf(satstr, "\t<%s name=\"%s\">\n", "terrestrial", spos_it->second.name.c_str());
 						sprintf(tpstr, "\t\t<TS id=\"%04x\" on=\"%04x\" frq=\"%u\" inv=\"%hu\" band=\"%hu\" HP=\"%hu\" LP=\"%hu\" const=\"%hu\" trans=\"%hu\" guard=\"%hu\" hierarchy=\"%hu\">\n",
 						tI->second.transport_stream_id, tI->second.original_network_id,
@@ -3213,10 +3219,11 @@ void * sdt_thread(void * arg)
 			else 
 			{
 				fgets(buffer, 255, fd1);
-				while(!feof(fd1) && !strstr(buffer, satfound ? "</sat>" : "</zapit>")) 
+				//while(!feof(fd1) && !strstr(buffer, satfound ? "</sat>" : "</zapit>")) 
+				while( !feof(fd1) ) 
 				{
-					if(!satfound && !strcmp(buffer, satstr))
-						satfound = 1;
+					//if(!satfound && !strcmp(buffer, satstr))
+					//	satfound = 1;
 					fputs(buffer, fd);
 					fgets(buffer, 255, fd1);
 				}
@@ -3230,7 +3237,7 @@ void * sdt_thread(void * arg)
 				{
 					if(!tpdone) 
 					{
-						if(!satfound) 
+						//if(!satfound) 
 							fprintf(fd, "%s", satstr);
 						fprintf(fd, "%s", tpstr);
 						tpdone = 1;
@@ -3247,7 +3254,7 @@ void * sdt_thread(void * arg)
 					{
 					   if(!tpdone) 
 					   {
-						if(!satfound) 
+						//if(!satfound) 
 							fprintf(fd, "%s", satstr);
 						fprintf(fd, "%s", tpstr);
 						tpdone = 1;
@@ -3269,7 +3276,7 @@ void * sdt_thread(void * arg)
 					{
 					   	if(!tpdone) 
 						{
-							if(!satfound) 
+							//if(!satfound) 
 								fprintf(fd, "%s", satstr);
 
 							fprintf(fd, "%s", tpstr);
@@ -3287,17 +3294,18 @@ void * sdt_thread(void * arg)
 			if(tpdone) 
 			{
 				//fprintf(fd, "\t\t</TS>\n");
-				switch ( live_fe->getInfo()->type)
+				//switch ( live_fe->getInfo()->type)
+				switch(spos_it->second.type)
 				{
-					case FE_QPSK: /* satellite */
+					case DVB_S: /* satellite */
 						fprintf(fd, "\t</sat>\n");
 						break;
 						
-					case FE_QAM: /* cable */
+					case DVB_C: /* cable */
 						fprintf(fd, "\t</cable>\n");
 						break;
 						
-					case FE_OFDM: /* satellite */
+					case DVB_T: /* terrestrial */
 						fprintf(fd, "\t</terrestrial>\n");
 						break;
 						
@@ -3305,6 +3313,7 @@ void * sdt_thread(void * arg)
 						break;
 				}
 			}
+			#if 0
 			else if(satfound)
 			{
 				//fprintf(fd, "\t</sat>\n");
@@ -3326,6 +3335,7 @@ void * sdt_thread(void * arg)
 						break;
 				}
 			}
+			#endif
 
 			if(fd1) 
 			{
@@ -3336,7 +3346,7 @@ void * sdt_thread(void * arg)
 					fgets(buffer, 255, fd1);
 				}
 
-				if(!satfound) 
+				//if(!satfound) 
 					fprintf(fd, "</zapit>\n");
 
 				fclose(fd1);
@@ -3401,29 +3411,6 @@ int zapit_main_thread(void *data)
 	//CI init
 	//FIXME: platform without ci cam
 	ci = cDvbCi::getInstance();
-
-#if defined (PLATFORM_SPARK7162)
-	//lib-stb-hal/libspark
-	/* 
-	* this is a strange hack: the drivers seem to only work correctly after
-	* demux0 has been used once. After that, we can use demux1,2,... 
-	*/
-	struct dmx_pes_filter_params p;
-	int dmx = open("/dev/dvb/adapter0/demux0", O_RDWR );
-	if (dmx < 0)
-		printf("%s: ERROR open /dev/dvb/adapter0/demux0 (%m)\n", __func__);
-	else
-	{
-		memset(&p, 0, sizeof(p));
-		p.output = DMX_OUT_DECODER;
-		p.input  = DMX_IN_FRONTEND;
-		p.flags  = DMX_IMMEDIATE_START;
-		p.pes_type = DMX_PES_VIDEO;
-		ioctl(dmx, DMX_SET_PES_FILTER, &p);
-		ioctl(dmx, DMX_STOP);
-		close(dmx);
-	}
-#endif
 
 	//dvbsub
 	dvbsub_init();

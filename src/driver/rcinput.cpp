@@ -1581,8 +1581,9 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 	{
 		if (fd_rc[i] != -1)
 		{
-			if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
-				perror("CRCInput::setRepeat: REP_DELAY");
+			//if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
+			//	perror("CRCInput::setRepeat: REP_DELAY");
+			write(fd_rc[i], &ie, sizeof(ie));
 		}
 	}
 
@@ -1594,15 +1595,16 @@ void CRCInput::setRepeat(unsigned int delay,unsigned int period)
 	{
 		if (fd_rc[i] != -1)
 		{
-			if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
-				perror("CRCInput::setRepeat: REP_PERIOD");
+			//if (write(fd_rc[i], &ie, sizeof(ie)) == -1)
+			//	perror("CRCInput::setRepeat: REP_PERIOD");
+			write(fd_rc[i], &ie, sizeof(ie));
 		}
 	}
 }
 
 void CRCInput::postMsg(const neutrino_msg_t msg, const neutrino_msg_data_t data, const bool Priority)
 {
-//	printf("postMsg %x %x %d\n", msg, data, Priority );
+	//printf("postMsg %x %x %d\n", msg, data, Priority );
 
 	struct event buf;
 	buf.msg  = msg;

@@ -64,7 +64,7 @@ int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
 		}
 
 		if(buffer[7]) 
-			printf("parse_pat: fe(%d) section 0x%X last 0x%X\n", feindex, buffer[6], buffer[7]);
+			printf("parse_pat: section 0x%X last 0x%X\n", buffer[6], buffer[7]);
 		
 		/* loop over service id / program map table pid pairs */
 		for (i = 8; i < (((buffer[1] & 0x0F) << 8) | buffer[2]) + 3; i += 4) 
@@ -82,7 +82,7 @@ int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
 	
 	delete dmx;
 
-	printf("parse_pat: fe(%d) sid 0x%X not found..\n", feindex, channel->getServiceId());
+	printf("parse_pat: sid 0x%X not found..\n", feindex, channel->getServiceId());
 	
 	return -1;
 }

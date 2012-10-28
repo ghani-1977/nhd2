@@ -556,7 +556,7 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	caPmt->current_next_indicator = buffer[5] & 0x01;
 	caPmt->reserved2 = buffer[10] >> 4;
 
-	printf("[pmt]parse_pmt: fe(%d) pcr pid: old 0x%x new 0x%x\n", feindex, channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
+	printf("[pmt]parse_pmt: pcr pid: old 0x%x new 0x%x\n", channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
 
 	// ci
 	if(channel->getCaPmt() != 0) 
@@ -620,12 +620,10 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex 
 	unsigned char mode[DMX_FILTER_SIZE];
 
 	if(pmtDemux == NULL) 
-	{
-		pmtDemux = new cDemux( feindex );
-		
-		// open 
-		pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, feindex ); // this indicate fe num
-	}
+		pmtDemux = new cDemux();
+	
+	// open 
+	pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, feindex ); // this indicate fe num
 
 	if (channel->getPmtPid() == 0)
 		return -1;
@@ -644,7 +642,7 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex 
 	mask[2] = 0xFF;
 	mask[4] = 0xFF;
 
-	printf("[pmt] pmt_set_update_filter: fe(%d) sid 0x%x pid 0x%x version 0x%x\n", feindex, channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
+	printf("[pmt] pmt_set_update_filter: sid 0x%x pid 0x%x version 0x%x\n", channel->getServiceId(), channel->getPmtPid(), channel->getCaPmt()->version_number);
 	
 	filter[3] = (channel->getCaPmt()->version_number << 1) | 0x01;
 	mask[3] = (0x1F << 1) | 0x01;
@@ -662,13 +660,7 @@ int pmt_stop_update_filter(int * fd)
 	printf("[pmt] stop update filter\n");
 
 	if (pmtDemux)
-	{
 		pmtDemux->Stop();
-		
-		//delete pmtDemux; // delte closes demuxes
-		//pmtDemux = NULL;
-		//FIXME: dont know if this is the reason why pmt update is not working???
-	}
 
 	*fd = -1;
 	

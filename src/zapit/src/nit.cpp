@@ -63,7 +63,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	for(int i = 0; i < 255; i++)
 		secdone[i] = 0;
 	
-	cDemux * dmx = new cDemux( feindex );
+	cDemux * dmx = new cDemux();
 	
 	dmx->Open(DMX_PSI_CHANNEL, NIT_SIZE, feindex);
 

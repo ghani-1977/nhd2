@@ -57,7 +57,6 @@ unsigned int CCaDescriptor::writeToBuffer(unsigned char * const buffer) // retur
 	return descriptor_length + 2;
 }
 
-
 /*
  * generic table containing conditional access descriptors
  */

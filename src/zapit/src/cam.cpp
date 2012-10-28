@@ -28,6 +28,11 @@
 #include <string.h>
 
 
+CCam::~CCam(void)
+{
+	close_connection();
+}
+
 const unsigned char CCam::getVersion(void) const
 {
 	return 0x9F;

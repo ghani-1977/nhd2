@@ -2422,8 +2422,7 @@ void CMoviePlayerGui::PlayFile(void)
 			} 
 			else if (playstate != CMoviePlayerGui::PAUSE)
 				playstate = CMoviePlayerGui::SOFTRESET;
-		} 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+		} 		
 		else if (msg == CRCInput::RC_slow) 
 		{
 			if (slow > 0)
@@ -2436,11 +2435,9 @@ void CMoviePlayerGui::PlayFile(void)
 			//update_lcd = true;
 			playstate = CMoviePlayerGui::SLOW;
 			update_lcd = true;
-		}
-#endif		
+		}		
 		else if(msg == CRCInput::RC_red)
 		{
-			//playback->SyncAV();
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			

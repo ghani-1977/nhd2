@@ -827,7 +827,7 @@ int CStreamInfo2::ts_setup()
 	if(vpid == 0 && apid == 0)
 		return -1;
 
-	ts_dmx = new cDemux( live_fe? live_fe->fenumber:0 );
+	ts_dmx = new cDemux();
 	
 	// open demux
 	ts_dmx->Open(DMX_TP_CHANNEL, 3 *3008 * 62, live_fe? live_fe->fenumber:0);
