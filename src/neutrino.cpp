@@ -5760,7 +5760,7 @@ int main(int argc, char *argv[])
 		close(i);
 	
 	/* don't work, i don't know why??? */
-	//mtrace();
+	mtrace();
 
 	return CNeutrinoApp::getInstance()->run(argc, argv);
 }
