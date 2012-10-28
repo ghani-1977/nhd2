@@ -27,6 +27,7 @@
 #include "channel.h"
 
 
+
 class CCaDescriptor
 {
 	private:
@@ -56,8 +57,6 @@ class CCaTable
 		CCaTable(void)			{ info_length = 0; };
 		~CCaTable(void);
 		unsigned getLength(void)	{ return info_length + 2; }
-		
-		// ci
 		unsigned writeToBuffer(unsigned char * const buffer);
 		
 		//cam
@@ -74,6 +73,9 @@ class CEsInfo : public CCaTable
 	protected:
 		unsigned getLength(void)	{ return CCaTable::getLength() + 3; }
 		unsigned writeToBuffer(unsigned char * const buffer);
+		
+		//cam
+		unsigned CamwriteToBuffer(unsigned char * const buffer);
 
 	public:
 		unsigned stream_type		: 8;
@@ -92,8 +94,6 @@ class CCaPmt : public CCaTable
 
 	public:
 		~CCaPmt(void);
-		
-		// ci
 		unsigned getLength(void);
 		unsigned writeToBuffer(unsigned char * const buffer, int demux = 0, int camask = 1);
 		
