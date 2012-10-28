@@ -44,9 +44,6 @@ void CEventServer::registerEvent(const int fd)
 	if ( readresult<= 0 )
 		perror("[eventserver]: read");
 	
-	//printf("[eventserver]: read from %d %x bytes  %d/%d\n", fd, errno, readresult,  sizeof(msg));
-	//printf("[eventserver]: registered event (%d) to: %d - %s\n", msg.eventID, msg.clientID, msg.udsName);
-	
 	registerEvent2(msg.eventID, msg.clientID, msg.udsName);
 }
 
@@ -64,7 +61,6 @@ void CEventServer::unRegisterEvent(const int fd)
 
 void CEventServer::sendEvent(const unsigned int eventID, const initiators initiatorID, const void* eventbody, const unsigned int eventbodysize)
 {
-	printf("CEventServer::sendEvent >\n");
 	eventClientMap notifyClients = eventData[eventID];
 
 	for(eventClientMap::iterator pos = notifyClients.begin(); pos != notifyClients.end(); pos++)
@@ -73,8 +69,6 @@ void CEventServer::sendEvent(const unsigned int eventID, const initiators initia
 		eventClient client = pos->second;
 		sendEvent2Client(eventID, initiatorID, &client, eventbody, eventbodysize);
 	}
-
-	printf("CEventServer::sendEvent <\n");
 }
 
 
@@ -112,15 +106,13 @@ bool CEventServer::sendEvent2Client(const unsigned int eventID, const initiators
 	head.initiatorID = initiatorID;
 	head.dataSize = eventbodysize;
 	int written = write(sock_fd, &head, sizeof(head));
-	
-	//printf ("[eventserver]: sent 0x%x - following eventbody= %d\n", written, eventbodysize );
 
 	if(eventbodysize!=0)
 	{
 		written = write(sock_fd, eventbody, eventbodysize);
-		//printf ("[eventserver]: eventbody sent 0x%x - peventbody= %x eventbody= %x\n", written, (unsigned)eventbody, *(unsigned*)eventbody );
 	}
+	
 	close(sock_fd);
-	printf("CEventServer::sendEvent2Client <\n");
+	
 	return true;
 }
