@@ -515,9 +515,7 @@ void cDemux::getSTC(int64_t * STC)
 		perror("DMX_GET_STC");
 	
 	*STC = (int64_t)stc.stc;
-	#endif
-	
-	#if 1
+	#else
 	// seifes
 	/* apparently I can only get the PTS of the video decoder,
 	 * but that's good enough for dvbsub */
