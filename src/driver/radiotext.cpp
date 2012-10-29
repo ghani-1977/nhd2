@@ -59,6 +59,23 @@
 #include <ctype.h>
 #include <config.h>
 
+#if 0
+#ifdef HAVE_TRIPLEDRAGON
+#include <zapit/td-demux-compat.h>
+#include <tddevices.h>
+#define DMXDEV	"/dev/" DEVICE_NAME_DEMUX "1"
+#elif HAVE_DVB_API_VERSION < 3
+#include <ost/dmx.h>
+#define DMXDEV  "/dev/dvb/card0/demux0"
+#define DVRDEV  "/dev/dvb/card0/dvr0"
+#define dmx_pes_filter_params   dmxPesFilterParams
+#define pes_type                pesType
+#else
+#include <linux/dvb/dmx.h>
+#define DMXDEV  "/dev/dvb/adapter0/demux0"
+#define DVRDEV  "/dev/dvb/adapter0/dvr0"
+#endif
+#endif
 
 #include <global.h>
 #include <system/settings.h>
@@ -75,7 +92,7 @@ extern "C" {
 #include <zapit/frontend_c.h>
 
 
-extern CFrontend * live_fe;			/* zapit.cpp */
+extern CFrontend * live_fe;
 
 rtp_classes rtp_content;
 
@@ -95,7 +112,7 @@ int Rass_GalStart, Rass_GalEnd, Rass_GalCount, Rass_SlideFoto;
 #endif
 
 #define floor
-const char *DataDir = "/var/radiotext";
+const char *DataDir = "./";
 //cRadioAudio *RadioAudio;
 //cRadioTextOsd *RadioTextOsd;
 //cRDSReceiver *RDSReceiver;
@@ -128,21 +145,17 @@ char *CRadioText::rds_entitychar(char *text)
 	int i = 0, l, lof, lre, space;
 	char *temp;
 
-	while (i < 5) 
-	{
-		if ((temp = strstr(text, entitystr[i])) != NULL) 
-		{
+	while (i < 5) {
+		if ((temp = strstr(text, entitystr[i])) != NULL) {
 			if (S_Verbose >= 2)
 				printf("RText-Entity: %s\n", text);
 			l = strlen(entitystr[i]);
 			lof = (temp-text);
-			if (strlen(text) < RT_MEL) 
-			{
+			if (strlen(text) < RT_MEL) {
 				lre = strlen(text) - lof - l;
 				space = 1;
 			}
-			else 
-			{
+			else {
 				lre =  RT_MEL - 1 - lof - l;
 				space = 0;
 			}
@@ -158,9 +171,8 @@ char *CRadioText::rds_entitychar(char *text)
 
 char* CRadioText::ptynr2string(int nr)
 {
-	switch (nr) 
-	{
-		// Source: http://www.ebu.ch/trev_255-beale.pdf
+	switch (nr) {
+        // Source: http://www.ebu.ch/trev_255-beale.pdf
 		case  0: return tr(const_cast<char *>("unknown program type"));
 		case  1: return tr(const_cast<char *>("News")); 
 		case  2: return tr(const_cast<char *>("Current affairs")); 
@@ -183,40 +195,34 @@ char* CRadioText::ptynr2string(int nr)
 	}
 }
 
-bool CRadioText::DividePes(char *data, int length, int *substart, int *subend)
+bool CRadioText::DividePes(unsigned char *data, int length, int *substart, int *subend)
 {
 	int i = *substart;
 	int found = 0;
 	while ((i<length-2) && (found < 2))
 	{
-		if ((found == 0) && (data[i] == 0xFF) && (data[i+1] == 0xFD)) 
-		{
+		if ((found == 0) && (data[i] == 0xFF) && (data[i+1] == 0xFD)) {
 			*substart = i;
 			found++;
 		}
-		else if ((found == 1) && (data[i] == 0xFD) && (data[i+1] == 0xFF)) 
-		{
+		else if ((found == 1) && (data[i] == 0xFD) && (data[i+1] == 0xFF)) {
 			*subend = i;
 			found++;
 		}
 		i++;
 	}
-	if ((found == 1) && (data[length-1] == 0xFD)) 
-	{
+	if ((found == 1) && (data[length-1] == 0xFD)) {
 		*subend = length-1;
 		found++;
 	}
-	if (found == 2) 
-	{
+	if (found == 2) {
 		return(true);
-	} 
-	else 
-	{
+	} else {
 		return(false);
 	}
 }
 
-int CRadioText::PES_Receive(char *data, int len)
+int CRadioText::PES_Receive(unsigned char *data, int len)
 {
 	const int mframel = 263;  // max. 255(MSG)+4(ADD/SQC/MFL)+2(CRC)+2(Start/Stop) of RDS-data
 	static unsigned char mtext[mframel+1];
@@ -241,35 +247,24 @@ int CRadioText::PES_Receive(char *data, int len)
 		while (DividePes(&data[0], pesl, &substart, &subend))
 		{
 			int inner_offset = subend + 1;
-			if (inner_offset < 3) 
-				fprintf(stderr, "RT %s: inner_offset < 3 (%d)\n", __FUNCTION__, inner_offset);
+if (inner_offset < 3) fprintf(stderr, "RT %s: inner_offset < 3 (%d)\n", __FUNCTION__, inner_offset);
 			int rdsl = data[subend - 1];	// RDS DataFieldLength
 			// RDS DataSync = 0xfd @ end
-			if ( (data[subend] == 0xfd) && (rdsl > 0) ) 
-			{
+			if (data[subend] == 0xfd && rdsl > 0) {
 				// print RawData with RDS-Info
-				if (S_Verbose >= 3) 
-				{
+				if (S_Verbose >= 3) {
 					printf("\n\nPES-Data(%d/%d): ", pesl, len);
 					for (int a=inner_offset -rdsl; a<offset; a++)
 						printf("%02x ", data[a]);
 					printf("(End)\n\n");
 				}
 
-				if (subend-2-rdsl < 0) 
-					fprintf(stderr, "RT %s: start: %d subend-2-rdsl < 0 (%d-2-%d)\n", __FUNCTION__, substart,subend,rdsl);
-				for (int i = subend - 2, val; i > subend - 2 - rdsl; i--) 
-				{ 
-					// <-- data reverse, from end to start
-					if (i < 0) 
-					{ 
-						fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); 
-						break; 
-					}
+if (subend-2-rdsl < 0) fprintf(stderr, "RT %s: start: %d subend-2-rdsl < 0 (%d-2-%d)\n", __FUNCTION__, substart,subend,rdsl);
+				for (int i = subend - 2, val; i > subend - 2 - rdsl; i--) { // <-- data reverse, from end to start
+if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 					val = data[i];
 
-					if (val == 0xfe) 
-					{	// Start
+					if (val == 0xfe) {	// Start
 						index = -1;
 						rt_start = true;
 						rt_bstuff = false;
@@ -277,15 +272,12 @@ int CRadioText::PES_Receive(char *data, int len)
 							printf("RDS-Start: ");
 					}
 
-					if (rt_start) 
-					{
+					if (rt_start) {
 						if (S_Verbose >= 3)
 							printf("%02x ", val);
 						// byte-stuffing reverse: 0xfd00->0xfd, 0xfd01->0xfe, 0xfd02->0xff
-						if (rt_bstuff) 
-						{
-							switch (val) 
-							{
+						if (rt_bstuff) {
+							switch (val) {
 								case 0x00: mtext[index] = 0xfd; break;
 								case 0x01: mtext[index] = 0xfe; break;
 								case 0x02: mtext[index] = 0xff; break;
@@ -300,11 +292,9 @@ int CRadioText::PES_Receive(char *data, int len)
 						if (val == 0xfd && index > 0)	// stuffing found
 							rt_bstuff = true;
 						// early check for used MEC
-						if (index == 5) 
-						{
+						if (index == 5) {
 							//mec = val;
-							switch (val) 
-							{
+							switch (val) {
 								case 0x0a:			// RT
 									have_radiotext = true;
 								case 0x46:			// RTplus-Tags
@@ -320,63 +310,56 @@ int CRadioText::PES_Receive(char *data, int len)
 										printf("(RDS-MEC '%02x' not used -> End)\n", val);
 							}
 						}
-						if (index >= mframel) 
-						{		// max. rdslength, garbage ?
+						if (index >= mframel) {		// max. rdslength, garbage ?
 							if (S_Verbose >= 1)
 								printf("RDS-Error: too long, garbage ?\n");
 							rt_start = false;
 						}
 					}
 
-					if (rt_start && val == 0xff) 
-					{	// End
+					if (rt_start && val == 0xff) {	// End
 						if (S_Verbose >= 2)
 							printf("(RDS-End)\n");
 						rt_start = false;
-						if (index < 9) 
-						{		//  min. rdslength, garbage ?
+						if (index < 9) {		//  min. rdslength, garbage ?
 							if (S_Verbose >= 1)
 								printf("RDS-Error: too short -> garbage ?\n");
 						}
-						else 
-						{
+						else {
 							// crc16-check
 							unsigned short crc16 = crc16_ccitt(mtext, index-3, true);
-							if (crc16 != (mtext[index-2]<<8)+mtext[index-1]) 
-							{
-								if (S_Verbose >= 1)
-									printf("RDS-Error: wrong CRC # calc = %04x <> transmit = %02x%02x\n", crc16, mtext[index-2], mtext[index-1]);
-							} 
-							else 
-							{
-								switch (mec) 
-								{
-									case 0x0a:
-									case 0x46:
-										if (S_Verbose >= 2)
-											printf("(RDS-MEC '%02x') -> RadiotextDecode - %d\n", mec, index);
-										RadiotextDecode(mtext, index);		// Radiotext, RT+
-										break;
-									case 0x07:  RT_PTY = mtext[8];			// PTY
-										RT_MsgShow = true;
-										if (S_Verbose >= 1)
-											printf("RDS-PTY set to '%s'\n", ptynr2string(RT_PTY));
-										break;
-									case 0x3e:
-										if (S_Verbose >= 2)
-											printf("(RDS-MEC '%02x') -> RDS_PsPtynDecode - %d\n", mec, index);
-										RDS_PsPtynDecode(true, mtext, index);	// PTYN
-										break;
-									case 0x02:
-										if (S_Verbose >= 2)
-											printf("(RDS-MEC '%02x') -> RDS_PsPtynDecode - %d\n", mec, index);
-										RDS_PsPtynDecode(false, mtext, index);	// PS
-										break;
-									case 0xda:
+							if (crc16 != (mtext[index-2]<<8)+mtext[index-1]) {
+							    if (S_Verbose >= 1)
+								printf("RDS-Error: wrong CRC # calc = %04x <> transmit = %02x%02x\n", crc16, mtext[index-2], mtext[index-1]);
+							} else {
+
+							switch (mec) {
+								case 0x0a:
+								case 0x46:
+									if (S_Verbose >= 2)
+										printf("(RDS-MEC '%02x') -> RadiotextDecode - %d\n", mec, index);
+									RadiotextDecode(mtext, index);		// Radiotext, RT+
+									break;
+								case 0x07:  RT_PTY = mtext[8];			// PTY
+									RT_MsgShow = true;
+									if (S_Verbose >= 1)
+										printf("RDS-PTY set to '%s'\n", ptynr2string(RT_PTY));
+									break;
+								case 0x3e:
+									if (S_Verbose >= 2)
+										printf("(RDS-MEC '%02x') -> RDS_PsPtynDecode - %d\n", mec, index);
+									RDS_PsPtynDecode(true, mtext, index);	// PTYN
+									break;
+								case 0x02:
+									if (S_Verbose >= 2)
+										printf("(RDS-MEC '%02x') -> RDS_PsPtynDecode - %d\n", mec, index);
+									RDS_PsPtynDecode(false, mtext, index);	// PS
+									break;
+								case 0xda:
 #if ENABLE_RASS
-										RassDecode(mtext, index);		// Rass
+									RassDecode(mtext, index);		// Rass
 #endif
-										break;
+									break;
 								}
 							}
 						}
@@ -388,6 +371,7 @@ int CRadioText::PES_Receive(char *data, int len)
 	}
 }
 
+
 void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 {
 	static bool rtp_itoggle = false;
@@ -398,135 +382,121 @@ void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 	// byte 1+2 = ADD (10bit SiteAdress + 6bit EncoderAdress)
 	// byte 3   = SQC (Sequence Counter 0x00 = not used)
 	int leninfo = mtext[4];	// byte 4 = MFL (Message Field Length)
-	if (len >= leninfo+7) 
-	{	// check complete length
+	if (len >= leninfo+7) {	// check complete length
 
 		// byte 5 = MEC (Message Element Code, 0x0a for RT, 0x46 for RTplus)
-		if (mtext[5] == 0x0a) 
-		{
-			// byte 6+7 = DSN+PSN (DataSetNumber+ProgramServiceNumber, 
-			//		       	   ignore here, always 0x00 ?)
-			// byte 8   = MEL (MessageElementLength, max. 64+1 byte @ RT)
-			if (mtext[8] == 0 || mtext[8] > RT_MEL || mtext[8] > leninfo-4) 
-			{
-				if (S_Verbose >= 1)
-					printf("RT-Error: Length = 0 or not correct !");
-				return;
-			}
-			// byte 9 = RT-Status bitcodet (0=AB-flagcontrol, 1-4=Transmission-Number, 5+6=Buffer-Config,
-			//				    ingnored, always 0x01 ?)
-			fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02d\n", mtext[5], mtext[6], mtext[7], mtext[8], mtext[9], mtext[4]);
-			char temptext[RT_MEL];
-			memset(temptext, 0x20, RT_MEL-1);
-			temptext[RT_MEL - 1] = '\0';
-			for (int i = 1, ii = 0; i < mtext[8]; i++) 
-			{
-				if (mtext[9+i] <= 0xfe)
-					// additional rds-character, see RBDS-Standard, Annex E
-					temptext[ii++] = (mtext[9+i] >= 0x80) ? rds_addchar[mtext[9+i]-0x80] : mtext[9+i];
-			}
-			memcpy(plustext, temptext, RT_MEL);
-			rds_entitychar(temptext);
-			// check repeats
-			bool repeat = false;
-			for (int ind = 0; ind < S_RtOsdRows; ind++) 
-			{
-				if (memcmp(RT_Text[ind], temptext, RT_MEL-1) == 0) 
-				{
-					repeat = true;
-					if (S_Verbose >= 1)
-						printf("RText-Rep[%d]: %s\n", ind, RT_Text[ind]);
-				}
-			}
-			if (!repeat) 
-			{
-				memcpy(RT_Text[RT_Index], temptext, RT_MEL);
-				// +Memory
-				char *temp;
-				asprintf(&temp, "%s", RT_Text[RT_Index]);
-				if (++rtp_content.rt_Index >= 2*MAX_RTPC)
-					rtp_content.rt_Index = 0;
-				asprintf(&rtp_content.radiotext[rtp_content.rt_Index], "%s", rtrim(temp));
-				free(temp);
-				if (S_Verbose >= 1)
-					printf("Radiotext[%d]: %s\n", RT_Index, RT_Text[RT_Index]);
-				RT_Index +=1; if (RT_Index >= S_RtOsdRows) RT_Index = 0;
-			}
-			RTP_TToggle = 0x03;		// Bit 0/1 = Title/Artist
-			RT_MsgShow = true;
-			S_RtOsd = 1;
-			RT_Info = (RT_Info > 0) ? : 1;
-			RadioStatusMsg();
+		if (mtext[5] == 0x0a) {
+		// byte 6+7 = DSN+PSN (DataSetNumber+ProgramServiceNumber, 
+		//		       	   ignore here, always 0x00 ?)
+		// byte 8   = MEL (MessageElementLength, max. 64+1 byte @ RT)
+		if (mtext[8] == 0 || mtext[8] > RT_MEL || mtext[8] > leninfo-4) {
+			if (S_Verbose >= 1)
+			printf("RT-Error: Length = 0 or not correct !");
+			return;
 		}
-		else if (RTP_TToggle > 0 && mtext[5] == 0x46 && S_RtFunc >= 2) 
-		{	// RTplus tags V2.0, only if RT
-			if (mtext[6] > leninfo-2 || mtext[6] != 8) 
-			{ // byte 6 = MEL, only 8 byte for 2 tags
+		// byte 9 = RT-Status bitcodet (0=AB-flagcontrol, 1-4=Transmission-Number, 5+6=Buffer-Config,
+		//				    ingnored, always 0x01 ?)
+fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02d\n", mtext[5], mtext[6], mtext[7], mtext[8], mtext[9], mtext[4]);
+		char temptext[RT_MEL];
+		memset(temptext, 0x20, RT_MEL-1);
+		temptext[RT_MEL - 1] = '\0';
+		for (int i = 1, ii = 0; i < mtext[8]; i++) {
+			if (mtext[9+i] <= 0xfe)
+			// additional rds-character, see RBDS-Standard, Annex E
+				temptext[ii++] = (mtext[9+i] >= 0x80) ? rds_addchar[mtext[9+i]-0x80] : mtext[9+i];
+		}
+		memcpy(plustext, temptext, RT_MEL);
+		rds_entitychar(temptext);
+		// check repeats
+		bool repeat = false;
+		for (int ind = 0; ind < S_RtOsdRows; ind++) {
+			if (memcmp(RT_Text[ind], temptext, RT_MEL-1) == 0) {
+				repeat = true;
 				if (S_Verbose >= 1)
-					printf("RTp-Error: Length not correct !");
-				return;
+					printf("RText-Rep[%d]: %s\n", ind, RT_Text[ind]);
 			}
+		}
+		if (!repeat) {
+			memcpy(RT_Text[RT_Index], temptext, RT_MEL);
+			// +Memory
+			char *temp;
+			asprintf(&temp, "%s", RT_Text[RT_Index]);
+		if (++rtp_content.rt_Index >= 2*MAX_RTPC)
+		    rtp_content.rt_Index = 0;
+		asprintf(&rtp_content.radiotext[rtp_content.rt_Index], "%s", rtrim(temp));
+		free(temp);
+		if (S_Verbose >= 1)
+		    printf("Radiotext[%d]: %s\n", RT_Index, RT_Text[RT_Index]);
+		RT_Index +=1; if (RT_Index >= S_RtOsdRows) RT_Index = 0;
+		}
+		RTP_TToggle = 0x03;		// Bit 0/1 = Title/Artist
+		RT_MsgShow = true;
+		S_RtOsd = 1;
+		RT_Info = (RT_Info > 0) ? RT_Info : 1;
+		RadioStatusMsg();
+	}
 
-			uint rtp_typ[2], rtp_start[2], rtp_len[2];
-			// byte 7+8 = ApplicationID, always 0x4bd7
-			// byte 9   = Applicationgroup Typecode / PTY ?
-			// bit 10#4 = Item Togglebit
-			// bit 10#3 = Item Runningbit
-			// Tag1: bit 10#2..11#5 = Contenttype, 11#4..12#7 = Startmarker, 12#6..12#1 = Length
-			rtp_typ[0]   = (0x38 & mtext[10]<<3) | mtext[11]>>5;
-			rtp_start[0] = (0x3e & mtext[11]<<1) | mtext[12]>>7;
-			rtp_len[0]   = 0x3f & mtext[12]>>1;
-			// Tag2: bit 12#0..13#3 = Contenttype, 13#2..14#5 = Startmarker, 14#4..14#0 = Length(5bit)
-			rtp_typ[1]   = (0x20 & mtext[12]<<5) | mtext[13]>>3;
-			rtp_start[1] = (0x38 & mtext[13]<<3) | mtext[14]>>5;
-			rtp_len[1]   = 0x1f & mtext[14];
-			if (S_Verbose >= 2)
-				printf("RTplus (tag=Typ/Start/Len):  Toggle/Run = %d/%d, tag#1 = %d/%d/%d, tag#2 = %d/%d/%d\n", (mtext[10]&0x10)>0, (mtext[10]&0x08)>0, rtp_typ[0], rtp_start[0], rtp_len[0], rtp_typ[1], rtp_start[1], rtp_len[1]);
-			// save info
-			for (int i = 0; i < 2; i++) 
-			{
-				if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) 
-				{	// length-error
-					if (S_Verbose >= 1)
-						printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n", i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
-				} 
-				else 
-				{
-					char temptext[RT_MEL];
-					memset(temptext, 0x20, RT_MEL-1);
-					memmove(temptext, plustext+rtp_start[i], rtp_len[i]+1);
-					rds_entitychar(temptext);
-					// +Memory
-					memset(rtp_content.temptext, 0x20, RT_MEL-1);
-					memcpy(rtp_content.temptext, temptext, RT_MEL-1);
-					switch (rtp_typ[i]) 
-					{
-						case 1:		// Item-Title	
-							if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) 
-							{
-								RTP_TToggle -= 0x01;
-								RT_Info = 2;
-								if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) 
-								{
-									memcpy(RTP_Title, temptext, RT_MEL-1);
-									if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
-										rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
-									if (!rtp_content.item_New) 
-									{
-										RTP_Starttime = time(NULL);
-										rtp_itime.Set(0);
-										sprintf(RTP_Artist, "---");
-										if (++rtp_content.item_Index >= MAX_RTPC)
-											rtp_content.item_Index = 0;
-										rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
-										rtp_content.item_Artist[rtp_content.item_Index] = NULL;
-									}
-									rtp_content.item_New = (!rtp_content.item_New) ? true : false;
-									if (rtp_content.item_Index >= 0)
-										asprintf(&rtp_content.item_Title[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
-									RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
-							}
+	else if (RTP_TToggle > 0 && mtext[5] == 0x46 && S_RtFunc >= 2) {	// RTplus tags V2.0, only if RT
+		if (mtext[6] > leninfo-2 || mtext[6] != 8) { // byte 6 = MEL, only 8 byte for 2 tags
+			if (S_Verbose >= 1)
+				printf("RTp-Error: Length not correct !");
+			return;
+		}
+
+		uint rtp_typ[2], rtp_start[2], rtp_len[2];
+		// byte 7+8 = ApplicationID, always 0x4bd7
+		// byte 9   = Applicationgroup Typecode / PTY ?
+		// bit 10#4 = Item Togglebit
+		// bit 10#3 = Item Runningbit
+		// Tag1: bit 10#2..11#5 = Contenttype, 11#4..12#7 = Startmarker, 12#6..12#1 = Length
+		rtp_typ[0]   = (0x38 & mtext[10]<<3) | mtext[11]>>5;
+		rtp_start[0] = (0x3e & mtext[11]<<1) | mtext[12]>>7;
+		rtp_len[0]   = 0x3f & mtext[12]>>1;
+		// Tag2: bit 12#0..13#3 = Contenttype, 13#2..14#5 = Startmarker, 14#4..14#0 = Length(5bit)
+		rtp_typ[1]   = (0x20 & mtext[12]<<5) | mtext[13]>>3;
+		rtp_start[1] = (0x38 & mtext[13]<<3) | mtext[14]>>5;
+		rtp_len[1]   = 0x1f & mtext[14];
+		if (S_Verbose >= 2)
+			printf("RTplus (tag=Typ/Start/Len):  Toggle/Run = %d/%d, tag#1 = %d/%d/%d, tag#2 = %d/%d/%d\n", 
+				(mtext[10]&0x10)>0, (mtext[10]&0x08)>0, rtp_typ[0], rtp_start[0], rtp_len[0], rtp_typ[1], rtp_start[1], rtp_len[1]);
+		// save info
+		for (int i = 0; i < 2; i++) {
+			if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) {	// length-error
+				if (S_Verbose >= 1)
+					printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n",
+						i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
+			} else {
+				char temptext[RT_MEL];
+				memset(temptext, 0x20, RT_MEL-1);
+				memmove(temptext, plustext+rtp_start[i], rtp_len[i]+1);
+				rds_entitychar(temptext);
+				// +Memory
+				memset(rtp_content.temptext, 0x20, RT_MEL-1);
+				memcpy(rtp_content.temptext, temptext, RT_MEL-1);
+				switch (rtp_typ[i]) {
+				case 1:		// Item-Title	
+					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) {
+					RTP_TToggle -= 0x01;
+					RT_Info = 2;
+					if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) {
+						memcpy(RTP_Title, temptext, RT_MEL-1);
+						if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
+							rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
+						if (!rtp_content.item_New) {
+							RTP_Starttime = time(NULL);
+							rtp_itime.Set(0);
+							sprintf(RTP_Artist, "---");
+							if (++rtp_content.item_Index >= MAX_RTPC)
+							rtp_content.item_Index = 0;
+							rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
+							rtp_content.item_Artist[rtp_content.item_Index] = NULL;
 						}
+						rtp_content.item_New = (!rtp_content.item_New) ? true : false;
+						if (rtp_content.item_Index >= 0)
+						    asprintf(&rtp_content.item_Title[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
+						RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
+						}
+					}
 					break;
 				case 4:		// Item-Artist	
 					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x02) == 0x02) {
@@ -2324,106 +2294,86 @@ eOSState cRTplusList::ProcessKey(eKeys Key)
 #endif
 
 
-static int pes_SyncBufferRead (cDemux * RaudioDemux, ringbuffer_t *buf, u_long *skipped_bytes);
+//static int pes_SyncBufferRead (cDemux *audioDemux, ringbuffer_t *buf, u_long *skipped_bytes);
 
 static bool rtThreadRunning;
 
 void *RadioTextThread(void *data)
 {
-	CRadioText * rt = ((CRadioText::s_rt_thread *)data)->rt_object;
-	//int fd = ((CRadioText::s_rt_thread *)data)->fd;
-	//struct dmx_pes_filter_params flt;
-	cDemux * RaudioDemux = rt->RaudioDemux;
-	//printf("in RadioTextThread fd = %d\n", fd);
+	CRadioText *rt = ((CRadioText::s_rt_thread*)data)->rt_object;
+	int fd = ((CRadioText::s_rt_thread*)data)->fd;
+	//	struct dmx_pes_filter_params flt;
+	cDemux *audioDemux = rt->audioDemux;
+	printf("in RadioTextThread fd = %d\n", fd);
 
-	//while (1) 
+	bool ret = false;
+
+	printf("\nRadioTextThread: ###################### Setting PID 0x%x ######################\n", rt->getPid());
+
+	audioDemux->Stop();
+	if (audioDemux->pesFilter(rt->getPid()))
 	{
-		bool ret = false;
-
-		printf("Thread Setting PID 0x%x\n", rt->getPid());
-
-		RaudioDemux->Stop();
-		if (RaudioDemux->pesFilter(rt->getPid()) >= 0)
-		{
-			/* start demux filter */
-			if (RaudioDemux->Start() >= 0)
-				ret = true;
-		}
-		
-		if (!ret) 
-		{
-			perror("RadiotextThread Audiodemuxer");
-			perror("DMX_SET_PES_FILTER");
-			pthread_exit(NULL);
-		}
-#if 0
-
-			ioctl(fd, DMX_SET_BUFFER_SIZE, 128*1024);
-	
-			flt.pid = rt->getPid();
-			flt.pes_type = DMX_PES_OTHER;
-			flt.flags = DMX_IMMEDIATE_START;
-#ifndef HAVE_TRIPLEDRAGON
-			flt.input = DMX_IN_FRONTEND;
-			flt.output = DMX_OUT_TAP;
-#else
-			flt.output = OUT_MEMORY;
-			flt.unloader.unloader_type = UNLOADER_TYPE_PAYLOAD;
-			flt.unloader.threshold     = 64;
-#endif
-			if (ioctl(fd, DMX_SET_PES_FILTER, &flt) < 0) {
-				perror("DMX_SET_PES_FILTER");
-				pthread_exit(NULL);
-			}
-#endif
-			/*
-			-- read PES packet for pid
-			*/
-			ringbuffer_t *buf_in = ringbuffer_create(0x1FFFF);
-			char  *b;				/* ptr to packet start */
-			long    count = 0;
-			rtThreadRunning = true;
-			while(rtThreadRunning)
-			{
-				int n;
-				int offset;
-				size_t rd;
-				u_long  skipped_bytes = 0;
-
-//printf("."); fflush(stdout);
-				//  -- Read PES packet  (sync Read)
-				n = pes_SyncBufferRead (RaudioDemux, buf_in, &skipped_bytes);
-
-				// -- error or eof?
-				if (n <= 0) 
-				{
-					usleep(10000); /* save CPU if nothing read */
-					continue;
-				}
-				rd = ringbuffer_get_readpointer(buf_in, &b, n);
-/* this can not happen, because pes_SyncBufferRead() returns -1 if ringbuffer is empty
-				if (rd <= 0) {
-					continue;
-				}
-*/
-				count ++;
-				// -- skipped Data to get sync byte?
-				offset = rt->PES_Receive(b, n);
-//				if (skipped_bytes) {
-//					printf("!!! %ld bytes skipped to get PS/PES sync!!! read: %d processed: %d\n",skipped_bytes, n, offset);
-//				}
-				ringbuffer_read_advance(buf_in, offset);
-			}
-
-			if (RaudioDemux->Stop() < 0) 
-			{
-//			if (ioctl(fd, DMX_STOP) < 0) {
-				perror("DMX_STOP");
-				pthread_exit(NULL);
-			}
-			ringbuffer_free(buf_in);
+		/* start demux filter */
+		if (audioDemux->Start())
+			ret = true;
 	}
+	if (!ret) {
+		perror("RadiotextThread Audiodemuxer");
+		perror("DMX_SET_PES_FILTER");
+		audioDemux->Stop();
+		pthread_exit(NULL);
+	}
+	/*
+	   -- read PES packet for pid
+	   */
+#if 0
+	ringbuffer_t *buf_in = ringbuffer_create(0x1FFFF);
+	char  *b;				/* ptr to packet start */
+	long    count = 0;
+#endif
+	rtThreadRunning = true;
+	while(rtThreadRunning)
+	{
+		int n;
+		unsigned char buf[0x1FFFF];
+#if 0
+		int offset;
+		size_t rd;
+		u_long  skipped_bytes = 0;
+#endif
+		//printf("."); fflush(stdout);
+		//  -- Read PES packet  (sync Read)
+		//n = pes_SyncBufferRead (audioDemux, buf_in, &skipped_bytes);
+		n = audioDemux->Read(buf, sizeof(buf), 500 /*5000*/);
+
+		// -- error or eof?
+		if (n <= 0) {
+			usleep(10000); /* save CPU if nothing read */
+			continue;
+		}
+		rt->PES_Receive(buf, n);
+#if 0
+		rd = ringbuffer_get_readpointer(buf_in, &b, n);
+		/* this can not happen, because pes_SyncBufferRead() returns -1 if ringbuffer is empty
+		   if (rd <= 0) {
+		   continue;
+		   }
+		   */
+		count ++;
+		// -- skipped Data to get sync byte?
+		offset = rt->PES_Receive(b, n);
+
+		ringbuffer_read_advance(buf_in, offset);
+#endif
+	}
+
+	audioDemux->Stop();
+
+#if 0
+	ringbuffer_free(buf_in);
 	fprintf(stderr, "RT %s: exit\n", __FUNCTION__);
+#endif
+	printf("\nRadioTextThread: ###################### exit ######################\n");
 	pthread_exit(NULL);
 }
 
@@ -2446,7 +2396,7 @@ CRadioText::CRadioText(void)
 	S_RtFgCol 	= 1;
 	S_RtDispl 	= 1;
 	S_RtMsgItems 	= 0;
-	//int S_RtpMemNo = 25;
+//int S_RtpMemNo = 25;
 	RT_Index 	= 0;
 	RT_PTY 		= 0;
 
@@ -2459,20 +2409,20 @@ CRadioText::CRadioText(void)
 	for (int i=0; i<5; i++) strcpy(RT_Text[i], "");
 	strcpy(RDS_PTYN, "");
 	have_radiotext	= false;
-	RaudioDemux = NULL;
+   audioDemux = NULL;
 }
 
 void CRadioText::radiotext_stop(void)
 {
-	if (getPid() != 0) 
-	{
+	printf("\nCRadioText::radiotext_stop: ###################### pid 0x%x ######################\n", getPid());
+	if (getPid() != 0) {
 		// this stuff takes a while sometimes - look for a better syncronisation
 		printf("Stopping RT Thread\n");
 		rtThreadRunning = false;
 		pthread_join(getThread(), NULL);
 		pid = 0;
 		have_radiotext = false;
-		RaudioDemux->Stop();
+		audioDemux->Stop();
 		S_RtOsd = 0;
 	}
 
@@ -2482,12 +2432,11 @@ CRadioText::~CRadioText(void)
 {
 	radiotext_stop();
 	pid = 0;
-	
-	printf("Deleting RT object\n");
+//	printf("Deleting RT object\n");
 
-	//close(dmxfd);
-	delete RaudioDemux;
-	RaudioDemux = NULL;
+//	close(dmxfd);
+	delete audioDemux;
+	audioDemux = NULL;
 	dmxfd = -1;
 }
 
@@ -2496,36 +2445,36 @@ void CRadioText::setPid(uint inPid)
 {
 	uint oldPid = pid;
 
+	printf("\nCRadioText::setPid: ###################### old pid 0x%x new pid 0x%x ######################\n", oldPid, inPid);
 	if (pid != inPid)
 	{
 		int rc;
 
-		printf("setting pid 0x%x\n", inPid);
-		
+		printf("CRadioText::setPid: setting pid 0x%x\n", inPid);
 		pid = inPid;
 
 		// open the device if first pid
 		if (0 == oldPid)
 		{
-			if (RaudioDemux == NULL) 
-			{
+			if (audioDemux == NULL) {
+				audioDemux = new cDemux();
+				//audioDemux->Open(DMX_TP_CHANNEL /*DMX_AUDIO_CHANNEL*/,0,128*1024);
+				//audioDemux->Open(DMX_PES_CHANNEL,0,128*1024);
+				audioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_fe?live_fe->fenumber:0);
+#if 0
 				bool ret = false;
-				RaudioDemux = new cDemux();
-				RaudioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_fe?live_fe->fenumber:0);
-				if (RaudioDemux->pesFilter(pid) >= 0)
+				if (audioDemux->pesFilter(pid))
 				{
 					/* start demux filter */
-					if (RaudioDemux->Start() >= 0)
+					if (audioDemux->Start())
 						ret = true;
 				}
-				
-				if (!ret) 
-				{
+				if (!ret) {
 					perror("Radiotext Audiodemuxer");
-					pthread_exit(NULL);
+					return;
 				}
-				
-				//audioDemux->Stop()
+#endif
+				//            audioDemux->Stop()
 #if 0
 				dmxfd = open(DMXDEV, O_RDWR|O_NONBLOCK);
 				if (dmxfd < 0) {
@@ -2539,8 +2488,8 @@ void CRadioText::setPid(uint inPid)
 		}
 
 		// Setup-Params
-		//S_Activate = false;
-		//S_HMEntry = false;
+		//		S_Activate = false;
+		//		S_HMEntry = false;
 		S_RtFunc = 1;
 		S_RtOsd = 0;
 		S_RtOsdTitle = 1;
@@ -2593,7 +2542,8 @@ void CRadioText::setPid(uint inPid)
   -- return: len // read()-return code
 */
 
-static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long max_len,*/ u_long *skipped_bytes)
+#if 0
+static int pes_SyncBufferRead(cDemux *audioDemux, ringbuffer_t *buf, /*u_long max_len,*/ u_long *skipped_bytes)
 {
 	ringbuffer_data_t vec;
 	int rd;
@@ -2616,7 +2566,7 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 	}
 	else
 	{
-		rd = RaudioDemux->Read((unsigned char*)vec.buf, vec.len, 5000);
+		rd = audioDemux->Read((unsigned char*)vec.buf, vec.len, 5000);
 		if (rd < 0)
 		{
 			if (errno != EAGAIN)
@@ -2634,7 +2584,7 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 	rd = ringbuffer_get_readpointer(buf, &ppes, 6);
 	if (rd < 6)
 	{
-		fprintf(stderr, "RT %s: ringbuffer empty (%d < 6)\n", __FUNCTION__, rd);
+//		fprintf(stderr, "RT %s: ringbuffer empty (%d < 6)\n", __FUNCTION__, rd);
 		return -1;
 	}
 
@@ -2655,34 +2605,28 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 			}
 		}
 		while (rd == 6);
-		
 		//fprintf(stderr, "\n");
 		if (deleted > 0)
 		{
-			fprintf(stderr, "RT %s: No valid PES signature found. %d Bytes deleted.\n", __FUNCTION__, deleted);
+//			fprintf(stderr, "RT %s: No valid PES signature found. %d Bytes deleted.\n", __FUNCTION__, deleted);
 			return -1;
 		}
 	}
 
 	// -- Sync found!
 	// -- evaluate packet_id and seek packet end (next sync)
-	if (ppes[3] >= 0xBC) 
-	{			// PES system packet with length
+	if (ppes[3] >= 0xBC) {			// PES system packet with length
 		unsigned int l;
 		l = (ppes[4] << 8) + ppes[5];		// PES packet size...
 
-		if (l > 0) 
-		{
+		if (l > 0) {
 			if (ringbuffer_read_space(buf) >= l + 6)
 				return (l + 6);
 			else
 				return 0;
-		} 
-		else
+		} else
 			ringbuffer_read_advance(buf, 6);
-	} 
-	else 
-	{
+	} else {
 		// will resync automatically on next invocation. Enough?
 		ringbuffer_read_advance(buf, 4);
 	}
@@ -2693,8 +2637,7 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 	// -- ISO 13818-2 packets
 
 	sync = 0xFFFFFFFF;
-	while (max_len > 0) 
-	{
+	while (max_len > 0) {
 		u_char c;
 		int    n;
 
@@ -2722,7 +2665,7 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 	}
 #endif
 
-	fprintf(stderr, "RT %s: unsynced, ret = -1! (this never happens) ppes[3] = 0x%02x\n", __FUNCTION__, ppes[3]);
-	
-	return -1;	// buffer overflow
+//	fprintf(stderr, "RT %s: unsynced, ret = -1! (this never happens) ppes[3] = 0x%02x\n", __FUNCTION__, ppes[3]);
+	return -1;					// buffer overflow
 }
+#endif
