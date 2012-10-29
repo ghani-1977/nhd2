@@ -849,21 +849,21 @@ void CInfoViewer::showSubchan()
 
 // radiotext
 #if ENABLE_RADIOTEXT
-void CInfoViewer::showIcon_RadioText(bool /*rt_available*/) const
+void CInfoViewer::showIcon_RadioText(bool rt_available) const
 // painting the icon for radiotext mode
 {
-#if 0
+#if 1
 	if (showButtonBar)
 	{
 		int mode = CNeutrinoApp::getInstance()->getMode();
-		std::string rt_icon = "radiotextoff.raw";
+		std::string rt_icon = "radiotextoff";
 		if ((!virtual_zap_mode) && (!recordModeActive) && (mode == NeutrinoMessages::mode_radio))
 		{
 			if (g_settings.radiotext_enable){
-					rt_icon = rt_available ? "radiotextget.raw" : "radiotextwait.raw";
+					rt_icon = rt_available ? "radiotextget" : "radiotextwait";
 				}
 		}
-		frameBuffer->paintIcon(rt_icon, BoxEndX - (ICON_LARGE_WIDTH + 2 + ICON_LARGE_WIDTH + 2 + ICON_SMALL_WIDTH + 2 + ICON_SMALL_WIDTH + 6),BoxEndY + (InfoHeightY_Info - ICON_HEIGHT) / 2);
+		frameBuffer->paintIcon(rt_icon, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 112, BoxEndY - ICON_Y_1);
 	}
 #endif
 }
@@ -875,8 +875,9 @@ void CInfoViewer::showIcon_16_9()
 			
 	if(videoDecoder->getAspectRatio() == 1)
 		aspect_icon = NEUTRINO_ICON_16_9;
-			
-	frameBuffer->paintIcon(aspect_icon, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2), BoxEndY - ICON_Y_1 );
+	
+	if (is_visible)
+		frameBuffer->paintIcon(aspect_icon, BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2), BoxEndY - ICON_Y_1 );
 }
 
 void CInfoViewer::showIcon_VTXT () const
