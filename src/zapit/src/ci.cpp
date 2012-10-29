@@ -198,31 +198,33 @@ unsigned int CCaPmt::CamwriteToBuffer(CZapitChannel * thischannel, unsigned char
 
 	memcpy(buffer, "\x9f\x80\x32\x82\x00\x00", 6);
 
-	buffer[6] = ca_pmt_list_management; 	//6
-	buffer[7] = program_number >> 8; 	//7 
-	buffer[8] = program_number; 		// 8
+	buffer[6] = ca_pmt_list_management; 						//6
+	buffer[7] = program_number >> 8; 						//7 
+	buffer[8] = program_number; 							// 8
 	buffer[9] = (reserved1 << 6) | (version_number << 1) | current_next_indicator;
-	buffer[10] = 0x00; 			// //reserved - prg-info len
-	buffer[11] = 0x00; 			// prg-info len
-	buffer[12] = 0x01;  			// ca pmt command id
-	buffer[13] = 0x81;  			// private descr.. dvbnamespace
-	buffer[14] = 0x08; 			//14
-	buffer[15] = 0x00;
-	buffer[16] = 0x00;
-	buffer[17] = 0x00;
-	buffer[18] = 0x00;
-	buffer[19] = 0x00;
-	buffer[20] = 0x00;
-	buffer[21] = 0x00;
-	buffer[22] = 0x00; 			//22
-	buffer[23] = 0x82;  			// demuxer kram..
+	buffer[10] = 0x00; 								// //reserved - prg-info len
+	buffer[11] = 0x00; 								// prg-info len
+	buffer[12] = 0x01;  								// ca pmt command id
+	buffer[13] = 0x81;  								// private descr.. dvbnamespace
+	buffer[14] = 0x08; 								//14
+	
+	buffer[15] = thischannel->getSatellitePosition() >> 8;				// getSatellitePosition() >> 8;	
+	buffer[16] = thischannel->getSatellitePosition() & 0xFF;			// getSatellitePosition() & 0xFF;
+	buffer[17] = thischannel->getFreqId() >> 8;					// getFreqId() >> 8;
+	buffer[18] = thischannel->getFreqId() & 0xFF;					// getFreqId() & 0xFF;
+	buffer[19] = thischannel->getTransportStreamId() >> 8;				// getTransportStreamId() >> 8;
+	buffer[20] = thischannel->getTransportStreamId() & 0xFF;			// getTransportStreamId() & 0xFF;
+	buffer[21] = thischannel->getOriginalNetworkId() >> 8;				// getOriginalNetworkId() >> 8;
+	buffer[22] = thischannel->getOriginalNetworkId() & 0xFF; 			// getOriginalNetworkId() & 0xFF;
+	
+	buffer[23] = 0x82;  								// demuxer kram..
 	buffer[24] = 0x02;
-	buffer[25] = camask; 			// descramble on demux0 and demux1
-	buffer[26] = demux; 			// get section data from demux index
-	buffer[27] = 0x84;  			// pmt pid
+	buffer[25] = camask; 								// descramble on caNum
+	buffer[26] = demux; 								// get section data from demuxNum
+	buffer[27] = 0x84;  								// pmt pid
 	buffer[28] = 0x02;
 	buffer[29] = (curpmtpid >> 8) & 0xFF;
-	buffer[30] = curpmtpid & 0xFF; 		// 30
+	buffer[30] = curpmtpid & 0xFF; 							// 30
 
         int lenpos = 10;
         int len = 19;

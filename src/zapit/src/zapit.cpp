@@ -2076,7 +2076,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
-			stopPlayBack(false);
+			stopPlayBack();
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
@@ -2085,7 +2085,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
 			/* hack. if standby true, dont blank video */
 			standby = true;
-			stopPlayBack(false);
+			stopPlayBack();
 			standby = false;
 					
 			if(audioDecoder)
@@ -2950,7 +2950,7 @@ void enterStandby(void)
 	saveZapitSettings(true, true);
 	
 	/* stop playback */
-	stopPlayBack(true);
+	stopPlayBack();	//dont stop cam
 }
 
 void leaveStandby(void)
