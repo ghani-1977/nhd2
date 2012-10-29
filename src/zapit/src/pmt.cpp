@@ -482,13 +482,6 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 	int pmtlen;
 	
 	pmtlen= ((buffer[1]&0xf)<<8) + buffer[2] + 3;
-	
-	#if 1
-	printf("%s:(%d)\n", __FUNCTION__, pmtlen);
-	for(i=0; i < pmtlen; i++)
-	   printf("0x%02x ",buffer[i]);
-	printf("\n");
-	#endif
 
 	if( !(currentMode & RECORD_MODE) && !scan_runs) 
 	{
