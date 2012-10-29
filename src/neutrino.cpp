@@ -3146,7 +3146,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}			
-			else if( (msg == CRCInput::RC_video) || (msg == (neutrino_msg_t)g_settings.key_video) )	// movie browser (recorded files)
+			else if( msg == (neutrino_msg_t)g_settings.key_video )	// movie browser (recorded files)
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "MoviePlayer";
