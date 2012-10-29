@@ -72,9 +72,10 @@ extern "C" {
 #include "radiotext.h"
 #include "radiotools.h"
 
+#include <zapit/frontend_c.h>
 
-#include <zapit/channel.h>
-extern CZapitChannel * live_channel;			/* zapit.cpp */
+
+extern CFrontend * live_fe;			/* zapit.cpp */
 
 rtp_classes rtp_content;
 
@@ -2510,7 +2511,7 @@ void CRadioText::setPid(uint inPid)
 			{
 				bool ret = false;
 				RaudioDemux = new cDemux();
-				RaudioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_channel?live_channel->getFeIndex():0);
+				RaudioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_fe?live_fe->fenumber:0);
 				if (RaudioDemux->pesFilter(pid) >= 0)
 				{
 					/* start demux filter */
@@ -2654,6 +2655,7 @@ static int pes_SyncBufferRead(cDemux *RaudioDemux, ringbuffer_t *buf, /*u_long m
 			}
 		}
 		while (rd == 6);
+		
 		//fprintf(stderr, "\n");
 		if (deleted > 0)
 		{
