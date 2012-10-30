@@ -615,7 +615,36 @@ void cVideo::SetInput(int val)
 	if(fd_sb > 0)
 	{
 		write(fd_sb, sb[val], strlen(sb[val]));
-	}	
+	}
+	
+	// set hdmi out on/off
+	int fd_hdmi  = open("/dev/fb0",   O_RDWR);
+
+	struct stmfbio_output_configuration outputConfig = {0};
+	outputConfig.outputid = 1;
+	if(ioctl(fd_hdmi, STMFBIO_GET_OUTPUT_CONFIG, &outputConfig)<0)
+		printf("Getting current output configuration failed\n");
+  
+	outputConfig.caps = 0;
+	outputConfig.activate = STMFBIO_ACTIVATE_IMMEDIATE;
+	outputConfig.analogue_config = 0;
+
+	outputConfig.caps |= STMFBIO_OUTPUT_CAPS_HDMI_CONFIG;
+
+	if (val == INPUT_SCART || val == INPUT_AUX) 
+	{
+		outputConfig.hdmi_config |= STMFBIO_OUTPUT_HDMI_DISABLED;
+	} 
+	else 
+	{
+		outputConfig.hdmi_config &= ~STMFBIO_OUTPUT_HDMI_DISABLED;
+	}
+
+	if(outputConfig.caps != STMFBIO_OUTPUT_CAPS_NONE)
+	{
+		if(ioctl(fd_hdmi, STMFBIO_SET_OUTPUT_CONFIG, &outputConfig)<0)
+			printf("setting output configuration failed\n");
+	}
 }
 
 /* Pig */
