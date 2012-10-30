@@ -91,15 +91,6 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	
 	dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __FUNCTION__, last_source, feindex, last_index, demux_num);
 	
-	//demux_num = feindex;
-	// dont open twice when index source dont change
-	//if (last_source == feindex && last_index == demux_num) 
-	//{
-		//dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __func__, last_source, feindex, last_index, demux_num);
-		//if (demux_fd > -1)
-		//	return true;
-	//}
-	
 	// close device
 	if (demux_fd > -1) 
 	{
@@ -119,24 +110,15 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
-	// Set Demux Source (default FRONT0)
-	//if (!init[demux_num])
+	// set demux source	
+	int n = DMX_SOURCE_FRONT0 + feindex;
+		
+	if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
 	{
-		//dprintf(DEBUG_INFO, "dmx(%d) source(%d) not set yet\n", demux_num, feindex);
-		
-		int n = DMX_SOURCE_FRONT0 + feindex;
-		
-		if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
-		{
-			perror("DMX_SET_SOURCE");
-		}
-		//else
-		//	init[demux_num] = true;
+		perror("DMX_SET_SOURCE");
 	}
-	
-	//dprintf(DEBUG_INFO, "cDemux::Open: DMX_SET_SOURCE fe(%d)\n", feindex);
 
-	// Set Buffer Size
+	// set demux buffer size
 	if (uBufferSize > 0)
 	{
 		if (ioctl(demux_fd, DMX_SET_BUFFER_SIZE, uBufferSize) < 0)
