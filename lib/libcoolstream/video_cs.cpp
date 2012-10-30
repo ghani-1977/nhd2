@@ -618,6 +618,7 @@ void cVideo::SetInput(int val)
 	}
 	
 	// set hdmi out on/off
+#ifdef __sh__	
 	int fd_hdmi  = open("/dev/fb0",   O_RDWR);
 
 	struct stmfbio_output_configuration outputConfig = {0};
@@ -645,6 +646,7 @@ void cVideo::SetInput(int val)
 		if(ioctl(fd_hdmi, STMFBIO_SET_OUTPUT_CONFIG, &outputConfig)<0)
 			printf("setting output configuration failed\n");
 	}
+#endif	
 }
 
 /* Pig */
