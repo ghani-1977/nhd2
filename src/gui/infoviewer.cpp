@@ -1051,7 +1051,9 @@ void CInfoViewer::showRadiotext()
 	int yoff = 8, ii = 0;
 	bool RTisIsUTF = false;
 
-	if (g_Radiotext == NULL) return;
+	if (g_Radiotext == NULL) 
+		return;
+	
 	showIcon_RadioText(g_Radiotext->haveRadiotext());
 
 	if (g_Radiotext->S_RtOsd) 
@@ -1065,7 +1067,8 @@ void CInfoViewer::showRadiotext()
 		rt_w = rt_x+rt_dx+SHADOW_OFFSET;
 		
 		int lines = 0;
-		for (int i = 0; i < g_Radiotext->S_RtOsdRows; i++) {
+		for (int i = 0; i < g_Radiotext->S_RtOsdRows; i++) 
+		{
 			if (g_Radiotext->RT_Text[i][0] != '\0') lines++;
 		}
 		
