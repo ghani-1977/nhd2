@@ -4531,7 +4531,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 	{
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 		
-		if(audioDecoder)
+		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
 	}
 
