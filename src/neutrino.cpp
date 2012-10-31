@@ -56,8 +56,6 @@
 
 #include <linux/fs.h>
 
-#include <mcheck.h>
-
 #include "global.h"
 #include "neutrino.h"
 
@@ -5786,9 +5784,6 @@ int main(int argc, char *argv[])
 	
 	for(int i = 3; i < 256; i++)
 		close(i);
-	
-	/* don't work, i don't know why??? */
-	mtrace();
 
 	return CNeutrinoApp::getInstance()->run(argc, argv);
 }
