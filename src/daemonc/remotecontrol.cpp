@@ -117,8 +117,6 @@ CRemoteControl::CRemoteControl()
 
 int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 {
-	//printf("CRemoteControl::handleMsg %x\n", msg);
-	
 	if ( zap_completion_timeout != 0 ) 
 	{
     		if ( (msg == NeutrinoMessages::EVT_ZAP_COMPLETE) || 
@@ -415,8 +413,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 
 void CRemoteControl::getSubChannels()
 {
-	//printf("[neutrino] getSubChannels, current_EPGid %llx\n", current_EPGid);
-	
 	if ( subChannels.size() == 0 )
 	{
 		CSectionsdClient::LinkageDescriptorList	linkedServices;
@@ -571,7 +567,8 @@ void CRemoteControl::processAPIDnames()
 
 	for(unsigned int count=0; count< current_PIDs.APIDs.size(); count++)
 	{
-		printf("CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
+		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
+		
 		if ( current_PIDs.APIDs[count].component_tag != 0xFF )
 		{
 			has_unresolved_ctags= true;
@@ -627,21 +624,21 @@ void CRemoteControl::processAPIDnames()
 		}
 	}
 	
-	printf("CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
+	dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
 	
 	if(pref_ac3_found >= 0) 
 	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
+		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
 		setAPID(pref_ac3_found);
 	} 
 	else if(pref_found >= 0) 
 	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_found].desc, current_PIDs.APIDs[pref_found].pid);
+		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_found].desc, current_PIDs.APIDs[pref_found].pid);
 		setAPID(pref_found);
 	}
 	else if(ac3_found >= 0) 
 	{
-		printf("CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
+		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
 		setAPID(ac3_found);
 	}
 	else if ( current_PIDs.PIDs.selected_apid >= current_PIDs.APIDs.size() )
@@ -752,7 +749,7 @@ void CRemoteControl::zapTo_ChannelID(const t_channel_id channel_id, const std::s
 	current_channel_id = channel_id;
 	current_channel_name = channame;
 	
-	printf("CRemoteControl::zapTo_ChannelID: start_video: %d\n", start_video);
+	dprintf(DEBUG_INFO, "CRemoteControl::zapTo_ChannelID: start_video: %d\n", start_video);
 	
 	if (start_video)
 		startvideo();
