@@ -79,10 +79,7 @@ CFrameBuffer::CFrameBuffer()
 	backupBackground = NULL;
 	backgroundFilename = "";
 	fd  = 0;
-	//m_transparent_default = /*CFrameBuffer::TM_BLACK*/CFrameBuffer::TM_INI; // TM_BLACK: Transparency when black content ('pseudo' transparency)
-							// TM_NONE:  No 'pseudo' transparency
-							// TM_INI:   Transparency depends on g_settings.infobar_alpha ???
-	//m_transparent         = m_transparent_default;
+	
 //FIXME: test
 	memset(red, 0, 256*sizeof(__u16));
 	memset(green, 0, 256*sizeof(__u16));
@@ -91,7 +88,7 @@ CFrameBuffer::CFrameBuffer()
 
 	// png/jpg/bmp/crw handlers
 	fh_root = NULL;
-	init_handlers ();
+	init_handlers();
 }
 
 CFrameBuffer* CFrameBuffer::getInstance()
@@ -190,8 +187,6 @@ void CFrameBuffer::init(const char * const fbDevice)
         paletteSet();
 
         useBackground(false);
-	
-	//m_transparent = m_transparent_default;
 
 	return;
 
@@ -207,8 +202,6 @@ CFrameBuffer::~CFrameBuffer()
 
 	for(it = icon_cache.begin(); it != icon_cache.end(); it++) 
 	{
-		// printf("FB: delete cached icon %s: %x\n", it->first.c_str(), (int) it->second.data);
-		
 		free(it->second.data);
 	}
 	icon_cache.clear();

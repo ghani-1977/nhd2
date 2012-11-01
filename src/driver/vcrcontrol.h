@@ -114,9 +114,6 @@ class CVCRControl
 				std::string getMovieInfoString(const CVCRCommand command, const t_channel_id channel_id,const event_id_t epgid, const std::string& epgTitle, APIDList apid_list, const time_t epg_time);
 
 			public:
-				bool	StopPlayBack;
-				bool	StopSectionsd;
-
 				virtual bool Pause()
 				{
 					return false;

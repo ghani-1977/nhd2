@@ -191,7 +191,7 @@ static int pmt_update_fd = -1;
 
 // dvbsub
 //extern int dvbsub_initialise();
-extern int dvbsub_init( /*int source*/);
+extern int dvbsub_init();
 extern int dvbsub_pause();
 extern int dvbsub_stop();
 extern int dvbsub_getpid();
@@ -233,9 +233,6 @@ bool initFrontend()
 	
 	CFrontend * fe;
 	unsigned short fekey;
-	
-	// clear map
-	femap.clear();
 	
 	// fill map
 	for(i = 0; i < DVBADAPTER_MAX; i++)
@@ -2871,17 +2868,7 @@ int stopPlayBack( bool sendPmt)
 {
 	if(sendPmt) 
 	{
-		if(currentMode & RECORD_MODE) 
-		{
-			//if(live_channel_id == rec_channel_id)
-			//	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), live_fe->fenumber); 
-			//else
-			//	cam1->sendMessage(0, 0);
-		} 
-		else 
-		{
-			cam0->sendMessage(0, 0);
-		}
+		//cam0->sendMessage(0, 0);
 	}
 
 	dprintf(DEBUG_NORMAL, "[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
@@ -3391,15 +3378,13 @@ int zapit_main_thread(void *data)
 	int video_mode = ZapStart_arg->video_mode;
 	
 	// video decoder
-	if(!videoDecoder)
-		videoDecoder = new cVideo();
+	videoDecoder = new cVideo();
 		
 	// set video system
 	videoDecoder->SetVideoSystem(video_mode);
 	
 	// audio decoder
-	if(!audioDecoder)
-		audioDecoder = new cAudio();
+	audioDecoder = new cAudio();
 	
 	// open video decoder
 	if( videoDecoder->Open() < 0)
@@ -3583,6 +3568,10 @@ int zapit_main_thread(void *data)
 	//close frontend	
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
 		delete it->second;
+	
+	// delete cams
+	delete cam0;
+	delete cam1;
 
 	dprintf(DEBUG_INFO, "frontend deleted\n");
 	dprintf(DEBUG_INFO, "zapit shutdown complete :-)\n");

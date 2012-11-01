@@ -293,10 +293,6 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	//pause epg scanning
 	g_Sectionsd->setPauseScanning(true);
 	
-	//
-	if(!audioDecoder)
-		audioDecoder = new cAudio();
-	
 	// open
 	audioDecoder->Open();
 
@@ -725,7 +721,8 @@ int CAudioPlayerGui::show()
 					CMenuWidget InputSelector(LOCALE_AUDIOPLAYER_LOAD_RADIO_STATIONS, NEUTRINO_ICON_AUDIO, 400);
 					int count = 0;
 					int select = -1;
-					CMenuSelectorTarget *InetRadioInputChanger = new CMenuSelectorTarget(&select);
+					
+					CMenuSelectorTarget * InetRadioInputChanger = new CMenuSelectorTarget(&select);
 					// -- setup menue for inetradio input
 					sprintf(cnt, "%d", count);
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_LOC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);

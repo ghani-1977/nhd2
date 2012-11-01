@@ -393,7 +393,7 @@ class CMenuWidget : public CMenuTarget
 		unsigned int         	total_pages;
 		bool		     	exit_pressed;
 		
-		fb_pixel_t		*background;
+		fb_pixel_t		* background;
 		bool			savescreen;
 		
 		void Init(const std::string & Icon, const int mwidth, const int mheight);

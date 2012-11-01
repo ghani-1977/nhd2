@@ -124,10 +124,7 @@ CFrontend::~CFrontend(void)
 		sendDiseqcStandby();
 
 	if(fd >= 0) 
-	{
 		Close();
-		close(fd);
-	}
 }
 
 bool CFrontend::Open(void)
@@ -184,6 +181,8 @@ void CFrontend::Close(void)
 	
 	close(fd);
 	fd = -1;
+	
+	dprintf(DEBUG_NORMAL, "CFrontend::Close fe(%d) %s\n", fenumber, info.name);
 }
 
 void CFrontend::reset(void)

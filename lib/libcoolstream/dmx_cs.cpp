@@ -92,10 +92,10 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __FUNCTION__, last_source, feindex, last_index, demux_num);
 	
 	// close device
-	if (demux_fd > -1) 
-	{
-		close(demux_fd);
-	}
+	//if (demux_fd > -1) 
+	//{
+	//	close(demux_fd);
+	//}
 	
 	char devname[256];
 

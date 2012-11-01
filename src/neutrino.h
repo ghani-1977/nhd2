@@ -180,7 +180,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		
 		void saveEpg();
 		
-		void ExitRun(const bool write_si = true, int retcode = 0);
+		void ExitRun(int retcode = 0);
 		void RealRun(CMenuWidget &mainSettings);
 		void InitZapper();
 		

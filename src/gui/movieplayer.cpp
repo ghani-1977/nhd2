@@ -134,7 +134,6 @@ off64_t secondoffset;
 #error not using 64 bit file offsets
 #endif /* __USE_FILE__OFFSET64 */
 
-CHintBox *hintBox;
 std::string startfilename;
 
 int jumpminutes = 1;
@@ -265,7 +264,6 @@ CMoviePlayerGui::CMoviePlayerGui()
 void CMoviePlayerGui::Init(void)
 {
 	stopped = false;
-	hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MOVIEPLAYER_PLEASEWAIT));	// UTF-8
 
 	frameBuffer = CFrameBuffer::getInstance();
 
@@ -347,19 +345,14 @@ void CMoviePlayerGui::Init(void)
 
 CMoviePlayerGui::~CMoviePlayerGui()
 {
-#if 0
-	delete filebrowser;
+	//if(filebrowser)
+	//	delete filebrowser;
 	
-	if (moviebrowser)
-		delete moviebrowser;
-	
-	delete hintBox;
-	
-	g_Zapit->setStandby(false);
-	g_Sectionsd->setPauseScanning(false);
-#endif
+	//if (moviebrowser)
+	//	delete moviebrowser;
 
-      delete playback;
+	if(playback)
+		delete playback;
 }
 
 void CMoviePlayerGui::cutNeutrino()

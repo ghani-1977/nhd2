@@ -164,9 +164,6 @@ CHintBox * reloadhintBox = 0;
 
 extern bool has_hdd;
 
-//int allow_flash = 1;
-extern int was_record;
-
 // record and timeshift
 bool autoshift = false;
 bool autoshift_delete = false;
@@ -239,7 +236,7 @@ extern cAudio 		* audioDecoder;		//libcoolstream (audio_cs.cpp)
 
 int prev_video_Mode;
 
-void stop_daemons(bool stopall = true);
+void stop_daemons();
 
 CAPIDChangeExec		* APIDChanger;			
 CVideoSetupNotifier	* videoSetupNotifier;
@@ -1969,7 +1966,7 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 		}
 		else 
 		{
-			dprintf(DEBUG_NORMAL, "Usage: neutrino [-sd] [-zd] [-v | --verbose 0..3]\n");
+			dprintf(DEBUG_NORMAL, "Usage: neutrino [-sd] [-v | --verbose 0..3]\n");
 			exit(1);
 		}
 	}
@@ -2765,7 +2762,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	RealRun(mainMenu);
 
 	// exitRun
-	ExitRun(true);
+	ExitRun();
 
 	// never reached
 	return 0;
@@ -3020,14 +3017,14 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					}
 			   	}
 			}
-			else if( msg == CRCInput::RC_play || msg == (neutrino_msg_t)g_settings.mpkey_play) // play timeshift
+			else if( (msg == CRCInput::RC_play || msg == (neutrino_msg_t)g_settings.mpkey_play) && timeshiftstatus) // play timeshift
 			{
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: timeshift play, timeshiftstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
 				printf("g_RemoteControl->is_video_started:%d\n\n", g_RemoteControl->is_video_started);
 
 				if(g_RemoteControl->is_video_started) 
 				{
-					if(timeshiftstatus /*recordingstatus*/) 
+					if(timeshiftstatus) 
 					{
 						moviePlayerGui->exec(NULL, tmode);
 					}
@@ -3354,14 +3351,6 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		{
 			scrambled_timer = 0;
 
-			#if 0
-			if(videoDecoder->getBlank() && videoDecoder->getPlayState()) 
-			{
-				const char * text = g_Locale->getText(LOCALE_SCRAMBLED_CHANNEL);
-				ShowHintUTF (LOCALE_MESSAGEBOX_INFO, text, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth (text, true) + 10, 5);
-			}
-			#endif
-
 			return messages_return::handled;	
 		}
 	}
@@ -3464,8 +3453,10 @@ _repeat:
 		{
 			neutrino_msg_t new_msg;
 
-			/* Note: pressing the power button on the box (not the remote control) over 1 second */
-			/* shuts down the system even if !g_settings.shutdown_real_rcdelay (see below)  */
+			/* 
+			* Note: pressing the power button on the box (not the remote control) over 1 second
+			* shuts down the system even if !g_settings.shutdown_real_rcdelay (see below)
+			*/
 			gettimeofday(&standby_pressed_at, NULL);
 
 			if ((mode != mode_standby) && (g_settings.shutdown_real)) 
@@ -3608,19 +3599,14 @@ _repeat:
 		// sent by rcinput, then got msg from zapit about record activated/deactivated
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: recordmode %s\n", ( data ) ? "on":"off" );
 		
-		if(!recordingstatus && was_record && (!data)) 
+		if(!recordingstatus && (!data)) 
 		{
-			was_record = 0;
-
 			if( mode == mode_standby )
 			{
 				// set standby
 				g_Zapit->setStandby(true);				
 			}
 		}
-		
-		if( mode == mode_standby && data )
-			was_record = 1;
 		
 		recordingstatus = data;
 		if( ( !g_InfoViewer->is_visible ) && data && !autoshift)
@@ -3877,7 +3863,7 @@ _repeat:
 	else if( msg == NeutrinoMessages::SLEEPTIMER) 
 	{
 		if(g_settings.shutdown_real)
-			ExitRun(true, 1);
+			ExitRun(1);
 		else
 			standbyMode( true );
 		
@@ -3917,11 +3903,11 @@ _repeat:
 	{
 		if(!skipShutdownTimer) 
 		{
-			ExitRun(true, 1);
+			ExitRun(1);
 		}
 		else 
 		{
-			skipShutdownTimer=false;
+			skipShutdownTimer = false;
 		}
 		return messages_return::handled;
 	}
@@ -4107,7 +4093,7 @@ skip_message:
 }
 
 // exit run
-void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
+void CNeutrinoApp::ExitRun(int retcode)
 {
 	if (!recordingstatus || ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)
 	{
@@ -4161,7 +4147,7 @@ void CNeutrinoApp::ExitRun(const bool write_si, int retcode)
 			mode = mode_off;
 
 			// stop all deamons threads
-			stop_daemons(true);
+			stop_daemons();
 
 			// check for events
 			neutrino_msg_t      msg;
@@ -4609,7 +4595,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 {
 	static bool wasshift = false;
 
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::standbyMode: was_record %d bOnOff %d\n", was_record, bOnOff);
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::standbyMode: recordingstatus (%d) timeshiftstatus(%d) bOnOff (%d)\n", recordingstatus, timeshiftstatus, bOnOff);
 
 	if( bOnOff ) 
 	{
@@ -4648,17 +4634,10 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_SCART);
 
-		if(recordingstatus) 
-			was_record = 1;
-
 		// zapit standby
-		if(!was_record) 
+		if(!recordingstatus && !timeshiftstatus)
 		{
 			g_Zapit->setStandby(true);
-			
-			char cmd[100];	
-			sprintf(cmd, "hdparm -y /dev/sda1 > /dev/null 2>/dev/null");
-			system(cmd);
 		} 
 		else
 		{
@@ -4671,9 +4650,12 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		g_Sectionsd->setPauseScanning(true);
 
 		//save epg
-		if(g_settings.epg_save) 
+		if(!recordingstatus && !timeshiftstatus)
 		{
-			saveEpg();
+			if(g_settings.epg_save) 
+			{
+				saveEpg();
+			}
 		}
 
 		//run script
@@ -4720,11 +4702,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		g_Zapit->setStandby(false);
 
 		// this is buggy don't respect parentallock
-		if(was_record) 
+		if(!recordingstatus && !timeshiftstatus)
 			g_Zapit->startPlayBack();
-
-		if(recordingstatus) 
-			was_record = 0;
 
 		// video wake up
 		if(videoDecoder)
@@ -4922,14 +4901,14 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	else if(actionKey=="shutdown") 
 	{
-		ExitRun(true, 1); //FIXME
+		ExitRun(1);
 	}
 	else if(actionKey=="reboot")
 	{
 		FILE *f = fopen("/tmp/.reboot", "w");
 		fclose(f);
 
-		ExitRun(true);
+		ExitRun();
 
 		unlink("/tmp/.reboot");
 		returnval = menu_return::RETURN_NONE;
@@ -5339,10 +5318,9 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void *data)
 	return false;
 }
 
-void stop_daemons(bool stopall)
+void stop_daemons()
 {
 	// stop dvbsub
-	dvbsub_stop();
 	dvbsub_close();
 
 	// stop txt
@@ -5363,14 +5341,11 @@ void stop_daemons(bool stopall)
 	streamts_stop = 1;
 	pthread_join(stream_thread, NULL);	
 
-	// timerd stop
-	if(stopall) 
-	{	  
-		dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown\n");
-		g_Timerd->shutdown();
-		pthread_join(timer_thread, NULL);
-		dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown done\n");		
-	}
+	// timerd stop	  
+	dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown\n");
+	g_Timerd->shutdown();
+	pthread_join(timer_thread, NULL);
+	dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown done\n");		
 
 	// sectionsd stop
 	sectionsd_stop = 1;
@@ -5389,10 +5364,8 @@ void stop_daemons(bool stopall)
 	// clear vfd
 	CVFD::getInstance()->Clear();
 
-	if(stopall) 
-	{
-		delete moviePlayerGui;
-	}
+	// movieplayerGui
+	delete moviePlayerGui;
 }
 
 // load color
@@ -5749,6 +5722,7 @@ void sighandler (int signum)
         }
 }
 
+#include <mcheck.h>
 // main function
 int main(int argc, char *argv[])
 {
@@ -5784,6 +5758,8 @@ int main(int argc, char *argv[])
 	
 	for(int i = 3; i < 256; i++)
 		close(i);
+	
+	mtrace();
 
 	return CNeutrinoApp::getInstance()->run(argc, argv);
 }

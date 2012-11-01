@@ -73,8 +73,6 @@
 #include <zapit/channel.h>
 
 
-
-int was_record = 0;
 extern bool autoshift;
 extern bool autoshift_delete;
 
@@ -89,10 +87,9 @@ CMovieInfo * g_cMovieInfo;
 MI_MOVIE_INFO * g_movieInfo;
 int safe_mkdir(char * path);
 
-extern int FrontendCount;
-CFrontend * getFE(int index);
-CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod);
-extern CFrontend * live_fe;
+//CFrontend * getFE(int index);
+//CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod);
+//extern CFrontend * live_fe;
 
 static CVCRControl vcrControl;
 
@@ -276,35 +273,9 @@ bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, co
 		CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , mode | NeutrinoMessages::norezap );
 	}
 	
-	// check for twin
-	#if 0
-	bool twin = false;
-	
-	if(FrontendCount > 1)
-	{
-		for (int i = 1; i < FrontendCount; i++)
-		{
-			// twin
-			if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
-				twin = true;
-		}
-	}
-	
-	// check for multi
-	bool multi = false;
-	CZapitChannel * record_channel = find_channel_tozap(channel_id, false);
-	
-	if( record_channel->getFeIndex() != live_fe->getFeIndex() )
-		multi = true;
-	#endif
-	
 	// zapit
 	if(channel_id != 0)	// wenn ein channel angegeben ist
 	{
-		// zap for live stream
-		//if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) /*&& !twin && !multi*/ )	// eventually not tuned
-		//	g_Zapit->zapTo_serviceID(channel_id);		// for live stream
-
 		// zap for record
 		g_Zapit->zapTo_record(channel_id);			// for recording
 	}
@@ -340,7 +311,6 @@ bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, co
 
 	deviceState = CMD_VCR_RECORD;
 
-	// Send IR
 	return true;
 }
 
@@ -376,15 +346,8 @@ void CVCRControl::CFileAndServerDevice::RestoreNeutrino(void)
 	if(last_mode == NeutrinoMessages::mode_standby && CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_standby )
 	{
 		//Wenn vorher und jetzt standby, dann die zapit wieder auf sb schalten
-		//g_Zapit->setStandby(true);
-		//was_record = 1;
-	}
-
-	// restart sectionsd if stopped
-#ifndef __sh__	
-	if((last_mode != NeutrinoMessages::mode_standby) && StopSectionsd)
-		g_Sectionsd->setPauseScanning(false);
-#endif	
+		g_Zapit->setStandby(true);
+	}	
 }
 
 void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id channel_id, const int mode)
@@ -396,7 +359,6 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 	if(last_mode == NeutrinoMessages::mode_standby)
 	{
 		g_Zapit->setStandby(false);
-		was_record = 1;
 	}
 	
 	if (channel_id != 0) 
@@ -409,48 +371,16 @@ void CVCRControl::CFileAndServerDevice::CutBackNeutrino(const t_channel_id chann
 				CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_standby);
 		}
 		
-		#if 0
-		bool twin = false;
-	
-		for (int i = 1; i < FrontendCount; i++)
-		{
-			// twin
-			if(getFE(0)->getInfo()->type == getFE(i)->getInfo()->type)
-				twin = true;
-		}
-		
-		// check for multi
-		bool multi = false;
-		CZapitChannel * record_channel = find_channel_tozap(channel_id, false);
-			
-		if( record_channel->getFeIndex() != live_fe->getFeIndex() )
-			multi = true;
-		#endif
-	
-		// zap for live stream
-		//if( (g_Zapit->getCurrentServiceID() != channel_id) && !SAME_TRANSPONDER(g_Zapit->getCurrentServiceID(), channel_id) /*&& !twin && !multi*/ )	// eventually not tuned
-		//	g_Zapit->zapTo_serviceID(channel_id);
-		
 		// zap to record
 		g_Zapit->zapTo_record(channel_id);
 	}
 
-#ifndef __sh__
-	if(StopSectionsd)		// wenn sectionsd gestoppt werden soll
-		g_Sectionsd->setPauseScanning(true);		// sectionsd stoppen
-#endif
-
-
 	// after this zapit send EVT_RECORDMODE_ACTIVATED, so neutrino getting NeutrinoMessages::EVT_RECORDMODE
 	g_Zapit->setRecordMode( true );
 
-//test
-#ifndef __sh__
-	//if( (last_mode == NeutrinoMessages::mode_standby) || (StopPlayBack && g_Zapit->isPlayBackActive()) )
-#else
+	// stop playback im standby
 	if( last_mode == NeutrinoMessages::mode_standby )
 		g_Zapit->stopPlayBack();
-#endif
 }
 
 bool sectionsd_getEPGidShort(event_id_t epgID, CShortEPGData * epgdata);

@@ -38,14 +38,6 @@
 
 #include <vector>	
 
-#ifndef __sh__
-#ifndef FP_IOCTL_CLEAR_WAKEUP_TIMER
-#define FP_IOCTL_CLEAR_WAKEUP_TIMER 10
-#endif
-
-#define FP_IOCTL_SET_RTC         0x101
-#define FP_IOCTL_GET_RTC         0x102
-#endif
 
 extern bool timeset;
 
