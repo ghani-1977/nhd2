@@ -617,7 +617,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	// socket
-	cam0->setCaSocket();
+	//cam0->setCaSocket();
 	
 	// cam
 	cam0->setCaPmt(thischannel, thischannel->getCaPmt());
@@ -965,7 +965,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 	// socket
-	cam1->setCaSocket( frontend->fenumber );
+	//cam1->setCaSocket( frontend->fenumber );
 	
 	// cam
 	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), frontend->fenumber );
@@ -1118,13 +1118,16 @@ void unsetRecordMode(void)
  
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 	
+	// capmt
+	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
+	
 	// cam1 stop
 	cam1->sendMessage(0, 0);
 	
-	// cam0 update
-	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 	// socket
-	cam0->setCaSocket();
+	//cam0->setCaSocket();
+	
+	// cam0 update
 	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), 0, 1, true);
 	
 	rec_channel_id = 0;

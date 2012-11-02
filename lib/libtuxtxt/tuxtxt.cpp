@@ -28,12 +28,7 @@
 #include <dmx_cs.h>
 
 #include <driver/framebuffer.h>
-
-int log_level = 0;
-
-#define debugf(i, arg...) \
-	if (i < log_level) \
-		fprintf(stderr, arg);
+#include <system/debug.h>
 	
 #include <configfile.h>
 
@@ -260,8 +255,6 @@ bool loadKeyMap(const char * const fileName)
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	key_info = configfile.getInt32("key_info", 0x166);
-//#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK7162)
-//	key_info = configfile.getInt32("key_info", 0x8A);
 #else
 	key_info = configfile.getInt32("key_info", KEY_INFO);
 #endif			
@@ -491,31 +484,23 @@ void FillBorder(int color)
 {
 	int ys =  0;
 
-	debugf(20, "%s: >\n", __func__);
-
 	FillRect(0, ys, StartX, CFrameBuffer::getInstance()->getScreenHeight(true), color);
 	FillRect(StartX, ys,displaywidth,StartY,color);
 	FillRect(StartX, ys+StartY+25*fontheight,displaywidth, CFrameBuffer::getInstance()->getScreenHeight(true)-(StartY+25*fontheight), color);
 
 	if (screenmode == 0 )
 		FillRect(StartX + displaywidth, ys, CFrameBuffer::getInstance()->getScreenWidth(true) - (StartX+displaywidth),CFrameBuffer::getInstance()->getScreenHeight(true), color);
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 int getIndexOfPageInHotlist()
 {
 	int i;
 
-	debugf(10, "%s: >\n", __func__);
-
 	for (i = 0; i <= maxhotlist; i++)
 	{
 		if (tuxtxt_cache.page == hotlist[i])
 			return i;
 	}
-
-	debugf(10, "%s: <\n", __func__);
 
 	return -1;
 }
@@ -524,8 +509,6 @@ void gethotlist()
 {
 	FILE *hl;
 	char line[100];
-
-	debugf(2, "%s: >\n", __func__);
 
 	hotlistchanged = 0;
 	maxhotlist = -1;
@@ -566,8 +549,6 @@ void gethotlist()
 		hotlist[1] = 0x303;
 		maxhotlist = 1;
 	}
-
-	debugf(2, "%s: <\n", __func__);
 }
 
 void savehotlist()
@@ -575,8 +556,6 @@ void savehotlist()
 	FILE *hl;
 	char line[100];
 	int i;
-
-	debugf(2, "%s: >\n", __func__);
 
 	hotlistchanged = 0;
 	sprintf(line, CONFIGDIR "/tuxtxt/hotlist%d.conf", tuxtxt_cache.vtxtpid);
@@ -604,26 +583,17 @@ void savehotlist()
 		printf(" (default - just deleted)");
 #endif
 	}
-#if TUXTXT_DEBUG
-	printf(">\n");
-#endif
-
-	debugf(2, "%s: <\n", __func__);
 }
 
 #define number2char(c) ((c) + (((c) <= 9) ? '0' : ('A' - 10)))
 /* print hex-number into string, s points to last digit, caller has to provide enough space, no termination */
 void hex2str(char *s, unsigned int n)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	do {
 		char c = (n & 0xF);
 		*s-- = number2char(c);
 		n >>= 4;
 	} while (n);
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 int toptext_getnext(int startpage, int up, int findgroup)
@@ -631,8 +601,6 @@ int toptext_getnext(int startpage, int up, int findgroup)
 	int current, nextgrp, nextblk;
 
 	int stoppage =  (tuxtxt_is_dec(startpage) ? startpage : startpage & 0xF00); // avoid endless loop in hexmode
-
-	debugf(2, "%s: >\n", __func__);
 
 	nextgrp = nextblk = 0;
 	current = startpage;
@@ -660,8 +628,6 @@ int toptext_getnext(int startpage, int up, int findgroup)
 		}
 	} while (current != stoppage);
 
-	debugf(2, "%s: <\n", __func__);
-
 	if (nextgrp)
 		return nextgrp;
 	else if (nextblk)
@@ -674,8 +640,6 @@ void RenderClearMenuLineBB(char *p, tstPageAttr *attrcol, tstPageAttr *attr)
 {
 	int col;
 
-	debugf(10, "%s: >\n", __func__);
-
 	PosX = TOPMENUSTARTX;
 	RenderCharBB(' ', attrcol); /* indicator for navigation keys */
 #if 0
@@ -687,47 +651,33 @@ void RenderClearMenuLineBB(char *p, tstPageAttr *attrcol, tstPageAttr *attr)
 	}
 	PosY += fontheight;
 	memset(p-TOPMENUCHARS, ' ', TOPMENUCHARS); /* init with spaces */
-
-	debugf(10, "%s: <\n", __func__);
 }
 
 void ClearBB(int color)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 	
 #ifdef FB_BLIT	
 	CFrameBuffer::getInstance()->blit();
 #endif	
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void ClearFB(int color)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 	
 #ifdef FB_BLIT	
 	CFrameBuffer::getInstance()->blit();
 #endif	
-
-	debugf(20, "%s: >\n", __func__);
 }
 
 void ClearB(int color)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 	
 #ifdef FB_BLIT	
 	CFrameBuffer::getInstance()->blit();
 #endif	
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 int  GetCurFontWidth()
@@ -735,8 +685,6 @@ int  GetCurFontWidth()
 	int mx = (displaywidth)%(40-nofirst); // # of unused pixels
 	int abx = (mx == 0 ? displaywidth+1 : (displaywidth)/(mx+1));// distance between 'inserted' pixels
 	int nx= abx+1-((PosX-sx) % (abx+1)); // # of pixels to next insert
-
-	debugf(20, "%s: <>\n", __func__);
 
 	return fontwidth+(((PosX+fontwidth+1-sx) <= displaywidth && nx <= fontwidth+1) ? 1 : 0);
 }
@@ -746,18 +694,12 @@ void SetPosX(int column)
 	PosX = StartX;
 	int i;
 
-	debugf(20, "%s: >\n", __func__);
-
 	for (i = 0; i < column-nofirst; i++)
 		PosX += GetCurFontWidth();
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void setfontwidth(int newwidth)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	if (fontwidth != newwidth)
 	{
 		int i;
@@ -777,16 +719,12 @@ void setfontwidth(int newwidth)
 		for (i = 0; i <= 12; i++)
 			axdrcs[i] = (fontwidth * i + 6) / 12;
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void setcolors(unsigned short *pcolormap, int offset, int number)
 {
 	int i,trans_tmp;
 	int j = offset; /* index in global color table */
-
-	debugf(20, "%s: >\n", __func__);
 
 	trans_tmp=25-trans_mode;
 
@@ -808,8 +746,6 @@ void setcolors(unsigned short *pcolormap, int offset, int number)
 		
 		j++;
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 
@@ -850,8 +786,6 @@ int iTripletNumber2Data(int iONr, tstCachedPage *pstCachedPage, unsigned char* p
 	int packet = (iONr / 13) + 3;
 	int packetoffset = 3 * (iONr % 13);
 
-	debugf(20, "%s: >\n", __func__);
-
 	if (packet <= 23)
 		p = pagedata + 40*(packet-1) + packetoffset + 1;
 	else if (packet <= 25)
@@ -869,8 +803,6 @@ int iTripletNumber2Data(int iONr, tstCachedPage *pstCachedPage, unsigned char* p
 			return -1;
 		p = pstCachedPage->pageinfo.ext->p26[descode] + packetoffset;	/* first byte (=designation code) is not cached */
 	}
-
-	debugf(20, "%s: <\n", __func__);
 
 	return deh24(p);
 }
@@ -890,8 +822,6 @@ void eval_object(int iONr, tstCachedPage *pstCachedPage,
 	unsigned char drcssubp=0, gdrcssubp=0;
 	signed char endcol = -1; /* last column to which to extend attribute changes */
 	tstPageAttr attrPassive = atrtable[ATR_PassiveDefault]; /* current attribute for passive objects */
-
-	debugf(20, "%s: >\n", __func__);
 
 	do
 	{
@@ -937,8 +867,6 @@ void eval_object(int iONr, tstCachedPage *pstCachedPage,
 	}
 	while (0 == eval_triplet(iOData, pstCachedPage, pAPx, pAPy, pAPx0, pAPy0, &drcssubp, &gdrcssubp, &endcol, &attrPassive, pagedata)
 			 || iONr1 == iONr); /* repeat until termination reached */
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void eval_NumberedObject(int p, int s, int packet, int triplet, int high,
@@ -952,8 +880,6 @@ void eval_NumberedObject(int p, int s, int packet, int triplet, int high,
 	tuxtxt_decompress_page(p, s,pagedata);
 	int idata = deh24(pagedata + 40*(packet-1) + 1 + 3*triplet);
 	int iONr;
-
-	debugf(20, "%s: >\n", __func__);
 
 	if (idata < 0)	/* hamming error: ignore triplet */
 		return;
@@ -971,8 +897,6 @@ void eval_NumberedObject(int p, int s, int packet, int triplet, int high,
 #endif
 		eval_object(iONr, tuxtxt_cache.astCachetable[p][s], pAPx, pAPy, pAPx0, pAPy0, (tObjType)(triplet % 3),pagedata);
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
@@ -984,8 +908,6 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 	int iAddress = (iOData      ) & 0x3f;
 	int iMode    = (iOData >>  6) & 0x1f;
 	int iData    = (iOData >> 11) & 0x7f;
-
-	debugf(20, "%s: >\n", __func__);
 
 	if (iAddress < 40) /* column addresses */
 	{
@@ -1538,9 +1460,6 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 	if (iAddress < 40 || iMode != 0x10) /* leave temp. AP-Offset unchanged only immediately after definition */
 		tAPx = tAPy = 0;
 
-
-	debugf(20, "%s: <\n", __func__);
-
 	return 0; /* normal exit, no termination */
 }
 
@@ -1580,8 +1499,6 @@ int setnational(unsigned char sec)
 /* evaluate level 2.5 information */
 void eval_l25()
 {
-	debugf(20, "%s: >\n", __func__);
-
 	memset(FullRowColor, 0, sizeof(FullRowColor));
 	
 	FullScrColor = black;
@@ -1906,8 +1823,6 @@ void eval_l25()
 		if (colortable) /* as late as possible to shorten the time the old page is displayed with the new colors */
 			setcolors(colortable, 16, 16); /* set colors for CLUTs 2+3 */
 	} /* is_dec(page) */
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 /*
@@ -2013,8 +1928,6 @@ int tuxtx_subtitle_running(int *pid, int *page, int *running)
 int tuxtx_main(int _rc, int pid, int page, int source)
 {
 	char cvs_revision[] = "$Revision: 1.95 $";
-
-	debugf(1, "%s: >\n", __func__);
 	
 	use_gui = 1;
 	boxed = 0;
@@ -2051,6 +1964,10 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 
 	//rcinput
 	rc = _rc;
+	
+	//load keymap
+	if( !loadKeyMap(NEUTRINO_KEYMAP_FILE) )
+		printf("CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
 	
 	//fb
 	lfb = (unsigned char *)CFrameBuffer::getInstance()->getFrameBufferPointer();
@@ -2102,10 +2019,6 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 #ifdef FB_BLIT	
 	CFrameBuffer::getInstance()->blit();
 #endif
-
-	//load keymap
-	if( !loadKeyMap(NEUTRINO_KEYMAP_FILE) )
-		printf("CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
 
 	do {
 		//update page or timestring and lcd
@@ -4472,8 +4385,6 @@ void SwitchScreenMode(int newscreenmode)
 
 	//struct v4l2_format format;
 
-	debugf(1, "%s: >\n", __func__);
-
 	// reset transparency mode
 	if (transpmode)
 		transpmode = 0;
@@ -4583,8 +4494,6 @@ void SwitchScreenMode(int newscreenmode)
 		displaywidth= (ex - sx);
 		StartX = sx;
 	}
-
-	debugf(1, "%s: <\n", __func__);
 }
 
 /*
@@ -4592,8 +4501,6 @@ void SwitchScreenMode(int newscreenmode)
 */
 void SwitchTranspMode()
 {
-	debugf(1, "%s: >\n", __func__);
-
 	if (screenmode)
 	{
 		prevscreenmode = screenmode;
@@ -4626,8 +4533,6 @@ void SwitchTranspMode()
 		ClearFB(transp);
 		clearbbcolor = FullScrColor;
 	}
-
-	debugf(1, "%s: <\n", __func__);
 }
 
 /*
@@ -4660,8 +4565,6 @@ void RenderDRCS( //FIXME
 {
 	int bit, x, y, ltmp;
 	unsigned char *ay = ax + 13; /* array[0..10] of y-offsets for each pixel */
-
-	debugf(1, "FIXME: SETPIXEL: %s: >\n", __func__);
 
 	for (y = 0; y < 10; y++) /* 10*2 bytes a 6 pixels per char definition */
 	{
@@ -4710,24 +4613,10 @@ void RenderDRCS( //FIXME
 		
 		d += h * (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
 	}
-
-	debugf(1, "%s: <\n", __func__);
 }
 
 void DrawVLine(int x, int y, int l, int color)
 {
-	#if 0
-	int ytemp;
-
-	debugf(20, "%s: >\n", __func__);
-
-	for (ytemp = 0; ytemp < l ; ytemp++)
-	{
-		setPixel(x, y + ytemp, color);
-	}
-	#endif
-	
-	#if 1
 	unsigned char *p = lfb + x*4 + y * CFrameBuffer::getInstance()->getStride();
 
 	for ( ; l > 0 ; l--)
@@ -4735,28 +4624,10 @@ void DrawVLine(int x, int y, int l, int color)
 		memmove(p,bgra[color],4);
 		p += CFrameBuffer::getInstance()->getStride();
 	}
-	#endif
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void DrawHLine(int x, int y, int l, int color)
 {
-	#if 0
-	int ltmp;
-
-	debugf(20, "%s: >\n", __func__);
-
-	if (l > 0)
-	{
-		for (ltmp=0; ltmp < l; ltmp++)
-		{
-			setPixel(x + ltmp, y, color);
-		}
-	}
-	#endif
-	
-	#if 1
 	int ltmp;
 	if (l > 0)
 	{
@@ -4765,22 +4636,15 @@ void DrawHLine(int x, int y, int l, int color)
 			memmove(lfb + x*4 + ltmp*4 + y * CFrameBuffer::getInstance()->getStride(), bgra[color], 4);
 		}
 	}
-	#endif
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void FillRectMosaicSeparated(int x, int y, int w, int h, int fgcolor, int bgcolor, int set)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	FillRect(x, y, w, h, bgcolor);
 	if (set)
 	{
 		FillRect(x+1, y+1, w-2, h-2, fgcolor);
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
@@ -4790,8 +4654,6 @@ void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
 	int xoffset, l;
 	int yoffset;
 	int ltmp;
-
-	debugf(20, "%s: >\n", __func__);
 
 	for (yoffset = 0; yoffset < h; yoffset++)
 	{
@@ -4808,9 +4670,6 @@ void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
 
 		p += (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
 	}
-
-	debugf(20, "%s: <\n", __func__);
-
 }
 
 void FlipHorz(int x, int y, int w, int h)
@@ -4820,8 +4679,6 @@ void FlipHorz(int x, int y, int w, int h)
 	unsigned char *p = lfb + x*4 + y * (CFrameBuffer::getInstance()->getScreenWidth(true)*4);
 
 	int w1,h1;
-
-	debugf(20, "%s: >\n", __func__);
 
 	for (h1 = 0 ; h1 < h ; h1++)
 	{
@@ -4839,8 +4696,6 @@ void FlipHorz(int x, int y, int w, int h)
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y %d\n", __func__, w1 + y);
 
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void FlipVert(int x, int y, int w, int h)
@@ -4849,8 +4704,6 @@ void FlipVert(int x, int y, int w, int h)
 	
 	unsigned char *p = lfb + x*4 + y * (CFrameBuffer::getInstance()->getScreenWidth(true) *4), *p1, *p2;
 	int h1;
-
-	debugf(20, "%s: >\n", __func__);
 
 	for (h1 = 0 ; h1 < h/2 ; h1++)
 	{
@@ -4871,8 +4724,6 @@ void FlipVert(int x, int y, int w, int h)
 		memcpy(p1,p2,w*4);
 		memcpy(p2,buf,w*4);
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 int ShapeCoord(int param, int curfontwidth, int curfontheight)
@@ -5010,8 +4861,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	unsigned char *sbitbuffer;
 
 	int curfontwidth = GetCurFontWidth();
-
-	debugf(20, "%s: >\n", __func__);
 
 	if (Attribute->setX26)
 	{
@@ -5501,8 +5350,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 		FillRect(PosX, PosY + yoffset + (fontheight-2)* factor, curfontwidth,2*factor, fgcolor); /* underline char */
 
 	PosX += curfontwidth;
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 /*
@@ -5510,9 +5357,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 */
 void RenderCharFB(int Char, tstPageAttr *Attribute)
 {
-	debugf(20, "%s: >\n", __func__);
 	RenderChar(Char, Attribute, zoommode, 0);
-	debugf(20, "%s: <\n", __func__);
 }
 
 /*
@@ -5520,11 +5365,7 @@ void RenderCharFB(int Char, tstPageAttr *Attribute)
 */
 void RenderCharBB(int Char, tstPageAttr *Attribute)
 {
-	debugf(20, "%s: >\n", __func__);
-
 	RenderChar(Char, Attribute, 0, 0);
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 /*
@@ -6000,8 +5841,6 @@ void showlink(int column, int linkpage)
 	int oldfontwidth = fontwidth;
 	int yoffset;
 
-	debugf(20, "%s: >\n", __func__);
-
 	yoffset = 0;
 
 	int abx = ((displaywidth)%(40-nofirst) == 0 ? displaywidth+1 : (displaywidth)/(((displaywidth)%(40-nofirst)))+1);// distance between 'inserted' pixels
@@ -6012,9 +5851,9 @@ void showlink(int column, int linkpage)
 	if (boxed)
 	{
 		PosX = StartX + column*width;
-		//debugf(20, "%s: x=%d(%d) y=%d(%d|%d) w=%d(%d) h=%d\n", __func__, PosX, abx, PosY+yoffset, PosY, yoffset, displaywidth, width, fontheight);
+		
 		FillRect(PosX, PosY+yoffset, width, fontheight, transp);
-		//debugf(20, "%s: < boxed\n", __func__);
+		
 		return;
 	}
 
@@ -6045,8 +5884,6 @@ void showlink(int column, int linkpage)
 		for (p = line; p < line+9; p++)
 			RenderCharBB(*p, &atrtable[ATR_L250 + column]);
 	}
-
-	debugf(20, "%s: <\n", __func__);
 }
 
 void CreateLine25()
@@ -6204,12 +6041,6 @@ void CreateLine25()
 */
 void CopyBB2FB()
 {
-	debugf(2, "%s: >\n", __func__);
-
-	/* line 25 */
-	//if (!pagecatching)
-		//CreateLine25();
-	//TEST
 	if (!pagecatching && use_gui)
 		CreateLine25();
 	
@@ -6223,8 +6054,6 @@ void CopyBB2FB()
 
 		return;
 	}
-
-	debugf(2, "%s: <\n", __func__);
 }
 
 /*
@@ -6404,8 +6233,6 @@ void DecodePage()
 	int foreground, background, doubleheight, doublewidth, charset, mosaictype, IgnoreAtBlackBgSubst, concealed, flashmode, boxwin;
 	unsigned char held_mosaic, *p;
 	tstCachedPage *pCachedPage;
-
-	debugf(2, "%s: >\n", __func__);
 
 	/* copy page to decode buffer */
 	if (tuxtxt_cache.subpagetable[tuxtxt_cache.page] == 0xff) /* not cached: do nothing */
@@ -6904,8 +6731,6 @@ void DecodePage()
 	}
 
 	return ;
-
-	debugf(2, "%s: <\n", __func__);
 }
 
 /*
@@ -6917,6 +6742,7 @@ int GetRCCode()
 	static __u16 rc_last_key = KEY_RESERVED;
 
 	int val = fcntl(rc, F_GETFL);
+	
 	if(!(val & O_NONBLOCK))
 		printf("[tuxtxt] GetRCCode in blocking mode.\n");
 
@@ -6928,45 +6754,6 @@ int GetRCCode()
 			if (ev.code != rc_last_key)
 			{
 				rc_last_key = ev.code;
-				
-				/*
-				switch (ev.code)
-				{
-					case key_up:		RCCode = RC_UP;		break;
-					case key_down:		RCCode = RC_DOWN;	break;
-					case key_left:		RCCode = RC_LEFT;	break;
-					case key_right:		RCCode = RC_RIGHT;	break;
-					case key_ok:		RCCode = RC_OK;		break;
-
-					// common
-					case key_0:		RCCode = RC_0; 		break;
-					case key_1:		RCCode = RC_1;		break;
-					case key_2:		RCCode = RC_2;		break;
-					case key_3:		RCCode = RC_3;		break;
-					case key_4:		RCCode = RC_4;		break;
-					case key_5:		RCCode = RC_5;		break;
-					case key_6:		RCCode = RC_6;		break;
-					case key_7:		RCCode = RC_7;		break;
-					case key_8:		RCCode = RC_8;		break;
-					case key_9:		RCCode = RC_9;		break;
-					
-					case key_red:		RCCode = RC_RED;	break;
-					case key_green:		RCCode = RC_GREEN;	break;
-					case key_yellow:	RCCode = RC_YELLOW;	break;
-					case key_blue:		RCCode = RC_BLUE;	break;
-
-					case key_plus:	RCCode = RC_PLUS;	break;
-					case key_minus:	RCCode = RC_MINUS;	break;
-					case key_spkr:		RCCode = RC_MUTE;	break;
-					case key_text:		RCCode = RC_TEXT;	break;
-				
-					case key_info:		RCCode = RC_HELP;	break;
-					case key_setup:		RCCode = RC_DBOX;	break;
-
-					case key_home:		RCCode = RC_HOME;	break;					
-					case key_standby:		RCCode = RC_STANDBY;	break;
-				}
-				*/
 				
 				translate(ev.code);
 				

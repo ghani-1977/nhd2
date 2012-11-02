@@ -172,7 +172,7 @@ class CRCInput
 
 		int 		fd_pipe_high_priority[2];
 		int 		fd_pipe_low_priority[2];
-		int         	fd_gamerc;
+		//int         	fd_gamerc;
 
 #define NUMBER_OF_EVENT_DEVICES 4
 
@@ -407,16 +407,10 @@ class CRCInput
 
 		inline int getFileHandle(void) /* used for tuxtxt and plugins */
 		{
-#if HAVE_DVB_API_VERSION == 1
-			return fd_gamerc;
-#else
 			for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
 			{
-				/*return*/fd_gamerc = fd_rc[i];
+				return fd_rc[i];
 			}
-			
-			return fd_gamerc;
-#endif
 		}
 		
 		void stopInput();
