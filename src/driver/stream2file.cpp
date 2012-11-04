@@ -71,7 +71,7 @@ extern CZapitChannel * rec_channel;
 extern CFrontend * live_fe;
 
 extern bool autoshift;
-extern bool autoshift_delete;
+//extern bool autoshift_delete;
 
 #define MAXPIDS		64
 #define FILENAMEBUFFERSIZE 1024
@@ -161,16 +161,13 @@ stream2file_error_msg_t stop_recording(const char * const info)
 
 	dprintf(DEBUG_NORMAL, "[Stream2File] stop Record\n");
 
-	//if(!autoshift || autoshift_delete) 
+	sprintf(buf, "%s.xml", rec_filename);
+	if ((fd = open(buf, O_SYNC | O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)) >= 0) 
 	{
-		sprintf(buf, "%s.xml", rec_filename);
-		if ((fd = open(buf, O_SYNC | O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)) >= 0) 
-		{
-			write(fd, info, strlen(info));
-			fdatasync(fd);
-			close(fd);
-		} 
-	}
+		write(fd, info, strlen(info));
+		fdatasync(fd);
+		close(fd);
+	} 
 
 	if(record) 
 	{
@@ -187,11 +184,11 @@ stream2file_error_msg_t stop_recording(const char * const info)
 	else
 		ret = STREAM2FILE_RECORDING_THREADS_FAILED;
 
-	if((autoshift && g_settings.auto_delete) || autoshift_delete) 
+	if( autoshift && g_settings.auto_delete ) 
 	{
 		sprintf(buf, "rm -f %s.ts &", rec_filename);
 		sprintf(buf1, "%s.xml", rec_filename);
-		autoshift_delete = false;
+
 		system(buf);
 		unlink(buf1);
 	}	
