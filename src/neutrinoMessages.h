@@ -85,8 +85,7 @@ struct NeutrinoMessages {
 		EVT_TIMER                                = CRCInput::RC_Events + 20,
 		EVT_PROGRAMLOCKSTATUS                    = CRCInput::RC_Events + 22,
 		EVT_RECORDMODE                           = CRCInput::RC_Events + 24,
-		//TEST
-		EVT_PIPMODE                              = CRCInput::RC_Events + 25,
+		
 #ifndef SKIP_CA_STATUS
 		EVT_ZAP_CA_ID				 = CRCInput::RC_Events + 50,
 		EVT_ZAP_CA_CLEAR                         = CRCInput::RC_Events + 26,
@@ -106,7 +105,7 @@ struct NeutrinoMessages {
 		EVT_SERVICES_UPD                         = CRCInput::RC_Events + 38,
 		EVT_SI_FINISHED                          = CRCInput::RC_Events + 39,
 		
-		//TEST
+		/* zapit */
 		EVT_PMT_CHANGED				 = CRCInput::RC_Events + 40,
 
 		/* NEVER CHANGE THIS */

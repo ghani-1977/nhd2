@@ -50,6 +50,7 @@
 
 #include <string>
 
+
 #define widest_number "2"
 
 #define ANNOUNCETIME (1 * 60)
@@ -119,7 +120,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		std::string network_ssid;
 		std::string network_key;
 		int network_encryption;
-		//CMenuItem * wlanEnable[3];
 
 		// font
 		neutrino_font_descr_struct      font;
@@ -147,6 +147,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CRCLock                         *rcLock;
                 CTimerList                      *Timerlist;			// for user menu
                 
+                /* streamingssetup */
                 std::vector<CMenuItem*> toNotify;
 
 		/* neutrino_menue.cpp */
@@ -159,13 +160,13 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		// themes
 		void setupColors_red();
 		void setupColors_ru();
-		void setupColors_dvb2000();
+		//void setupColors_dvb2000();
 		void setupColors_classic();
 		void setupColors_neutrino();
-		void setupColors_dblue();
+		//void setupColors_dblue();
 		void setupColors_dvb2k();
 		void setupColors_nhd2();
-		void setupColors_gigablue();
+		//void setupColors_gigablue();
 		
 		void setupRecordingDevice(void);
 		void startNextRecording();
@@ -273,21 +274,15 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		int getMode() { return mode; }
 		int getLastMode() { return lastMode; }
 		bool isMuted() { return current_muted; }
+		/* recording flag */
 		int recordingstatus;
-		//TEST
+		/* timeshift flag */
 		int timeshiftstatus;
-		int jump_to_mp;
-		//
 		
 		int recording_id;
 		void SendSectionsdConfig(void);
 		int GetChannelMode(void) { return g_settings.channel_mode; };
 		void SetChannelMode(int mode);
-		
-		//int lastChannelMode;
-		
-		//TEST
-		int pipstatus;
 		
 		//dvb/txt subs
 		void quickZap(int msg);

@@ -166,7 +166,6 @@ extern bool has_hdd;
 
 // record and timeshift
 bool autoshift = false;
-bool autoshift_delete = false;
 uint32_t shift_timer;
 uint32_t scrambled_timer;
 char recDir[255];
@@ -283,9 +282,6 @@ const char* usermenu_button_def[SNeutrinoSettings::BUTTON_MAX]={
 
 CVCRControl::CDevice * recordingdevice = NULL;
 
-//extern int FrontendCount;
-extern int tuner_to_scan;		// defined in scan_setup.cpp
-
 // init globals
 static void initGlobals(void)
 {
@@ -339,7 +335,7 @@ CNeutrinoApp::~CNeutrinoApp()
 // getInstance
 CNeutrinoApp * CNeutrinoApp::getInstance()
 {
-	static CNeutrinoApp* neutrinoApp = NULL;
+	static CNeutrinoApp * neutrinoApp = NULL;
 
 	if(!neutrinoApp) 
 	{
@@ -679,6 +675,7 @@ void CNeutrinoApp::setupColors_nhd2()
 #define FONT_STYLE_BOLD    1
 #define FONT_STYLE_ITALIC  2
 
+/* neutrino_font */
 font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
 {
         {LOCALE_FONTSIZE_MENU               ,  20, FONT_STYLE_BOLD   , 0},
@@ -705,6 +702,7 @@ font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
         {LOCALE_FONTSIZE_FILEBROWSER_ITEM   ,  16, FONT_STYLE_BOLD   , 1}
 };
 
+/* signal font */
 const font_sizes_struct signal_font = {LOCALE_FONTSIZE_INFOBAR_SMALL,  14, FONT_STYLE_REGULAR, 1};
 
 // LCD settings
@@ -1024,6 +1022,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_timelist = configfile.getInt32( "key_timelist", CRCInput::RC_bookmark );
 	g_settings.key_net = configfile.getInt32( "key_net", CRCInput::RC_net );
 	g_settings.key_video_player = configfile.getInt32( "key_video_player", CRCInput::RC_nokey );
+	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
@@ -1108,7 +1107,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.rotor_swap = configfile.getInt32( "rotor_swap", 0);
 	
 	// mb preview
-	g_settings.mb_preview = configfile.getBool("mb_preview", true);
+	g_settings.mb_preview = configfile.getBool("mb_preview", false);
 
 	g_settings.shutdown_real = configfile.getBool("shutdown_real", true );
 	g_settings.shutdown_real_rcdelay = configfile.getBool("shutdown_real_rcdelay", false );
@@ -1190,7 +1189,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 		g_settings.lcd_setting[i] = configfile.getInt32(lcd_setting[i].name, lcd_setting[i].default_value);
 	
 	strcpy(g_settings.lcd_setting_dim_time, configfile.getString("lcd_dim_time","0").c_str());
-	//strcpy(g_settings.lcd_setting_dim_brightness, configfile.getString("lcd_dim_brightness","0").c_str());
 	g_settings.lcd_setting_dim_brightness = configfile.getInt32("lcd_dim_brightness", 0);
 	// END VFD
 	
@@ -1353,17 +1351,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32 ( "streaming_transcode_video_codec", g_settings.streaming_transcode_video_codec );
 	configfile.setInt32 ( "streaming_resolution", g_settings.streaming_resolution );
 	configfile.setInt32 ( "streaming_vlc10", g_settings.streaming_vlc10 );
-#if 0
-	configfile.setInt32 ( "streaming_use_buffer", g_settings.streaming_use_buffer);
-	configfile.setInt32 ( "streaming_buffer_segment_size", g_settings.streaming_buffer_segment_size);
-	configfile.setInt32 ( "streaming_stopsectionsd", g_settings.streaming_stopsectionsd);
-#endif
 	configfile.setInt32 ( "streaming_show_tv_in_browser", g_settings.streaming_show_tv_in_browser);
 	configfile.setBool ("streaming_allow_multiselect", g_settings.streaming_allow_multiselect);
-#if 0
-	configfile.setBool ("streaming_use_reclength", g_settings.streaming_use_reclength);
-	configfile.setString( "streaming_moviedir", g_settings.streaming_moviedir);
-#endif
 	// END MOVIEPLAYER
 
 	// OSD
@@ -1625,7 +1614,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 		configfile.setInt32(lcd_setting[i].name, g_settings.lcd_setting[i]);
 	
 	configfile.setString("lcd_dim_time", g_settings.lcd_setting_dim_time);
-	//configfile.setString("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
 	configfile.setInt32("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
 	// END VFD
 	
@@ -1663,8 +1651,6 @@ void CNeutrinoApp::firstChannel()
 void CNeutrinoApp::channelsInit(bool bOnly)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: Creating channels lists...\n");
-
-	//TIMER_START();
 
 	const char * fav_bouquetname = g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME);
 
@@ -1728,7 +1714,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	int tvi = 0, ri = 0, hi = 0;
 	
 	// hd bouquet
-	CBouquet* hdBouquet;
+	CBouquet * hdBouquet;
 	if(g_settings.make_hd_list)
 		hdBouquet = new CBouquet(0, (char *) "HD", 0);
 
@@ -1947,9 +1933,7 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 	
         global_argv[argc] = NULL;
 
-	//softupdate = false;
-
-	for(int x=1; x<argc; x++) 
+	for(int x = 1; x < argc; x++) 
 	{
 		if (((!strcmp(argv[x], "-v")) || (!strcmp(argv[x], "--verbose"))) && (x + 1 < argc)) 
 		{
@@ -2031,6 +2015,7 @@ void CNeutrinoApp::SetupFonts()
 	g_fontRenderer->AddFont(font.filename, true);  // make italics
 	style[2] = "Italic";
 
+	// set neutrino font
 	for (int i = 0; i < FONT_TYPE_COUNT; i++)
 	{
 		if(g_Font[i] != NULL) 
@@ -2039,6 +2024,7 @@ void CNeutrinoApp::SetupFonts()
 		g_Font[i] = g_fontRenderer->getFont(font.name, style[neutrino_font[i].style], configfile.getInt32(locale_real_names[neutrino_font[i].name], neutrino_font[i].defaultsize) + neutrino_font[i].size_offset * font.size_offset);
 	}
 
+	// set signal font
 	g_SignalFont = g_fontRenderer->getFont(font.name, style[signal_font.style], signal_font.defaultsize + signal_font.size_offset * font.size_offset);
 
 	// recalculate infobar position
@@ -2082,12 +2068,14 @@ int startAutoRecord(bool addTimer)
 	}
 
 	eventinfo.apids = TIMERD_APIDS_CONF;
+	
 	dprintf(DEBUG_NORMAL, "startAutoRecord: dir %s\n", timeshiftDir);
 
 	(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = timeshiftDir;
 
 	autoshift = 1;
 	CNeutrinoApp::getInstance()->recordingstatus = 1;
+	CNeutrinoApp::getInstance()->timeshiftstatus = 1;
 
 	if( CVCRControl::getInstance()->Record(&eventinfo) == false ) 
 	{
@@ -2140,6 +2128,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 
 	if(CVCRControl::getInstance()->isDeviceRegistered()) 
 	{
+		// stop auto record
 		if(autoshift) 
 		{
 			stopAutoRecord();
@@ -2153,7 +2142,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			if (system(NEUTRINO_RECORDING_START_SCRIPT) != 0)
 				perror(NEUTRINO_RECORDING_START_SCRIPT " failed");
 
-			CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
+			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 
 			// get EPG info
 			eventinfo.channel_id = live_channel_id;
@@ -2206,10 +2195,12 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 		{
 			g_Timerd->stopTimerEvent(recording_id);
 			
-			CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
+			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 			
 			startNextRecording();
 		}
+		
+		CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 
 		return refreshGui;
 	}
@@ -2296,6 +2287,10 @@ void CNeutrinoApp::InitZapper()
 		// start epg scanning
 		g_Sectionsd->setPauseScanning(false);
 		g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );
+		
+		// process apids
+		g_Zapit->getPIDS(g_RemoteControl->current_PIDs);
+		g_RemoteControl->processAPIDnames();
 		
 		// show info bar
 		g_RCInput->postMsg(NeutrinoMessages::SHOW_INFOBAR, 0);
@@ -2986,13 +2981,14 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 						if(recordingstatus) 
 						{
 							timeshiftstatus = recordingstatus;
+							
 							//g_Zapit->lockPlayBack();
 							audioDecoder->Stop();
 							videoDecoder->Stop(false);
 						} 
 						else
 						{
-							//tmp timeshift
+							//temp timeshift
 							if(g_settings.temp_timeshift) 
 							{
 								startAutoRecord(true);
@@ -3007,7 +3003,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 							}
 							
 							// jump in movieplayer mode
-							if(recordingstatus) 
+							if(timeshiftstatus) 
 							{
 								//g_Zapit->lockPlayBack();
 								audioDecoder->Stop();
@@ -3239,10 +3235,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( (msg == (neutrino_msg_t) g_settings.key_pip) || (msg == (neutrino_msg_t) g_settings.key_pip_subchannel) )
 			{
-				//set pip mode
-				//g_Zapit->setPipMode(true);
-				//pipstatus = 1;
-				
 				StopSubtitles();
 				
 				// first steo show channels from the same TP
@@ -3614,17 +3606,6 @@ _repeat:
 
 		return messages_return::handled;
 	}
-	else if( msg == NeutrinoMessages::EVT_PIPMODE ) 
-	{
-		// sent by rcinput, then got msg from zapit about pip activated/deactivated 
-		dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: pipmode %s\n", ( data ) ? "on":"off" );
-		
-		pipstatus = data;
-		
-		printf("pipstatus: %d\n", pipstatus);
-
-		return messages_return::handled;
-	}
 	else if (msg == NeutrinoMessages::RECORD_START) 
 	{
 		if(autoshift) 
@@ -3664,14 +3645,6 @@ _repeat:
 
 					if(timeshiftstatus)
 					{
-						// if we dont jump in mp we resume audio/video
-						//if( jump_to_mp == 0 )
-						//{
-							//g_Zapit->lockPlayBack();
-							//sleep(1);
-							//g_Zapit->unlockPlayBack();
-						//}
-					
 						// set timeshift status to false
 						timeshiftstatus = 0;
 					}
@@ -4103,7 +4076,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 			CVCRControl::getInstance()->Stop();
 			g_Timerd->stopTimerEvent(recording_id);
 			
-			CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
+			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 		}
 
 		// vfd mode shutdown
@@ -4807,7 +4780,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 // start next recording
 void CNeutrinoApp::startNextRecording()
 {
-	if ( /*(recordingstatus == 0) &&*/ (nextRecordingInfo != NULL)) 
+	if ( nextRecordingInfo != NULL ) 
 	{
 		bool doRecord = true;
 		if (CVCRControl::getInstance()->isDeviceRegistered()) 
