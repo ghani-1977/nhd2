@@ -1291,43 +1291,40 @@ int CChannelList::numericZap(int key)
 	//TEST: PiP
 	if( (key == g_settings.key_pip) || (key == g_settings.key_pip_subchannel) )
 	{
-		if( !CNeutrinoApp::getInstance()->pipstatus)  //not yet after choosing channel
+		CChannelList * orgList = bouquetList->orgChannelList;
+		CChannelList * channelList = new CChannelList(g_Locale->getText(LOCALE_CHANNELLIST_CURRENT_TP), false, true);
+			
+		t_channel_id pipid = live_channel_id >> 16;
+			
+		for ( unsigned int i = 0 ; i < orgList->chanlist.size(); i++) 
 		{
-			CChannelList * orgList = bouquetList->orgChannelList;
-			CChannelList * channelList = new CChannelList(g_Locale->getText(LOCALE_CHANNELLIST_CURRENT_TP), false, true);
-			
-			t_channel_id pipid = live_channel_id >> 16;
-			
-			for ( unsigned int i = 0 ; i < orgList->chanlist.size(); i++) 
+			if((orgList->chanlist[i]->channel_id >> 16) == pipid) 
 			{
-				if((orgList->chanlist[i]->channel_id >> 16) == pipid) 
-				{
 					channelList->addChannel(orgList->chanlist[i]);
-				}
 			}
-			
-			//TEST
-			pip_selected = true;
-
-			if (channelList->getSize() != 0) 
-			{
-				channelList->adjustToChannelID(orgList->getActiveChannel_ChannelID(), false);
-				this->frameBuffer->paintBackground();
-#ifdef FB_BLIT
-				this->frameBuffer->blit();
-#endif
-				res = channelList->exec();
-#if 0
-				int newChannel = channelList->show() ;
-
-				if (newChannel > -1) { //FIXME handle edit/mode change ??
-					orgList->zapTo_ChannelID(channelList->chanlist[newChannel]->channel_id);
-				}
-#endif
-			}
-			delete channelList;
-			return res;
 		}
+			
+		//TEST
+		pip_selected = true;
+
+		if (channelList->getSize() != 0) 
+		{
+			channelList->adjustToChannelID(orgList->getActiveChannel_ChannelID(), false);
+			this->frameBuffer->paintBackground();
+#ifdef FB_BLIT
+			this->frameBuffer->blit();
+#endif
+			res = channelList->exec();
+#if 0
+			int newChannel = channelList->show() ;
+
+			if (newChannel > -1) { //FIXME handle edit/mode change ??
+				orgList->zapTo_ChannelID(channelList->chanlist[newChannel]->channel_id);
+			}
+#endif
+		}
+		delete channelList;
+		return res;
 	}
 	//
 

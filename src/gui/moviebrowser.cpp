@@ -1244,6 +1244,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 	else
 	{
 		bool logo_ok = false;
+		
 		int divx = 720/m_cBoxFrameInfo.iHeight;
 		int picw = 720/divx - 50;
 		int pich = 576/divx - 50;
@@ -1262,7 +1263,9 @@ void CMovieBrowser::refreshMovieInfo(void)
 			strReplace(fname, extension.c_str(), ".jpg");
 		}
 		///
+		
 		//printf("screenshot name: %s\n", fname.c_str());
+		
 		logo_ok = !access(fname.c_str(), F_OK);
 		
 		if(!logo_ok)
@@ -1279,8 +1282,8 @@ void CMovieBrowser::refreshMovieInfo(void)
 		int ly = m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY+ (m_cBoxFrameTitleRel.iHeight - PIC_H)/2;
 
 		/* display logo */
-		m_pcWindow->paintBoxRel(lx, ly, PIC_W, PIC_H, TITLE_BACKGROUND_COLOR);
-        	g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
+		//m_pcWindow->paintBoxRel(lx, ly, PIC_W, PIC_H, TITLE_BACKGROUND_COLOR);
+        	//g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
 
 		/* display screenshot */
 		if(g_settings.mb_preview && logo_ok) 
@@ -1596,17 +1599,14 @@ void CMovieBrowser::refreshTitle(void)
 
 	// icon
 	int width = m_cBoxFrameTitleRel.iWidth;
-	int xpos1= width - 20;
-	int ypos= m_cBoxFrameTitleRel.iHeight + 10;
+	int xpos1 = width - 20;
+	int ypos = m_cBoxFrameTitleRel.iHeight + 10;
 
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1-30, ypos);
+	//m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1 - 30, ypos);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1, ypos);
 
 	// help icon
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1-60, ypos);
-	
-#if 0
-	m_pcWindow->blit();
-#endif
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - 30, ypos);
 }
 
 #define ADD_FOOT_HEIGHT 4
@@ -1677,10 +1677,6 @@ void CMovieBrowser::refreshFoot(void)
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
 
 	m_pcFontFoot->RenderString(m_cBoxFrame.iX+xpos4+30, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), (CFBWindow::color_t)color, 0, true); // UTF-8
-	
-#if 0
-	m_pcWindow->blit();
-#endif
 }
 
 bool CMovieBrowser::onButtonPress(neutrino_msg_t msg)
@@ -1860,7 +1856,6 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			refresh();
 		}
 	}
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	else if (msg == CRCInput::RC_dvbsub) 
 	{
 		if((m_movieSelectionHandler == playing_info) && (NeutrinoMessages::mode_ts == CNeutrinoApp::getInstance()->getMode()))
@@ -1910,7 +1905,6 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
           	}
 	}
-#endif	
 	else if ( msg == CRCInput::RC_mode ) 
 	{
           	if (m_movieSelectionHandler != NULL) 
@@ -2493,7 +2487,7 @@ bool CMovieBrowser::onSortMovieInfoHandleList(std::vector<MI_MOVIE_INFO*>& handl
 
 void CMovieBrowser::updateDir(void)
 {
-    m_dir.clear();
+	m_dir.clear();
 #if 1
 	// check if there is a movie dir and if we should use it
 	if(g_settings.network_nfs_moviedir[0] != 0 )
