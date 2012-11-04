@@ -48,16 +48,16 @@ cRecord::cRecord(int num)
 #if defined (PLATFORM_SPARK7162)
 	switch(num)
 	{
-		case 1:
-			demux_num = 0;
-			break;
-			
 		case 0:
 			demux_num = 1;
 			break;
 			
-		case 2:
+		case 1:
 			demux_num = 0;
+			break;
+			
+		case 2:
+			demux_num = 2;
 			break;
 	}
 #else
