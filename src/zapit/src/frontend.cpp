@@ -127,7 +127,7 @@ CFrontend::~CFrontend(void)
 		Close();
 }
 
-bool CFrontend::Open(void)
+bool CFrontend::Open( bool init )
 {
 	if(!standby)
 		return false;
@@ -151,12 +151,15 @@ bool CFrontend::Open(void)
 		dprintf(DEBUG_NORMAL, "CFrontend::Open fe(%d) %s\n", fenumber, info.name);
 	}
 
-	// sec
-	secSetVoltage(SEC_VOLTAGE_13, 15);
-	secSetTone(SEC_TONE_OFF, 15);
-	
-	// diseqc
-	setDiseqcType(diseqcType);
+	if(init)
+	{
+		// sec
+		secSetVoltage(SEC_VOLTAGE_13, 15);
+		secSetTone(SEC_TONE_OFF, 15);
+		
+		// diseqc
+		setDiseqcType(diseqcType);
+	}
 	
 	currentTransponder.TP_id = 0;
 	

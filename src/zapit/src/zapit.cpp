@@ -240,6 +240,7 @@ bool initFrontend()
 		for(j = 0; j < FRONTEND_MAX; j++)
 		{
 			fe = new CFrontend(j, i);
+			
 			if(fe->Open()) 
 			{
 				fekey = MAKE_FE_KEY(i, j);
@@ -247,7 +248,11 @@ bool initFrontend()
 				
 				if(live_fe == NULL)
 					live_fe = fe;
+				
+				fe->Close();
 			}
+			else
+				delete fe;
 		}
 	}
 	
@@ -259,6 +264,27 @@ bool initFrontend()
 		return false;
 		
 	return true;
+}
+
+void OpenFE()
+{
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		CFrontend * fe = it->second;
+		
+		fe->Open(true);
+	}
+}
+
+void CloseFE()
+{
+
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		CFrontend * fe = it->second;
+		
+		fe->Close();
+	}
 }
 
 CFrontend * getFE(int index)
@@ -299,7 +325,7 @@ bool feCanTune(CZapitChannel * thischannel)
 {
 	if(currentMode & RECORD_MODE)
 	{
-		// sme tp id
+		// same tp id
 		if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
 			return true;
 		else // not same tp id
@@ -312,19 +338,18 @@ bool feCanTune(CZapitChannel * thischannel)
 				// multi
 				if( sit->second.type != live_fe->getDeliverySystem() ) 
 					return true;
-				// twin
+				// twin/loop
+				#if 0
 				else
 				{
 					// if any an other tuner (twin) have same type and is as twin set up
-					//for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 					for(int i = 0; i < FrontendCount; i++)
 					{
-						//if( (fe_it != live_fe) && (fe_it->second->getInfo()->type == live_fe->getInfo()->type) )
-						//FIXME: fenumber is not feindex???
-						if( (i != live_fe->fenumber) && (getFE(i)->getInfo()->type == live_fe->getInfo()->type) )
+						if( (i != live_fe->fenumber) && ( getFE(i)->mode != (fe_mode_t)FE_LOOP && ( getFE(i)->getInfo()->type == live_fe->getInfo()->type)) )
 							return true;
 					}
 				}
+				#endif
 			}
 		}
 	}
@@ -446,8 +471,8 @@ void loadFrontendConfig()
 		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
 		
 		// setmasterslave
-		if( getFE(i)->mode == (fe_mode_t)FE_LOOP )
-			getFE(i)->setMasterSlave();
+		//if( getFE(i)->mode == (fe_mode_t)FE_LOOP )
+		//	getFE(i)->setMasterSlave();
 		
 		// sat
 		if(getFE(i)->getInfo()->type == FE_QPSK)
@@ -473,9 +498,9 @@ void loadFrontendConfig()
 			getFE(i)->lastSatellitePosition = getConfigValue(i, "lastSatellitePosition", 0);
 
 			// FE functions at start
-			getFE(i)->setDiseqcRepeats( getFE(i)->diseqcRepeats );
-			getFE(i)->setCurrentSatellitePosition( getFE(i)->lastSatellitePosition );
-			getFE(i)->setDiseqcType( getFE(i)->diseqcType );
+			//getFE(i)->setDiseqcRepeats( getFE(i)->diseqcRepeats );
+			//getFE(i)->setCurrentSatellitePosition( getFE(i)->lastSatellitePosition );
+			//getFE(i)->setDiseqcType( getFE(i)->diseqcType );
 		}
 	}
 }
@@ -2941,6 +2966,9 @@ void enterStandby(void)
 	
 	/* stop playback */
 	stopPlayBack();	//dont stop cam
+	
+	//close frontend	
+	CloseFE();
 }
 
 void leaveStandby(void)
@@ -2949,21 +2977,29 @@ void leaveStandby(void)
 	
 	if(!standby) 
 		return;
-
-	// live cam
-	if (!cam0) 
-	{
-		cam0 = new CCam();
-	}
 	
-	if(!cam1)
-	{
-		cam1 = new CCam();
-	}
-
 	standby = false;
 
-	//if we have already zapped channel
+	//open frontend	
+	#if 1
+	OpenFE();
+	
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
+	{
+		CFrontend * fe = it->second;
+		
+		// fe functions at start
+		// setmasterslave
+		if( fe->mode == (fe_mode_t)FE_LOOP )
+			fe->setMasterSlave();
+		
+		fe->setDiseqcRepeats( fe->diseqcRepeats );
+		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
+		fe->setDiseqcType( fe->diseqcType );
+	}
+	#endif
+
+	// if we have already zapped channel
 	if (live_channel)
 		zapit(live_channel_id, current_is_nvod, false);
 }
@@ -3396,6 +3432,18 @@ int zapit_main_thread(void *data)
 	// open audiodecoder
 	if( audioDecoder->Open() < 0)
 		return -1;
+	
+	// live cam
+	if (!cam0) 
+	{
+		cam0 = new CCam();
+	}
+	
+	// record cam
+	if(!cam1)
+	{
+		cam1 = new CCam();
+	}
 
 	//CI init
 	//FIXME: platform without ci cam

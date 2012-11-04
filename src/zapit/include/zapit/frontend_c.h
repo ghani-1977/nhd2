@@ -215,7 +215,7 @@ class CFrontend
 		uint32_t 			getRate();
 		
                 void Close();
-		bool Open();
+		bool Open( bool init = false);
 		
 		bool sendUncommittedSwitchesCommand(int input);
 		bool setInput(CZapitChannel *channel, bool nvod);
