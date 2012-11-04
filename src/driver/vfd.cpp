@@ -571,18 +571,14 @@ void CVFD::Clear()
 	
 #if defined (PLATFORM_GIGABLUE)
 	ShowText("    "); // 4 empty digits
-#elif defined __sh__  //(PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
-        //struct vfd_ioctl_data data;
-	//data.start = 0x01;
-	//data.length = 0x0;
-	
+#elif defined __sh__ 
 	struct vfd_ioctl_data data;
    
 	data.start_address = 0;
 	
 	openDevice();
 	
-	if( ioctl(fd, /*VFDDISPLAYCLR*/VFDDISPLAYWRITEONOFF, &data) < 0)
+	if( ioctl(fd, VFDDISPLAYWRITEONOFF, &data) < 0)
 		perror("VFDDISPLAYCLR");
 	
 	closeDevice();
@@ -593,7 +589,6 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
 	openDevice();
 
@@ -670,7 +665,6 @@ void CVFD::ShowText(char * str)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
 
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
 #ifdef __sh__
 	int len = strlen(str);
 	int i;
@@ -685,8 +679,6 @@ void CVFD::ShowText(char * str)
 	  
 	openDevice();
 	
-	printf("CVFD::ShowText >%s< - %d\n", str, len);
-	
 	if( write(fd , str, len > 16? 16 : len ) < 0)
 		perror("write to vfd failed");
 	
@@ -695,8 +687,6 @@ void CVFD::ShowText(char * str)
 	FILE *f;
 	if((f = fopen("/proc/vfd","w")) == NULL) 
 	{
-		printf("CVFD::ShowText cannotopen /proc/vfd\n");
-	
 		return;
 	}
 	
