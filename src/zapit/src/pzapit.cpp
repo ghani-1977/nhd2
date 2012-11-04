@@ -491,17 +491,15 @@ int main (int argc, char** argv)
 
         if (set_pal)
         {
-                //zapit.stopPlayBack();
                 zapit.setVideoSystem(VIDEO_STD_PAL);
-                //zapit.startPlayBack();
+		
                 return 0;
         }
                  
         if (set_hd)
         {
-                //zapit.stopPlayBack();
                 zapit.setVideoSystem(set_hd);
-                //zapit.startPlayBack();
+              
                 return 0;
         }
 

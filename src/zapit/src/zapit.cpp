@@ -960,7 +960,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		frontend->locked = true;
 	
 	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel, frontend, frontend->fenumber))
+	if(!parse_channel_pat_pmt(rec_channel, frontend/*, frontend->fenumber*/ ))
 		return -1;
 	
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
