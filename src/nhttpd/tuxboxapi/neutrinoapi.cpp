@@ -37,6 +37,7 @@
 #include <zapit/channel.h>
 #include <zapit/bouquets.h>
 
+
 extern tallchans allchans;
 extern CBouquetManager *g_bouquetManager;
 extern CFrontend * frontend;
@@ -182,14 +183,32 @@ void CNeutrinoAPI::ZapTo(const char * const target)
 //-------------------------------------------------------------------------
 void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 {
-	if (channel_id == Zapit->getCurrentServiceID())
+	// standby modus
+	if(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_standby)
 	{
-		//printf("Kanal ist aktuell\n");
-		return;
-	}
+		Zapit->setStandby(false);
 
-	if (Zapit->zapTo_serviceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
-		Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
+	
+		if (channel_id != 0) 
+		{
+			if (Zapit->zapTo_record(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
+				Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
+		}
+
+		// stop playback im standby
+		Zapit->stopPlayBack();
+	}
+	else
+	{
+		if (channel_id == Zapit->getCurrentServiceID())
+		{
+			//printf("Kanal ist aktuell\n");
+			return;
+		}
+
+		if (Zapit->zapTo_serviceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
+			Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
+	}
 }
 //-------------------------------------------------------------------------
 
