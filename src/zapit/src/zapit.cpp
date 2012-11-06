@@ -648,24 +648,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	//cam0->setCaSocket();
 	
 	// cam
-#if defined (PLATFORM_SPARK7162)
-	switch(fe->fenumber)
-	{
-		case 0:
-			demux_index = 2;
-			break;
-		
-		case 1:
-			demux_index = 1;
-			break;
-			
-		case 2:
-			demux_index = 0;
-			break;	
-	}
-#else
 	demux_index = fe->fenumber;
-#endif	
 
 #if !defined (PLATFORM_GIGABLUE)
 	ca_mask = fe->fenumber + 1;
@@ -1022,25 +1005,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	// socket
 	//cam1->setCaSocket( frontend->fenumber );
 	
-	// cam
-#if defined (PLATFORM_SPARK7162)
-	switch(frontend->fenumber)
-	{
-		case 0:
-			demux_index = 2;
-			break;
-		
-		case 1:
-			demux_index = 1;
-			break;
-			
-		case 2:
-			demux_index = 0;
-			break;	
-	}
-#else	
+	// cam	
 	demux_index = frontend->fenumber;
-#endif
 
 #if !defined (PLATFORM_GIGABLUE)
 	ca_mask = frontend->fenumber + 1;
@@ -1208,25 +1174,8 @@ void unsetRecordMode(void)
 	// socket
 	//cam0->setCaSocket();
 	
-	// cam0 update
-#if defined (PLATFORM_SPARK7162)
-	switch(live_fe->fenumber)
-	{
-		case 0:
-			demux_index = 2;
-			break;
-		
-		case 1:
-			demux_index = 1;
-			break;
-			
-		case 2:
-			demux_index = 0;
-			break;	
-	}
-#else	
+	// cam0 update	
 	demux_index = live_fe->fenumber;
-#endif	
 
 #if !defined (PLATFORM_GIGABLUE)
 	ca_mask = live_fe->fenumber + 1;
@@ -3509,6 +3458,29 @@ int zapit_main_thread(void *data)
 	// open audiodecoder
 	if( audioDecoder->Open() < 0)
 		return -1;
+	
+#if defined (PLATFORM_SPARK7162)
+	//lib-stb-hal/libspark
+	/* 
+	* this is a strange hack: the drivers seem to only work correctly after
+	* demux0 has been used once. After that, we can use demux1,2,... 
+	*/
+	struct dmx_pes_filter_params p;
+	int dmx = open("/dev/dvb/adapter0/demux0", O_RDWR );
+	if (dmx < 0)
+		printf("%s: ERROR open /dev/dvb/adapter0/demux0 (%m)\n", __func__);
+	else
+	{
+		memset(&p, 0, sizeof(p));
+		p.output = DMX_OUT_DECODER;
+		p.input  = DMX_IN_FRONTEND;
+		p.flags  = DMX_IMMEDIATE_START;
+		p.pes_type = DMX_PES_VIDEO;
+		ioctl(dmx, DMX_SET_PES_FILTER, &p);
+		ioctl(dmx, DMX_STOP);
+		close(dmx);
+	}
+#endif	
 	
 	// live cam
 	if (!cam0) 

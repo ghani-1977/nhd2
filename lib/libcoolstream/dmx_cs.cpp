@@ -88,24 +88,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		flags |= O_NONBLOCK;
 	
 	// demux num
-#if defined (PLATFORM_SPARK7162)
-	switch(feindex)
-	{
-		case 0:
-			demux_num = 2;
-			break;
-		
-		case 1:
-			demux_num = 1;
-			break;
-			
-		case 2:
-			demux_num = 0;
-			break;	
-	}
-#else
 	demux_num = feindex;
-#endif	
 	
 	dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __FUNCTION__, last_source, feindex, last_index, demux_num);
 	
