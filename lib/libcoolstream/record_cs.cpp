@@ -45,24 +45,8 @@ void *execute_record_thread(void *c)
 cRecord::cRecord(int num)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-#if defined (PLATFORM_SPARK7162)
-	switch(num)
-	{
-		case 0:
-			demux_num = 1;
-			break;
-			
-		case 1:
-			demux_num = 0;
-			break;
-			
-		case 2:
-			demux_num = 2;
-			break;
-	}
-#else
+
 	demux_num = num;
-#endif	
 	fe_num = num;
 	dmx = NULL;
 	record_thread_running = false;

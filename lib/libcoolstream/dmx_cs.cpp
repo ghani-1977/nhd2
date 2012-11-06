@@ -49,7 +49,6 @@ cDemux *audioDemux = NULL;
 #define NUM_DEMUXDEV 3
 static bool init[NUM_DEMUXDEV] = { false, false, false };
 
-
 static const char * aDMXCHANNELTYPE[] = {
 	"",
 	"DMX_VIDEO_CHANNEL",
@@ -65,12 +64,11 @@ cDemux::cDemux(int num)
 {  
 	// dmx file descriptor
 	demux_fd = -1;
-	
-	// demux num
-	demux_num = num;
 
 	// last dmx source
 	last_source = -1;
+	
+	// last demux index
 	last_index = -1;
 }
 
@@ -89,7 +87,35 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (type != DMX_PSI_CHANNEL)
 		flags |= O_NONBLOCK;
 	
+	// demux num
+#if defined (PLATFORM_SPARK7162)
+	switch(feindex)
+	{
+		case 0:
+			demux_num = 2;
+			break;
+		
+		case 1:
+			demux_num = 1;
+			break;
+			
+		case 2:
+			demux_num = 0;
+			break;	
+	}
+#else
+	demux_num = feindex;
+#endif	
+	
 	dprintf(DEBUG_INFO, "%s last_source(%d) source(%d) last_index(%d) index(%d)\n", __FUNCTION__, last_source, feindex, last_index, demux_num);
+	
+	if (last_source == feindex) 
+	{
+		dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __FUNCTION__, feindex, last_source);
+		
+		if (demux_fd > -1)
+			return true;
+	}
 	
 	// close device
 	if (demux_fd > -1) 
@@ -110,12 +136,17 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
-	// set demux source	
-	int n = DMX_SOURCE_FRONT0 + feindex;
-		
-	if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
+	// set demux source
+	if (!init[demux_num])
 	{
-		perror("DMX_SET_SOURCE");
+		int n = DMX_SOURCE_FRONT0 + feindex;
+		
+		if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
+		{
+			perror("DMX_SET_SOURCE");
+		}
+		else
+			init[demux_num] = true;
 	}
 
 	// set demux buffer size
