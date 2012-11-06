@@ -641,11 +641,37 @@ CZapitClient::responseGetLastChannel load_settings(void)
 
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
+	int demux_index = 0;
+	int ca_mask = 1;
+	
 	// socket
 	//cam0->setCaSocket();
 	
 	// cam
-	cam0->setCaPmt(thischannel, thischannel->getCaPmt());
+#if defined (PLATFORM_SPARK7162)
+	switch(fe->fenumber)
+	{
+		case 0:
+			demux_index = 2;
+			break;
+		
+		case 1:
+			demux_index = 1;
+			break;
+			
+		case 2:
+			demux_index = 0;
+			break;	
+	}
+#else
+	demux_index = fe->fenumber;
+#endif	
+
+#if !defined (PLATFORM_GIGABLUE)
+	ca_mask = fe->fenumber + 1;
+#endif	
+
+	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(thischannel->getCaPmt());	
@@ -989,11 +1015,38 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
+	
+	int demux_index = 0;
+	int ca_mask = 1;
+	
 	// socket
 	//cam1->setCaSocket( frontend->fenumber );
 	
 	// cam
-	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), frontend->fenumber );
+#if defined (PLATFORM_SPARK7162)
+	switch(frontend->fenumber)
+	{
+		case 0:
+			demux_index = 2;
+			break;
+		
+		case 1:
+			demux_index = 1;
+			break;
+			
+		case 2:
+			demux_index = 0;
+			break;	
+	}
+#else	
+	demux_index = frontend->fenumber;
+#endif
+
+#if !defined (PLATFORM_GIGABLUE)
+	ca_mask = frontend->fenumber + 1;
+#endif	
+	
+	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask );
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(rec_channel->getCaPmt());	
@@ -1146,6 +1199,9 @@ void unsetRecordMode(void)
 	// capmt
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 	
+	int demux_index = 0;
+	int ca_mask = 1;
+	
 	// cam1 stop
 	cam1->sendMessage(0, 0);
 	
@@ -1153,7 +1209,30 @@ void unsetRecordMode(void)
 	//cam0->setCaSocket();
 	
 	// cam0 update
-	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), 0, 1, true);
+#if defined (PLATFORM_SPARK7162)
+	switch(live_fe->fenumber)
+	{
+		case 0:
+			demux_index = 2;
+			break;
+		
+		case 1:
+			demux_index = 1;
+			break;
+			
+		case 2:
+			demux_index = 0;
+			break;	
+	}
+#else	
+	demux_index = live_fe->fenumber;
+#endif	
+
+#if !defined (PLATFORM_GIGABLUE)
+	ca_mask = live_fe->fenumber + 1;
+#endif	
+	
+	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true);
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -2981,7 +3060,6 @@ void leaveStandby(void)
 	standby = false;
 
 	//open frontend	
-	#if 1
 	OpenFE();
 	
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
@@ -2997,7 +3075,6 @@ void leaveStandby(void)
 		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
 		fe->setDiseqcType( fe->diseqcType );
 	}
-	#endif
 
 	// if we have already zapped channel
 	if (live_channel)
