@@ -641,17 +641,20 @@ CZapitClient::responseGetLastChannel load_settings(void)
 
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
-	int demux_index = 0;
-	int ca_mask = 1;
+	int demux_index = -1;
+	int ca_mask = 0;
 	
 	// socket
 	//cam0->setCaSocket();
 	
 	// cam
 	demux_index = fe->fenumber;
+	
+#if defined (PLATFORM_GIGABLUE)
+	ca_mask = 1;
 
-#if !defined (PLATFORM_GIGABLUE)
-	ca_mask = fe->fenumber + 1;
+#else
+	ca_mask |= 1 << fe->fenumber;
 #endif	
 
 	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
@@ -999,8 +1002,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 	
-	int demux_index = 0;
-	int ca_mask = 1;
+	int demux_index = -1;
+	int ca_mask = 0;
 	
 	// socket
 	//cam1->setCaSocket( frontend->fenumber );
@@ -1008,8 +1011,11 @@ int zapit_to_record(const t_channel_id channel_id)
 	// cam	
 	demux_index = frontend->fenumber;
 
-#if !defined (PLATFORM_GIGABLUE)
-	ca_mask = frontend->fenumber + 1;
+#if defined (PLATFORM_GIGABLUE)
+	ca_mask = 1;
+
+#else
+	ca_mask |= 1 << frontend->fenumber;
 #endif	
 	
 	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask );
@@ -1165,8 +1171,8 @@ void unsetRecordMode(void)
 	// capmt
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 	
-	int demux_index = 0;
-	int ca_mask = 1;
+	int demux_index = -1;
+	int ca_mask = 0;
 	
 	// cam1 stop
 	cam1->sendMessage(0, 0);
@@ -1177,8 +1183,11 @@ void unsetRecordMode(void)
 	// cam0 update	
 	demux_index = live_fe->fenumber;
 
-#if !defined (PLATFORM_GIGABLUE)
-	ca_mask = live_fe->fenumber + 1;
+#if defined (PLATFORM_GIGABLUE)
+	ca_mask = 1;
+
+#else
+	ca_mask |= 1 << live_fe->fenumber;
 #endif	
 	
 	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true);
