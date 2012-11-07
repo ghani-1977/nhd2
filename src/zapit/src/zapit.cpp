@@ -3508,7 +3508,7 @@ int zapit_main_thread(void *data)
 	ci = cDvbCi::getInstance();
 
 	//dvbsub
-	dvbsub_init();
+	//dvbsub_init();
 	
 	//globals
 	scan_runs = 0;

@@ -2396,7 +2396,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	while(!zapit_ready)
 		usleep(0);
 	
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: zapit ready\n\n");	
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: zapit ready\n\n");
+	
+	// dvbsub thread
+	dvbsub_init();
 
 	// Audio
 	if(audioDecoder)
@@ -4885,12 +4888,12 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	else if(actionKey=="reboot")
 	{
-		FILE *f = fopen("/tmp/.reboot", "w");
-		fclose(f);
+		//FILE *f = fopen("/tmp/.reboot", "w");
+		//fclose(f);
 
 		ExitRun();
 
-		unlink("/tmp/.reboot");
+		//unlink("/tmp/.reboot");
 		returnval = menu_return::RETURN_NONE;
 	}
 	else if(actionKey=="tv") 
@@ -5301,6 +5304,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void *data)
 void stop_daemons()
 {
 	// stop dvbsub
+	dvbsub_stop();
 	dvbsub_close();
 
 	// stop txt
