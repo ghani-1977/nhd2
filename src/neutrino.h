@@ -160,13 +160,10 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		// themes
 		void setupColors_red();
 		void setupColors_ru();
-		//void setupColors_dvb2000();
 		void setupColors_classic();
 		void setupColors_neutrino();
-		//void setupColors_dblue();
 		void setupColors_dvb2k();
 		void setupColors_nhd2();
-		//void setupColors_gigablue();
 		
 		void setupRecordingDevice(void);
 		void startNextRecording();
@@ -181,7 +178,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		
 		void saveEpg();
 		
-		void ExitRun(int retcode = 0);
 		void RealRun(CMenuWidget &mainSettings);
 		void InitZapper();
 		
@@ -290,6 +286,8 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void StopSubtitles();
 		void StartSubtitles(bool show = true);
 		void SelectSubtitles();
+		
+		void ExitRun(int retcode = 0);
 };
 
 
