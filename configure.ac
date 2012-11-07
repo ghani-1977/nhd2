@@ -23,7 +23,7 @@ TUXBOX_APPS_LIB_PKGCONFIG(PNG,libpng)
 TUXBOX_APPS_LIB_PKGCONFIG(AVCODEC,libavcodec)
 TUXBOX_APPS_LIB_PKGCONFIG(AVUTIL,libavutil)
 TUXBOX_APPS_LIB_PKGCONFIG(AVFORMAT,libavformat)
-if test "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend"; then
+if test "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus"; then
 TUXBOX_APPS_LIB_PKGCONFIG(GST,gstreamer-0.10)
 fi
 
