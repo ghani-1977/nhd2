@@ -194,7 +194,7 @@ int dvbsub_close()
 {
 	if(threadReader) 
 	{
-		dvbsub_pause();
+		//dvbsub_pause();
 		reader_running = false;
 		dvbsub_stopped = 1;
 

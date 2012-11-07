@@ -3836,7 +3836,7 @@ _repeat:
 	else if( msg == NeutrinoMessages::SLEEPTIMER) 
 	{
 		if(g_settings.shutdown_real)
-			ExitRun(1);
+			ExitRun();
 		else
 			standbyMode( true );
 		
@@ -3876,7 +3876,7 @@ _repeat:
 	{
 		if(!skipShutdownTimer) 
 		{
-			ExitRun(1);
+			ExitRun();
 		}
 		else 
 		{
@@ -4075,8 +4075,6 @@ void CNeutrinoApp::ExitRun(int retcode)
 		{
 			CVCRControl::getInstance()->Stop();
 			g_Timerd->stopTimerEvent(recording_id);
-			
-			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 		}
 
 		// vfd mode shutdown
@@ -4120,7 +4118,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 			mode = mode_off;
 
 			// stop all deamons threads
-			stop_daemons();
+			//stop_daemons();
 
 			// check for events
 			neutrino_msg_t      msg;
@@ -4145,6 +4143,9 @@ void CNeutrinoApp::ExitRun(int retcode)
 					if (frameBuffer != NULL)
 						delete frameBuffer;
 					
+					// stop all deamons threads
+					stop_daemons();
+					
 					exit(retcode);
 				} 
 				else if( ( msg == NeutrinoMessages::ANNOUNCE_RECORD) || ( msg == NeutrinoMessages::ANNOUNCE_ZAPTO) ) 
@@ -4158,6 +4159,9 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 					if (frameBuffer != NULL)
 						delete frameBuffer;
+					
+					// stop all deamons threads
+					stop_daemons();
 					
 					reboot(LINUX_REBOOT_CMD_RESTART);
 				}
@@ -4173,6 +4177,9 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 					if (frameBuffer != NULL)
 						delete frameBuffer;
+					
+					// stop all deamons threads
+					stop_daemons();
 					
 					dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
 					

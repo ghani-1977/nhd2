@@ -28,11 +28,6 @@
 #include <string.h>
 
 
-CCam::~CCam(void)
-{
-	close_connection();
-}
-
 const unsigned char CCam::getVersion(void) const
 {
 	return 0x9F;
@@ -82,26 +77,3 @@ bool CCam::setCaPmt(CZapitChannel * thischannel, CCaPmt * const caPmt, int demux
 
 	return sendMessage((char *)buffer, pos, update);
 }
-
-bool CCam::setCaSocket(int demux)
-{
-	printf("CCam::setCaSocket: dmx %d\n", demux);
-	
-	unsigned char buffer[8];
-	
-	memset(buffer, 0, 8);
-	
-	buffer[0] = 0x9F;
-        buffer[1] = 0x80;
-        buffer[2] = 0x3f;
-        buffer[3] = 0x04;
-        buffer[4] = 0x83;
-        buffer[5] = 0x02;
-        buffer[6] = 0x00;
-	buffer[7] = demux; //demux index
-
-	return sendMessage((char *)buffer, 8);
-}
-
-
-

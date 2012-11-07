@@ -2933,7 +2933,7 @@ int stopPlayBack( bool sendPmt)
 {
 	if(sendPmt) 
 	{
-		//cam0->sendMessage(0, 0);
+		cam0->sendMessage(0, 0);
 	}
 
 	dprintf(DEBUG_NORMAL, "[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
@@ -3002,7 +3002,7 @@ void enterStandby(void)
 	saveZapitSettings(true, true);
 	
 	/* stop playback */
-	stopPlayBack();	//dont stop cam
+	stopPlayBack(true);
 	
 	//close frontend	
 	CloseFE();
@@ -3655,7 +3655,7 @@ int zapit_main_thread(void *data)
 	
 	saveZapitSettings(true, true);
 	stopPlayBack(true);
-
+	
 	pthread_cancel(tsdt);
 	
 	zapit_ready = 0;
@@ -3677,10 +3677,6 @@ int zapit_main_thread(void *data)
 	//close frontend	
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
 		delete it->second;
-	
-	// delete cams
-	delete cam0;
-	delete cam1;
 
 	dprintf(DEBUG_INFO, "frontend deleted\n");
 	dprintf(DEBUG_INFO, "zapit shutdown complete :-)\n");
