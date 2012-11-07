@@ -2727,7 +2727,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// lcdsettinsg
 	InitLcdSettings(lcdSettings);
 
-#if !defined (PLATFORM_GIGABLUE)  && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)
+#if !defined (PLATFORM_GIGABLUE)  && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS)
 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER] == 1)
 	{
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: vfd set led on\n");

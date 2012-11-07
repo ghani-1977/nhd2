@@ -1756,7 +1756,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	// sceensetup
 	colorSettings.addItem(new CMenuForwarder(LOCALE_VIDEOMENU_SCREENSETUP, true, NULL, ScreenSetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND)
+#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS)
 	colorSettings.addItem(GenericMenuSeparatorLine);
 
 	// alpha setup
