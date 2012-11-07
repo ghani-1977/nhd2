@@ -376,9 +376,9 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_9500hd, gigablue, dreambox, xtrend, spark7162, ufs910,ufs912,ufs913,ufs922,ipbox55,ipbox99,ipbox9900,tf7700,fortis_hdbox,octagon1008,atevio7500,spark,hl101,hs7110,hs7810a,adb_box,whitebox,vip,homecast5101],
+	[  --with-boxtype          valid values: cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_9500hd, gigablue, dreambox, xtrend, spark7162, ufs910,ufs912,ufs913,ufs922,ipbox55,ipbox99,ipbox9900,tf7700,fortis_hdbox,octagon1008,atevio7500,spark,hl101,hs7110,hs7810a,adb_box,whitebox,vip,homecast5101, vuplus],
 	[case "${withval}" in
-		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|gigablue|dreambox|xtrend|spark7162|ufs910|ufs912|ufs913|ufs922|ipbox55|ipbox99|ipbox9900|tf7700|fortis_hdbox|octagon1008|atevio7500|spark|hl101|hs7110|hs7810a|adb_box|whitebox|vip|homecast5101)
+		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|gigablue|dreambox|xtrend|spark7162|ufs910|ufs912|ufs913|ufs922|ipbox55|ipbox99|ipbox9900|tf7700|fortis_hdbox|octagon1008|atevio7500|spark|hl101|hs7110|hs7810a|adb_box|whitebox|vip|homecast5101|vuplus)
 			BOXTYPE="$withval"
 			;;
 		*)
@@ -419,6 +419,7 @@ AM_CONDITIONAL(BOXTYPE_ADB_BOX, test "$BOXTYPE" = "adb_box")
 AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
 AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
 AM_CONDITIONAL(BOXTYPE_HOMECAST5101, test "$BOXTYPE" = "homecast5101")
+AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
 
 if test "$BOXTYPE" = "cuberevo"; then
 	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
@@ -480,6 +481,8 @@ elif test "$BOXTYPE" = "vip"; then
 	AC_DEFINE(PLATFORM_VIP, 1, [building for an vip])
 elif test "$BOXTYPE" = "homecast5101"; then
 	AC_DEFINE(PLATFORM_HOMECAST5101, 1, [building for a homecast5101])
+elif test "$BOXTYPE" = "vuplus"; then
+	AC_DEFINE(PLATFORM_VUPLUS, 1, [building for a vuplus])
 fi
 ])
 
