@@ -56,7 +56,9 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #define CORNER_BOTH		0x3
 
 // FB HW BLIT
-//#define FB_BLIT
+#if !defined (PLATFORM_GENERIC)
+#define FB_BLIT
+#endif
 
 // resolution
 #if defined (FB_BLIT)
