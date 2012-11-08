@@ -39,6 +39,13 @@
 #include <linux/stmfb.h>
 #endif
 
+#if defined (PLATFORM_GENERIC)
+#define USE_OPENGL 1
+#ifdef USE_OPENGL
+class GLThreadObj;
+#endif
+#endif /*PLATFORM_GENERIC*/
+
 // 32 bit
 #define fb_pixel_t uint32_t		// unsigned int 32 bit data
 
@@ -49,15 +56,15 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #define CORNER_BOTH		0x3
 
 // FB HW BLIT
-#define FB_BLIT
+//#define FB_BLIT
 
 // resolution
 #if defined (FB_BLIT)
 #define DEFAULT_XRES		960
 #define DEFAULT_YRES		720
 #else
-#define DEFAULT_XRES		1280
-#define DEFAULT_YRES		720
+#define DEFAULT_XRES		720
+#define DEFAULT_YRES		576
 #endif
 
 // bitmap
@@ -143,6 +150,10 @@ class CFrameBuffer
 		void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
 		
 		//int m_transparent_default, m_transparent;
+		
+#ifdef USE_OPENGL
+		GLThreadObj *mpGLThreadObj; /* the thread object */
+#endif		
 
 	public:
 		// 16/32 bits

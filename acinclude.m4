@@ -376,19 +376,20 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_9500hd, gigablue, dreambox, xtrend, spark7162, ufs910,ufs912,ufs913,ufs922,ipbox55,ipbox99,ipbox9900,tf7700,fortis_hdbox,octagon1008,atevio7500,spark,hl101,hs7110,hs7810a,adb_box,whitebox,vip,homecast5101, vuplus],
+	[  --with-boxtype          valid values: generic,cuberevo,cuberevo_mini,cuberevo_mini2,cuberevo_mini_fta,cuberevo_250hd,cuberevo_2000hd,cuberevo_9500hd,gigablue,dreambox,xtrend,spark7162,ufs910,ufs912,ufs913,ufs922,ipbox55,ipbox99,ipbox9900,tf7700,fortis_hdbox,octagon1008,atevio7500,spark,hl101,hs7110,hs7810a,adb_box,whitebox,vip,homecast5101,vuplus],
 	[case "${withval}" in
-		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|gigablue|dreambox|xtrend|spark7162|ufs910|ufs912|ufs913|ufs922|ipbox55|ipbox99|ipbox9900|tf7700|fortis_hdbox|octagon1008|atevio7500|spark|hl101|hs7110|hs7810a|adb_box|whitebox|vip|homecast5101|vuplus)
+		generic|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd|gigablue|dreambox|xtrend|spark7162|ufs910|ufs912|ufs913|ufs922|ipbox55|ipbox99|ipbox9900|tf7700|fortis_hdbox|octagon1008|atevio7500|spark|hl101|hs7110|hs7810a|adb_box|whitebox|vip|homecast5101|vuplus)
 			BOXTYPE="$withval"
 			;;
 		*)
 			AC_MSG_ERROR([unsupported value $withval for --with-boxtype])
 			;;
-	esac], [BOXTYPE="cuberevo_mini2"])
+	esac], [BOXTYPE="generic"])
 
 
 AC_SUBST(BOXTYPE)
 
+AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
 AM_CONDITIONAL(BOXTYPE_CUBEREVO, test "$BOXTYPE" = "cuberevo")
 AM_CONDITIONAL(BOXTYPE_CUBEREVO_MINI, test "$BOXTYPE" = "cuberevo_mini")
 AM_CONDITIONAL(BOXTYPE_CUBEREVO_MINI2, test "$BOXTYPE" = "cuberevo_mini2")
@@ -421,7 +422,9 @@ AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
 AM_CONDITIONAL(BOXTYPE_HOMECAST5101, test "$BOXTYPE" = "homecast5101")
 AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
 
-if test "$BOXTYPE" = "cuberevo"; then
+if test "$BOXTYPE" = "generic"; then
+	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
+elif test "$BOXTYPE" = "cuberevo"; then
 	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
 elif test "$BOXTYPE" = "cuberevo_mini"; then
 	AC_DEFINE(PLATFORM_CUBEREVO_MINI, 1, [building for cuberevo_mini])

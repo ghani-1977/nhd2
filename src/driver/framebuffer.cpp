@@ -44,6 +44,13 @@
 #include <global.h>
 #include <system/debug.h>
 
+// generic
+#ifdef USE_OPENGL
+#include <GL/glew.h>
+#include "rcinput.h"
+#include "glthread.h"
+#endif
+
 
 #define BACKGROUNDIMAGEWIDTH 	DEFAULT_XRES
 #define BACKGROUNDIMAGEHEIGHT	DEFAULT_YRES
@@ -107,6 +114,35 @@ CFrameBuffer* CFrameBuffer::getInstance()
 void CFrameBuffer::init(const char * const fbDevice)
 {
 	int tr = 0xFF;
+	
+#ifdef USE_OPENGL
+	fd = -1;
+	if(!mpGLThreadObj)
+	{
+		screeninfo.bits_per_pixel = 32;
+		screeninfo.xres = 720;
+		screeninfo.xres_virtual = screeninfo.xres;
+		screeninfo.yres = 576;
+		screeninfo.yres_virtual = screeninfo.yres;
+		screeninfo.bits_per_pixel = 32;
+		screeninfo.blue.length = 8;
+		screeninfo.blue.offset = 0;
+		screeninfo.green.length = 8;
+		screeninfo.green.offset = 8;
+		screeninfo.red.length = 8;
+		screeninfo.red.offset = 16;
+		screeninfo.transp.length = 8;
+		screeninfo.transp.offset = 24;
+		mpGLThreadObj = new GLThreadObj(screeninfo.xres, screeninfo.yres);
+		if(mpGLThreadObj)
+		{ /* kick off the GL thread for the window */
+			mpGLThreadObj->Start();
+			mpGLThreadObj->waitInit();
+		}
+	}
+	lfb = reinterpret_cast<fb_pixel_t*>(mpGLThreadObj->getOSDBuffer());
+	memset(lfb, 0x7f, screeninfo.xres * screeninfo.yres * 4);
+#else	
 
 	fd = open(fbDevice, O_RDWR);
 
@@ -158,8 +194,9 @@ void CFrameBuffer::init(const char * const fbDevice)
 		printf("CFrameBuffer::init: to less memory for stmfb given, need at least 12mb\n"); 
 		goto nolfb;
 	}
-#endif 
-#endif
+#endif /*sh*/ 
+#endif /*FB_BLIT*/
+#endif /* USE_OPENGL */
 
 	// icons cache
 	cache_size = 0;
@@ -222,7 +259,13 @@ CFrameBuffer::~CFrameBuffer()
 	if (virtual_fb)
 		delete[] virtual_fb;
 	
+#ifdef USE_OPENGL
+	active = false; /* keep people/infoclocks from accessing */
+	mpGLThreadObj->shutDown();
+	mpGLThreadObj->join();
+#else	
 	close(fd);
+#endif	
 }
 
 int CFrameBuffer::getFileHandle() const
@@ -382,6 +425,10 @@ int CFrameBuffer::setMode()
 #else
 	setVideoMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 #endif
+
+#ifdef USE_OPENGL
+	stride = 4 * xRes;
+#endif	
 
 	setBlendMode(0);
 	

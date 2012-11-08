@@ -465,7 +465,7 @@ bool CIPChangeNotifier::changeNotify(const neutrino_locale_t locale, void * Data
 	}
 	else if(locale == LOCALE_NETWORKMENU_SELECT_IF) 
 	{
-#if 1
+#ifdef FB_BLIT
 		// Width may change. Clear framebuffer, caller will redraw anyway.
 		//CFrameBuffer::getInstance()->Clear();
 		CFrameBuffer::getInstance()->blit();

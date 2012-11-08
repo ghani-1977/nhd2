@@ -84,6 +84,11 @@ if ENABLE_GRAPHLCD
 neutrino_LDADD += -lglcddrivers -lglcdgraphics -lusb
 endif
 
+if BOXTYPE_GENERIC
+neutrino_LDADD += \
+	-lglut -lGL -lGLU -lGLEW -lOpenThreads
+endif
+
 
 
 
