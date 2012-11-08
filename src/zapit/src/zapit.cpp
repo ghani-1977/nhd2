@@ -3033,6 +3033,18 @@ void leaveStandby(void)
 		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
 		fe->setDiseqcType( fe->diseqcType );
 	}
+	
+	// live cam
+	if (!cam0) 
+	{
+		cam0 = new CCam();
+	}
+	
+	// record cam
+	if(!cam1)
+	{
+		cam1 = new CCam();
+	}
 
 	// if we have already zapped channel
 	if (live_channel)
@@ -3506,9 +3518,6 @@ int zapit_main_thread(void *data)
 	//CI init
 	//FIXME: platform without ci cam
 	ci = cDvbCi::getInstance();
-
-	//dvbsub
-	//dvbsub_init();
 	
 	//globals
 	scan_runs = 0;
