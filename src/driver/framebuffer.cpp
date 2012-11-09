@@ -119,12 +119,12 @@ void CFrameBuffer::init(const char * const fbDevice)
 	fd = -1;
 	if(!mpGLThreadObj)
 	{
-		screeninfo.bits_per_pixel = 32;
-		screeninfo.xres = 720;
+		screeninfo.bits_per_pixel = DEFAULT_BPP;
+		screeninfo.xres = DEFAULT_XRES;
 		screeninfo.xres_virtual = screeninfo.xres;
-		screeninfo.yres = 576;
+		screeninfo.yres = DEFAULT_YRES;
 		screeninfo.yres_virtual = screeninfo.yres;
-		screeninfo.bits_per_pixel = 32;
+		screeninfo.bits_per_pixel = DEFAULT_BPP;
 		screeninfo.blue.length = 8;
 		screeninfo.blue.offset = 0;
 		screeninfo.green.length = 8;

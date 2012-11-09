@@ -1245,9 +1245,12 @@ void CMovieBrowser::refreshMovieInfo(void)
 	{
 		bool logo_ok = false;
 		
-		int divx = 720/m_cBoxFrameInfo.iHeight;
-		int picw = 720/divx - 50;
-		int pich = 576/divx - 50;
+		//int divx = m_pcWindow->getScreenWidth(true)/m_cBoxFrameInfo.iHeight;
+		//int picw = m_pcWindow->getScreenWidth(true)/divx - 50;
+		//int pich = m_pcWindow->getScreenHeight(true)/divx - 50;
+		
+		int picw = m_cBoxFrameInfo.iHeight*(m_pcWindow->getScreenWidth(true)/m_pcWindow->getScreenHeight(true));
+		int pich = m_cBoxFrameInfo.iHeight - 10;
 
 		std::string fname = m_movieSelectionHandler->file.Name;
 		
@@ -1268,11 +1271,11 @@ void CMovieBrowser::refreshMovieInfo(void)
 		
 		logo_ok = !access(fname.c_str(), F_OK);
 		
-		if(!logo_ok)
-		{
-			fname = "/share/tuxbox/neutrino/icons/no_preview.jpg";
-			logo_ok = !access(fname.c_str(), F_OK);
-		}
+		//if(!logo_ok)
+		//{
+		//	fname = "/share/tuxbox/neutrino/icons/no_preview.jpg";
+		//	logo_ok = !access(fname.c_str(), F_OK);
+		//}
 
 		m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2, (g_settings.mb_preview && logo_ok) ? m_cBoxFrameInfo.iWidth-picw-20: 0);
 
