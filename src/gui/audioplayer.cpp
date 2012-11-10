@@ -76,7 +76,7 @@
 #include <gui/pictureviewer.h>
 #include <audio_cs.h>
 
-extern cAudio * audioDecoder;			/* defined in audio_cs.pp (libcoolstream) */
+//extern cAudio * audioDecoder;			/* defined in audio_cs.pp (libcoolstream) */
 
 extern CPictureViewer * g_PicViewer;
 
@@ -294,7 +294,7 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	g_Sectionsd->setPauseScanning(true);
 	
 	// open
-	audioDecoder->Open();
+	//audioDecoder->Open();
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -316,7 +316,7 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 #endif	
 
 	//
-	audioDecoder->Close();
+	//audioDecoder->Close();
 
 	//AP end-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_END_SCRIPT "."); 
