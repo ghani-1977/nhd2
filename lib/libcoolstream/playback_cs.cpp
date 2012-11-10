@@ -47,11 +47,10 @@ static const char * FILENAME = "[playback_cs.cpp]";
 
 #if defined (ENABLE_GSTREAMER)
 GstElement * m_gst_playbin = NULL;
-GstBus * bus = NULL;;
 GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
-guint watchId = false;
+static int end_eof = 0;
 #endif
 
 #if defined ENABLE_GSTREAMER
@@ -60,7 +59,7 @@ gint match_sinktype(GstElement *element, gpointer type)
 	return strcmp(g_type_name(G_OBJECT_TYPE(element)), (const char*)type);
 }
 
-gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, gpointer user_data)
+/*gboolean*/GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 {
 	//gstplaydata_t * playdata = (gstplaydata_t *) user_data;
 	cPlayback * self=(cPlayback*) user_data; 
@@ -69,8 +68,8 @@ gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, gpointer user_data)
 	{
 		case GST_MESSAGE_EOS: {
 			g_message("End-of-stream");
-			//g_main_loop_quit(loop);
-			self->Close();
+			end_eof = 1;
+			//self->Stop(); //FIXME: dont call Close hier GUI player call Close after EOF.
 			break;
 		}
 		
@@ -82,7 +81,8 @@ gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, gpointer user_data)
 			g_error_free(err);
 
 			//g_main_loop_quit(loop);
-			self->Close();
+			end_eof = 1; 		// NOTE: just to exit
+			//self->Close(); 	//FIXME: dont call Close hier GUI player call Close after EOF.
 			break;
 		}
 		
@@ -154,7 +154,8 @@ gboolean Gst_bus_call(GstBus *bus, GstMessage *msg, gpointer user_data)
 			break;
 	}
 
-	return true;
+	//return true;
+	return GST_BUS_DROP;
 }
 #endif
 
@@ -267,7 +268,46 @@ void cPlayback::Close(void)
 
 	Stop();
 	
-#if !ENABLE_GSTREAMER
+#if ENABLE_GSTREAMER
+	#if 1
+	// disconnect bus handler
+	if (m_gst_playbin)
+	{
+		// disconnect sync handler callback
+		GstBus * bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
+		gst_bus_set_sync_handler(bus, NULL, NULL);
+		gst_object_unref(bus);
+		
+		printf("GST bus handler closed\n");
+	}
+
+	// close gst
+	if (m_gst_playbin)
+	{
+		if (audioSink)
+		{
+			gst_object_unref(GST_OBJECT(audioSink));
+			audioSink = NULL;
+			
+			printf("GST audio Sink closed\n");
+		}
+		
+		if (videoSink)
+		{
+			gst_object_unref(GST_OBJECT(videoSink));
+			videoSink = NULL;
+			
+			printf("GST video Sink closed\n");
+		}
+		
+		// unref m_gst_playbin
+		gst_object_unref (GST_OBJECT (m_gst_playbin));
+		printf("GST playbin closed\n");
+		
+		m_gst_playbin = NULL;
+	}
+	#endif
+#else
 	if(player && player->output) 
 	{
 		player->output->Command(player, OUTPUT_CLOSE, NULL);
@@ -330,8 +370,7 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 		uri = g_filename_to_uri(filename, NULL, NULL);
 	
 	// create gst pipeline
-	if (!m_gst_playbin)
-		m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
+	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
 	
 	if (!m_gst_playbin)
 	{
@@ -348,16 +387,9 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 	if(m_gst_playbin)
 	{
 		//gstbus handler
-		//bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
-		//gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
-		//guint watchId = gst_bus_add_watch(bus, Gst_bus_call, this);
-		//gst_object_unref(bus); 
-		
-		//videosink
-		//audiosink
-		//subsink
-		//streaming
-		//buffering
+		GstBus * bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
+		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
+		gst_object_unref(bus); 
 		
 		// state playing
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
@@ -572,6 +604,11 @@ bool cPlayback::GetPosition(int &position, int &duration)
 #if defined (ENABLE_GSTREAMER)
 
 	//EOF
+	if(end_eof)
+	{
+		end_eof = 0;
+		return false;
+	}
 	
 	//position
 	//unsigned long long int pts = 0;
@@ -584,7 +621,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	if(m_gst_playbin)
 	{
 		gst_element_query_position(m_gst_playbin, &fmt, &pts);
-		position = pts /  90.0;
+		position = pts /  1000000.0;
 		//printf("Pts = %02d:%02d:%02d (%llu.0000 sec)\n", (int)((sec / 60) / 60) % 60, (int)(sec / 60) % 60, (int)sec % 60, sec);
 	
 		// duration
@@ -592,10 +629,10 @@ bool cPlayback::GetPosition(int &position, int &duration)
 		gint64 len;
 
 		gst_element_query_duration(m_gst_playbin, &fmt, &len);
-		length = len / 90.0;
+		length = len / 1000000.0;
 		if(length < 0) length = 0;
 		
-		duration = (int)(length*1000);
+		duration = (int)(length) + 1000;
 		//printf("Length = %02d:%02d:%02d (%.4f sec)\n", (int)((length / 60) / 60) % 60, (int)(length / 60) % 60, (int)length % 60, length);
 	}
 #else
