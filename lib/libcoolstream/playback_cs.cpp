@@ -265,51 +265,7 @@ void cPlayback::Close(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
-//#if ENABLE_GSTREAMER
-#if 0
-	// disconnect bus handler
-	if (m_gst_playbin)
-	{
-		// disconnect sync handler callback
-		GstBus * bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, NULL, NULL);
-		gst_object_unref(bus);
-		
-		printf("GST bus handler closed\n");
-	}
-	//
-#endif
-
 	Stop();
-	
-//#if ENABLE_GSTREAMER
-#if 0
-	// close gst
-	if (m_gst_playbin)
-	{
-		if (audioSink)
-		{
-			gst_object_unref(GST_OBJECT(audioSink));
-			audioSink = NULL;
-			
-			printf("GST audio Sink closed\n");
-		}
-		
-		if (videoSink)
-		{
-			gst_object_unref(GST_OBJECT(videoSink));
-			videoSink = NULL;
-			
-			printf("GST video Sink closed\n");
-		}
-		
-		// unref m_gst_playbin
-		gst_object_unref (GST_OBJECT (m_gst_playbin));
-		printf("GST playbin closed\n");
-		
-		m_gst_playbin = NULL;
-	}
-#endif
 }
 
 // start
