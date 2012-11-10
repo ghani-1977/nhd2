@@ -84,19 +84,41 @@ void CAudioPlayer::ff(unsigned int seconds)
 	m_SecondsToSkip = seconds;
 
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::REV)
-		state = CBaseDec::FF;
+	{
+		state=CBaseDec::FF;
+#if 1	
+		playback->SetSpeed(2);
+#endif
+	}
 	else if(state == CBaseDec::FF)
-		state = CBaseDec::PLAY;
+	{
+		state=CBaseDec::PLAY;
+		
+#if 1	
+		playback->SetSpeed(1);
+#endif
+	}
 }
 
 void CAudioPlayer::rev(unsigned int seconds)
 {
 	m_SecondsToSkip = seconds;
 
-	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state==CBaseDec::FF)
+	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::FF)
+	{
 		state = CBaseDec::REV;
+#if 1	
+		playback->SetSpeed(-2);
+#endif
+	}
 	else if(state == CBaseDec::REV)
+	{
 		state = CBaseDec::PLAY;
+		
+#if 1	
+		playback->SetSpeed(1);
+#endif
+	}
 }
 
 CAudioPlayer * CAudioPlayer::getInstance()
