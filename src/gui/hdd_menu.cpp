@@ -65,7 +65,7 @@
 
 
 
-bool has_hdd = false;
+//bool has_hdd = 0;
 
 #define HDD_NOISE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval HDD_NOISE_OPTIONS[HDD_NOISE_OPTION_COUNT] =
@@ -168,6 +168,8 @@ int CHDDMenuHandler::hddMenu()
 	int fd;
 	struct dirent **namelist;
 	int ret;
+	
+	bool hdd_found = 0;
 
 	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
 
@@ -345,7 +347,7 @@ int CHDDMenuHandler::hddMenu()
 		hddmenu->addItem(new CMenuForwarderNonLocalized(str, true, NULL, tempMenu[i]));
 
 		/* result */
-		has_hdd = true;
+		hdd_found = 1;
 		
 		//test
 		free(namelist[i]);
@@ -359,9 +361,9 @@ int CHDDMenuHandler::hddMenu()
 	ret = hddmenu->exec(NULL, "");
 	
 	// delet temp menus
-	for(int i = 0; i < n;i++) 
+	for(int i = 0; i < n; i++) 
 	{     
-                if( has_hdd && tempMenu[i] != NULL )
+                if( hdd_found && tempMenu[i] != NULL )
 		{
                         delete tempMenu[i];
                 }
@@ -572,7 +574,7 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
 
         free(namelist);
 	
-	has_hdd = true;
+	//has_hdd = 1;
 
         return 1;
 }

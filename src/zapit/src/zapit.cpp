@@ -641,6 +641,9 @@ CZapitClient::responseGetLastChannel load_settings(void)
 
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
+	if(!thischannel)
+		return;
+	
 	int demux_index = -1;
 	int ca_mask = 0;
 	
@@ -648,13 +651,15 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	//cam0->setCaSocket();
 	
 	// cam
-	demux_index = fe->fenumber;
+	if(fe)
+		demux_index = fe->fenumber;
 	
 #if defined (PLATFORM_GIGABLUE)
 	ca_mask = 1;
 
 #else
-	ca_mask |= 1 << fe->fenumber;
+	if(fe)
+		ca_mask |= 1 << fe->fenumber;
 #endif	
 
 	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
@@ -909,7 +914,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	live_channel_id = live_channel->getChannelID();
 	saveZapitSettings(false, false);
 
-	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->getFeIndex() );
+	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fenumber );
 
 	// tune to
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))

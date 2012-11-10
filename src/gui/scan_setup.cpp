@@ -305,6 +305,9 @@ void CScanSetup::showScanService()
 	
 	printf("CScanSetup::showScanService: Tuner: %d\n", feindex);
 	
+	if(!getFE(feindex))
+		return;
+	
 	//load scan settings 
 	if( !scanSettings->loadSettings(NEUTRINO_SCAN_SETTINGS_FILE, feindex) ) 
 		dprintf(DEBUG_NORMAL, "CScanSetup::CScanSetup: Loading of scan settings failed. Using defaults.\n");
@@ -325,7 +328,7 @@ void CScanSetup::showScanService()
 	
 	// load motor position
 	if( getFE(feindex)->getInfo()->type == FE_QPSK) 
-		 LoadMotorPositions();
+		LoadMotorPositions();
 	
 	// intros
 	scansetup->addItem(GenericMenuBack);
@@ -913,6 +916,9 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 	if(!configfile.loadConfig(fileName))
 		printf("%s not found\n", fileName);
 	
+	if( !getFE(index) )
+		return false;
+	
 	// common
 	scanType = (CZapitClient::scanType) getConfigValue(index, "scanType", CZapitClient::ST_ALL);
 	bouquetMode = (CZapitClient::bouquetMode) getConfigValue(index, "bouquetMode", CZapitClient::BM_UPDATEBOUQUETS);
@@ -937,7 +943,7 @@ bool CScanSettings::loadSettings(const char * const fileName, int index)
 		TP_fec = getConfigValue(index, "TP_fec", 1);
 		TP_pol = getConfigValue(index, "TP_pol", 0);
 	}
-	
+		
 	if(getFE(index)->getInfo()->type == FE_QAM)
 	{
 		TP_mod = getConfigValue(index, "TP_mod", 3);

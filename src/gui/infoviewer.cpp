@@ -1541,7 +1541,7 @@ void CInfoViewer::showSNR()
 				char AktivTuner[255];
 				
 				if(live_fe != NULL)
-					sprintf(AktivTuner, "T%d", (live_fe->getFeIndex() + 1));
+					sprintf(AktivTuner, "T%d", (live_fe->fenumber + 1));
 				
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 			}

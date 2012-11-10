@@ -895,10 +895,11 @@ void cDvbCi::reset(int slot)
 	    break;
 	 }
      }
-
+#if HAVE_DVB_API_VERSION < 5
      if (haveFound)
      {
 	if (ioctl((*it)->fd, CA_RESET, (*it)->slot) < 0)
 		printf("IOCTL CA_RESET failed for slot %d\n", slot);
      }
+#endif     
 }

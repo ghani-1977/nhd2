@@ -40,7 +40,7 @@ class CImageInfo : public CMenuTarget
 		int ypos;
 		int width;
 		int height;
-		int hheight,iheight,sheight; 	// head/info/small font height
+		int hheight, iheight, sheight; 	// head/info/small font height
 
 		int max_height;	// Frambuffer 0.. max
 		int max_width;

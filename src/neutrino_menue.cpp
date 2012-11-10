@@ -154,7 +154,7 @@
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
-extern bool has_hdd;				// defined in hdd_menu.cpp
+//extern bool has_hdd;				// defined in hdd_menu.cpp
 extern bool parentallocked;			// defined neutrino.cpp
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
 extern CCAMMenuHandler * g_CamHandler;		// defined neutrino.cpp
@@ -162,7 +162,7 @@ extern CCAMMenuHandler * g_CamHandler;		// defined neutrino.cpp
 static CTimingSettingsNotifier timingsettingsnotifier;
 
 extern int FrontendCount;			// defined in zapit.cpp
-extern int tuner_to_scan;			// defined in scan_setup.cpp
+//extern int tuner_to_scan;			// defined in scan_setup.cpp
 CFrontend * getFE(int index);
 
 extern Zapit_config zapitCfg;	//defined in neutrino.cpp
@@ -333,7 +333,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	//HDD settings
 	//if(has_hdd)
-		mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, true, "", new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "hddsettings", LOCALE_HELPTEXT_HDDSETTINGS ));
+	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, true, "", new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "hddsettings", LOCALE_HELPTEXT_HDDSETTINGS ));
 }
 
 //Video Settings
@@ -769,7 +769,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 			CFrontend * fe = getFE(i);
 			char tbuf[255];
 		
-			sprintf(tbuf, "Tuner-%d: %s", fe->getFeIndex() + 1, fe->getInfo()->name);
+			sprintf(tbuf, "Tuner-%d: %s", fe->fenumber + 1, fe->getInfo()->name);
 			TunerSetup.addItem(new CMenuForwarderNonLocalized(tbuf, true, NULL, new CScanSetup(i) ));
 		}	
 		
@@ -1616,7 +1616,7 @@ void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 	
 	// streaming setup sub menu
 	CMenuWidget* mp_streaming_setup = new CMenuWidget(LOCALE_MAINSETTINGS_STREAMING, NEUTRINO_ICON_SETTINGS, w_max (500, 100));
-	CMenuForwarder* mp_streaming_setup_mf = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SETTINGS, true, NULL, mp_streaming_setup, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW);
+	CMenuForwarder* mp_streaming_setup_mf = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SETTINGS, true, NULL, mp_streaming_setup, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN);
 
 	// intros
 	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );

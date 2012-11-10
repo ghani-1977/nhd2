@@ -2854,7 +2854,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				tuxtx_stop_subtitle();
 
-				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe->fenumber );
+				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
 
 				frameBuffer->paintBackground();
 
@@ -5599,7 +5599,7 @@ void CNeutrinoApp::StopSubtitles()
 	
 	if(ttx) 
 	{
-		tuxtx_pause_subtitle(true, live_fe->getFeIndex() );
+		tuxtx_pause_subtitle(true, live_fe?live_fe->fenumber:0 );
 		frameBuffer->paintBackground();
 #ifdef FB_BLIT
 		frameBuffer->blit();
@@ -5627,7 +5627,7 @@ void CNeutrinoApp::StartSubtitles(bool show)
 	dvbsub_start(dvbsub_getpid());
 	
 	// tuxtxt
-	tuxtx_pause_subtitle(false, live_fe->getFeIndex());
+	tuxtx_pause_subtitle( false, live_fe?live_fe->fenumber:0 );
 }
 
 // select subtitle
@@ -5706,7 +5706,6 @@ void sighandler (int signum)
         }
 }
 
-#include <mcheck.h>
 // main function
 int main(int argc, char *argv[])
 {
@@ -5742,8 +5741,6 @@ int main(int argc, char *argv[])
 	
 	for(int i = 3; i < 256; i++)
 		close(i);
-	
-	mtrace();
 
 	return CNeutrinoApp::getInstance()->run(argc, argv);
 }

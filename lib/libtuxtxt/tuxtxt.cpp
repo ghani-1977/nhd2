@@ -4230,6 +4230,7 @@ void SwitchZoomMode()
 */
 void getCurrentPIGSettings(int* left, int* top, int* width, int* height)
 {
+#if !defined (PLATFORM_GENERIC)  
 	FILE* fd;
 	
 	fd = fopen("/proc/stb/vmpeg/0/dst_left", "r");
@@ -4247,25 +4248,30 @@ void getCurrentPIGSettings(int* left, int* top, int* width, int* height)
 	fd = fopen("/proc/stb/vmpeg/0/dst_height", "r");
 	fscanf(fd, "%x", height);
 	fclose(fd);
+#endif	
 
 	fprintf(stderr, "%s: top %d, left %d, width %d, height %d\n", __func__, *left, *top, *width, *height);
 }
 
 void getCurrentPOLICYSettings()
 {
+#if !defined (PLATFORM_GENERIC)  
 	FILE* fd;
 	fd = fopen("/proc/stb/video/policy", "r");
 	fscanf(fd, "%s", policy);
 	fclose(fd);
+#endif	
 }
 
 void getCurrentASPECTSettings()
 {
+#if !defined (PLATFORM_GENERIC)  
 	FILE* fd;
 	
 	fd = fopen("/proc/stb/video/aspect", "r");
 	fscanf(fd, "%s", aspect);
 	fclose(fd);
+#endif	
 }
 
 void setCurrentPIGSettings(int left, int top, int width, int height)
@@ -4292,6 +4298,8 @@ void setCurrentPIGSettings(int left, int top, int width, int height)
 		_y = top * yres / osd_h;
 		_h = height * yres / osd_h;
 	}
+	
+#if !defined (PLATFORM_GENERIC)	
 	//
 	FILE* fd;
 	
@@ -4312,11 +4320,13 @@ void setCurrentPIGSettings(int left, int top, int width, int height)
 	fd = fopen("/proc/stb/vmpeg/0/dst_height", "w");
 	fprintf(fd, "%x", _h/*height*/);
 	fclose(fd);
+#endif	
 }
 
 // new
 void getCurrentPictureInfo(int &width, int &height, int &rate)
 {
+#if !defined (PLATFORM_GENERIC)  
   	unsigned char buffer[10];
 	int n, fd;	
 
@@ -4357,19 +4367,23 @@ void getCurrentPictureInfo(int &width, int &height, int &rate)
 	{
 		sscanf((const char*) buffer, "%X", &height);
 	}
+#endif	
 }
 
 void setCurrentPOLICYSettings(int reset)
 {
+#if !defined (PLATFORM_GENERIC)  
 	FILE* fd;
 	fd = fopen("/proc/stb/video/policy", "w");
 	if (reset == 1)
 	    fprintf(fd, "%s", policy);
 	fclose(fd);
+#endif	
 }
 
 void setCurrentASPECTSettings(int reset)
 {
+#if !defined (PLATFORM_GENERIC)  
 	FILE* fd;
 	
 	fd = fopen("/proc/stb/video/aspect", "w");
@@ -4378,6 +4392,7 @@ void setCurrentASPECTSettings(int reset)
 	else
 	   fprintf(fd, "4:3");
 	fclose(fd);
+#endif	
 }
 
 void SwitchScreenMode(int newscreenmode)

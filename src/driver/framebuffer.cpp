@@ -417,17 +417,13 @@ int CFrameBuffer::setMode()
 	
 	dprintf(DEBUG_NORMAL, "CFrameBuffer::setMode: FB: %dx%dx%d\n", DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 
-#ifdef __sh__
+#if defined __sh__ || defined USE_OPENGL
 	xRes = DEFAULT_XRES;
 	yRes = DEFAULT_YRES;
 	bpp = DEFAULT_BPP;
 	stride = xRes * 4;
 #else
 	setVideoMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
-#endif
-
-#ifdef USE_OPENGL
-	stride = 4 * xRes;
 #endif	
 
 	setBlendMode(0);

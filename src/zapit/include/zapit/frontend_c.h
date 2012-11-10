@@ -227,7 +227,6 @@ class CFrontend
 		void setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int32_t _lnbSwitch);
 
 		struct dvb_frontend_event getEvent(void);
-		int getFeIndex() {return fenumber;}
 		
 		int getDeliverySystem();
 		bool				getHighBand()				{ return (int) getFrequency() >= lnbSwitch; }

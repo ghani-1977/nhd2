@@ -558,11 +558,6 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		// tuxtxt stop
 		tuxtx_stop_subtitle();
 		
-		// dvbsub stop and close
-		//dvbsub_stop();
-		//dvbsub_close();
-		//dvbsub_init(live_fe->getFeIndex() );
-		
 		dvbsub_pause();
 		dvbsub_start(pid);
 	} 

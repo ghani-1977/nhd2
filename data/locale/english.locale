@@ -900,7 +900,7 @@ movieplayer.bookmarkname_hint2
 movieplayer.buffering Buffering...
 movieplayer.defdir start dir.
 movieplayer.defplugin Start-Plugin
-movieplayer.vlcplayback Vlc Player
+movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
 movieplayer.fileplayback Media Archiv
 movieplayer.showtshelp Help

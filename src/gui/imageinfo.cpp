@@ -73,7 +73,7 @@ CImageInfo::CImageInfo()
 }
 
 CImageInfo::~CImageInfo()
-{
+{  
 	videoDecoder->Pig(-1, -1, -1, -1);
 }
 
@@ -84,7 +84,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 
 	paint();
 
-	paint_pig( (width - width/3), y, width/3, height/3);
+	paint_pig( (width - width/3), y, width/3, height/3);	
 
 #ifdef FB_BLIT
 	frameBuffer->blit();	
@@ -119,7 +119,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 }
 
 void CImageInfo::hide()
-{
+{  
 	videoDecoder->Pig(-1, -1, -1, -1);
 	
 	frameBuffer->paintBackgroundBoxRel(0 , 0, max_width, max_height);
@@ -179,7 +179,8 @@ void CImageInfo::paint()
 
 
 	CConfigFile config('\t');
-	config.loadConfig("/var/etc/.version");
+	if( !config.loadConfig("/var/etc/.version"));
+		printf("/var/etc/.version not found using default.\n");
 
 	const char * imagename = config.getString("imagename", "NeutrinoHD2").c_str();
 	const char * homepage  = config.getString("homepage",  "http://www.dgstation-forum.org").c_str();
@@ -246,9 +247,6 @@ void CImageInfo::paint()
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_FORUM));
 	paintLine(xpos+125, font_info, forum);
-	
-	//test
-	//g_PicViewer->DisplayImage("/share/tuxbox/neutrino/icons/logo.jpeg", xpos+5, ypos +125, 0, 0);
 
 	// license
 	ypos += iheight;
