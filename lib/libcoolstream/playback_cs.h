@@ -56,12 +56,12 @@ class cPlayback
 #endif
 		bool playing;
 
-		playstate_t playstate;
-
 		int mSpeed;
 		int mAudioStream;
 
 	public:
+		playstate_t playstate;
+		
 		bool Open();
 		void Close(void);
 		bool Start(char * filename, unsigned short vpid, int vtype, unsigned short apid, bool ac3);
