@@ -102,7 +102,7 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-static cPlayback * playback;
+/*static*/ cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;

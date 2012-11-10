@@ -43,24 +43,41 @@
 #include <driver/audioplay.h>
 #include <driver/netfile.h>
 
+#include <playback_cs.h>
 
+
+extern cPlayback * playback;
 
 
 void CAudioPlayer::stop()
 {
 	state = CBaseDec::STOP_REQ;
 	
+#if ENABLE_GSTREAMER
+	playback->Close();
+#else	
 	if(thrPlay)
 		pthread_join(thrPlay,NULL);
 	thrPlay = 0;
+#endif	
 }
 
 void CAudioPlayer::pause()
 {
-	if(state==CBaseDec::PLAY || state==CBaseDec::FF || state==CBaseDec::REV)
-		state=CBaseDec::PAUSE;
+	if(state == CBaseDec::PLAY || state==CBaseDec::FF || state==CBaseDec::REV)
+	{
+		state = CBaseDec::PAUSE;
+#if ENABLE_GSTREAMER		
+		playback->SetSpeed(0);
+#endif
+	}
 	else if(state==CBaseDec::PAUSE)
+	{
 		state=CBaseDec::PLAY;
+#if ENABLE_GSTREAMER		
+		playback->SetSpeed(1);
+#endif		
+	}
 }
 
 void CAudioPlayer::ff(unsigned int seconds)
@@ -100,7 +117,6 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 	int soundfd = -1;
 	
 	// Decode stdin to stdout.
-	
 	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
 
 	if (Status != CBaseDec::OK)
@@ -113,7 +129,6 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 				( Status == CBaseDec::INTERNAL_ERR ) ? "INTERNAL_ERR" :
 				"unknown" );
 	}
-
 
 	getInstance()->state = CBaseDec::STOP;
 
@@ -154,6 +169,18 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 	}
 
 	bool ret = true;
+	
+#if ENABLE_GSTREAMER				
+		playback->Close();
+				
+		// init player
+		playback->Open();
+				
+		if(!playback->Start((char *)file->Filename.c_str(), 0, 0, 0, false))
+			ret = false;
+				
+		playback->SetPosition(0, true);
+#else	
 #warning fixme: There must be a way to call the playing thread without arguments. (NULL did not work for me)
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )
 	{
@@ -162,6 +189,8 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 	}
 
 	pthread_attr_destroy(&attr);
+#endif
+
 	return ret;
 }
 

@@ -72,7 +72,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 	}
 
 	if ( Status == OK )
-	{
+	{	  
 		if( in->FileType == CFile::STREAM_AUDIO )
 		{
 			if ( fstatus( fp, ShoutcastCallback ) < 0 )
@@ -88,6 +88,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 			*/
 			{
 				Status = CMP3Dec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t,secondsToSkip );
+				
 			}
 		}
 		else if( in->FileType == CFile::FILE_MP3)
@@ -117,7 +118,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 			fprintf( stderr, "DecoderBase: Supplied filetype is not " );
 			fprintf( stderr, "supported by Audioplayer.\n" );
 			Status = INTERNAL_ERR;
-		}
+		}		
 
 		if ( fclose( fp ) == EOF )
 		{

@@ -18,7 +18,7 @@ TUXBOX_APPS_LIB_CONFIG(CURL,curl-config)
 TUXBOX_APPS_LIB_CONFIG(FREETYPE,freetype-config)
 TUXBOX_APPS_LIB_PKGCONFIG(ID3TAG,id3tag)
 TUXBOX_APPS_LIB_PKGCONFIG(MAD,mad)
-if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus"; then
+if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate"; then
 TUXBOX_APPS_LIB_PKGCONFIG(VORBISIDEC,vorbis)
 else
 TUXBOX_APPS_LIB_PKGCONFIG(VORBISIDEC,vorbisidec)
@@ -27,7 +27,7 @@ TUXBOX_APPS_LIB_PKGCONFIG(PNG,libpng)
 TUXBOX_APPS_LIB_PKGCONFIG(AVCODEC,libavcodec)
 TUXBOX_APPS_LIB_PKGCONFIG(AVUTIL,libavutil)
 TUXBOX_APPS_LIB_PKGCONFIG(AVFORMAT,libavformat)
-if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus"; then
+if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate"; then
 TUXBOX_APPS_LIB_PKGCONFIG(GST,gstreamer-0.10)
 fi
 
