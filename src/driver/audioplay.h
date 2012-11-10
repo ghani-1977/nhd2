@@ -46,11 +46,13 @@ class CAudioPlayer
 		unsigned int m_SecondsToSkip;
 
 
-	protected: 
-		CAudiofile m_Audiofile;
-		bool SetDSP(int soundfd, int fmt, unsigned int dsp_speed, unsigned int channels);
+	//protected: 
+	//	CAudiofile m_Audiofile;
+	//	bool SetDSP(int soundfd, int fmt, unsigned int dsp_speed, unsigned int channels);
 
 	public:
+		CAudiofile m_Audiofile;
+		
 		static CAudioPlayer* getInstance();
 		bool play(const CAudiofile*, const bool highPrio=false);
 		void stop();
