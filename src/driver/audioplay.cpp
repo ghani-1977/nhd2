@@ -54,7 +54,7 @@ void CAudioPlayer::stop()
 	state = CBaseDec::STOP_REQ;
 	
 #if ENABLE_GSTREAMER
-	playback->Close();
+	playback->Stop();
 #else	
 	if(thrPlay)
 		pthread_join(thrPlay,NULL);
@@ -64,7 +64,7 @@ void CAudioPlayer::stop()
 
 void CAudioPlayer::pause()
 {
-	if(state == CBaseDec::PLAY || state==CBaseDec::FF || state==CBaseDec::REV)
+	if(state == CBaseDec::PLAY || state == CBaseDec::FF || state == CBaseDec::REV)
 	{
 		state = CBaseDec::PAUSE;
 #if ENABLE_GSTREAMER		
@@ -84,20 +84,20 @@ void CAudioPlayer::ff(unsigned int seconds)
 {
 	m_SecondsToSkip = seconds;
 
-	if(state==CBaseDec::PLAY || state==CBaseDec::PAUSE || state==CBaseDec::REV)
-		state=CBaseDec::FF;
-	else if(state==CBaseDec::FF)
-		state=CBaseDec::PLAY;
+	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::REV)
+		state = CBaseDec::FF;
+	else if(state == CBaseDec::FF)
+		state = CBaseDec::PLAY;
 }
 
 void CAudioPlayer::rev(unsigned int seconds)
 {
 	m_SecondsToSkip = seconds;
 
-	if(state==CBaseDec::PLAY || state==CBaseDec::PAUSE || state==CBaseDec::FF)
-		state=CBaseDec::REV;
-	else if(state==CBaseDec::REV)
-		state=CBaseDec::PLAY;
+	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state==CBaseDec::FF)
+		state = CBaseDec::REV;
+	else if(state == CBaseDec::REV)
+		state = CBaseDec::PLAY;
 }
 
 CAudioPlayer * CAudioPlayer::getInstance()
@@ -171,15 +171,15 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 	bool ret = true;
 	
 #if ENABLE_GSTREAMER				
-		playback->Close();
+		//playback->Close();
 				
 		// init player
-		playback->Open();
+		//playback->Open();
 				
 		if(!playback->Start((char *)file->Filename.c_str(), 0, 0, 0, false))
 			ret = false;
 				
-		playback->SetPosition(0, true);
+		//playback->SetPosition(0, true);
 #else	
 #warning fixme: There must be a way to call the playing thread without arguments. (NULL did not work for me)
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )
@@ -203,39 +203,54 @@ void CAudioPlayer::init()
 {
 	CBaseDec::Init();
 	state = CBaseDec::STOP;
+	
+#if ENABLE_GSTREAMER				
+	playback->Close();
+				
+	// init player
+	playback->Open();	
+#else	
 	thrPlay = 0;
+#endif	
 }
 
 void CAudioPlayer::sc_callback(void *arg)
 {
 	bool changed=false;
 	CSTATE *stat = (CSTATE*)arg;
+	
 	if(m_Audiofile.MetaData.artist != stat->artist)
 	{
 		m_Audiofile.MetaData.artist = stat->artist;
-		changed=true;
+		changed = true;
 	}
+	
 	if (m_Audiofile.MetaData.title != stat->title)
 	{
 		m_Audiofile.MetaData.title = stat->title;
-		changed=true;
+		changed = true;
 	}
+	
 	if (m_Audiofile.MetaData.sc_station != stat->station)
 	{
 		m_Audiofile.MetaData.sc_station = stat->station;
-		changed=true;
+		changed = true;
 	}
+	
 	if (m_Audiofile.MetaData.genre != stat->genre)
 	{
 		m_Audiofile.MetaData.genre = stat->genre;
-		changed=true;
+		changed = true;
 	}
+	
 	if(changed)
 	{
 		m_played_time = 0;
 	}
+	
 	m_sc_buffered = stat->buffered;
 	m_Audiofile.MetaData.changed = changed;
+	
 	//printf("Callback %s %s %s %d\n",stat->artist, stat->title, stat->station, stat->buffered);
 }
 
