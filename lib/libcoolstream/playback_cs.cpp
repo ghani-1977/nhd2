@@ -264,8 +264,29 @@ bool cPlayback::Open()
 void cPlayback::Close(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-	
+
 	Stop();
+	
+#if !ENABLE_GSTREAMER
+	if(player && player->output) 
+	{
+		player->output->Command(player, OUTPUT_CLOSE, NULL);
+		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
+		player->output->Command(player,OUTPUT_DEL, (void*)"video");		
+		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");	
+	}
+
+	if(player && player->playback)
+		player->playback->Command(player, PLAYBACK_CLOSE, NULL);
+
+
+	if(player != NULL)
+	{
+		free(player);
+
+		player = NULL;
+	}
+#endif	
 }
 
 // start
@@ -309,7 +330,8 @@ bool cPlayback::Start(char * filename, unsigned short vpid, int vtype, unsigned 
 		uri = g_filename_to_uri(filename, NULL, NULL);
 	
 	// create gst pipeline
-	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
+	if (!m_gst_playbin)
+		m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
 	
 	if (!m_gst_playbin)
 	{
@@ -415,8 +437,6 @@ bool cPlayback::Play(void)
 
 bool cPlayback::Stop(void)
 { 
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
-
 	if(playing == false) 
 		return false;	
 
@@ -428,28 +448,10 @@ bool cPlayback::Stop(void)
 	}
 #else
 	if(player && player->playback && player->output) 
-	{
 		player->playback->Command(player, PLAYBACK_STOP, NULL);
-		player->output->Command(player, OUTPUT_CLOSE, NULL);
-	}
-
-	if(player && player->output) 
-	{
-		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-		player->output->Command(player,OUTPUT_DEL, (void*)"video");		
-		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");	
-	}
-
-	if(player && player->playback)
-		player->playback->Command(player, PLAYBACK_CLOSE, NULL);
-
-
-	if(player != NULL)
-	{
-		free(player);
-
-		player = NULL;
-	}
+	
+	if(player && player->container && player->container->selectedContainer)
+		player->container->selectedContainer->Command(player, CONTAINER_STOP, NULL);
 #endif
 
 	playing = false;
@@ -582,7 +584,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	if(m_gst_playbin)
 	{
 		gst_element_query_position(m_gst_playbin, &fmt, &pts);
-		position = pts /  90.0/*1000000000.0*/;
+		position = pts /  90.0;
 		//printf("Pts = %02d:%02d:%02d (%llu.0000 sec)\n", (int)((sec / 60) / 60) % 60, (int)(sec / 60) % 60, (int)sec % 60, sec);
 	
 		// duration
@@ -590,7 +592,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 		gint64 len;
 
 		gst_element_query_duration(m_gst_playbin, &fmt, &len);
-		length = len /*/  1000000000.0*/;
+		length = len / 90.0;
 		if(length < 0) length = 0;
 		
 		duration = (int)(length*1000);
