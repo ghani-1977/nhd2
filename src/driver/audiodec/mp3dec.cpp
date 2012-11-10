@@ -58,6 +58,12 @@
 
 extern cAudio * audioDecoder;
 
+#include <driver/audioplay.h>
+#include <playback_cs.h>
+
+
+extern cPlayback * playback;
+
 
 /* libid3tag extension: This is neccessary in order to call fclose
    on the file. Normally libid3tag closes the file implicit.
@@ -810,13 +816,15 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 		ssize_t	BufferSize=OutputPtr-OutputBuffer;
 
 		if(audioDecoder)
+		{
 			if(audioDecoder->WriteClip(OutputBuffer, BufferSize) != BufferSize)
 			{
 				fprintf(stderr,"%s: PCM write error at the end (%s).\n", ProgName,strerror(errno));
 				Status=WRITE_ERR;
 			}
+		}
 	}
-		
+	
 	if(audioDecoder)
 		audioDecoder->StopClip();
 	

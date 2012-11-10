@@ -72,7 +72,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 	}
 
 	if ( Status == OK )
-	{	  
+	{
 		if( in->FileType == CFile::STREAM_AUDIO )
 		{
 			if ( fstatus( fp, ShoutcastCallback ) < 0 )
