@@ -19,6 +19,12 @@ if ENABLE_LCD
 INCLUDES += -I$(top_srcdir)/lib/liblcddisplay
 endif
 
+if !ENABLE_GSTREAMER
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+else
+INCLUDES += @GST_CFLAGS@
+endif
+
 noinst_LIBRARIES = libneutrino_driver.a libneutrino_driver_netfile.a
 
 libneutrino_driver_a_SOURCES = \
