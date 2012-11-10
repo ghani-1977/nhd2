@@ -58,12 +58,6 @@
 
 extern cAudio * audioDecoder;
 
-#include <driver/audioplay.h>
-#include <playback_cs.h>
-
-
-extern cPlayback * playback;
-
 
 /* libid3tag extension: This is neccessary in order to call fclose
    on the file. Normally libid3tag closes the file implicit.
