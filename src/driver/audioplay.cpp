@@ -53,13 +53,12 @@ void CAudioPlayer::stop()
 {
 	state = CBaseDec::STOP_REQ;
 	
-#if ENABLE_GSTREAMER
+#if 1
 	playback->Stop();
-#else	
+#endif	
 	if(thrPlay)
 		pthread_join(thrPlay,NULL);
-	thrPlay = 0;
-#endif	
+	thrPlay = 0;	
 }
 
 void CAudioPlayer::pause()
@@ -67,14 +66,14 @@ void CAudioPlayer::pause()
 	if(state == CBaseDec::PLAY || state == CBaseDec::FF || state == CBaseDec::REV)
 	{
 		state = CBaseDec::PAUSE;
-#if ENABLE_GSTREAMER		
+#if 1		
 		playback->SetSpeed(0);
 #endif
 	}
 	else if(state==CBaseDec::PAUSE)
 	{
 		state=CBaseDec::PLAY;
-#if ENABLE_GSTREAMER		
+#if 1		
 		playback->SetSpeed(1);
 #endif		
 	}
@@ -116,6 +115,19 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 {
 	int soundfd = -1;
 	
+#if 1
+	int position = 0;
+	int duration = 0;
+	
+	do {
+		if(! playback->GetPosition(position, duration))
+		{
+			getInstance()->state = CBaseDec::STOP;
+			break;
+		}
+		getInstance()->m_played_time = position/1000;
+	}while(getInstance()->state != CBaseDec::STOP_REQ);	//(playback->GetPosition(position, duration));
+#else
 	// Decode stdin to stdout.
 	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
 
@@ -128,9 +140,10 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 				( Status == CBaseDec::DATA_ERR ) ? "DATA_ERR" :
 				( Status == CBaseDec::INTERNAL_ERR ) ? "INTERNAL_ERR" :
 				"unknown" );
-	}
+	}	
 
-	getInstance()->state = CBaseDec::STOP;
+	getInstance()->state = CBaseDec::STOP;	
+#endif	
 
 	pthread_exit(0);
 
@@ -170,17 +183,15 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 
 	bool ret = true;
 	
-#if ENABLE_GSTREAMER				
-		//playback->Close();
-				
-		// init player
-		//playback->Open();
+#if 1				
+		playback->Close();
+		
+		playback->Open();
 				
 		if(!playback->Start((char *)file->Filename.c_str(), 0, 0, 0, false))
 			ret = false;
-				
-		//playback->SetPosition(0, true);
-#else	
+#endif	
+
 #warning fixme: There must be a way to call the playing thread without arguments. (NULL did not work for me)
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )
 	{
@@ -189,7 +200,6 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 	}
 
 	pthread_attr_destroy(&attr);
-#endif
 
 	return ret;
 }
@@ -204,14 +214,11 @@ void CAudioPlayer::init()
 	CBaseDec::Init();
 	state = CBaseDec::STOP;
 	
-#if ENABLE_GSTREAMER				
-	playback->Close();
-				
+#if 1							
 	// init player
 	playback->Open();	
-#else	
-	thrPlay = 0;
 #endif	
+	thrPlay = 0;	
 }
 
 void CAudioPlayer::sc_callback(void *arg)
@@ -264,7 +271,7 @@ void CAudioPlayer::clearFileData()
 CAudioMetaData CAudioPlayer::getMetaData()
 {
 	CAudioMetaData m = m_Audiofile.MetaData;
-	m_Audiofile.MetaData.changed=false;
+	m_Audiofile.MetaData.changed = false;
 	return m;
 }
 
