@@ -210,7 +210,7 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 		
 		playback->Open();
 				
-		if(!playback->Start((char *)file->Filename.c_str(), 0, 0, 0, false))
+		if(!playback->Start( (char *)file->Filename.c_str() ))
 			ret = false;
 #endif	
 

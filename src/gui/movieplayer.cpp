@@ -306,7 +306,9 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("vob");
 	tsfilefilter.addFilter("mp4");
 	tsfilefilter.addFilter("mov");
+#if !ENABLE_GSTREAMER	
 	tsfilefilter.addFilter("flv");
+#endif	
 	
 	tsfilefilter.addFilter("dat");
 	tsfilefilter.addFilter("trp");
@@ -1176,7 +1178,8 @@ void CMoviePlayerGui::PlayFile(void)
 							if (p_movie_info->bookmarks.user[book_nr].pos != 0 && p_movie_info->bookmarks.user[book_nr].length != 0) 
 							{
 								// valid bookmark found, now check if we are close before or after it
-								if (play_sec >= p_movie_info->bookmarks.user[book_nr].pos - MOVIE_HINT_BOX_TIMER && play_sec < p_movie_info->bookmarks.user[book_nr].pos && play_sec > jump_not_until) {
+								if (play_sec >= p_movie_info->bookmarks.user[book_nr].pos - MOVIE_HINT_BOX_TIMER && play_sec < p_movie_info->bookmarks.user[book_nr].pos && play_sec > jump_not_until) 
+								{
 									if (p_movie_info->bookmarks.user[book_nr].length < 0)
 										showLoopHintBox = true;	// we are 5 sec before , show warning
 									else if (p_movie_info->bookmarks.user[book_nr].length > 0)
@@ -1639,7 +1642,7 @@ void CMoviePlayerGui::PlayFile(void)
 			  
 			// open file
 			// PlayBack Start
-			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3)) 
+			if(!playback->Start((char *)filename)) 
 			{
 				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();

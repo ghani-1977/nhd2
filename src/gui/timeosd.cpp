@@ -194,13 +194,8 @@ void CTimeOSD::show(time_t time_show)
 		// infos
 		
 		// duration
-		char runningRest[32]; // %d can be 10 digits max...
-		//sprintf(runningRest, "%d / %d min", (position + 30000) / 60000, (duration + 30000) / 60000);
-#if ENABLE_GSTREAMER		
-		sprintf(runningRest, "%d min", (duration)/135);
-#else		
-		sprintf(runningRest, "%d min", (duration + 30000) / 60000 );
-#endif		
+		char runningRest[32]; // %d can be 10 digits max...	
+		sprintf(runningRest, "%d min", (duration + 30000) / 60000 );	
 		
 		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
 		int durationTextPos = BoxEndX - durationWidth - 15;
@@ -211,10 +206,10 @@ void CTimeOSD::show(time_t time_show)
 		int InfoWidth = durationTextPos - InfoStartX;
 		
 		//Title 1
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, /*durationTextPos - (icon_x + icon_w + 15) - 5*/InfoWidth, g_file_epg, COL_INFOBAR, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, g_file_epg, COL_INFOBAR, 0, true);
 
 		//Title2
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, /*durationTextPos - (icon_x + icon_w + 15) - 5*/InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 		// duration
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningRest, COL_INFOBAR);

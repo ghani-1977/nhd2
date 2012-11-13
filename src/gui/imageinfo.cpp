@@ -73,7 +73,7 @@ CImageInfo::CImageInfo()
 }
 
 CImageInfo::~CImageInfo()
-{  
+{   
 	videoDecoder->Pig(-1, -1, -1, -1);
 }
 

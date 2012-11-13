@@ -145,9 +145,6 @@ void GLThreadObj::initKeys()
 	mKeyMap['7']  = CRCInput::RC_7;
 	mKeyMap['8']  = CRCInput::RC_8;
 	mKeyMap['9']  = CRCInput::RC_9;
-	
-	mKeyMap['p'] = CRCInput::RC_play;
-	mKeyMap['s'] = CRCInput::RC_stop;
 }
 
 void GLThreadObj::run()

@@ -64,7 +64,7 @@ class cPlayback
 		
 		bool Open();
 		void Close(void);
-		bool Start(char * filename, unsigned short vpid, int vtype, unsigned short apid, bool ac3);
+		bool Start(char * filename);
 		
 		bool Play(void);
 		bool SyncAV(void);

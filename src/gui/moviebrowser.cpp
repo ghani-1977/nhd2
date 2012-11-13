@@ -2618,7 +2618,9 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					    (strcasecmp("vob", extension.c_str()) == 0) ||
 					    (strcasecmp("mp4", extension.c_str()) == 0) ||
 					    (strcasecmp("mov", extension.c_str()) == 0) ||
+#if !ENABLE_GSTREAMER					    
 					    (strcasecmp("flv", extension.c_str()) == 0) ||
+#endif					    
 					    (strcasecmp("dat", extension.c_str()) == 0) ||
 					    (strcasecmp("trp", extension.c_str()) == 0) ||
 					    (strcasecmp("vdr", extension.c_str()) == 0) ||
