@@ -50,6 +50,7 @@ GstElement * m_gst_playbin = NULL;
 GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
+GstTagList * m_stream_tags = 0;
 static int end_eof = 0;
 #endif
 
@@ -94,6 +95,33 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			gst_message_parse_info (msg, &inf, &debug);
 			g_free (debug);
 			g_error_free(inf);
+			break;
+		}
+		
+		case GST_MESSAGE_TAG:
+		{
+			GstTagList *tags, *result;
+			gst_message_parse_tag(msg, &tags);
+	
+			result = gst_tag_list_merge(m_stream_tags, tags, GST_TAG_MERGE_REPLACE);
+			if (result)
+			{
+				if (m_stream_tags)
+					gst_tag_list_free(m_stream_tags);
+				m_stream_tags = result;
+			}
+	
+			const GValue *gv_image = gst_tag_list_get_value_index(tags, GST_TAG_IMAGE, 0);
+			if ( gv_image )
+			{
+				GstBuffer *buf_image;
+				buf_image = gst_value_get_buffer (gv_image);
+				int fd = open("/tmp/.id3coverart", O_CREAT|O_WRONLY|O_TRUNC, 0644);
+				int ret = write(fd, GST_BUFFER_DATA(buf_image), GST_BUFFER_SIZE(buf_image));
+				close(fd);
+				printf("cPlayback::state /tmp/.id3coverart %d bytes written\n", ret);
+			}
+			gst_tag_list_free(tags);
 			break;
 		}
 		
@@ -251,6 +279,9 @@ void cPlayback::Close(void)
 	}
 	
 	Stop();
+	
+	if (m_stream_tags)
+		gst_tag_list_free(m_stream_tags);
 
 	// close gst
 	if (m_gst_playbin)
@@ -459,11 +490,21 @@ bool cPlayback::Stop(void)
 	return true;
 }
 
-bool cPlayback::SetAPid(unsigned short pid, bool ac3)
+bool cPlayback::SetAPid(unsigned short pid)
 {
 	dprintf(DEBUG_INFO, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
+	
+#if ENABLE_GSTREAMER
+	int current_audio;
+	
+	if(pid != mAudioStream)
+	{
+		g_object_set (G_OBJECT (m_gst_playbin), "current-audio", pid, NULL);
+		printf("%s: switched to audio stream %i\n", __FUNCTION__, pid);
+		mAudioStream = pid;
+	}
 
-#if !defined (ENABLE_GSTREAMER)
+#else
 	int track = pid;
 
 	if(pid != mAudioStream)
@@ -635,8 +676,8 @@ bool cPlayback::GetPosition(int &position, int &duration)
 
 bool cPlayback::SetPosition(int position, bool absolute)
 {
-	//if(playing == false) 
-	//	return false;
+	if(playing == false) 
+		return false;
 	
 #if defined (ENABLE_GSTREAMER)
 	gint64 time_nanoseconds;
@@ -667,56 +708,84 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 #if defined (ENABLE_GSTREAMER)
 	if(m_gst_playbin)
 	{
-		GstStructure * structure = NULL;
+		gint i, n_audio = 0;
+		//GstStructure * structure = NULL;
 		
-		//if (!structure)
-			//return atUnknown;
-		//	ac3flags[0] = 0;
-
-		if ( gst_structure_has_name (structure, "audio/mpeg"))
+		// get audio
+		g_object_get (m_gst_playbin, "n-audio", &n_audio, NULL);
+		printf("%s: %d audio\n", __FUNCTION__, n_audio);
+		
+		if(n_audio == 0)
+			return;
+		
+		for (i = 0; i < n_audio; i++)
 		{
-			gint mpegversion, layer = -1;
-			if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
+			// apids
+			apids[i]=i;
+			
+			GstPad * pad = 0;
+			g_signal_emit_by_name (m_gst_playbin, "get-audio-pad", i, &pad);
+			GstCaps * caps = gst_pad_get_negotiated_caps(pad);
+			if (!caps)
+				continue;
+			
+			GstStructure * structure = gst_caps_get_structure(caps, 0);
+			//const gchar *g_type = gst_structure_get_name(structure);
+		
+			//if (!structure)
 				//return atUnknown;
-				ac3flags[0] = 0;
+			//ac3flags[0] = 0;
 
-			switch (mpegversion) 
+			// ac3flags
+			if ( gst_structure_has_name (structure, "audio/mpeg"))
 			{
-				case 1:
-					/*
-					{
-						gst_structure_get_int (structure, "layer", &layer);
-						if ( layer == 3 )
-							return atMP3;
-						else
-							return atMPEG;
-							ac3flags[0] = 4;
-						break;
-					}
-					*/
-					ac3flags[0] = 4;
-				case 2:
-					//return atAAC;
-					ac3flags[0] = 5;
-				case 4:
-					//return atAAC;
-					ac3flags[0] = 5;
-				default:
+				gint mpegversion, layer = -1;
+				
+				if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
 					//return atUnknown;
-					ac3flags[0] = 0;
-			}
-		}
-		else if ( gst_structure_has_name (structure, "audio/x-ac3") || gst_structure_has_name (structure, "audio/ac3") )
-			//return atAC3;
-			ac3flags[0] = 1;
-		else if ( gst_structure_has_name (structure, "audio/x-dts") || gst_structure_has_name (structure, "audio/dts") )
-			//return atDTS;
-			ac3flags[0] = 6;
-		else if ( gst_structure_has_name (structure, "audio/x-raw-int") )
-			//return atPCM;
-			ac3flags[0] = 0;
+					ac3flags[i] = 0;
 
-		//return atUnknown;
+				switch (mpegversion) 
+				{
+					case 1:
+						/*
+						{
+							gst_structure_get_int (structure, "layer", &layer);
+							if ( layer == 3 )
+								return atMP3;
+							else
+								return atMPEG;
+								ac3flags[0] = 4;
+							break;
+						}
+						*/
+						ac3flags[i] = 4;
+					case 2:
+						//return atAAC;
+						ac3flags[i] = 5;
+					case 4:
+						//return atAAC;
+						ac3flags[i] = 5;
+					default:
+						//return atUnknown;
+						ac3flags[i] = 0;
+				}
+			}
+			else if ( gst_structure_has_name (structure, "audio/x-ac3") || gst_structure_has_name (structure, "audio/ac3") )
+				//return atAC3;
+				ac3flags[i] = 1;
+			else if ( gst_structure_has_name (structure, "audio/x-dts") || gst_structure_has_name (structure, "audio/dts") )
+				//return atDTS;
+				ac3flags[i] = 6;
+			else if ( gst_structure_has_name (structure, "audio/x-raw-int") )
+				//return atPCM;
+				ac3flags[i] = 0;
+			
+			gst_caps_unref(caps);
+		}
+		
+		// numpids
+		*numpida=i;
 	}
 #else
 		// audio pids

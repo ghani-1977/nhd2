@@ -39,7 +39,6 @@
 #include <linux/soundcard.h>
 
 #include <audio_cs.h>
-
 extern cAudio *audioDecoder;
 
 #define ProgName "WavDec"
@@ -105,11 +104,13 @@ CBaseDec::RetCode CWavDec::Decoder(FILE *in, int OutputFd, State* state, CAudioM
 	}
 
 	if(audioDecoder)
+	{
 		if( audioDecoder->PrepareClipPlay(mChannels, meta_data->samplerate, mBitsPerSample, fmt == AFMT_S16_LE ? 1 : 0))	  
 		{
 			Status=DSPSET_ERR;
 			return Status;
 		}
+	}	
 	
 	int actSecsToSkip = (*secondsToSkip != 0) ? *secondsToSkip : MSECS_TO_SKIP / 1000;
 	unsigned int oldSecsToSkip = *secondsToSkip;
@@ -164,16 +165,19 @@ CBaseDec::RetCode CWavDec::Decoder(FILE *in, int OutputFd, State* state, CAudioM
 		bytes = fread(buffer, 1, buffersize, in);
 		
 		if(audioDecoder)
+		{
 			if(audioDecoder->WriteClip((unsigned char *)buffer, bytes) != bytes)		  
 			{
 				fprintf(stderr,"%s: PCM write error (%s).\n", ProgName, strerror(errno));
 				Status=WRITE_ERR;
-			}  
+			}
+		}
+		
 		*time_played = (meta_data->bitrate!=0) ? (ftell(in)-header_size)*8/meta_data->bitrate : 0;
 	} while (bytes > 0 && *state!=STOP_REQ && Status==OK);
 	
 	if(audioDecoder)
-		audioDecoder->StopClip();
+		audioDecoder->StopClip();	
 
 	free(buffer);
 	return Status;

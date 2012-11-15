@@ -26,11 +26,6 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define DBOX
-
-/****************************************************************************
- * Includes																	*
- ****************************************************************************/
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -43,17 +38,17 @@
 #include <driver/audioplay.h>
 #include <driver/netfile.h>
 
+#if ENABLE_GSTREAMER
 #include <playback_cs.h>
-
-
 extern cPlayback * playback;
+#endif
 
 
 void CAudioPlayer::stop()
 {
 	state = CBaseDec::STOP_REQ;
 	
-#if 1
+#if ENABLE_GSTREAMER
 	playback->Stop();
 #endif	
 	if(thrPlay)
@@ -66,14 +61,14 @@ void CAudioPlayer::pause()
 	if(state == CBaseDec::PLAY || state == CBaseDec::FF || state == CBaseDec::REV)
 	{
 		state = CBaseDec::PAUSE;
-#if 1		
+#if ENABLE_GSTREAMER
 		playback->SetSpeed(0);
 #endif
 	}
 	else if(state==CBaseDec::PAUSE)
 	{
 		state=CBaseDec::PLAY;
-#if 1		
+#if ENABLE_GSTREAMER
 		playback->SetSpeed(1);
 #endif		
 	}
@@ -86,7 +81,7 @@ void CAudioPlayer::ff(unsigned int seconds)
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::REV)
 	{
 		state=CBaseDec::FF;
-#if 1	
+#if ENABLE_GSTREAMER
 		playback->SetSpeed(2);
 #endif
 	}
@@ -94,7 +89,7 @@ void CAudioPlayer::ff(unsigned int seconds)
 	{
 		state=CBaseDec::PLAY;
 		
-#if 1	
+#if ENABLE_GSTREAMER	
 		playback->SetSpeed(1);
 #endif
 	}
@@ -107,7 +102,7 @@ void CAudioPlayer::rev(unsigned int seconds)
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::FF)
 	{
 		state = CBaseDec::REV;
-#if 1	
+#if ENABLE_GSTREAMER
 		playback->SetSpeed(-2);
 #endif
 	}
@@ -115,7 +110,7 @@ void CAudioPlayer::rev(unsigned int seconds)
 	{
 		state = CBaseDec::PLAY;
 		
-#if 1	
+#if ENABLE_GSTREAMER
 		playback->SetSpeed(1);
 #endif
 	}
@@ -137,7 +132,7 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 {
 	int soundfd = -1;
 	
-#if 1
+#if ENABLE_GSTREAMER
 	int position = 0;
 	int duration = 0;
 	
@@ -205,7 +200,7 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 
 	bool ret = true;
 	
-#if 1				
+#if ENABLE_GSTREAMER
 		playback->Close();
 		
 		playback->Open();
@@ -236,7 +231,7 @@ void CAudioPlayer::init()
 	CBaseDec::Init();
 	state = CBaseDec::STOP;
 	
-#if 1							
+#if ENABLE_GSTREAMER
 	// init player
 	playback->Open();	
 #endif	

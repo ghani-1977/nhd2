@@ -47,7 +47,7 @@
 #include <zapit/client/zapittools.h>
 
 
-unsigned int CBaseDec::mSamplerate=0;
+unsigned int CBaseDec::mSamplerate = 0;
 
 void ShoutcastCallback(void *arg)
 {

@@ -71,17 +71,12 @@ class cAudio
 		int audio_fd;
 		int audio_num;
 		
-#if defined (ENABLE_DSP)
-		int clipfd; /* for pcm playback */	
-		
-		// for pcm soft decoder
-#else
+		// for pcm playback
 		int uNoOfChannels;
 		int uSampleRate;
 		int uBitsPerSample;
 		int bLittleEndian;
-#endif		
-	
+		
 		bool Muted;
 #ifdef __sh__
 		audio_encoding_t EncodingType;		
@@ -132,12 +127,12 @@ class cAudio
 
 		// select channels
 		int setChannel(int channel);
-			
+		
+		// for pcm playback
 		int PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample, int LittleEndian);
 		int WriteClip(unsigned char * buffer, int size);
 		int StopClip();		
 		
-		//void SetHdmiDD(bool enable);
 		void SetHdmiDD(int ac3);
 		
 		// audio stream source		

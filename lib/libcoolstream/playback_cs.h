@@ -70,7 +70,7 @@ class cPlayback
 		bool SyncAV(void);
 		
 		bool Stop(void);
-		bool SetAPid(unsigned short pid, bool ac3);
+		bool SetAPid(unsigned short pid);
 		bool SetSpeed(int speed);
 		bool SetSlow(int slow);
 		bool GetSpeed(int &speed) const;

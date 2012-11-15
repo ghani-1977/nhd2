@@ -55,7 +55,6 @@
 #include <driver/netfile.h>
 
 #include <audio_cs.h>
-
 extern cAudio * audioDecoder;
 
 
@@ -462,13 +461,14 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 							ProgName,strerror(errno));
 					Status=READ_ERR;
 				}
+				
 				if(feof(InputFp))
 				{
 					fprintf(stderr,"%s: end of input stream\n",ProgName);
 					
-					// Lets flush the remaining seconds through the decoder matrix
+					// Lets flush the remaining seconds through the decoder matrix				
 					if(audioDecoder)
-						audioDecoder->Flush();
+						audioDecoder->Flush();					
 				}
 				break;
 			}
@@ -647,9 +647,9 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 		 */
 		FrameCount++;
 		if (FrameCount == 1)
-		{
+		{	  
 			if(audioDecoder)
-				audioDecoder->PrepareClipPlay(2, Frame.header.samplerate, 16, 1);
+				audioDecoder->PrepareClipPlay(2, Frame.header.samplerate, 16, 1);		
 
 			if ( !meta_data )
 			{
@@ -732,7 +732,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{
+					{				  
 						if(audioDecoder)
 						{
 							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
@@ -741,7 +741,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 								Status = WRITE_ERR;
 								break;
 							}
-						}
+						}					
 						
 						OutputPtr = OutputBuffer;
 					}
@@ -764,7 +764,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{
+					{			  
 						if(audioDecoder)
 						{
 							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
@@ -776,7 +776,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 									break;
 								}
 							}
-						}
+						}					
 						
 						OutputPtr = OutputBuffer;
 					}
@@ -808,7 +808,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 	if(OutputPtr != OutputBuffer && Status != WRITE_ERR)
 	{
 		ssize_t	BufferSize=OutputPtr-OutputBuffer;
-
+	
 		if(audioDecoder)
 		{
 			if(audioDecoder->WriteClip(OutputBuffer, BufferSize) != BufferSize)
@@ -816,7 +816,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 				fprintf(stderr,"%s: PCM write error at the end (%s).\n", ProgName,strerror(errno));
 				Status=WRITE_ERR;
 			}
-		}
+		}	
 	}
 	
 	if(audioDecoder)
@@ -1084,8 +1084,6 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice,
 	return result;
 }
 
-
-//------------------------------------------------------------------------
 void CMP3Dec::GetID3(FILE* in, CAudioMetaData* const m)
 {
 	unsigned int i;

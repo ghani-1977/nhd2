@@ -1568,7 +1568,7 @@ void CMoviePlayerGui::PlayFile(void)
 							ac3state = CInfoViewer::AC3_ACTIVE;
 					}
 
-					playback->SetAPid(g_currentapid, g_currentac3);
+					playback->SetAPid(g_currentapid);
 					apidchanged = 0;
 				}
 				

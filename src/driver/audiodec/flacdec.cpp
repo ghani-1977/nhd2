@@ -45,7 +45,6 @@
 #include <driver/netfile.h>
 
 #include <audio_cs.h>
-
 extern cAudio *audioDecoder;
 
 #define ProgName "FlacDec"
@@ -157,14 +156,15 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 				flacdec->Status=CFlacDec::DSPSET_ERR;
 				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 		}
-		
+					
 		if(audioDecoder)
+		{
 			if(audioDecoder->PrepareClipPlay(flacdec->mChannels, flacdec->mSampleRate, flacdec->mBps, 1))
 			{
 				flacdec->Status=CFlacDec::DSPSET_ERR;
 				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 			}
-
+		}		
 	}
 
 	const unsigned bps = frame->header.bits_per_sample, channels = frame->header.channels;
@@ -399,11 +399,14 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 				cnt = flacdec->mBuffersize;
 
 			if(audioDecoder)
+			{
 				if(audioDecoder->WriteClip(&u8buffer[j], cnt) != (ssize_t)cnt) 
 				{
 					/* if a pipe closed when writing to stdout, we let it go without an error message */
 					return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 				}
+			}
+		
 			j += cnt;
 		}
 	}
@@ -475,10 +478,6 @@ CBaseDec::RetCode CFlacDec::Decoder(FILE *in, const int OutputFd, State* const s
 		Status=DATA_ERR;
 		return Status;
 	}
-
-	//test
-	//audioDecoder->PrepareClipPlay(frame->header.channels, frame->header.sample_rate, frame->header.bits_per_sample, 1);
-	//audioDecoder->PrepareClipPlay(2, 16, 16, 1);
 
 	/* up and away ... */
 	mSlotSize = MAX_OUTPUT_SAMPLES * 2 * FLAC__stream_decoder_get_channels(mFlacDec);
@@ -567,7 +566,6 @@ CBaseDec::RetCode CFlacDec::Decoder(FILE *in, const int OutputFd, State* const s
 	/* and drive home ;) */
 	return Status;
 }
-
 
 bool CFlacDec::GetMetaData(FILE *in, const bool nice, CAudioMetaData* m)
 {

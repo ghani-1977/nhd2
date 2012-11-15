@@ -38,7 +38,6 @@
 #include <driver/netfile.h>
 
 #include <audio_cs.h>
-
 extern cAudio * audioDecoder;
 
 #define ProgName "OggDec"
@@ -197,9 +196,9 @@ CBaseDec::RetCode COggDec::Decoder(FILE *in, const int OutputFd, State* const st
 	Status = WRITE_ERR;
 	pthread_join(OutputThread, NULL);
 	//printf("COggDec::Decoder: OutputThread join done\n");
-		
+	
 	if(audioDecoder)
-		audioDecoder->StopClip();	
+		audioDecoder->StopClip();
   
 	for(int i = 0 ; i < DECODE_SLOTS ; i++)
 		free(mPcmSlots[i]);
@@ -224,12 +223,15 @@ void* COggDec::OutputDsp(void * arg)
 		}
 	
 		if(audioDecoder)
+		{
 			if (audioDecoder->WriteClip((unsigned char *)dec->mPcmSlots[dec->mReadSlot], dec->mSlotSize) != dec->mSlotSize)
 			{
 				fprintf(stderr,"%s: PCM write error (%s).\n", ProgName, strerror(errno));
 				dec->Status=WRITE_ERR;
 				break;
 			}
+		}
+		
 		*dec->mTimePlayed = (int)(dec->mSlotTime[dec->mReadSlot]/1000);
 		dec->mReadSlot=(dec->mReadSlot+1)%DECODE_SLOTS;
 	}

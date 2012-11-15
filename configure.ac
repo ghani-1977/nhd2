@@ -46,16 +46,6 @@ if test "$enable_gstreamer" = "yes"; then
 AC_DEFINE(ENABLE_GSTREAMER,1,[include gstreamer engine])
 fi
 
-# dsp
-AC_ARG_ENABLE(dsp,
-	AS_HELP_STRING(--enable-dsp,include DSP as audio player support),
-	,[enable_dsp=no])
-AM_CONDITIONAL(ENABLE_DSP,test "$enable_dsp" = "yes")
-
-if test "$enable_dsp" = "yes"; then
-AC_DEFINE(ENABLE_DSP,1,[include dsp as audio player])
-fi
-
 # lcd
 AC_ARG_ENABLE(lcd,
 	AS_HELP_STRING(--enable-lcd,include lcd support),
