@@ -26,7 +26,7 @@
 #include <config.h>
 
 
-#if !defined (ENABLE_GSTREAMER)  // eplayer3 default
+#if !ENABLE_GSTREAMER
 #include <common.h>
 #include <subtitle.h>
 #include <linux/fb.h>
@@ -51,7 +51,7 @@ typedef enum {
 class cPlayback
 {
 	private:
-#if !defined (ENABLE_GSTREAMER)
+#if !ENABLE_GSTREAMER
 		Context_t * player;
 #endif
 		bool playing;
@@ -71,6 +71,10 @@ class cPlayback
 		
 		bool Stop(void);
 		bool SetAPid(unsigned short pid);
+
+#if ENABLE_GSTREAMER
+		void trickSeek(int ratio);
+#endif		
 		bool SetSpeed(int speed);
 		bool SetSlow(int slow);
 		bool GetSpeed(int &speed) const;

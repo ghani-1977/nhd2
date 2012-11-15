@@ -10,10 +10,10 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libeventserver
 
-if !ENABLE_GSTREAMER
-INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
-else
+if ENABLE_GSTREAMER
 INCLUDES += @GST_CFLAGS@
+else
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 endif
 
 noinst_LIBRARIES = libcoolstream.a
