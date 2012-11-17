@@ -1589,7 +1589,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		/* Time */
-		if (FileTime.IsVisible() /*FIXME && playstate == CMoviePlayerGui::PLAY */ ) 
+		if (FileTime.IsVisible()) 
 		{
 			if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 			{

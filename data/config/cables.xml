@@ -222,13 +222,13 @@
 		<transponder frequency="121000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="129000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="346000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
-		<transponder frequency="354000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
-		<transponder frequency="362000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
-		<transponder frequency="370000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
-		<transponder frequency="378000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
-		<transponder frequency="386000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
+		<transponder frequency="354000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
+		<transponder frequency="362000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
+		<transponder frequency="370000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
+		<transponder frequency="378000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
+		<transponder frequency="386000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="394000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
-		<transponder frequency="396000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
+		<transponder frequency="396000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="402000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="410000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="418000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
@@ -245,7 +245,7 @@
 		<transponder frequency="554000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="562000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="570000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
-		<transponder frequency="610000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
+		<transponder frequency="610000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="650000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="658000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="666000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
@@ -258,7 +258,7 @@
 		<transponder frequency="722000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="730000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 		<transponder frequency="738000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
-		<transponder frequency="746000" symbol_rate="6900000" fec_inner="0" modulation="3"/>
+		<transponder frequency="746000" symbol_rate="6900000" fec_inner="0" modulation="5"/>
 	</cable>
 	<cable name="Kabel BW" satfeed="true" flags="9">
 		<transponder frequency="113000" symbol_rate="6900000" fec_inner="0" modulation="3"/>

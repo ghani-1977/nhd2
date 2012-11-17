@@ -259,7 +259,9 @@ void CTimeOSD::update(time_t time_show)
 	{
 		color1 = COL_MENUCONTENTSELECTED_PLUS_0;
 		color2 = COL_MENUCONTENTSELECTED;
-		if(!time_show) time_show = 1;
+		
+		if(!time_show) 
+			time_show = 1;
 	}
 
 	if(time_show) 

@@ -437,7 +437,7 @@ void cDvbCi::setSource(int slot, int source)
     snprintf(buf, 64, "/proc/stb/tsmux/ci%d_input", slot);
     FILE *ci = fopen(buf, "wb");
 
-    #if 1
+    // set source
     switch(source)
     {
       case TUNER_A:
@@ -452,7 +452,7 @@ void cDvbCi::setSource(int slot, int source)
 	fprintf(ci, "D");
 	break;
     }
-    #endif
+
     //fprintf(ci, "A");
     fclose(ci);
 }
@@ -693,7 +693,7 @@ void cDvbCi::slot_pollthread(void *c)
 		 //neutrino currently. so if a cam is inserted a pmt is not resend
 		 if (slot->caPmt != NULL)
 		 {
-		     SendCaPMT(slot->caPmt);
+		     SendCaPMT(slot->caPmt, slot->source);
 		 }
 	    }
 	}
@@ -752,6 +752,7 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt, int source)
 //fixme: hmmm is this a copy or did I only save the pointer.
 //in copy case I must do some delete etc before if set and in destruct case
                    (*it)->caPmt = caPmt;
+		   (*it)->source = source;
                }
 	}
         return true;
@@ -801,6 +802,7 @@ cDvbCi::cDvbCi(int Slots)
 	    slot->init = false;
  
             slot->caPmt = NULL;
+	    slot->source = TUNER_A;
 
             sprintf(slot->name, "unknown module %d", i);
 

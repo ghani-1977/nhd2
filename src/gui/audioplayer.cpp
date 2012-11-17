@@ -164,7 +164,6 @@ CAudioPlayerGui::CAudioPlayerGui(bool inetmode)
 {
 	m_frameBuffer = CFrameBuffer::getInstance();
 	m_visible = false;
-	//m_inetmode = false;  //inetmode;//FIXME
 	m_inetmode = inetmode;
 
 	Init();
@@ -222,6 +221,7 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	
 	m_state = CAudioPlayerGui::STOP;
 
+	// show playlist or not?
 	m_show_playlist = g_settings.audioplayer_show_playlist == 1;
 
 	if (m_select_title_by_name != (g_settings.audioplayer_select_title_by_name == 1))
@@ -1343,7 +1343,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 			}
 			
 			if ((files->getType() == CFile::FILE_CDR)
-					||  (files->getType() == CFile::FILE_OGG)
+					//||  (files->getType() == CFile::FILE_OGG)
 					||  (files->getType() == CFile::FILE_MP3)
 					||  (files->getType() == CFile::FILE_WAV)
 					||  (files->getType() == CFile::FILE_FLAC)
@@ -1432,7 +1432,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 									CFile::FileType fileType = playlistItem.getType();
 									if (fileType == CFile::FILE_CDR
 											|| fileType == CFile::FILE_MP3
-											|| fileType == CFile::FILE_OGG
+											//|| fileType == CFile::FILE_OGG
 											|| fileType == CFile::FILE_WAV
 											|| fileType == CFile::FILE_FLAC
 									)
@@ -1460,10 +1460,15 @@ bool CAudioPlayerGui::openFilebrowser(void)
 				}
 			}
 		}
+		
+		//TEST
+		progress.hide();
+		
 		if (m_select_title_by_name)
 		{
 			buildSearchTree();
 		}
+		
 #ifdef AUDIOPLAYER_TIME_DEBUG
 		timeval end;
 		gettimeofday(&end,NULL);
@@ -1545,6 +1550,11 @@ bool CAudioPlayerGui::openSCbrowser(void)
 			processPlaylistUrl(files->Url.c_str(), files->Name.c_str(), files->Time);
 			g_RCInput->getMsg(&msg, &data, 0);
 		}
+		
+		//TEST
+		progress.hide();
+		
+		
 		if (m_select_title_by_name)
 		{
 			buildSearchTree();
@@ -1784,21 +1794,24 @@ void CAudioPlayerGui::paintFoot()
 
 	int ButtonWidth = (m_width - 20) / 4;
 	int ButtonWidth2 = (m_width - 50) / 2;
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2 * m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
+	
+	if(m_show_playlist)
+		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2 * m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
+	else
+		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2 * m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1);
+	
+	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);
 
 	if (!m_playlist.empty())
 	{
 		// play
 		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 1 * ButtonWidth2 + 25, top + m_buttonHeight - 3);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
-			->RenderString(m_x + 1 * ButtonWidth2 + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28,
-						   g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 1 * ButtonWidth2 + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
+		
 		// keylevel switch
 		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, m_x + 0 * ButtonWidth + 25, top + m_buttonHeight - 3);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
-			->RenderString(m_x + 0 * ButtonWidth + 53 , top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28,
-						   g_Locale->getText(LOCALE_AUDIOPLAYER_KEYLEVEL), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 0 * ButtonWidth + 53 , top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_KEYLEVEL), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
 	}
 
 	if (m_key_level == 0)
@@ -1806,19 +1819,15 @@ void CAudioPlayerGui::paintFoot()
 		if (m_playlist.empty()) 
 		{
 			if (m_inetmode)
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, 
-					m_x + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[7]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[7]);
 			else
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, 
-					m_x + 10, top + 4, ButtonWidth, 1, &(AudioPlayerButtons[7][0]));
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 1, &(AudioPlayerButtons[7][0]));
 		} 
 		else
 			if (m_inetmode)
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-					m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[8]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[8]);
 			else
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-					m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[1]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[1]);
 	}
 	else if (m_key_level == 1)
 	{
@@ -1838,26 +1847,22 @@ void CAudioPlayerGui::paintFoot()
 		{
 			if (m_select_title_by_name)
 			{
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, 
-						m_x + ButtonWidth + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[5]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[5]);
 			} 
 			else 
 			{
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-						m_x + ButtonWidth + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[4]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[4]);
 			}
 		} 
 		else 
 		{
 			if (m_select_title_by_name)
 			{
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-						m_x + ButtonWidth + 10, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[3]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[3]);
 			} 
 			else 
 			{
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-						m_x + ButtonWidth + 10, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[2]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[2]);
 			}
 		}
 	}	

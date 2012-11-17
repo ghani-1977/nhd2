@@ -665,7 +665,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
 	
 	// ci cam //FIXME: boxes without ci cam
-	ci->SendCaPMT(thischannel->getCaPmt());	
+	ci->SendCaPMT(thischannel->getCaPmt(), fe->fenumber);	
 }
 
 // save pids
@@ -1026,8 +1026,7 @@ int zapit_to_record(const t_channel_id channel_id)
 	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask );
 	
 	// ci cam //FIXME: boxes without ci cam
-	ci->SendCaPMT(rec_channel->getCaPmt());	
-		
+	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber);	
 
 	return 0;
 }
@@ -1195,7 +1194,10 @@ void unsetRecordMode(void)
 	ca_mask |= 1 << live_fe->fenumber;
 #endif	
 	
-	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true);
+	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
+	
+	// ci cam
+	ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);	
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;

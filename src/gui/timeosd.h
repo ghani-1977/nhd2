@@ -48,7 +48,6 @@ class CTimeOSD
 		mode m_mode;
 		void GetDimensions();
 		
-		//int i_width, i_height;
 		int BoxStartX, BoxStartY, BoxEndY, BoxEndX;
 		int BoxWidth, BoxHeight;
 
