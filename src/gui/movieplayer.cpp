@@ -1668,7 +1668,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
-					playback->SetPosition(startposition, true);
+					playback->SetPosition(startposition);
 				
 				// show movieviewer directly after starting play
 				if(isVlc)
@@ -2313,7 +2313,7 @@ void CMoviePlayerGui::PlayFile(void)
 #endif
 		)
 		{	// goto start
-			playback->SetPosition(startposition, true);
+			playback->SetPosition(startposition);
 			
 			// time
 			if (!FileTime.IsVisible()) 
@@ -2332,7 +2332,7 @@ void CMoviePlayerGui::PlayFile(void)
 		else if (msg == CRCInput::RC_5) 
 		{	
 			// goto middle
-			playback->SetPosition(duration/2, true);
+			playback->SetPosition(duration/2);
 			
 			// time
 			if (!FileTime.IsVisible()) 
@@ -2351,7 +2351,7 @@ void CMoviePlayerGui::PlayFile(void)
 		else if (msg == CRCInput::RC_8) 
 		{	
 			// goto end
-			playback->SetPosition(duration - 60 * 1000, true);
+			playback->SetPosition(duration - 60 * 1000);
 			
 			//time
 			if (!FileTime.IsVisible()) 
