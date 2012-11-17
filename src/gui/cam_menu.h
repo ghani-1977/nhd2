@@ -27,6 +27,7 @@
 #include "widget/menue.h"
 #include <dvb-ci.h>
 
+
 using namespace std;
 
 class CCAMMenuHandler : public CMenuTarget

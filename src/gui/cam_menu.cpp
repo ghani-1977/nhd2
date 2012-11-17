@@ -333,11 +333,9 @@ int CCAMMenuHandler::handleCamMsg (const neutrino_msg_t msg, neutrino_msg_data_t
 
 		if(selected >= 0) {
 			printf("CCAMMenuHandler::handleCamMsg: selected %d:%s sublevel %s\n", selected, pMenu->choice_item[i], sublevel ? "yes" : "no");
-#if 1
+
 			ci->CI_MenuAnswer(curslot, selected+1);
-#else
-			CI_MenuAnswer(curslot, selected+1);
-#endif
+
 			timeoutEnd = CRCInput::calcTimeoutEnd(10);
 			return 1;
 		} 
@@ -369,20 +367,15 @@ int CCAMMenuHandler::handleCamMsg (const neutrino_msg_t msg, neutrino_msg_data_t
 		if((int) strlen(cPIN) != pMmiEnquiry->answerlen) 
 		{
 			printf("CCAMMenuHandler::handleCamMsg: wrong input len\n");
-#if 1
+
 			ci->CI_Answer(curslot, (unsigned char *) cPIN, 0);
-#else
-			CI_Answer(curslot, (unsigned char *) cPIN, 0);
-#endif
+
 			return 0;
 		} 
 		else 
 		{
-#if 1
 			ci->CI_Answer(curslot, (unsigned char *) cPIN, pMmiEnquiry->answerlen);
-#else
-			CI_Answer(curslot, (unsigned char *) cPIN, pMmiEnquiry->answerlen);
-#endif
+
 			return 1;
 		}
 	}
@@ -398,11 +391,8 @@ int CCAMMenuHandler::handleCamMsg (const neutrino_msg_t msg, neutrino_msg_data_t
 		}
 #endif
 
-#if 1
 		ci->CI_CloseMMI(curslot);
-#else
-		CI_CloseMMI(curslot);
-#endif
+
 		return 0;
 	}
 	else if(msg == NeutrinoMessages::EVT_CI_MMI_TEXT) 
@@ -431,11 +421,8 @@ int CCAMMenuHandler::doMenu (int slot)
 
 		timeoutEnd = CRCInput::calcTimeoutEnd(10);
 
-#if 1
 		ci->CI_EnterMenu(slot);
-#else
-		CI_EnterMenu(slot);
-#endif
+
 		while(true) 
 		{
 			if(hintBox)
@@ -458,11 +445,8 @@ int CCAMMenuHandler::doMenu (int slot)
 				delete hintBox;
 				hintBox = NULL;
 
-#if 1
 				ci->CI_CloseMMI(slot);
-#else
-				CI_CloseMMI(slot);
-#endif
+
 				return menu_return::RETURN_REPAINT;
 			} 
 			/* -1 = not our event, 0 = back to top menu, 1 = continue loop, 2 = quit */
@@ -491,11 +475,9 @@ int CCAMMenuHandler::doMenu (int slot)
 			}
 		}
 	}
-#if 1
+
 	ci->CI_CloseMMI(slot);
-#else
-	CI_CloseMMI(slot);
-#endif
+
 	if(hintBox) 
 	{
 		delete hintBox;
