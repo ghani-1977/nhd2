@@ -34,6 +34,137 @@
 #include <string>
 
 
+#if defined(PLATFORM_SPARK7162)
+/* SAB Triple VFD Icons								*/
+/* taken from aotom_main.h, with these numbers the Icons on Spark7162		*/
+/* will work right ( hopefully all Models )					*/
+typedef enum {
+//----------------------------------11G-------------------------------------
+	PLAY_FASTBACKWARD = 1,		//11*16+1,
+	PLAY_HEAD = 2,
+	PLAY_LOG = 3,
+	PLAY_TAIL = 4,
+	PLAY_FASTFORWARD = 5,
+	PLAY_PAUSE = 6,
+	REC1 = 7,
+	MUTE = 8,
+	CYCLE = 9,
+	DUBI = 10,
+	CA = 11,
+	CI= 12,
+	USB = 13,
+	DOUBLESCREEN = 14,
+	REC2 = 15,
+//----------------------------------12G-------------------------------------
+	HDD_A8 = 16,			//12*16+1,
+	HDD_A7 = 17,
+	HDD_A6 = 18,
+	HDD_A5 = 19,
+	HDD_A4 = 20,
+	HDD_A3 = 21,
+	HDD_FULL = 22,
+	HDD_A2 = 23,
+	HDD_A1 = 24,
+	MP3 = 25,
+	AC3 = 26,
+	TVMODE_LOG = 27,
+	AUDIO = 28,
+	ALERT = 29,
+	HDD_A9 = 30,
+//----------------------------------13G-------------------------------------
+	CLOCK_PM = 31,			//13*16+1,
+	CLOCK_AM = 32,
+	CLOCK = 33,
+	TIME_SECOND = 34,
+	DOT2 = 35,
+	STANDBY = 36,
+	TER = 37,
+	DISK_S3 = 38,
+	DISK_S2 = 39,
+	DISK_S1 = 40,
+	DISK_S0 = 41,
+	SAT = 42,
+	TIMESHIFT = 43,
+	DOT1 = 44,
+	CAB = 45,
+//----------------------------------end-------------------------------------
+	SPARK_ICON_ALL = 46, 		/* with this number the aotom driver set all icons on (1) or off (0) */
+	VFD_ICON_MAX
+} spark7162_vfd_icon;
+
+// neutrino common translate for spark7162
+typedef enum
+{
+	VFD_ICON_MUTE		= MUTE,
+	VFD_ICON_DOLBY		= DUBI,
+	VFD_ICON_POWER		= STANDBY,
+	VFD_ICON_TIMESHIFT	= REC1,
+	VFD_ICON_TV		= TVMODE_LOG,
+	VFD_ICON_RADIO		= AUDIO,
+	VFD_ICON_HD		= DOUBLESCREEN,
+	VFD_ICON_1080P		= TIME_SECOND,
+	VFD_ICON_1080I		= TIME_SECOND,
+	VFD_ICON_720P		= TIME_SECOND,
+	VFD_ICON_480P		= TIME_SECOND,
+	VFD_ICON_480I		= TIME_SECOND,
+	VFD_ICON_USB		= USB,
+	VFD_ICON_MP3		= MP3,
+	VFD_ICON_PLAY		= PLAY_HEAD,
+	VFD_ICON_PAUSE		= PLAY_PAUSE,
+	VFD_ICON_LOCK 		= CA,
+} vfd_icon;
+
+#endif //spark7162
+
+#if defined(PLATFORM_UFS910)
+
+typedef enum
+{
+	vfd_910_usb = 1,
+	vfd_910_hd = 2,
+	vfd_910_hdd = 3,
+	vfd_910_lock = 4,
+	vfd_910_bt = 5,
+	vfd_910_mp3 = 6,
+	vfd_910_music = 7,
+	vfd_910_dd = 8,
+	vfd_910_mail = 9,
+	vfd_910_mute = 10,
+	vfd_910_play = 11,
+	vfd_910_pause = 12,
+	vfd_910_ff = 13,
+	vfd_910_fr = 14,
+	vfd_910_rec = 15,
+	vfd_910_clock = 16,
+} ufs910_vfd_icon;
+
+
+// neutrino common translate for ufs910
+typedef enum
+{
+	VFD_ICON_MUTE		= vfd_910_mute,
+	VFD_ICON_DOLBY		= vfd_910_dd,
+	VFD_ICON_POWER		= vfd_910_bt,
+	VFD_ICON_TIMESHIFT	= vfd_910_rec,
+	VFD_ICON_TV		= vfd_910_mail,
+	VFD_ICON_RADIO		= vfd_910_music,
+	VFD_ICON_HD		= vfd_910_hd,
+	VFD_ICON_1080P		= vfd_910_bt,
+	VFD_ICON_1080I		= vfd_910_bt,
+	VFD_ICON_720P		= vfd_910_bt,
+	VFD_ICON_480P		= vfd_910_bt,
+	VFD_ICON_480I		= vfd_910_bt,
+	VFD_ICON_USB		= vfd_910_usb,
+	VFD_ICON_MP3		= vfd_910_mp3,
+	VFD_ICON_PLAY		= vfd_910_play,
+	VFD_ICON_PAUSE		= vfd_910_pause,
+	VFD_ICON_LOCK 		= vfd_910_lock,
+} vfd_icon;
+
+#endif //ufs910
+
+#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162)
+
 // duckbox
 // token from micom
 enum {
@@ -91,6 +222,8 @@ typedef enum
 	VFD_ICON_LOCK 		= ICON_SCRAMBLED,
 } vfd_icon;
 
+#endif  //common
+
 #ifdef __sh__
 #define VFDBRIGHTNESS         0xc0425a03
 #define VFDPWRLED             0xc0425a04 /* added by zeroone, also used in fp_control/global.h ; set PowerLed Brightness on HDBOX*/
@@ -114,6 +247,56 @@ typedef enum
 #define VFDGETVERSION         0xc0425b01
 #define VFDSETDISPLAYTIME     0xc0425b02
 #define VFDSETTIMEMODE        0xc0425b03
+#define VFDDISPLAYCLR	      0xc0425b00
+
+#if defined(PLATFORM_SPARK7162)
+/* structs are needed for sending icons etc. to aotom 				*/
+struct set_mode_s {
+	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
+};
+
+struct set_brightness_s {
+	int level;
+};
+
+struct set_icon_s {
+	int icon_nr;
+	int on;
+};
+
+struct set_led_s {
+	int led_nr;
+	int on;
+};
+
+/* time must be given as follows:
+ * time[0] & time[1] = mjd ???
+ * time[2] = hour
+ * time[3] = min
+ * time[4] = sec
+ */
+struct set_standby_s {
+	char time[5];
+};
+
+struct set_time_s {
+	char time[5];
+};
+
+struct aotom_ioctl_data {
+	union
+	{
+		struct set_icon_s icon;
+		struct set_led_s led;
+		struct set_brightness_s brightness;
+		struct set_mode_s mode;
+		struct set_standby_s standby;
+		struct set_time_s time;
+	} u;
+};
+
+#endif //Spark7162
+
 
 struct vfd_ioctl_data {
 	unsigned char start_address;
@@ -162,7 +345,7 @@ class CVFD
 		bool			clearClock;
 		unsigned int            timeout_cnt;
 		int fd;
-		/*int*/unsigned char brightness;
+		unsigned char brightness;
 		char text[256];
 
 		void wake_up();

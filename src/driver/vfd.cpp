@@ -42,6 +42,9 @@
 #include <math.h>
 #include <system/debug.h>
 
+#if defined(PLATFORM_SPARK7162)
+static struct aotom_ioctl_data aotom_data;
+#endif
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
@@ -220,9 +223,13 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 		return;
 
 	dprintf(DEBUG_DEBUG, "CVFD::showServicename: %s\n", name.c_str());
+	dprintf(DEBUG_DEBUG, "CVFD::showServicenameLen: %d\n", strlen((char *)name.c_str()));
 	
 	servicename = name;
-	
+
+	if (strlen((char *)name.c_str()) == 0)			/* if there is a null string Neutrino has a segfault on ufs910			*/
+		return;	
+
 	if (mode != MODE_TVRADIO)
 		return;
 
@@ -573,15 +580,20 @@ void CVFD::Clear()
 	ShowText("    "); // 4 empty digits
 #elif defined __sh__ 
 	struct vfd_ioctl_data data;
-   
+#if defined (PLATFORM_UFS910)			/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
+	data.start_address = 0x01;
+	data.length = 0x0;
+	openDevice();	
+	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
+		perror("VFDDISPLAYCLR");
+	closeDevice();
+#else
 	data.start_address = 0;
-	
-	openDevice();
-	
+	openDevice();	
 	if( ioctl(fd, VFDDISPLAYWRITEONOFF, &data) < 0)
 		perror("VFDDISPLAYCLR");
-	
 	closeDevice();
+#endif
 #endif
 }
 
@@ -591,7 +603,15 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 
 #ifdef __sh__
 	openDevice();
-
+#if defined(PLATFORM_SPARK7162)
+	aotom_data.u.icon.icon_nr = icon;
+	if (show == true)
+		aotom_data.u.icon.on = 1;
+	else
+		aotom_data.u.icon.on = 0;
+	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+		perror("VFDICONDISPLAYONOFF");
+#else
 	struct vfd_ioctl_data data;
 
 	data.data[0] = (icon - 1) & 0x1F;
@@ -599,7 +619,7 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	
 	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
 		perror("VFDICONDISPLAYONOFF");
-	
+#endif	
 	closeDevice();
 #endif
 }

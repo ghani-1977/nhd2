@@ -638,7 +638,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	
 	return lastchannel;
 }
-
+ 
 void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	if(!thischannel)
