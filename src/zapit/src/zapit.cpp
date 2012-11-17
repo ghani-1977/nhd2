@@ -149,7 +149,7 @@ enum {
 
 int currentMode;
 bool playbackStopForced = false;
-int waitForMotor = 0;
+//int waitForMotor = 0;
 
 /* list of near video on demand */
 tallchans nvodchannels;         	/* tallchans defined in "bouquets.h" */
@@ -425,7 +425,7 @@ void saveFrontendConfig(int feindex)
 {
 	dprintf(DEBUG_INFO, "zapit: saveFrontendConfig\n");
 	
-	for(int feindex = 0; feindex < FrontendCount; feindex++)
+	for(feindex = 0; feindex < FrontendCount; feindex++)
 	{
 		// common
 		setConfigValue(feindex, "mode", getFE(feindex)->mode);
