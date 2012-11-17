@@ -630,13 +630,19 @@ bool cPlayback::SetSlow(int slow)
 	if(playing == false) 
 		return false;
 
-#if !defined (ENABLE_GSTREAMER)
+#if ENABLE_GSTREAMER
+	if(m_gst_playbin)
+	{
+		trickSeek(0.5);
+	}
+#else
 	if(player && player->playback) 
 	{
 		player->playback->Command(player, PLAYBACK_SLOWMOTION, (void*)&slow);
-		playstate = STATE_SLOW;
 	}
-#endif	
+#endif
+
+	playstate = STATE_SLOW;
 
 	mSpeed = slow;
 
@@ -656,7 +662,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	if(playing == false) 
 		return false;	
 
-#if defined (ENABLE_GSTREAMER)
+#if ENABLE_GSTREAMER
 
 	//EOF
 	if(end_eof)
@@ -720,12 +726,12 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	return true;
 }
 
-bool cPlayback::SetPosition(int position, bool absolute)
+bool cPlayback::SetPosition(int position)
 {
 	if(playing == false) 
 		return false;
 	
-#if defined (ENABLE_GSTREAMER)
+#if ENABLE_GSTREAMER
 	gint64 time_nanoseconds;
 	gint64 pos;
 	GstFormat fmt = GST_FORMAT_TIME;
@@ -734,7 +740,9 @@ bool cPlayback::SetPosition(int position, bool absolute)
 	{
 		gst_element_query_position(m_gst_playbin, &fmt, &pos);
 		time_nanoseconds = pos + (position * 1000000.0);
-		if(time_nanoseconds < 0) time_nanoseconds = 0;
+		if(time_nanoseconds < 0) 
+			time_nanoseconds = 0;
+		
 		gst_element_seek(m_gst_playbin, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, time_nanoseconds, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 	}
 #else
