@@ -2,7 +2,8 @@ INCLUDES = \
 	-I$(top_srcdir)/src \
         -I$(top_srcdir)/src/zapit/include \
 	-I$(top_srcdir)/lib/libcoolstream \
-	-I$(top_srcdir)/lib/libconfigfile
+	-I$(top_srcdir)/lib/libconfigfile \
+	@FREETYPE_CFLAGS@
 
 #AM_CPPFLAGS = $(FREETYPE_CFLAGS) -fno-rtti -fno-exceptions
 
