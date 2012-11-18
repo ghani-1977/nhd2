@@ -507,7 +507,7 @@ void cDemux::getSTC(int64_t * STC)
 { 
 	dprintf(DEBUG_DEBUG, "%s:%s dmx(%d) type=%s STC=\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type]);	
 	
-	#if 0
+#if defined (PLATFORM_GENERIC)
 	struct dmx_stc stc;
 	memset(&stc, 0, sizeof(dmx_stc));
 	stc.num =  demux_num;	//num
@@ -517,7 +517,7 @@ void cDemux::getSTC(int64_t * STC)
 		perror("DMX_GET_STC");
 	
 	*STC = (int64_t)stc.stc;
-	#else
+#else
 	// seifes
 	/* apparently I can only get the PTS of the video decoder,
 	 * but that's good enough for dvbsub */
@@ -525,7 +525,7 @@ void cDemux::getSTC(int64_t * STC)
 	if (videoDecoder)
 		pts = videoDecoder->GetPTS();
 	*STC = pts;
-	#endif
+#endif
 }
 
 
