@@ -5,14 +5,8 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/connection \
 	-I$(top_srcdir)/lib/libeventserver \
-	-I$(top_srcdir)/lib/libxmltree
-
-#if BOXTYPE_COOL
-INCLUDES += -I$(top_srcdir)/lib/libcoolstream
-#endif
-#if BOXTYPE_TRIPLE
-#INCLUDES += -I$(top_srcdir)/lib/libtriple
-#endif
+	-I$(top_srcdir)/lib/libxmltree \
+	-I$(top_srcdir)/lib/libcoolstream
 
 AM_CPPFLAGS = -D DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
 

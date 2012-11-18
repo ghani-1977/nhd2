@@ -7,6 +7,7 @@
 #ifndef __yconfig_h__
 #define __yconfig_h__
 
+#include <config.h>
 // c++
 #include <string>
 #include <map>
@@ -28,7 +29,7 @@
 #define HTTPD_VERSION 		"3.3.2"				// Webserver version  (can be overloaded)
 #define YHTTPD_VERSION 		"1.3.1"			// Webserver version  (Version of yhttpd-core!)
 #define IADDR_LOCAL 		"127.0.0.1"			// local IP
-#define HTTPD_NAME 			"yhttpd"			// Webserver name (can be overloaded)
+#define HTTPD_NAME 		"yhttpd"			// Webserver name (can be overloaded)
 #define YHTTPD_NAME 		"yhttpd_core"			// Webserver name (Name of yhttpd-core!)
 #define AUTH_NAME_MSG		"yhhtpd"			// Name in Authentication Dialogue
 #define CONF_VERSION		4					// Version of yhttpd-conf file
@@ -85,42 +86,41 @@
 //-----------------------------------------------------------------------,js:text/plain------
 #undef HTTPD_NAME
 #define HTTPD_NAME 					"nhttpd"
-#define HTTPD_STANDARD_PORT			80
-#define HTTPD_MAX_CONNECTIONS			10
+#define HTTPD_STANDARD_PORT				80
+#define HTTPD_MAX_CONNECTIONS				10
 #define HTTPD_REQUEST_LOG 				"/tmp/httpd_log"
 #define SSL_PEMFILE					HTTPD_CONFIGDIR "/server.pem"
-#define SSL_CA_FILE						HTTPD_CONFIGDIR "/cacert.pem"
-#define LOG_FILE						"/tmp/yhhtpd.log"
+#define SSL_CA_FILE					HTTPD_CONFIGDIR "/cacert.pem"
+#define LOG_FILE					"/tmp/yhhtpd.log"
 #define LOG_FORMAT					""
 #define UPLOAD_TMP_FILE 				"/tmp/upload.tmp"
-#define CACHE_DIR						"/tmp/.cache"
-#define HTTPD_ERRORPAGE				"/Y_ErrorPage.yhtm"
+#define CACHE_DIR					"/tmp/.cache"
+#define HTTPD_ERRORPAGE					"/Y_ErrorPage.yhtm"
 #define HTTPD_SENDFILE_EXT				"htm:text/html,html:text/html,xml:text/xml,txt:text/plain,jpg:image/jpeg,jpeg:image/jpeg,gif:image/gif,png:image/png,bmp:image/bmp,css:text/css,js:text/plain,yjs:text/plain,img:application/octet-stream,ico:image/x-icon,m3u:application/octet-stream,tar:application/octet-stream,gz:text/x-gzip"
 #define HTTPD_SENDFILE_ALL				"false"
 #define HTTPD_LANGUAGEDIR 				"languages"
-#define HTTPD_DEFAULT_LANGUAGE 		"English"
-#define AUTHUSER						"root"
+#define HTTPD_DEFAULT_LANGUAGE 				"English"
+#define AUTHUSER					"root"
 
-#define HTTPD_CONFIGDIR 				"/var/tuxbox/config"
-#define HTTPD_CONFIGFILE HTTPD_CONFIGDIR "/nhttpd.conf"
-#define YWEB_CONFIGFILE HTTPD_CONFIGDIR "/Y-Web.conf"
-#define PUBLICDOCUMENTROOT			"/var/httpd"
-#define NEUTRINO_CONFIGFILE				"/var/tuxbox/config/neutrino.conf"
-#define HOSTEDDOCUMENTROOT			"/mnt/hosted"
-#define EXTRASDOCUMENTROOT			"/mnt/hosted/extras"
-#define EXTRASDOCUMENTURL			"/hosted/extras"
-#define ZAPITXMLPATH					"/var/tuxbox/config/zapit"
-#define TUXBOX_LOGOS_URL				"/usr/share/tuxbox/neutrino/icons/logos"
+#define HTTPD_CONFIGFILE 				CONFIGDIR "/nhttpd.conf"
+#define YWEB_CONFIGFILE 				CONFIGDIR "/Y-Web.conf"
+#define PUBLICDOCUMENTROOT				"/var/httpd"
+#define NEUTRINO_CONFIGFILE				CONFIGDIR "/neutrino.conf"
+#define HOSTEDDOCUMENTROOT				"/mnt/hosted"
+#define EXTRASDOCUMENTROOT				"/mnt/hosted/extras"
+#define EXTRASDOCUMENTURL				"/hosted/extras"
+#define ZAPITXMLPATH					CONFIGDIR "/zapit"
+#define TUXBOX_LOGOS_URL				CONFIGDIR "/icons/logos"
 
 // switch for Box differences
 #ifdef CONFIG_SYSTEM_TUXBOX
 #define AUTHPASSWORD					"dbox2"
-#define PRIVATEDOCUMENTROOT			"/share/tuxbox/neutrino/httpd-y"
+#define PRIVATEDOCUMENTROOT				DATADIR "/neutrino/httpd-y"
 #endif
 
 #ifdef CONFIG_SYSTEM_TUXBOX_COOLSTREAM
 #define AUTHPASSWORD					"relook"
-#define PRIVATEDOCUMENTROOT			"/share/tuxbox/neutrino/httpd"
+#define PRIVATEDOCUMENTROOT				DATADIR "/neutrino/httpd"
 #undef Y_CONFIG_BUILD_AS_DAEMON		// No Daemon
 #endif
 //-----------------------------------------------------------------------------

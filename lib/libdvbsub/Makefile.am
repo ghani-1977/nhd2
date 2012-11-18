@@ -5,7 +5,8 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@AVCODEC_CFLAGS@
 
-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_CONSTANT_MACROS
+#AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_CONSTANT_MACROS
+AM_CPPFLAGS = -D__STDC_CONSTANT_MACROS
 
 noinst_LIBRARIES = libdvbsub.a
 

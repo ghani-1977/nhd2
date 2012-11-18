@@ -29,15 +29,11 @@
 #include <errno.h>
 
 #include "dmx_cs.h"
-#include <zapit/frontend_c.h>
-
 #include "video_cs.h"
-
 #include <system/debug.h>
 
 
 extern cVideo *videoDecoder;
-extern CFrontend * live_fe;
 
 static const char * FILENAME = "[dmx_cs.cpp]";
 
@@ -120,6 +116,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	dprintf(DEBUG_INFO, "cDemux::Open dmx(%d) type:%s BufferSize:%d fe(%d)\n", demux_num, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
 
 	// set demux source
+#if !defined (PLATFORM_GENERIC)	
 	if (!init[demux_num])
 	{
 		int n = DMX_SOURCE_FRONT0 + feindex;
@@ -132,6 +129,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		else
 			init[demux_num] = true;
 	}
+#endif	
 
 	// set demux buffer size
 	if (uBufferSize > 0)
@@ -404,7 +402,7 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 	return true;
 }
 
-bool cDemux::pesFilter(const unsigned short Pid/*, const dmx_input_t Input*/)
+bool cDemux::pesFilter(const unsigned short Pid)
 {  
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid);
 	
@@ -426,33 +424,40 @@ bool cDemux::pesFilter(const unsigned short Pid/*, const dmx_input_t Input*/)
 	pid = Pid;
 
 	pes.pid      	= Pid;
-	pes.input    = DMX_IN_FRONTEND;
-	//pes.input 	= Input;
+	pes.input    	= DMX_IN_FRONTEND;
 	pes.output   	= DMX_OUT_DECODER;
-	
 	pes.flags    	= DMX_IMMEDIATE_START;
 
 	switch(type) 
 	{
 		case DMX_VIDEO_CHANNEL:
+#if defined (PLATFORM_GENERIC)
+			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
+#endif		  
 			pes.pes_type = DMX_PES_VIDEO;
 			break;
 			
 		case DMX_AUDIO_CHANNEL:
+#if defined (PLATFORM_GENERIC)
+			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
+#endif		  
 			pes.pes_type = DMX_PES_AUDIO;
 			break;
 			
 		case DMX_PCR_ONLY_CHANNEL:
+#if defined (PLATFORM_GENERIC)
+			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
+#endif		  
 			pes.pes_type = DMX_PES_PCR;
 			break;
 			
-		case DMX_PES_CHANNEL:
-			pes.output   = DMX_OUT_TAP; /* to memory */
+		case DMX_PES_CHANNEL:		  
+			pes.output   = DMX_OUT_TAP; 		/* to memory */
 			pes.pes_type = DMX_PES_OTHER;
 			break;
 		
-		case DMX_TP_CHANNEL:		  
-			pes.output   = DMX_OUT_TSDEMUX_TAP;  // to dmx
+		case DMX_TP_CHANNEL:
+			pes.output   = DMX_OUT_TSDEMUX_TAP;     /* to demux */		
 			pes.pes_type = DMX_PES_OTHER;
 			break;
 			

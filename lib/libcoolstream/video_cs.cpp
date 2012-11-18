@@ -64,6 +64,7 @@ cVideo::~cVideo(void)
 
 bool cVideo::Open(int num)
 {
+#if !defined (PLATFORM_GENERIC)  
 	video_num = 0; // eventually always 0
 	
 	char devname[32];
@@ -84,6 +85,7 @@ bool cVideo::Open(int num)
 		dprintf(DEBUG_INFO, "cVideo::Open %s\n", devname);
 		return true;
 	}
+#endif	
 
 	return false;
 }
@@ -205,9 +207,9 @@ int cVideo::setAspectRatio(int ratio, int format)
 
 void cVideo::getPictureInfo(int &width, int &height, int &rate) 
 {
+#if !defined (PLATFORM_GENERIC)	  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__); 
 
-#if !defined (PLATFORM_GENERIC)	
   	unsigned char buffer[10];
 	int n, fd;	
 
@@ -247,16 +249,17 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 	if (n > 0) 
 	{
 		sscanf((const char*) buffer, "%X", &height);
-	}
-#endif	
+	}	
 	
 	dprintf(DEBUG_INFO, "%s:%s < w %d, h %d, r %d\n", FILENAME, __FUNCTION__, width, height, rate);
+#endif	
 }
 
 int cVideo::Start()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
+#if !defined (PLATFORM_GENERIC)
 	if (playstate == VIDEO_PLAYING)
 		return 0;
 
@@ -265,6 +268,7 @@ int cVideo::Start()
 	// Video Play
 	if(ioctl(video_fd, VIDEO_PLAY) < 0)
 		perror("VIDEO_PLAY");
+#endif	
 		
 	return true;
 }
@@ -273,10 +277,12 @@ int cVideo::Stop(bool blank)
 { 
 	dprintf(DEBUG_INFO, "%s:%s blank:%d\n", FILENAME, __FUNCTION__, blank);	
 	
+#if !defined (PLATFORM_GENERIC)	
 	playstate = blank ? VIDEO_STOPPED : VIDEO_FREEZED;
 	
 	if( ioctl(video_fd, VIDEO_STOP, blank ? 1 : 0) < 0 )
 		perror("VIDEO_STOP");
+#endif	
 	
 	return true;
 }
@@ -285,10 +291,12 @@ bool cVideo::Pause(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
+#if !defined (PLATFORM_GENERIC)	
 	if (ioctl(video_fd, VIDEO_FREEZE) < 0)
 		perror("VIDEO_FREEZE");
 	
 	playstate = VIDEO_FREEZED;
+#endif	
 		
 	return true;
 }
@@ -297,10 +305,12 @@ bool cVideo::Resume(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
+#if !defined (PLATFORM_GENERIC)	
 	if (ioctl(video_fd, VIDEO_CONTINUE) < 0)
 		perror("VIDEO_CONTINUE");
 	
 	playstate = VIDEO_PLAYING;
+#endif	
 		
 	return true;
 }
@@ -311,7 +321,7 @@ int cVideo::Flush(void)
 
 #ifdef __sh__
 	if (ioctl(video_fd, VIDEO_FLUSH, NULL) < 0)
-#else
+#elif !defined (PLATFORM_GENERIC)
 	if (ioctl(video_fd, VIDEO_CLEAR_BUFFER) < 0)
 #endif
 		perror("VIDEO_FLUSH");
@@ -323,9 +333,13 @@ int cVideo::setSlowMotion(int repeat)
 {
 	dprintf(DEBUG_INFO, "VIDEO_SLOWMOTION(%d) - \n", repeat);
 	
-	int ret = ::ioctl(video_fd, VIDEO_SLOWMOTION, repeat);
+	int ret = -1;
+	
+#if !defined (PLATFORM_GENERIC)	
+	ret = ::ioctl(video_fd, VIDEO_SLOWMOTION, repeat);
 	if (ret < 0)
 		printf("failed(%m)");
+#endif	
 	
 	return ret;
 }
@@ -333,9 +347,14 @@ int cVideo::setSlowMotion(int repeat)
 int cVideo::setFastForward(int skip)
 {
 	dprintf(DEBUG_INFO, "VIDEO_FAST_FORWARD(%d) - \n", skip);
-	int ret = ::ioctl(video_fd, VIDEO_FAST_FORWARD, skip);
+	
+	int ret = -1;
+	
+#if !defined (PLATFORM_GENERIC)	
+	ret = ::ioctl(video_fd, VIDEO_FAST_FORWARD, skip);
 	if (ret < 0)
 		printf("failed(%m)");
+#endif	
 
 	return ret;
 }
@@ -534,8 +553,10 @@ void cVideo::SetStreamType(VIDEO_FORMAT type)
 
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aVIDEOFORMAT[type]);
 
+#if !defined (PLATFORM_GENERIC)
 	if (ioctl( video_fd, VIDEO_SET_STREAMTYPE, type) < 0)
 		perror("VIDEO_SET_STREAMTYPE");
+#endif	
 }
 #endif
 

@@ -1,6 +1,6 @@
 SUBDIRS = yhttpd_core yhttpd_mods tuxboxapi web
 
-AM_CPPFLAGS = -fno-rtti -fno-exceptions
+#AM_CPPFLAGS = -fno-rtti -fno-exceptions
 
 INCLUDES = \
 	-I$(top_srcdir)/lib \

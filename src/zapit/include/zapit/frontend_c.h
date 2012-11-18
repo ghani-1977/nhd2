@@ -222,7 +222,6 @@ class CFrontend
 		void setInput(t_satellite_position satellitePosition, uint32_t frequency, uint8_t polarization);
 		bool setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t frequency);
 		void setDiseqc(int sat_no, const uint8_t pol, const uint32_t frequency);
-		//void setMasterSlave(bool _slave) { slave = _slave; };
 		int driveToSatellitePosition(t_satellite_position satellitePosition, bool from_scan = false);
 		void setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int32_t _lnbSwitch);
 

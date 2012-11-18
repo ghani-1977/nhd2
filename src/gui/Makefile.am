@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -fno-rtti -fno-exceptions
+#AM_CPPFLAGS = -fno-rtti -fno-exceptions
 
 BUILT_SOURCES  = svn_version.h
 

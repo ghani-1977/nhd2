@@ -42,6 +42,8 @@
 #if defined (PLATFORM_GENERIC)
 #define USE_OPENGL 1
 #ifdef USE_OPENGL
+#include <boost/thread.hpp>
+#include <vector>
 class GLThreadObj;
 #endif
 #endif /*PLATFORM_GENERIC*/
@@ -61,8 +63,13 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #endif
 
 // resolution
+#ifdef __FB_BLIT
 #define DEFAULT_XRES		960
 #define DEFAULT_YRES		720
+#else
+#define DEFAULT_XRES		720
+#define DEFAULT_YRES		576
+#endif
 
 // bitmap
 #define DEFAULT_BPP		32	// 32 bit
@@ -149,7 +156,9 @@ class CFrameBuffer
 		//int m_transparent_default, m_transparent;
 		
 #ifdef USE_OPENGL
-		GLThreadObj *mpGLThreadObj; /* the thread object */
+		//GLThreadObj *mpGLThreadObj; /* the thread object */
+		boost::shared_ptr<GLThreadObj> mpGLThreadObj; /* the thread object */
+		boost::thread mGLThread;  /* boost thread executing the thread object */
 #endif		
 
 	public:

@@ -78,7 +78,7 @@ int abort_zapit;
 cDvbCi * ci; //FIXME: boxes without ci cam
 
 /* audio conf */
-#define AUDIO_CONFIG_FILE "/var/tuxbox/config/zapit/audio.conf"
+#define AUDIO_CONFIG_FILE CONFIGDIR "/zapit/audio.conf"
 map<t_channel_id, audio_map_set_t> audio_map;
 map<t_channel_id, audio_map_set_t>::iterator audio_map_it;
 unsigned int volume_left = 0, volume_right = 0;
@@ -207,7 +207,7 @@ extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
 // frontend stuff
-#define DVBADAPTER_MAX	2
+#define DVBADAPTER_MAX	1
 #define FRONTEND_MAX	4
 int FrontendCount = 0;
 
@@ -218,7 +218,7 @@ fe_map_t femap;
 
 // frontend config
 CConfigFile fe_configfile(',', false);
-#define FRONTEND_CONFIGFILE "/var/tuxbox/config/zapit/frontend.conf"
+#define FRONTEND_CONFIGFILE CONFIGDIR "/zapit/frontend.conf"
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
@@ -246,8 +246,8 @@ bool initFrontend()
 				fekey = MAKE_FE_KEY(i, j);
 				femap.insert(std::pair <unsigned short, CFrontend*> (fekey, fe));
 				
-				if(live_fe == NULL)
-					live_fe = fe;
+				//if(live_fe == NULL)
+				//	live_fe = fe;
 				
 				fe->Close();
 			}
@@ -339,7 +339,6 @@ bool feCanTune(CZapitChannel * thischannel)
 				if( sit->second.type != live_fe->getDeliverySystem() ) 
 					return true;
 				// twin/loop
-				#if 0
 				else
 				{
 					// if any an other tuner (twin) have same type and is as twin set up
@@ -349,7 +348,6 @@ bool feCanTune(CZapitChannel * thischannel)
 							return true;
 					}
 				}
-				#endif
 			}
 		}
 	}
@@ -465,28 +463,33 @@ void loadFrontendConfig()
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		printf("%s not found\n", FRONTEND_CONFIGFILE);
 	
-	for(int i = 0; i < FrontendCount; i++)
+	//for(int i = 0; i < FrontendCount; i++)
+	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
-		// common
-		getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
+		CFrontend * fe = fe_it->second;
 		
-		// setmasterslave
-		//if( getFE(i)->mode == (fe_mode_t)FE_LOOP )
-		//	getFE(i)->setMasterSlave();
+		// common
+		//getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
+		fe->mode = (fe_mode_t)getConfigValue(fe_it->first, "mode", (fe_mode_t)FE_SINGLE);
 		
 		// sat
-		if(getFE(i)->getInfo()->type == FE_QPSK)
+		//if(getFE(i)->getInfo()->type == FE_QPSK)
+		if(fe->getInfo()->type == FE_QPSK)
 		{
-			getFE(i)->useGotoXX = getConfigValue(i, "useGotoXX", 0);
+			//getFE(i)->useGotoXX = getConfigValue(i, "useGotoXX", 0);
+			fe->useGotoXX = getConfigValue(fe_it->first, "useGotoXX", 0);
 			
 			char cfg_key[81];
 			
-			sprintf(cfg_key, "fe%d_gotoXXLatitude", i );
-			getFE(i)->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe_it->first );
+			//getFE(i)->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			fe->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			sprintf(cfg_key, "fe%d_gotoXXLongitude", i );
-			getFE(i)->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe_it->first );
+			//getFE(i)->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
+			fe->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
+			#if 0
 			getFE(i)->gotoXXLaDirection = getConfigValue(i, "gotoXXLaDirection", 0);
 			getFE(i)->gotoXXLoDirection = getConfigValue(i, "gotoXXLoDirection", 0);
 			
@@ -496,11 +499,16 @@ void loadFrontendConfig()
 			getFE(i)->motorRotationSpeed = getConfigValue(i, "motorRotationSpeed", 18); // default: 1.8 degrees per second
 			
 			getFE(i)->lastSatellitePosition = getConfigValue(i, "lastSatellitePosition", 0);
-
-			// FE functions at start
-			//getFE(i)->setDiseqcRepeats( getFE(i)->diseqcRepeats );
-			//getFE(i)->setCurrentSatellitePosition( getFE(i)->lastSatellitePosition );
-			//getFE(i)->setDiseqcType( getFE(i)->diseqcType );
+			#endif
+			fe->gotoXXLaDirection = getConfigValue(fe_it->first, "gotoXXLaDirection", 0);
+			fe->gotoXXLoDirection = getConfigValue(fe_it->first, "gotoXXLoDirection", 0);
+			
+			fe->repeatUsals = getConfigValue(fe_it->first, "repeatUsals", 0);
+			fe->diseqcType = (diseqc_t)getConfigValue(fe_it->first, "diseqcType", (diseqc_t)NO_DISEQC);
+			fe->diseqcRepeats = getConfigValue(fe_it->first, "diseqcRepeats", 0);
+			fe->motorRotationSpeed = getConfigValue(fe_it->first, "motorRotationSpeed", 18); // default: 1.8 degrees per second
+			
+			fe->lastSatellitePosition = getConfigValue(fe_it->first, "lastSatellitePosition", 0);
 		}
 	}
 }
@@ -1240,8 +1248,10 @@ void parseScanInputXml(int feindex)
 		delete scanInputParser;
 		scanInputParser = NULL;
 	}
+	
+	CFrontend * fe = getFE(feindex);
 		
-	switch ( getFE(feindex)->getInfo()->type) 
+	switch ( /*getFE(feindex)*/fe->getInfo()->type) 
 	{
 		case FE_QPSK:
 			scanInputParser = parseXmlFile(SATELLITES_XML);
@@ -2755,7 +2765,26 @@ int startPlayBack(CZapitChannel * thisChannel)
 		thisChannel->setPcrPid(thisChannel->getVideoPid());
 		have_pcr = true;
 	}
-
+	
+#if defined (PLATFORM_GENERIC)
+	// video pid
+	if (have_video) 
+	{
+		if( !videoDemux )
+			videoDemux = new cDemux(); 
+		
+		// open Video Demux		
+		if( videoDemux->Open(DMX_VIDEO_CHANNEL, 8192, live_fe->fenumber ) < 0 )
+			return -1;
+		
+		// video pes filter
+		if( videoDemux->pesFilter(thisChannel->getVideoPid() ) < 0)
+			return -1;		
+		
+		if ( videoDemux->Start() < 0 )
+			return -1;
+	}
+#else	
 	// pcr pid
 	if (have_pcr) 
 	{
@@ -2798,13 +2827,13 @@ int startPlayBack(CZapitChannel * thisChannel)
 		if( !videoDemux )
 			videoDemux = new cDemux(); 
 		
-		// open Video Demux
+		// open Video Demux		
 		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
 			return -1;
 		
 		// video pes filter
 		if( videoDemux->pesFilter(thisChannel->getVideoPid() ) < 0)
-			return -1;
+			return -1;		
 		
 		if ( videoDemux->Start() < 0 )
 			return -1;
@@ -2930,6 +2959,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 		if(videoDecoder)
 			videoDecoder->Start();
 	}
+#endif	
 
 	playing = true;
 	

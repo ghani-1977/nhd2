@@ -67,11 +67,12 @@ cAudio::~cAudio(void)
 
 bool cAudio::Open(int num)
 {
+#if !defined (PLATFORM_GENERIC)  
 	audio_num = 0; //always 0
 	
 	char devname[32];
 
-	// Open audio device
+	// Open audio device	
 	sprintf(devname, "/dev/dvb/adapter0/audio%d", audio_num);
 	
 	if(audio_fd > 0)
@@ -87,7 +88,8 @@ bool cAudio::Open(int num)
 		dprintf(DEBUG_INFO, "cAudio::Open %s\n", devname);
 		
 		return true;
-	}	
+	}
+#endif	
 
 	return false;
 }
@@ -145,7 +147,7 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
 	write(fd, sVolume, strlen(sVolume));
 	close(fd);
-#else
+#elif !defined (PLATFORM_GENERIC)
 	volume = left;
 	
 	// convert to -1dB steps
@@ -299,8 +301,10 @@ void cAudio::SetSyncMode(int Mode)
 {	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
+#if !defined (PLATFORM_GENERIC)	
 	if (::ioctl(audio_fd, AUDIO_SET_AV_SYNC, Mode) < 0)
 		perror("AUDIO_SET_AV_SYNC");
+#endif	
 }
 
 int cAudio::Flush(void)
@@ -309,7 +313,7 @@ int cAudio::Flush(void)
 
 #ifdef __sh__	
 	if (ioctl(audio_fd, AUDIO_FLUSH, NULL) < 0)
-#else
+#elif !defined (PLATFORM_GENERIC)
 	if (ioctl(audio_fd, AUDIO_CLEAR_BUFFER) < 0)
 #endif
 		perror("AUDIO_FLUSH");
@@ -320,6 +324,7 @@ int cAudio::Flush(void)
 /* select channels */
 int cAudio::setChannel(int channel)
 {
+#if !defined (PLATFORM_GENERIC)  
 	const char * aAUDIOCHANNEL[] = {
 		"STEREO",
 		"MONOLEFT",
@@ -330,6 +335,7 @@ int cAudio::setChannel(int channel)
 
 	if (ioctl(audio_fd, AUDIO_CHANNEL_SELECT, (audio_channel_select_t)channel) < 0)
 		perror("AUDIO_CHANNEL_SELECT");
+#endif	
 	
 	return 0;
 }
@@ -595,17 +601,18 @@ void cAudio::SetHdmiDD(int ac3)
 	close(fd);
 #endif
 
-
+#if !defined (PLATFORM_GENERIC)
 	int fd_ac3 = open("/proc/stb/audio/ac3", O_RDWR);
 	
 	write(fd_ac3, aHDMIDD[ac3], strlen(aHDMIDD[ac3]));
 
 	close(fd_ac3);
+#endif	
 }
 
 /* set source */
 int cAudio::setSource(audio_stream_source_t source)
-{
+{ 
 	const char *aAUDIOSTREAMSOURCE[] = {
 		"AUDIO_SOURCE_DEMUX",
 		"AUDIO_SOURCE_MEMORY",
@@ -628,9 +635,10 @@ audio_stream_source_t cAudio::getSource(void)
 }
 
 int cAudio::setHwPCMDelay(int delay)
-{
+{  
 	dprintf(DEBUG_INFO, "%s:%s - delay=%d\n", FILENAME, __FUNCTION__, delay);
 	
+#if !defined (PLATFORM_GENERIC)	
 	if (delay != m_pcm_delay )
 	{
 		FILE *fp = fopen("/proc/stb/audio/audio_delay_pcm", "w");
@@ -642,6 +650,7 @@ int cAudio::setHwPCMDelay(int delay)
 			return 0;
 		}
 	}
+#endif	
 	
 	return -1;
 }
@@ -650,6 +659,7 @@ int cAudio::setHwAC3Delay(int delay)
 {
 	dprintf(DEBUG_INFO, "%s:%s - delay=%d\n", FILENAME, __FUNCTION__, delay);
 	
+#if !defined (PLATFORM_GENERIC)	
 	if ( delay != m_ac3_delay )
 	{
 		FILE *fp = fopen("/proc/stb/audio/audio_delay_bitstream", "w");
@@ -661,6 +671,7 @@ int cAudio::setHwAC3Delay(int delay)
 			return 0;
 		}
 	}
+#endif	
 	
 	return -1;
 }

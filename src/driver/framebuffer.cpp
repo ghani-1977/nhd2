@@ -49,6 +49,7 @@
 #include <GL/glew.h>
 #include "rcinput.h"
 #include "glthread.h"
+#include <boost/shared_ptr.hpp>
 #endif
 
 
@@ -133,10 +134,12 @@ void CFrameBuffer::init(const char * const fbDevice)
 		screeninfo.red.offset = 16;
 		screeninfo.transp.length = 8;
 		screeninfo.transp.offset = 24;
-		mpGLThreadObj = new GLThreadObj(screeninfo.xres, screeninfo.yres);
+		//mpGLThreadObj = new GLThreadObj(screeninfo.xres, screeninfo.yres);
+		mpGLThreadObj = boost::shared_ptr<GLThreadObj>(new GLThreadObj(screeninfo.xres, screeninfo.yres));
 		if(mpGLThreadObj)
 		{ /* kick off the GL thread for the window */
-			mpGLThreadObj->Start();
+			//mpGLThreadObj->Start();
+			mGLThread = boost::thread(boost::ref(*mpGLThreadObj));
 			mpGLThreadObj->waitInit();
 		}
 	}
@@ -262,7 +265,8 @@ CFrameBuffer::~CFrameBuffer()
 #ifdef USE_OPENGL
 	active = false; /* keep people/infoclocks from accessing */
 	mpGLThreadObj->shutDown();
-	mpGLThreadObj->join();
+	//mpGLThreadObj->join();
+	mGLThread.timed_join(boost::posix_time::seconds(10));
 #else	
 	close(fd);
 #endif	
