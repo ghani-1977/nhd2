@@ -171,9 +171,11 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 int cAudio::Start(void)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-
+	
+#if !defined (PLATFORM_GENERIC)
 	if (ioctl(audio_fd, AUDIO_PLAY) < 0)
 		perror("AUDIO_PLAY");
+#endif	
 
 	return 0;
 }
@@ -182,8 +184,10 @@ int cAudio::Stop(void)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
+#if !defined (PLATFORM_GENERIC)	
 	if (ioctl(audio_fd, AUDIO_STOP) < 0)
 		perror("AUDIO_STOP");
+#endif	
 
 	return 0;
 }
@@ -191,9 +195,11 @@ int cAudio::Stop(void)
 bool cAudio::Pause()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
-
+	
+#if !defined (PLATFORM_GENERIC)
 	if (ioctl(audio_fd, AUDIO_PAUSE, 1) < 0)
 		perror("AUDIO_PAUSE");
+#endif	
 
 	return true;
 }
@@ -202,8 +208,10 @@ bool cAudio::Resume()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
+#if !defined (PLATFORM_GENERIC)
 	if (ioctl(audio_fd, AUDIO_CONTINUE) < 0)
 		perror("AUDIO_CONTINUE");
+#endif	
 	
 	return true;
 }
@@ -290,8 +298,10 @@ void cAudio::SetStreamType(AUDIO_FORMAT type)
 
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aAUDIOFORMAT[type]);
 
+#if !defined (PLATFORM_GENERIC)	
 	if (ioctl(audio_fd, AUDIO_SET_BYPASS_MODE, type) < 0)
 		perror("AUDIO_SET_BYPASS_MODE");
+#endif	
 
 	StreamType = type;
 }

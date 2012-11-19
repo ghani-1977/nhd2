@@ -1,11 +1,9 @@
-#AM_CPPFLAGS = -fno-rtti -fno-exceptions
-
 SUBDIRS = zapit gui daemonc driver system timerd nhttpd sectionsd
 
 INCLUDES = \
 	-I$(top_srcdir)/daemons \
-	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/connection \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libconfigfile \
@@ -62,7 +60,7 @@ neutrino_LDADD = \
 	@MAD_LIBS@ \
 	@ID3TAG_LIBS@ \
 	@VORBISIDEC_LIBS@ \
-	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil -lswscale
+	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if ENABLE_UPNP
 neutrino_LDADD += $(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a
@@ -86,7 +84,7 @@ endif
 
 if BOXTYPE_GENERIC
 neutrino_LDADD += \
-	-lglut -lGL -lGLU -lGLEW -lOpenThreads -lboost_thread
+	-lglut -lGL -lGLU -lGLEW -lOpenThreads
 endif
 
 

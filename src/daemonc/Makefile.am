@@ -1,5 +1,3 @@
-#AM_CPPFLAGS = -fno-rtti -fno-exceptions
-
 INCLUDES = \
 	-I$(top_srcdir)/daemons \
 	-I$(top_srcdir)/src \

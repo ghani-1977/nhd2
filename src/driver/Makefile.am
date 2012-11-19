@@ -1,5 +1,3 @@
-#AM_CXXFLAGS = -fno-rtti -fno-exceptions
-
 SUBDIRS = pictureviewer audiodec
 
 INCLUDES = \
@@ -73,7 +71,6 @@ endif
 
 if BOXTYPE_GENERIC
 libneutrino_driver_a_SOURCES += \
-	glthread.cpp \
-	decodethread.cpp
+	glthread.cpp
 endif
 

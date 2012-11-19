@@ -6,8 +6,6 @@ INCLUDES = \
 
 noinst_LIBRARIES = libsectionsdclient.a
 
-AM_CPPFLAGS = -fno-rtti -fno-exceptions
-
 libsectionsdclient_a_SOURCES = sectionsdclient.cpp
 
 bin_PROGRAMS = sectionsdcontrol

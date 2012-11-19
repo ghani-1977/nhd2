@@ -1,6 +1,7 @@
 SUBDIRS = client
 
 pkgincludedir = ${includedir}/tuxbox/zapit
+
 pkginclude_HEADERS = \
 	bouquets.h cam.h channel.h \
 	ci.h descriptors.h dvbstring.h frontend_c.h \

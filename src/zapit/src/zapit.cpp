@@ -2765,26 +2765,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 		thisChannel->setPcrPid(thisChannel->getVideoPid());
 		have_pcr = true;
 	}
-	
-#if defined (PLATFORM_GENERIC)
-	// video pid
-	if (have_video) 
-	{
-		if( !videoDemux )
-			videoDemux = new cDemux(); 
 		
-		// open Video Demux		
-		if( videoDemux->Open(DMX_VIDEO_CHANNEL, 8192, live_fe->fenumber ) < 0 )
-			return -1;
-		
-		// video pes filter
-		if( videoDemux->pesFilter(thisChannel->getVideoPid() ) < 0)
-			return -1;		
-		
-		if ( videoDemux->Start() < 0 )
-			return -1;
-	}
-#else	
 	// pcr pid
 	if (have_pcr) 
 	{
@@ -2959,7 +2940,6 @@ int startPlayBack(CZapitChannel * thisChannel)
 		if(videoDecoder)
 			videoDecoder->Start();
 	}
-#endif	
 
 	playing = true;
 	

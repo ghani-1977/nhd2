@@ -1,17 +1,13 @@
-#AM_CPPFLAGS = -fno-rtti -fno-exceptions
-
 INCLUDES = \
-	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/zapit/include \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/connection \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libxmltree \
-	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/lib/libcoolstream
-
-
 
 noinst_LIBRARIES = libzapit.a
 

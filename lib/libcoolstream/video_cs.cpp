@@ -31,6 +31,8 @@
 #include <sys/time.h>
 #include <sys/select.h>
 
+#include <config.h>
+
 #include "video_cs.h"
 
 #include <linux/fb.h>
@@ -94,9 +96,11 @@ bool cVideo::Close()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
+#if !defined (PLATFORM_GENERIC) 	
 	if(video_fd >= 0)
 		close(video_fd);
 	video_fd = -1;
+#endif	
 
 	return true;
 }

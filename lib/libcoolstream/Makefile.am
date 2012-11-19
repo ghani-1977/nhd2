@@ -1,5 +1,3 @@
-AM_CFLAGS = -Wall -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
-
 INCLUDES = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/src \

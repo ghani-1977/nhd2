@@ -42,8 +42,6 @@
 #if defined (PLATFORM_GENERIC)
 #define USE_OPENGL 1
 #ifdef USE_OPENGL
-#include <boost/thread.hpp>
-#include <vector>
 class GLThreadObj;
 #endif
 #endif /*PLATFORM_GENERIC*/
@@ -136,10 +134,7 @@ class CFrameBuffer
 		
 		void paletteFade(int i, __u32 rgb1, __u32 rgb2, int level);
 
-		//int 	kd_mode;
-		//struct	vt_mode vt_mode;
 		bool	active;
-		//static	void switch_signal (int);
 
 		// icon cache map
 		std::map<std::string, Icon> icon_cache;
@@ -156,9 +151,7 @@ class CFrameBuffer
 		//int m_transparent_default, m_transparent;
 		
 #ifdef USE_OPENGL
-		//GLThreadObj *mpGLThreadObj; /* the thread object */
-		boost::shared_ptr<GLThreadObj> mpGLThreadObj; /* the thread object */
-		boost::thread mGLThread;  /* boost thread executing the thread object */
+		GLThreadObj *mpGLThreadObj; /* the thread object */
 #endif		
 
 	public:

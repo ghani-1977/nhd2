@@ -5,8 +5,6 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	@FREETYPE_CFLAGS@
 
-#AM_CPPFLAGS = $(FREETYPE_CFLAGS) -fno-rtti -fno-exceptions
-
 noinst_LIBRARIES = libtuxtxt.a
 
 libtuxtxt_a_SOURCES = libtuxtxt.cpp tuxtxt.cpp
