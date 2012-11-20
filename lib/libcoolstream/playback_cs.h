@@ -26,18 +26,6 @@
 #include <config.h>
 
 
-#if !ENABLE_GSTREAMER
-#include <common.h>
-#include <subtitle.h>
-#include <linux/fb.h>
-
-
-extern OutputHandler_t		OutputHandler;
-extern PlaybackHandler_t	PlaybackHandler;
-extern ContainerHandler_t	ContainerHandler;
-extern ManagerHandler_t		ManagerHandler;
-#endif
-
 typedef enum {
 	STATE_STOP,
 	STATE_PLAY,
@@ -51,9 +39,6 @@ typedef enum {
 class cPlayback
 {
 	private:
-#if !ENABLE_GSTREAMER
-		Context_t * player;
-#endif
 		bool playing;
 
 		int mSpeed;

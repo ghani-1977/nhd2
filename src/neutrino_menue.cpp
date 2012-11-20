@@ -162,7 +162,6 @@ extern CCAMMenuHandler * g_CamHandler;		// defined neutrino.cpp
 static CTimingSettingsNotifier timingsettingsnotifier;
 
 extern int FrontendCount;			// defined in zapit.cpp
-//extern int tuner_to_scan;			// defined in scan_setup.cpp
 CFrontend * getFE(int index);
 
 extern Zapit_config zapitCfg;	//defined in neutrino.cpp
@@ -764,12 +763,12 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 		TunerSetup.addItem(GenericMenuBack);
 		TunerSetup.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 		
-		for(int i=0; i<FrontendCount; i++)
+		for(int i=0; i < FrontendCount; i++)
 		{
 			CFrontend * fe = getFE(i);
 			char tbuf[255];
 		
-			sprintf(tbuf, "Tuner-%d: %s", fe->fenumber + 1, fe->getInfo()->name);
+			sprintf(tbuf, "Tuner-%d: %s", i + 1, fe->getInfo()->name);
 			TunerSetup.addItem(new CMenuForwarderNonLocalized(tbuf, true, NULL, new CScanSetup(i) ));
 		}	
 		

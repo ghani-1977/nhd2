@@ -111,7 +111,8 @@ int cAudio::SetMute(int enable)
 	dprintf(DEBUG_INFO, "%s:%s (%d)\n", FILENAME, __FUNCTION__, enable);	
 	
 	Muted = enable?true:false;
-	
+
+#if !defined (PLATFORM_GENERIC)
 #ifdef __sh__	
 	char sMuted[4];
 	sprintf(sMuted, "%d", Muted);
@@ -122,6 +123,7 @@ int cAudio::SetMute(int enable)
 #else
 	if( ioctl(audio_fd, AUDIO_SET_MUTE, enable) < 0 )
 		perror("AUDIO_SET_MUTE");
+#endif
 #endif
 
 	return 0;
@@ -320,13 +322,14 @@ void cAudio::SetSyncMode(int Mode)
 int cAudio::Flush(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-
+#if !defined (PLATFORM_GENERIC)
 #ifdef __sh__	
 	if (ioctl(audio_fd, AUDIO_FLUSH, NULL) < 0)
-#elif !defined (PLATFORM_GENERIC)
+#else
 	if (ioctl(audio_fd, AUDIO_CLEAR_BUFFER) < 0)
-#endif
+#endif	  
 		perror("AUDIO_FLUSH");
+#endif	
 	
 	return 0;
 }

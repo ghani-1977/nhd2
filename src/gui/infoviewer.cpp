@@ -77,6 +77,7 @@ extern CPictureViewer * g_PicViewer;
 
 extern cVideo * videoDecoder;
 extern CFrontend * live_fe;
+extern fe_map_t femap;
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -1278,9 +1279,11 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_RECORDMODE) 
 	{
+#if !defined (PLATFORM_GENERIC)
 		recordModeActive = data;
 		if(is_visible) 
 			showRecordIcon(true);
+#endif		
   	} 
 	else if (msg == NeutrinoMessages::EVT_ZAP_GOTAPIDS) 
 	{
@@ -1507,7 +1510,7 @@ void CInfoViewer::showSNR()
   	char percent[10];
   	uint16_t ssig, ssnr;
   	int sw, snr, sig, posx, posy;
-  	int height/*, ChanNumYPos*/;
+  	int height;
   	int barwidth = BAR_WIDTH;
 	
   	if (is_visible && g_settings.infobar_sat_display) 
@@ -1550,10 +1553,20 @@ void CInfoViewer::showSNR()
 			//show aktiv tuner
 			if( FrontendCount > 1 )
 			{
+				int Index = 0;
+				
+				for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+				{
+					CFrontend * fe = it->second;
+					
+					if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
+						Index = it->first;
+				}
+					
 				char AktivTuner[255];
 				
 				if(live_fe != NULL)
-					sprintf(AktivTuner, "T%d", (live_fe->fenumber + 1));
+					sprintf(AktivTuner, "T%d", (Index + 1));
 				
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 			}

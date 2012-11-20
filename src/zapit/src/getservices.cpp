@@ -243,11 +243,13 @@ void FindTransponder(xmlNodePtr search)
 	/* frontend type */
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		if( getFE(i)->getDeliverySystem() == DVB_S ) 
+		CFrontend * fe = getFE(i);
+		
+		if( fe->getDeliverySystem() == DVB_S ) 
 			have_s = true;
-		if( getFE(i)->getDeliverySystem() == DVB_C ) 
+		if( fe->getDeliverySystem() == DVB_C ) 
 			have_c = true;
-		if( getFE(i)->getDeliverySystem() == DVB_T ) 
+		if( fe->getDeliverySystem() == DVB_T ) 
 			have_t = true;
 	}
 	
@@ -498,6 +500,8 @@ int loadTransponders()
 	// parse sat tp
 	for(int i = 0; i < FrontendCount; i++)
 	{
+		CFrontend * fe = getFE(i);
+		
 		parseScanInputXml(i);
 			
 		if ( scanInputParser != NULL ) 
@@ -559,7 +563,7 @@ int loadTransponders()
 				}
 
 				// parse sat TP
-				ParseSatTransponders( getFE(i)->getInfo()->type, search, position);
+				ParseSatTransponders( fe->getInfo()->type, search, position);
 				
 				position++;
 				
@@ -616,7 +620,10 @@ int LoadServices(bool only_current)
 
 	// load motor position
 	for(int i = 0; i < FrontendCount; i++)
-	{	if( getFE(i)->getInfo()->type == FE_QPSK)
+	{
+		CFrontend * fe = getFE(i);
+		
+		if( fe->getInfo()->type == FE_QPSK)
 			LoadMotorPositions();
 	}
 

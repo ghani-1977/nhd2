@@ -51,6 +51,17 @@ GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstTagList * m_stream_tags = 0;
 static int end_eof = 0;
+#else
+#include <common.h>
+#include <subtitle.h>
+#include <linux/fb.h>
+
+extern OutputHandler_t		OutputHandler;
+extern PlaybackHandler_t	PlaybackHandler;
+extern ContainerHandler_t	ContainerHandler;
+extern ManagerHandler_t		ManagerHandler;
+
+static Context_t * player;
 #endif
 
 #if defined ENABLE_GSTREAMER
@@ -202,8 +213,6 @@ cPlayback::cPlayback(int num)
 
 #if ENABLE_GSTREAMER
 	gst_init(NULL, NULL);
-#else
-	player = NULL;
 #endif	
 	
 	mAudioStream = 0;
@@ -322,12 +331,11 @@ void cPlayback::Close(void)
 		player->playback->Command(player, PLAYBACK_CLOSE, NULL);
 
 
-	if(player != NULL)
-	{
+	if(player)
 		free(player);
 
+	if(player != NULL)
 		player = NULL;
-	}
 #endif	
 }
 

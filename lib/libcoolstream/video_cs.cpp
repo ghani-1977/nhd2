@@ -323,12 +323,14 @@ int cVideo::Flush(void)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
+#if !defined (PLATFORM_GENERIC)
 #ifdef __sh__
 	if (ioctl(video_fd, VIDEO_FLUSH, NULL) < 0)
-#elif !defined (PLATFORM_GENERIC)
+#else
 	if (ioctl(video_fd, VIDEO_CLEAR_BUFFER) < 0)
 #endif
 		perror("VIDEO_FLUSH");
+#endif		
 	
 	return 0;
 }

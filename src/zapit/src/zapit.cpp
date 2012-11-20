@@ -206,14 +206,10 @@ extern void tuxtx_stop_subtitle();
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
-// frontend stuff
-#define DVBADAPTER_MAX	1
+// multi frontend stuff
+#define DVBADAPTER_MAX	2
 #define FRONTEND_MAX	4
 int FrontendCount = 0;
-
-#define MAKE_FE_KEY(adapter, number) ((adapter << 8) | (number & 0xFF))
-typedef std::map<unsigned short, CFrontend*> fe_map_t;
-typedef fe_map_t::iterator fe_map_iterator_t;
 fe_map_t femap;
 
 // frontend config
@@ -232,7 +228,7 @@ bool initFrontend()
 	int i, j;
 	
 	CFrontend * fe;
-	unsigned short fekey;
+	int index = -1;
 	
 	// fill map
 	for(i = 0; i < DVBADAPTER_MAX; i++)
@@ -243,11 +239,8 @@ bool initFrontend()
 			
 			if(fe->Open()) 
 			{
-				fekey = MAKE_FE_KEY(i, j);
-				femap.insert(std::pair <unsigned short, CFrontend*> (fekey, fe));
-				
-				//if(live_fe == NULL)
-				//	live_fe = fe;
+				index++;
+				femap.insert(std::pair <unsigned short, CFrontend*> (index, fe));
 				
 				fe->Close();
 			}
@@ -463,43 +456,26 @@ void loadFrontendConfig()
 	if (!fe_configfile.loadConfig(FRONTEND_CONFIGFILE))
 		printf("%s not found\n", FRONTEND_CONFIGFILE);
 	
-	//for(int i = 0; i < FrontendCount; i++)
 	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
 		CFrontend * fe = fe_it->second;
 		
 		// common
-		//getFE(i)->mode = (fe_mode_t)getConfigValue(i, "mode", (fe_mode_t)FE_SINGLE);
 		fe->mode = (fe_mode_t)getConfigValue(fe_it->first, "mode", (fe_mode_t)FE_SINGLE);
 		
 		// sat
-		//if(getFE(i)->getInfo()->type == FE_QPSK)
 		if(fe->getInfo()->type == FE_QPSK)
 		{
-			//getFE(i)->useGotoXX = getConfigValue(i, "useGotoXX", 0);
 			fe->useGotoXX = getConfigValue(fe_it->first, "useGotoXX", 0);
 			
 			char cfg_key[81];
 			
 			sprintf(cfg_key, "fe%d_gotoXXLatitude", fe_it->first );
-			//getFE(i)->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			fe->gotoXXLatitude = strtod( fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
 			sprintf(cfg_key, "fe%d_gotoXXLongitude", fe_it->first );
-			//getFE(i)->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			fe->gotoXXLongitude = strtod(fe_configfile.getString(cfg_key, "0.0").c_str(), NULL);
 			
-			#if 0
-			getFE(i)->gotoXXLaDirection = getConfigValue(i, "gotoXXLaDirection", 0);
-			getFE(i)->gotoXXLoDirection = getConfigValue(i, "gotoXXLoDirection", 0);
-			
-			getFE(i)->repeatUsals = getConfigValue(i, "repeatUsals", 0);
-			getFE(i)->diseqcType = (diseqc_t)getConfigValue(i, "diseqcType", (diseqc_t)NO_DISEQC);
-			getFE(i)->diseqcRepeats = getConfigValue(i, "diseqcRepeats", 0);
-			getFE(i)->motorRotationSpeed = getConfigValue(i, "motorRotationSpeed", 18); // default: 1.8 degrees per second
-			
-			getFE(i)->lastSatellitePosition = getConfigValue(i, "lastSatellitePosition", 0);
-			#endif
 			fe->gotoXXLaDirection = getConfigValue(fe_it->first, "gotoXXLaDirection", 0);
 			fe->gotoXXLoDirection = getConfigValue(fe_it->first, "gotoXXLoDirection", 0);
 			
@@ -1251,7 +1227,7 @@ void parseScanInputXml(int feindex)
 	
 	CFrontend * fe = getFE(feindex);
 		
-	switch ( /*getFE(feindex)*/fe->getInfo()->type) 
+	switch ( fe->getInfo()->type) 
 	{
 		case FE_QPSK:
 			scanInputParser = parseXmlFile(SATELLITES_XML);

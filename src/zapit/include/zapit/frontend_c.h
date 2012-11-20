@@ -90,6 +90,7 @@ class CFrontend
 {
 	public:
 		int fenumber;
+		int fe_adapter;
 		
 		fe_mode_t	mode;
 		
@@ -123,7 +124,7 @@ class CFrontend
 	  
 	private:
 		int fd;
-		int fe_adapter;
+		//int fe_adapter;
 		bool standby;
 		
 		/* information about the used frontend type */
@@ -232,6 +233,10 @@ class CFrontend
 		
 		void setMasterSlave();
 };
+
+// multi frontend stuff
+typedef std::map<unsigned short, CFrontend*> fe_map_t;
+typedef fe_map_t::iterator fe_map_iterator_t;
 
 
 #endif /* __zapit_frontend_h__ */

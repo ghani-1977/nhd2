@@ -71,7 +71,6 @@ extern CZapitChannel * rec_channel;
 extern CFrontend * live_fe;
 
 extern bool autoshift;
-//extern bool autoshift_delete;
 
 #define MAXPIDS		64
 #define FILENAMEBUFFERSIZE 1024
