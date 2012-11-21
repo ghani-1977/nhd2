@@ -3309,9 +3309,9 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		}
 
 		// auto timeshift
-		if (!recordingstatus && g_settings.auto_timeshift) 
-		{
-			int delay = g_settings.auto_timeshift;
+		if (!recordingstatus && g_settings.auto_timeshift) 		  
+		{			
+			int delay = g_settings.auto_timeshift;			
 			shift_timer = g_RCInput->addTimer( delay*1000*1000, true );
 			g_InfoViewer->handleMsg(NeutrinoMessages::EVT_RECORDMODE, 1);
 		}
@@ -4120,9 +4120,6 @@ void CNeutrinoApp::ExitRun(int retcode)
 			
 			mode = mode_off;
 
-			// stop all deamons threads
-			//stop_daemons();
-
 			// check for events
 			neutrino_msg_t      msg;
 			neutrino_msg_data_t data;
@@ -4888,12 +4885,12 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	else if(actionKey=="reboot")
 	{
-		//FILE *f = fopen("/tmp/.reboot", "w");
-		//fclose(f);
+		FILE *f = fopen("/tmp/.reboot", "w");
+		fclose(f);
 
 		ExitRun();
 
-		//unlink("/tmp/.reboot");
+		unlink("/tmp/.reboot");
 		returnval = menu_return::RETURN_NONE;
 	}
 	else if(actionKey=="tv") 
@@ -5304,7 +5301,6 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void *data)
 void stop_daemons()
 {
 	// stop dvbsub
-	dvbsub_stop();
 	dvbsub_close();
 
 	// stop txt
