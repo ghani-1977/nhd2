@@ -255,7 +255,7 @@ eData sendData(tSlot* slot, unsigned char* data, int len)
 	}
 
 #ifdef x_debug
-	printf("write (%d): > ", slot->slot);
+	printf("write (%d): > \n", slot->slot);
 	for(int i=0; i < len; i++)
 	   printf("%02x ",d[i]);
 	printf("\n");
@@ -352,7 +352,7 @@ void cDvbCi::process_tpdu(tSlot* slot, unsigned char tpdu_tag, __u8* data, int a
 
 	        	printf("->single package\n");
 #ifdef x_debug	
-			printf("calling receiveData with data (len %d)> ", asn_data_length);
+			printf("calling receiveData with data (len %d)> \n", asn_data_length);
 			for(int i = 0;i < asn_data_length; i++)
 				printf("%02x ", data[i]);
                         printf("\n");
@@ -729,7 +729,7 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt, int source)
                    printf(" %d, %d\n", get_length_field_size(size), size);
 		   int len = caPmt->writeToBuffer(buffer, 0, 0xff);
 
-         	   printf("capmt(%d): > ", len);
+         	   printf("capmt(%d): > \n", len);
 	
 #if 0
 		   for(int i=0; i < len; i++)
@@ -777,7 +777,7 @@ cDvbCi::cDvbCi(int Slots)
 	    
 	    if (fd < 0)
 	    {
-                printf("failed to open %s ->%m", filename);
+                printf("failed to open %s ->%m\n", filename);
 	    } 
 	    	
 	    tSlot* slot = (tSlot*) malloc(sizeof(tSlot));
@@ -816,7 +816,7 @@ cDvbCi::cDvbCi(int Slots)
 	       
 	       if (pthread_create(&slot->slot_thread, 0, execute_thread,  (void*)slot)) 
 	       {
-		  printf("pthread_create");
+		  printf("pthread_create\n");
 	       }
 	    }
 	}
