@@ -8,3 +8,4 @@ install_DATA = \
 install-exec-local:
 	install -d $(DESTDIR)$(CONFIGDIR)/zapit
 
+
