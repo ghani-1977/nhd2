@@ -217,7 +217,7 @@ class CFrontend
 		//void 				setTsidOnid(transponder_id_t newid)  { currentTransponder.TP_id = newid; }
 		uint32_t 			getRate();
 		
-                void Close();
+                void Close( bool inited = false);
 		bool Open( bool init = false);
 		
 		bool sendUncommittedSwitchesCommand(int input);

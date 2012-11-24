@@ -276,7 +276,7 @@ void CloseFE()
 	{
 		CFrontend * fe = it->second;
 		
-		fe->Close();
+		fe->Close(true);
 	}
 }
 
@@ -378,13 +378,18 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		{
 			same_tid_fe = fe;
+			fe->Open();
 			break;
 		}
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
 			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			{
 				free_frontend = fe;
+				//TEST
+				fe->Open();
+			}
 		}
 	}
 	
