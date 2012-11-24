@@ -181,7 +181,7 @@ extern void tuxtx_pause_subtitle(bool pause, int source = 0);
 extern void tuxtx_stop_subtitle();
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
-extern int tuxtx_main(int _rc, int pid, int page, int source );
+extern int tuxtx_main(int _rc, int pid, int page, int source = 0 );
 
 // dvbsub
 //extern int dvbsub_initialise();
@@ -5588,7 +5588,7 @@ void CNeutrinoApp::StopSubtitles()
 	
 	if(ttx) 
 	{
-		tuxtx_pause_subtitle(true/*, live_fe?live_fe->fenumber:0*/ );
+		tuxtx_pause_subtitle(true, live_fe?live_fe->fenumber:0 );
 		
 		frameBuffer->paintBackground();
 #ifdef FB_BLIT

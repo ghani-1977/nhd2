@@ -53,7 +53,7 @@
 extern tuxtxt_cache_struct tuxtxt_cache;
 extern int tuxtxt_init();
 extern void tuxtxt_close();
-extern void tuxtxt_start(int tpid, int source);  // Start caching
+extern void tuxtxt_start(int tpid, int source = 0);  // Start caching
 extern int  tuxtxt_stop(); // Stop caching
 extern void tuxtxt_next_dec(int *i); /* skip to next decimal */
 extern void tuxtxt_prev_dec(int *i); /* counting down */
