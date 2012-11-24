@@ -305,7 +305,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 		uint8_t tp_pol = thischannel->polarization & 1;
 		uint8_t fe_pol = fe->getPolarization() & 1;
 
-		dprintf(DEBUG_DEBUG, "%s fe%d: locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
+		dprintf(DEBUG_DEBUG, "%s fe(%d,%d): locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
 		
 		if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
 			return true;
@@ -362,7 +362,8 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		dprintf(DEBUG_DEBUG, "getFrontend: fe%d: fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+				fe->fe_adapter,
 				fe->fenumber, 
 				fe->getFrequency(), 
 				fe->getTsidOnid(), 
@@ -974,7 +975,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	}
 	
-	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, frontend->fenumber);
+	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, frontend->fe_adapter, frontend->fenumber);
 	
 	record_fe = frontend;
 	
@@ -1646,7 +1647,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			dprintf(DEBUG_INFO, "[zapit] sending EVT_SERVICES_CHANGED\n");
 			
-			live_fe->setTsidOnid(0);
+			//live_fe->setTsidOnid(0);
 			zapit(live_channel_id, current_is_nvod);
 
 			eventServer->sendEvent(CZapitClient::EVT_BOUQUETS_CHANGED, CEventServer::INITID_ZAPIT);

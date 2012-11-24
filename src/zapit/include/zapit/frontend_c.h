@@ -124,7 +124,7 @@ class CFrontend
 	  
 	private:
 		int fd;
-		//int fe_adapter;
+		
 		bool standby;
 		
 		/* information about the used frontend type */
@@ -212,7 +212,9 @@ class CFrontend
 							return (currentTransponder.TP_id == 0)
 								|| (tpid == currentTransponder.TP_id);
 						}
-		void 				setTsidOnid(transponder_id_t newid)  { currentTransponder.TP_id = newid; }
+						
+		//const transponder_id_t 		getTsidOnid()    { return currentTransponder.TP_id; }
+		//void 				setTsidOnid(transponder_id_t newid)  { currentTransponder.TP_id = newid; }
 		uint32_t 			getRate();
 		
                 void Close();

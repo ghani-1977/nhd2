@@ -90,8 +90,6 @@ CVFD::CVFD()
 	has_lcd = 1;
 #endif
 	
-	fd = -1;
-	
 	text[0] = 0;
 	clearClock = 0;
 

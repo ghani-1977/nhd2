@@ -357,8 +357,8 @@ static const SIevent nullEvt; // Null-Event
 // SmartPointer auf SIevent
 //typedef Loki::SmartPtr<class SIevent, Loki::RefCounted, Loki::DisallowConversion, Loki::NoCheck>
 //  SIeventPtr;
-typedef boost::shared_ptr<class SIevent>
-		SIeventPtr;
+//typedef boost::shared_ptr<class SIevent> SIeventPtr;
+typedef SIevent * SIeventPtr;
 
 typedef std::map<event_id_t, SIeventPtr, std::less<event_id_t> > MySIeventsOrderUniqueKey;
 static MySIeventsOrderUniqueKey mySIeventsOrderUniqueKey;
@@ -764,7 +764,7 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 			printf("[sectionsd::addEvent] new SIevent failed.\n");
 			unlockEvents();
 			return;
-			// throw std::bad_alloc();
+			//throw std::bad_alloc();
 		}
 
 		SIeventPtr e(eptr);
@@ -1501,8 +1501,8 @@ static bool addService(const SIservice &s, const int is_actual)
 		if (!sp)
 		{
 			printf("[sectionsd::addService] new SIservice failed.\n");
-			return false;
-			//throw std::bad_alloc();
+			//return false;
+			throw std::bad_alloc();
 		}
 
 		SIservicePtr sptr(sp);
@@ -8006,21 +8006,27 @@ void sectionsd_main_thread(void */*data*/)
 #endif
 	pthread_cancel(threadHouseKeeping);
 
-	if(dmxUTC) dmxUTC->Stop();
+	if(dmxUTC) 
+		dmxUTC->Stop();
 
 	pthread_cancel(threadTOT);
 
 	printf("join 1\n");
 	pthread_join(threadTOT, NULL);
-	if(dmxUTC) delete dmxUTC;
+	if(dmxUTC) 
+		delete dmxUTC;
+	
 	printf("join 2\n");
 	pthread_join(threadEIT, NULL);
+	
 	printf("join 3\n");
 	pthread_join(threadCN, NULL);
+	
 #ifdef ENABLE_PPT
 	printf("join 3\n");
 	pthread_join(threadPPT, NULL);
 #endif
+
 #ifdef UPDATE_NETWORKS
 	printf("join 4\n");
 	pthread_join(threadSDT, NULL);

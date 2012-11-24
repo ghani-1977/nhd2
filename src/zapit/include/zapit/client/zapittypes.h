@@ -98,15 +98,6 @@ typedef struct Channel_parameter
 	uint32_t TP_id;					/* diseqc<<24 | feparams->frequency>>8 */
 } CH_params;
 
-typedef struct TP_map
-{
-	TP_params TP;
-	TP_map(const TP_params p_TP)
-	{
-		TP = p_TP;
-	}
-} t_transponder;
-
 #define MAX_LNB 64 
 typedef struct Zapit_config {
 	int makeRemainingChannelsBouquet;
@@ -140,9 +131,6 @@ typedef enum {
 	FE_LOOP,
 	FE_NOTCONNECTED, // do we really need this
 } fe_mode_t;
-
-typedef std::map <uint32_t, TP_map> TP_map_t;
-typedef std::map <uint32_t, TP_map>::iterator TP_iterator;
 
 
 #endif /* __zapittypes_h__ */

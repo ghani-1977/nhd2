@@ -78,6 +78,7 @@ extern CPictureViewer * g_PicViewer;
 extern cVideo * videoDecoder;
 extern CFrontend * live_fe;
 extern fe_map_t femap;
+extern CFrontend * getFE(int index);
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -1537,6 +1538,8 @@ void CInfoViewer::showSNR()
 					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
 				}
 			}
+			else
+				sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
 
 			int chanH = g_SignalFont->getHeight();
 			int freqWidth = g_SignalFont->getRenderWidth(freq);
@@ -1555,12 +1558,20 @@ void CInfoViewer::showSNR()
 			{
 				int Index = 0;
 				
-				for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+				//for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+				for(unsigned int i = 0; i < FrontendCount; i++)
 				{
-					CFrontend * fe = it->second;
+					CFrontend * fe = /*it->second*/getFE(i);
 					
-					if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
-						Index = it->first;
+					//if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
+					if(live_fe != NULL)
+					{
+						if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
+						//if(fe = live_fe)
+							Index = i/*it->first*/;
+					}
+					else
+						Index = 0;
 				}
 					
 				char AktivTuner[255];

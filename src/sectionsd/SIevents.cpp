@@ -82,11 +82,13 @@ SIevent::SIevent(const t_original_network_id _original_network_id, const t_trans
 	table_id            = 0xFF; /* not set */
 	version 	    = 0xFF;
 	running		    = 0;
-	/*	contentClassification = "";
-		userClassification = "";
-		itemDescription = "";
-		item = "";
-		extendedText = "";*/
+	/*	
+	contentClassification = "";
+	userClassification = "";
+	itemDescription = "";
+	item = "";
+	extendedText = "";
+	*/
 }
 
 // Std-Copy
@@ -95,8 +97,8 @@ SIevent::SIevent(const SIevent &e)
 	eventID=e.eventID;
 	langName=e.langName;
 	langText=e.langText;
-//  startzeit=e.startzeit;
-//  dauer=e.dauer;
+	//startzeit=e.startzeit;
+	//dauer=e.dauer;
 	times=e.times;
 	service_id          = e.service_id;
 	original_network_id = e.original_network_id;
@@ -569,7 +571,7 @@ void SIevents::mergeAndRemoveTimeShiftedEvents(const SIservices &services)
 						}
 					}
 				}
-				erase(e); // Altes Event loeschen -> iterator (e) ungültig
+				erase(e); // Altes Event loeschen -> iterator (e) ungï¿½ltig
 				insert(newEvent); // und das erweiterte Event wieder einfuegen
 			}
 		}

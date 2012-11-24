@@ -141,6 +141,7 @@ bool CFrontend::Open( bool init )
 		/* open front-end */
 		if( (fd = open(filename, O_RDWR | O_NONBLOCK) ) < 0)
 		{
+			//printf("can not open %s\n", filename);
 			return false;
 		}
 		
@@ -148,13 +149,15 @@ bool CFrontend::Open( bool init )
 		if(ioctl(fd, FE_GET_INFO, &info) < 0)
 			perror("FE_GET_INFO");
 		
-		dprintf(DEBUG_NORMAL, "CFrontend::Open fe(%d) %s\n", fenumber, info.name);
+		dprintf(DEBUG_NORMAL, "CFrontend::Open %s %s\n", filename, info.name);
 	}
 
 	if(init)
 	{
-		// sec
+		// secvoltage
 		secSetVoltage(SEC_VOLTAGE_13, 15);
+		
+		// sectone
 		secSetTone(SEC_TONE_OFF, 15);
 		
 		// diseqc
@@ -168,16 +171,19 @@ bool CFrontend::Open( bool init )
 	return true;
 }
 
-void CFrontend::Close(void)
+void CFrontend::Close(bool inited)
 {
 	if(standby)
 		return;
 	
-	if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
-		sendDiseqcStandby();
-
-	secSetVoltage(SEC_VOLTAGE_OFF, 0);
-	secSetTone(SEC_TONE_OFF, 15);
+	if(inited)
+	{
+		if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
+			sendDiseqcStandby();
+	
+		secSetVoltage(SEC_VOLTAGE_OFF, 0);
+		secSetTone(SEC_TONE_OFF, 15);
+	}
 
 	tuned = false;
 	standby = true;
@@ -185,7 +191,7 @@ void CFrontend::Close(void)
 	close(fd);
 	fd = -1;
 	
-	dprintf(DEBUG_NORMAL, "CFrontend::Close fe(%d) %s\n", fenumber, info.name);
+	dprintf(DEBUG_NORMAL, "CFrontend::Close fe(%d,%d) %s\n", fe_adapter, fenumber, info.name);
 }
 
 void CFrontend::reset(void)
@@ -199,7 +205,7 @@ void CFrontend::reset(void)
 
 	sprintf(filename, "/dev/dvb/adapter%d/frontend%d", fe_adapter, fenumber);
 	
-	dprintf(DEBUG_INFO, "cFrontend(%d) reset %s\n", fenumber, filename);
+	dprintf(DEBUG_INFO, "cFrontend(%d,%d) reset %s\n", fe_adapter, fenumber, filename);
 
 	if ((fd = open(filename, O_RDWR | O_NONBLOCK | O_SYNC)) < 0)
 		perror(filename);
@@ -548,7 +554,7 @@ void CFrontend::getDelSys(int f, int m, char *&fec, char *&sys, char *&mod)
 			break;			
 			
 		default:
-			dprintf(DEBUG_INFO, "CFrontend::getDelSys: fe(%d) getDelSys: unknown FEC: %d !!!\n", fenumber, f);
+			dprintf(DEBUG_INFO, "CFrontend::getDelSys: fe(%d,%d) getDelSys: unknown FEC: %d !!!\n", fe_adapter, fenumber, f);
 		
 		case FEC_AUTO:
 			fec = (char *)"AUTO";
@@ -576,14 +582,13 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 	
 	memset(&event, 0, sizeof(struct dvb_frontend_event));
 	
-	dprintf(DEBUG_INFO, "cFrontend::getEvent: fe(%d) max timeout: %d\n", fenumber, TIMEOUT_MAX_MS);
+	dprintf(DEBUG_INFO, "cFrontend::getEvent: fe(%d,%d) max timeout: %d\n", fe_adapter, fenumber, TIMEOUT_MAX_MS);
 	
 	TIMER_START();
 
 	while ((int) timer_msec < TIMEOUT_MAX_MS) 
 	{
 		int ret = poll(&pfd, 1, TIMEOUT_MAX_MS);
-		//int ret = poll(&pfd, 1, TIMEOUT_MAX_MS - timer_msec);
 
 		if (ret < 0) 
 		{
@@ -615,7 +620,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 
 			if (event.status & FE_HAS_LOCK) 
 			{
-				dprintf(DEBUG_NORMAL, "cFrontend::getEvent fe(%d) FE_HAS_LOCK: freq %lu\n", fenumber, (long unsigned int)event.parameters.frequency);
+				dprintf(DEBUG_NORMAL, "cFrontend::getEvent fe(%d,%d) FE_HAS_LOCK: freq %lu\n", fe_adapter, fenumber, (long unsigned int)event.parameters.frequency);
 				tuned = true;
 				break;
 			} 
@@ -624,20 +629,20 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 				if(timedout < timer_msec)
 					timedout = timer_msec;
 				
-				dprintf(DEBUG_INFO, "cFrontend::getEvent fe(%d) FE_TIMEDOUT\n", fenumber);
+				dprintf(DEBUG_INFO, "cFrontend::getEvent fe(%d,%d) FE_TIMEDOUT\n", fe_adapter, fenumber);
 			} 
 			else 
 			{
 				if (event.status & FE_HAS_SIGNAL)
-					printf("cFrontend::getEvent fe(%d) FE_HAS_SIGNAL\n", fenumber);
+					printf("cFrontend::getEvent fe(%d,%d) FE_HAS_SIGNAL\n", fe_adapter, fenumber);
 				if (event.status & FE_HAS_CARRIER)
-					printf("cFrontend::getEvent fe(%d) FE_HAS_CARRIER\n", fenumber);
+					printf("cFrontend::getEvent fe(%d,%d) FE_HAS_CARRIER\n", fe_adapter, fenumber);
 				if (event.status & FE_HAS_VITERBI)
-					printf("cFrontend::getEvent fe(%d) FE_HAS_VITERBI\n", fenumber);
+					printf("cFrontend::getEvent fe(%d,%d) FE_HAS_VITERBI\n", fe_adapter, fenumber);
 				if (event.status & FE_HAS_SYNC)
-					printf("cFrontend::getEvent fe(%d) FE_HAS_SYNC\n", fenumber);
+					printf("cFrontend::getEvent fe(%d,%d) FE_HAS_SYNC\n", fe_adapter, fenumber);
 				if (event.status & FE_REINIT)
-					printf("cFrontend::getEvent fe(%d) FE_REINIT\n", fenumber);
+					printf("cFrontend::getEvent fe(%d,%d) FE_REINIT\n", fe_adapter, fenumber);
 			}
 		} 
 		else if (pfd.revents & POLLHUP) 
@@ -765,7 +770,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 				break;
 				
 			default:
-				dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) DEMOD: unknown FEC: %d\n", fenumber, fec_inner);
+				dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d,%d) DEMOD: unknown FEC: %d\n", fe_adapter, fenumber, fec_inner);
 			
 			case FEC_AUTO:			  
 			case FEC_S2_AUTO:			  
@@ -822,7 +827,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool
 			tuned = false;
 	}
 	
-	dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
+	dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d,%d) DEMOD: FEC %s system %s modulation %s\n", fe_adapter, fenumber, f, s, m);
 
 	//tune to
 	if(info.type == FE_QPSK)
@@ -911,7 +916,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 	
 	getDelSys(fec_inner, modulation, f, s, m);
 	
-	dprintf(DEBUG_INFO, "cFrontend::setFrontend fe(%d) DEMOD: FEC %s system %s modulation %s\n", fenumber, f, s, m);
+	dprintf(DEBUG_INFO, "cFrontend::setFrontend fe(%d,%d) DEMOD: FEC %s system %s modulation %s\n", fe_adapter, fenumber, f, s, m);
 
 	// clear event queue
 	struct dvb_frontend_event event;
@@ -929,7 +934,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 		if(ioctl(fd, FE_GET_EVENT, &event) < 0)
 			perror("FE_GET_EVENT");
 		
-		dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d) CLEAR DEMOD: event status %d\n", fenumber, event.status);
+		dprintf(DEBUG_INFO, "CFrontend::setFrontend: fe(%d,%d) CLEAR DEMOD: event status %d\n", fe_adapter, fenumber, event.status);
 	}
 
 	// set frontend
@@ -960,7 +965,7 @@ void CFrontend::secSetTone(const fe_sec_tone_mode_t toneMode, const uint32_t ms)
 	}
 	#endif
 
-	dprintf(DEBUG_INFO, "CFrontend::secSetTone: fe(%d) tone %s\n", fenumber, toneMode == SEC_TONE_ON ? "on" : "off");
+	dprintf(DEBUG_INFO, "CFrontend::secSetTone: fe(%d,%d) tone %s\n", fe_adapter, fenumber, toneMode == SEC_TONE_ON ? "on" : "off");
 
 	if (ioctl(fd, FE_SET_TONE, toneMode) == 0) 
 	{
@@ -988,7 +993,7 @@ void CFrontend::secSetVoltage(const fe_sec_voltage_t voltage, const uint32_t ms)
 	}
 	#endif
 
-	dprintf(DEBUG_INFO, "CFrontend::secSetVoltage: fe(%d) voltage %s\n", fenumber, voltage == SEC_VOLTAGE_OFF ? "OFF" : voltage == SEC_VOLTAGE_13 ? "13" : "18");
+	dprintf(DEBUG_INFO, "CFrontend::secSetVoltage: fe(%d,%d) voltage %s\n", fe_adapter, fenumber, voltage == SEC_VOLTAGE_OFF ? "OFF" : voltage == SEC_VOLTAGE_13 ? "13" : "18");
 
 	if (ioctl(fd, FE_SET_VOLTAGE, voltage) == 0) 
 	{
@@ -1079,7 +1084,7 @@ void CFrontend::setLnbOffsets(int32_t _lnbOffsetLow, int32_t _lnbOffsetHigh, int
 	lnbOffsetHigh = _lnbOffsetHigh * 1000;
 	lnbSwitch = _lnbSwitch * 1000;
 
-	dprintf(DEBUG_INFO, "CFrontend::setLnbOffsets: fe(%d) setLnbOffsets %d/%d/%d\n", fenumber, lnbOffsetLow, lnbOffsetHigh, lnbSwitch);
+	dprintf(DEBUG_INFO, "CFrontend::setLnbOffsets: fe(%d,%d) setLnbOffsets %d/%d/%d\n", fe_adapter, fenumber, lnbOffsetLow, lnbOffsetHigh, lnbSwitch);
 }
 
 void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t command, uint8_t num_parameters, uint8_t parameter1, uint8_t parameter2, int repeat)
@@ -1090,8 +1095,8 @@ void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t comma
 	struct dvb_diseqc_master_cmd cmd;
 	int i;
 
-	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d) sendMotorCommand: cmdtype   = %x, address = %x, cmd   = %x\n", fenumber, cmdtype, address, command);
-	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d) sendMotorCommand: num_parms = %d, parm1   = %x, parm2 = %x\n", fenumber, num_parameters, parameter1, parameter2);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d,%d) sendMotorCommand: cmdtype   = %x, address = %x, cmd   = %x\n", fe_adapter, fenumber, cmdtype, address, command);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d,%d) sendMotorCommand: num_parms = %d, parm1   = %x, parm2 = %x\n", fe_adapter, fenumber, num_parameters, parameter1, parameter2);
 
 	cmd.msg[0] = cmdtype;	//command type
 	cmd.msg[1] = address;	//address
@@ -1105,7 +1110,7 @@ void CFrontend::sendMotorCommand(uint8_t cmdtype, uint8_t address, uint8_t comma
 	for(i = 0; i <= repeat; i++)
 		sendDiseqcCommand(&cmd, 50);
 
-	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d) motor command sent.\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand: fe(%d,%d) motor command sent.\n", fe_adapter, fenumber);
 	
 }
 
@@ -1126,7 +1131,7 @@ void CFrontend::positionMotor(uint8_t motorPosition)
 		cmd.msg[3] = motorPosition;
 		sendDiseqcCommand(&cmd, 15);
 		
-		dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d) motor positioning command sent.\n", fenumber);
+		dprintf(DEBUG_INFO, "CFrontend::sendMotorCommand fe(%d,%d) motor positioning command sent.\n", fe_adapter, fenumber);
 	}
 }
 
@@ -1172,7 +1177,7 @@ void CFrontend::setInput(t_satellite_position satellitePosition, uint32_t freque
 {
 	sat_iterator_t sit = satellitePositions.find(satellitePosition);
 
-	dprintf(DEBUG_INFO, "CFrontend::setInput: fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
+	dprintf(DEBUG_INFO, "CFrontend::setInput: fe(%d,%d) SatellitePosition %d -> %d\n", fe_adapter, fenumber, currentSatellitePosition, satellitePosition);
 
 	// set lnb offset
 	if(info.type == FE_QPSK)
@@ -1251,7 +1256,7 @@ const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 	if(mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
 	
-	dprintf(DEBUG_INFO, "CFrontend::tuneChannel: fe(%d) tpid %llx\n", fenumber, currentTransponder.TP_id);
+	dprintf(DEBUG_INFO, "CFrontend::tuneChannel: fe(%d,%d) tpid %llx\n", fe_adapter, fenumber, currentTransponder.TP_id);
 
 	transponder_list_t::iterator transponder = transponders.find(currentTransponder.TP_id);
 
@@ -1318,7 +1323,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		/* set Sec for Sat */
 		setSec(TP->diseqc, TP->polarization, high_band);
 
-		dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d) freq= %d (offset= %d) fec= %d\n", fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
+		dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) freq= %d (offset= %d) fec= %d\n", fe_adapter, fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
 	}
 
 	if (info.type == FE_QAM) 
@@ -1327,7 +1332,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		if (TP->feparams.frequency < 1000*1000)
 			TP->feparams.frequency = TP->feparams.frequency * 1000;
 		
-		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d) freq= %d fec= %d mod= %d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
+		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d fec= %d mod= %d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
 	}
 
 	if (info.type == FE_OFDM) 
@@ -1336,7 +1341,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		if (TP->feparams.frequency < 1000*1000)
 			TP->feparams.frequency = TP->feparams.frequency * 1000;	//convert to HZ
 		
-		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
+		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
 	}
 	
 	// auto inversion for stupid tuner
@@ -1360,7 +1365,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		}
 	} while (0);
 
-	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d) %s\n", fenumber, tuned? "tuned" : "tune failed");
+	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) %s\n", fe_adapter, fenumber, tuned? "tuned" : "tune failed");
 
 	if (info.type == FE_QPSK)
 		TP->feparams.frequency += freq_offset;
@@ -1374,7 +1379,7 @@ bool CFrontend::sendUncommittedSwitchesCommand(int input)
 		{0xe0, 0x10, 0x39, 0x00, 0x00, 0x00}, 4
 	};
 
-	dprintf(DEBUG_INFO, "CFrontend::sendUncommittedSwitchesCommand fe(%d) uncommitted  %d -> %d\n", fenumber, uncommitedInput, input);
+	dprintf(DEBUG_INFO, "CFrontend::sendUncommittedSwitchesCommand fe(%d,%d) uncommitted  %d -> %d\n", fe_adapter, fenumber, uncommitedInput, input);
 	
 	if ((input < 0) || (uncommitedInput == input))
 		return false;
@@ -1399,7 +1404,7 @@ bool CFrontend::setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t fr
 		{0xe0, 0x10, 0x38, 0x00, 0x00, 0x00}, 4
 	};
 
-	dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d) diseqc input  %d -> %d\n", fenumber, diseqc, sat_no);
+	dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d,%d) diseqc input  %d -> %d\n", fe_adapter, fenumber, diseqc, sat_no);
 	
 	currentTransponder.diseqc = sat_no;
 	
@@ -1409,7 +1414,7 @@ bool CFrontend::setDiseqcSimple(int sat_no, const uint8_t pol, const uint32_t fr
 	if ((sat_no >= 0) && (diseqc != sat_no)) 
 	{
 		diseqc = sat_no;
-		dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d) diseqc no. %d\n", fenumber, sat_no);
+		dprintf(DEBUG_INFO, "CFrontend::setDiseqcSimple: fe(%d,%d) diseqc no. %d\n", fe_adapter, fenumber, sat_no);
 
 		cmd.msg[3] = 0xf0 | (((sat_no * 4) & 0x0f) | (high_band ? 1 : 0) | ((pol & 1) ? 0 : 2));
 
@@ -1533,7 +1538,7 @@ void CFrontend::sendDiseqcPowerOn(void)
 	// FIXME power on can take a while. Should be wait
 	// more time here ? 15 ms enough for some switches ?
 #if 1
-	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcPowerOn: fe(%d) diseqc power on\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcPowerOn: fe(%d,%d) diseqc power on\n", fe_adapter, fenumber);
 	
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x03);
 #else
@@ -1549,7 +1554,7 @@ void CFrontend::sendDiseqcReset(void)
 	if (info.type != FE_QPSK) 
 		return;
 	
-	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcReset: fe(%d) diseqc reset\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcReset: fe(%d,%d) diseqc reset\n", fe_adapter, fenumber);
 	
 	/* Reset && Clear Reset */
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x00);
@@ -1562,7 +1567,7 @@ void CFrontend::sendDiseqcStandby(void)
 	if (info.type != FE_QPSK) 
 		return;
 	
-	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcStandby: fe(%d) diseqc standby\n", fenumber);
+	dprintf(DEBUG_INFO, "CFrontend::sendDiseqcStandby: fe(%d,%d) diseqc standby\n", fe_adapter, fenumber);
 	
 	sendDiseqcZeroByteCommand(0xe0, 0x10, 0x02);
 }
@@ -1610,14 +1615,14 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 
 	if(diseqcType == DISEQC_ADVANCED) //FIXME testing
 	{
-		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d) SatellitePosition %d -> %d\n", fenumber, currentSatellitePosition, satellitePosition);
+		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d,%d) SatellitePosition %d -> %d\n", fe_adapter, fenumber, currentSatellitePosition, satellitePosition);
 		
 		bool moved = false;
 
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		if (sit == satellitePositions.end()) 
 		{
-			dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition: fe(%d) satellite position %d not found!\n", fenumber, satellitePosition);
+			dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition: fe(%d,%d) satellite position %d not found!\n", fe_adapter, fenumber, satellitePosition);
 			
 			return 0;
 		} 
@@ -1631,7 +1636,7 @@ int CFrontend::driveToSatellitePosition(t_satellite_position satellitePosition, 
 		if (sit != satellitePositions.end())
 			old_position = sit->second.motor_position;
 
-		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d) motorPosition %d -> %d usals %s\n", fenumber, old_position, new_position, use_usals ? "on" : "off");
+		dprintf(DEBUG_INFO, "CFrontend::driveToSatellitePosition fe(%d,%d) motorPosition %d -> %d usals %s\n", fe_adapter, fenumber, old_position, new_position, use_usals ? "on" : "off");
 
 		if (currentSatellitePosition == satellitePosition)
 			return 0;
@@ -1888,14 +1893,14 @@ void CFrontend::gotoXX(t_satellite_position pos)
 	if (satDir == WEST)
 		SatLon = 360 - SatLon;
 	
-	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) siteLatitude = %f, siteLongitude = %f, %f degrees\n", fenumber, SiteLat, SiteLon, SatLon);
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d,%d) siteLatitude = %f, siteLongitude = %f, %f degrees\n", fe_adapter, fenumber, SiteLat, SiteLon, SatLon);
 
 	double azimuth = calcAzimuth(SatLon, SiteLat, SiteLon);
 	double elevation = calcElevation(SatLon, SiteLat, SiteLon);
 	double declination = calcDeclination(SiteLat, azimuth, elevation);
 	double satHourAngle = calcSatHourangle(azimuth, elevation, declination, SiteLat);
 	
-	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) azimuth=%f, elevation=%f, declination=%f, PolarmountHourAngle=%f\n", fenumber, azimuth, elevation, declination, satHourAngle);
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d,%d) azimuth=%f, elevation=%f, declination=%f, PolarmountHourAngle=%f\n", fe_adapter, fenumber, azimuth, elevation, declination, satHourAngle);
 	
 	if (SiteLat >= 0) {
 		int tmp = (int)round(fabs(180 - satHourAngle) * 10.0);
@@ -1916,7 +1921,7 @@ void CFrontend::gotoXX(t_satellite_position pos)
 		}
 	}
 
-	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d) RotorCmd = %04x\n", fenumber, RotorCmd);
+	dprintf(DEBUG_INFO, "CFrontend::gotoXX: fe(%d,%d) RotorCmd = %04x\n", fe_adapter, fenumber, RotorCmd);
 	
 	sendMotorCommand(0xE0, 0x31, 0x6E, 2, ((RotorCmd & 0xFF00) / 0x100), RotorCmd & 0xFF, repeatUsals);
 }

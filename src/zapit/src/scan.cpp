@@ -63,11 +63,8 @@ extern t_channel_id live_channel_id;
 extern CZapitClient::bouquetMode bouquetMode;
 extern CEventServer *eventServer;
 
-//extern diseqc_t diseqcType;
-//extern int useGotoXX;
-//extern int motorRotationSpeed;
-
-CFrontend * getFE(int index);
+extern CFrontend * getFE(int index);
+extern CFrontend * live_fe;
 
 extern xmlDocPtr scanInputParser;
 
@@ -420,7 +417,7 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, uint8_t diseqc_pos, bool satfeed, int feindex)
 {
 	xmlNodePtr tps = NULL;
-	transponder_list_t::iterator tI;
+	//transponder_list_t::iterator tI;
 	found_transponders = 0;
 	processed_transponders = 0;
 
@@ -439,6 +436,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 	tps = search->xmlChildrenNode;
 
 	/* TPs from current service list */
+	#if 0
 	for(tI = transponders.begin(); tI != transponders.end(); tI++) 
 	{
 		if(abort_scan)
@@ -453,6 +451,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 		
 		add_to_scan(tI->first, &tI->second.feparams, tI->second.polarization, false, feindex);
 	}
+	#endif
 
 	/* read all transponders */
 	while ((tps = xmlGetNextOccurence(tps, "transponder")) != NULL) 
@@ -670,7 +669,7 @@ void * start_scanthread(void *scanmode)
 	{
 		stop_scan(false);
 
-		getFE(feindex)->setTsidOnid(0);
+		//live_fe->setTsidOnid(0);
 		
 		zapit(live_channel_id, 0);
 	}
@@ -765,7 +764,7 @@ void * scan_transponder(void * arg)
 	{
 		stop_scan(false);
 
-		getFE(ScanTP.feindex)->setTsidOnid(0);
+		//live_fe->setTsidOnid(0);
 		
 		zapit(live_channel_id, 0);
 	}
