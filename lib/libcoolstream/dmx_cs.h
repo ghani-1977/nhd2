@@ -54,7 +54,7 @@ class cDemux
 		DMX_CHANNEL_TYPE type;
 		unsigned short pid;
 		
-		//int last_source;
+		int last_source;
 
 	public:
 		bool Open(DMX_CHANNEL_TYPE Type, int uBufferSize = DMX_BUFFER_SIZE, int feindex = 0);

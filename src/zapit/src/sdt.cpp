@@ -41,6 +41,7 @@
 #define SDT_SIZE 1024
 
 
+// sdt scan
 int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id *p_original_network_id,t_satellite_position satellitePosition, freq_id_t freq, int feindex)
 {
 	int secdone[255];
@@ -237,6 +238,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	return 0;
 }
 
+// sdt monitor
 extern tallchans curchans;
 
 int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id, t_satellite_position satellitePosition, freq_id_t freq, int feindex)

@@ -62,7 +62,7 @@ cDemux::cDemux(int num)
 	demux_fd = -1;
 	
 	// last dmx source
- 	//last_source = -1;
+ 	last_source = -1;
 }
 
 cDemux::~cDemux()
@@ -84,16 +84,13 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	demux_num = feindex;
 	
 	//
-	//dprintf(DEBUG_INFO, "%s last_source(%d) source(%d)\n", __FUNCTION__, last_source, feindex);
-
- 	//if (last_source == feindex)
- 	//{
- 	//	dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __FUNCTION__, feindex, last_source);
+ 	if (last_source == feindex)
+ 	{
+ 		dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __FUNCTION__, feindex, last_source);
 		
- 	//	if (demux_fd > -1)
-	//		return true;
- 	//}
-	//
+ 		if (demux_fd > -1)
+			return true;
+ 	}
 	
 	// close device
 	if (demux_fd > -1) 
@@ -138,7 +135,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	}
 	
 	//
-	//last_source = feindex;
+	last_source = feindex;
 
 	return true;
 }
