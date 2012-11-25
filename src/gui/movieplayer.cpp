@@ -102,17 +102,17 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-/*static*/ cPlayback * playback;
+cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
 
-#define MOVIE_HINT_BOX_TIMER 5	// time to show bookmark hints in seconds
+#define MOVIE_HINT_BOX_TIMER 5				// time to show bookmark hints in seconds
 
 #define MINUTEOFFSET 117*262072
-#define MP_TS_SIZE 262072	// ~0.5 sec
+#define MP_TS_SIZE 262072				// ~0.5 sec
 
-extern char rec_filename[512];		// defined in stream2file.cpp
+extern char rec_filename[512];				// defined in stream2file.cpp
 
 CMoviePlayerGui::state playstate;
 bool isMovieBrowser = false;
