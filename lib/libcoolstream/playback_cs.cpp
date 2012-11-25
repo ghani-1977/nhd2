@@ -72,8 +72,18 @@ gint match_sinktype(GstElement *element, gpointer type)
 
 GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 {
-	//gstplaydata_t * playdata = (gstplaydata_t *) user_data;
-	cPlayback * self=(cPlayback*) user_data; 
+	//NOTE: borrowed from e2 :)
+	//source name
+	gchar * sourceName;
+	
+	// source
+	GstObject * source;
+	source = GST_MESSAGE_SRC(msg);
+	
+	if (!GST_IS_OBJECT(source))
+		return GST_BUS_DROP;
+	
+	sourceName = gst_object_get_name(source);
 
 	switch (GST_MESSAGE_TYPE(msg)) 
 	{
@@ -86,14 +96,26 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 		
 		case GST_MESSAGE_ERROR: 
 		{
+			gchar * debug;
 			GError *err;
-			gst_message_parse_error(msg, &err, NULL);
-			g_error("%s", err->message);
+			gst_message_parse_error(msg, &err, &debug);
+			g_free (debug);
+			//g_error("%s", err->message);
+			printf("Gstreamer error: %s (%i)\n", err->message, err->code );
+			if ( err->domain == GST_STREAM_ERROR )
+			{
+				if ( err->code == GST_STREAM_ERROR_CODEC_NOT_FOUND )
+				{
+					if ( g_strrstr(sourceName, "videosink") )
+						printf("videoSink\n");	//FIXME: how shall playback handle this event???
+					else if ( g_strrstr(sourceName, "audiosink") )
+						printf("audioSink\n"); //FIXME: how shall playback handle this event???
+				}
+			}
 			g_error_free(err);
 
-			//g_main_loop_quit(loop);
 			end_eof = 1; 		// NOTE: just to exit
-			//self->Close(); 	//FIXME: dont call Close hier GUI player call Close after EOF.
+			
 			break;
 		}
 		
@@ -104,6 +126,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 	
 			gst_message_parse_info (msg, &inf, &debug);
 			g_free (debug);
+			if ( inf->domain == GST_STREAM_ERROR && inf->code == GST_STREAM_ERROR_DECODE )
+			{
+				if ( g_strrstr(sourceName, "videosink") )
+					printf("videoSink\n"); //FIXME: how shall playback handle this event???
+			}
 			g_error_free(inf);
 			break;
 		}
@@ -173,6 +200,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
+					
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
@@ -286,7 +314,7 @@ void cPlayback::Close(void)
 		printf("GST bus handler closed\n");
 	}
 	
-	Stop();
+	//Stop();
 	
 	if (m_stream_tags)
 		gst_tag_list_free(m_stream_tags);
@@ -317,7 +345,7 @@ void cPlayback::Close(void)
 		m_gst_playbin = NULL;
 	}
 #else
-	Stop();
+	//Stop();
 	
 	if(player && player->output) 
 	{

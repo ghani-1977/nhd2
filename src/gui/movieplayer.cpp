@@ -1085,6 +1085,8 @@ void CMoviePlayerGui::PlayFile(void)
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");
+			//TEST
+			playback->Stop();
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
 		}
