@@ -1858,7 +1858,7 @@ static void * reader_thread(void * /*arg*/)
 	pthread_exit(NULL);
 }
 
-int tuxtx_main(int _rc, int pid, int page, int source = 0);
+int tuxtx_main(int _rc, int pid, int page, int source);
 void tuxtx_pause_subtitle(bool pause, int source)
 {
 	if(!pause) {
