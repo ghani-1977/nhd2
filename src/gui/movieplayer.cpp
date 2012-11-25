@@ -1085,8 +1085,9 @@ void CMoviePlayerGui::PlayFile(void)
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");
-			//TEST
+#if ENABLE_GSTREAMER			
 			playback->Stop();
+#endif			
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
 		}
@@ -2477,6 +2478,9 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{
+#if ENABLE_GSTREAMER			
+			playback->Stop();
+#endif		  
 			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
 			{
 				// if we have a movie information, try to save the stop position

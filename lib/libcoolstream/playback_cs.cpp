@@ -87,10 +87,10 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 
 	switch (GST_MESSAGE_TYPE(msg)) 
 	{
-		case GST_MESSAGE_EOS: {
+		case GST_MESSAGE_EOS: 
+		{
 			g_message("End-of-stream");
 			end_eof = 1;
-			//self->Stop(); //FIXME: dont call Close hier GUI player call Close after EOF.
 			break;
 		}
 		
@@ -154,11 +154,16 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				GstBuffer *buf_image;
 				buf_image = gst_value_get_buffer (gv_image);
 				int fd = open("/tmp/.id3coverart", O_CREAT|O_WRONLY|O_TRUNC, 0644);
-				int ret = write(fd, GST_BUFFER_DATA(buf_image), GST_BUFFER_SIZE(buf_image));
-				close(fd);
-				printf("cPlayback::state /tmp/.id3coverart %d bytes written\n", ret);
+				if(fd >= 0)
+				{
+					int ret = write(fd, GST_BUFFER_DATA(buf_image), GST_BUFFER_SIZE(buf_image));
+					close(fd);
+					printf("cPlayback::state /tmp/.id3coverart %d bytes written\n", ret);
+				}
+				//FIXME: how shall playback handle this event???
 			}
 			gst_tag_list_free(tags);
+			printf("update info tags\n"); //FIXME: how shall playback handle this event???
 			break;
 		}
 		
@@ -314,8 +319,6 @@ void cPlayback::Close(void)
 		printf("GST bus handler closed\n");
 	}
 	
-	//Stop();
-	
 	if (m_stream_tags)
 		gst_tag_list_free(m_stream_tags);
 
@@ -345,7 +348,7 @@ void cPlayback::Close(void)
 		m_gst_playbin = NULL;
 	}
 #else
-	//Stop();
+	Stop();
 	
 	if(player && player->output) 
 	{
@@ -372,6 +375,7 @@ bool cPlayback::Start(char * filename)
 {
 	printf("%s:%s - filename=%s\n", FILENAME, __FUNCTION__, filename);
 
+	// default first audio pid
 	mAudioStream = 0;
 	
 	//create playback path
