@@ -378,7 +378,6 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		{
 			same_tid_fe = fe;
-			fe->Open();
 			break;
 		}
 		// first zap/record/other frontend type
@@ -387,8 +386,6 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				free_frontend = fe;
-				//TEST
-				fe->Open();
 			}
 		}
 	}
