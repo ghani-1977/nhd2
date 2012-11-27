@@ -334,6 +334,9 @@ extra.tp_mod_64 QAM/64
 extra.tp_band Bandwidth
 extra.tp_hp Code Rate HP
 extra.tp_lp Code Rate LP
+extra.tp_trans Transmission mode
+extra.tp_guard Guard Interval
+extra.tp_hierarchy Hierarchy
 extra.tp_pol Polarization
 extra.tp_pol_h H
 extra.tp_rate Symbolrate

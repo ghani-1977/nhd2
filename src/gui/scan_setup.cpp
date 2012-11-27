@@ -117,10 +117,12 @@ const CMenuOptionChooser::keyval SATSETUP_DISEQC_OPTIONS[SATSETUP_DISEQC_OPTION_
 	{ SMATV_REMOTE_TUNING, LOCALE_SATSETUP_SMATVREMOTE,	NULL }
 };
 
-#define SATSETUP_SCANTP_FEC_COUNT 23
-#define CABLESETUP_SCANTP_FEC_COUNT 5
+#define SATSETUP_SCANTP_FEC_COUNT 24
+#define CABLESETUP_SCANTP_FEC_COUNT 6
 const CMenuOptionChooser::keyval SATSETUP_SCANTP_FEC[SATSETUP_SCANTP_FEC_COUNT] =
 {
+	{ FEC_NONE, NONEXISTANT_LOCALE, "FEC_NONE" },
+	
         { FEC_1_2, LOCALE_SCANTP_FEC_1_2 },
         { FEC_2_3, LOCALE_SCANTP_FEC_2_3 },
         { FEC_3_4, LOCALE_SCANTP_FEC_3_4 },
@@ -172,10 +174,41 @@ const CMenuOptionChooser::keyval SATSETUP_SCANTP_MOD[SATSETUP_SCANTP_MOD_COUNT] 
 #define SATSETUP_SCANTP_BAND_COUNT 4
 const CMenuOptionChooser::keyval SATSETUP_SCANTP_BAND[SATSETUP_SCANTP_BAND_COUNT] =
 {
-	{ 0, NONEXISTANT_LOCALE, "BAND_8" },
-	{ 1, NONEXISTANT_LOCALE, "BAND_7" },
-	{ 2, NONEXISTANT_LOCALE, "BAND_6" },
-	{ 3, NONEXISTANT_LOCALE, "BAND_AUTO"}
+	{ BANDWIDTH_8_MHZ, NONEXISTANT_LOCALE, "BAND_8" },
+	{ BANDWIDTH_7_MHZ, NONEXISTANT_LOCALE, "BAND_7" },
+	{ BANDWIDTH_6_MHZ, NONEXISTANT_LOCALE, "BAND_6" },
+	{ BANDWIDTH_AUTO, NONEXISTANT_LOCALE, "BAND_AUTO"}
+};
+
+// transmition mode
+#define TERRESTRIALSETUP_TRANSMIT_MODE_COUNT 3
+const CMenuOptionChooser::keyval TERRESTRIALSETUP_TRANSMIT_MODE[TERRESTRIALSETUP_TRANSMIT_MODE_COUNT] =
+{
+	{ TRANSMISSION_MODE_2K, NONEXISTANT_LOCALE, "2K" },
+	{ TRANSMISSION_MODE_8K, NONEXISTANT_LOCALE, "8K" },
+	{ TRANSMISSION_MODE_AUTO, NONEXISTANT_LOCALE, "AUTO" },
+};
+
+// guard interval
+#define TERRESTRIALSETUP_GUARD_INTERVAL_COUNT 5
+const CMenuOptionChooser::keyval TERRESTRIALSETUP_GUARD_INTERVAL[TERRESTRIALSETUP_GUARD_INTERVAL_COUNT] =
+{
+	{ GUARD_INTERVAL_1_32, NONEXISTANT_LOCALE, "1_32" },
+	{ GUARD_INTERVAL_1_16, NONEXISTANT_LOCALE, "1_16" },
+	{ GUARD_INTERVAL_1_8, NONEXISTANT_LOCALE, "1_8" },
+	{ GUARD_INTERVAL_1_4, NONEXISTANT_LOCALE, "1_4"},
+	{ GUARD_INTERVAL_AUTO, NONEXISTANT_LOCALE, "AUTO"},
+};
+
+// hierarchy
+#define TERRESTRIALSETUP_HIERARCHY_COUNT 5
+const CMenuOptionChooser::keyval TERRESTRIALSETUP_HIERARCHY[TERRESTRIALSETUP_HIERARCHY_COUNT] =
+{
+	{ HIERARCHY_NONE, NONEXISTANT_LOCALE, "NONE" },
+	{ HIERARCHY_1, NONEXISTANT_LOCALE, "1" },
+	{ HIERARCHY_2, NONEXISTANT_LOCALE, "2" },
+	{ HIERARCHY_4, NONEXISTANT_LOCALE, "4"},
+	{ HIERARCHY_AUTO, NONEXISTANT_LOCALE, "AUTO"},
 };
 
 #define SATSETUP_SCANTP_POL_COUNT 2
@@ -596,12 +629,12 @@ void CScanSetup::showScanService()
 	// TP select
 	CTPSelectHandler * tpSelect = new CTPSelectHandler(feindex);
 		
-	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_SELECT_TP, true, NULL, tpSelect, "test", CRCInput::convertDigitToKey(man_shortcut++) ));
+	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_SELECT_TP, true, NULL, tpSelect, "test", CRCInput::RC_nokey ));
 		
 	// frequency
 	int freq_length = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? 8 : 6;
 	CStringInput * freq = new CStringInput(LOCALE_EXTRA_FREQ, (char *) scanSettings->TP_freq, freq_length, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789");
-	CMenuForwarder * Freq = new CMenuForwarder(LOCALE_EXTRA_FREQ, true, scanSettings->TP_freq, freq, "", CRCInput::convertDigitToKey(man_shortcut++));
+	CMenuForwarder * Freq = new CMenuForwarder(LOCALE_EXTRA_FREQ, true, scanSettings->TP_freq, freq, "", CRCInput::RC_nokey );
 		
 	manualScan->addItem(Freq);
 		
@@ -610,26 +643,26 @@ void CScanSetup::showScanService()
 
 	if( getFE(feindex)->getInfo()->type == FE_QPSK )
 	{
-		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_POL, (int *)&scanSettings->TP_pol, SATSETUP_SCANTP_POL, SATSETUP_SCANTP_POL_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_POL, (int *)&scanSettings->TP_pol, SATSETUP_SCANTP_POL, SATSETUP_SCANTP_POL_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
 	}
 	else if( getFE(feindex)->getInfo()->type == FE_QAM)
 	{
-		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings->TP_mod, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings->TP_mod, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
 	}
 	else if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
-		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings->TP_const, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		mod_pol = new CMenuOptionChooser(LOCALE_EXTRA_MOD, (int *)&scanSettings->TP_const, CABLETERRESTRIALSETUP_SCANTP_MOD, CABLETERRESTRIALSETUP_SCANTP_MOD_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
 	}
 
 	manualScan->addItem(mod_pol);
 
 	// symbol rate
 	CStringInput * rate = new CStringInput(LOCALE_EXTRA_RATE, (char *) scanSettings->TP_rate, 8, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789");
-	CMenuForwarder * Rate = new CMenuForwarder(LOCALE_EXTRA_RATE, true, scanSettings->TP_rate, rate, "", CRCInput::convertDigitToKey(man_shortcut++));
+	CMenuForwarder * Rate = new CMenuForwarder(LOCALE_EXTRA_RATE, true, scanSettings->TP_rate, rate, "", CRCInput::RC_nokey );
 
 	// fec
 	int fec_count = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? SATSETUP_SCANTP_FEC_COUNT : CABLESETUP_SCANTP_FEC_COUNT;
-	CMenuOptionChooser * fec = new CMenuOptionChooser(LOCALE_EXTRA_FEC, (int *)&scanSettings->TP_fec, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+	CMenuOptionChooser * fec = new CMenuOptionChooser(LOCALE_EXTRA_FEC, (int *)&scanSettings->TP_fec, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::RC_nokey, "", true);
 		
 	if( getFE(feindex)->getInfo()->type != FE_OFDM)
 	{
@@ -644,16 +677,28 @@ void CScanSetup::showScanService()
 	if( getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		// Band
-		CMenuOptionChooser * Band = new CMenuOptionChooser(LOCALE_EXTRA_BAND, (int *)&scanSettings->TP_band, SATSETUP_SCANTP_BAND, SATSETUP_SCANTP_BAND_COUNT, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		CMenuOptionChooser * Band = new CMenuOptionChooser(LOCALE_EXTRA_BAND, (int *)&scanSettings->TP_band, SATSETUP_SCANTP_BAND, SATSETUP_SCANTP_BAND_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
 		manualScan->addItem(Band);
 
 		// HP
-		CMenuOptionChooser * HP = new CMenuOptionChooser(LOCALE_EXTRA_HP, (int *)&scanSettings->TP_HP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		CMenuOptionChooser * HP = new CMenuOptionChooser(LOCALE_EXTRA_HP, (int *)&scanSettings->TP_HP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::RC_nokey, "", true);
 		manualScan->addItem(HP);
 
 		// LP
-		CMenuOptionChooser * LP = new CMenuOptionChooser(LOCALE_EXTRA_LP, (int *)&scanSettings->TP_LP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::convertDigitToKey(man_shortcut++), "", true);
+		CMenuOptionChooser * LP = new CMenuOptionChooser(LOCALE_EXTRA_LP, (int *)&scanSettings->TP_LP, SATSETUP_SCANTP_FEC, fec_count, true, NULL, CRCInput::RC_nokey, "", true);
 		manualScan->addItem(LP);
+		
+		// transmition mode
+		CMenuOptionChooser * TM = new CMenuOptionChooser(LOCALE_EXTRA_TM, (int *)&scanSettings->TP_trans, TERRESTRIALSETUP_TRANSMIT_MODE, TERRESTRIALSETUP_TRANSMIT_MODE_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
+		manualScan->addItem(TM);
+		
+		// guard intervall
+		CMenuOptionChooser * GI = new CMenuOptionChooser(LOCALE_EXTRA_GI, (int *)&scanSettings->TP_guard, TERRESTRIALSETUP_GUARD_INTERVAL, TERRESTRIALSETUP_GUARD_INTERVAL_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
+		manualScan->addItem(GI);
+		
+		// hierarchy
+		CMenuOptionChooser * HR = new CMenuOptionChooser(LOCALE_EXTRA_HR, (int *)&scanSettings->TP_hierarchy, TERRESTRIALSETUP_HIERARCHY, TERRESTRIALSETUP_HIERARCHY_COUNT, true, NULL, CRCInput::RC_nokey, "", true);
+		manualScan->addItem(HR);
 	}	
 
 	manualScan->addItem(GenericMenuSeparatorLine);

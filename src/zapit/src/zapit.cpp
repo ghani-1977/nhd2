@@ -337,7 +337,7 @@ bool feCanTune(CZapitChannel * thischannel)
 					// if any an other tuner (twin) have same type and is as twin set up
 					for(int i = 0; i < FrontendCount; i++)
 					{
-						if( (i != live_fe->fenumber) && ( getFE(i)->mode != (fe_mode_t)FE_LOOP && ( getFE(i)->getInfo()->type == live_fe->getInfo()->type)) )
+						if( (i != live_fe->fenumber) && ( ( getFE(i)->mode != (fe_mode_t)FE_LOOP && getFE(i)->mode != (fe_mode_t)FE_NOTCONNECTED )&& ( getFE(i)->getInfo()->type == live_fe->getInfo()->type)) )
 							return true;
 					}
 				}

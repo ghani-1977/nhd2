@@ -1345,7 +1345,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 	}
 	
 	// auto inversion for stupid tuner
-	#if 0
+	#if 1
 	bool auto_inversion = (TP->feparams.inversion == INVERSION_AUTO);
 	
 	if ((!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion))
@@ -1360,7 +1360,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		getEvent();
 		
 		// auto inversion for stupid tuner
-		#if 0
+		#if 1
 		if ( (!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion) && (TP->feparams.inversion == INVERSION_OFF) && (!tuned) ) 
 		{
 			TP->feparams.inversion = INVERSION_ON;

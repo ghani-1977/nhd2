@@ -104,9 +104,9 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	// window size
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	//width       = w_max(550, 0);
-	int fw = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth();
-	width       = w_max(fw * 42, 0);
+	width       = w_max(550, 0);
+	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth();
+	//width       = w_max(fw * 42, 0);
 	height      = h_max(hheight + (10 * mheight), 0); //9 lines
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
