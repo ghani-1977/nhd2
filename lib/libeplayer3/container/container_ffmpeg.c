@@ -52,7 +52,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define FFMPEG_DEBUG
+//#define FFMPEG_DEBUG
 
 #ifdef FFMPEG_DEBUG
 
@@ -842,8 +842,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     avContext->flags = AVFMT_FLAG_GENPTS;
     
     // TangoCash
-    //if ( strstr(filename, ".ts") )
-	//avContext->max_analyze_duration = 1;
+    //FIXME:??? seeking sucks
+    if ( strstr(filename, ".ts") )
+	avContext->max_analyze_duration = 1;
 
     ffmpeg_printf(20, "find_streaminfo\n");
 

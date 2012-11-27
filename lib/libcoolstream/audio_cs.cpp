@@ -368,7 +368,7 @@ int cAudio::Flush(void)
 	int ret = -1;
 
 #ifdef __sh__	
-	ret = ioctl(audio_fd, AUDIO_FLUSH, NULL);
+	ret = ioctl(audio_fd, AUDIO_FLUSH);
 #else
 	ret = ioctl(audio_fd, AUDIO_CLEAR_BUFFER);
 #endif

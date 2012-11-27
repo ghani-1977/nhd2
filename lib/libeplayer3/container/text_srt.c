@@ -43,7 +43,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define SRT_DEBUG
+//#define SRT_DEBUG
 
 #ifdef SRT_DEBUG
 

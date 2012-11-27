@@ -51,7 +51,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define ASS_DEBUG
+//#define ASS_DEBUG
 
 #ifdef ASS_DEBUG
 
@@ -387,7 +387,7 @@ static void ASSThread(Context_t *context) {
             //FIXME: durch den sleep bleibt die cpu usage zw. 5 und 13%, ohne
             //       steigt sie bei Verwendung von subtiteln bis auf 95%.
             //       ich hoffe dadurch gehen keine subtitle verloren, wenn die playPts
-            //       durch den sleep verschlafen wird. Besser wäre es den nächsten
+            //       durch den sleep verschlafen wird. Besser wï¿½re es den nï¿½chsten
             //       subtitel zeitpunkt zu bestimmen und solange zu schlafen.
             usleep(1000);
 
@@ -531,8 +531,10 @@ int container_ass_init(Context_t *context)
         return cERR_CONTAINER_ASS_ERROR;
     }
 
+#ifdef ASS_DEBUG
     if (debug_level >= 100)
         ass_set_message_cb(ass_library, ass_msg_callback, NULL);
+#endif    
     
     ass_set_extract_fonts( ass_library, 1 );
     ass_set_style_overrides( ass_library, NULL );

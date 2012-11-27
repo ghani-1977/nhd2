@@ -2148,13 +2148,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					
 			if(audioDecoder)
 			{
-				audioDecoder->Flush();
 				audioDecoder->Close();
 			}
 			
 			if(videoDecoder)
 			{
-				videoDecoder->Flush();
 				videoDecoder->Close();
 			}		
 			

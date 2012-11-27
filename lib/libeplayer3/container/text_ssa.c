@@ -43,7 +43,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define SSA_DEBUG
+//#define SSA_DEBUG
 
 #ifdef SSA_DEBUG
 

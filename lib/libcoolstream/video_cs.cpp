@@ -332,12 +332,12 @@ int cVideo::Flush(void)
 	int ret = -1;
 
 #ifdef __sh__
-	ret = ioctl(video_fd, VIDEO_FLUSH, NULL);
+	ret = ioctl(video_fd, VIDEO_FLUSH);
 #else
 	ret = ioctl(video_fd, VIDEO_CLEAR_BUFFER);
 #endif
 	if(ret < 0)
-		printf("VIDEO_FLUSH failed(%m)");		
+		perror("VIDEO_FLUSH");		
 	
 	return ret;
 }
@@ -353,7 +353,7 @@ int cVideo::setSlowMotion(int repeat)
 		
 	ret = ::ioctl(video_fd, VIDEO_SLOWMOTION, repeat);
 	if (ret < 0)
-		printf("failed(%m)");	
+		perror("VIDEO_SLOWMOTION");	
 	
 	return ret;
 }
@@ -369,7 +369,7 @@ int cVideo::setFastForward(int skip)
 		
 	ret = ::ioctl(video_fd, VIDEO_FAST_FORWARD, skip);
 	if (ret < 0)
-		printf("failed(%m)");	
+		perror("VIDEO_FAST_FORWARD");	
 
 	return ret;
 }

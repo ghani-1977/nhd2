@@ -42,7 +42,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define SUBTITLE_DEBUG
+//#define SUBTITLE_DEBUG
 
 #ifdef SUBTITLE_DEBUG
 
@@ -226,13 +226,13 @@ int subtitle_ParseSRT (char **Line) {
     replace_all(Line, "\n\n", "\\N");
     replace_all(Line, "\n", "");
     replace_all(Line, "\\N", "\n");
-    replace_all(Line, "ö", "oe");
-    replace_all(Line, "ä", "ae");
-    replace_all(Line, "ü", "ue");
-    replace_all(Line, "Ö", "Oe");
-    replace_all(Line, "Ä", "Ae");
-    replace_all(Line, "Ü", "Ue");
-    replace_all(Line, "ß", "ss");
+    replace_all(Line, "ï¿½", "oe");
+    replace_all(Line, "ï¿½", "ae");
+    replace_all(Line, "ï¿½", "ue");
+    replace_all(Line, "ï¿½", "Oe");
+    replace_all(Line, "ï¿½", "Ae");
+    replace_all(Line, "ï¿½", "Ue");
+    replace_all(Line, "ï¿½", "ss");
 
     subtitle_printf(10, "<- Text=%s\n", *Line);
 
@@ -253,13 +253,13 @@ int subtitle_ParseSSA (char **Line) {
     replace_all(Line, "\n\n", "\\N");
     replace_all(Line, "\n", "");
     replace_all(Line, "\\N", "\n");
-    replace_all(Line, "ö", "oe");
-    replace_all(Line, "ä", "ae");
-    replace_all(Line, "ü", "ue");
-    replace_all(Line, "Ö", "Oe");
-    replace_all(Line, "Ä", "Ae");
-    replace_all(Line, "Ü", "Ue");
-    replace_all(Line, "ß", "ss");
+    replace_all(Line, "ï¿½", "oe");
+    replace_all(Line, "ï¿½", "ae");
+    replace_all(Line, "ï¿½", "ue");
+    replace_all(Line, "ï¿½", "Oe");
+    replace_all(Line, "ï¿½", "Ae");
+    replace_all(Line, "ï¿½", "Ue");
+    replace_all(Line, "ï¿½", "ss");
 
     subtitle_printf(10, "<- Text=%s\n", *Line);
 
