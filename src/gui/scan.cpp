@@ -104,13 +104,13 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	// window size
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	width       = w_max(550, 0);
+	width       = w_max(600, 0);
 	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth();
 	//width       = w_max(fw * 42, 0);
 	height      = h_max(hheight + (10 * mheight), 0); //9 lines
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
-	xpos_radar = x + 470;
+	xpos_radar = x + 500;
 	ypos_radar = y + hheight + (mheight >> 1);
 	xpos1 = x + BORDER_LEFT;
 
@@ -382,12 +382,12 @@ int CScanTs::handleMsg(neutrino_msg_t msg, neutrino_msg_data_t data)
 	switch (msg) 
 	{
 		case NeutrinoMessages::EVT_SCAN_SATELLITE:
-			paintLine(xpos2, ypos_cur_satellite, w - 95, (char *)data);
+			paintLine(xpos2, ypos_cur_satellite, w - 100, (char *)data);
 			break;
 			
 		case NeutrinoMessages::EVT_SCAN_NUM_TRANSPONDERS:
 			sprintf(buffer, "%d", data);
-			paintLine(xpos2, ypos_transponder, w - 95, buffer);
+			paintLine(xpos2, ypos_transponder, w - 100, buffer);
 			total = data;
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
 			snprintf(str, 255, "scan: %d/%d", done, total);
@@ -399,7 +399,7 @@ int CScanTs::handleMsg(neutrino_msg_t msg, neutrino_msg_data_t data)
 			if (total == 0) data = 0;
 			done = data;
 			sprintf(buffer, "%d/%d", done, total);
-			paintLine(xpos2, ypos_transponder, w - 95, buffer);
+			paintLine(xpos2, ypos_transponder, w - 100, buffer);
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
 			snprintf(str, 255, "scan %d/%d", done, total);
 			CVFD::getInstance()->showMenuText(0, str, -1, true);

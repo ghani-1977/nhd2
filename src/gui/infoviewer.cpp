@@ -1514,107 +1514,110 @@ void CInfoViewer::showSNR()
   	int height;
   	int barwidth = BAR_WIDTH;
 	
-  	if (is_visible && g_settings.infobar_sat_display) 
+  	if (g_settings.infobar_sat_display) 
 	{
-		// freq
-		if (newfreq && chanready) 
+		if(is_visible)
 		{
-	  		char freq[20];
-
-	  		newfreq = false;
-			
-			// get current service info
-	  		CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
-			
-			/* freq */
-			if(live_fe != NULL)
+			// freq
+			if (newfreq && chanready) 
 			{
-				if( live_fe->getInfo()->type == FE_QPSK || live_fe->getInfo()->type == FE_QAM)
-				{
-					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
-				}
-				else if( live_fe->getInfo()->type == FE_OFDM)
-				{
-					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
-				}
-			}
-			else
-				sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
+				char freq[20];
 
-			int chanH = g_SignalFont->getHeight();
-			int freqWidth = g_SignalFont->getRenderWidth(freq);
-			int FreqStartX = BoxStartX + ChanWidth + 80;
-
-			g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENUCONTENTINACTIVE);
-		
-			if(live_fe != NULL)
-			{
-				ssig = live_fe->getSignalStrength();
-				ssnr = live_fe->getSignalNoiseRatio();
-			}
-					
-			//show aktiv tuner
-			if( FrontendCount > 1 )
-			{
-				int Index = 0;
+				newfreq = false;
 				
-				for(unsigned int i = 0; i < FrontendCount; i++)
+				// get current service info
+				CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
+				
+				/* freq */
+				if(live_fe != NULL)
 				{
-					CFrontend * fe = getFE(i);
+					if( live_fe->getInfo()->type == FE_QPSK || live_fe->getInfo()->type == FE_QAM)
+					{
+						sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
+					}
+					else if( live_fe->getInfo()->type == FE_OFDM)
+					{
+						sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000000, si.tsfrequency % 1000);
+					}
+				}
+				else
+					sprintf (freq, "FREQ:%d.%d MHz", si.tsfrequency / 1000, si.tsfrequency % 1000);
+
+				int chanH = g_SignalFont->getHeight();
+				int freqWidth = g_SignalFont->getRenderWidth(freq);
+				int FreqStartX = BoxStartX + ChanWidth + 80;
+
+				g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENUCONTENTINACTIVE);
+			
+				if(live_fe != NULL)
+				{
+					ssig = live_fe->getSignalStrength();
+					ssnr = live_fe->getSignalNoiseRatio();
+				}
+						
+				//show aktiv tuner
+				if( FrontendCount > 1 )
+				{
+					int Index = 0;
+					
+					for(unsigned int i = 0; i < FrontendCount; i++)
+					{
+						CFrontend * fe = getFE(i);
+						
+						if(live_fe != NULL)
+						{
+							if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
+								Index = i;
+						}
+						else
+							Index = 0;
+					}
+						
+					char AktivTuner[255];
 					
 					if(live_fe != NULL)
-					{
-						if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
-							Index = i;
-					}
-					else
-						Index = 0;
-				}
+						sprintf(AktivTuner, "T%d", (Index + 1));
 					
-				char AktivTuner[255];
-				
-				if(live_fe != NULL)
-					sprintf(AktivTuner, "T%d", (Index + 1));
-				
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
-			}
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+				}
 
-			//sig = (ssig & 0xFFFF) * 100 / 65535;
-			//snr = (ssnr & 0xFFFF) * 100 / 65535;
-			sig = ((ssig * 100 + 0x8001) >> 16);
-			snr = ((ssnr * 100 + 0x8001) >> 16);
+				//sig = (ssig & 0xFFFF) * 100 / 65535;
+				//snr = (ssnr & 0xFFFF) * 100 / 65535;
+				sig = ((ssig * 100 + 0x8001) >> 16);
+				snr = ((ssnr * 100 + 0x8001) >> 16);
+				
+				posy = BoxStartY + (chanH*3)/2;
+				
+				height = g_SignalFont->getHeight() - 1;
+
+				if (sigscale->getPercent() != sig) 
+				{
+					posx = FreqStartX + freqWidth + 10;
+
+					sigscale->paint(posx, BoxStartY + 15, sig);
+
+					sprintf (percent, "SIG:%d%%S", sig);
+					posx = posx + barwidth + 2;
+					sw = g_SignalFont->getRenderWidth(percent);
+
+					g_SignalFont->RenderString (posx, posy, sw, percent, COL_MENUCONTENTINACTIVE);
+				}
+
+				//SNR
+				if (snrscale->getPercent() != snr) 
+				{
+					int snr_posx = posx + sw + 10;
+
+					snrscale->paint(snr_posx, BoxStartY + 15, snr);
+
+					sprintf (percent, "SNR:%d%%Q", snr);
+					snr_posx = snr_posx + barwidth + 2;
+					sw = g_SignalFont->getRenderWidth(percent);
+					
+					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_MENUCONTENTINACTIVE);
+				}
 			
-			posy = BoxStartY + (chanH*3)/2;
-			
-			height = g_SignalFont->getHeight() - 1;
-
-			if (sigscale->getPercent() != sig) 
-			{
-				posx = FreqStartX + freqWidth + 10;
-
-				sigscale->paint(posx, BoxStartY + 15, sig);
-
-				sprintf (percent, "SIG:%d%%S", sig);
-				posx = posx + barwidth + 2;
-				sw = g_SignalFont->getRenderWidth(percent);
-
-				g_SignalFont->RenderString (posx, posy, sw, percent, COL_MENUCONTENTINACTIVE);
 			}
-
-			//SNR
-			if (snrscale->getPercent() != snr) 
-			{
-				int snr_posx = posx + sw + 10;
-
-				snrscale->paint(snr_posx, BoxStartY + 15, snr);
-
-				sprintf (percent, "SNR:%d%%Q", snr);
-				snr_posx = snr_posx + barwidth + 2;
-				sw = g_SignalFont->getRenderWidth(percent);
-				
-				g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_MENUCONTENTINACTIVE);
-			}
-		
 		}
   	} 	
 }
