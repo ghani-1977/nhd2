@@ -134,10 +134,9 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 	
 #if ENABLE_GSTREAMER
 	int position = 0;
-	int duration = 0;
 	
 	do {
-		if(! playback->GetPosition(position, duration))
+		if(! playback->GetPosition(position))
 		{
 			getInstance()->state = CBaseDec::STOP;
 			break;

@@ -1131,7 +1131,7 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{
-				playback->GetPosition(position, duration);
+				playback->GetPosition(position);
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -1714,8 +1714,10 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				else 
 				{
-					if( playback->GetPosition(position, duration) ) 
+					if( playback->GetPosition(position) ) 
 					{
+						playback->GetDuration(duration);
+						
 						if(duration > 100)
 							file_prozent = (unsigned char) (position / (duration / 100));
 					
@@ -1761,7 +1763,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(!isVlc)
 			{
-				if(playback->GetPosition(position, duration)) 
+				if(playback->GetPosition(position)) 
 				{
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));

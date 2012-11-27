@@ -703,7 +703,45 @@ bool cPlayback::GetSpeed(int &speed) const
 }
 
 // in milliseconds
-bool cPlayback::GetPosition(int &position, int &duration)
+bool cPlayback::GetDuration(int &duration)
+{
+	if(playing == false) 
+		return false;	
+
+#if ENABLE_GSTREAMER
+	
+	if(m_gst_playbin)
+	{
+		// duration
+		GstFormat fmt_d = GST_FORMAT_TIME; //Returns time in nanosecs
+		double length = 0;
+		gint64 len;
+
+		gst_element_query_duration(m_gst_playbin, &fmt_d, &len);
+		length = len / 1000000.0;
+		if(length < 0) 
+			length = 0;
+		
+		duration = (int)(length);
+	}
+#else
+	// duration
+	double length = 0;
+
+	if(player && player->playback)
+		player->playback->Command(player, PLAYBACK_LENGTH, &length);
+	
+	if(length < 0) 
+		length = 0;
+
+	duration = (int)(length*1000);
+#endif
+	
+	return true;
+}
+
+// in milliseconds
+bool cPlayback::GetPosition(int &position)
 {
 	if(playing == false) 
 		return false;	
@@ -727,18 +765,6 @@ bool cPlayback::GetPosition(int &position, int &duration)
 		
 		gst_element_query_position(m_gst_playbin, &fmt, &pts);
 		position = pts /  1000000.0;
-	
-		// duration
-		GstFormat fmt_d = GST_FORMAT_TIME; //Returns time in nanosecs
-		double length = 0;
-		gint64 len;
-
-		gst_element_query_duration(m_gst_playbin, &fmt_d, &len);
-		length = len / 1000000.0;
-		if(length < 0) 
-			length = 0;
-		
-		duration = (int)(length);
 	}
 #else
 	if (player && player->playback && !player->playback->isPlaying) 
@@ -756,17 +782,6 @@ bool cPlayback::GetPosition(int &position, int &duration)
 
 	/* len is in nanoseconds. we have 90 000 pts per second. */
 	position = vpts/90;
-
-	// duration
-	double length = 0;
-
-	if(player && player->playback)
-		player->playback->Command(player, PLAYBACK_LENGTH, &length);
-	
-	if(length < 0) 
-		length = 0;
-
-	duration = (int)(length*1000);
 #endif
 	
 	return true;
