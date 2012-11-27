@@ -572,7 +572,7 @@ void cPlayback::trickSeek(int ratio)
 	int position;
 	int duration;
 	
-	if( GetPosition(position, duration) )
+	if( GetPosition(position) )
 	{
 		validposition = true;
 		pos = position;
@@ -703,10 +703,10 @@ bool cPlayback::GetSpeed(int &speed) const
 }
 
 // in milliseconds
-bool cPlayback::GetDuration(int &duration)
+void cPlayback::GetDuration(int &duration)
 {
 	if(playing == false) 
-		return false;	
+		return;	
 
 #if ENABLE_GSTREAMER
 	
@@ -736,8 +736,6 @@ bool cPlayback::GetDuration(int &duration)
 
 	duration = (int)(length*1000);
 #endif
-	
-	return true;
 }
 
 // in milliseconds

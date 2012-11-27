@@ -1672,86 +1672,6 @@ void CMoviePlayerGui::PlayFile(void)
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition(startposition);
-				
-				// show movieviewer directly after starting play
-				if(isVlc)
-				{
-					duration = VlcGetStreamLength();
-					position = VlcGetStreamTime();
-					
-					if(duration > 100)
-						file_prozent = (unsigned char) (position / (duration / 100));
-				
-					if(!timeshift)
-					{
-						if (FileTime.IsVisible()) 
-						{
-							if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
-							{
-								if(timeshift)
-									FileTime.hide();
-								else
-								{
-									FileTime.SetMode(CTimeOSD::MODE_DESC);
-									FileTime.update((duration - position) / 1000);
-									
-									FileTime.updatePos(file_prozent);
-								}
-							} 
-							else 
-							{
-								FileTime.hide();
-							}
-						}
-						else 
-						{
-							FileTime.SetMode(CTimeOSD::MODE_ASC);
-							FileTime.show(position / 1000);
-							
-							FileTime.updatePos(file_prozent);
-						}
-					}
-				}
-				else 
-				{
-					if( playback->GetPosition(position) ) 
-					{
-						playback->GetDuration(duration);
-						
-						if(duration > 100)
-							file_prozent = (unsigned char) (position / (duration / 100));
-					
-						if(!timeshift)
-						{
-							if (FileTime.IsVisible()) 
-							{
-								if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
-								{
-									if(timeshift)
-										FileTime.hide();
-									else
-									{
-										FileTime.SetMode(CTimeOSD::MODE_DESC);
-										FileTime.update((duration - position) / 1000);
-										
-										FileTime.updatePos(file_prozent);
-									}
-								} 
-								else 
-								{
-									FileTime.hide();
-								}
-							}
-							else 
-							{
-								FileTime.SetMode(CTimeOSD::MODE_ASC);
-								FileTime.show(position / 1000);
-								
-								FileTime.updatePos(file_prozent);
-							}
-						}
-					}
-				}
 			}
 		}
 		
@@ -1765,6 +1685,8 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				if(playback->GetPosition(position)) 
 				{
+					playback->GetDuration(duration);
+					
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
 
