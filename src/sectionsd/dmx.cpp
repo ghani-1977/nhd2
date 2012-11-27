@@ -476,7 +476,7 @@ int DMX::immediate_start(void)
 	if(dmx == NULL) 
 	{
 		dmx = new cDemux();
-		dmx->Open(DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_fe? live_fe->fenumber : 0);
+		dmx->Open( DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_fe );
 	}
 
 	fd = 1;

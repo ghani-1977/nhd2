@@ -1345,10 +1345,12 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 	}
 	
 	// auto inversion for stupid tuner
+	#if 0
 	bool auto_inversion = (TP->feparams.inversion == INVERSION_AUTO);
 	
 	if ((!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion))
 		TP->feparams.inversion = INVERSION_OFF;
+	#endif
 	
 	do {
 		tuned = false;
@@ -1358,11 +1360,13 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		getEvent();
 		
 		// auto inversion for stupid tuner
+		#if 0
 		if ( (!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion) && (TP->feparams.inversion == INVERSION_OFF) && (!tuned) ) 
 		{
 			TP->feparams.inversion = INVERSION_ON;
 			continue;
 		}
+		#endif
 	} while (0);
 
 	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) %s\n", fe_adapter, fenumber, tuned? "tuned" : "tune failed");

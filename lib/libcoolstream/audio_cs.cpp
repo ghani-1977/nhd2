@@ -66,8 +66,7 @@ cAudio::~cAudio(void)
 }
 
 bool cAudio::Open(int num)
-{
-#if !defined (PLATFORM_GENERIC)  
+{  
 	audio_num = 0; //always 0
 	
 	char devname[32];
@@ -88,14 +87,16 @@ bool cAudio::Open(int num)
 		dprintf(DEBUG_INFO, "cAudio::Open %s\n", devname);
 		
 		return true;
-	}
-#endif	
+	}	
 
 	return false;
 }
 
 bool cAudio::Close()
-{  
+{ 
+	if (audio_fd < 0)
+		return false;
+	  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	if (audio_fd >= 0)
@@ -107,12 +108,16 @@ bool cAudio::Close()
 
 // shut up
 int cAudio::SetMute(int enable)
-{  
+{ 
+	if (audio_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "%s:%s (%d)\n", FILENAME, __FUNCTION__, enable);	
 	
 	Muted = enable?true:false;
+	
+	int ret = 0;
 
-#if !defined (PLATFORM_GENERIC)
 #ifdef __sh__	
 	char sMuted[4];
 	sprintf(sMuted, "%d", Muted);
@@ -121,19 +126,25 @@ int cAudio::SetMute(int enable)
 	write(fd, sMuted, strlen(sMuted));
 	close(fd);
 #else
-	if( ioctl(audio_fd, AUDIO_SET_MUTE, enable) < 0 )
+	ret = ioctl(audio_fd, AUDIO_SET_MUTE, enable);
+	
+	if(ret < 0)
 		perror("AUDIO_SET_MUTE");
 #endif
-#endif
 
-	return 0;
+	return ret;
 }
 
 /* volume, min = 0, max = 100 */
 /* e2 sets 0 to 63 */
 int cAudio::setVolume(unsigned int left, unsigned int right)
 { 
+	if (audio_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "%s:%s volume: %d\n", FILENAME, __FUNCTION__, left);
+	
+	int ret = 0;
 	
 #ifdef __sh__	
 	volume = left;
@@ -149,7 +160,7 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
 	write(fd, sVolume, strlen(sVolume));
 	close(fd);
-#elif !defined (PLATFORM_GENERIC)
+#else
 	volume = left;
 	
 	// convert to -1dB steps
@@ -162,58 +173,78 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	mixer.volume_left = left;
 	mixer.volume_right = right;
 	
-	if( ioctl(audio_fd, AUDIO_SET_MIXER, &mixer) < 0 )
+	ret = ioctl(audio_fd, AUDIO_SET_MIXER, &mixer);
+	
+	if(ret < 0)
 		perror("AUDIO_SET_MIXER");
 #endif
 	
-	return 0;
+	return ret;
 }
 
 /* start audio */
 int cAudio::Start(void)
 { 
+	if (audio_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
-#if !defined (PLATFORM_GENERIC)
-	if (ioctl(audio_fd, AUDIO_PLAY) < 0)
-		perror("AUDIO_PLAY");
-#endif	
+	int ret = -1;
+	
+	ret = ioctl(audio_fd, AUDIO_PLAY);
+	
+	if(ret < 0)
+		perror("AUDIO_PLAY");	
 
-	return 0;
+	return ret;
 }
 
 int cAudio::Stop(void)
 { 
+	if (audio_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
-#if !defined (PLATFORM_GENERIC)	
-	if (ioctl(audio_fd, AUDIO_STOP) < 0)
-		perror("AUDIO_STOP");
-#endif	
+	int ret = -1;
+		
+	ret = ioctl(audio_fd, AUDIO_STOP);
+	
+	if(ret < 0)
+		perror("AUDIO_STOP");	
 
-	return 0;
+	return ret;
 }
 
 bool cAudio::Pause()
-{  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+{ 
+	if (audio_fd < 0)
+		return false;
 	
-#if !defined (PLATFORM_GENERIC)
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	
 	if (ioctl(audio_fd, AUDIO_PAUSE, 1) < 0)
+	{
 		perror("AUDIO_PAUSE");
-#endif	
+		return false;
+	}	
 
 	return true;
 }
 
 bool cAudio::Resume()
-{  
+{ 
+	if (audio_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
-#if !defined (PLATFORM_GENERIC)
 	if (ioctl(audio_fd, AUDIO_CONTINUE) < 0)
+	{
 		perror("AUDIO_CONTINUE");
-#endif	
+		return false;
+	}	
 	
 	return true;
 }
@@ -288,6 +319,9 @@ void cAudio::SetEncoding(audio_encoding_t type)
 #else
 void cAudio::SetStreamType(AUDIO_FORMAT type)
 {
+	if (audio_fd < 0)
+		return;
+	
 	const char *aAUDIOFORMAT[] = {
 		"AUDIO_STREAMTYPE_AC3",
 		"AUDIO_STREAMTYPE_MPEG",
@@ -299,45 +333,58 @@ void cAudio::SetStreamType(AUDIO_FORMAT type)
 	};
 
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aAUDIOFORMAT[type]);
-
-#if !defined (PLATFORM_GENERIC)	
+	
 	if (ioctl(audio_fd, AUDIO_SET_BYPASS_MODE, type) < 0)
+	{
 		perror("AUDIO_SET_BYPASS_MODE");
-#endif	
+		return;
+	}	
 
 	StreamType = type;
 }
 #endif
 
 void cAudio::SetSyncMode(int Mode)
-{	
+{
+	if (audio_fd < 0)
+		return;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
-
-#if !defined (PLATFORM_GENERIC)	
+	
 	if (::ioctl(audio_fd, AUDIO_SET_AV_SYNC, Mode) < 0)
+	{
 		perror("AUDIO_SET_AV_SYNC");
-#endif	
+		return;
+	}	
 }
 
 int cAudio::Flush(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-#if !defined (PLATFORM_GENERIC)
-#ifdef __sh__	
-	if (ioctl(audio_fd, AUDIO_FLUSH, NULL) < 0)
-#else
-	if (ioctl(audio_fd, AUDIO_CLEAR_BUFFER) < 0)
-#endif	  
-		perror("AUDIO_FLUSH");
-#endif	
+	if (audio_fd < 0)
+		return -1;
 	
-	return 0;
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	
+	int ret = -1;
+
+#ifdef __sh__	
+	ret = ioctl(audio_fd, AUDIO_FLUSH, NULL);
+#else
+	ret = ioctl(audio_fd, AUDIO_CLEAR_BUFFER);
+#endif
+
+	if(ret < 0)
+		perror("AUDIO_FLUSH");	
+	
+	return ret;
 }
 
 /* select channels */
 int cAudio::setChannel(int channel)
 {
-#if !defined (PLATFORM_GENERIC)  
+	if (audio_fd < 0)
+		return -1;
+	  
 	const char * aAUDIOCHANNEL[] = {
 		"STEREO",
 		"MONOLEFT",
@@ -345,12 +392,13 @@ int cAudio::setChannel(int channel)
 	};
 	 
 	dprintf(DEBUG_INFO, "%s:%s %s\n", FILENAME, __FUNCTION__, aAUDIOCHANNEL[channel]);
-
-	if (ioctl(audio_fd, AUDIO_CHANNEL_SELECT, (audio_channel_select_t)channel) < 0)
-		perror("AUDIO_CHANNEL_SELECT");
-#endif	
 	
-	return 0;
+	int ret = -1;
+
+	ret = ioctl(audio_fd, AUDIO_CHANNEL_SELECT, (audio_channel_select_t)channel);
+		perror("AUDIO_CHANNEL_SELECT");	
+	
+	return ret;
 }
 
 /* pcm writer needed for audioplayer */
@@ -626,25 +674,21 @@ void cAudio::SetHdmiDD(int ac3)
 /* set source */
 int cAudio::setSource(audio_stream_source_t source)
 { 
+	if (audio_fd < 0)
+		return -1;
+	
 	const char *aAUDIOSTREAMSOURCE[] = {
 		"AUDIO_SOURCE_DEMUX",
 		"AUDIO_SOURCE_MEMORY",
 	};
 		
 	dprintf(DEBUG_INFO, "%s:%s - source=%s\n", FILENAME, __FUNCTION__, aAUDIOSTREAMSOURCE[source]);
+	
+	int ret = -1;
 
-	return ioctl(audio_fd, AUDIO_SELECT_SOURCE, source);
-}
-
-/* get source */
-audio_stream_source_t cAudio::getSource(void)
-{
-	struct audio_status status;
-
-	if ( ioctl(audio_fd, AUDIO_GET_STATUS, &status) < 0)
-		perror("AUDIO_GET_STATUS");
-
-	return status.stream_source;
+	ret = ioctl(audio_fd, AUDIO_SELECT_SOURCE, source);
+	
+	return ret;
 }
 
 int cAudio::setHwPCMDelay(int delay)

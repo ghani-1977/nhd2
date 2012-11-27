@@ -31,6 +31,9 @@
 #include <system/debug.h>
 	
 #include <configfile.h>
+#include <zapit/frontend_c.h>
+
+extern CFrontend * live_fe;
 
 /* this values are token from cuberevo3000hd */
 #ifndef KEY_PIP	
@@ -2624,7 +2627,8 @@ int GetTeletextPIDs(int source)
 	int res;
 
         cDemux * dmx = new cDemux();
-	dmx->Open(DMX_PSI_CHANNEL, 1024, source );
+	//dmx->Open(DMX_PSI_CHANNEL, 1024, source );
+	dmx->Open(DMX_PSI_CHANNEL, 1024, live_fe );
 
         memset(filter, 0x00, DMX_FILTER_SIZE);
         memset(mask, 0x00, DMX_FILTER_SIZE);

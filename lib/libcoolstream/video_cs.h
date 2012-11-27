@@ -255,7 +255,6 @@ class cVideo
 		int getPlayState(void);
 
 		/* video stream source */
-		video_stream_source_t getSource(void);
 		int setSource(video_stream_source_t source);
 
 		//

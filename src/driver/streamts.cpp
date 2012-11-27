@@ -346,7 +346,7 @@ void * streamts_live_thread(void *data)
 
 	cDemux * dmx = new cDemux();
 	
-	dmx->Open(DMX_TP_CHANNEL, 3 * 3008 * 62, live_fe? live_fe->fenumber:0);	
+	dmx->Open( DMX_TP_CHANNEL, 3 * 3008 * 62, live_fe);	
 	
 	dmx->pesFilter(pids[0]);
 	for(int i = 1; i < demuxfd_count; i++)

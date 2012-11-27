@@ -423,8 +423,14 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 int curpmtpid;
 int pmt_caids[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
+int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 {
+	if(!channel)
+		return -1;
+	
+	if(!fe)
+		return -1;
+	
 	unsigned short i;
 	unsigned char buffer[PMT_SIZE];
 
@@ -445,10 +451,10 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 		return -1;
 	}
 	
-	cDemux * dmx = new cDemux( dmx_num ); 
+	cDemux * dmx = new cDemux(); 
 	
 	// open
-	dmx->Open( DMX_PSI_CHANNEL, PMT_SIZE, feindex );
+	dmx->Open( DMX_PSI_CHANNEL, PMT_SIZE, fe );
 
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
@@ -616,17 +622,20 @@ int parse_pmt(CZapitChannel * const channel, int feindex, int dmx_num)
 /* globals */
 cDemux * pmtDemux;
 
-int pmt_set_update_filter( CZapitChannel * const channel, int * fd, int feindex )
+int pmt_set_update_filter( CZapitChannel * const channel, int * fd, CFrontend * fe)
 {
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];
 	unsigned char mode[DMX_FILTER_SIZE];
+	
+	if(!fe)
+		return -1;
 
 	if(pmtDemux == NULL) 
 		pmtDemux = new cDemux();
 	
 	// open 
-	pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, feindex ); // this indicate fe num
+	pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, fe );
 
 	if (channel->getPmtPid() == 0)
 		return -1;

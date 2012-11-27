@@ -31,15 +31,22 @@
 #define PAT_SIZE 1024
 
 
-int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
+extern CFrontend * getFE(int index);
+extern CFrontend * live_fe;
+
+
+int parse_pat(CZapitChannel * const channel, CFrontend * fe)
 {
 	if (!channel)
 		return -1;
+	
+	if(!fe)
+		return -1;
 
-	cDemux * dmx = new cDemux( dmx_num );
+	cDemux * dmx = new cDemux();
 	
 	//open
-	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, feindex );
+	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, fe );
 
 	/* buffer for program association table */
 	unsigned char buffer[PAT_SIZE];
@@ -91,7 +98,7 @@ int parse_pat(CZapitChannel * const channel, int feindex, int dmx_num)
 	return -1;
 }
 
-
+// scan pat
 static unsigned char pbuffer[PAT_SIZE];
 
 int parse_pat(int feindex)
@@ -100,10 +107,10 @@ int parse_pat(int feindex)
 
 	dprintf(DEBUG_NORMAL, "parse_pat: scan pat Parsing\n");
 	
-	cDemux * dmx = new cDemux( feindex );
+	cDemux * dmx = new cDemux();
 	
 	// open
-	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, feindex);
+	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, getFE(feindex));
 
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];

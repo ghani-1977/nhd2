@@ -23,11 +23,10 @@
 #define __zapit_sdt_h__
 
 #include "types.h"
-
-//transponder_id_t get_sdt_TsidOnid(t_satellite_position satellitePosition, freq_id_t freq); //not used
+#include <zapit/frontend_c.h>
 
 int parse_sdt(t_transport_stream_id* , t_original_network_id*, t_satellite_position satellitePosition, freq_id_t freq, int feindex = 0);
-int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id,t_satellite_position satellitePosition, freq_id_t freq, int feindex = 0);
+int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id,t_satellite_position satellitePosition, freq_id_t freq, CFrontend * fe);
 
 
 #endif /* __zapit_sdt_h__ */

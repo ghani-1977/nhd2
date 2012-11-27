@@ -24,10 +24,11 @@
 
 #include "channel.h"
 #include "ci.h"
+#include <zapit/frontend_c.h>
 
 
-int parse_pmt(CZapitChannel * const channel, int feindex = 0, int dmx_num = 0);
-int pmt_set_update_filter(CZapitChannel * const channel, int * fd, int feindex = 0);
+int parse_pmt(CZapitChannel * const channel, CFrontend * fe);
+int pmt_set_update_filter(CZapitChannel * const channel, int * fd, CFrontend * fe);
 int pmt_stop_update_filter(int * fd);
 
 #endif /* __zapit_pmt_h__ */

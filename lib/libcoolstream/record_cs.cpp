@@ -29,6 +29,10 @@
 #include <system/debug.h>
 #include <zapit/client/zapittypes.h>
 
+#include <zapit/frontend_c.h>
+
+extern CFrontend * record_fe;
+
 
 static const char * FILENAME = "[record_cs.cpp]";
 
@@ -46,8 +50,6 @@ cRecord::cRecord(int num)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-	demux_num = num;
-	fe_num = num;
 	dmx = NULL;
 	record_thread_running = false;
 	file_fd = -1;
@@ -74,9 +76,9 @@ bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int num
 	int i;
 
 	if (!dmx)
-		dmx = new cDemux( demux_num );
+		dmx = new cDemux();
 
-	dmx->Open(DMX_TP_CHANNEL, RECORD_STREAM_BUFFER_SIZE, fe_num );
+	dmx->Open(DMX_TP_CHANNEL, RECORD_STREAM_BUFFER_SIZE, record_fe );
 	dmx->pesFilter(vpid);
 
 	for (i = 0; i < numpids; i++)

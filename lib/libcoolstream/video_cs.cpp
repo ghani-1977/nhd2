@@ -65,8 +65,7 @@ cVideo::~cVideo(void)
 }
 
 bool cVideo::Open(int num)
-{
-#if !defined (PLATFORM_GENERIC)  
+{ 
 	video_num = 0; // eventually always 0
 	
 	char devname[32];
@@ -86,21 +85,21 @@ bool cVideo::Open(int num)
 	{
 		dprintf(DEBUG_INFO, "cVideo::Open %s\n", devname);
 		return true;
-	}
-#endif	
+	}	
 
 	return false;
 }
 
 bool cVideo::Close()
-{  
+{ 
+	if(video_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
-
-#if !defined (PLATFORM_GENERIC) 	
+	
 	if(video_fd >= 0)
 		close(video_fd);
-	video_fd = -1;
-#endif	
+	video_fd = -1;	
 
 	return true;
 }
@@ -260,10 +259,12 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 }
 
 int cVideo::Start()
-{  
+{ 
+	if(video_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
-#if !defined (PLATFORM_GENERIC)
 	if (playstate == VIDEO_PLAYING)
 		return 0;
 
@@ -271,96 +272,104 @@ int cVideo::Start()
 	
 	// Video Play
 	if(ioctl(video_fd, VIDEO_PLAY) < 0)
-		perror("VIDEO_PLAY");
-#endif	
+		perror("VIDEO_PLAY");	
 		
 	return true;
 }
 
 int cVideo::Stop(bool blank)
 { 
-	dprintf(DEBUG_INFO, "%s:%s blank:%d\n", FILENAME, __FUNCTION__, blank);	
+	if(video_fd < 0)
+		return false;
 	
-#if !defined (PLATFORM_GENERIC)	
+	dprintf(DEBUG_INFO, "%s:%s blank:%d\n", FILENAME, __FUNCTION__, blank);	
+		
 	playstate = blank ? VIDEO_STOPPED : VIDEO_FREEZED;
 	
 	if( ioctl(video_fd, VIDEO_STOP, blank ? 1 : 0) < 0 )
-		perror("VIDEO_STOP");
-#endif	
+		perror("VIDEO_STOP");	
 	
 	return true;
 }
 
 bool cVideo::Pause(void)
-{  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+{ 
+	if(video_fd < 0)
+		return false;
 	
-#if !defined (PLATFORM_GENERIC)	
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+		
 	if (ioctl(video_fd, VIDEO_FREEZE) < 0)
 		perror("VIDEO_FREEZE");
 	
-	playstate = VIDEO_FREEZED;
-#endif	
+	playstate = VIDEO_FREEZED;	
 		
 	return true;
 }
 
 bool cVideo::Resume(void)
-{  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+{
+	if(video_fd < 0)
+		return false;
 	
-#if !defined (PLATFORM_GENERIC)	
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+		
 	if (ioctl(video_fd, VIDEO_CONTINUE) < 0)
 		perror("VIDEO_CONTINUE");
 	
-	playstate = VIDEO_PLAYING;
-#endif	
+	playstate = VIDEO_PLAYING;	
 		
 	return true;
 }
 
 int cVideo::Flush(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
-
-#if !defined (PLATFORM_GENERIC)
-#ifdef __sh__
-	if (ioctl(video_fd, VIDEO_FLUSH, NULL) < 0)
-#else
-	if (ioctl(video_fd, VIDEO_CLEAR_BUFFER) < 0)
-#endif
-		perror("VIDEO_FLUSH");
-#endif		
+	if(video_fd < 0)
+		return -1;
 	
-	return 0;
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	
+	int ret = -1;
+
+#ifdef __sh__
+	ret = ioctl(video_fd, VIDEO_FLUSH, NULL);
+#else
+	ret = ioctl(video_fd, VIDEO_CLEAR_BUFFER);
+#endif
+	if(ret < 0)
+		printf("VIDEO_FLUSH failed(%m)");		
+	
+	return ret;
 }
 
 int cVideo::setSlowMotion(int repeat)
 {
+	if(video_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "VIDEO_SLOWMOTION(%d) - \n", repeat);
 	
 	int ret = -1;
-	
-#if !defined (PLATFORM_GENERIC)	
+		
 	ret = ::ioctl(video_fd, VIDEO_SLOWMOTION, repeat);
 	if (ret < 0)
-		printf("failed(%m)");
-#endif	
+		printf("failed(%m)");	
 	
 	return ret;
 }
 
 int cVideo::setFastForward(int skip)
 {
+	if(video_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "VIDEO_FAST_FORWARD(%d) - \n", skip);
 	
 	int ret = -1;
-	
-#if !defined (PLATFORM_GENERIC)	
+		
 	ret = ::ioctl(video_fd, VIDEO_FAST_FORWARD, skip);
 	if (ret < 0)
-		printf("failed(%m)");
-#endif	
+		printf("failed(%m)");	
 
 	return ret;
 }
@@ -546,6 +555,9 @@ int cVideo::SetEncoding(video_encoding_t type)
 #else
 void cVideo::SetStreamType(VIDEO_FORMAT type) 
 {
+	if(video_fd < 0)
+		return;
+	
 	const char *aVIDEOFORMAT[] = {
 		"VIDEO_STREAMTYPE_MPEG2",
 		"VIDEO_STREAMTYPE_MPEG4_H264",
@@ -559,10 +571,8 @@ void cVideo::SetStreamType(VIDEO_FORMAT type)
 
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aVIDEOFORMAT[type]);
 
-#if !defined (PLATFORM_GENERIC)
 	if (ioctl( video_fd, VIDEO_SET_STREAMTYPE, type) < 0)
-		perror("VIDEO_SET_STREAMTYPE");
-#endif	
+		perror("VIDEO_SET_STREAMTYPE");	
 }
 #endif
 
@@ -792,7 +802,10 @@ void cVideo::SetAnalogMode(int mode)
 
 /* blank on freeze */
 int cVideo::getBlank(void) 
-{  
+{ 
+	if(video_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	struct video_status status;
@@ -806,6 +819,9 @@ int cVideo::getBlank(void)
 /* set blank */
 int cVideo::setBlank(int enable) 
 {  
+	if(video_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	return ioctl(video_fd, VIDEO_SET_BLANK, enable);
@@ -813,7 +829,10 @@ int cVideo::setBlank(int enable)
 
 /* get play state */
 int cVideo::getPlayState(void) 
-{   
+{ 
+	if(video_fd < 0)
+		return -1;
+	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	return playstate; 
@@ -822,6 +841,9 @@ int cVideo::getPlayState(void)
 /* set source */
 int cVideo::setSource(video_stream_source_t source)
 {
+	if(video_fd < 0)
+		return -1;
+	
 	const char *aVIDEOSTREAMSOURCE[] = {
 		"VIDEO_SOURCE_DEMUX",
 		"VIDEO_SOURCE_MEMORY",
@@ -830,17 +852,6 @@ int cVideo::setSource(video_stream_source_t source)
 	dprintf(DEBUG_INFO, "%s:%s - source=%s\n", FILENAME, __FUNCTION__, aVIDEOSTREAMSOURCE[source]);	
 	
 	return ioctl(video_fd, VIDEO_SELECT_SOURCE, source);
-}
-
-/* get source */
-video_stream_source_t cVideo::getSource(void)
-{
-	struct video_status status;
-
-	if ( ioctl(video_fd, VIDEO_GET_STATUS, &status) < 0)
-		perror("VIDEO_GET_STATUS");
-
-	return status.stream_source;
 }
 
 // set speed normal
@@ -855,6 +866,9 @@ int cVideo::setSpeedNormal()
 
 int64_t cVideo::GetPTS(void)
 {
+	if(video_fd < 0)
+		return -1;
+	
 	int64_t pts = 0;
 	if (ioctl(video_fd, VIDEO_GET_PTS, &pts) < 0)
 		perror("%s: GET_PTS failed");

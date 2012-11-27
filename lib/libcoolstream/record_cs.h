@@ -22,6 +22,7 @@
 #include <pthread.h>
 #include "dmx_cs.h"
 
+
 typedef enum {
 	RECORD_RUNNING,
 	RECORD_STOPPED,
@@ -34,10 +35,8 @@ typedef enum {
 class cRecord
 {
 	private:
-		int demux_num;
-		int fe_num;
 		int file_fd;
-		cDemux *dmx;
+		cDemux * dmx;
 		pthread_t record_thread;
 		bool record_thread_running;
 		record_state_t exit_flag;

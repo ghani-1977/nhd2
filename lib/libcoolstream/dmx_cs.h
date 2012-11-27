@@ -25,6 +25,8 @@
 #include <linux/dvb/dmx.h>
 #include <linux/dvb/version.h>
 
+#include <zapit/frontend_c.h>
+
 
 #define DEMUX_POLL_TIMEOUT 0  			// timeout in ms
 #define DMX_BUFFER_SIZE			8192
@@ -48,22 +50,23 @@ typedef enum
 class cDemux
 {
 	private:
-		int demux_num;
 		int demux_fd;
+		
+		int demux_adapter;
+		int demux_num;
+		int demux_source;
 		
 		DMX_CHANNEL_TYPE type;
 		unsigned short pid;
-		
-		int last_source;
 
 	public:
-		bool Open(DMX_CHANNEL_TYPE Type, int uBufferSize = DMX_BUFFER_SIZE, int feindex = 0);
+		bool Open(DMX_CHANNEL_TYPE Type, int uBufferSize = DMX_BUFFER_SIZE, CFrontend * fe = NULL);
 		void Close(void);
 		bool Start(void);
 		bool Stop(void);
 		int Read(unsigned char * const buff, const size_t len, int Timeout = 0);
 		bool sectionFilter(unsigned short Pid, const unsigned char * const Tid, const unsigned char * const Mask, int len, int Timeout = DEMUX_POLL_TIMEOUT, const unsigned char * const nMask = 0);
-		bool pesFilter(const unsigned short Pid/*, const dmx_input_t Input = DMX_IN_FRONTEND*/);
+		bool pesFilter(const unsigned short Pid);
 		void addPid(unsigned short Pid);
 		void removePid(unsigned short Pid);
 		void getSTC(int64_t * STC);

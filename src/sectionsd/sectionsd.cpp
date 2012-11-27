@@ -6225,7 +6225,7 @@ int eit_set_update_filter(int *fd)
 	if(eitDmx == NULL) 
 	{
 		eitDmx = new cDemux();
-		eitDmx->Open(DMX_PSI_CHANNEL, 4096, live_fe? live_fe->fenumber : 0);
+		eitDmx->Open( DMX_PSI_CHANNEL, 4096, live_fe );
 	}
 
 	unsigned char filter[DMX_FILTER_SIZE];

@@ -1558,17 +1558,14 @@ void CInfoViewer::showSNR()
 			{
 				int Index = 0;
 				
-				//for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
 				for(unsigned int i = 0; i < FrontendCount; i++)
 				{
-					CFrontend * fe = /*it->second*/getFE(i);
+					CFrontend * fe = getFE(i);
 					
-					//if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
 					if(live_fe != NULL)
 					{
 						if(fe->fenumber == live_fe->fenumber && fe->fe_adapter == live_fe->fe_adapter)
-						//if(fe = live_fe)
-							Index = i/*it->first*/;
+							Index = i;
 					}
 					else
 						Index = 0;
@@ -1582,8 +1579,10 @@ void CInfoViewer::showSNR()
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 			}
 
-			sig = (ssig & 0xFFFF) * 100 / 65535;
-			snr = (ssnr & 0xFFFF) * 100 / 65535;
+			//sig = (ssig & 0xFFFF) * 100 / 65535;
+			//snr = (ssnr & 0xFFFF) * 100 / 65535;
+			sig = ((ssig * 100 + 0x8001) >> 16);
+			snr = ((ssnr * 100 + 0x8001) >> 16);
 			
 			posy = BoxStartY + (chanH*3)/2;
 			

@@ -14,6 +14,8 @@
 #include <syscall.h>
 
 #include <dmx_cs.h>
+#include <zapit/frontend_c.h>
+extern CFrontend * live_fe;
 
 tuxtxt_cache_struct tuxtxt_cache;
 static pthread_mutex_t tuxtxt_cache_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -435,7 +437,7 @@ int tuxtxt_init_demuxer( int source )
 		
 		printf("TuxTxt: source demux %d\n", source);
 
-		dmx->Open(DMX_PES_CHANNEL, 2* 3008 * 62, source );		
+		dmx->Open(DMX_PES_CHANNEL, 2* 3008 * 62, /*source*/live_fe );		
 	}
 #if TUXTXT_DEBUG
 	printf("TuxTxt: initialized\n");

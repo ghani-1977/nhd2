@@ -2460,7 +2460,7 @@ void CRadioText::setPid(uint inPid)
 				audioDemux = new cDemux();
 				//audioDemux->Open(DMX_TP_CHANNEL /*DMX_AUDIO_CHANNEL*/,0,128*1024);
 				//audioDemux->Open(DMX_PES_CHANNEL,0,128*1024);
-				audioDemux->Open(DMX_PES_CHANNEL, 128*1024, live_fe?live_fe->fenumber:0);
+				audioDemux->Open( DMX_PES_CHANNEL, 128*1024, live_fe );
 #if 0
 				bool ret = false;
 				if (audioDemux->pesFilter(pid))

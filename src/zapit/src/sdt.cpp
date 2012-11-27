@@ -41,6 +41,9 @@
 #define SDT_SIZE 1024
 
 
+extern CFrontend * getFE(int index);
+
+
 // sdt scan
 int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id *p_original_network_id,t_satellite_position satellitePosition, freq_id_t freq, int feindex)
 {
@@ -52,7 +55,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	cDemux * dmx = new cDemux();
 	
 	//open
-	dmx->Open(DMX_PSI_CHANNEL, SDT_SIZE, feindex);
+	dmx->Open( DMX_PSI_CHANNEL, SDT_SIZE, getFE(feindex) );
 
 	unsigned char buffer[SDT_SIZE];
 
@@ -241,12 +244,15 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 // sdt monitor
 extern tallchans curchans;
 
-int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id, t_satellite_position satellitePosition, freq_id_t freq, int feindex)
+int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const t_original_network_id p_original_network_id, t_satellite_position satellitePosition, freq_id_t freq, CFrontend * fe)
 { 
+	if(!fe)
+		return -1;
+	
 	cDemux * dmx = new cDemux();
 	
 	/* open */
-	dmx->Open(DMX_PSI_CHANNEL, SDT_SIZE, feindex);
+	dmx->Open( DMX_PSI_CHANNEL, SDT_SIZE, fe );
 	
 	int ret = -1;
 

@@ -41,6 +41,9 @@
 #define NIT_SIZE 1024
 
 
+extern CFrontend * getFE(int index);
+
+
 void * nit_thread(void * data)
 {
 	dprintf(DEBUG_INFO, "[nit.cpp] nit_thread: starting... tid %ld\n", syscall(__NR_gettid));
@@ -68,7 +71,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	
 	cDemux * dmx = new cDemux();
 	
-	dmx->Open(DMX_PSI_CHANNEL, NIT_SIZE, feindex);
+	dmx->Open(DMX_PSI_CHANNEL, NIT_SIZE, getFE(feindex));
 
 	unsigned char buffer[NIT_SIZE];
 

@@ -753,7 +753,7 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 	return true;
 }
 
-static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, int dmx_num = 0)
+static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	if(fe->mode == (fe_mode_t)FE_NOTCONNECTED)
 		return false;
@@ -765,7 +765,7 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, i
 	{
 		dprintf(DEBUG_NORMAL, "[zapit] no pmt pid, going to parse pat\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, dmx_num) < 0) // live demux is always 0
+		if (parse_pat(thischannel, fe) < 0)
 		{
 			dprintf(DEBUG_NORMAL, "[zapit] pat parsing failed\n");
 			return false;
@@ -773,16 +773,16 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe, i
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, fe->fenumber, dmx_num) < 0) 
+	if (parse_pmt(thischannel, fe) < 0) 
 	{
 		dprintf(DEBUG_NORMAL, "[zapit] pmt parsing failed\n");
 		
-		if (parse_pat(thischannel, fe->fenumber, dmx_num) < 0) 
+		if (parse_pat(thischannel, fe) < 0) 
 		{
 			dprintf(DEBUG_NORMAL, "pat parsing failed\n");
 			return false;
 		}
-		else if (parse_pmt(thischannel, fe->fenumber, dmx_num) < 0) 
+		else if (parse_pmt(thischannel, fe) < 0) 
 		{
 			dprintf(DEBUG_NORMAL, "[zapit] pmt parsing failed\n");
 			return false;
@@ -870,7 +870,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 		return -1;
 	}
 	
-	// find live_fe
+	// find live_fe to tune
 	CFrontend * fe = getFrontend(newchannel);
 	if(fe == NULL) 
 	{
@@ -951,7 +951,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	eventServer->sendEvent(CZapitClient::EVT_ZAP_CA_ID, CEventServer::INITID_ZAPIT, &caid, sizeof(int));
 
 	// start pmt update filter
-	pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe->fenumber);	
+	pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe);	
 
 	return 0;
 }
@@ -2752,7 +2752,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			pcrDemux = new cDemux();
 		
 		// open pcr demux
-		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
+		if( pcrDemux->Open(DMX_PCR_ONLY_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe/*->fenumber*/ ) < 0 )
 			return -1;
 		
 		// set pes filter
@@ -2770,7 +2770,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			audioDemux = new cDemux();
 		
 		// open audio demux
-		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
+		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe/*->fenumber*/ ) < 0 )
 			return -1;
 		
 		// set pes filter
@@ -2788,7 +2788,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			videoDemux = new cDemux(); 
 		
 		// open Video Demux		
-		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe->fenumber ) < 0 )
+		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe/*->fenumber*/ ) < 0 )
 			return -1;
 		
 		// video pes filter
@@ -3000,6 +3000,12 @@ void enterStandby(void)
 	/* stop playback */
 	stopPlayBack(true);
 	
+	// close videodecoder
+	videoDecoder->Close();
+	
+	// close audiodecoder
+	audioDecoder->Close();
+	
 	//close frontend	
 	CloseFE();
 }
@@ -3041,6 +3047,13 @@ void leaveStandby(void)
 	{
 		cam1 = new CCam();
 	}
+	
+	// open video decoder
+	videoDecoder->Open();
+	
+	// open audiodecoder
+	audioDecoder->Open();
+	
 
 	// if we have already zapped channel
 	if (live_channel)
@@ -3229,7 +3242,7 @@ void * sdt_thread(void * arg)
 
 			if(live_channel) 
 			{
-				ret = parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe->fenumber );
+				ret = parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe/*->fenumber*/ );
 				if(ret)
 					continue;
 			}
@@ -3424,8 +3437,8 @@ void * sdt_thread(void * arg)
 
 				fclose(fd1);
 			} 
-			else
-				fprintf(fd, "</zapit>\n");
+			//else
+			//	fprintf(fd, "</zapit>\n");
 			fclose(fd);
 
 			rename(CURRENTSERVICES_TMP, CURRENTSERVICES_XML);
@@ -3469,12 +3482,10 @@ int zapit_main_thread(void *data)
 	audioDecoder = new cAudio();
 	
 	// open video decoder
-	if( videoDecoder->Open() < 0)
-		return -1;
+	//videoDecoder->Open();
 	
 	// open audiodecoder
-	if( audioDecoder->Open() < 0)
-		return -1;
+	//audioDecoder->Open();
 	
 #if defined (PLATFORM_SPARK7162)
 	//lib-stb-hal/libspark
@@ -3621,7 +3632,7 @@ int zapit_main_thread(void *data)
 					int vpid = live_channel->getVideoPid();
 					int apid = live_channel->getAudioPid();
 					
-					parse_pmt(live_channel, live_fe->fenumber);
+					parse_pmt(live_channel, live_fe);
 					
 					bool apid_found = false;
 					// check if selected audio pid still present
@@ -3642,7 +3653,7 @@ int zapit_main_thread(void *data)
 					{
 						dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
 						sendCaPmt(live_channel, live_fe);
-						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe->fenumber);
+						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe);
 					}
 						
 					eventServer->sendEvent(CZapitClient::EVT_PMT_CHANGED, CEventServer::INITID_ZAPIT, &channel_id, sizeof(channel_id));

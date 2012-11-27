@@ -63,6 +63,12 @@ void GLThreadObj::initKeys()
 	mSpecialMap[GLUT_KEY_F2] = CRCInput::RC_green;
 	mSpecialMap[GLUT_KEY_F3] = CRCInput::RC_yellow;
 	mSpecialMap[GLUT_KEY_F4] = CRCInput::RC_blue;
+	
+	mSpecialMap[GLUT_KEY_F5] = CRCInput::RC_play;
+	mSpecialMap[GLUT_KEY_F6] = CRCInput::RC_stop;
+	mSpecialMap[GLUT_KEY_F7] = CRCInput::RC_pause;
+	mSpecialMap[GLUT_KEY_F8] = CRCInput::RC_rewind;
+	mSpecialMap[GLUT_KEY_F9] = CRCInput::RC_forward;
 
 	mSpecialMap[GLUT_KEY_PAGE_UP]   = CRCInput::RC_page_up;
 	mSpecialMap[GLUT_KEY_PAGE_DOWN] = CRCInput::RC_page_down;

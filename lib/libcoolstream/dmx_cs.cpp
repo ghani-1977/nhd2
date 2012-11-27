@@ -60,9 +60,6 @@ cDemux::cDemux(int num)
 {  
 	// dmx file descriptor
 	demux_fd = -1;
-	
-	// last dmx source
- 	last_source = -1;
 }
 
 cDemux::~cDemux()
@@ -72,25 +69,37 @@ cDemux::~cDemux()
 	Close();
 }
 
-bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
+bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, CFrontend * fe)
 {
+	if(!fe)
+	{
+		//return false;
+		
+		// adapter
+		demux_adapter = 0;
+		// demux num
+		demux_num = 0;
+		
+		// source
+		demux_source = 0;
+	}
+	else
+	{
+#if defined (PLATFORM_GENERIC)
+		demux_adapter = fe->fe_adapter;
+#else		
+		demux_adapter = 0;
+#endif
+		demux_num = fe->fenumber;
+		
+		demux_source = fe->fenumber;
+	}
+	
 	int flags = O_RDWR;
 	type = Type;
 	
 	if (type != DMX_PSI_CHANNEL)
-		flags |= O_NONBLOCK;
-	
-	// demux num
-	demux_num = feindex;
-	
-	//
- 	if (last_source == feindex)
- 	{
- 		dprintf(DEBUG_INFO, "%s #%d: source (%d) did not change\n", __FUNCTION__, feindex, last_source);
-		
- 		if (demux_fd > -1)
-			return true;
- 	}
+		flags |= O_NONBLOCK;	
 	
 	// close device
 	if (demux_fd > -1) 
@@ -101,7 +110,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	char devname[256];
 
 	// open/reopen
-	sprintf(devname, "/dev/dvb/adapter0/demux%d", demux_num);
+	sprintf(devname, "/dev/dvb/adapter%d/demux%d", demux_adapter, demux_num);
 
 	demux_fd = open(devname, flags);
 
@@ -109,14 +118,15 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 	if (demux_fd < 0)
 		return false;
 
-	dprintf(DEBUG_INFO, "cDemux::Open %s type:%s BufferSize:%d fe(%d)\n", devname, aDMXCHANNELTYPE[Type], uBufferSize, feindex);
+	dprintf(DEBUG_INFO, "cDemux::Open %s type:%s BufferSize:%d source(%d)\n", devname, aDMXCHANNELTYPE[Type], uBufferSize, demux_source);
 
 	// set demux source
 #if !defined (PLATFORM_GENERIC)	
 	if (!init[demux_num])
 	{
-		int n = DMX_SOURCE_FRONT0 + feindex;
-		printf("%s: setting %s to source %d\n", __FUNCTION__, devname, feindex);
+		int n = DMX_SOURCE_FRONT0 + demux_source;
+		
+		printf("%s: setting %s to source %d\n", __FUNCTION__, devname, demux_source);
 		
 		if (ioctl(demux_fd, DMX_SET_SOURCE, &n) < 0)
 		{
@@ -133,19 +143,16 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, int feindex)
 		if (ioctl(demux_fd, DMX_SET_BUFFER_SIZE, uBufferSize) < 0)
 			perror("DMX_SET_BUFFER_SIZE");
 	}
-	
-	//
-	last_source = feindex;
 
 	return true;
 }
 
 void cDemux::Close(void)
 { 
-	dprintf(DEBUG_INFO, "%s:%s type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], pid);
-	
 	if(demux_fd < 0)
 		return;
+	
+	dprintf(DEBUG_INFO, "%s:%s type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], pid);	
 
 	close(demux_fd);
 
@@ -154,13 +161,10 @@ void cDemux::Close(void)
 
 bool cDemux::Start(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
-	
 	if (demux_fd < 0)
-	{
-		printf("%s #%d: not open!\n", __FUNCTION__, demux_num);
 		return false;
-	}
+	
+	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
 
         if (ioctl(demux_fd , DMX_START) < 0)
                 perror("DMX_START");       
@@ -170,13 +174,10 @@ bool cDemux::Start(void)
 
 bool cDemux::Stop(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
-	
 	if(demux_fd < 0)
-	{
-		printf("%s #%d: not open!\n", __FUNCTION__, demux_num);
 		return false;
-	}
+	
+	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid 0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], pid);
 	
 	if( ioctl(demux_fd, DMX_STOP) < 0)
 		perror("DMX_STOP");
@@ -193,10 +194,7 @@ int cDemux::Read(unsigned char * const buff, const size_t len, int Timeout)
 	ufds.revents = 0;
 	
 	if (demux_fd < 0)
-	{
-		printf("%s #%d: not open!\n", __func__, demux_num);
 		return -1;
-	}
 	
 	if (type == DMX_PSI_CHANNEL && Timeout <= 0)
 		Timeout = 60 * 1000;
@@ -238,6 +236,9 @@ retry:
 
 bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, const unsigned char * const Mask, int len, int Timeout, const unsigned char * const nMask )
 {
+	if (demux_fd < 0)
+		return false;
+	
 	pid = Pid;
 	
 	dmx_sct_filter_params sct;
@@ -384,8 +385,6 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 		sct.timeout = to;
 	
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x Len=%d Timeout=%d\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid, len, sct.timeout);
-	
-	//ioctl (demux_fd, DMX_STOP);
 
 	/* Set Demux Section Filter() */
 	if (ioctl(demux_fd, DMX_SET_FILTER, &sct) < 0)
@@ -399,6 +398,9 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 
 bool cDemux::pesFilter(const unsigned short Pid)
 {  
+	if (demux_fd < 0)
+		return false;
+	
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid);
 	
 	/* allow PID 0 for web streaming e.g.
@@ -473,10 +475,10 @@ bool cDemux::pesFilter(const unsigned short Pid)
 // addPid
 void cDemux::addPid(unsigned short Pid)
 { 
-	dprintf(DEBUG_INFO, "%s:%s type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], Pid);	
-
 	if(demux_fd <= 0)
 		return;
+	
+	dprintf(DEBUG_INFO, "%s:%s type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], Pid);
 
 	if (ioctl(demux_fd, DMX_ADD_PID, &Pid) < 0)
 		perror("DMX_ADD_PID");
@@ -487,10 +489,10 @@ void cDemux::addPid(unsigned short Pid)
 // remove pid
 void cDemux::removePid(unsigned short Pid)
 {
-	dprintf(DEBUG_INFO, "%s:%s type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], Pid);	
-
 	if(demux_fd <= 0)
 		return;
+	
+	dprintf(DEBUG_INFO, "%s:%s type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type], Pid);	
 
 	if (ioctl(demux_fd, DMX_REMOVE_PID, &Pid) < 0)
 		perror("DMX_ADD_PID");
@@ -500,9 +502,12 @@ void cDemux::removePid(unsigned short Pid)
 
 void cDemux::getSTC(int64_t * STC)
 { 
+#if defined (PLATFORM_GENERIC)
+	if (demux_fd < 0)
+		return;
+	
 	dprintf(DEBUG_DEBUG, "%s:%s dmx(%d) type=%s STC=\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type]);	
 	
-#if defined (PLATFORM_GENERIC)
 	struct dmx_stc stc;
 	memset(&stc, 0, sizeof(dmx_stc));
 	stc.num =  demux_num;	//num
@@ -516,6 +521,8 @@ void cDemux::getSTC(int64_t * STC)
 	// seifes
 	/* apparently I can only get the PTS of the video decoder,
 	 * but that's good enough for dvbsub */
+	dprintf(DEBUG_DEBUG, "%s:%s dmx(%d) type=%s STC=\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type]);	
+	
 	int64_t pts = 0;
 	if (videoDecoder)
 		pts = videoDecoder->GetPTS();

@@ -49,7 +49,7 @@ GstElement * m_gst_playbin = NULL;
 GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
-GstTagList * m_stream_tags = 0;
+//GstTagList * m_stream_tags = 0;
 static int end_eof = 0;
 #else
 #include <common.h>
@@ -134,7 +134,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			g_error_free(inf);
 			break;
 		}
-		
+		#if 0
 		case GST_MESSAGE_TAG:
 		{
 			GstTagList *tags, *result;
@@ -166,6 +166,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			printf("update info tags\n"); //FIXME: how shall playback handle this event???
 			break;
 		}
+		#endif
 		
 		case GST_MESSAGE_STATE_CHANGED:
 		{
@@ -319,8 +320,13 @@ void cPlayback::Close(void)
 		printf("GST bus handler closed\n");
 	}
 	
-	if (m_stream_tags)
-		gst_tag_list_free(m_stream_tags);
+#if defined (PLATFORM_GENERIC)	
+	if(playstate == STATE_PLAY)
+		Stop();
+#endif
+	
+	//if (m_stream_tags)
+	//	gst_tag_list_free(m_stream_tags);
 
 	// close gst
 	if (m_gst_playbin)

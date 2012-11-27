@@ -23,9 +23,10 @@
 #define __zapit_pat_h__
 
 #include "channel.h"
+#include <zapit/frontend_c.h>
 
 
-int parse_pat(CZapitChannel * const channel, int feindex = 0, int dmx_num = 0 );
+int parse_pat(CZapitChannel * const channel, CFrontend * fe);
 int parse_pat(int feindex = 0);
 
 #endif /* __zapit_pat_h__ */
