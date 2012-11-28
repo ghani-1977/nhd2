@@ -121,11 +121,17 @@ class CFrontend
 		int32_t lnbOffsetLow;
 		int32_t lnbOffsetHigh;
 		int32_t lnbSwitch;
+		
+		/**/
+		bool initialised;
 	  
 	private:
 		int fd;
 		
 		bool standby;
+		
+		/**/
+		bool slave;
 		
 		/* information about the used frontend type */
 		struct dvb_frontend_info info;
@@ -213,12 +219,12 @@ class CFrontend
 								|| (tpid == currentTransponder.TP_id);
 						}
 						
-		//const transponder_id_t 		getTsidOnid()    { return currentTransponder.TP_id; }
-		//void 				setTsidOnid(transponder_id_t newid)  { currentTransponder.TP_id = newid; }
 		uint32_t 			getRate();
 		
-                void Close( bool inited = false);
+                void Close();
 		bool Open( bool init = false);
+		void Init(void);
+		void setMasterSlave(bool _slave);
 		
 		bool sendUncommittedSwitchesCommand(int input);
 		bool setInput(CZapitChannel *channel, bool nvod);

@@ -95,6 +95,8 @@ CFrontend::CFrontend(int num, int adap)
 	mode = (fe_mode_t)FE_SINGLE;
 	locked = false;
 	standby = true;
+	
+	slave = false;
 
 	memset(&curfe, 0, sizeof(curfe));
 	
@@ -116,12 +118,14 @@ CFrontend::CFrontend(int num, int adap)
 	// to allow Open() switch it off
 	currentVoltage = SEC_VOLTAGE_OFF; //SEC_VOLTAGE_13;
 	currentToneMode = SEC_TONE_ON;
+	
+	initialised = false;
 }
 
 CFrontend::~CFrontend(void)
 {
-	if (diseqcType > MINI_DISEQC)
-		sendDiseqcStandby();
+	//if (diseqcType > MINI_DISEQC)
+	//	sendDiseqcStandby();
 
 	if(fd >= 0) 
 		Close();
@@ -154,14 +158,7 @@ bool CFrontend::Open( bool init )
 
 	if(init)
 	{
-		// secvoltage
-		secSetVoltage(SEC_VOLTAGE_13, 15);
-		
-		// sectone
-		secSetTone(SEC_TONE_OFF, 15);
-		
-		// diseqc
-		setDiseqcType(diseqcType);
+		Init();
 	}
 	
 	currentTransponder.TP_id = 0;
@@ -171,19 +168,37 @@ bool CFrontend::Open( bool init )
 	return true;
 }
 
-void CFrontend::Close(bool inited)
+void CFrontend::Init(void)
+{
+	secSetVoltage(SEC_VOLTAGE_13, 15);
+	secSetTone(SEC_TONE_OFF, 15);
+	setDiseqcType(diseqcType);
+}
+
+void CFrontend::setMasterSlave(bool _slave)
+{
+	if(slave == _slave)
+		return;
+
+	if(_slave) {
+		secSetVoltage(SEC_VOLTAGE_OFF, 0);
+		secSetTone(SEC_TONE_OFF, 15);
+	}
+	slave = _slave;
+	if(!slave)
+		Init();
+}
+
+void CFrontend::Close()
 {
 	if(standby)
 		return;
 	
-	if(inited)
-	{
-		if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
-			sendDiseqcStandby();
+	if ( (mode != (fe_mode_t)FE_LOOP) && diseqcType > MINI_DISEQC )
+		sendDiseqcStandby();
 	
-		secSetVoltage(SEC_VOLTAGE_OFF, 0);
-		secSetTone(SEC_TONE_OFF, 15);
-	}
+	secSetVoltage(SEC_VOLTAGE_OFF, 0);
+	secSetTone(SEC_TONE_OFF, 15);
 
 	tuned = false;
 	standby = true;

@@ -242,7 +242,8 @@ bool initFrontend()
 				index++;
 				femap.insert(std::pair <unsigned short, CFrontend*> (index, fe));
 				
-				fe->Close();
+				//fe->Close();
+				live_fe = fe;
 			}
 			else
 				delete fe;
@@ -265,7 +266,7 @@ void OpenFE()
 	{
 		CFrontend * fe = it->second;
 		
-		fe->Open(true);
+		fe->Open();
 	}
 }
 
@@ -276,7 +277,7 @@ void CloseFE()
 	{
 		CFrontend * fe = it->second;
 		
-		fe->Close(true);
+		fe->Close();
 	}
 }
 
@@ -288,6 +289,25 @@ CFrontend * getFE(int index)
 	dprintf(DEBUG_INFO, "getFE: Frontend #%d not found\n", index);
 	
 	return NULL;
+}
+
+void setMode(fe_mode_t newmode, int feindex)
+{
+	getFE(feindex)->mode = newmode;
+
+	bool setslave = ( getFE(feindex)->mode == FE_LOOP ) || ( getFE(feindex)->mode == FE_SINGLE );
+	
+	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
+	{
+		CFrontend * fe = it->second;
+		
+		if(it != femap.begin()) 
+		{
+			dprintf(DEBUG_INFO, "Frontend %d as slave: %s\n", fe->fenumber, setslave ? "yes" : "no");
+			fe->setMasterSlave(setslave);
+		} else
+			fe->Init();
+	}
 }
 
 /* compare polarization and band with fe values */
@@ -1935,7 +1955,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::receive_data(connfd, &msgSetFEMode, sizeof(msgSetFEMode));
 			
 			// fe set femode
-			getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
+			//getFE(msgSetFEMode.feindex)->mode = msgSetFEMode.mode;
+			setMode(msgSetFEMode.mode, msgSetFEMode.feindex);
 			//saveFrontendConfig();
 			
 			break;
@@ -3023,12 +3044,17 @@ void leaveStandby(void)
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
 	{
 		CFrontend * fe = it->second;
-		
-		// fe functions at start
-		// setmasterslave
-		if( fe->mode == (fe_mode_t)FE_LOOP )
-			fe->setMasterSlave();
-		
+
+		bool setslave = ( (fe->mode == FE_LOOP) || (fe->mode == FE_SINGLE) );
+			
+		if(it != femap.begin()) 
+		{
+			dprintf(DEBUG_INFO, "Frontend %d as slave: %s\n", fe->fenumber, setslave ? "yes" : "no");
+			fe->setMasterSlave(setslave);
+		} 
+		else
+			fe->Init();
+
 		fe->setDiseqcRepeats( fe->diseqcRepeats );
 		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
 		fe->setDiseqcType( fe->diseqcType );
@@ -3580,13 +3606,11 @@ int zapit_main_thread(void *data)
 
 	if(cit != allchans.end())
 		live_channel = &(cit->second);
-
-	zapit_ready = 1;
 	
 	//wakeup from standby and zap it to live channel
 	leaveStandby(); 
 	
-	//firstzap = false;
+	zapit_ready = 1;
 	
 	//check for lock
 #ifdef CHECK_FOR_LOCK	

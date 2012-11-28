@@ -71,6 +71,7 @@ extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);
 extern void saveFrontendConfig(int feindex);
 extern void loadFrontendConfig();
+extern void setMode(fe_mode_t newmode, int feindex);
 
 
 // option off0_on1
@@ -304,6 +305,9 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 			getFE(feindex)->gotoXXLatitude = strtod(zapit_lat, NULL);
 			getFE(feindex)->gotoXXLongitude = strtod(zapit_long, NULL);
 		}
+		
+		// set fe mode
+		setMode(getFE(feindex)->mode, feindex);
 		
 		// save frontend.conf
 		saveFrontendConfig(feindex);

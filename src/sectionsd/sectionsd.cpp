@@ -6087,13 +6087,19 @@ static void *timeThread(void *)
 
 	while(!sectionsd_stop)
 	{
-		while (!scanning || !reader_ready) {
+		while (!scanning || !reader_ready) 
+		{
 			if(sectionsd_stop)
 				break;
 			sleep(1);
 		}
-		if (bTimeCorrect == true) {		// sectionsd started with parameter "-tc"
-			if (first_time == true) {	// only do this once!
+		
+		if (bTimeCorrect == true) 
+		{		
+			// sectionsd started with parameter "-tc"
+			if (first_time == true) 
+			{	
+				// only do this once!
 				time_t actTime;
 				actTime=time(NULL);
 				pthread_mutex_lock(&timeIsSetMutex);
@@ -6117,19 +6123,25 @@ static void *timeThread(void *)
 			pthread_cond_broadcast(&timeIsSetCond);
 			pthread_mutex_unlock(&timeIsSetMutex );
 			eventServer->sendEvent(CSectionsdClient::EVT_TIMESET, CEventServer::INITID_SECTIONSD, &actTime, sizeof(actTime) );
-		} else {
-			if (dvb_time_update) {
+		} 
+		else 
+		{
+			if (dvb_time_update) 
+			{
 				success = getUTC(&UTC, first_time); // for first time, get TDT, then TOT
 				if (success)
 				{
 					tim = changeUTCtoCtime((const unsigned char *) &UTC);
 
-					if (tim) {
-						if ((!messaging_neutrino_sets_time) && (geteuid() == 0)) {
+					if (tim) 
+					{
+						if ((!messaging_neutrino_sets_time) && (geteuid() == 0)) 
+						{
 							struct timeval tv;
 							tv.tv_sec = tim;
 							tv.tv_usec = 0;
-							if (settimeofday(&tv, NULL) < 0) {
+							if (settimeofday(&tv, NULL) < 0) 
+							{
 								perror("[sectionsd] settimeofday");
 								pthread_exit(NULL);
 							}
@@ -6151,36 +6163,46 @@ static void *timeThread(void *)
 			}
 		}
 
-		if (timeset && dvb_time_update) {
+		if (timeset && dvb_time_update) 
+		{
 			if (first_time)
 				seconds = 5; /* retry a second time immediately */
 			else
 				seconds = ntprefresh * 60;
 
-			if(time_ntp) {
+			if(time_ntp) 
+			{
 				xprintf("[%sThread] Time set via NTP, going to sleep for %d seconds.\n", "time", seconds);
 			}
-			else {
+			else 
+			{
 				xprintf("[%sThread] Time %sset via DVB(%s), going to sleep for %d seconds.\n",
 					"time", success?"":"not ", first_time?"TDT":"TOT", seconds);
 			}
 			first_time = false;
 		}
-		else {
-			if (!first_time) {
+		else 
+		{
+			if (!first_time) 
+			{
 				/* time was already set, no need to do it again soon when DVB time-blocked channel is tuned */
 				seconds = ntprefresh * 60;
 			}
-			else if (!scanning) {
+			else if (!scanning) 
+			{
 				seconds = 60;
 			}
-			else {
+			else 
+			{
 				seconds = 1;
 			}
-			if (!dvb_time_update && !first_time) {
+			
+			if (!dvb_time_update && !first_time) 
+			{
 				xprintf("[%sThread] Time NOT set via DVB due to blocked channel, going to sleep for %d seconds.\n", "time", seconds);
 			}
 		}
+		
 		if(sectionsd_stop)
 			break;
 

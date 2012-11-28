@@ -72,28 +72,16 @@ cDemux::~cDemux()
 bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, CFrontend * fe)
 {
 	if(!fe)
-	{
-		//return false;
+		return false;
 		
-		// adapter
-		demux_adapter = 0;
-		// demux num
-		demux_num = 0;
-		
-		// source
-		demux_source = 0;
-	}
-	else
-	{
 #if defined (PLATFORM_GENERIC)
-		demux_adapter = fe->fe_adapter;
+	demux_adapter = fe->fe_adapter;
 #else		
-		demux_adapter = 0;
+	demux_adapter = 0;
 #endif
-		demux_num = fe->fenumber;
+	demux_num = fe->fenumber;
 		
-		demux_source = fe->fenumber;
-	}
+	demux_source = fe->fenumber;
 	
 	int flags = O_RDWR;
 	type = Type;

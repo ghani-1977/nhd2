@@ -124,7 +124,8 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 	unsigned char buf[1023+3];
 
-	if(dmxUTC == NULL) {
+	if(dmxUTC == NULL) 
+	{
 		dmxUTC = new cDemux();
 		dmxUTC->Open( DMX_PSI_CHANNEL, 1026, live_fe );
 	}
@@ -163,13 +164,15 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 #if 1
 	short loop_length = tdt_tot_header.descr_loop_length_hi << 8 | tdt_tot_header.descr_loop_length_lo;
-	if (loop_length >= 15) {
+	if (loop_length >= 15) 
+	{
 		int off = sizeof(tdt_tot_header);
 		int rem = loop_length;
 		while (rem >= 15)
 		{
 			unsigned char *b2 = &buf[off];
-			if (b2[0] == 0x58) {
+			if (b2[0] == 0x58) 
+			{
 				struct descrLocalTimeOffset *to;
 				to = (struct descrLocalTimeOffset *)&b2[2];
 				unsigned char cc[4];
@@ -181,7 +184,9 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 					b2[1], cc, to->country_region_id,
 					to->local_time_offset_polarity, htons(to->local_time_offset),
 					htons(to->next_time_offset), ctime(&t));
-			} else {
+			} 
+			else 
+			{
 				xprintf("getUTC(TOT): descriptor != 0x58: 0x%02x\n", b2[0]);
 			}
 			off += b2[1] + 2;
@@ -200,8 +205,8 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 	if (loop_length < 15 && !TDT)
 		ret = false;
 
-	//delete dmxUTC;
 	dmxUTC->Stop();
+	//delete dmxUTC;
 
 	return ret;
 }
