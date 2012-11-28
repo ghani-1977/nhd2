@@ -3047,17 +3047,19 @@ void leaveStandby(void)
 
 		bool setslave = ( (fe->mode == FE_LOOP) || (fe->mode == FE_SINGLE) );
 			
-		if(it != femap.begin()) 
+		if(it != femap.begin() && fe->getInfo()->type != FE_QAM) 
+		//if(setslave)
 		{
-			dprintf(DEBUG_INFO, "Frontend %d as slave: %s\n", fe->fenumber, setslave ? "yes" : "no");
+			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
 			fe->setMasterSlave(setslave);
 		} 
 		else
 			fe->Init();
 
+		// fe functions at start
 		fe->setDiseqcRepeats( fe->diseqcRepeats );
 		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
-		fe->setDiseqcType( fe->diseqcType );
+		//fe->setDiseqcType( fe->diseqcType );
 	}
 	
 	// live cam

@@ -180,11 +180,14 @@ void CFrontend::setMasterSlave(bool _slave)
 	if(slave == _slave)
 		return;
 
-	if(_slave) {
+	if(_slave) 
+	{
 		secSetVoltage(SEC_VOLTAGE_OFF, 0);
 		secSetTone(SEC_TONE_OFF, 15);
 	}
+	
 	slave = _slave;
+	
 	if(!slave)
 		Init();
 }
