@@ -228,7 +228,7 @@ bool initFrontend()
 	int i, j;
 	
 	CFrontend * fe;
-	int index = -1;
+	int index = 0;
 	
 	// fill map
 	for(i = 0; i < DVBADAPTER_MAX; i++)
@@ -239,11 +239,12 @@ bool initFrontend()
 			
 			if(fe->Open()) 
 			{
-				index++;
+				//index++;
 				femap.insert(std::pair <unsigned short, CFrontend*> (index, fe));
 				
-				//fe->Close();
 				live_fe = fe;
+				
+				index++;
 			}
 			else
 				delete fe;
@@ -411,7 +412,11 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	}
 	
 	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
-	dprintf(DEBUG_INFO, "%s Selected fe: %d\n", __FUNCTION__, ret ? ret->fenumber : -1);
+	
+	if(ret)
+		printf("%s Selected fe: (%d,%d)\n", __FUNCTION__, ret->fe_adapter, ret->fenumber);
+	else
+		printf("%s can not get free frontend\n", __FUNCTION__);
 	
 	return ret;
 }
@@ -921,7 +926,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	live_channel_id = live_channel->getChannelID();
 	saveZapitSettings(false, false);
 
-	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fenumber );
+	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
 	// tune to
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
@@ -3506,12 +3511,6 @@ int zapit_main_thread(void *data)
 	
 	// audio decoder
 	audioDecoder = new cAudio();
-	
-	// open video decoder
-	//videoDecoder->Open();
-	
-	// open audiodecoder
-	//audioDecoder->Open();
 	
 #if defined (PLATFORM_SPARK7162)
 	//lib-stb-hal/libspark
