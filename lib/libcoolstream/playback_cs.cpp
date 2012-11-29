@@ -650,6 +650,9 @@ bool cPlayback::SetSpeed(int speed)
 		else if (speed < 0)	//backwarding
 		{
 			//
+			if (speed > -1) 
+				speed = -1;
+			
 			if (speed < -7) 
 				speed = -7;
 			

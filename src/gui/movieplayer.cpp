@@ -1672,6 +1672,13 @@ void CMoviePlayerGui::PlayFile(void)
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition(startposition);
+				
+				// get duration
+				// show movieviewer directly after starting play
+				if(isVlc)
+					duration = VlcGetStreamLength();
+				else
+					playback->GetDuration(duration);
 			}
 		}
 		
