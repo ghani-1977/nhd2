@@ -122,15 +122,13 @@ class CFrontend
 		int32_t lnbOffsetHigh;
 		int32_t lnbSwitch;
 		
-		/**/
-		bool initialised;
+		/* standby flag */
+		bool standby;
 	  
 	private:
 		int fd;
 		
-		bool standby;
-		
-		/**/
+		/* slave */
 		bool slave;
 		
 		/* information about the used frontend type */
@@ -222,7 +220,7 @@ class CFrontend
 		uint32_t 			getRate();
 		
                 void Close();
-		bool Open( bool init = false);
+		bool Open();
 		void Init(void);
 		void setMasterSlave(bool _slave);
 		

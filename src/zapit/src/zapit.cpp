@@ -383,7 +383,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		dprintf(DEBUG_INFO, "getFrontend: fe(%d,%d): fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fe_adapter,
 				fe->fenumber, 
 				fe->getFrequency(), 
@@ -3052,8 +3052,7 @@ void leaveStandby(void)
 
 		bool setslave = ( (fe->mode == FE_LOOP) || (fe->mode == FE_SINGLE) );
 			
-		if(it != femap.begin() && fe->getInfo()->type != FE_QAM) 
-		//if(setslave)
+		if( it != femap.begin() && fe->getInfo()->type != FE_QAM) 
 		{
 			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
 			fe->setMasterSlave(setslave);

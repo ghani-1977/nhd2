@@ -4860,8 +4860,6 @@ void CNeutrinoApp::startNextRecording()
 }
 
 // exec, menuitem callback (shutdown)
-void SaveMotorPositions();
-
 int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: actionKey: %s\n", actionKey.c_str());

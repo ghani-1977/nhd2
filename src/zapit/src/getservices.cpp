@@ -627,10 +627,11 @@ int LoadServices(bool only_current)
 	// load motor position
 	for(int i = 0; i < FrontendCount; i++)
 	{
-		CFrontend * fe = getFE(i);
-		
-		if( fe->getInfo()->type == FE_QPSK)
+		if( getFE(i)->getInfo()->type == FE_QPSK)
+		{
 			LoadMotorPositions();
+			break;
+		}
 	}
 
 	dprintf(DEBUG_NORMAL, "[zapit] %d services loaded (%d)...\n", scnt, allchans.size());

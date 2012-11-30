@@ -160,8 +160,6 @@ bool CSatelliteSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 		}
 	}
 
-	//g_Zapit->setDiseqcType((diseqc_t) type, feindex);
-	//g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex );
 	getFE(feindex)->setDiseqcType( getFE(feindex)->diseqcType );
 	getFE(feindex)->setDiseqcRepeats( getFE(feindex)->diseqcRepeats );
 

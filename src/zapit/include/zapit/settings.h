@@ -50,7 +50,7 @@
 #define SATELLITES_XML  		CONFIGDIR "/satellites.xml"
 #define TERRESTRIALS_XML 		CONFIGDIR "/terrestrial.xml"
 
-#define CAMD_UDS_NAME  "/tmp/camd.socket"
+#define CAMD_UDS_NAME  			"/tmp/camd.socket"
 
 
 #endif /* __zapit__settings_h__ */

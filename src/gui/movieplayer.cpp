@@ -159,6 +159,8 @@ bool showaudioselectdialog = false;
 
 bool isHTTP = false;
 
+#define TIMESHIFT_SECONDS 3
+
 extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
 // aspect ratio
 #ifdef __sh__
@@ -931,10 +933,6 @@ void updateLcd(const std::string & sel_filename)
 #endif	
 }
 
-extern bool has_hdd;
-
-
-#define TIMESHIFT_SECONDS 3
 void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
@@ -1002,16 +1000,6 @@ void CMoviePlayerGui::PlayFile(void)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
 #endif		
 	}
-
-	//FIXME: do we really need this???
-	#if 0
-	if (has_hdd)
-	{
-		char cmd[100];
-		sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
-		system(cmd);
-	}
-	#endif
 
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info

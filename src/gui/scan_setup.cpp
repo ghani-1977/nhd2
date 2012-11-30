@@ -242,12 +242,13 @@ const CMenuOptionChooser::keyval OPTIONS_EAST0_WEST1_OPTIONS[OPTIONS_EAST0_WEST1
 
 // 
 #define FRONTEND_MODE_SINGLE_OPTION_COUNT 2
-#define FRONTEND_MODE_OPTION_COUNT 3
-const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_OPTION_COUNT] =
+#define FRONTEND_MODE_TWIN_OPTION_COUNT 3
+const CMenuOptionChooser::keyval FRONTEND_MODE_OPTIONS[FRONTEND_MODE_TWIN_OPTION_COUNT] =
 {
-	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_ACTIV },
+	{ (fe_mode_t)FE_SINGLE, LOCALE_SCANSETUP_FEMODE_CONNECTED },
 	{ (fe_mode_t)FE_NOTCONNECTED, LOCALE_SCANSETUP_FEMODE_NOTCONNECTED },
 	
+	//{ (fe_mode_t)FE_TWIN, LOCALE_SCANSETUP_FEMODE_TWIN },
 	{ (fe_mode_t)FE_LOOP, LOCALE_SCANSETUP_FEMODE_LOOP },
 };
 
@@ -549,19 +550,19 @@ void CScanSetup::showScanService()
 	// check for twin
 	// mode loop can be used if we hat twice sat tuner, otherwise direct connected or not connected
 	// FIXME:
-	bool sat_twin = false;
-	if( getFE(feindex)->getInfo()->type == FE_QPSK )
+	bool have_twin = false;
+	if( getFE(feindex)->getInfo()->type == FE_QPSK || getFE(feindex)->getInfo()->type == FE_OFDM)
 	{
 		for(int i = 0; i < FrontendCount; i++) 
 		{
-			if( i != feindex && getFE(i)->getInfo()->type == FE_QPSK )
+			if( i != feindex && ( getFE(i)->getInfo()->type == getFE(feindex)->getInfo()->type) )
 			{
-				sat_twin = true;
+				have_twin = true;
 				break;
 			}
 		}
 	}
-	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, sat_twin? FRONTEND_MODE_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
+	scansetup->addItem(new CMenuOptionChooser(LOCALE_SCANSETUP_FEMODE,  (int *)&getFE(feindex)->mode, FRONTEND_MODE_OPTIONS, have_twin? FRONTEND_MODE_TWIN_OPTION_COUNT:FRONTEND_MODE_SINGLE_OPTION_COUNT, true, feModeNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
 	
 	scansetup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
