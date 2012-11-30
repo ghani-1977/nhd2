@@ -59,7 +59,6 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <sys/stat.h>
-#include <sys/stat.h>
 #include <sys/vfs.h>
 
 #include <errno.h>

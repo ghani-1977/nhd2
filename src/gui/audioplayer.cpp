@@ -329,7 +329,7 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
 
 	//always exit all
-	return menu_return::RETURN_REPAINT/*RETURN_EXIT_ALL*/;
+	return menu_return::RETURN_REPAINT;
 }
 
 int CAudioPlayerGui::show()

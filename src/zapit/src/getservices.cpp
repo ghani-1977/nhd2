@@ -26,12 +26,18 @@
 #include <zapit/settings.h>
 #include <zapit/satconfig.h>
 #include <xmlinterface.h>
+
 #include <math.h>
 #include <sys/time.h>
 #include <set>
+#include <sys/stat.h>
+#include <sys/vfs.h>
+
+#include <errno.h>
 
 /* system */
 #include <system/debug.h>
+#include <system/setting_helpers.h>
 
 
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */
@@ -842,6 +848,25 @@ void SaveServices(bool tocopy)
 	}
 	fprintf(fd, "</zapit>\n");
 	fclose(fd);
+	
+	// create zapit ordner if missed
+	struct stat statInfo;
+	int res = stat(CONFIGDIR "/zapit", &statInfo);
+	
+	if (res == -1) 
+	{
+		if (errno == ENOENT) 
+		{
+			res = safe_mkdir(CONFIGDIR "/zapit");
+
+			if (res != 0) 
+				perror("[getservices] mkdir");
+		} 
+		else 
+		{
+			perror("[getservices] stat");
+		}
+	} 
 
 	if(tocopy) 
 	{
