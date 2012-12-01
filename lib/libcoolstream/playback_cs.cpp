@@ -118,7 +118,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			
 			break;
 		}
-		
+
 		case GST_MESSAGE_INFO:
 		{
 			gchar *debug;
@@ -134,6 +134,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			g_error_free(inf);
 			break;
 		}
+
 		#if 0
 		case GST_MESSAGE_TAG:
 		{
@@ -465,6 +466,13 @@ bool cPlayback::Start(char * filename)
 			}
 		}		
 	}
+	else
+	{
+		printf("failed to start playing file, sorry we can not play\n");
+		playing = false;
+		
+		return false;
+	}
 #endif
 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
@@ -578,7 +586,7 @@ void cPlayback::trickSeek(int ratio)
 		pos = position;
 	}
 
-	gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+	//gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 			
 	if (validposition)
 	{
@@ -748,7 +756,6 @@ bool cPlayback::GetPosition(int &position)
 		return false;	
 
 #if ENABLE_GSTREAMER
-
 	//EOF
 	if(end_eof)
 	{
