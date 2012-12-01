@@ -2880,7 +2880,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			audioDemux = new cDemux();
 		
 		// open audio demux
-		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe/*->fenumber*/ ) < 0 )
+		if( audioDemux->Open(DMX_AUDIO_CHANNEL, AUDIO_STREAM_BUFFER_SIZE, live_fe ) < 0 )
 			return -1;
 		
 		// set pes filter
@@ -2898,7 +2898,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			videoDemux = new cDemux(); 
 		
 		// open Video Demux		
-		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe/*->fenumber*/ ) < 0 )
+		if( videoDemux->Open(DMX_VIDEO_CHANNEL, VIDEO_STREAM_BUFFER_SIZE, live_fe ) < 0 )
 			return -1;
 		
 		// video pes filter
