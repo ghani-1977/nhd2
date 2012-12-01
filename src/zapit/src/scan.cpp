@@ -108,6 +108,29 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 	if( getFE(feindex)->mode == FE_NOTCONNECTED )
 		return false;
 	
+	//TEST
+	if(getFE(feindex)->standby)
+	{
+		getFE(feindex)->Open();
+			
+		// fe functions 
+		bool setslave = ( getFE(feindex)->mode == FE_LOOP );
+				
+		if(setslave)
+		{
+			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", getFE(feindex)->fe_adapter, getFE(feindex)->fenumber, setslave ? "yes" : "no");
+			getFE(feindex)->setMasterSlave(setslave);
+		} 
+		else
+			getFE(feindex)->Init();
+
+		// fe functions at start
+		getFE(feindex)->setDiseqcRepeats( getFE(feindex)->diseqcRepeats );
+		getFE(feindex)->setCurrentSatellitePosition( getFE(feindex)->lastSatellitePosition );
+		//getFE(feindex)->setDiseqcType( getFE(feindex)->diseqcType );
+	}
+	//
+	
 	//Set Input
 	getFE(feindex)->setInput(satellitePosition, feparams->frequency, polarization);
 

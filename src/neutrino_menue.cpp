@@ -763,7 +763,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 		TunerSetup.addItem(GenericMenuBack);
 		TunerSetup.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 		
-		for(int i=0; i < FrontendCount; i++)
+		for(int i = 0; i < FrontendCount; i++)
 		{
 			CFrontend * fe = getFE(i);
 			char tbuf[255];
