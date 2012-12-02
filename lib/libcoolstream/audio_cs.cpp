@@ -139,9 +139,6 @@ int cAudio::SetMute(int enable)
 /* e2 sets 0 to 63 */
 int cAudio::setVolume(unsigned int left, unsigned int right)
 { 
-	if (audio_fd < 0)
-		return -1;
-	
 	dprintf(DEBUG_INFO, "%s:%s volume: %d\n", FILENAME, __FUNCTION__, left);
 	
 	int ret = 0;

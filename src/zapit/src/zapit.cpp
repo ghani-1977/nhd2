@@ -2233,7 +2233,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			standby = true;
 			stopPlayBack();
 			standby = false;
-					
+			
+#if !ENABLE_GSTREAMER			
 			if(audioDecoder)
 			{
 				audioDecoder->Close();
@@ -2242,19 +2243,22 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if(videoDecoder)
 			{
 				videoDecoder->Close();
-			}		
+			}
+#endif			
 			
 			playbackStopForced = true;
 			break;
 	
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
-						
+			
+#if !ENABLE_GSTREAMER			
 			if(videoDecoder)
 				videoDecoder->Open();
 	
 			if(audioDecoder)
-				audioDecoder->Open();			
+				audioDecoder->Open();
+#endif			
 	
 			startPlayBack(live_channel);
 			
