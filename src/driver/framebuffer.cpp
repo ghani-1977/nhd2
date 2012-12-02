@@ -428,10 +428,14 @@ int CFrameBuffer::setMode()
 	setVideoMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 #endif	
 
-	setBlendMode(0);
+	setBlendMode(0); //non-premultiplied alpha
 	
 	// clear frameBuffer
 	paintBackground();
+	
+#ifdef FB_BLIT
+	blit();
+#endif
 
 	return 0;
 }

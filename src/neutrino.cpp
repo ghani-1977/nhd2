@@ -750,7 +750,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	}
 
 	// video
-	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);	
+#ifdef __sh__	
+	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
+#else
+	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_720P50);
+#endif
 	prev_video_Mode = g_settings.video_Mode;
 	
 	//analog mode
