@@ -129,7 +129,6 @@ class CVCRControl
 					return true;
 				};
 				
-				//t_channel_id                  record_channel_id;
 				unsigned long long            record_EPGid;
 				unsigned long long            record_next_EPGid;
 				CZapitClient::responseGetRecordPIDs pids;
@@ -147,7 +146,7 @@ class CVCRControl
 				};
 					
 				virtual bool Stop(); 
-				virtual bool Record(const t_channel_id channel_id = 0, int mode=1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0); // epg_time added for .xml (MovieBrowser)
+				virtual bool Record(const t_channel_id channel_id = 0, int mode = 1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0); // epg_time added for .xml (MovieBrowser)
 	
 				// file
 				CFileDevice(const char * const directory )
