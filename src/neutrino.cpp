@@ -2865,7 +2865,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}			
-			else if( (msg == CRCInput::RC_bookmark) || (msg == (neutrino_msg_t)g_settings.key_timelist)) 
+			else if( msg == (neutrino_msg_t)g_settings.key_timelist ) 
 			{
 				StopSubtitles();
 				
@@ -2890,13 +2890,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					radioMode();
 				else if( mode == mode_radio )
 					tvMode();
-			}
-			else if( (msg == CRCInput::RC_mode) && ((neutrino_msg_t)g_settings.key_tvradio_mode == CRCInput::RC_nokey))
-			{
-				if(mode == mode_radio )
-					tvMode();
-				else if(mode == mode_tv)
-					radioMode();
 			}
 			else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
 			{
@@ -2964,7 +2957,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles(res < 0);
 			}
-			else if( msg == CRCInput::RC_pause || msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
+			else if( msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
 			{
 			   	if( g_settings.recording_type == RECORDING_FILE )
 				{
@@ -3013,7 +3006,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					}
 			   	}
 			}
-			else if( (msg == CRCInput::RC_play || msg == (neutrino_msg_t)g_settings.mpkey_play) && timeshiftstatus) // play timeshift
+			else if( (msg == (neutrino_msg_t)g_settings.mpkey_play) && timeshiftstatus) // play timeshift
 			{
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: timeshift play, timeshiftstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
 				printf("g_RemoteControl->is_video_started:%d\n\n", g_RemoteControl->is_video_started);
@@ -3103,7 +3096,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 #endif			
 			//music player
-			else if( (msg == CRCInput::RC_music) || (msg == (neutrino_msg_t)g_settings.key_music) ) 
+			else if( msg == (neutrino_msg_t)g_settings.key_music ) 
 			{
 				StopSubtitles();
 
@@ -3128,7 +3121,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}			
-			else if( (msg == CRCInput::RC_net) || (msg == (neutrino_msg_t)g_settings.key_net) ) 	// internet radio
+			else if( msg == (neutrino_msg_t)g_settings.key_net ) 	// internet radio
 			{
 				StopSubtitles();
 
@@ -3189,7 +3182,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				nGLCD::unlockChannel();
 #endif				
 			}	
-			else if( (msg == CRCInput::RC_picture) || (msg == (neutrino_msg_t)g_settings.key_picture) ) 	// picture viewer
+			else if( msg == (neutrino_msg_t)g_settings.key_picture ) 	// picture viewer
 			{
 				StopSubtitles();
 				
@@ -5483,7 +5476,7 @@ void CNeutrinoApp::loadKeys(const char * fname)
 		return;
 
 	//rc-key configuration
-	g_settings.key_tvradio_mode = tconfig.getInt32( "key_tvradio_mode", CRCInput::RC_nokey );
+	g_settings.key_tvradio_mode = tconfig.getInt32( "key_tvradio_mode", CRCInput::RC_mode );
 
 	g_settings.key_channelList_pageup = tconfig.getInt32( "key_channelList_pageup",  CRCInput::RC_minus );
 	g_settings.key_channelList_pagedown = tconfig.getInt32( "key_channelList_pagedown", CRCInput::RC_plus );
