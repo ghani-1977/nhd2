@@ -1504,7 +1504,7 @@ colormenu.helpbar Hilfe Leiste
 lcdmenu.menutitlevfd Menu Title in VFD
 
 scansetup.tunermode Tuner Mode
-scansetup.tunermode_single Direkt angeschlossen
+scansetup.tunermode_connected Direkt angeschlossen
 scansetup.tunermode_twin Twin
 scansetup.tunermode_loop Loop
 scansetup.tunermode_notconnected nicht angeschloßen

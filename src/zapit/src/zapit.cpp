@@ -244,7 +244,7 @@ bool initFrontend()
 				
 				live_fe = fe;
 				
-				//TEST
+				// set it to standby
 				fe->Close();
 			}
 			else
@@ -279,7 +279,8 @@ void CloseFE()
 	{
 		CFrontend * fe = it->second;
 		
-		fe->Close();
+		if(!fe->locked)
+			fe->Close();
 	}
 }
 
@@ -299,25 +300,35 @@ void setMode(fe_mode_t newmode, int feindex)
 
 	bool setslave = ( getFE(feindex)->mode == FE_LOOP );
 	
-	#if 0
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++) 
-	{
-		CFrontend * fe = it->second;
-		
-		if(it != femap.begin()) 
-		{
-			dprintf(DEBUG_INFO, "Frontend %d as slave: %s\n", fe->fenumber, setslave ? "yes" : "no");
-			fe->setMasterSlave(setslave);
-		} else
-			fe->Init();
-	}
-	#else
 	if(setslave)
 	{
 		dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", getFE(feindex)->fe_adapter, getFE(feindex)->fenumber, setslave ? "yes" : "no");
 		getFE(feindex)->setMasterSlave(setslave);
 	}
-	#endif
+}
+
+void initTuner(CFrontend * fe)
+{
+	if(fe->standby)
+	{
+		fe->Open();
+				
+		// fe functions 
+		bool setslave = ( fe->mode == FE_LOOP );
+					
+		if(setslave)
+		{
+			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
+			fe->setMasterSlave(setslave);
+		} 
+		else
+			fe->Init();
+
+		// fe functions at start
+		fe->setDiseqcRepeats( fe->diseqcRepeats );
+		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
+		//fe->setDiseqcType( fe->diseqcType );
+	}
 }
 
 /* compare polarization and band with fe values */
@@ -378,7 +389,6 @@ bool feCanTune(CZapitChannel * thischannel)
 	return false;
 }
 
-/* we prefer same tid fe */
 CFrontend * getFrontend(CZapitChannel * thischannel)
 {
 	/* check for frontend */
@@ -387,13 +397,17 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	
 	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 	
-	//TEST
-	//FIXME: be brutal and close all unlocked frontend for recording
 	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
 		CFrontend * fe = fe_it->second;
+		
+		//NOTE:skip frontend tuned and have same tid or same type as channel to tune
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		
+		if( (fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId()) || (fe->tuned && sit->second.type == fe->getDeliverySystem()) )
+			continue;
 
-		if(!fe->locked)
+		if( !fe->locked )
 			fe->Close();
 	}
 	//
@@ -414,32 +428,11 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 				sit->second.name.c_str(),
 				sit->second.type);
 
-		/* we prefer on same tid same fe*/
 		// same tid
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		{
 			same_tid_fe = fe;
-			//TEST
-			if(fe->standby)
-			{
-				fe->Open();
-			
-				// fe functions 
-				bool setslave = ( fe->mode == FE_LOOP );
-				
-				if(setslave)
-				{
-					dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
-					fe->setMasterSlave(setslave);
-				} 
-				else
-					fe->Init();
-
-				// fe functions at start
-				fe->setDiseqcRepeats( fe->diseqcRepeats );
-				fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
-				//fe->setDiseqcType( fe->diseqcType );
-			}
+			initTuner(fe);
 			break;
 		}
 		// first zap/record/other frontend type
@@ -448,27 +441,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				free_frontend = fe;
-				//TEST
-				if(fe->standby)
-				{
-					fe->Open();
-				
-					// fe functions 
-					bool setslave = ( fe->mode == FE_LOOP );
-					
-					if(setslave)
-					{
-						dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
-						fe->setMasterSlave(setslave);
-					} 
-					else
-						fe->Init();
-
-					// fe functions at start
-					fe->setDiseqcRepeats( fe->diseqcRepeats );
-					fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
-					//fe->setDiseqcType( fe->diseqcType );
-				}
+				initTuner(fe);
 			}
 		}
 	}
@@ -718,25 +691,41 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	if(!thischannel)
 		return;
 	
+	if(!fe)
+		return;
+	
 	int demux_index = -1;
 	int ca_mask = 0;
 	
-	// socket
-	//cam0->setCaSocket();
-	
 	// cam
-	if(fe)
-		demux_index = fe->fenumber;
+	demux_index = fe->fenumber;
 	
 #if defined (PLATFORM_GIGABLUE)
 	ca_mask = 1;
 
 #else
-	if(fe)
-		ca_mask |= 1 << fe->fenumber;
+	ca_mask |= 1 << fe->fenumber;
 #endif	
 
-	cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+	//cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+	if(currentMode & RECORD_MODE) 
+	{
+		if(rec_channel_id != live_channel_id) 
+		{
+			/* zap from rec. channel */
+			cam1->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+                } 
+                else 
+		{
+			/* zap back to rec. channel */
+			cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask, true); // update
+			cam1->sendMessage(0, 0); // stop/close
+		}
+	} 
+	else 
+	{
+		cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+	}
 	
 	// ci cam //FIXME: boxes without ci cam
 	ci->SendCaPMT(thischannel->getCaPmt(), fe->fenumber);	
@@ -1064,30 +1053,27 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	}
 	
-	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, frontend->fe_adapter, frontend->fenumber);
-	
 	record_fe = frontend;
 	
+	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
+	
 	// tune to rec channel
-	if(!tune_to_channel(frontend, rec_channel, transponder_change))
+	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
 	
-	if(frontend->tuned)
-		frontend->locked = true;
+	if(record_fe->tuned)
+		record_fe->locked = true;
 	
 	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel, frontend/*, frontend->fenumber*/ ))
+	if(!parse_channel_pat_pmt(rec_channel, record_fe))
 		return -1;
 	
+	// capmt
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
-	
+	#if 0
 	int demux_index = -1;
 	int ca_mask = 0;
 	
-	// socket
-	//cam1->setCaSocket( frontend->fenumber );
-	
-	// cam	
 	demux_index = frontend->fenumber;
 
 #if defined (PLATFORM_GIGABLUE)
@@ -1100,7 +1086,10 @@ int zapit_to_record(const t_channel_id channel_id)
 	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask );
 	
 	// ci cam //FIXME: boxes without ci cam
-	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber);	
+	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber);
+	#else
+	sendCaPmt(rec_channel, record_fe);
+	#endif
 
 	return 0;
 }
@@ -1267,11 +1256,23 @@ void unsetRecordMode(void)
 #else
 	ca_mask |= 1 << live_fe->fenumber;
 #endif	
+
+	//cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
 	
-	cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
+	if(standby)
+		cam0->sendMessage(0, 0); // stop
+	else if(live_channel_id == rec_channel_id) 
+	{
+		cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
+	} 
+	else 
+	{
+		cam1->sendMessage(0,0); // stop
+		cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask); // update
+	}
 	
 	// ci cam
-	ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);	
+	ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
@@ -1528,8 +1529,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 		
-		//TEST
-		#if 1
 		case CZapitMessages::CMD_GET_RECORD_SERVICEID: 
 		{
 			CZapitMessages::responseGetRecordServiceID msgRecordSID;
@@ -1575,7 +1574,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &msgRecordServiceInfo, sizeof(msgRecordServiceInfo));
 			break;
 		}
-		#endif
 		//
 		
 		/* used by neutrino at start, this deliver infos only about the first tuner */
@@ -1794,29 +1792,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandTuneTP TuneTP;
 			CBasicServer::receive_data(connfd, &TuneTP, sizeof(TuneTP));
 			
-			//TEST
-			if(getFE(TuneTP.feindex)->standby)
-			{
-				getFE(TuneTP.feindex)->Open();
-			
-				// fe functions 
-				bool setslave = ( getFE(TuneTP.feindex)->mode == FE_LOOP );
-					
-				if(setslave)
-				{
-					dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", getFE(TuneTP.feindex)->fe_adapter, getFE(TuneTP.feindex)->fenumber, setslave ? "yes" : "no");
-					getFE(TuneTP.feindex)->setMasterSlave(setslave);
-				} 
-				else
-					getFE(TuneTP.feindex)->Init();
-
-				// fe functions at start
-				getFE(TuneTP.feindex)->setDiseqcRepeats( getFE(TuneTP.feindex)->diseqcRepeats );
-				getFE(TuneTP.feindex)->setCurrentSatellitePosition( getFE(TuneTP.feindex)->lastSatellitePosition );
-				//getFE(TuneTP.feindex)->setDiseqcType( getFE(TuneTP.feindex)->diseqcType );
-				//
-			}
-			//
+			initTuner(getFE(TuneTP.feindex));
 			
 			// inversion
 			TuneTP.TP.feparams.inversion = INVERSION_AUTO;
@@ -3039,7 +3015,34 @@ int stopPlayBack( bool sendPmt)
 {
 	if(sendPmt) 
 	{
-		cam0->sendMessage(0, 0);
+		//cam0->sendMessage(0, 0);
+		
+		// capmt
+		dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
+	
+		int demux_index = -1;
+		int ca_mask = 0;
+	
+		if(currentMode & RECORD_MODE) 
+		{
+			demux_index = record_fe->fenumber;
+
+#if defined (PLATFORM_GIGABLUE)
+			ca_mask = 1;
+
+#else
+			ca_mask |= 1 << record_fe->fenumber;
+#endif	
+
+			if(live_channel_id == rec_channel_id)
+				cam0->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask, true); 
+			else
+				cam1->sendMessage(0,0);
+		} 
+		else 
+		{
+			cam0->sendMessage(0,0);
+		}
 	}
 
 	dprintf(DEBUG_NORMAL, "[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
@@ -3128,43 +3131,14 @@ void leaveStandby(void)
 		return;
 	
 	standby = false;
-
-	//open frontend	
-	#if 0
-	OpenFE();
-	
-	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
-	{
-		CFrontend * fe = it->second;
-
-		bool setslave = ( (fe->mode == FE_LOOP) || (fe->mode == FE_SINGLE) );
-			
-		if( it != femap.begin() && fe->getInfo()->type != FE_QAM) 
-		{
-			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
-			fe->setMasterSlave(setslave);
-		} 
-		else
-			fe->Init();
-
-		// fe functions at start
-		fe->setDiseqcRepeats( fe->diseqcRepeats );
-		fe->setCurrentSatellitePosition( fe->lastSatellitePosition );
-		//fe->setDiseqcType( fe->diseqcType );
-	}
-	#endif
 	
 	// live cam
 	if (!cam0) 
-	{
 		cam0 = new CCam();
-	}
 	
 	// record cam
 	if(!cam1)
-	{
 		cam1 = new CCam();
-	}
 	
 	// open video decoder
 	videoDecoder->Open();
@@ -3621,18 +3595,6 @@ int zapit_main_thread(void *data)
 		close(dmx);
 	}
 #endif	
-	
-	// live cam
-	if (!cam0) 
-	{
-		cam0 = new CCam();
-	}
-	
-	// record cam
-	if(!cam1)
-	{
-		cam1 = new CCam();
-	}
 
 	//CI init
 	//FIXME: platform without ci cam

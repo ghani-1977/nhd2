@@ -53,6 +53,7 @@
 #include <zapit/client/zapittools.h>
 
 #include <daemonc/remotecontrol.h>
+#include <system/safe_system.h>
 
 
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
@@ -296,7 +297,7 @@ void CPlugins::startPlugin(const char * const name)
 
 void CPlugins::startScriptPlugin(int number)
 {
-	const char *script = plugin_list[number].pluginfile.c_str();
+	const char * script = plugin_list[number].pluginfile.c_str();
 	
 	printf("[CPlugins] executing script %s\n", script);
 	
@@ -306,19 +307,17 @@ void CPlugins::startScriptPlugin(int number)
 		return;
 	}
 	
-	//system("script");
-	//mysystem((char *)plugin_list[number].pluginfile.c_str(), NULL, NULL);
+	#if 0
 	FILE *f = popen(script,"r");
 	if (f != NULL)
 	{
-		//char output[1024];
-		//while (fgets(output,1024,f))
-		//{
-		//	scriptOutput += output; 
-		//}
-		
 		printf("CPlugins::startScriptPlugin: script %s successfull started\n", script);
 		pclose(f);
+	} 
+	#endif
+	if( safe_system(script) )
+	{
+		printf("CPlugins::startScriptPlugin: script %s successfull started\n", script);
 	} 
 	else 
 	{	

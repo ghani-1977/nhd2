@@ -65,6 +65,7 @@ extern CEventServer *eventServer;
 
 extern CFrontend * getFE(int index);
 extern CFrontend * live_fe;
+extern void initTuner(CFrontend * fe);
 
 extern xmlDocPtr scanInputParser;
 
@@ -109,26 +110,7 @@ bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satelli
 		return false;
 	
 	//TEST
-	if(getFE(feindex)->standby)
-	{
-		getFE(feindex)->Open();
-			
-		// fe functions 
-		bool setslave = ( getFE(feindex)->mode == FE_LOOP );
-				
-		if(setslave)
-		{
-			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", getFE(feindex)->fe_adapter, getFE(feindex)->fenumber, setslave ? "yes" : "no");
-			getFE(feindex)->setMasterSlave(setslave);
-		} 
-		else
-			getFE(feindex)->Init();
-
-		// fe functions at start
-		getFE(feindex)->setDiseqcRepeats( getFE(feindex)->diseqcRepeats );
-		getFE(feindex)->setCurrentSatellitePosition( getFE(feindex)->lastSatellitePosition );
-		//getFE(feindex)->setDiseqcType( getFE(feindex)->diseqcType );
-	}
+	initTuner(getFE(feindex));
 	//
 	
 	//Set Input

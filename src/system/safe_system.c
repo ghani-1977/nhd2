@@ -16,6 +16,8 @@
  */
 #include <fcntl.h>
 #include <stdlib.h>
+
+
 int safe_system(const char *command)
 {
 	int fd;

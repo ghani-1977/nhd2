@@ -1322,7 +1322,7 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 			freq_offset = lnbOffsetHigh;
 		}
 
-		/* calculate freq for Sat */
+		/* calculate freq for sat */
 		TP->feparams.frequency = abs(TP->feparams.frequency - freq_offset);
 		
 		/* set Sec for Sat */
@@ -1335,27 +1335,15 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 	{
 		/* freq */
 		if (TP->feparams.frequency < 1000*1000)
-			TP->feparams.frequency = TP->feparams.frequency * 1000;
+			TP->feparams.frequency = TP->feparams.frequency * 1000; // convert to hz cable freq are in cables.xml in khz
 		
 		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d fec= %d mod= %d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
 	}
 
 	if (info.type == FE_OFDM) 
 	{
-		//freq
-		if (TP->feparams.frequency < 1000*1000)
-			TP->feparams.frequency = TP->feparams.frequency * 1000;	//convert to HZ
-		
 		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
 	}
-	
-	// auto inversion for stupid tuner
-	#if 1
-	bool auto_inversion = (TP->feparams.inversion == INVERSION_AUTO);
-	
-	if ((!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion))
-		TP->feparams.inversion = INVERSION_OFF;
-	#endif
 	
 	do {
 		tuned = false;
@@ -1363,15 +1351,6 @@ int CFrontend::setParameters(TP_params * TP, bool nowait)
 		setFrontend(&TP->feparams);
 		
 		getEvent();
-		
-		// auto inversion for stupid tuner
-		#if 1
-		if ( (!(info.caps & FE_CAN_INVERSION_AUTO)) && (auto_inversion) && (TP->feparams.inversion == INVERSION_OFF) && (!tuned) ) 
-		{
-			TP->feparams.inversion = INVERSION_ON;
-			continue;
-		}
-		#endif
 	} while (0);
 
 	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) %s\n", fe_adapter, fenumber, tuned? "tuned" : "tune failed");
