@@ -106,8 +106,8 @@ extern void parseScanInputXml(int feindex);
 
 bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satellite_position satellitePosition, int feindex)
 {
-	if( getFE(feindex)->mode == FE_NOTCONNECTED )
-		return false;
+	//if( getFE(feindex)->mode == FE_NOTCONNECTED )
+	//	return false;
 	
 	//TEST
 	initTuner(getFE(feindex));

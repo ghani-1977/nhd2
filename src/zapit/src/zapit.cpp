@@ -296,8 +296,13 @@ CFrontend * getFE(int index)
 
 void setMode(fe_mode_t newmode, int feindex)
 {
+	// set mode
 	getFE(feindex)->mode = newmode;
+	
+	if( getFE(feindex)->mode == (fe_mode_t)FE_NOTCONNECTED )
+		getFE(feindex)->Close();
 
+	// set master7slave
 	bool setslave = ( getFE(feindex)->mode == FE_LOOP );
 	
 	if(setslave)
@@ -427,6 +432,10 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 				satellitePosition,
 				sit->second.name.c_str(),
 				sit->second.type);
+				
+		// skip not connected frontend
+		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
+			continue;
 
 		// same tid
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
@@ -831,8 +840,8 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 
 static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 {
-	if(fe->mode == (fe_mode_t)FE_NOTCONNECTED)
-		return false;
+	//if(fe->mode == (fe_mode_t)FE_NOTCONNECTED)
+	//	return false;
 	
 	dprintf(DEBUG_NORMAL, "%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
 	
