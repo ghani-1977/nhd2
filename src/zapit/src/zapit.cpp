@@ -953,18 +953,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 		return -1;
 	}
 	
-	// find live_fe to tune
-	#if 0
-	CFrontend * fe = getFrontend(newchannel);
-	if(fe == NULL) 
-	{
-		dprintf(DEBUG_INFO, "%s can not allocate live frontend\n", __FUNCTION__);
-		return -1;
-	}
-	
-	live_fe = fe;
-	#endif
-	
 	// save pids
 	if (!firstzap && live_channel)
 		save_channel_pids(live_channel);
