@@ -317,19 +317,18 @@ void initTuner(CFrontend * fe)
 {
 	if(fe->standby)
 	{
-		dprintf(DEBUG_INFO, "%s Frontend (%d,%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumbre);
+		dprintf(DEBUG_INFO, "%s Frontend (%d,%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumber);
 		
 		// open frontend
 		fe->Open();
 				
 		// set loop frontend as slave 
 		bool setslave = ( fe->mode == FE_LOOP );
+		
+		dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
 					
 		if(setslave)
-		{
-			dprintf(DEBUG_INFO, "Frontend (%d,%d) as slave: %s\n", fe->fe_adapter, fe->fenumber, setslave ? "yes" : "no");
 			fe->setMasterSlave(setslave);
-		} 
 		else
 			fe->Init();
 
@@ -411,10 +410,10 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		
 		//NOTE:skip frontend tuned and have same tid or same type as channel to tune
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		//sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		if( (fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId()) || (fe->tuned && sit->second.type == fe->getDeliverySystem()) )
-			continue;
+		//if( (fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId()) || (fe->tuned && fe->getDeliverySystem() == sit->second.type) )
+		//	continue;
 
 		if( !fe->locked )
 			fe->Close();
@@ -976,11 +975,9 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	live_channel_id = live_channel->getChannelID();
 	saveZapitSettings(false, false);
-
-	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 	
 	// find live_fe to tune
-	CFrontend * fe = getFrontend(newchannel);
+	CFrontend * fe = getFrontend(live_channel);
 	if(fe == NULL) 
 	{
 		dprintf(DEBUG_INFO, "%s can not allocate live frontend\n", __FUNCTION__);
@@ -988,6 +985,8 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	live_fe = fe;
+	
+	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
 	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
