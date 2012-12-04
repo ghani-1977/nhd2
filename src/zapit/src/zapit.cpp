@@ -299,10 +299,11 @@ void setMode(fe_mode_t newmode, int feindex)
 	// set mode
 	getFE(feindex)->mode = newmode;
 	
+	// set not connected frontend to standby
 	if( getFE(feindex)->mode == (fe_mode_t)FE_NOTCONNECTED )
 		getFE(feindex)->Close();
 
-	// set master7slave
+	// set loop frontend as slave
 	bool setslave = ( getFE(feindex)->mode == FE_LOOP );
 	
 	if(setslave)
@@ -840,9 +841,6 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 
 static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 {
-	//if(fe->mode == (fe_mode_t)FE_NOTCONNECTED)
-	//	return false;
-	
 	dprintf(DEBUG_NORMAL, "%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
 	
 	// get program map table pid from program association table
@@ -956,6 +954,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	// find live_fe to tune
+	#if 0
 	CFrontend * fe = getFrontend(newchannel);
 	if(fe == NULL) 
 	{
@@ -964,6 +963,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	}
 	
 	live_fe = fe;
+	#endif
 	
 	// save pids
 	if (!firstzap && live_channel)
@@ -987,8 +987,18 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	saveZapitSettings(false, false);
 
 	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
+	
+	// find live_fe to tune
+	CFrontend * fe = getFrontend(newchannel);
+	if(fe == NULL) 
+	{
+		dprintf(DEBUG_INFO, "%s can not allocate live frontend\n", __FUNCTION__);
+		return -1;
+	}
+	
+	live_fe = fe;
 
-	// tune to
+	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 			return -1;
 
