@@ -317,9 +317,12 @@ void initTuner(CFrontend * fe)
 {
 	if(fe->standby)
 	{
+		dprintf(DEBUG_INFO, "%s Frontend (%d,%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumbre);
+		
+		// open frontend
 		fe->Open();
 				
-		// fe functions 
+		// set loop frontend as slave 
 		bool setslave = ( fe->mode == FE_LOOP );
 					
 		if(setslave)
