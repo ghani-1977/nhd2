@@ -1142,9 +1142,6 @@ void CFrontend::positionMotor(uint8_t motorPosition)
 
 bool CFrontend::setInput(CZapitChannel * channel, bool nvod)
 {
-	//if(mode == (fe_mode_t)FE_NOTCONNECTED)
-	//	return false;
-	
 	transponder_list_t::iterator tpI;
 	transponder_id_t ct = channel->getTransponderId();
 
@@ -1258,9 +1255,6 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 
 const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 {
-	//if(mode == (fe_mode_t)FE_NOTCONNECTED)
-	//	return false;
-	
 	dprintf(DEBUG_INFO, "CFrontend::tuneChannel: fe(%d,%d) tpid %llx\n", fe_adapter, fenumber, currentTransponder.TP_id);
 
 	transponder_list_t::iterator transponder = transponders.find(currentTransponder.TP_id);
