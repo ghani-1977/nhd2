@@ -409,11 +409,11 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	{
 		CFrontend * fe = fe_it->second;
 		
-		//NOTE:skip frontend tuned and have same tid or same type as channel to tune
-		//sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		// skip frontend tuned and have same tid or same type as channel to tune
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		//if( (fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId()) || (fe->tuned && fe->getDeliverySystem() == sit->second.type) )
-		//	continue;
+		if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
+			continue;
 
 		if( !fe->locked )
 			fe->Close();
