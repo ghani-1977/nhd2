@@ -49,6 +49,7 @@ GstElement * m_gst_playbin = NULL;
 GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
+GstBus * bus = NULL;
 //GstTagList * m_stream_tags = 0;
 static int end_eof = 0;
 #else
@@ -254,19 +255,18 @@ cPlayback::cPlayback(int num)
 	mSpeed = 0;
 
 	playing = false;
-	playstate = STATE_STOP;
 }
 
 cPlayback::~cPlayback()
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
-	//FIXME: all deleting stuff is done in Close()
+	//FIXME: all deleting stuff is done in Close()	
 }
 
 //Used by Fileplay
 bool cPlayback::Open()
 {
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );	
 	
 #if !defined (ENABLE_GSTREAMER)
 	player = (Context_t*)malloc(sizeof(Context_t));
@@ -322,7 +322,7 @@ void cPlayback::Close(void)
 	}
 	
 #if defined (PLATFORM_GENERIC)	
-	if(playstate == STATE_PLAY)
+	if(playing)
 		Stop();
 #endif
 	
@@ -355,7 +355,7 @@ void cPlayback::Close(void)
 		m_gst_playbin = NULL;
 	}
 #else
-	Stop();
+	//Stop();
 	
 	if(player && player->output) 
 	{
@@ -427,7 +427,7 @@ bool cPlayback::Start(char * filename)
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 	
 		//gstbus handler
-		GstBus * bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
+		bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
 		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
 		gst_object_unref(bus); 
 		
@@ -435,7 +435,6 @@ bool cPlayback::Start(char * filename)
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
 		
 		playing = true;
-		playstate = STATE_PLAY;
 	}
 	else
 	{
@@ -462,7 +461,6 @@ bool cPlayback::Start(char * filename)
 			if (player->playback->Command(player, PLAYBACK_PLAY, NULL) == 0 ) // playback.c uses "int = 0" for "true"
 			{
 				playing = true;
-				playstate = STATE_PLAY;
 			}
 		}		
 	}
@@ -482,7 +480,7 @@ bool cPlayback::Start(char * filename)
 
 bool cPlayback::Play(void)
 {
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == true) 
 		return true;
@@ -493,7 +491,6 @@ bool cPlayback::Play(void)
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
 		
 		playing = true;
-		playstate = STATE_PLAY;
 	}
 #else
 	if(player && player->output && player->playback) 
@@ -503,12 +500,11 @@ bool cPlayback::Play(void)
 		if (player->playback->Command(player, PLAYBACK_PLAY, NULL) == 0 ) // playback.c uses "int = 0" for "true"
 		{
 			playing = true;
-			playstate = STATE_PLAY;
 		}
 	}
 #endif
 
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);
 
 	return playing;
 }
@@ -518,7 +514,7 @@ bool cPlayback::Stop(void)
 	if(playing == false) 
 		return false;
 	
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);
 
 #if defined (ENABLE_GSTREAMER)
 	// stop
@@ -536,9 +532,7 @@ bool cPlayback::Stop(void)
 
 	playing = false;
 	
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);
-	
-	playstate = STATE_STOP;
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);
 
 	return true;
 }
@@ -613,7 +607,7 @@ bool cPlayback::SetSpeed(int speed)
 		{
 			gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
 			//trickSeek(0);
-			playstate = STATE_PAUSE;
+			//playstate = STATE_PAUSE;
 		}
 		// play/continue
 		else if(speed == 1)
@@ -621,21 +615,21 @@ bool cPlayback::SetSpeed(int speed)
 			trickSeek(1);
 			//gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 			//
-			playstate = STATE_PLAY;
+			//playstate = STATE_PLAY;
 		}
 		//ff
 		else if(speed > 1)
 		{
 			trickSeek(speed);
 			//
-			playstate = STATE_FF;
+			//playstate = STATE_FF;
 		}
 		//rf
 		else if(speed < 0)
 		{
 			trickSeek(speed);
 			//
-			playstate = STATE_REW;
+			//playstate = STATE_REW;
 		}
 	}
 #else
@@ -648,12 +642,12 @@ bool cPlayback::SetSpeed(int speed)
 				speed = 7;
 
 			player->playback->Command(player, PLAYBACK_FASTFORWARD, (void*)&speed);
-			playstate = STATE_FF;
+			//playstate = STATE_FF;
 		}
 		else if(speed == 0)	//pausing
 		{
 			player->playback->Command(player, PLAYBACK_PAUSE, NULL);
-			playstate = STATE_PAUSE;
+			//playstate = STATE_PAUSE;
 		}
 		else if (speed < 0)	//backwarding
 		{
@@ -665,12 +659,12 @@ bool cPlayback::SetSpeed(int speed)
 				speed = -7;
 			
 			player->playback->Command(player, PLAYBACK_FASTBACKWARD, (void*)&speed);
-			playstate = STATE_REW;
+			//playstate = STATE_REW;
 		}
 		else if(speed == 1) 	//continue
 		{
 			player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-			playstate = STATE_PLAY;
+			//playstate = STATE_PLAY;
 		}
 	}
 #endif
@@ -682,7 +676,7 @@ bool cPlayback::SetSpeed(int speed)
 
 bool cPlayback::SetSlow(int slow)
 {  
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == false) 
 		return false;
@@ -699,7 +693,7 @@ bool cPlayback::SetSlow(int slow)
 	}
 #endif
 
-	playstate = STATE_SLOW;
+	//playstate = STATE_SLOW;
 
 	mSpeed = slow;
 
@@ -995,7 +989,7 @@ void cPlayback::getMeta()
 
 bool cPlayback::SyncAV(void)
 {
-	dprintf(DEBUG_INFO, "%s:%s playing %d\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == false ) 
 		return false;

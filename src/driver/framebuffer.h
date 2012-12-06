@@ -135,15 +135,14 @@ class CFrameBuffer
 		std::map<std::string, Icon> icon_cache;
 		int cache_size;
 		
-		int m_number_of_pages;		
+		int m_number_of_pages;
+		int m_manual_blit;
 		
 		// png/jpg/bmp/gif/crw
 		CFormathandler * fh_root;
 		CFormathandler * fh_getsize(const char *name,int *x,int *y, int width_wanted, int height_wanted);
 		void init_handlers(void);
 		void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
-		
-		//int m_transparent_default, m_transparent;
 		
 #ifdef USE_OPENGL
 		GLThreadObj *mpGLThreadObj; /* the thread object */
@@ -158,6 +157,8 @@ class CFrameBuffer
 		static CFrameBuffer* getInstance();
 
 #ifdef FB_BLIT
+		void enableManualBlit();
+		void disableManualBlit();
 		void blit();
 #endif
 

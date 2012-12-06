@@ -86,6 +86,7 @@ CFrameBuffer::CFrameBuffer()
 	backupBackground = NULL;
 	backgroundFilename = "";
 	fd  = 0;
+	m_manual_blit = -1;
 	
 //FIXME: test
 	memset(red, 0, 256*sizeof(__u16));
@@ -196,6 +197,8 @@ void CFrameBuffer::init(const char * const fbDevice)
 		printf("CFrameBuffer::init: to less memory for stmfb given, need at least 12mb\n"); 
 		goto nolfb;
 	}
+#else
+	enableManualBlit();
 #endif /*sh*/ 
 #endif /*FB_BLIT*/
 #endif /* USE_OPENGL */
@@ -248,18 +251,23 @@ CFrameBuffer::~CFrameBuffer()
 	if (background) 
 	{
 		delete[] background;
+		background = NULL;
 	}
 
 	if (backupBackground) 
 	{
 		delete[] backupBackground;
+		backupBackground = NULL;
 	}
 
 	if (lfb)
 		munmap(lfb, available);
 	
 	if (virtual_fb)
+	{
 		delete[] virtual_fb;
+		virtual_fb = NULL;
+	}
 	
 #ifdef USE_OPENGL
 	active = false; /* keep people/infoclocks from accessing */
@@ -329,6 +337,22 @@ bool CFrameBuffer::getActive() const
 void CFrameBuffer::setActive(bool enable)
 {
 	active = enable;
+	
+	if(enable)
+	{
+		// set manual blit when fb is activ
+		if (m_manual_blit == 0) 
+		{
+			enableManualBlit();
+		}
+	}
+	else
+	{
+		if (m_manual_blit == 1) 
+		{
+			disableManualBlit();
+		}
+	}
 }
 
 t_fb_var_screeninfo *CFrameBuffer::getScreenInfo()
@@ -1882,6 +1906,36 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 #define FBIO_BLIT 0x22
 #endif
 
+void CFrameBuffer::enableManualBlit()
+{
+	unsigned char tmp = 1;
+	
+	if (ioctl(fd,FBIO_SET_MANUAL_BLIT, &tmp) < 0) 
+	{
+		perror("FB: FBIO_SET_MANUAL_BLIT");
+		printf("FB: failed\n");
+	}
+	else 
+	{
+		m_manual_blit = 1;
+	}
+}
+
+void CFrameBuffer::disableManualBlit()
+{
+	unsigned char tmp = 0;
+	
+	if (ioctl(fd,FBIO_SET_MANUAL_BLIT, &tmp) < 0) 
+	{
+		perror("FB: FBIO_SET_MANUAL_BLIT");
+		printf("FB: failed\n");
+	}
+	else 
+	{
+		m_manual_blit = 0;
+	}
+}
+
 void CFrameBuffer::blit()
 {
 #ifdef __sh__  
@@ -1933,22 +1987,12 @@ void CFrameBuffer::blit()
 	if(ioctl(fd, STMFBIO_SYNC_BLITTER) < 0)
 		perror("ioctl STMFBIO_SYNC_BLITTER");
 #else
-	// set manual blit
-	unsigned char tmp = 1;
-	
-	if (ioctl(fd, FBIO_SET_MANUAL_BLIT, &tmp)<0)
-		perror("FBIO_SET_MANUAL_BLIT");
-	
 	// blit
-	if (ioctl(fd, FBIO_BLIT) < 0)
-		perror("FBIO_BLIT");
-	
-	// sync bliter
-#if defined (PLATFORM_GIGABLUE)	
-	int c = 0;
-	if( ioctl(fd, FBIO_WAITFORVSYNC, &c) < 0 )
-		perror("FBIO_WAITFORVSYNC");
-#endif	
+	if (m_manual_blit == 1) 
+	{
+		if (ioctl(fd, FBIO_BLIT) < 0)
+			perror("FBIO_BLIT");	
+	}
 #endif
 }
 #endif

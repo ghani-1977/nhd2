@@ -140,7 +140,7 @@ bool CFrontend::Open()
 		// open frontend
 		if( (fd = open(filename, O_RDWR | O_NONBLOCK) ) < 0)
 		{
-			dprintf(DEBUG_INFO, "%s can't open %s\n", __FUNCTION__, filename);
+			//dprintf(DEBUG_INFO, "%s can't open %s\n", __FUNCTION__, filename);
 			return false;
 		}
 		

@@ -1070,6 +1070,7 @@ void CMoviePlayerGui::PlayFile(void)
 		// exit
 		if (exit) 
 		{
+			playback->Stop();
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");			
@@ -2393,6 +2394,8 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{		  
+			playback->Stop();
+
 			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
 			{
 				// if we have a movie information, try to save the stop position

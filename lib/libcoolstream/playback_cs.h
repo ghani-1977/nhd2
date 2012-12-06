@@ -26,16 +26,6 @@
 #include <config.h>
 
 
-typedef enum {
-	STATE_STOP,
-	STATE_PLAY,
-	STATE_PAUSE,
-	STATE_FF,
-	STATE_REW,
-	STATE_SLOW
-} playstate_t;
-
-
 class cPlayback
 {
 	private:
@@ -45,7 +35,7 @@ class cPlayback
 		int mAudioStream;
 
 	public:
-		playstate_t playstate;
+		//playstate_t playstate;
 		
 		bool Open();
 		void Close(void);
