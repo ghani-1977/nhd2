@@ -1070,7 +1070,9 @@ void CMoviePlayerGui::PlayFile(void)
 		// exit
 		if (exit) 
 		{
+#if ENABLE_GSTREAMER		  
 			playback->Stop();
+#endif			
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");			
@@ -2393,8 +2395,10 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		if (exit) 
-		{		  
+		{
+#if ENABLE_GSTREAMER		  
 			playback->Stop();
+#endif			
 
 			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
 			{

@@ -355,7 +355,7 @@ void cPlayback::Close(void)
 		m_gst_playbin = NULL;
 	}
 #else
-	//Stop();
+	Stop();
 	
 	if(player && player->output) 
 	{
