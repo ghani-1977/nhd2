@@ -338,6 +338,8 @@ void CFrameBuffer::setActive(bool enable)
 {
 	active = enable;
 	
+#ifdef FB_BLIT	
+#if !defined __sh__ && !defined USE_OPENGL
 	if(enable)
 	{
 		// set manual blit when fb is activ
@@ -353,6 +355,8 @@ void CFrameBuffer::setActive(bool enable)
 			disableManualBlit();
 		}
 	}
+#endif
+#endif
 }
 
 t_fb_var_screeninfo *CFrameBuffer::getScreenInfo()
