@@ -2776,14 +2776,6 @@ void CNeutrinoApp::quickZap(int msg)
 	int res;
 
 	StopSubtitles();
-
-	if(recordingstatus && !autoshift) 
-	{
-		res = channelList->numericZap(g_settings.key_zaphistory);
-		StartSubtitles(res < 0);
-		
-		return;
-	}
 	
 	if((bouquetList != NULL) && !(bouquetList->Bouquets.empty()))
 		bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->quickZap(msg, g_settings.zap_cycle);
