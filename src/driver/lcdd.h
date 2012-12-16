@@ -164,8 +164,8 @@ class CLCD
 
 		static void* TimeThread(void*);
 		bool lcdInit(const char * fontfile1, const char * fontname1, 
-		             const char * fontfile2=NULL, const char * fontname2=NULL,
-		             const char * fontfile3=NULL, const char * fontname3=NULL);
+		             const char * fontfile2 = NULL, const char * fontname2 = NULL,
+		             const char * fontfile3 = NULL, const char * fontname3 = NULL);
 		void setlcdparameter(int dimm, int contrast, int power, int inverse, int bias);
 		void displayUpdate();
 		void showTextScreen(const std::string & big, const std::string & small, int showmode, bool perform_wakeup, bool centered = false);

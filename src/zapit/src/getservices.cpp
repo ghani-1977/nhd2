@@ -35,6 +35,8 @@
 
 #include <errno.h>
 
+#include <unistd.h>
+
 /* system */
 #include <system/debug.h>
 #include <system/setting_helpers.h>

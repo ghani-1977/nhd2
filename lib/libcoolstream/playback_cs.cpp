@@ -28,6 +28,8 @@
 #include <pthread.h>
 #include <syscall.h>
 
+#include <unistd.h>
+
 #include "dmx_cs.h"
 #include "audio_cs.h"
 #include "video_cs.h"

@@ -41,30 +41,25 @@
 
 CLCDDisplay::CLCDDisplay()
 {
-	paused=0;
+	paused = 0;
 	available = false;
 	
 	//open device
 	if ((fd = open(LCD_DEVICE, O_RDWR)) < 0)
 	{
-		perror("LCD (" LCD_DEVICE ")");
-		return;
-	}
-
-	//clear the display
-	if ( ioctl(fd, LCD_IOCTL_CLEAR) < 0)
-	{
-		perror("clear failed");
+		printf("[lcddisplay] LCD (" LCD_DEVICE ") failed (%m)\n");
 		return;
 	}
 	
+	//clear the display
+	if( ioctl(fd, LCD_IOCTL_CLEAR) < 0 )
+		printf("[lcddisplay] LCD_IOCTL_CLEAR failed (%m)\n");
+	
 	//graphic (binary) mode 
 	int i=LCD_MODE_BIN;
-	if ( ioctl(fd, LCD_IOCTL_ASC_MODE, &i) < 0 )
-	{
-		perror("graphic mode failed");
-		return;
-	}
+	if( ioctl(fd, LCD_IOCTL_ASC_MODE, &i) < 0 )
+		printf("[lcddisplay] LCD_IOCTL_ASC_MODE failed (%m)\n");
+	//
 
 	available = true;
 	iconBasePath = "";
@@ -88,96 +83,18 @@ void CLCDDisplay::pause()
 void CLCDDisplay::resume()
 {
 	//clear the display
-	if ( ioctl(fd, LCD_IOCTL_CLEAR) < 0)
-	{
-		perror("clear failed");
-		return;
-	}
+	if( ioctl(fd, LCD_IOCTL_CLEAR) < 0 )
+		printf("[lcddisplay] LCD_IOCTL_CLEAR failed (%m)\n");
 	
 	//graphic (binary) mode 
 	int i=LCD_MODE_BIN;
-	if ( ioctl(fd,LCD_IOCTL_ASC_MODE,&i) < 0 )
-	{
-		perror("graphic mode failed");
-		return;
-	}
+	if( ioctl(fd, LCD_IOCTL_ASC_MODE, &i) < 0 )
+		printf("[lcddisplay] LCD_IOCTL_ASC_MODE failed (%m)\n");
+	//
 	
 	paused = 0;
 }
 
-#ifdef HAVE_TRIPLEDRAGON
-void CLCDDisplay::convert_data()
-{
-	int x, y, xx, xp, yp;
-	unsigned char pix, bit;
-
-	/* 128x64 (8bpp) membuffer -> 16*64 (1bpp) lcdbuffer */
-	/* TODO: extend skins to 128x64 */
-
-	/* the strange offset handling comes from a bug (probably) in the
-	   TD LCD driver: the MSB (0x80) of the first byte (lcd[0]) written to
-	   the device actually appears on the lower right, 8 pixels up, so we
-	   must shift the whole buffer one pixel to the right. This is wrong for
-	   the column 127 (rightmost), which is shifted up 8 lines.
-	 */
-	for (y = 0; y < LCD_LINES; y++) 
-	{
-		for (x = 0; x < LCD_STRIDE; x++) 
-		{
-			pix = 0;
-			bit = 0x80;
-
-			for (xx = x * 8; xx < x * 8 + 8; xx++, bit >>= 1) 
-			{
-				xp = xx - 1;		/* shift the whole buffer one pixel to the right */
-				yp = y;
-				if (xp < 0) 
-				{		/* rightmost column (column 127) */
-					xp += LCD_COLS;	/* wraparound */
-					yp -= 8;	/* shift down 8 lines */
-					if (yp < 0)	/* wraparound */
-						yp += LCD_LINES;
-				}
-				
-				if (raw[yp][xp] == 1)
-					pix |= bit;
-			}
-/* I was chasing this one for quite some time, so check it for now */
-#if 1
-			if (y * LCD_STRIDE + x > LCD_BUFFER_SIZE)
-				fprintf(stderr, "%s: y (%d) * LCD_STRIDE (%d) + x (%d) (== %d) > LCD_BUFFER_SIZE (%d)\n",
-				__FUNCTION__, y, LCD_STRIDE, x, y*LCD_STRIDE+x, LCD_BUFFER_SIZE);
-			else
-#endif
-				lcd[y * LCD_STRIDE + x] = pix;
-		}
-	}
-
-#if 0
-	/* alternative solution, just ignore the rightmost column (which would be the MSB of the first byte */
-	for (y=0; y<64; y++)
-	{
-		for (x=0; x<(128/8); x++)
-		{
-			int pix=0, start = 0;
-			unsigned char bit = 0x80;
-			int offset=(y*128)+x*8;
-			if (x == 0) 
-			{	/* first column, skip MSB */
-				start = 1;
-				bit = 0x40;
-			} else
-				offset--;
-			for (yy=start; yy<8; yy++, bit >>=1) 
-			{
-				pix|=(_buffer[offset++]>=108)?bit:0;
-			}
-			raw[y*16+x]=pix;
-		}
-	}
-#endif
-}
-#else
 void CLCDDisplay::convert_data ()
 {
 #ifndef PLATFORM_GENERIC
@@ -199,19 +116,19 @@ void CLCDDisplay::convert_data ()
 	}
 #endif
 }
-#endif
 
 void CLCDDisplay::update()
 {
 #ifndef PLATFORM_GENERIC
 	convert_data();
+	
 	if(paused || !available)
 		return;
 	else
+	{
 		if ( write(fd, lcd, LCD_BUFFER_SIZE) < 0) 
-		{
-			perror("lcdd: CLCDDisplay::update(): write()");
-		}
+			printf("lcdd: CLCDDisplay::update(): write() failed (%m)\n");
+	}
 #endif
 }
 
@@ -225,7 +142,6 @@ void CLCDDisplay::draw_point(const int x, const int y, const int state)
 	else
 		raw[y][x] = state;
 }
-
 
 /*
  * draw_line

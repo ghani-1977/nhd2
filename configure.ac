@@ -56,6 +56,16 @@ if test "$enable_lcd" = "yes"; then
 AC_DEFINE(ENABLE_LCD,1,[include lcd support])
 fi
 
+# lcd updape
+AC_ARG_ENABLE(lcd_update,
+	AS_HELP_STRING(--enable-lcd-update,include lcd update support),
+	,[enable_lcd_update=no])
+AM_CONDITIONAL(LCD_UPDATE,test "$enable_lcd_update" = "yes")
+
+if test "$enable_lcd_update" = "yes"; then
+AC_DEFINE(LCD_UPDATE,1,[include lcd update support])
+fi
+
 # graphlcd
 AC_ARG_ENABLE(graphlcd,
 	AS_HELP_STRING(--enable-graphlcd,include graph lcd support),
@@ -73,7 +83,7 @@ AC_ARG_ENABLE(radiotext,
 AM_CONDITIONAL(ENABLE_RADIOTEXT,test "$enable_radiotext" = "yes")
 
 if test "$enable_radiotext" = "yes"; then
-AC_DEFINE(ENABLE_RADIOTEXT,1,[include graph lcd support])
+AC_DEFINE(ENABLE_RADIOTEXT,1,[include radiotext support])
 fi
 
 # upnp

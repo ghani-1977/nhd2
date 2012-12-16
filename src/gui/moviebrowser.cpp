@@ -57,6 +57,9 @@
 #include "widget/stringinput_ext.h"
 #include <dirent.h>
 #include <sys/stat.h>
+
+#include <unistd.h>
+
 #include <gui/nfs.h>
 #include "neutrino.h"
 #include <gui/widget/stringinput.h>

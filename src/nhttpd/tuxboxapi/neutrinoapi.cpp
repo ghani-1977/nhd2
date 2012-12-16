@@ -18,6 +18,8 @@
 #include <map>
 #include <sstream>
 
+#include <unistd.h>
+
 // tuxbox
 #include <neutrinoMessages.h>
 #include <global.h>

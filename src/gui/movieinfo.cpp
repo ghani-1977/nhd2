@@ -49,6 +49,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+
+#include <unistd.h>
+
 #include <gui/widget/msgbox.h>
 #include <gui/movieinfo.h>
 

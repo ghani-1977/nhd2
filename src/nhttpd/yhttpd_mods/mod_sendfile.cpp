@@ -45,6 +45,9 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <sys/stat.h>
+
+#include <unistd.h>
+
 // yhttpd
 #include "yconfig.h"
 #include "ytypes_globals.h"

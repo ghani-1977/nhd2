@@ -33,6 +33,8 @@
 #include <config.h>
 #endif
 
+#include <unistd.h>
+
 /* include <config.h> before <gui/filebrowser.h> to enable 64 bit file offsets */
 #include <gui/filebrowser.h>
 

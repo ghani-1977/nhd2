@@ -271,7 +271,10 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 		cmd << "," << options2;
 	}
 	
-	pthread_create(&g_mnt, 0, mount_thread, (void *) cmd.str().c_str());
+	// has to be declared after building the string
+	const std::string& cmdstr = cmd.str();
+ 	
+	pthread_create(&g_mnt, 0, mount_thread, (void *) cmdstr.c_str());
 	
 	struct timespec timeout;
 	int retcode;
@@ -288,7 +291,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 
 	if ( g_mntstatus != 0 )
 	{
-		printf("[CFSMounter] FS mount error: \"%s\"\n", cmd.str().c_str());
+		printf("[CFSMounter] FS mount error: \"%s\"\n", cmdstr.c_str());
 		return (retcode == ETIMEDOUT) ? MRES_TIMEOUT : MRES_UNKNOWN;
 	}
 	return MRES_OK;

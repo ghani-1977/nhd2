@@ -38,6 +38,8 @@
 #include <config.h>
 #endif
 
+#include <unistd.h>
+
 #include <gui/audioplayer.h>
 
 #include <global.h>

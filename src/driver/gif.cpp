@@ -12,6 +12,8 @@
 #include <fcntl.h>
 #include <setjmp.h>
 
+#include <unistd.h>
+
 extern "C" {
 #include <gif_lib.h>
 }

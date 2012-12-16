@@ -24,6 +24,8 @@
 
 #include <sys/types.h>
 
+#include <unistd.h>
+
 #include "record_cs.h"
 
 #include <system/debug.h>

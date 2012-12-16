@@ -14,6 +14,9 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <signal.h>
+
+#include <unistd.h>
+
 // yhttpd
 #include "yhttpd.h"
 #include "ysocket.h"

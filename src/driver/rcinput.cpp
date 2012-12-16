@@ -111,7 +111,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 	key_standby = configfile.getInt32("key_standby", KEY_POWER);
 			
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE)
 	key_home = configfile.getInt32("key_home", 0xAE);
 #else
 	key_home = configfile.getInt32("key_home", KEY_HOME);
@@ -145,8 +145,6 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
 	key_info = configfile.getInt32("key_info", 0x166);
-//#elif defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK7162)
-//	key_info = configfile.getInt32("key_info", 0x8A);
 #else
 	key_info = configfile.getInt32("key_info", KEY_INFO);
 #endif			
@@ -158,7 +156,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 #endif			
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_recall = configfile.getInt32("key_recall", /*0x3C*/0x19C);
+	key_recall = configfile.getInt32("key_recall", 0x19C);
 #else
 	key_recall = configfile.getInt32("key_recall", KEY_BACK);
 #endif			
@@ -174,10 +172,10 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_stop = configfile.getInt32("key_stop", KEY_STOP);
 	key_timeshift = configfile.getInt32("key_timeshift", KEY_TIME);
 			
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE)
 	key_mode = configfile.getInt32("key_mode", 0x181);
 #elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_mode = configfile.getInt32("key_mode", /*0x3B*/0x181);
+	key_mode = configfile.getInt32("key_mode", 0x181);
 #else			
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);
 #endif			

@@ -39,6 +39,7 @@
 #include <config.h>
 #endif
 
+#include <unistd.h>
 
 #include "gui/opkg_manager.h"
 

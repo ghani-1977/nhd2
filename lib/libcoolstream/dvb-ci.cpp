@@ -13,6 +13,8 @@
 #include <list>
 #include <queue>
 
+#include <unistd.h>
+
 #include "dvb-ci.h"
 #include "dvbci_session.h"
 #include "dvbci_appmgr.h"

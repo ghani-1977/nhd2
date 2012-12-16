@@ -26,22 +26,8 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-// dummy
-//#define LCD_ROWS	8
-//#define LCD_COLS	120
-//#define LCD_PIXEL_OFF	0
-//#define LCD_PIXEL_ON	1
-//#define LCD_PIXEL_INV	2
-
-//#if defined (PLATFORM_GIGABLUE_UE)
-//#ifndef HAVE_TRIPLEDRAGON
-/* dreambox is actually compatible to dbox2 wrt. lcd */
-//#include <dbox/lcd-ks0713.h>
 #define LCD_DEVICE	"/dev/dbox/lcd0"
-//#else
-//#include <tdpanel/lcdstuff.h>
-//#include <tddevices.h>
+
 #define LCD_LINES	64
 #define LCD_ROWS	(LCD_LINES / 8) // compatibility with stupid DBOX LCD driver
 #define LCD_COLS	128
@@ -50,15 +36,13 @@
 #define LCD_PIXEL_OFF	0
 #define LCD_PIXEL_ON	1
 #define LCD_PIXEL_INV	2
-//#define LCD_DEVICE	"/dev/" DEVICE_NAME_LCD
+
 #define LCD_MODE_ASC	0
 #define LCD_MODE_BIN	2
 
 // ioctls
 #define LCD_IOCTL_ASC_MODE	(25)
 #define LCD_IOCTL_CLEAR		(26)
-//#endif
-//#endif
 
 #include <string>
 

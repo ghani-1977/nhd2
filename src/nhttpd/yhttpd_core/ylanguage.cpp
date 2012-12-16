@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <unistd.h>
+
 // yhttpd
 #include "yconfig.h"
 #include "yhttpd.h"
