@@ -26,6 +26,9 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <string>
+
+
 #define LCD_DEVICE	"/dev/dbox/lcd0"
 
 #define LCD_LINES	64
@@ -44,7 +47,14 @@
 #define LCD_IOCTL_ASC_MODE	(25)
 #define LCD_IOCTL_CLEAR		(26)
 
-#include <string>
+#define FP_IOCTL_LCD_DIMM       3
+
+#define LCDSET                  0x1000
+
+#define LCD_IOCTL_ON            (2 |LCDSET)
+#define LCD_IOCTL_REVERSE       (4 |LCDSET)
+#define LCD_IOCTL_SRV           (10|LCDSET)
+
 
 typedef unsigned char raw_display_t[LCD_ROWS*8][LCD_COLS];
 
