@@ -5136,15 +5136,9 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 		
 		if (b.exec(g_settings.logos_dir.c_str())) 
 		{
-			const char * newdir = b.getSelectedFile()->Name.c_str();
-			if(check_dir(newdir))
-				printf("CNeutrinoApp::exec: Wrong/unsupported logos dir %s\n", newdir);
-			else
-			{
-				g_settings.logos_dir = b.getSelectedFile()->Name;
-				//strcpy(g_settings.logos_dir.c_str(), b.getSelectedFile()->Name.c_str());
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: new logos dir %s\n", b.getSelectedFile()->Name.c_str());
-			}
+			g_settings.logos_dir = b.getSelectedFile()->Name;
+
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: new logos dir %s\n", b.getSelectedFile()->Name.c_str());
 		}
 
 		return menu_return::RETURN_REPAINT;
