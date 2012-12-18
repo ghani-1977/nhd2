@@ -1311,8 +1311,15 @@ void CMoviePlayerGui::PlayFile(void)
 						g_vtype = p_movie_info->VideoType;
 						
 						//
-						g_file_epg = p_movie_info->epgTitle;
-						g_file_epg1 = p_movie_info->epgInfo1;
+						if(!p_movie_info->epgTitle.empty())
+							g_file_epg = p_movie_info->epgTitle;
+						else
+							g_file_epg = sel_filename;
+						
+						if(!p_movie_info->epgInfo1.empty())
+							g_file_epg1 = p_movie_info->epgInfo1;
+						else
+							g_file_epg1 = sel_filename;
 						//
 						
 						printf("CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
@@ -1717,7 +1724,7 @@ void CMoviePlayerGui::PlayFile(void)
 				exit = true;
 			}
 
-			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
+			if (isMovieBrowser == true ) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
@@ -1725,12 +1732,10 @@ void CMoviePlayerGui::PlayFile(void)
 				current_time.time = time(NULL);
 				p_movie_info->bookmarks.lastPlayStop = position / 1000;
 				
-				//FIXME:???
-				if(p_movie_info == NULL)
-				{
+				if(p_movie_info->epgChannel.empty())
 					p_movie_info->epgChannel = sel_filename;
+				if(p_movie_info->epgTitle.empty())
 					p_movie_info->epgTitle = sel_filename;
-				}
 
 				cMovieInfo.saveMovieInfo(*p_movie_info);
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
@@ -2228,11 +2233,7 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 			}
 		} 
-		else if ( msg == CRCInput::RC_2
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		  
-		  || msg == CRCInput::RC_repeat 
-#endif
-		)
+		else if ( msg == CRCInput::RC_2 || msg == CRCInput::RC_repeat )
 		{	// goto start
 			playback->SetPosition(startposition);
 			
@@ -2400,7 +2401,7 @@ void CMoviePlayerGui::PlayFile(void)
 			playback->Stop();
 #endif			
 
-			if (isMovieBrowser == true /*&& p_movie_info != NULL*/ ) 
+			if (isMovieBrowser == true) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
@@ -2408,12 +2409,10 @@ void CMoviePlayerGui::PlayFile(void)
 				current_time.time = time(NULL);
 				p_movie_info->bookmarks.lastPlayStop = position / 1000;
 				
-				//TEST
-				if(p_movie_info == NULL)
-				{
+				if(p_movie_info->epgChannel.empty())
 					p_movie_info->epgChannel = sel_filename;
+				if(p_movie_info->epgTitle.empty())
 					p_movie_info->epgTitle = sel_filename;
-				}
 
 				cMovieInfo.saveMovieInfo(*p_movie_info);
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser

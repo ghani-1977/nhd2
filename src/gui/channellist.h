@@ -1,6 +1,3 @@
-#ifndef __channellist__
-#define __channellist__
-
 /*
 	Neutrino-GUI  -   DBoxII-Project
 
@@ -32,6 +29,9 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef __channellist__
+#define __channellist__
+
 #include <driver/framebuffer.h>
 #include <gui/widget/menue.h>
 #include <system/lastchannel.h>
@@ -61,12 +61,11 @@ class CChannelList
 		unsigned int		liststart;
 		unsigned int		listmaxshow;
 		unsigned int		numwidth;
-		int			fheight; // Fonthoehe Channellist-Inhalt
-		int			theight; // Fonthoehe Channellist-Titel
+		int			fheight; 	// Fonthoehe Channellist-Inhalt
+		int			theight; 	// Fonthoehe Channellist-Titel
 		int			buttonHeight;
 
 		std::string             name;
-		//std::vector<CChannel*>	chanlist;
 		std::vector<CZapitChannel*>	chanlist;
 		CZapProtection* 	zapProtection;
 
@@ -76,7 +75,7 @@ class CChannelList
 		int 			y;
 
 		bool historyMode;
-		bool vlist; // "virtual" list, not bouquet
+		bool vlist; 				// "virtual" list, not bouquet
 		bool displayNext;
 
 		void paintDetails(int index);
@@ -90,10 +89,10 @@ class CChannelList
 	public:
 		CChannelList(const char * const Name, bool historyMode = false, bool _vlist = false );
 		~CChannelList();
-		//void addChannel(int key, int number, const std::string& name, const t_satellite_position satellitePosition, t_channel_id ids = 0); // UTF-8
+		
 		void addChannel(CZapitChannel* chan, int num = 0);
 		void putChannel(CZapitChannel* chan);
-		//void addChannel(CZapitChannel* channel, int key, int number, bool locked = false);
+		
 		CZapitChannel* getChannel(int number);
 		CZapitChannel* getChannel(t_channel_id channel_id);
 		CZapitChannel* getChannelFromIndex( uint32_t index) { if (chanlist.size() > index) return chanlist[index]; else return NULL;};
@@ -105,8 +104,6 @@ class CChannelList
 		t_satellite_position getActiveSatellitePosition(void) const;
 		int                  getActiveChannelNumber    (void) const;
 		t_channel_id         getActiveChannel_ChannelID(void) const;
-
-/*		CChannel *   getChannelFromChannelID(const t_channel_id channel_id); */
 
 		void zapTo(int pos, bool forceStoreToLastChannels = false);
 		void virtual_zap_mode(bool up);
@@ -120,7 +117,7 @@ class CChannelList
 		void quickZap(int key, bool cycle = false);
 		int  hasChannel(int nChannelNr);
 		int  hasChannelID(t_channel_id channel_id);
-		void setSelected( int nChannelNr); // for adjusting bouquet's channel list after numzap or quickzap
+		void setSelected( int nChannelNr); 		// for adjusting bouquet's channel list after numzap or quickzap
 
 		int handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
 
@@ -132,8 +129,8 @@ class CChannelList
 		void SortAlpha(void);
 		void SortSat(void);
 		void ClearList(void);
-		//friend class CZapitChannel;
 		
 		bool canZap(CZapitChannel * channel = NULL);
 };
+
 #endif

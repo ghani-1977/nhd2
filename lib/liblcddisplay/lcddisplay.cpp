@@ -39,12 +39,82 @@
 #include <sys/stat.h>
 
 
+void CLCDDisplay::setSize(int xres, int yres, int bpp)
+{
+	_buffer = new unsigned char[xres * yres * bpp/8];
+	memset(_buffer, 0, xres*yres*bpp/8);
+	_stride = xres*bpp/8;
+	printf("[CLCDDisplay] %s lcd buffer %p %d bytes, stride %d\n", __FUNCTION__, _buffer, xres*yres*bpp/8, _stride);
+}
+
 CLCDDisplay::CLCDDisplay()
 {
 	paused = 0;
 	available = false;
 	
+	//e2
+	xres = 132;
+	yres = 64; 
+	bpp = 8;
+	
+	flipped = false;
+	inverted = 0;
+	is_oled = 0;
+	
 	//open device
+	fd = open("/dev/dbox/oled0", O_RDWR);
+	
+	if (fd < 0)
+	{
+		if (!access("/proc/stb/lcd/oled_brightness", W_OK) || !access("/proc/stb/fp/oled_brightness", W_OK) )
+			is_oled = 2;
+		fd = open(LCD_DEVICE, O_RDWR);
+	} 
+	else
+	{
+		printf("found OLED display!\n");
+		is_oled = 1;
+	}
+	
+	if (fd < 0)
+	{
+		printf("couldn't open LCD - load lcd.ko!\n");
+		return;
+	}
+	else
+	{
+		int i = LCD_MODE_BIN;
+		ioctl(fd, LCD_IOCTL_ASC_MODE, &i);
+		
+		FILE *f = fopen("/proc/stb/lcd/xres", "r");
+		if (f)
+		{
+			int tmp;
+			if (fscanf(f, "%x", &tmp) == 1)
+				xres = tmp;
+			fclose(f);
+			f = fopen("/proc/stb/lcd/yres", "r");
+			if (f)
+			{
+				if (fscanf(f, "%x", &tmp) == 1)
+					yres = tmp;
+				fclose(f);
+				f = fopen("/proc/stb/lcd/bpp", "r");
+				if (f)
+				{
+					if (fscanf(f, "%x", &tmp) == 1)
+						bpp = tmp;
+					fclose(f);
+				}
+			}
+			is_oled = 3;
+		}
+	}
+	  
+	setSize(xres, yres, bpp);
+	// end-e2
+	  
+	#if 0
 	if ((fd = open(LCD_DEVICE, O_RDWR)) < 0)
 	{
 		printf("[lcddisplay] LCD (" LCD_DEVICE ") failed (%m)\n");
@@ -59,11 +129,73 @@ CLCDDisplay::CLCDDisplay()
 	int i=LCD_MODE_BIN;
 	if( ioctl(fd, LCD_IOCTL_ASC_MODE, &i) < 0 )
 		printf("[lcddisplay] LCD_IOCTL_ASC_MODE failed (%m)\n");
+	#endif
 	//
 
 	available = true;
 	iconBasePath = "";
 }
+
+//e2
+void CLCDDisplay::setInverted(unsigned char inv)
+{
+	inverted = inv;
+	update();
+}
+
+void CLCDDisplay::setFlipped(bool onoff)
+{
+	flipped = onoff;
+	update();
+}
+
+int CLCDDisplay::setLCDContrast(int contrast)
+{
+	int fp;
+	if((fp=open("/dev/dbox/fp0", O_RDWR))<0)
+	{
+		printf("[LCD] can't open /dev/dbox/fp0(%m)\n");
+		return(-1);
+	}
+
+	if(ioctl(fd, LCD_IOCTL_SRV, &contrast) < 0)
+	{
+		printf("[LCD] can't set lcd contrast(%m)\n");
+	}
+	close(fp);
+
+	return(0);
+}
+
+int CLCDDisplay::setLCDBrightness(int brightness)
+{
+	printf("setLCDBrightness %d\n", brightness);
+	FILE *f=fopen("/proc/stb/lcd/oled_brightness", "w");
+	if (!f)
+		f = fopen("/proc/stb/fp/oled_brightness", "w");
+	if (f)
+	{
+		if (fprintf(f, "%d", brightness) == 0)
+			printf("write /proc/stb/lcd/oled_brightness failed!! (%m)\n");
+		fclose(f);
+	}
+	else
+	{
+		int fp;
+		if((fp=open("/dev/dbox/fp0", O_RDWR)) < 0)
+		{
+			printf("[LCD] can't open /dev/dbox/fp0\n");
+			return(-1);
+		}
+
+		if(ioctl(fp, FP_IOCTL_LCD_DIMM, &brightness) < 0)
+			printf("[LCD] can't set lcd brightness (%m)\n");
+		close(fp);
+	}
+
+	return(0);
+}
+//end-e2
 
 bool CLCDDisplay::isAvailable()
 {
@@ -72,7 +204,13 @@ bool CLCDDisplay::isAvailable()
 
 CLCDDisplay::~CLCDDisplay()
 {
-	close(fd);
+	delete [] _buffer;
+	
+	if (fd >= 0)
+	{
+		close(fd);
+		fd = -1;
+	}
 }
 
 void CLCDDisplay::pause()
@@ -120,6 +258,7 @@ void CLCDDisplay::convert_data ()
 void CLCDDisplay::update()
 {
 #ifndef PLATFORM_GENERIC
+	#if 0
 	convert_data();
 	
 	if(paused || !available)
@@ -129,6 +268,100 @@ void CLCDDisplay::update()
 		if ( write(fd, lcd, LCD_BUFFER_SIZE) < 0) 
 			printf("lcdd: CLCDDisplay::update(): write() failed (%m)\n");
 	}
+	#else
+	if (fd >= 0)
+	{
+		if (is_oled == 0 || is_oled == 2)
+		{
+			unsigned char raw[132*8];
+			int x, y, yy;
+			for (y=0; y<8; y++)
+			{
+				for (x=0; x<132; x++)
+				{
+					int pix=0;
+					for (yy=0; yy<8; yy++)
+					{
+						pix|=(_buffer[(y*8+yy)*132+x]>=108)<<yy;
+					}
+					
+					if (flipped)
+					{
+						/* 8 pixels per byte, swap bits */
+#define BIT_SWAP(a) (( ((a << 7)&0x80) + ((a << 5)&0x40) + ((a << 3)&0x20) + ((a << 1)&0x10) + ((a >> 1)&0x08) + ((a >> 3)&0x04) + ((a >> 5)&0x02) + ((a >> 7)&0x01) )&0xff)
+						raw[(7 - y) * 132 + (131 - x)] = BIT_SWAP(pix ^ inverted);
+					}
+					else
+					{
+						raw[y * 132 + x] = pix ^ inverted;
+					}
+				}
+			}
+			
+			write(fd, raw, 132*8);
+		}
+		else if (is_oled == 3)
+		{
+			/* for now, only support flipping / inverting for 8bpp displays */
+			if ((flipped || inverted) && _stride == xres)
+			{
+				unsigned int height = yres;
+				unsigned int width = xres;
+				unsigned char raw[_stride * height];
+				
+				for (unsigned int y = 0; y < height; y++)
+				{
+					for (unsigned int x = 0; x < width; x++)
+					{
+						if (flipped)
+						{
+							/* 8bpp, no bit swapping */
+							raw[(height - 1 - y) * width + (width - 1 - x)] = _buffer[y * width + x] ^ inverted;
+						}
+						else
+						{
+							raw[y * width + x] = _buffer[y * width + x] ^ inverted;
+						}
+					}
+				}
+				write(fd, raw, _stride * height);
+			}
+			else
+			{
+				write(fd, _buffer, _stride * yres);
+			}
+		}
+		else /* is_oled == 1 */
+		{
+			unsigned char raw[64*64];
+			int x, y;
+			memset(raw, 0, 64*64);
+			for (y=0; y<64; y++)
+			{
+				int pix=0;
+				for (x=0; x<128 / 2; x++)
+				{
+					pix = (_buffer[y*132 + x * 2 + 2] & 0xF0) |(_buffer[y*132 + x * 2 + 1 + 2] >> 4);
+					if (inverted)
+						pix = 0xFF - pix;
+					if (flipped)
+					{
+						/* device seems to be 4bpp, swap nibbles */
+						unsigned char byte;
+						byte = (pix >> 4) & 0x0f;
+						byte |= (pix << 4) & 0xf0;
+						raw[(63 - y) * 64 + (63 - x)] = byte;
+					}
+					else
+					{
+						raw[y * 64 + x] = pix;
+					}
+				}
+			}
+			write(fd, raw, 64*64);
+		}
+	}
+	#endif
 #endif
 }
 

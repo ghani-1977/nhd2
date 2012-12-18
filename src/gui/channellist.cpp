@@ -111,7 +111,7 @@ CChannelList::CChannelList(const char * const Name, bool historyMode, bool _vlis
 	name = Name;
 	selected = 0;
 	liststart = 0;
-	tuned=0xfffffff;
+	tuned = 0xfffffff;
 	zapProtection = NULL;
 	this->historyMode = historyMode;
 	vlist = _vlist;
@@ -138,9 +138,9 @@ void CChannelList::setSize(int newsize)
 	//chanlist.resize(newsize);
 }
 
-void CChannelList::addChannel(CZapitChannel* channel, int num)
+void CChannelList::addChannel(CZapitChannel * channel, int num)
 {
-	//printf("CChannelList::addChannel: %s %s fe(%d)\n", name.c_str(), channel->getName().c_str(), channel->getFeIndex());fflush(stdout);
+	//printf("CChannelList::addChannel: %s %s\n", name.c_str(), channel->getName().c_str());fflush(stdout);
 	
 	if(num)
 		channel->number = num;
@@ -148,7 +148,7 @@ void CChannelList::addChannel(CZapitChannel* channel, int num)
 	chanlist.push_back(channel);
 }
 
-void CChannelList::putChannel(CZapitChannel* channel)
+void CChannelList::putChannel(CZapitChannel * channel)
 {
 	int num = channel->number - 1;
 	
@@ -177,18 +177,21 @@ void CChannelList::updateEvents(void)
 		{
 			time_t atime = time(NULL);
 			unsigned int count;
-			for (count=0; count < chanlist.size(); count++)
-			{
-				//CChannelEventList events = g_Sectionsd->getEventsServiceKey(chanlist[liststart+count]->channel_id &0xFFFFFFFFFFFFULL);
-				sectionsd_getEventsServiceKey(chanlist[count]->channel_id &0xFFFFFFFFFFFFULL, events);
+			
+			for (count = 0; count < chanlist.size(); count++)
+			{		
+				//
+				events.clear();
+				//
+				sectionsd_getEventsServiceKey(chanlist[count]->channel_id, events);
 				chanlist[count]->nextEvent.startTime = (long)0x7fffffff;
 				
-				for ( CChannelEventList::iterator e= events.begin(); e != events.end(); ++e ) 
+				for ( CChannelEventList::iterator e = events.begin(); e != events.end(); ++e ) 
 				{
 					if (((long)(e->startTime) > atime) && ((e->startTime) < (long)(chanlist[count]->nextEvent.startTime)))
 					{
 						chanlist[count]->nextEvent= *e;
-						break; //max: FIXME no sense to continue ?
+						break;
 					}
 				}
 			}
@@ -196,25 +199,26 @@ void CChannelList::updateEvents(void)
 	} 
 	else 
 	{
-		t_channel_id *p_requested_channels = NULL;
+		t_channel_id * p_requested_channels = NULL;
 		int size_requested_channels = 0;
 
 		if (chanlist.size()) 
 		{
 			size_requested_channels = chanlist.size()*sizeof(t_channel_id);
 			p_requested_channels    = (t_channel_id*)malloc(size_requested_channels);
+			
 			for (uint32_t count = 0; count < chanlist.size(); count++)
 			{
 				p_requested_channels[count] = chanlist[count]->channel_id&0xFFFFFFFFFFFFULL;
 			}
 
-			//CChannelEventList events = g_Sectionsd->getChannelEvents((CNeutrinoApp::getInstance()->getMode()) != NeutrinoMessages::mode_radio, p_requested_channels, size_requested_channels);
-
 			CChannelEventList events;
 			sectionsd_getChannelEvents(events, (CNeutrinoApp::getInstance()->getMode()) != NeutrinoMessages::mode_radio, p_requested_channels, size_requested_channels);
+			
 			for (uint32_t count=0; count < chanlist.size(); count++) 
 			{
 				chanlist[count]->currentEvent = CChannelEvent();
+				
 				for ( CChannelEventList::iterator e = events.begin(); e != events.end(); ++e )
 				{
 					if ((chanlist[count]->channel_id&0xFFFFFFFFFFFFULL) == e->get_channel_id())
@@ -228,6 +232,7 @@ void CChannelList::updateEvents(void)
 				free(p_requested_channels);
 		}
 	}
+	
 	events.clear();
 }
 
@@ -275,7 +280,7 @@ void CChannelList::SortSat(void)
 	sort(chanlist.begin(), chanlist.end(), CmpChannelBySat());
 }
 
-CZapitChannel* CChannelList::getChannel(int number)
+CZapitChannel * CChannelList::getChannel(int number)
 {
 	for (uint32_t i=0; i< chanlist.size();i++) 
 	{
@@ -286,12 +291,13 @@ CZapitChannel* CChannelList::getChannel(int number)
 	return(NULL);
 }
 
-CZapitChannel* CChannelList::getChannel(t_channel_id channel_id)
+CZapitChannel * CChannelList::getChannel(t_channel_id channel_id)
 {
 	for (uint32_t i=0; i< chanlist.size();i++) {
 		if (chanlist[i]->channel_id == channel_id)
 			return chanlist[i];
 	}
+	
 	return(NULL);
 }
 
@@ -371,6 +377,7 @@ int CChannelList::doChannelMenu(void)
 	{
 		old_selected = select;
 		channel_id = chanlist[selected]->channel_id;
+		
 		switch(select) 
 		{
 			case 0: //delete
@@ -477,7 +484,7 @@ int CChannelList::exec()
 		zapTo(nNewChannel);
 #endif
 		//channelList->zapTo(bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->getKey(nNewChannel)-1);
-		CNeutrinoApp::getInstance ()->channelList->zapTo(getKey(nNewChannel)-1);
+		CNeutrinoApp::getInstance()->channelList->zapTo(getKey(nNewChannel)-1);
 	}
 
 	return nNewChannel;
@@ -535,7 +542,7 @@ int CChannelList::show()
 	paint();
 	
 #ifdef FB_BLIT	
-	frameBuffer->blit();	//26: for itemdetaillines
+	frameBuffer->blit();
 #endif	
 
 	int oldselected = selected;
@@ -561,7 +568,7 @@ int CChannelList::show()
 			loop = false;
 			res = -1;
 		}
-		else if ((msg == CRCInput::RC_red) || (msg == CRCInput::RC_epg)) 
+		else if ((msg == CRCInput::RC_red) || (msg == CRCInput::RC_epg)) // epg
 		{
 			hide();
 
@@ -574,7 +581,7 @@ int CChannelList::show()
 			paintHead();
 			paint();
 		}
-		else if ( msg == CRCInput::/*RC_blue*/RC_yellow && ( bouquetList != NULL ) ) //bouquets
+		else if ( msg == CRCInput::RC_yellow && ( bouquetList != NULL ) ) //bouquets
 		{ 
 			//FIXME: show bqt list
 			bShowBouquetList = true;
@@ -902,9 +909,9 @@ int CChannelList::show()
 			//pushback key if...
 			selected = oldselected;
 			g_RCInput->postMsg( msg, data );
-			loop=false;
+			loop = false;
 		}
-		else if ( msg == CRCInput::/*RC_yellow*/RC_green ) //next
+		else if ( msg == CRCInput::RC_green ) //next
 		{
 			displayNext = !displayNext;
 			paintHead(); 		// update button bar
@@ -928,7 +935,7 @@ int CChannelList::show()
 		}
 		
 #ifdef FB_BLIT		
-		frameBuffer->blit();	//26: for itemdetaillines
+		frameBuffer->blit();
 #endif		
 	}
 	

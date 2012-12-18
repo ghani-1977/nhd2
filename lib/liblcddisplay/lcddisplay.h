@@ -66,6 +66,16 @@ class CLCDDisplay
 		int           fd, paused;
 		std::string   iconBasePath;
 		bool          available;
+		
+		//
+		unsigned char inverted;
+		bool flipped;
+		int is_oled;	//1=oled, 2=lcd, 3=???
+		
+		unsigned char * _buffer;
+		int _stride;
+		int xres, yres, bpp;
+		//
 	
 	public:
 		enum
@@ -97,6 +107,15 @@ class CLCDDisplay
 		void dump_screen(raw_display_t *screen);
 		void load_screen(const raw_display_t * const screen);
 		bool load_png(const char * const filename);
+		
+		//e2
+		void setSize(int xres, int yres, int bpp);
+		int setLCDContrast(int contrast);
+		int setLCDBrightness(int brightness);
+		void setInverted( unsigned char );
+		void setFlipped(bool);
+		bool isOled() const { return !!is_oled; }
+		//end-e2
 };
 
 #endif

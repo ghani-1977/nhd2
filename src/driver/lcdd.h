@@ -32,7 +32,7 @@
 #define LCD_UPDATE 1
 #endif
 
-#define LCDDIR_VAR "/var/share/tuxbox/neutrino/lcdd"
+#define LCDDIR_VAR "/var/share/tuxbox/config/icons/lcdd"
 
 typedef enum
 {

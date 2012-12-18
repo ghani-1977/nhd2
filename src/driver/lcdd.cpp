@@ -279,6 +279,8 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 	if (power == 0)
 		dimm = 0;
 
+	#if 0
+	// dimm
 	if ((fd = open("/dev/dbox/fp0", O_RDWR)) == -1)
 	{
 		printf("[lcdd] open '/dev/dbox/fp0' failed(%m)\n");
@@ -299,16 +301,19 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 	}
 	else
 	{
+		// contrast
 		if (ioctl(fd, LCD_IOCTL_SRV, &contrast) < 0)
 		{
 			printf("[lcdd] set contrast failed!(%m)\n");
 		}
 
+		// power
 		if (ioctl(fd, LCD_IOCTL_ON, &power) < 0)
 		{
 			printf("[lcdd] set power failed!(%m)\n");
 		}
 
+		// reverse
 		if (ioctl(fd, LCD_IOCTL_REVERSE, &inverse) < 0)
 		{
 			printf("[lcdd] set invert failed!(%m)\n");
@@ -316,6 +321,20 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 
 		close(fd);
 	}
+	#endif
+	
+	//e2
+	// dimm
+	display.setLCDBrightness(dimm);
+	
+	// contrast
+	display.setLCDContrast(contrast);
+	
+	// power ???
+	
+	//reverse ???
+	
+	//end-e2
 #endif
 }
 
