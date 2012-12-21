@@ -71,8 +71,8 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 	selected = 0;
 	//width = 500;
 	width = 650;
-	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
-		width=(g_settings.screen_EndX - g_settings.screen_StartX);
+	if(width > (g_settings.screen_EndX - g_settings.screen_StartX))
+		width = (g_settings.screen_EndX - g_settings.screen_StartX);
 	
 	height = 526;
 	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
@@ -345,9 +345,9 @@ void CPluginList::paintHead()
 void CPluginList::paint()
 {
 	hide();
-	width = 500;
-	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
-		width=(g_settings.screen_EndX-g_settings.screen_StartX);
+	width = 650;
+	if(width > (g_settings.screen_EndX-g_settings.screen_StartX))
+		width = (g_settings.screen_EndX-g_settings.screen_StartX);
 	height = 526;
 	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
 		height=(g_settings.screen_EndY-g_settings.screen_StartY) - 50; // 2*25 pixel frei
