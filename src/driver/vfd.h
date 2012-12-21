@@ -142,18 +142,18 @@ typedef enum
 // neutrino common translate for ufs910
 typedef enum
 {
-	VFD_ICON_MUTE		= vfd_910_mute,
+	VFD_ICON_MUTE		= vfd_910_mute,		// UFS910 hasn't all icons, therefore a value wich doesn't change anything
 	VFD_ICON_DOLBY		= vfd_910_dd,
-	VFD_ICON_POWER		= vfd_910_bt,
+	VFD_ICON_POWER		= 17,
 	VFD_ICON_TIMESHIFT	= vfd_910_rec,
-	VFD_ICON_TV		= vfd_910_mail,
+	VFD_ICON_TV		= 17,
 	VFD_ICON_RADIO		= vfd_910_music,
 	VFD_ICON_HD		= vfd_910_hd,
-	VFD_ICON_1080P		= vfd_910_bt,
-	VFD_ICON_1080I		= vfd_910_bt,
-	VFD_ICON_720P		= vfd_910_bt,
-	VFD_ICON_480P		= vfd_910_bt,
-	VFD_ICON_480I		= vfd_910_bt,
+	VFD_ICON_1080P		= 17,
+	VFD_ICON_1080I		= 17,
+	VFD_ICON_720P		= 17,
+	VFD_ICON_480P		= 17,
+	VFD_ICON_480I		= 17,
 	VFD_ICON_USB		= vfd_910_usb,
 	VFD_ICON_MP3		= vfd_910_mp3,
 	VFD_ICON_PLAY		= vfd_910_play,
@@ -395,6 +395,7 @@ class CVFD
 		void Lock();
 		void Unlock();
 		void Clear();
+		void ClearIcons();
 		void ShowIcon(vfd_icon icon, bool show);
 		void ShowText(char * str);
 

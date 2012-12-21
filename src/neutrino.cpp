@@ -150,6 +150,8 @@
 #include <zapit/channel.h>
 #include <zapit/bouquets.h>
 
+#include "gui/svn_version.h"
+
 
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
@@ -2146,8 +2148,6 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			if (system(NEUTRINO_RECORDING_START_SCRIPT) != 0)
 				perror(NEUTRINO_RECORDING_START_SCRIPT " failed");
 
-			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
-
 			// get EPG info
 			eventinfo.channel_id = live_channel_id;
 			CEPGData epgData;
@@ -2198,8 +2198,6 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 		else 
 		{
 			g_Timerd->stopTimerEvent(recording_id);
-			
-			//CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 			
 			startNextRecording();
 		}
@@ -2364,7 +2362,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	colorSetupNotifier = new CColorSetupNotifier;
 	colorSetupNotifier->changeNotify(NONEXISTANT_LOCALE, NULL);
 
-	// init vfd/lcd display
+	// init vfd/lcd display (this starts time thread)
 #if ENABLE_LCD
 	CVFD::getInstance()->init(font.filename, font.name);
 #else	
@@ -4072,7 +4070,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 		CVFD::getInstance()->ShowText((char *) "Good Bye");
 #endif		
 
-		dprintf(DEBUG_INFO, "ExitRun\n");
+		dprintf(DEBUG_INFO, "ExitRun (retcode:%d)\n", retcode);
 
 		// stop playback
 		g_Zapit->stopPlayBack();
@@ -4091,98 +4089,50 @@ void CNeutrinoApp::ExitRun(int retcode)
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 
 		// save epg
-		if(g_settings.epg_save /* && timeset && g_Sectionsd->getIsTimeSet ()*/) 
+		if(g_settings.epg_save ) 
 		{
 			saveEpg();
 		}
-
-		if(retcode)
-		{
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: [shutdown] entering off state\n");
+		
+		mode = mode_off;
+		
+		dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: entering off state\n");
 			
-			mode = mode_off;
-
-			// check for events
-			neutrino_msg_t      msg;
-			neutrino_msg_data_t data;
-
-			g_RCInput->clearRCMsg();
+		stop_daemons();
 			
-			// check for events
-			while( true ) 
-			{
-				g_RCInput->getMsg(&msg, &data, 100);		//10 sec
-				
-				if( msg == CRCInput::RC_standby ) 
-				{
-					dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: Power key, going to sleep...\n");
+		// movieplayerGui
+		if(moviePlayerGui)
+			delete moviePlayerGui;
 			
-					sleep(2);
-					
-					if (g_RCInput != NULL)
-						delete g_RCInput;
+		if (g_RCInput != NULL)
+			delete g_RCInput;
+			
+		if(g_Sectionsd)
+			delete g_Sectionsd;
+			
+		if(g_Timerd)
+			delete g_Timerd;
+			
+		if(g_RemoteControl)
+			delete g_RemoteControl;
+			
+		if(g_fontRenderer)
+			delete g_fontRenderer;
+			
+		if(g_Zapit)
+			delete g_Zapit;
+			
+		delete CVFD::getInstance();
+			
+		if (frameBuffer != NULL)
+			delete frameBuffer;
 
-					if (frameBuffer != NULL)
-						delete frameBuffer;
-					
-					// stop all deamons threads
-					stop_daemons();
-					
-					exit(retcode);
-				} 
-				else if( ( msg == NeutrinoMessages::ANNOUNCE_RECORD) || ( msg == NeutrinoMessages::ANNOUNCE_ZAPTO) ) 
-				{
-					dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: Zap/record timer, going to reboot...\n");
-					
-					sleep(2);
-					
-					if (g_RCInput != NULL)
-						delete g_RCInput;
-
-					if (frameBuffer != NULL)
-						delete frameBuffer;
-					
-					// stop all deamons threads
-					stop_daemons();
-					
-					reboot(LINUX_REBOOT_CMD_RESTART);
-				}
-				else 
-				{
-					// no message received.
-					dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: going to sleep...\n");
-					
-					sleep(2);
-					
-					if (g_RCInput != NULL)
-						delete g_RCInput;
-
-					if (frameBuffer != NULL)
-						delete frameBuffer;
-					
-					// stop all deamons threads
-					stop_daemons();
-					
-					dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
-					
-					exit(retcode);
-				}
-			}
-		} 
-		else 	//without retcode
-		{
-			if (g_RCInput != NULL)
-				delete g_RCInput;
-
-			if (frameBuffer != NULL)
-				delete frameBuffer;
-
-			stop_daemons();
-
-			dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
-
-			exit(0);
-		}
+		dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
+		
+		if(retcode) //reboot/error
+			reboot(LINUX_REBOOT_CMD_RESTART);
+		else //shutdown
+			_exit(retcode);	
 	}
 }
 
@@ -4849,7 +4799,7 @@ void CNeutrinoApp::startNextRecording()
 }
 
 // exec, menuitem callback (shutdown)
-int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
+int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: actionKey: %s\n", actionKey.c_str());
 
@@ -4861,14 +4811,14 @@ int CNeutrinoApp::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 	else if(actionKey=="shutdown") 
 	{
-		ExitRun(1);
+		ExitRun();
 	}
 	else if(actionKey=="reboot")
 	{
 		FILE *f = fopen("/tmp/.reboot", "w");
 		fclose(f);
 
-		ExitRun();
+		ExitRun(1);
 
 		unlink("/tmp/.reboot");
 		returnval = menu_return::RETURN_NONE;
@@ -5291,17 +5241,17 @@ void stop_daemons()
 	pthread_join(nhttpd_thread, NULL);
 	dprintf(DEBUG_NORMAL, "stop_daemons: httpd shutdown done\n");	
 
-	// streamts	
+	// stop streamts	
 	streamts_stop = 1;
 	pthread_join(stream_thread, NULL);	
 
-	// timerd stop	  
+	// stop timerd	  
 	dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown\n");
 	g_Timerd->shutdown();
 	pthread_join(timer_thread, NULL);
 	dprintf(DEBUG_NORMAL, "stop_daemons: timerd shutdown done\n");		
 
-	// sectionsd stop
+	// stop sectionsd
 	sectionsd_stop = 1;
 	dprintf(DEBUG_NORMAL, "stop_daemons: sectionsd shutdown\n");
 	pthread_join(sections_thread, NULL);
@@ -5319,7 +5269,7 @@ void stop_daemons()
 	CVFD::getInstance()->Clear();
 
 	// movieplayerGui
-	delete moviePlayerGui;
+	//delete moviePlayerGui;
 }
 
 // load color
@@ -5681,7 +5631,7 @@ void sighandler (int signum)
 int main(int argc, char *argv[])
 {
 	// build date
-	printf(">>> NeutrinoHD2 (compiled %s %s) <<<\n", __DATE__, __TIME__);
+	printf(">>> NeutrinoHD2 (compiled %s %s) (SVN Rev:%s) <<<\n", __DATE__, __TIME__, SVNVERSION);
 	
 	// set debug level (default normal)
 	setDebugLevel(DEBUG_INFO);

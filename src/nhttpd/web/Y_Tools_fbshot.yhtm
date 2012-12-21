@@ -11,11 +11,9 @@ function do_snapshot2(){
 	var _shot = document.getElementById("shot");
 	var filename = id("file").value;
 	dbox_exec_tools("fbshot fb /tmp/"+filename+".png");
-	//dbox_exec_tools("stfbshot fb sPNG /tmp");
 	show_waitbox(false);
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".png?"+Math.random();
-	//_shot.src = "/tmp/dump.png?"+Math.random();
 }
 function do_dboxshot(){
 	show_waitbox(true);
@@ -25,20 +23,16 @@ function do_dboxshot2(){
 	var _shot = document.getElementById("shot");
 	var filename = id("file").value;
 	var res = dbox_exec_tools("fbshot fb /tmp/"+filename+".png");
-	//var res = dbox_exec_tools("stfbshot fb sNPG /tmp");
 	if(res != "")
 		dbox_exec_tools("fbshot -o /tmp/"+filename+".png");
-		//dbox_exec_tools("stfbshot sBMP /tmp");
 	show_waitbox(false);
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".bmp?"+Math.random();
-	//_shot.src = "/tmp/dump.bmp?"+Math.random();
 }
 function do_clearshot(){
 	window.setTimeout("do_clearshot2()", 500);
 }
 function do_clearshot2(){
-	//dbox_exec_tools("stfbshot_clear");
 	dbox_exec_tools("fbshot_clear");
 }
 //]]>

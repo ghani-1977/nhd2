@@ -635,6 +635,8 @@ bool cPlayback::SetSpeed(int speed)
 		}
 	}
 #else
+	int speedmap = 0;
+	
 	if(player && player->playback) 
 	{
 		if(speed > 1) 		//forwarding
@@ -642,14 +644,22 @@ bool cPlayback::SetSpeed(int speed)
 			//
 			if (speed > 7) 
 				speed = 7;
+			
+			switch(speed)
+			{
+				case 2: speedmap = 3; break;
+				case 3: speedmap = 7; break;
+				case 4: speedmap = 15; break;
+				case 5: speedmap = 31; break;
+				case 6: speedmap = 63; break;
+				case 7: speedmap = 127; break;
+			}
 
-			player->playback->Command(player, PLAYBACK_FASTFORWARD, (void*)&speed);
-			//playstate = STATE_FF;
+			player->playback->Command(player, PLAYBACK_FASTFORWARD, (void*)&speedmap);
 		}
 		else if(speed == 0)	//pausing
 		{
 			player->playback->Command(player, PLAYBACK_PAUSE, NULL);
-			//playstate = STATE_PAUSE;
 		}
 		else if (speed < 0)	//backwarding
 		{
@@ -660,13 +670,22 @@ bool cPlayback::SetSpeed(int speed)
 			if (speed < -7) 
 				speed = -7;
 			
-			player->playback->Command(player, PLAYBACK_FASTBACKWARD, (void*)&speed);
-			//playstate = STATE_REW;
+			switch(speed)
+			{
+				case -1: speedmap = -5; break;
+				case -2: speedmap = -10; break;
+				case -3: speedmap = -20; break;
+				case -4: speedmap = -40; break;
+				case -5: speedmap = -80; break;
+				case -6: speedmap = -160; break;
+				case -7: speedmap = -320; break;
+			}
+			
+			player->playback->Command(player, PLAYBACK_FASTBACKWARD, (void*)&speedmap);
 		}
 		else if(speed == 1) 	//continue
 		{
 			player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-			//playstate = STATE_PLAY;
 		}
 	}
 #endif
@@ -694,8 +713,6 @@ bool cPlayback::SetSlow(int slow)
 		player->playback->Command(player, PLAYBACK_SLOWMOTION, (void*)&slow);
 	}
 #endif
-
-	//playstate = STATE_SLOW;
 
 	mSpeed = slow;
 

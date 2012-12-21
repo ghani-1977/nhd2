@@ -39,12 +39,16 @@
 #include <sys/stat.h>
 
 
-void CLCDDisplay::setSize(int xres, int yres, int bpp)
+void CLCDDisplay::setSize(int w, int h, int b)
 {
-	_buffer = new unsigned char[xres * yres * bpp/8];
-	memset(_buffer, 0, xres*yres*bpp/8);
+	xres = w;
+	yres = h;
+	bpp = b;
+	raw_buffer_size = xres * yres * bpp/8;
+	_buffer = new unsigned char[raw_buffer_size];
+	memset(_buffer, 0, raw_buffer_size);
 	_stride = xres*bpp/8;
-	printf("[CLCDDisplay] %s lcd buffer %p %d bytes, stride %d\n", __FUNCTION__, _buffer, xres*yres*bpp/8, _stride);
+	printf("[CLCDDisplay] %s lcd buffer %p %d bytes, stride %d, type %d\n", __FUNCTION__, _buffer, raw_buffer_size, _stride, is_oled);
 }
 
 CLCDDisplay::CLCDDisplay()
@@ -52,7 +56,7 @@ CLCDDisplay::CLCDDisplay()
 	paused = 0;
 	available = false;
 	
-	//e2
+	raw_buffer_size = 0;
 	xres = 132;
 	yres = 64; 
 	bpp = 8;
@@ -112,25 +116,6 @@ CLCDDisplay::CLCDDisplay()
 	}
 	  
 	setSize(xres, yres, bpp);
-	// end-e2
-	  
-	#if 0
-	if ((fd = open(LCD_DEVICE, O_RDWR)) < 0)
-	{
-		printf("[lcddisplay] LCD (" LCD_DEVICE ") failed (%m)\n");
-		return;
-	}
-	
-	//clear the display
-	if( ioctl(fd, LCD_IOCTL_CLEAR) < 0 )
-		printf("[lcddisplay] LCD_IOCTL_CLEAR failed (%m)\n");
-	
-	//graphic (binary) mode 
-	int i=LCD_MODE_BIN;
-	if( ioctl(fd, LCD_IOCTL_ASC_MODE, &i) < 0 )
-		printf("[lcddisplay] LCD_IOCTL_ASC_MODE failed (%m)\n");
-	#endif
-	//
 
 	available = true;
 	iconBasePath = "";
@@ -152,7 +137,12 @@ void CLCDDisplay::setFlipped(bool onoff)
 int CLCDDisplay::setLCDContrast(int contrast)
 {
 	int fp;
-	if((fp=open("/dev/dbox/fp0", O_RDWR))<0)
+	
+	fp = open("/dev/dbox/fp0", O_RDWR);
+	
+	if (fp < 0)
+		fp = open("/dev/dbox/lcd0", O_RDWR);
+	if (fp < 0)
 	{
 		printf("[LCD] can't open /dev/dbox/fp0(%m)\n");
 		return(-1);
@@ -170,7 +160,8 @@ int CLCDDisplay::setLCDContrast(int contrast)
 int CLCDDisplay::setLCDBrightness(int brightness)
 {
 	printf("setLCDBrightness %d\n", brightness);
-	FILE *f=fopen("/proc/stb/lcd/oled_brightness", "w");
+	
+	FILE *f = fopen("/proc/stb/lcd/oled_brightness", "w");
 	if (!f)
 		f = fopen("/proc/stb/fp/oled_brightness", "w");
 	if (f)
@@ -182,7 +173,7 @@ int CLCDDisplay::setLCDBrightness(int brightness)
 	else
 	{
 		int fp;
-		if((fp=open("/dev/dbox/fp0", O_RDWR)) < 0)
+		if((fp = open("/dev/dbox/fp0", O_RDWR)) < 0)
 		{
 			printf("[LCD] can't open /dev/dbox/fp0\n");
 			return(-1);
@@ -195,7 +186,6 @@ int CLCDDisplay::setLCDBrightness(int brightness)
 
 	return(0);
 }
-//end-e2
 
 bool CLCDDisplay::isAvailable()
 {
@@ -239,42 +229,46 @@ void CLCDDisplay::convert_data ()
 	unsigned int x, y, z;
 	char tmp;
 
-	for (x = 0; x < LCD_COLS; x++)
+	#if 0
+	unsigned int height = yres;
+	unsigned int width = xres;
+
+	for (x = 0; x < width; x++)
 	{   
-		for (y = 0; y < LCD_ROWS; y++)
+		for (y = 0; y < (height / 8); y++)
 		{
 			tmp = 0;
 
 			for (z = 0; z < 8; z++)
-				if (raw[y * 8 + z][x] == 1)
+				if (_buffer[(y * 8 + z) * width + x] == LCD_PIXEL_ON)
 					tmp |= (1 << z);
 
 			lcd[y][x] = tmp;
 		}
 	}
+	#endif
 #endif
 }
 
 void CLCDDisplay::update()
 {
 #ifndef PLATFORM_GENERIC
-	#if 0
-	convert_data();
-	
-	if(paused || !available)
-		return;
-	else
-	{
-		if ( write(fd, lcd, LCD_BUFFER_SIZE) < 0) 
-			printf("lcdd: CLCDDisplay::update(): write() failed (%m)\n");
-	}
-	#else
 	if (fd >= 0)
 	{
 		if (is_oled == 0 || is_oled == 2)
 		{
+			unsigned int height = yres;
+			unsigned int width = xres;
+
+			// hack move last line to top
+			unsigned char linebuffer[width];
+			memmove(linebuffer, _buffer+raw_buffer_size-width, width);
+			memmove(_buffer+width, _buffer, raw_buffer_size-width);
+			memmove(_buffer, linebuffer, width);
+
 			unsigned char raw[132*8];
 			int x, y, yy;
+			
 			for (y=0; y<8; y++)
 			{
 				for (x=0; x<132; x++)
@@ -299,6 +293,11 @@ void CLCDDisplay::update()
 			}
 			
 			write(fd, raw, 132*8);
+			
+			// hack move last line back to bottom
+			memmove(linebuffer, _buffer, width);
+			memmove(_buffer, _buffer+width, raw_buffer_size-width);
+			memmove(_buffer+raw_buffer_size-width, linebuffer, width);
 		}
 		else if (is_oled == 3)
 		{
@@ -361,19 +360,18 @@ void CLCDDisplay::update()
 			write(fd, raw, 64*64);
 		}
 	}
-	#endif
 #endif
 }
 
 void CLCDDisplay::draw_point(const int x, const int y, const int state)
 {
-	if ((x < 0) || (x >= LCD_COLS) || (y < 0) || (y >= (LCD_ROWS * 8)))
+	if ((x < 0) || (x >= xres) || (y < 0) || (y >= yres))
 		return;
 
 	if (state == LCD_PIXEL_INV)
-		raw[y][x] ^= 1;
+		_buffer[y * xres + x] ^= 1;
 	else
-		raw[y][x] = state;
+		_buffer[y * xres + x] = state;
 }
 
 /*
@@ -570,16 +568,36 @@ bool CLCDDisplay::paintIcon(std::string filename, int x, int y, bool invert)
 	return true;
 }
 
-void CLCDDisplay::dump_screen(raw_display_t *screen) {
-	memmove(screen, raw, sizeof(raw_display_t));
+void CLCDDisplay::clear_screen() 
+{
+	memset(_buffer, 0, raw_buffer_size);
+}
+
+void CLCDDisplay::dump_screen(raw_display_t *screen) 
+{
+	memmove(*screen, _buffer, raw_buffer_size);
+}
+
+void CLCDDisplay::load_screen_element(const raw_lcd_element_t * element, int left, int top) 
+{
+	unsigned int i;
+
+	if (element->buffer)
+		for (i = 0; i < element->header.height; i++)	
+			memmove(_buffer+((top+i) * xres)+left, element->buffer+(i * element->header.width), element->header.width);
 }
 
 void CLCDDisplay::load_screen(const raw_display_t * const screen) 
 {
-	memmove(raw, screen, sizeof(raw_display_t));
+	raw_lcd_element_t element;
+	element.buffer_size = raw_buffer_size;
+	element.buffer = *screen;
+	element.header.width = xres;
+	element.header.height = yres;
+	load_screen_element(&element, 0, 0);
 }
 
-bool CLCDDisplay::load_png(const char * const filename)
+bool CLCDDisplay::load_png_element(const char * const filename, raw_lcd_element_t * element)
 {
 	png_structp  png_ptr;
 	png_infop    info_ptr;
@@ -609,19 +627,50 @@ bool CLCDDisplay::load_png(const char * const filename)
 				if (!setjmp(png_jmpbuf(png_ptr)))
 #endif
 				{
+					unsigned int lcd_height = yres;
+					unsigned int lcd_width = xres;
+
 					png_init_io(png_ptr,fh);
 					
 					png_read_info(png_ptr, info_ptr);
 					png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
 					
 					if (
-						(color_type == PNG_COLOR_TYPE_PALETTE) &&
-						(bit_depth  == 1                     ) &&
-						(width      <= LCD_COLS              ) &&
-						(height     == (LCD_ROWS * 8))
+						((color_type == PNG_COLOR_TYPE_PALETTE) ||
+						 ((color_type & PNG_COLOR_MASK_COLOR) == PNG_COLOR_TYPE_GRAY)) &&
+						(bit_depth  <= 8                     ) &&
+						(width      <= lcd_width             ) &&
+						(height     <= lcd_height            )
 						)
 					{
+						printf("[CLCDDisplay] %s %s %dx%dx%d, type %d\n", __FUNCTION__, filename, width, height, bit_depth, color_type);
+						element->header.width = width;
+						element->header.height = height;
+						element->header.bpp = bit_depth;
+						if (!element->buffer)
+						{
+							element->buffer_size = width*height;
+							element->buffer = new unsigned char[element->buffer_size];
+							lcd_width = width;
+							lcd_height = height;
+						}
+						
+						memset(element->buffer, 0, element->buffer_size);
+
 						png_set_packing(png_ptr); /* expand to 1 byte blocks */
+						
+						if (color_type == PNG_COLOR_TYPE_PALETTE)
+						      png_set_expand(png_ptr);
+
+						if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+						      png_set_expand(png_ptr);
+
+						if (color_type & PNG_COLOR_MASK_COLOR)
+#if (PNG_LIBPNG_VER < 10200)
+							png_set_rgb_to_gray(png_ptr);
+#else
+							png_set_rgb_to_gray(png_ptr, 1, NULL, NULL);
+#endif
 						
 						number_passes = png_set_interlace_handling(png_ptr);
 						png_read_update_info(png_ptr,info_ptr);
@@ -632,13 +681,17 @@ bool CLCDDisplay::load_png(const char * const filename)
 							
 							for (pass = 0; pass < number_passes; pass++)
 							{
-								fbptr = (png_byte *)raw;
-								for (i = 0; i < height; i++, fbptr += LCD_COLS)
+								fbptr = (png_byte *)element->buffer;
+								for (i = 0; i < height; i++)
 								{
+									//fbptr = row_pointers[i];
+									//png_read_rows(png_ptr, &fbptr, NULL, 1);
+
 									png_read_row(png_ptr, fbptr, NULL);
 									/* if the PNG is smaller, than the display width... */
-									if (width < LCD_COLS)	/* clear the area right of the PNG */
-										memset(fbptr + width, 0, LCD_COLS - width);
+									if (width < lcd_width)	/* clear the area right of the PNG */
+										memset(fbptr + width, 0, lcd_width - width);
+									fbptr += lcd_width;
 								}
 							}
 							png_read_end(png_ptr, info_ptr);
@@ -652,3 +705,13 @@ bool CLCDDisplay::load_png(const char * const filename)
 	}
 	return ret_value;
 }
+
+bool CLCDDisplay::load_png(const char * const filename)
+{
+	raw_lcd_element_t element;
+	element.buffer_size = raw_buffer_size;
+	element.buffer = _buffer;
+	return load_png_element(filename, &element);
+}
+
+

@@ -86,19 +86,7 @@ typedef struct TP_parameter
 	
 	struct dvb_frontend_parameters feparams;
 } TP_params;
-
-/* complete channel-parameters in a struct */
-typedef struct Channel_parameter
-{
-	std::string name;
-	t_service_id service_id;
-	t_transport_stream_id transport_stream_id;
-	t_original_network_id original_network_id;
-	unsigned char service_type;
-	uint32_t TP_id;					/* diseqc<<24 | feparams->frequency>>8 */
-} CH_params;
-
-#define MAX_LNB 64 
+ 
 typedef struct Zapit_config {
 	int makeRemainingChannelsBouquet;
 	int saveLastChannel;

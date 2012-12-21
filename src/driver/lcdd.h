@@ -32,7 +32,7 @@
 #define LCD_UPDATE 1
 #endif
 
-#define LCDDIR_VAR "/var/share/tuxbox/config/icons/lcdd"
+#define LCDDIR_VAR "/var/tuxbox/config/icons/lcdd"
 
 typedef enum
 {
@@ -89,6 +89,7 @@ typedef enum
 
 class CLCDPainter;
 class LcdFontRenderClass;
+
 class CLCD
 {
 	public:
@@ -135,8 +136,8 @@ class CLCD
 		LcdFontRenderClass		*fontRenderer;
 		FontsDef			fonts;
 
-#define LCD_NUMBER_OF_BACKGROUNDS 5
-		raw_display_t                   background[LCD_NUMBER_OF_BACKGROUNDS];
+#define LCD_NUMBER_OF_ELEMENTS 5
+		raw_lcd_element_t               element[LCD_NUMBER_OF_ELEMENTS];
 
 		MODES				mode;
 		AUDIOMODES			movie_playmode;
@@ -160,8 +161,6 @@ class CLCD
 
 		void count_down();
 
-		CLCD();
-
 		static void* TimeThread(void*);
 		bool lcdInit(const char * fontfile1, const char * fontname1, 
 		             const char * fontfile2 = NULL, const char * fontname2 = NULL,
@@ -169,8 +168,12 @@ class CLCD
 		void setlcdparameter(int dimm, int contrast, int power, int inverse, int bias);
 		void displayUpdate();
 		void showTextScreen(const std::string & big, const std::string & small, int showmode, bool perform_wakeup, bool centered = false);
+		void drawBanner();
 
 	public:
+		CLCD();
+		~CLCD();
+
 		bool has_lcd;
 		void wake_up();
 		void setled(void) { return; };

@@ -469,25 +469,11 @@ do_fbshot()
 {
 	if [ "$1" = "fb" ]; then
 		shift 1
-		if [ -e "/var/bin/fbshot" ]; then
-			/var/bin/fbshot $*
+		if [ -e "/usr/bin/grab" ]; then
+			/usr/bin/grab -o $*
 		else
-			/bin/fbshot $*
+			/bin/grab -o $*
 		fi
-	#if [ "$1" = "fb" ]; then
-	#	shift 1
-	#	if [ -e "/var/bin/stfbshot" ]; then
-	#		/var/bin/stfbshot $*
-	#	else
-	#		/bin/stfbshot $*
-	#	fi
-	#else
-	#	shift 1
-	#	if [ -e "/var/bin/dboxshot" ]; then
-	#		/var/bin/dboxshot $*
-	#	else
-	#		dboxshot $*
-	#	fi
 	fi
 }
 # -----------------------------------------------------------

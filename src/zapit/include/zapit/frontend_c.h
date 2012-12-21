@@ -198,7 +198,6 @@ class CFrontend
 		int				setParameters(TP_params *TP, bool nowait = 0);
 		int				tuneFrequency (struct dvb_frontend_parameters * feparams, uint8_t polarization, bool nowait = 0);
 		const TP_params*		getParameters(void) const { return &currentTransponder; };
-		struct dvb_frontend_event *	setParametersResponse(TP_params *TP);
 		void 				setCurrentSatellitePosition(int32_t satellitePosition) {currentSatellitePosition = satellitePosition; }
 
 		void 				positionMotor(uint8_t motorPosition);

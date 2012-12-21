@@ -1934,6 +1934,11 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 		{
 			fclose(test);
 			chdir(PLUGIN_DIRS[i].c_str());
+#ifndef __sh__	
+			//FIXME: dont know why popen dont work in oe1.2
+			system( (fullfilename+" "+para).c_str() ); //execute
+#endif			
+			//
 			FILE *f = popen( (fullfilename+" "+para).c_str(),"r"); //execute
 			if (f != NULL)
 			{

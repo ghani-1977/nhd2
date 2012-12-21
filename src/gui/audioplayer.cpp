@@ -1463,7 +1463,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 			}
 		}
 		
-		//TEST
+		//FIXME: do we need this???
 		progress.hide();
 		
 		if (m_select_title_by_name)
@@ -1493,9 +1493,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 	return ( result);
 }
 
-//#define SC_BASE_DIR	"http://www.shoutcast.com"
-//#define SC_BASE_DIR   "http://api.shoutcast.com"
-//#define SC_INIT_DIR	"/sbin/newxml.phtml"
 bool CAudioPlayerGui::openSCbrowser(void)
 {
 	bool result = false;
@@ -1553,7 +1550,7 @@ bool CAudioPlayerGui::openSCbrowser(void)
 			g_RCInput->getMsg(&msg, &data, 0);
 		}
 		
-		//TEST
+		//FIXME: do we need this???
 		progress.hide();
 		
 		
@@ -2076,10 +2073,6 @@ void CAudioPlayerGui::stop()
 	paintInfo();
 	m_key_level = 0;
 	paintFoot();
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 		CAudioPlayer::getInstance()->stop();
@@ -2215,10 +2208,6 @@ void CAudioPlayerGui::play(unsigned int pos)
 	m_key_level = 1;
 	if(!m_screensaver)
 		paintFoot();
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 }
 
 int CAudioPlayerGui::getNext()
@@ -2310,10 +2299,6 @@ void CAudioPlayerGui::updateMetaData()
 		int xstart = ((m_width - 20 - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(m_metainfo))/2)+10;
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + xstart, m_y + 4 + 2*m_fheight + m_sheight, m_width- 2*xstart, m_metainfo, COL_MENUCONTENTSELECTED);
 	}
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif	
 }
 
 void CAudioPlayerGui::updateTimes(const bool force)
@@ -2379,10 +2364,6 @@ void CAudioPlayerGui::updateTimes(const bool force)
 		}
 #endif		
 	}
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif	
 }
 
 void CAudioPlayerGui::paintLCD()
@@ -2475,9 +2456,7 @@ void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 	bool ret = 1;
 
 	if (CFile::STREAM_AUDIO != File.FileType)
-		ret = CAudioPlayer::getInstance()->readMetaData(  &File,
-								m_state != CAudioPlayerGui::STOP &&
-								!g_settings.audioplayer_highprio);
+		ret = CAudioPlayer::getInstance()->readMetaData(  &File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
 
 	if (!ret || (File.MetaData.artist.empty() && File.MetaData.title.empty() ))
 	{
@@ -2534,10 +2513,7 @@ bool CAudioPlayerGui::getNumericInput(neutrino_msg_t& msg, int& val)
 			if (msg & (CRCInput::RC_Repeat|CRCInput::RC_Release)) // repeat / release
 				continue;
 			break;
-		}
-#ifdef FB_BLIT		
-		//m_frameBuffer->blit();		
-#endif		
+		}		
 	} while (g_RCInput->isNumeric(msg) && val < 1000000);
 	
 	return (msg == CRCInput::RC_ok);
@@ -2748,7 +2724,6 @@ void CAudioPlayerGui::printSearchTree()
 
 void CAudioPlayerGui::buildSearchTree()
 {
-
 	//printf("before\n");
 	//printSearchTree();
 

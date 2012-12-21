@@ -390,7 +390,8 @@ void CVFD::setMode(const MODES m, const char * const title)
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE)	
 			showServicename(servicename);
 #endif
-
+		
+			ShowIcon(VFD_ICON_MP3, false);	
 			ShowIcon(VFD_ICON_TV, true);			
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
@@ -402,6 +403,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_TV, false);			
 			showAudioPlayMode(AUDIO_MODE_STOP);			
 			showclock = true;
+			ShowIcon(VFD_ICON_LOCK, false);
 			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
@@ -422,11 +424,13 @@ void CVFD::setMode(const MODES m, const char * const title)
 			//ShowIcon(VFD_ICON_TV, false);
 			/* clear all symbols */
 			Clear();
+			ClearIcons();
 			showclock = false;
 			break;
 
 		case MODE_STANDBY:
-			ShowIcon(VFD_ICON_TV, false);			
+			ShowIcon(VFD_ICON_TV, false);
+			ClearIcons();
 			showclock = true;
 			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 						/* "showTime()" clears the whole lcd in MODE_STANDBY */
@@ -595,6 +599,37 @@ void CVFD::Clear()
 #endif
 }
 
+void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
+{
+	if(!has_lcd) 
+		return;
+	
+#if defined (PLATFORM_UFS910)
+	int i;
+	struct vfd_ioctl_data data;
+	
+	openDevice();
+	
+	for(i=0; i <= 15; i++)
+	{
+		data.data[0] = i;
+		data.data[4] = 0;
+		
+		if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
+			perror("VFDICONDISPLAYONOFF");
+	}
+	
+	closeDevice();
+#elif defined(PLATFORM_SPARK7162)		/* using one command for switching off all Icons*/	 
+	openDevice();
+	aotom_data.u.icon.icon_nr = SPARK_ICON_ALL;
+	aotom_data.u.icon.on = 0;
+	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+		perror("VFDICONDISPLAYONOFF");
+	closeDevice();
+#endif
+}
+
 void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
@@ -608,8 +643,15 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	else
 		aotom_data.u.icon.on = 0;
 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
-		perror("VFDICONDISPLAYONOFF");
+		perror("VFDICONDISPLAYONOFF");	
 #else
+#if defined (PLATFORM_UFS910)
+	if (icon == 17)				/* returning because not existing icon at ufs910 */
+	{
+		closeDevice();	
+		return;
+	}
+#endif	
 	struct vfd_ioctl_data data;
 
 	data.data[0] = (icon - 1) & 0x1F;

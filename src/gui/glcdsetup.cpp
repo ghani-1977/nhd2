@@ -3,7 +3,6 @@
 
 	(c) 2012 by martii
 
-
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify
@@ -74,6 +73,7 @@ int GLCD_Menu::color2index(uint32_t color) {
 		return KEY_GLCD_CYAN;
 	if (color == GLCD::cColor::Yellow)
 		return KEY_GLCD_YELLOW;
+	
 	return KEY_GLCD_BLACK;
 }
 
@@ -96,9 +96,9 @@ uint32_t GLCD_Menu::index2color(int i) {
 	case KEY_GLCD_YELLOW:
 		return GLCD::cColor::Yellow;
 	}
+	
 	return GLCD::cColor::ERRCOL;
 }
-
 
 GLCD_Menu::GLCD_Menu()
 {
@@ -108,27 +108,34 @@ GLCD_Menu::GLCD_Menu()
 	notifier = new GLCD_Menu_Notifier();
 }
 
-
 int GLCD_Menu::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	int res = menu_return::RETURN_REPAINT;
 	nGLCD *nglcd = nGLCD::getInstance();
-	if(actionKey == "rescan") {
+	
+	if(actionKey == "rescan") 
+	{
 		nglcd->Rescan();
 		return res;
 	}
-	if(actionKey == "select_font") {
+	
+	if(actionKey == "select_font") 
+	{
 		if(parent)
 			parent->hide();
+		
 		CFileBrowser fileBrowser;
 		CFileFilter fileFilter;
 		fileFilter.addFilter("ttf");
 		fileBrowser.Filter = &fileFilter;
-		if (fileBrowser.exec(FONTDIR) == true) {
+		
+		if (fileBrowser.exec(FONTDIR) == true) 
+		{
 			g_settings.glcd_font = fileBrowser.getSelectedFile()->Name;
 			nglcd->fonts_initialized = false;
 			nglcd->Rescan();
 		}
+		
 		return res;
 	}
 
@@ -144,43 +151,51 @@ void GLCD_Menu::hide()
 {
 }
 
-GLCD_Menu_Notifier::GLCD_Menu_Notifier ()
+GLCD_Menu_Notifier::GLCD_Menu_Notifier()
 {
 }
 
-bool GLCD_Menu_Notifier::changeNotify (const neutrino_locale_t OptionName, void *Data)
+bool GLCD_Menu_Notifier::changeNotify(const neutrino_locale_t OptionName, void *Data)
 {
 	if (!Data)
 		return false;
 	nGLCD *nglcd = nGLCD::getInstance();
-	switch(OptionName) {
-	case LOCALE_GLCD_SELECT_FG:
-		g_settings.glcd_color_fg = GLCD_Menu::index2color(*((int *) Data));
-		break;
-	case LOCALE_GLCD_SELECT_BG:
-		g_settings.glcd_color_bg = GLCD_Menu::index2color(*((int *) Data));
-		break;
-	case LOCALE_GLCD_SELECT_BAR:
-		g_settings.glcd_color_bar = GLCD_Menu::index2color(*((int *) Data));
-		break;
-	case LOCALE_GLCD_ENABLE:
-		if (g_settings.glcd_enable)
-			nglcd->Resume();
-		else
-			nglcd->Suspend();
-		return true;
-		break;
-	case LOCALE_GLCD_MIRROR_OSD:
-		nglcd->doMirrorOSD = g_settings.glcd_mirror_osd;
-		break;
-	case LOCALE_GLCD_TIME_IN_STANDBY:
-	case LOCALE_GLCD_SIZE_CHANNEL:
-	case LOCALE_GLCD_SIZE_EPG:
-	case LOCALE_GLCD_SIZE_BAR:
-	case LOCALE_GLCD_SIZE_TIME:
-		break;
-	default:
-		return false;
+	
+	switch(OptionName) 
+	{
+		case LOCALE_GLCD_SELECT_FG:
+			g_settings.glcd_color_fg = GLCD_Menu::index2color(*((int *) Data));
+			break;
+			
+		case LOCALE_GLCD_SELECT_BG:
+			g_settings.glcd_color_bg = GLCD_Menu::index2color(*((int *) Data));
+			break;
+			
+		case LOCALE_GLCD_SELECT_BAR:
+			g_settings.glcd_color_bar = GLCD_Menu::index2color(*((int *) Data));
+			break;
+			
+		case LOCALE_GLCD_ENABLE:
+			if (g_settings.glcd_enable)
+				nglcd->Resume();
+			else
+				nglcd->Suspend();
+			return true;
+			break;
+			
+		case LOCALE_GLCD_MIRROR_OSD:
+			nglcd->doMirrorOSD = g_settings.glcd_mirror_osd;
+			break;
+			
+		case LOCALE_GLCD_TIME_IN_STANDBY:
+		case LOCALE_GLCD_SIZE_CHANNEL:
+		case LOCALE_GLCD_SIZE_EPG:
+		case LOCALE_GLCD_SIZE_BAR:
+		case LOCALE_GLCD_SIZE_TIME:
+			break;
+			
+		default:
+			return false;
 	}
 
 	nglcd->Update();
@@ -200,6 +215,7 @@ void GLCD_Menu::GLCD_Menu_Settings()
 	int color_bar = color2index(g_settings.glcd_color_bar);
 
 	CMenuWidget * m = new CMenuWidget(LOCALE_GLCD_HEAD, NEUTRINO_ICON_SETTINGS);
+	
 	m->setSelected(selected);
 	m->addItem(GenericMenuSeparator);
 	m->addItem(GenericMenuBack);

@@ -61,7 +61,7 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #endif
 
 // resolution
-#define DEFAULT_XRES		960
+#define DEFAULT_XRES		1280
 #define DEFAULT_YRES		720
 
 // bitmap

@@ -567,7 +567,7 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 
 	dprintf(DEBUG_NORMAL, "[pmt]parse_pmt: pcr pid: old 0x%x new 0x%x\n", channel->getPcrPid(), ((buffer[8] & 0x1F) << 8) + buffer[9]);
 
-	// ci
+	// reset pids
 	if(channel->getCaPmt() != 0) 
 	{
 		if(channel->getCaPmt()->version_number != caPmt->version_number)

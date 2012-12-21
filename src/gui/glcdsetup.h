@@ -41,7 +41,6 @@ class GLCD_Menu_Notifier : public CChangeObserver
 		bool changeNotify(const neutrino_locale_t, void *);
 };
 
-
 class GLCD_Menu : public CMenuTarget
 {
 	private:
