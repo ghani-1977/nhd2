@@ -59,7 +59,7 @@
 
 COPKGManager::COPKGManager()
 {
-	width = 560;
+	width = 650;
 	vp_pkg_menu = NULL;
 	v_pkg_list.clear();
 	v_pkg_installed.clear();

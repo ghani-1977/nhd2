@@ -103,7 +103,7 @@ int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actio
 
 int CAudioSelectMenuHandler::doMenu()
 {
-	CMenuWidget AudioSelector(LOCALE_APIDSELECTOR_HEAD, NEUTRINO_ICON_AUDIO, 400);
+	CMenuWidget AudioSelector(LOCALE_APIDSELECTOR_HEAD, NEUTRINO_ICON_AUDIO);
 	
 	// intros
 	//AudioSelector.addItem(GenericMenuSeparator);

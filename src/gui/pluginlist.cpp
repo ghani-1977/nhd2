@@ -69,7 +69,8 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 	pluginlisttype = listtype;
 	
 	selected = 0;
-	width = 500;
+	//width = 500;
+	width = 650;
 	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
 		width=(g_settings.screen_EndX - g_settings.screen_StartX);
 	

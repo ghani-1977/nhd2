@@ -231,8 +231,12 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	//int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
 	//width  = w_max (62 * fw, 20);
 	//height = h_max (23 * fh, 20);
-	width = w_max (768, 70);
-	height = h_max (576, 50 + 30); // 30 for the bottom button box.
+	//width = w_max (768, 70);
+	//height = h_max (576, 50 + 30); // 30 for the bottom button box.
+	
+	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
+	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
 
 	iheight = 30;	// info bar height (see below, hard coded at this time)
 	theight  = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->getHeight();

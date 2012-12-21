@@ -65,7 +65,7 @@ int CEPGMenuHandler::exec(CMenuTarget* parent, const std::string &actionkey)
 	return res;
 }
 
-int CEPGMenuHandler::doMenu ()
+int CEPGMenuHandler::doMenu()
 {
 	CMenuWidget EPGSelector(LOCALE_EPGMENU_HEAD, NEUTRINO_ICON_FEATURES, 350);
 

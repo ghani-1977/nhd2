@@ -142,8 +142,12 @@ CEpgData::CEpgData()
 
 void CEpgData::start()
 {
-	ox = w_max (768, 70);
-	oy = h_max (576, 50 + 30); // 30 for the bottom button box.
+	//ox = w_max (768, 70);
+	//oy = h_max (576, 50 + 30); // 30 for the bottom button box.
+	
+	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	ox  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
+	oy = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
 	
 	sx = (((g_settings.screen_EndX - g_settings.screen_StartX) -ox) / 2) + g_settings.screen_StartX;
 

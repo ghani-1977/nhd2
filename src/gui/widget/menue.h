@@ -404,8 +404,8 @@ class CMenuWidget : public CMenuTarget
 
 	public:
 		CMenuWidget();
-		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576 );
-		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576 );
+		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = 650, const int mheight = 576 );
+		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 650, const int mheight = 576 );
 		
 		~CMenuWidget();
 

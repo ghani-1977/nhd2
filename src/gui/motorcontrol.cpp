@@ -78,7 +78,7 @@ void CMotorControl::Init(void)
 
 	satfindpid = -1;
 	
-	width = w_max(470, 0);
+	width = w_max(570, 0);
 	mheight = mheight - 2;
 	height = hheight + (20 * mheight) - 5;
 	height = h_max(height, 0);

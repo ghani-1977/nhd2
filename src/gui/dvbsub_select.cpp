@@ -73,7 +73,7 @@ int CDVBSubSelectMenuHandler::exec(CMenuTarget* parent, const std::string &actio
 
 int CDVBSubSelectMenuHandler::doMenu ()
 {
-	CMenuWidget DVBSubSelector(LOCALE_SUBTITLES_HEAD, NEUTRINO_ICON_SUBT, 400);
+	CMenuWidget DVBSubSelector(LOCALE_SUBTITLES_HEAD, NEUTRINO_ICON_SUBT);
 	
 	// intros
 	//DVBSubSelector.addItem(GenericMenuSeparator);

@@ -304,7 +304,7 @@ int CBouquetList::show(bool bShowChannelList)
 	neutrino_msg_data_t data;
 	int res = -1;
 
-	//if(Bouquets.size()==0)
+	//if(Bouquets.size() == 0)
 	//	return res;
 #if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
@@ -314,10 +314,17 @@ int CBouquetList::show(bool bShowChannelList)
 	
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	
 	//width  = w_max (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth()*52, 20);//500
 	//height = h_max (16 * fheight, 40);
-	width = w_max (768, 70);
-	height = h_max (576, 50 + 30); // 30 for the bottom button box.
+	
+	// from channellist
+	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
+	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	
+	//width = w_max (768, 70);
+	//height = h_max (576, 50 + 30); // 30 for the bottom button box.
 
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -329,6 +336,7 @@ int CBouquetList::show(bool bShowChannelList)
 
 	int maxpos= 1;
 	int i= Bouquets.size();
+	
 	while ((i= i/10)!=0)
 		maxpos++;
 
@@ -448,6 +456,7 @@ int CBouquetList::show(bool bShowChannelList)
 			paintItem(prev_selected - liststart);
 			unsigned int oldliststart = liststart;
 			liststart = (selected/listmaxshow)*listmaxshow;
+			
 			if(oldliststart!=liststart)
 				paint();
 			else
@@ -493,6 +502,7 @@ int CBouquetList::show(bool bShowChannelList)
 			paintItem(prevselected - liststart);
 			unsigned int oldliststart = liststart;
 			liststart = (selected/listmaxshow)*listmaxshow;
+			
 			if(oldliststart!=liststart) 
 			{
 				paint();

@@ -114,7 +114,7 @@ int CFavorites::addChannelToFavorites(bool show_list)
 // -- Add current channel to Favorites and display user messagebox
 //
 
-int CFavorites::exec(CMenuTarget* parent, const std::string & actionKey)
+int CFavorites::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	int         status;
 	std::string str;
@@ -153,8 +153,11 @@ int CFavorites::exec(CMenuTarget* parent, const std::string & actionKey)
 	str = "";
 	if(show_list)
 	{
-		if (status & 2)  str += g_Locale->getText(LOCALE_EXTRA_CHADDED);
-		else	str += g_Locale->getText(LOCALE_EXTRA_CHALREADYINBQ);
+		if (status & 2)  
+			str += g_Locale->getText(LOCALE_EXTRA_CHADDED);
+		else	
+			str += g_Locale->getText(LOCALE_EXTRA_CHALREADYINBQ);
+		
 		ShowMsgUTF(LOCALE_EXTRA_ADD_TO_BOUQUET, str, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO); // UTF-8
 	}
 	else

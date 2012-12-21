@@ -1449,7 +1449,7 @@ void CMoviePlayerGui::PlayFile(void)
 		// Audio Pids
 		if (showaudioselectdialog) 
 		{
-			CMenuWidget APIDSelector(LOCALE_APIDSELECTOR_HEAD, NEUTRINO_ICON_AUDIO, 400);
+			CMenuWidget APIDSelector(LOCALE_APIDSELECTOR_HEAD, NEUTRINO_ICON_AUDIO);
 
 			// g_apids will be rewritten for mb
 			playback->FindAllPids(g_apids, g_ac3flags, &g_numpida, g_language);

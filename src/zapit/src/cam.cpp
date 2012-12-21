@@ -69,7 +69,7 @@ bool CCam::setCaPmt(CZapitChannel * thischannel, CCaPmt * const caPmt, int demux
 	if (!caPmt)
 		return true;
 
-	printf("CCam::setCaPmt: dmx %d camask %d update %s\n", demux, camask, update ? "yes" : "no" );
+	printf("CCam::setCaPmt: demux_index:(%d) camask:(%d) update:(%s)\n", demux, camask, update ? "yes" : "no" );
 	
 	unsigned int size = caPmt->CamgetLength();
 	unsigned char buffer[3 + get_length_field_size(size) + size];
