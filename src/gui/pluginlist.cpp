@@ -69,10 +69,9 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 	pluginlisttype = listtype;
 	
 	selected = 0;
-	//width = 500;
-	width = 650;
-	if(width > (g_settings.screen_EndX - g_settings.screen_StartX))
-		width = (g_settings.screen_EndX - g_settings.screen_StartX);
+	width = MENU_WIDTH;
+	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
+		width=(g_settings.screen_EndX - g_settings.screen_StartX);
 	
 	height = 526;
 	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
@@ -137,7 +136,7 @@ int CPluginList::exec(CMenuTarget* parent, const std::string & /*actionKey*/)
 
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -235,7 +234,8 @@ int CPluginList::exec(CMenuTarget* parent, const std::string & /*actionKey*/)
 			loop = false;
 			res = menu_return::RETURN_EXIT_ALL;
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -248,7 +248,8 @@ int CPluginList::exec(CMenuTarget* parent, const std::string & /*actionKey*/)
 void CPluginList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width + 15, height + ((RADIUS_MID * 2) + 1));
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -345,9 +346,9 @@ void CPluginList::paintHead()
 void CPluginList::paint()
 {
 	hide();
-	width = 650;
-	if(width > (g_settings.screen_EndX-g_settings.screen_StartX))
-		width = (g_settings.screen_EndX-g_settings.screen_StartX);
+	width = MENU_WIDTH;
+	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
+		width=(g_settings.screen_EndX-g_settings.screen_StartX);
 	height = 526;
 	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
 		height=(g_settings.screen_EndY-g_settings.screen_StartY) - 50; // 2*25 pixel frei
@@ -388,7 +389,7 @@ CPluginList::result_ CPluginList::pluginSelected()
 	
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 	
