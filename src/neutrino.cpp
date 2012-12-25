@@ -2027,7 +2027,7 @@ void CNeutrinoApp::SetupFonts()
 		if(g_Font[i] != NULL) 
 			delete g_Font[i];
 
-		g_Font[i] = g_fontRenderer->getFont(font.name, style[neutrino_font[i].style], configfile.getInt32(locale_real_names[neutrino_font[i].name], neutrino_font[i].defaultsize) + neutrino_font[i].size_offset * font.size_offset);
+		g_Font[i] = g_fontRenderer->getFont(font.name, style[neutrino_font[i].style], neutrino_font[i].defaultsize + neutrino_font[i].size_offset * font.size_offset);
 	}
 
 	// set signal font

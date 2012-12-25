@@ -283,22 +283,22 @@ return 0;
 	FTC_SBit glyph;
 	int index;
 
-	index=FT_Get_Char_Index(face, 'M'); // "M" gives us ascender
+	index = FT_Get_Char_Index(face, 'M'); // "M" gives us ascender
 	getGlyphBitmap(index, &glyph);
-	int tM=glyph->top;
+	int tM = glyph->top;
 	fontwidth = glyph->width;
 
-	index=FT_Get_Char_Index(face, 'g'); // "g" gives us descender
+	index = FT_Get_Char_Index(face, 'g'); // "g" gives us descender
 	getGlyphBitmap(index, &glyph);
-	int hg=glyph->height;
-	int tg=glyph->top;
+	int hg = glyph->height;
+	int tg = glyph->top;
 
-	ascender=tM;
-	descender=tg-hg; //this is a negative value!
-	int halflinegap= -(descender>>1); // |descender/2| - we use descender as linegap, half at top, half at bottom
+	ascender = tM;
+	descender = tg - hg; //this is a negative value!
+	int halflinegap = -(descender>>1); // |descender/2| - we use descender as linegap, half at top, half at bottom
 	upper = halflinegap+ascender+3;   // we add 3 at top
 	lower = -descender+halflinegap+1; // we add 1 at bottom
-	height=upper+lower;               // this is total height == distance of lines
+	height = upper+lower;               // this is total height == distance of lines
 	// hack end
 
 	//printf("glyph: hM=%d tM=%d hg=%d tg=%d ascender=%d descender=%d height=%d linegap/2=%d upper=%d lower=%d\n",
@@ -316,9 +316,6 @@ int Font::getWidth(void)
 {
 	return fontwidth;
 }
-
-//TODO add arabic font borrowed from enigma 
-extern void shape (std::vector<unsigned long> &string, const std::vector<unsigned long> &text);
 
 int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on error
 {
@@ -656,35 +653,5 @@ int Font::getRenderWidth(const std::string & text, const bool utf8_encoded)
 	return getRenderWidth(text.c_str(), utf8_encoded);
 }
 
-//TEST
-#if 0
-void Font::Bidi(const char *Ltr)
-{
-	fribidi_set_mirroring(true);
-	fribidi_set_reorder_nsm(false);
-	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;
-	int LtrLen = strlen(Ltr);
-	FriBidiCharType Base = FRIBIDI_TYPE_L;
-	FriBidiChar *Logical = (FriBidiChar *)malloc(LtrLen + 1) ;
-	int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(Ltr), LtrLen, Logical);
-	FriBidiChar *Visual = (FriBidiChar *)malloc(LtrLen + 1) ;
-	char *Rtl = NULL;
-	bool ok = fribidi_log2vis(Logical, RtlLen, &Base, Visual, NULL, NULL, NULL);
-	if (ok) 
-	{
-		fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
-		Rtl = (char *)malloc(RtlLen * 4);
-		fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
-	}
-	
-	free(Logical);
-	free(Visual);
-	if (ok)
-		return Rtl;
-	
-	return Ltr;
-}
-#endif
-//
 
 
