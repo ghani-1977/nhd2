@@ -397,7 +397,6 @@ struct SNeutrinoSettings
 	int infobar_sat_display;
 	int infobar_subchan_disp_pos;
 	int rotor_swap;
-	int mb_preview;
 	char timezone[150];
 
 	int radiotext_enable;

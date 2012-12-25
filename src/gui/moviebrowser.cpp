@@ -877,7 +877,8 @@ int CMovieBrowser::exec(CMenuTarget* parent, const std::string & actionKey)
 	else if(actionKey == "reload_movie_info")
 	{
 		loadMovies();
-		refresh();
+		updateMovieSelection();
+		//refresh();
 	}
 	else if(actionKey == "run")
 	{
@@ -1275,7 +1276,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 		
 		logo_ok = !access(fname.c_str(), F_OK);
 
-		m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2, (g_settings.mb_preview && logo_ok) ? m_cBoxFrameInfo.iWidth-picw-20: 0);
+		m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2, (logo_ok) ? m_cBoxFrameInfo.iWidth-picw-20: 0);
 
 		//printf("refreshMovieInfo: EpgId %llx id %llx y %d\n", m_movieSelectionHandler->epgEpgId, m_movieSelectionHandler->epgId, m_cBoxFrameTitleRel.iY);
 		
@@ -1286,8 +1287,8 @@ void CMovieBrowser::refreshMovieInfo(void)
 		//m_pcWindow->paintBoxRel(lx, ly, PIC_W, PIC_H, TITLE_BACKGROUND_COLOR);
         	//g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
 
-		/* display screenshot */
-		if(g_settings.mb_preview && logo_ok) 
+		/* display screenshot if exists */
+		if(logo_ok) 
 		{
 			lx = m_cBoxFrameInfo.iX+m_cBoxFrameInfo.iWidth - picw - 10;
 			ly = m_cBoxFrameInfo.iY + (m_cBoxFrameInfo.iHeight - pich)/2;
@@ -1717,6 +1718,7 @@ bool CMovieBrowser::onButtonPress(neutrino_msg_t msg)
 				break;
 		}
 	}
+	
 	return (result);
 }
 
@@ -1863,7 +1865,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			ShowMsgUTF(LOCALE_MESSAGEBOX_ERROR, "Impossible to truncate playing movie.", CMessageBox::mbrCancel, CMessageBox::mbCancel, NEUTRINO_ICON_ERROR);
 		else if(m_movieSelectionHandler->bookmarks.end == 0)
 			ShowMsgUTF(LOCALE_MESSAGEBOX_ERROR, "No End bookmark defined!", CMessageBox::mbrCancel, CMessageBox::mbCancel, NEUTRINO_ICON_ERROR);
-		else {
+		else 
+		{
 			if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, "Truncate movie ?", CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) {
 				CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, "Truncating, please wait");
 				hintBox->paint();
@@ -2256,6 +2259,7 @@ void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 	else if(gui == MB_GUI_LAST_PLAY)
 	{
 		TRACE("[mb] last play \r\n");
+		
 		// Paint these frames ...
 		m_showLastRecordFiles = true;
 		m_showLastPlayFiles = true;
@@ -2300,11 +2304,15 @@ void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
  	else if(gui == MB_GUI_FILTER)
 	{
 		TRACE("[mb] filter \r\n");
+		
 		// Paint these frames ...
 		m_showFilter = true;
+		
 		// ... and hide these frames
 		m_showMovieInfo = false;
+		
 		m_pcInfo->hide();
+		
 		m_pcFilter->paint();
 		
 		onSetFocus(MB_FOCUS_FILTER);
@@ -2348,13 +2356,13 @@ void CMovieBrowser::onSetFocus(MB_FOCUS new_focus)
 	//TRACE("[mb]->onSetFocus %d \r\n",new_focus);
 	
 	m_windowFocus = new_focus;
+	
 	if(m_windowFocus == MB_FOCUS_BROWSER)
 	{
 			m_pcBrowser->showSelection(true);
 			m_pcLastRecord->showSelection(false);
 			m_pcLastPlay->showSelection(false);
 			m_pcFilter->showSelection(false);
-			//m_pcInfo->showSelection(false);
 	}
 	else if(m_windowFocus == MB_FOCUS_LAST_PLAY)
 	{
@@ -2362,7 +2370,6 @@ void CMovieBrowser::onSetFocus(MB_FOCUS new_focus)
 			m_pcLastRecord->showSelection(false);
 			m_pcLastPlay->showSelection(true);
 			m_pcFilter->showSelection(false);
-			//m_pcInfo->showSelection(false);
 	}
 	else if(m_windowFocus == MB_FOCUS_LAST_RECORD)
 	{
@@ -2370,7 +2377,6 @@ void CMovieBrowser::onSetFocus(MB_FOCUS new_focus)
 			m_pcLastRecord->showSelection(true);
 			m_pcLastPlay->showSelection(false);
 			m_pcFilter->showSelection(false);
-			//m_pcInfo->showSelection(false);
 	}
 	else if(m_windowFocus == MB_FOCUS_MOVIE_INFO)
 	{
@@ -2378,7 +2384,6 @@ void CMovieBrowser::onSetFocus(MB_FOCUS new_focus)
 			m_pcLastRecord->showSelection(false);
 			m_pcLastPlay->showSelection(false);
 			m_pcFilter->showSelection(false);
-			//m_pcInfo->showSelection(true);
 	}
 	else if(m_windowFocus == MB_FOCUS_FILTER)
 	{
@@ -2386,7 +2391,6 @@ void CMovieBrowser::onSetFocus(MB_FOCUS new_focus)
 			m_pcLastRecord->showSelection(false);
 			m_pcLastPlay->showSelection(false);
 			m_pcFilter->showSelection(true);
-			//m_pcInfo->showSelection(false);
 	}
 	
 	updateMovieSelection();

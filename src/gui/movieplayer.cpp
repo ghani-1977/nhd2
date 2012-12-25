@@ -1005,7 +1005,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info
-	MI_MOVIE_INFO *p_movie_info = NULL;	// movie info handle which comes from the MovieBrowser, if not NULL MoviePla yer is able to save new bookmarks
+	MI_MOVIE_INFO * p_movie_info = NULL;	// movie info handle which comes from the MovieBrowser, if not NULL MoviePla yer is able to save new bookmarks
 
 	int width = 280;
 	int height = 65;

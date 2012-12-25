@@ -13,6 +13,10 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
 
+if !ENABLE_GSTREAMER
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+endif
+
 if ENABLE_UPNP
 INCLUDES += -I$(top_srcdir)/lib/libupnpclient
 endif

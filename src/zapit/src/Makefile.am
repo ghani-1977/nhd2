@@ -9,6 +9,10 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libxmltree \
 	-I$(top_srcdir)/lib/libcoolstream
 
+if !ENABLE_GSTREAMER
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+endif
+
 noinst_LIBRARIES = libzapit.a
 
 libzapit_a_SOURCES = \

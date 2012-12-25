@@ -7,6 +7,10 @@ INCLUDES = \
         @FREETYPE_CFLAGS@ \
         @VORBISIDEC_CFLAGS@
 
+if !ENABLE_GSTREAMER
+INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+endif
+
 noinst_LIBRARIES = libneutrino_driver_audiodec.a
 
 libneutrino_driver_audiodec_a_SOURCES = \

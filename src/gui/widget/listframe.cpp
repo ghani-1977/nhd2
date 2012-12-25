@@ -358,7 +358,9 @@ void CListFrame::onNewLineArray(void)
 void CListFrame::refreshTitle(void)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame]->refreshHeaderList \r\n");
-	if( frameBuffer == NULL) return;
+	
+	if( frameBuffer == NULL) 
+		return;
 
 	frameBuffer->paintBoxRel(m_cFrameTitleRel.iX+m_cFrame.iX, m_cFrameTitleRel.iY+m_cFrame.iY, m_cFrameTitleRel.iWidth, m_cFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR);
 
@@ -368,8 +370,11 @@ void CListFrame::refreshTitle(void)
 void CListFrame::refreshScroll(void)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame]->refreshScroll\r\n");
-	if( frameBuffer == NULL) return;
-	if(!(m_nMode & SCROLL)) return;
+	
+	if( frameBuffer == NULL) 
+		return;
+	if(!(m_nMode & SCROLL)) 
+		return;
 
 	if (m_nNrOfPages > 1) 
 	{
@@ -402,7 +407,7 @@ void CListFrame::refreshList(void)
 		{
 			color = LIST_FONT_COLOR_SELECTED;
 
-			//frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED, RADIUS_LARGE, 3);
+			//frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED, RADIUS_LARGE, CORNER_BOTH);
 			//test
 			frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED);
 		}
@@ -425,8 +430,10 @@ void CListFrame::refreshList(void)
 
 void CListFrame::refreshLine(int line)
 {
-	if( frameBuffer == NULL) return;
-	if( m_nNrOfLines <= 0) return;
+	if( frameBuffer == NULL) 
+		return;
+	if( m_nNrOfLines <= 0) 
+		return;
 
 	if((line < m_nCurrentLine) && (line > m_nCurrentLine + m_nLinesPerPage))
 		return;
@@ -468,8 +475,11 @@ void CListFrame::refreshLine(int line)
 void CListFrame::refreshHeaderList(void)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame]->refreshHeaderList \r\n");
-	if( frameBuffer == NULL) return;
-	if(!(m_nMode & HEADER_LINE))return;
+	
+	if( frameBuffer == NULL) 
+		return;
+	if(!(m_nMode & HEADER_LINE))
+		return;
 
 	frameBuffer->paintBoxRel(m_cFrameHeaderListRel.iX+m_cFrame.iX, m_cFrameHeaderListRel.iY+m_cFrame.iY, m_cFrameHeaderListRel.iWidth, m_cFrameHeaderListRel.iHeight, HEADER_LIST_BACKGROUND_COLOR);
 
@@ -480,13 +490,13 @@ void CListFrame::refreshHeaderList(void)
 	for(int row = 0; row < m_pLines->rows && loop == true; row++)
 	{
 		width = m_pLines->rowWidth[row] ;
-		if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH)
+		//if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH)
 		//test
-		//if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH)
+		if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH)
 		{
-			width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH;
+			//width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH;
 			//test
-			//width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH;
+			width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH;
 
 			dprintf(DEBUG_DEBUG, "   normalize width to %d , x:%d \r\n",width,x);
 			loop = false;
@@ -612,6 +622,7 @@ void CListFrame::scrollPageUp(const int pages)
 void CListFrame::refresh(void)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame]->Refresh\r\n");
+	
 	if( frameBuffer == NULL) 
 		return;
 
@@ -656,6 +667,7 @@ bool CListFrame::setTitle(char* title)
 bool CListFrame::setSelectedLine(int selection)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame]->setSelectedLine %d \r\n",selection);
+	
 	bool result = false;
 	if(selection >= 0 && selection < m_nNrOfLines)
 	{ 
@@ -678,7 +690,7 @@ void CListFrame::hide(void)
 	
 	dprintf(DEBUG_DEBUG, "[CListFrame]->hide %s\n", m_textTitle.c_str());
 
-	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX - 10, m_cFrame.iY - 10, m_cFrame.iWidth + 10, m_cFrame.iHeight + 10);
+	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX, m_cFrame.iY, m_cFrame.iWidth, m_cFrame.iHeight);
 	
 	frameBuffer = NULL;
 }

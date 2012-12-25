@@ -776,7 +776,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.video_Format = configfile.getInt32("video_Format", VIDEOFORMAT_PANSCAN2);
 
 	//wss	
-	g_settings.wss_mode = configfile.getInt32("wss_mode", WSS_OFF);
+	g_settings.wss_mode = configfile.getInt32("wss_mode", WSS_AUTO);
 	
 	g_settings.contrast = configfile.getInt32( "contrast", 130);
 	g_settings.saturation = configfile.getInt32( "saturation", 130);
@@ -1116,9 +1116,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	//misc
 	g_settings.power_standby = configfile.getInt32( "power_standby", 0);
 	g_settings.rotor_swap = configfile.getInt32( "rotor_swap", 0);
-	
-	// mb preview
-	g_settings.mb_preview = configfile.getBool("mb_preview", false);
 
 	g_settings.shutdown_real = configfile.getBool("shutdown_real", true );
 	g_settings.shutdown_real_rcdelay = configfile.getBool("shutdown_real_rcdelay", false );
@@ -1574,8 +1571,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "power_standby", g_settings.power_standby);
 
 	configfile.setInt32( "rotor_swap", g_settings.rotor_swap);
-	
-	configfile.setBool("mb_preview", g_settings.mb_preview);
 
 	configfile.setInt32( "zap_cycle", g_settings.zap_cycle );
 	configfile.setInt32( "sms_channel", g_settings.sms_channel );
@@ -4031,13 +4026,6 @@ skip_message:
 	else if (msg == NeutrinoMessages::EVT_START_PLUGIN) 
 	{
 		g_PluginList->startPlugin((const char *)data);
-		
-		/*
-		if (!g_PluginList->getScriptOutput().empty()) 
-		{
-			ShowMsgUTF(LOCALE_PLUGINS_RESULT, g_PluginList->getScriptOutput(), CMessageBox::mbrBack,CMessageBox::mbBack,NEUTRINO_ICON_SHELL);
-		}
-		*/
 		
 		delete[] (unsigned char*) data;
 		return messages_return::handled;
