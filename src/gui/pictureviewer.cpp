@@ -149,7 +149,8 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
 	{
 		frameBuffer->saveBackgroundImage();
 		frameBuffer->ClearFrameBuffer();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -171,7 +172,8 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
 		frameBuffer->restoreBackgroundImage();
 		frameBuffer->useBackground(true);
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif			
 	}
@@ -544,7 +546,8 @@ int CPictureViewerGui::show()
 				loop = false;
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -559,7 +562,8 @@ void CPictureViewerGui::hide()
 	if(visible) 
 	{
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 		visible = false;
@@ -711,7 +715,7 @@ void CPictureViewerGui::paint()
 	paintFoot();
 	paintInfo();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 	

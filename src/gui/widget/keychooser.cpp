@@ -111,7 +111,7 @@ int CKeyChooserItem::exec(CMenuTarget* parent, const std::string &)
 
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 
@@ -140,7 +140,7 @@ void CKeyChooserItem::hide()
 {
 	CFrameBuffer::getInstance()->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 }

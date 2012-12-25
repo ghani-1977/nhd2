@@ -132,7 +132,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	width = w_max(450, 0);
+	width = w_max(MENU_WIDTH - 100, 0);
 
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
@@ -154,16 +154,14 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	unsigned char brightness_old = *brightness;
 	unsigned char tint_old = *tint;
 
-	#if 1
 	setContrast(*contrast);
 	setSaturation(*saturation);
 	setBrightness(*brightness);
 	setTint(*tint);
-	#endif
 	
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -414,7 +412,8 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 					res = menu_return::RETURN_EXIT_ALL;
 				}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -430,7 +429,8 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 void CPSISetup::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }

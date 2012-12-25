@@ -30,7 +30,8 @@ function do_lcshot2(){
 	if(document.f.grayscale.checked)
 		gscale = " -g";
 
-	dbox_exec_tools("lcshot"+gscale+comp+zoom+color+" /tmp/"+filename+".png");
+	//dbox_exec_tools("lcshot"+gscale+comp+zoom+color+" /tmp/"+filename+".png");
+	loadSyncURL("/control/lcd?shotpng=" + "/tmp/"+filename+".png");
 	show_waitbox(false);
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".png?"+Math.random();

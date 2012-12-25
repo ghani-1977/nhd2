@@ -87,7 +87,7 @@ CDBoxInfoWidget::CDBoxInfoWidget()
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	
-	width  = w_max (600, 0);
+	width  = w_max (MENU_WIDTH + 100, 0);
 	height = h_max (hheight + (10 + FrontendCount)*mheight + 20, 0);
 	
     	x = (((g_settings.screen_EndX - g_settings.screen_StartX) - width) / 2) + g_settings.screen_StartX;
@@ -102,8 +102,8 @@ int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 	}
 	
 	paint();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -117,7 +117,8 @@ int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 void CDBoxInfoWidget::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

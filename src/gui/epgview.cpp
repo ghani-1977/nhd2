@@ -142,9 +142,7 @@ CEpgData::CEpgData()
 
 void CEpgData::start()
 {
-	//ox = w_max (768, 70);
-	//oy = h_max (576, 50 + 30); // 30 for the bottom button box.
-	
+	// dimension
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	ox  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
 	oy = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
@@ -441,7 +439,9 @@ const char * GetGenre(const unsigned char contentClassification) // UTF-8
 
 	//unsigned char i = (contentClassification & 0x0F0);
 	int i = (contentClassification & 0xF0);
+	
 	//printf("GetGenre: contentClassification %X i %X bool %s\n", contentClassification, i, i < 176 ? "yes" : "no"); fflush(stdout);
+	
 	if ((i >= 0x010) && (i < 0x0B0))
 	{
 		i >>= 4;
@@ -485,7 +485,8 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	if (oldtoph > toph)
 	{
 		frameBuffer->paintBackgroundBox (sx, sy - oldtoph- 1, sx + ox, sy );
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -535,7 +536,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
   		sort(evtlist.begin(),evtlist.end(),sortByDateTime);
 		
 		frameBuffer->paintBackgroundBoxRel(g_settings.screen_StartX, g_settings.screen_StartY, 50, height + 5);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -706,7 +708,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ ox- botboxheight+ 8, sy+ oy- 3, widthr, ">", COL_MENUCONTENT + 3);
 	}
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -744,7 +746,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					break;
 					
 				case NeutrinoMessages::EVT_CURRENTNEXT_EPG:
-					if (/* !id &&*/ ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL))) {
+					if (/* !id &&*/ ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL))) 
+					{
 						show(channel_id);
 						showPos=0;
 					}
@@ -756,7 +759,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					{
 						frameBuffer->paintBoxRel(sx + 5, sy + oy - botboxheight + 4, botboxheight - 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
 						
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 						frameBuffer->blit();
 #endif
 
@@ -772,7 +775,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					{
 						frameBuffer->paintBoxRel(sx+ ox- botboxheight + 8 - 5, sy + oy- botboxheight + 4, botboxheight- 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
 						
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 						frameBuffer->blit();
 #endif
 
@@ -899,12 +902,11 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					break;
 				}
 				
-				//case CRCInput::RC_help:
 				case CRCInput::RC_info:
 					bigFonts = bigFonts ? false : true;
 					
 					frameBuffer->paintBackgroundBox(sx, sy- toph, sx + ox, sy + oy + 30);
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					frameBuffer->blit();
 #endif
 					
@@ -950,7 +952,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 						}
 					}
 			}
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif			
 		}
@@ -972,8 +974,9 @@ void CEpgData::hide()
 	}
 
 	frameBuffer->paintBackgroundBox (sx, sy- toph, sx + ox, sy + oy + 30); 	// 30: button bar height
-#ifdef FB_BLIT
-	frameBuffer->blit(); 		// 30: button bar height
+
+#if !defined USE_OPENGL
+	frameBuffer->blit();
 #endif
 	
         showTimerEventBar(false);
@@ -1154,7 +1157,8 @@ void CEpgData::showTimerEventBar (bool show)
 	{
 		// hide
 		frameBuffer->paintBackgroundBoxRel(x, y, w, h);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 		return;

@@ -176,7 +176,7 @@ void CBEChannelWidget::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height + ButtonHeight);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -194,10 +194,13 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 
         //width  = w_max (500, 0);
         //height = h_max (440, 50);
-	int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	width  = w_max (64 * fw, 20);
-	height = h_max (20 * fh, 50);
+	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	//int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
+	//width  = w_max (64 * fw, 20);
+	//height = h_max (20 * fh, 50);
+	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
+	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
 	
 	listmaxshow = (height-theight-0)/fheight;
 	height = theight+0+listmaxshow*fheight; // recalc height
@@ -209,7 +212,7 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 	paint();
 	paintFoot();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -367,7 +370,8 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 		{
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}

@@ -26,7 +26,7 @@
 
 // stm_ioctl
 #ifdef __sh__
-#include <linux/dvb/stm_ioctls.h>
+#include <linux/stm_ioctls.h>
 #endif
 
 // bcm

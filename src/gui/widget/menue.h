@@ -40,6 +40,10 @@
 #include <string>
 #include <vector>
 
+
+#define MENU_WIDTH	550	//NOTE: if you are using 1280x720 fb set it to 650
+#define MENU_HEIGHT	576
+
 struct menu_return
 {
 	enum
@@ -404,8 +408,8 @@ class CMenuWidget : public CMenuTarget
 
 	public:
 		CMenuWidget();
-		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = 650, const int mheight = 576 );
-		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 650, const int mheight = 576 );
+		CMenuWidget(const char* Name, const std::string & Icon = "", const int mwidth = MENU_WIDTH, const int mheight = MENU_HEIGHT );
+		CMenuWidget(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = MENU_WIDTH, const int mheight = MENU_HEIGHT );
 		
 		~CMenuWidget();
 

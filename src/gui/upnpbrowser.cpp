@@ -103,7 +103,8 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	g_Zapit->lockPlayBack();
 
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	m_frameBuffer->blit();
 #endif
 
@@ -374,8 +375,8 @@ void CUpnpBrowserGui::selectDevice()
 		delete scanBox;
 		return;
 	}
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	m_frameBuffer->blit();
 #endif	
 
@@ -464,7 +465,8 @@ void CUpnpBrowserGui::selectDevice()
 				loop = false;
 			changed=true;
 		}
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 		m_frameBuffer->blit();
 #endif		
 	}
@@ -847,11 +849,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		}
 
 		if (m_folderplay && (CAudioPlayer::getInstance()->getState() == CBaseDec::STOP))
-			playnext();
-		
-#ifdef FB_BLIT	
-		//m_frameBuffer->blit();
-#endif		
+			playnext();		
 	}
 	if (entries)
 		delete entries;
@@ -888,10 +886,6 @@ void CUpnpBrowserGui::paintDevicePos(unsigned int pos)
 	int w = g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->getRenderWidth(name) + 5;
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 10, ypos + m_fheight, m_width - 30 - w, num, color, m_fheight, true); // UTF-8
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, name, color, m_fheight, true); // UTF-8
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 }
 
 void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int pos, unsigned int selected)
@@ -950,11 +944,6 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight,
 		w, info, color, m_fheight);
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 30, ypos + m_fheight, m_width - 50 - w, name, color, m_fheight, true); // UTF-8
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
-
 }
 
 void CUpnpBrowserGui::paintDevice()
@@ -1048,10 +1037,6 @@ void CUpnpBrowserGui::paintDevice()
 		m_x + 10, top + 4, ButtonWidth, 1, &RescanButton);
 
 	//clearItem2DetailsLine(); // clear it
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 }
 
 void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int selected, unsigned int max, unsigned int offset)
@@ -1186,10 +1171,6 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 3 * ButtonWidth + 10, top + 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 3 * ButtonWidth + 40, top + 19 + 4, ButtonWidth - 40, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR, 0, true); // UTF-8
-	
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 }
 
 void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int index, bool use_playing)
@@ -1200,9 +1181,6 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 	if ((!use_playing) && ((*entry)[index].isdir))
 	{
 		m_frameBuffer->paintBackgroundBoxRel(m_x, top + 2, m_width, 2 * m_buttonHeight);
-#ifdef FB_BLIT
-		//m_frameBuffer->blit();
-#endif
 	}
 	else
 	{
@@ -1309,16 +1287,10 @@ void CUpnpBrowserGui::paintItem2DetailsLine (int pos, unsigned int /*ch_index*/)
 
 	// Clear
 	m_frameBuffer->paintBackgroundBoxRel(xpos, m_y + m_title_height, ConnectLineBox_Width, m_height+m_info_height-(m_y + m_title_height));
-#ifdef FB_BLIT
-	//m_frameBuffer->blit();
-#endif
 	
 	if (pos < 0) 
 	{
 		m_frameBuffer->paintBackgroundBoxRel(m_x - 10, m_y + (m_height - m_info_height - 1 * m_buttonHeight) -8, m_width + 10, m_info_height + 10);
-#ifdef FB_BLIT
-		//m_frameBuffer->blit();
-#endif
 	}
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0)

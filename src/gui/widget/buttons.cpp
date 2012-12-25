@@ -26,6 +26,7 @@
 #include <gui/widget/buttons.h>
 #include <gui/color.h>
 
+
 void paintButtons(CFrameBuffer * const frameBuffer, Font * const font, const CLocaleManager * const localemanager, const int x, const int y, const unsigned int buttonwidth, const unsigned int count, const struct button_label * const content)
 {
 	for (unsigned int i = 0; i < count; i++)

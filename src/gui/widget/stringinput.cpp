@@ -316,7 +316,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -418,7 +418,8 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 				}
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif		
 	}
@@ -457,7 +458,8 @@ int CStringInput::handleOthers(const neutrino_msg_t msg, const neutrino_msg_data
 void CStringInput::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -714,7 +716,7 @@ int CPINInput::exec( CMenuTarget* parent, const std::string & )
 
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -766,7 +768,8 @@ int CPINInput::exec( CMenuTarget* parent, const std::string & )
 				}
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -832,8 +835,8 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	if (pixbuf != NULL)
 	{
 		frameBuffer->SaveScreen(x- borderwidth, y- borderwidth, width+ 2* borderwidth, height+ 2* borderwidth, pixbuf);
-		//frameBuffer->SaveScreen(x- borderwidth, y- borderwidth, 720, 576, pixbuf);
-#ifdef FB_BLIT
+		
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -844,7 +847,7 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	frameBuffer->paintBackgroundBoxRel(x- borderwidth, y, borderwidth, height);
 	frameBuffer->paintBackgroundBoxRel(x+ width, y, borderwidth, height);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -853,7 +856,8 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	if (pixbuf != NULL)
 	{
 		frameBuffer->RestoreScreen(x- borderwidth, y- borderwidth, width+ 2* borderwidth, height+ 2* borderwidth, pixbuf);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 		//frameBuffer->RestoreScreen(x- borderwidth, y- borderwidth, 720, 576, pixbuf);

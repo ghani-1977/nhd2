@@ -105,9 +105,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	
-	width       = w_max(680, 0);
-	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth();
-	//width       = w_max(fw * 42, 0);
+	width       = w_max(MENU_WIDTH + 100, 0);
 	height      = h_max(hheight + (10 * mheight), 0); //9 lines
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
@@ -234,7 +232,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	
 	paint(test);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -311,7 +309,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 		
 		showSNR(); // FIXME commented until scan slowdown will be solved
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -346,7 +344,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 		// title
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(xpos1 + 5 + icon_s_w, y + hheight, width - BORDER_RIGHT - BORDER_LEFT - icon_hm_w - icon_s_w, text, COL_MENUHEAD, 0, true); // UTF-8
 			
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	
@@ -493,7 +491,8 @@ void CScanTs::paintRadar(void)
 void CScanTs::hide()
 {
 	frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 

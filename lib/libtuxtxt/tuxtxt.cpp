@@ -659,8 +659,8 @@ void RenderClearMenuLineBB(char *p, tstPageAttr *attrcol, tstPageAttr *attr)
 void ClearBB(int color)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 }
@@ -668,8 +668,8 @@ void ClearBB(int color)
 void ClearFB(int color)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 }
@@ -677,8 +677,8 @@ void ClearFB(int color)
 void ClearB(int color)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 }
@@ -1843,7 +1843,8 @@ static void * reader_thread(void * /*arg*/)
 			usleep(10);
 		else
 			RenderPage();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
 #endif
 		if(ttx_req_pause) 
@@ -2018,8 +2019,8 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 		return 1;
 	}
 	
-	//main loop
-#ifdef FB_BLIT	
+	//main loop	
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 
@@ -2169,7 +2170,8 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 
 		// update page or timestring and lcd
 		RenderPage();
-#ifdef FB_BLIT		
+		
+#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
 #endif		
 	} while ((RCCode != RC_HOME) && (RCCode != RC_STANDBY));
@@ -2556,7 +2558,8 @@ void CleanUp()
 
 	/* clear screen */
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 
@@ -3712,8 +3715,8 @@ void ConfigMenu(int Init, int source)
 			}
 		}
 		UpdateLCD(); /* update number of cached pages */
-		
-#ifdef FB_BLIT	
+			
+#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
 #endif		
 	} while ((RCCode != RC_HOME) && (RCCode != RC_DBOX) && (RCCode != RC_MUTE));
@@ -3970,7 +3973,7 @@ void PageCatching()
 	val = fcntl(rc, F_GETFL);
 	fcntl(rc, F_SETFL, val &~ O_NONBLOCK);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 
@@ -4021,7 +4024,7 @@ void PageCatching()
 
 		UpdateLCD();
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
 #endif
 
@@ -5527,7 +5530,7 @@ void RenderMessage(int Message)
 	for (byte = 0; byte < 38; byte++)
 		RenderCharFB(message_6[byte], &atrtable[menuatr + 2]);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 }
@@ -5846,7 +5849,8 @@ void RenderPage()
 
 		tuxtxt_cache.pageupdate=0;
 	}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 }

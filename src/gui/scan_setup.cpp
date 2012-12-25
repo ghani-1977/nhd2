@@ -256,7 +256,7 @@ CScanSetup::CScanSetup(int num)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 
-	width = w_max (500, 100);
+	width = w_max (MENU_WIDTH, 0);
 	
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
@@ -332,7 +332,8 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 void CScanSetup::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

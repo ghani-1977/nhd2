@@ -55,6 +55,10 @@ extern CZapitClient::SatelliteList satList;
 // nhttpd
 #include "neutrinoapi.h"
 
+#ifdef ENABLE_LCDAPI
+#include "lcdapi.h"
+#endif
+
 void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode = true, t_channel_id *chidlist = NULL, int clen = 0);
 
 //=============================================================================
@@ -89,7 +93,7 @@ bool _initialize_iso639_map(void)
 		return false;
 }
 #endif
-//-----------------------------------------------------------------------------
+
 const char * _getISO639Description(const char * const iso)
 {
 	std::map<std::string, std::string>::const_iterator it = iso639.find(std::string(iso));
@@ -124,6 +128,10 @@ CNeutrinoAPI::CNeutrinoAPI()
 
 	NeutrinoYParser = new CNeutrinoYParser(this);
 	ControlAPI = new CControlAPI(this);
+	
+#ifdef ENABLE_LCDAPI
+	LcdAPI = new CLCDAPI();
+#endif	
 
 	UpdateBouquets();
 
@@ -139,10 +147,14 @@ CNeutrinoAPI::CNeutrinoAPI()
 	EventServer->registerEvent2( NeutrinoMessages::LOCK_RC, CEventServer::INITID_HTTPD, "/tmp/neutrino.sock");
 	EventServer->registerEvent2( NeutrinoMessages::UNLOCK_RC, CEventServer::INITID_HTTPD, "/tmp/neutrino.sock");
 }
-//-------------------------------------------------------------------------
 
 CNeutrinoAPI::~CNeutrinoAPI(void)
 {
+#ifdef ENABLE_LCDAPI
+	if (LcdAPI)
+		delete LcdAPI;
+#endif
+
 	if (NeutrinoYParser)
 		delete NeutrinoYParser;
 	if (ControlAPI)
@@ -157,8 +169,6 @@ CNeutrinoAPI::~CNeutrinoAPI(void)
 		delete EventServer;
 }
 
-//-------------------------------------------------------------------------
-
 void CNeutrinoAPI::UpdateBouquets(void)
 {
 #if 0 //FIXME
@@ -171,7 +181,6 @@ void CNeutrinoAPI::UpdateBouquets(void)
 #endif
 }
 
-//-------------------------------------------------------------------------
 void CNeutrinoAPI::ZapTo(const char * const target)
 {
 	t_channel_id channel_id;
@@ -182,7 +191,7 @@ void CNeutrinoAPI::ZapTo(const char * const target)
 
 	ZapToChannelId(channel_id);
 }
-//-------------------------------------------------------------------------
+
 void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 {
 	// standby modus
@@ -212,7 +221,6 @@ void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 			Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
 	}
 }
-//-------------------------------------------------------------------------
 
 void CNeutrinoAPI::ZapToSubService(const char * const target)
 {
@@ -225,7 +233,7 @@ void CNeutrinoAPI::ZapToSubService(const char * const target)
 	if (Zapit->zapTo_subServiceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
 		Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
 }
-//-------------------------------------------------------------------------
+
 t_channel_id CNeutrinoAPI::ChannelNameToChannelId(std::string search_channel_name)
 {
 //FIXME depending on mode missing
@@ -251,7 +259,6 @@ t_channel_id CNeutrinoAPI::ChannelNameToChannelId(std::string search_channel_nam
 //-------------------------------------------------------------------------
 // Get functions
 //-------------------------------------------------------------------------
-
 bool CNeutrinoAPI::GetStreamInfo(int bitInfo[10])
 {
 	char *key, *tmpptr, buf[100];
@@ -286,8 +293,6 @@ bool CNeutrinoAPI::GetStreamInfo(int bitInfo[10])
 	return true;
 }
 
-//-------------------------------------------------------------------------
-
 bool CNeutrinoAPI::GetChannelEvents(void)
 {
 	sectionsd_getChannelEvents(eList);
@@ -304,8 +309,6 @@ bool CNeutrinoAPI::GetChannelEvents(void)
 	return true;
 }
 
-//-------------------------------------------------------------------------
-
 std::string CNeutrinoAPI::GetServiceName(t_channel_id channel_id)
 {
 	tallchans_iterator it = allchans.find(channel_id);
@@ -315,16 +318,12 @@ std::string CNeutrinoAPI::GetServiceName(t_channel_id channel_id)
 		return "";
 }
 
-//-------------------------------------------------------------------------
-
 CZapitClient::BouquetChannelList *CNeutrinoAPI::GetBouquet(unsigned int, int)
 {
 	//FIXME
 	printf("CNeutrinoAPI::GetChannelList still used !\n");
 	return NULL;
 }
-
-//-------------------------------------------------------------------------
 
 CZapitClient::BouquetChannelList *CNeutrinoAPI::GetChannelList(int)
 {
@@ -333,19 +332,15 @@ CZapitClient::BouquetChannelList *CNeutrinoAPI::GetChannelList(int)
 	return NULL;
 }
 
-//-------------------------------------------------------------------------
 void CNeutrinoAPI::UpdateBouquet(unsigned int)
 {
 	//FIXME
 }
 
-//-------------------------------------------------------------------------
 void CNeutrinoAPI::UpdateChannelList(void)
 {
 	//FIXME
 }
-
-//-------------------------------------------------------------------------
 
 std::string CNeutrinoAPI::timerEventType2Str(CTimerd::CTimerEventTypes type)
 {
@@ -381,8 +376,6 @@ std::string CNeutrinoAPI::timerEventType2Str(CTimerd::CTimerEventTypes type)
 	}
 	return result;
 }
-
-//-------------------------------------------------------------------------
 
 std::string CNeutrinoAPI::timerEventRepeat2Str(CTimerd::CTimerEventRepeat rep)
 {
@@ -436,7 +429,6 @@ std::string CNeutrinoAPI::timerEventRepeat2Str(CTimerd::CTimerEventRepeat rep)
 	return result;
 }
 
-//-------------------------------------------------------------------------
 std::string CNeutrinoAPI::getVideoAspectRatioAsString(void) 
 {
 	int aspectRatio = videoDecoder->getAspectRatio();
@@ -446,7 +438,7 @@ std::string CNeutrinoAPI::getVideoAspectRatioAsString(void)
 	else
 		return "unknown";
 }
-//-------------------------------------------------------------------------
+
 int CNeutrinoAPI::setVideoAspectRatioAsString(std::string newRatioString) {
 	int newRatioInt = -1;
 	for(int i=0;i<(int)sizeof(videoformat_names);i++)
@@ -459,7 +451,7 @@ int CNeutrinoAPI::setVideoAspectRatioAsString(std::string newRatioString) {
 
 	return newRatioInt;
 }
-//-------------------------------------------------------------------------
+
 std::string CNeutrinoAPI::getVideoResolutionAsString(void) {
 	int xres, yres, framerate;
 	videoDecoder->getPictureInfo(xres, yres, framerate);
@@ -468,7 +460,6 @@ std::string CNeutrinoAPI::getVideoResolutionAsString(void) {
 	return out.str();
 }
 
-//-------------------------------------------------------------------------
 std::string CNeutrinoAPI::getVideoFramerateAsString(void) 
 {
 	int xres, yres, framerate;
@@ -493,7 +484,6 @@ std::string CNeutrinoAPI::getVideoFramerateAsString(void)
 	return sframerate;
 }
 
-//-------------------------------------------------------------------------
 std::string CNeutrinoAPI::getAudioInfoAsString(void) 
 {
 #if 0
@@ -510,7 +500,6 @@ std::string CNeutrinoAPI::getAudioInfoAsString(void)
 #endif	
 }
 
-//-------------------------------------------------------------------------
 std::string CNeutrinoAPI::getCryptInfoAsString(void) 
 {
 	extern int pmt_caids[11];
@@ -534,7 +523,6 @@ std::string CNeutrinoAPI::getCryptInfoAsString(void)
 	return out.str();
 }
 
-//-------------------------------------------------------------------------
 std::string CNeutrinoAPI::getLogoFile(std::string _logoURL, t_channel_id channelId) {
 	std::string channelIdAsString = string_printf( PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS , channelId & 0xFFFFFFFFFFFFULL);
 	std::string channelName = GetServiceName(channelId);
@@ -542,12 +530,12 @@ std::string CNeutrinoAPI::getLogoFile(std::string _logoURL, t_channel_id channel
 	_logoURL+="/";
 	if(access((_logoURL + channelIdAsString + ".jpg").c_str(), 4) == 0)
 		return _logoURL + channelIdAsString + ".jpg";
-	else if (access((_logoURL + channelIdAsString + ".gif").c_str(), 4) == 0)
-		return _logoURL + channelIdAsString + ".gif";
+	else if (access((_logoURL + channelIdAsString + ".png").c_str(), 4) == 0)
+		return _logoURL + channelIdAsString + ".png";
 	else if (access((_logoURL + channelName + ".jpg").c_str(), 4) == 0)
 		return _logoURL + channelName + ".jpg";
-	else if (access((_logoURL + channelName + ".gif").c_str(), 4) == 0)
-		return _logoURL + channelName + ".gif";
+	else if (access((_logoURL + channelName + ".png").c_str(), 4) == 0)
+		return _logoURL + channelName + ".png";
 	else
 		return "";
 }

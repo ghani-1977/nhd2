@@ -81,7 +81,13 @@ function do_check(){
 	=}
 
 	/*programs*/
-	{=var-set:fbshot={=if-file-exists:/bin/fbshot~/bin/fbshot~{=if-file-exists:/var/bin/fbshot~/var/bin/fbshot~false=}=}=}
+	{=var-set:lcshot={=if-file-exists:/bin/lcshot~/bin/lcshot~{=if-file-exists:/var/bin/lcshot~/var/bin/lcshot~{=if-file-exists:/usr/bin/lcshot~/usr/bin/lcshot~false=}=}=}=}
+	{=if-equal:{=var-get:lcshot=}~false~
+		sLog_addRow(sLog_body, "red", "Programs: lcshot is not installed. LCD Screenshot is disabled. "+y_url("Help-BoxControl-LCD_Screenshot"), "failed");
+	~
+		sLog_addRow(sLog_body, "green", "Programs: lcshot is installed at: {=var-get:lcshot=}. LCD Screenshot is enabled.", "ok");
+	=}
+	{=var-set:fbshot={=if-file-exists:/bin/grab~/bin/grab~{=if-file-exists:/var/bin/grab~/var/bin/grab~{=if-file-exists:/usr/bin/grab~/usr/bin/grab~false=}=}=}=}
 	{=if-equal:{=var-get:fbshot=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: fbshot is not installed. OSD Screenshot is disabled. "+y_url("Help-BoxControl-OSD_Screenshot"), "failed");
 	~
@@ -99,7 +105,7 @@ function do_check(){
 	~
 		sLog_addRow(sLog_body, "green", "Programs: fcp is installed at: {=var-get:fcp=}. Image flashing is enabled.", "ok");
 	=}
-	{=var-set:etherwake={=if-equal:{=global-var-get:boxtype=}~cuberevo~{=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~=}=}~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~=}=}=}=}
+	{=var-set:etherwake={=if-equal:{=global-var-get:boxtype=}~cuberevo~{=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~false=}=}~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}
 	{=if-equal:{=var-get:etherwake=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: etherwake is not installed. Wake on LAN is disabled. "+y_url("Help-Tools-Wake_on_LAN"), "failed");
 	~

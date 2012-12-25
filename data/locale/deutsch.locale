@@ -665,6 +665,18 @@ lcdmenu.statusline.playtime Sendungsfortschritt
 lcdmenu.statusline.volume Lautstärke
 lcdmenu.scrolltext Service Name Scroll-Text
 lcdmenu.setfptime Set VFD Time
+lcdmenu.epg EPG-Anzeige
+lcdmenu.epg.name Standard (Kanal)
+lcdmenu.epg.name.sepline.title Kanal / Trennl. / Sendung
+lcdmenu.epg.name.title Kanal / Sendung
+lcdmenu.epg.nameshort.sepline.title Kanal (kurz) / Trennl. / Sendung
+lcdmenu.epg.nameshort.title Kanal (kurz) / Sendung
+lcdmenu.epg.title Sendung
+lcdmenu.epgalign Ausrichtung der EPG-Anzeige
+lcdmenu.epgalign_center mittig
+lcdmenu.epgalign_left links
+lcdmenu.statusline.both_audio Laut. / Fort. / Audio
+lcdmenu.dump_png Ausgabe in PNG schreiben
 mainmenu.audioplayer Audioplayer
 mainmenu.inetradio Internetradio
 mainmenu.clearsectionsd Lösche EPG Cache

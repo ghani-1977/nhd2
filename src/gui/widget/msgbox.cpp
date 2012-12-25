@@ -511,7 +511,7 @@ bool CMsgBox::hide(void)
 	// delete m_pcWindow;
 	m_pcWindow->paintBackgroundBoxRel(m_cBoxFrame.iX - 10, m_cBoxFrame.iY - 10, m_cBoxFrame.iWidth + 10, m_cBoxFrame.iHeight + 10);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif
 	m_pcWindow = NULL;
@@ -653,7 +653,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif
 
@@ -723,7 +723,8 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 			res  = menu_return::RETURN_EXIT_ALL;
 			loop = false;
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif
 	}

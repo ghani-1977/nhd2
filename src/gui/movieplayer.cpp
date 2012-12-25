@@ -461,7 +461,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		frameBuffer->saveBackgroundImage();
 		frameBuffer->ClearFrameBuffer();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -535,7 +536,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		frameBuffer->restoreBackgroundImage();
 		frameBuffer->useBackground(true);
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}

@@ -281,7 +281,8 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	
 	//show audio background pic
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	m_frameBuffer->blit();
 #endif
 	
@@ -309,7 +310,7 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 	m_frameBuffer->useBackground(usedBackground);
 	m_frameBuffer->paintBackground();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	m_frameBuffer->blit();
 #endif	
 
@@ -872,7 +873,7 @@ int CAudioPlayerGui::show()
 			}
 
 		}
-		else if( (msg == CRCInput::RC_setup) && !m_inetmode || (msg == CRCInput::RC_vfdmenu) && !m_inetmode )
+		else if( (msg == CRCInput::RC_setup && !m_inetmode) || (msg == CRCInput::RC_vfdmenu && !m_inetmode) )
 		{
 			CNFSSmallMenu nfsMenu;
 			nfsMenu.exec(this, "");
@@ -919,8 +920,8 @@ int CAudioPlayerGui::show()
 			//paintHead();
 			//paintLCD();
 		}
-		
-#ifdef FB_BLIT	
+			
+#if !defined USE_OPENGL
 		m_frameBuffer->blit();
 #endif		
 	}
@@ -1593,7 +1594,8 @@ void CAudioPlayerGui::hide()
 		
 		// title
 		m_frameBuffer->paintBackgroundBoxRel(m_x, m_y, m_width, m_title_height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		m_frameBuffer->blit();
 #endif		
 		m_visible = false;
@@ -1973,8 +1975,8 @@ void CAudioPlayerGui::paint()
 
 	paintFoot();
 	paintInfo();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	m_frameBuffer->blit();
 #endif
 	m_visible = true;

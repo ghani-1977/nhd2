@@ -145,7 +145,7 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 	strcpy(oldval, value);
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -284,7 +284,8 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 			loop = false;
 			res = menu_return::RETURN_EXIT_ALL;
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -304,7 +305,8 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 void CExtendedInput::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

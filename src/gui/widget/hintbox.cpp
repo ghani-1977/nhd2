@@ -142,7 +142,7 @@ void CHintBox::paint(void)
 			       height + borderwidth);
 	refresh();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 }
@@ -228,7 +228,7 @@ int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const 
  	CHintBox * hintBox = new CHintBox(Caption, Text, Width, Icon);
 	hintBox->paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 
@@ -272,7 +272,8 @@ int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const 
 				res = messages_return::cancel_info;
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif		
 	}

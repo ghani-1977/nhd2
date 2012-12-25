@@ -800,7 +800,7 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 
 		this->paint ();
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		this->frameBuffer->blit();
 #endif
 
@@ -1162,7 +1162,7 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 	  		else if (this->refreshFooterButtons)
 				this->footer->paintButtons (buttonLabels, sizeof (buttonLabels) / sizeof (button_label));
 			
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			this->frameBuffer->blit();
 #endif			
 		}
@@ -1199,7 +1199,8 @@ EpgPlus::TCChannelEventEntries::const_iterator EpgPlus::getSelectedEvent () cons
 void EpgPlus::hide ()
 {
   	this->frameBuffer->paintBackgroundBoxRel(this->usableScreenX - 10, this->usableScreenY - 10, this->usableScreenWidth + 10, this->usableScreenHeight + 10);	
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	this->frameBuffer->blit();
 #endif
 }
@@ -1232,7 +1233,7 @@ void EpgPlus::paint ()
 	// clear
 	this->frameBuffer->paintBackgroundBoxRel (this->channelsTableX, this->channelsTableY, this->usableScreenWidth, this->channelsTableHeight);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	this->frameBuffer->blit();
 #endif
 	

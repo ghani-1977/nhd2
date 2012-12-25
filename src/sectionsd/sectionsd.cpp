@@ -6954,24 +6954,33 @@ static void *cnThread(void *)
 
 	while(!sectionsd_stop)
 	{
-		while (!scanning) {
+		while (!scanning) 
+		{
 			sleep(1);
 			if(sectionsd_stop)
 				break;
 		}
+		
 		if(sectionsd_stop)
 			break;
 
 		rc = dmxCN.getSection(static_buf, timeoutInMSeconds, timeoutsDMX);
 		time_t zeit = time_monotonic();
-		if (update_eit) {
-			if (dmxCN.get_eit_version() != 0xff) {
+		
+		if (update_eit) 
+		{
+			if (dmxCN.get_eit_version() != 0xff) 
+			{
 				writeLockMessaging();
 				messaging_need_eit_version = false;
 				unlockMessaging();
-			} else {
+			} 
+			else 
+			{
 				readLockMessaging();
-				if (!messaging_need_eit_version) {
+				
+				if (!messaging_need_eit_version) 
+				{
 					unlockMessaging();
 					dprintf("waiting for eit_version...\n");
 					zeit = time_monotonic();  /* reset so that we don't get negative */
@@ -6981,8 +6990,11 @@ static void *cnThread(void *)
 					writeLockMessaging();
 					messaging_need_eit_version = true;
 				}
+				
 				unlockMessaging();
-				if (zeit - eit_waiting_since > TIME_EIT_VERSION_WAIT) {
+				
+				if (zeit - eit_waiting_since > TIME_EIT_VERSION_WAIT) 
+				{
 					dprintf("waiting for more than %d seconds - bail out...\n", TIME_EIT_VERSION_WAIT);
 					/* send event anyway, so that we know there is no EPG */
 					eventServer->sendEvent(CSectionsdClient::EVT_GOT_CN_EPG,
@@ -7008,6 +7020,7 @@ static void *cnThread(void *)
 		} // if (update_eit)
 
 		readLockMessaging();
+		
 		if (messaging_got_CN != messaging_have_CN) // timeoutsDMX < -1)
 		{
 			unlockMessaging();
@@ -7024,13 +7037,15 @@ static void *cnThread(void *)
 			dmxCN.lastChanged = zeit; /* this is ugly - needs somehting better */
 			readLockMessaging();
 		}
+		
 		if (messaging_have_CN == 0x03) // current + next
 		{
 			unlockMessaging();
 			sendToSleepNow = true;
 			//timeoutsDMX = 0;
 		}
-		else {
+		else 
+		{
 			unlockMessaging();
 		}
 
@@ -7065,7 +7080,8 @@ static void *cnThread(void *)
 			unlockMessaging();
 			unlockServices();
 		}
-		else {
+		else 
+		{
 #endif
 #if 0 // 2009-09-14
 			if (timeoutsDMX > 0)
@@ -7127,7 +7143,7 @@ static void *cnThread(void *)
 					dprintf("dmxCN: waking up again - requested from .change()\n");
 					// fix EPG problems on IPBox
 					// http://tuxbox-forum.dreambox-fan.de/forum/viewtopic.php?p=367937#p367937
-#if 0
+#if 1 //FIXME
 					dmxCN.change(0);
 #endif
 				}
@@ -7212,13 +7228,14 @@ static void *cnThread(void *)
 #endif
 			} // for
 			//dprintf("[cnThread] added %d events (end)\n",  eit.events().size());
-		} // for
-		delete[] static_buf;
+	} // for
+	
+	delete[] static_buf;
 
-		printf("[sectionsd] cnThread ended\n");
+	printf("[sectionsd] cnThread ended\n");
 
-		pthread_exit(NULL);
-	}
+	pthread_exit(NULL);
+}
 
 #ifdef ENABLE_PPT
 

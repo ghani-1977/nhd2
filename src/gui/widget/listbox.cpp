@@ -113,7 +113,7 @@ void CListBox::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height+ButtonHeight + 10);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -167,7 +167,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string & actionKey)
 	paint();
 	paintFoot();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -256,7 +256,8 @@ int CListBox::exec(CMenuTarget* parent, const std::string & actionKey)
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 			// kein canceling...
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}

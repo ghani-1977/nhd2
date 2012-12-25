@@ -664,6 +664,18 @@ lcdmenu.statusline.playtime playtime
 lcdmenu.statusline.volume volume
 lcdmenu.scrolltext Service Name Scroll-Text
 lcdmenu.setfptime Set VFD Time
+lcdmenu.epg LCD EPG
+lcdmenu.epg.name default (Channel)
+lcdmenu.epg.name.sepline.title Channel / Sep.-Line / Title
+lcdmenu.epg.name.title Channel / Title
+lcdmenu.epg.nameshort.sepline.title Channel (short) / Sep.-Line / Title
+lcdmenu.epg.nameshort.title Channel (short) / Title
+lcdmenu.epg.title Title
+lcdmenu.epgalign LCD EPG Align
+lcdmenu.epgalign_center center
+lcdmenu.epgalign_left left
+lcdmenu.statusline.both_audio Volume / Playtime / Audio
+lcdmenu.dump_png Dump output to PNG
 mainmenu.audioplayer Audioplayer
 mainmenu.inetradio Internet Radio
 mainmenu.clearsectionsd Clear EPG Cache

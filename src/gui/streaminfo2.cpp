@@ -114,7 +114,7 @@ int CStreamInfo2::exec()
 	
 	doSignalStrengthLoop();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif	
 		
@@ -133,7 +133,7 @@ int CStreamInfo2::exec (CMenuTarget * parent, const std::string &)
 
 	doSignalStrengthLoop ();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 
@@ -166,7 +166,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 	int mm = g_Font[font_info]->getRenderWidth ("Max");//max min lenght
 	maxb = minb = lastb = 0;
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 	
@@ -312,7 +312,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 			CNeutrinoApp::getInstance ()->handleMsg (msg, data);
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -340,7 +340,7 @@ void CStreamInfo2::hide ()
 	
   	frameBuffer->paintBackgroundBoxRel(0, 0, max_width, max_height);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -348,7 +348,8 @@ void CStreamInfo2::hide ()
 void CStreamInfo2::paint_pig(int x, int y, int w, int h)
 {
   	frameBuffer->paintBackgroundBoxRel (x, y, w, h);	
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 	//dont pig if we have 1980 x 1080

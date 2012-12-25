@@ -990,7 +990,7 @@ int CMovieBrowser::exec(const char* path)
 	refreshTitle();
 	onSetGUIWindow(m_settings.gui);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif
 
@@ -1048,7 +1048,7 @@ int CMovieBrowser::exec(const char* path)
 			}
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		m_pcWindow->blit();
 #endif		
 
@@ -1082,7 +1082,8 @@ void CMovieBrowser::hide(void)
 	//TRACE("[mb]->Hide\r\n");
 	
 	m_pcWindow->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif
 	
@@ -1180,11 +1181,10 @@ int CMovieBrowser::paint(void)
 		return (false);
 	}  
 	
-	//onSetGUIWindow(m_settings.gui);	
-	//refreshTitle();
-	//refreshFoot();
-	//refreshLCD();
-	
+	onSetGUIWindow(m_settings.gui);	
+	refreshTitle();
+	refreshFoot();
+	refreshLCD();
 	refresh();
 	
 	return (true);
@@ -1302,8 +1302,8 @@ void CMovieBrowser::refreshMovieInfo(void)
 		}
 	}
 	
-#ifdef FB_BLIT
-	m_pcWindow->blit(); //FIXME
+#if !defined USE_OPENGL
+	m_pcWindow->blit();
 #endif
 }
 
@@ -1813,7 +1813,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			delete hintBox;
 			m_pcWindow->paintBackground(); // clear screen
 			
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			m_pcWindow->blit();
 #endif			
 
@@ -1844,7 +1844,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			delete hintBox;
 			m_pcWindow->paintBackground(); // clear screen
 			
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			m_pcWindow->blit();
 #endif			
 			off64_t res = cut_movie(m_movieSelectionHandler, &m_movieInfo);
@@ -3138,7 +3138,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 	//first clear screen */
 	m_pcWindow->paintBackground();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif	
 	int i;
@@ -4249,9 +4249,7 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
         int x = (((g_settings.screen_EndX- g_settings.screen_StartX)- dx) / 2) + g_settings.screen_StartX;
         int y = g_settings.screen_EndY - 50;
 	frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
-#if 0
-	frameBuffer->blit(x + 40, y+12, 200, 15);
-#endif
+
 	timescale->paint(x + 41, y + 12, percent);
 	int len = minfo->length;
 	off64_t size = minfo->file.Size;
@@ -4372,9 +4370,6 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 				{
 					timescale->reset();
 					frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
-#if 0
-					frameBuffer->blit(x + 40, y+12, 200, 15);
-#endif
 				}
 				size_t toread = (until-sdone) > BUF_SIZE ? BUF_SIZE : until - sdone;
 #if REAL_CUT
@@ -4512,9 +4507,7 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
         int x = (((g_settings.screen_EndX- g_settings.screen_StartX)- dx) / 2) + g_settings.screen_StartX;
         int y = g_settings.screen_EndY - 50;
 	frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
-#if 0
-	frameBuffer->blit(x + 40, y+12, 200, 15);
-#endif
+
 	timescale->paint(x + 41, y + 12, percent);
 
 	newsize = 0;
@@ -4605,9 +4598,7 @@ next_file:
 			if(msg) 
 			{
 				frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
-#if 0
-				frameBuffer->blit(x + 40, y+12, 200, 15);
-#endif
+
 				timescale->reset();
 			}
 #if REAL_CUT

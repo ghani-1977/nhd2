@@ -399,7 +399,6 @@ void CTimerList::updateEvents(void)
 	}
 	sort(timerlist.begin(), timerlist.end());
 
-	//width = w_max(700, 0);
 	width = w_max(g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth()*56, 20);
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
@@ -564,7 +563,8 @@ int CTimerList::show()
 				res = menu_return::RETURN_EXIT_ALL;
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -581,7 +581,8 @@ void CTimerList::hide()
 	if(visible)
 	{
 		frameBuffer->paintBackgroundBoxRel(x, y, width, height + info_height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 		
@@ -828,7 +829,7 @@ void CTimerList::paint()
 
 	paintFoot();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 

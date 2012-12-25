@@ -315,10 +315,6 @@ int CBouquetList::show(bool bShowChannelList)
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	
-	//width  = w_max (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth()*52, 20);//500
-	//height = h_max (16 * fheight, 40);
-	
-	// from channellist
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
 	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
@@ -342,8 +338,8 @@ int CBouquetList::show(bool bShowChannelList)
 
 	paintHead();
 	paint();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -520,8 +516,8 @@ int CBouquetList::show(bool bShowChannelList)
 				res = -2;
 			}
 		}
-		
-#ifdef FB_BLIT		
+			
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -543,7 +539,8 @@ int CBouquetList::show(bool bShowChannelList)
 void CBouquetList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

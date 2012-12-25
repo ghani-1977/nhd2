@@ -44,7 +44,7 @@ CProgressWindow::CProgressWindow()
 	frameBuffer = CFrameBuffer::getInstance();
 	hheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	width       = w_max (420, 0);
+	width       = w_max (600, 0);
 	height      = h_max(hheight+5*mheight, 20);
 
 	global_progress = local_progress = 101;
@@ -60,7 +60,7 @@ void CProgressWindow::setTitle(const neutrino_locale_t title)
 {
 	caption = title;
 
-#ifdef VFD_UPDATE
+#ifdef LCD_UPDATE
 	CVFD::getInstance()->showProgressBar2(-1, NULL, -1, g_Locale->getText(caption)); // set global text in VFD
 #endif // VFD_UPDATE
 }
@@ -87,11 +87,11 @@ void CProgressWindow::showGlobalStatus(const unsigned int prog)
 	//hintergrund
 	frameBuffer->paintBox(pos, globalstatusY, x+width-10, globalstatusY+10, COL_MENUCONTENT_PLUS_2);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
-#ifdef VFD_UPDATE
+#ifdef LCD_UPDATE
 	CVFD::getInstance()->showProgressBar2(-1, NULL, global_progress);
 #endif // VFD_UPDATE
 }
@@ -118,11 +118,11 @@ void CProgressWindow::showLocalStatus(const unsigned int prog)
 	//hintergrund
 	frameBuffer->paintBox(pos, localstatusY, x + width-10, localstatusY + 10, COL_MENUCONTENT_PLUS_2);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
-#ifdef VFD_UPDATE
+#ifdef LCD_UPDATE
 	CVFD::getInstance()->showProgressBar2(local_progress);
 #endif // VFD_UPDATE
 }
@@ -133,11 +133,11 @@ void CProgressWindow::showStatusMessageUTF(const std::string & text)
 	frameBuffer->paintBox(x, statusTextY-mheight, x+width, statusTextY,  COL_MENUCONTENT_PLUS_0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10, statusTextY, width-20, text, COL_MENUCONTENT, 0, true); // UTF-8
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
-#ifdef VFD_UPDATE
+#ifdef LCD_UPDATE
 	CVFD::getInstance()->showProgressBar2(-1,text.c_str()); // set local text in VFD
 #endif // VFD_UPDATE
 }
@@ -151,7 +151,8 @@ unsigned int CProgressWindow::getGlobalStatus(void)
 void CProgressWindow::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -205,7 +206,7 @@ int CProgressWindow::exec(CMenuTarget* parent, const std::string & actionKey)
 	
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 

@@ -723,7 +723,12 @@ const lcd_setting_struct_t lcd_setting[LCD_SETTING_COUNT] =
 	{"lcd_inverse"          , DEFAULT_LCD_INVERSE          },
 	{"lcd_show_volume"      , DEFAULT_LCD_SHOW_VOLUME      },
 	{"lcd_autodimm"         , DEFAULT_LCD_AUTODIMM         },
-	{"lcd_scroll_text"      , DEFAULT_LCD_SCROLL_TEXT      }
+	{"lcd_scroll_text"      , DEFAULT_LCD_SCROLL_TEXT      },
+#if ENABLE_LCD
+	{"lcd_epgmode"          , DEFAULT_LCD_EPGMODE          },
+	{"lcd_epgalign"         , DEFAULT_LCD_EPGALIGN         },
+	{"lcd_dump_png"         , DEFAULT_LCD_DUMP_PNG         },
+#endif	
 };
 
 // loadSetup, load the application-settings
@@ -2671,7 +2676,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 		
 		// startup pic
 		frameBuffer->loadBackgroundPic("start.jpg");	
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif				
 		// setup languages
@@ -2845,7 +2851,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				frameBuffer->paintBackground();
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 				frameBuffer->blit();
 #endif
 				
@@ -3135,7 +3141,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					frameBuffer->loadBackgroundPic("radio.jpg");
 						
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					frameBuffer->blit();
 #endif						
 				}
@@ -3161,7 +3167,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					frameBuffer->loadBackgroundPic("radio.jpg");
 						
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					frameBuffer->blit();
 #endif						
 				}
@@ -4077,7 +4083,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 		frameBuffer->loadBackgroundPic("shutdown.jpg");
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 
@@ -4129,10 +4135,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 		dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
 		
-		if(retcode) //reboot/error
-			reboot(LINUX_REBOOT_CMD_RESTART);
-		else //shutdown
-			_exit(retcode);	
+		_exit(retcode);	
 	}
 }
 
@@ -4143,6 +4146,7 @@ void CNeutrinoApp::saveEpg()
 	if(stat(g_settings.epg_dir.c_str(), &my_stat) == 0)
 	{
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::saveEpg: Saving EPG to %s....\n", g_settings.epg_dir.c_str());
+		
 		neutrino_msg_t      msg;
 		neutrino_msg_data_t data;
 		
@@ -4193,7 +4197,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 			
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x+(offset/2), y + (offset/2) );
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif
 		}
@@ -4201,7 +4205,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 		{
 			frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif	
 		}
@@ -4270,7 +4274,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		if(pixbuf != NULL)
 		{
 			frameBuffer->SaveScreen(x, y, dx, dy, pixbuf);
-#ifdef FB_BLIT
+			
+#if !defined USE_OPENGL
 			frameBuffer->blit();			
 #endif			
 		}
@@ -4299,7 +4304,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p1, COL_MENUHEAD);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}
@@ -4361,7 +4366,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 				g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p, COL_MENUHEAD);
 				
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 				frameBuffer->blit();
 #endif				
 			}
@@ -4376,7 +4381,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd );
 		}
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	} while (msg != CRCInput::RC_timeout);
@@ -4384,7 +4389,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	if( (bDoPaint) && (pixbuf != NULL) ) 
 	{
 		frameBuffer->RestoreScreen(x, y, dx, dy, pixbuf);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 		delete [] pixbuf;
@@ -4444,7 +4450,8 @@ void CNeutrinoApp::tvMode( bool rezap )
 
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 
@@ -4470,7 +4477,8 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 		// SCART AN
 		frameBuffer->useBackground(false);
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 
@@ -4534,7 +4542,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		frameBuffer->useBackground(false);
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 
@@ -4704,7 +4713,8 @@ void CNeutrinoApp::radioMode( bool rezap)
 	}
 
 	frameBuffer->loadBackgroundPic("radio.jpg");
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -5181,9 +5191,11 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
 		hintBox->paint();
-		
+
+#if !defined ENABLE_LCD
 #ifdef __sh__
 		CVFD::getInstance()->setFPTime();
+#endif
 #endif
 		
 		sleep(2);
@@ -5522,7 +5534,8 @@ void CNeutrinoApp::StopSubtitles()
 		tuxtx_pause_subtitle(true, live_fe?live_fe->fenumber:0 );
 		
 		frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 	}

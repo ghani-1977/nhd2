@@ -878,8 +878,8 @@ bool CFileBrowser::exec(const char * const dirname)
 	ChangeDir(name);
 	paint();
 	paintFoot();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -1130,7 +1130,8 @@ bool CFileBrowser::exec(const char * const dirname)
 				loop = false;
 			}
 		}
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -1233,7 +1234,8 @@ void CFileBrowser::addRecursiveDir(CFileList * re_filelist, std::string rpath, b
 void CFileBrowser::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -1466,7 +1468,8 @@ void CFileBrowser::paintFoot()
 		{
 			char cKey[2]={m_SMSKeyInput.getOldKey(),0};
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + width - 16, by2 , 16, cKey, COL_MENUHEAD, 0, true); // UTF-8
-#ifdef FB_BLIT			
+	
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif			
 		}

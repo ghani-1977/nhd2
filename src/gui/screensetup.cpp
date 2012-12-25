@@ -74,7 +74,7 @@ int CScreenSetup::exec(CMenuTarget* parent, const std::string &)
 
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -185,7 +185,8 @@ int CScreenSetup::exec(CMenuTarget* parent, const std::string &)
 					res = menu_return::RETURN_EXIT_ALL;
 				}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -197,7 +198,8 @@ int CScreenSetup::exec(CMenuTarget* parent, const std::string &)
 void CScreenSetup::hide()
 {
 	frameBuffer->paintBackgroundBox(0, 0, frameBuffer->getScreenWidth(true), frameBuffer->getScreenHeight(true));
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

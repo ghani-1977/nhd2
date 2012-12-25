@@ -294,7 +294,7 @@ void CTimeOSD::update(time_t time_show)
 		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5, m_y + m_height, m_width + 5, cDisplayTime, color2);
 	}
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -319,7 +319,7 @@ void CTimeOSD::hide()
 	// hide infobar
 	frameBuffer->paintBackgroundBoxRel(BoxStartX, BoxStartY, BoxWidth + SHADOW_OFFSET, BoxHeight + SHADOW_OFFSET );
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 	visible = false;

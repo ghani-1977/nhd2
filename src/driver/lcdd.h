@@ -136,7 +136,7 @@ class CLCD
 		LcdFontRenderClass		*fontRenderer;
 		FontsDef			fonts;
 
-#define LCD_NUMBER_OF_ELEMENTS 5
+#define LCD_NUMBER_OF_ELEMENTS 7
 		raw_lcd_element_t               element[LCD_NUMBER_OF_ELEMENTS];
 
 		MODES				mode;
@@ -153,6 +153,7 @@ class CLCD
 		bool				showclock;
 		bool				movie_centered;
 		bool				movie_is_ac3;
+		bool				icon_dolby;
 		CConfigFile			configfile;
 		pthread_t			thrTime;
 		int                             last_toggle_state_power;
@@ -233,6 +234,10 @@ class CLCD
 		void Clear();
 		void ShowIcon(vfd_icon icon, bool show);
 		void ShowText(const char *s) { showServicename(std::string(s)); };
+		
+		bool ShowPng(char *filename);
+		bool DumpPng(char *filename);
+		
 #ifdef LCD_UPDATE
 	private:
 		CFileList* m_fileList;

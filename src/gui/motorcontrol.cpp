@@ -78,7 +78,7 @@ void CMotorControl::Init(void)
 
 	satfindpid = -1;
 	
-	width = w_max(570, 0);
+	width = w_max(MENU_WIDTH, 0);
 	mheight = mheight - 2;
 	height = hheight + (20 * mheight) - 5;
 	height = h_max(height, 0);
@@ -149,7 +149,7 @@ int CMotorControl::exec(CMenuTarget* parent, const std::string &)
 	paintMenu();
 	paintStatus();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -385,7 +385,7 @@ int CMotorControl::exec(CMenuTarget* parent, const std::string &)
 		
 		istheend = (msg == CRCInput::RC_home);
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -460,7 +460,8 @@ void CMotorControl::motorStepEast(void)
 void CMotorControl::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height + 20); //20:???
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 	stopSatFind();

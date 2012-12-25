@@ -57,7 +57,7 @@ CVfdControler::CVfdControler(const neutrino_locale_t Name, CChangeObserver* Obse
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	observer = Observer;
 	name = Name;
-	width = w_max(450, 0);
+	width = w_max(MENU_WIDTH - 100, 0);
 	height = h_max(hheight+ mheight* 3+ +mheight/2, 0);
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
 	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight()-height)>>1);
@@ -92,7 +92,7 @@ int CVfdControler::exec(CMenuTarget* parent, const std::string &)
 	setVfd();
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -245,7 +245,8 @@ int CVfdControler::exec(CMenuTarget* parent, const std::string &)
 					res = menu_return::RETURN_EXIT_ALL;
 				}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -261,7 +262,8 @@ int CVfdControler::exec(CMenuTarget* parent, const std::string &)
 void CVfdControler::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

@@ -144,15 +144,17 @@ const char * LcdFontRenderClass::AddFont(const char * const filename)
 	printf("[LCDFONT] adding font %s...", filename);
 	fflush(stdout);
 	int error;
-	fontListEntry *n=new fontListEntry;
+	fontListEntry *n;
 
 	FT_Face face;
-	if ((error=FT_New_Face(library, filename, 0, &face)))
+	if ((error = FT_New_Face(library, filename, 0, &face)))
 	{
 		printf(" failed: %i\n", error);
-		delete n;
 		return NULL;
 	}
+	
+	n = new fontListEntry;
+	
 	n->filename = strdup(filename);
 	n->family   = strdup(face->family_name);
 	n->style    = strdup(face->style_name);
@@ -161,6 +163,7 @@ const char * LcdFontRenderClass::AddFont(const char * const filename)
 	n->next=font;
 	printf("OK (%s/%s)\n", n->family, n->style);
 	font=n;
+	
 	return n->style;
 }
 

@@ -53,7 +53,7 @@ CFBWindow::CFBWindow(const int _x, const int _y, const int _dx, const int _dy)
 	{
 		((CPrivateData *)private_data)->frameBuffer->SaveScreen(_x, _y, _dx, _dy, (fb_pixel_t *)((CPrivateData *)private_data)->Background);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		((CPrivateData *)private_data)->frameBuffer->blit();
 #endif
 	}
@@ -68,7 +68,7 @@ CFBWindow::~CFBWindow(void)
 		{
 			((CPrivateData *)private_data)->frameBuffer->RestoreScreen(x, y, dx, dy, (fb_pixel_t *)((CPrivateData *)private_data)->Background);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			((CPrivateData *)private_data)->frameBuffer->blit();
 #endif
 		}

@@ -35,7 +35,7 @@
 class CZapitClient : public CBasicClient
 {
 	private:
-		virtual const unsigned char   getVersion() const;
+		virtual unsigned char   getVersion() const;
 		virtual const          char * getSocketName() const;
 
 	public:

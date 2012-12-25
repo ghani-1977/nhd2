@@ -810,9 +810,12 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_IMAGEINFO,  true, "", new CImageInfo(), NULL, CRCInput::RC_info, NEUTRINO_ICON_BUTTON_HELP_SMALL, "imageinfo", LOCALE_HELPTEXT_IMAGEINFO), false);
 
 	// restart neutrino
+	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_RESTART, true, "", this, "restart", CRCInput::RC_standby, NEUTRINO_ICON_BUTTON_POWER, "shutdown", LOCALE_HELPTEXT_SOFTRESTART ));
 
 	// softupdate
+#if defined ENABLE_SOFTWARE_UPDATE	
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitServiceSettings. init soft-update-stuff\n");
 		
 	CMenuWidget * updateSettings = new CMenuWidget(LOCALE_SERVICEMENU_UPDATE, NEUTRINO_ICON_UPDATE);
@@ -832,7 +835,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	mtdexpert->addItem(GenericMenuBack);
 	mtdexpert->addItem(GenericMenuSeparatorLine);
 		
-	CFlashExpert* fe = new CFlashExpert();
+	CFlashExpert * fe = new CFlashExpert();
 
 	// read mtd 
 	mtdexpert->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_READFLASHMTD , true, NULL, fe, "readflashmtd" ));
@@ -896,6 +899,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 		
 	// updatesettings
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_UPDATE, true, "", updateSettings, NULL, CRCInput::convertDigitToKey(shortcutService++), NULL, "service", LOCALE_HELPTEXT_SOFTWAREUPDATE ));
+#endif	
 }
 
 // Init AudioPlayer Settings
@@ -1755,7 +1759,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	// sceensetup
 	colorSettings.addItem(new CMenuForwarder(LOCALE_VIDEOMENU_SCREENSETUP, true, NULL, ScreenSetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS) && !defined (PLATFORM_TECHNOMATE)
+#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS) && !defined (PLATFORM_TECHNOMATE) && !defined (PLATFORM_GENERIC)
 	colorSettings.addItem(GenericMenuSeparatorLine);
 
 	// alpha setup
@@ -1776,7 +1780,6 @@ void CNeutrinoApp::InitColorThemesSettings(CMenuWidget &colorSettings_Themes)
 	colorSettings_Themes.addItem(GenericMenuSeparatorLine);
 	
 	//nhd2
-		// dvb2k
 	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINOHD2_THEME, true, NULL, this, "theme_nhd2"));
 	
 	//neutrino themes
@@ -1875,6 +1878,37 @@ void CNeutrinoApp::InitColorSettingsTiming(CMenuWidget &colorSettings_timing)
 	colorSettings_timing.addItem(new CMenuForwarder(LOCALE_OPTIONS_DEFAULT, true, NULL, this, "osd.def"));
 }
 
+#if defined (PLATFORM_DREAMBOX)
+/* for lcd settings menu*/
+#define LCDMENU_STATUSLINE_OPTION_COUNT 4
+const CMenuOptionChooser::keyval LCDMENU_STATUSLINE_OPTIONS[LCDMENU_STATUSLINE_OPTION_COUNT] =
+{
+	{ 0, LOCALE_LCDMENU_STATUSLINE_PLAYTIME   },
+	{ 1, LOCALE_LCDMENU_STATUSLINE_VOLUME     },
+	{ 2, LOCALE_LCDMENU_STATUSLINE_BOTH       },
+	{ 3, LOCALE_LCDMENU_STATUSLINE_BOTH_AUDIO }
+};
+
+/* for lcd EPG menu*/
+#define LCDMENU_EPG_OPTION_COUNT 6
+const CMenuOptionChooser::keyval LCDMENU_EPG_OPTIONS[LCDMENU_EPG_OPTION_COUNT] =
+{
+	{ 1, LOCALE_LCDMENU_EPG_NAME		},
+	{ 2, LOCALE_LCDMENU_EPG_TITLE		},
+	{ 3, LOCALE_LCDMENU_EPG_NAME_TITLE	},
+	{ 7, LOCALE_LCDMENU_EPG_NAME_SEPLINE_TITLE },
+	{ 11, LOCALE_LCDMENU_EPG_NAMESHORT_TITLE },
+	{ 15, LOCALE_LCDMENU_EPG_NAMESHORT_SEPLINE_TITLE }
+};
+
+#define LCDMENU_EPGALIGN_OPTION_COUNT 2
+const CMenuOptionChooser::keyval LCDMENU_EPGALIGN_OPTIONS[LCDMENU_EPGALIGN_OPTION_COUNT] =
+{
+	{ 0, LOCALE_LCDMENU_EPGALIGN_LEFT   },
+	{ 1, LOCALE_LCDMENU_EPGALIGN_CENTER	}
+};
+#endif
+
 /* Init LCD Settings */
 void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 {
@@ -1895,6 +1929,28 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	// vfd power
 	CMenuOptionChooser * oj2 = new CMenuOptionChooser(LOCALE_LCDMENU_POWER, &g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
 	lcdSettings.addItem(oj2);
+	
+#if defined (PLATFORM_DREAMBOX)
+	//option invert
+	CMenuOptionChooser* oj_inverse = new CMenuOptionChooser(LOCALE_LCDMENU_INVERSE, &g_settings.lcd_setting[SNeutrinoSettings::LCD_INVERSE], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
+	lcdSettings.addItem(oj_inverse);
+
+	//status display
+	CMenuOptionChooser* oj_status = new CMenuOptionChooser(LOCALE_LCDMENU_STATUSLINE, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME], LCDMENU_STATUSLINE_OPTIONS, LCDMENU_STATUSLINE_OPTION_COUNT, true);
+	lcdSettings.addItem(oj_status);
+	
+	//lcd_epg
+	CMenuOptionChooser* oj_epg = new CMenuOptionChooser(LOCALE_LCDMENU_EPG, &g_settings.lcd_setting[SNeutrinoSettings::LCD_EPGMODE], LCDMENU_EPG_OPTIONS, LCDMENU_EPG_OPTION_COUNT, true);
+	lcdSettings.addItem(oj_epg);
+
+	//align
+	CMenuOptionChooser* oj_align = new CMenuOptionChooser(LOCALE_LCDMENU_EPGALIGN, &g_settings.lcd_setting[SNeutrinoSettings::LCD_EPGALIGN], LCDMENU_EPGALIGN_OPTIONS, LCDMENU_EPGALIGN_OPTION_COUNT, true);
+	lcdSettings.addItem(oj_align);
+
+	//dump to png
+	CMenuOptionChooser* oj_dumppng = new CMenuOptionChooser(LOCALE_LCDMENU_DUMP_PNG, &g_settings.lcd_setting[SNeutrinoSettings::LCD_DUMP_PNG], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true);
+	lcdSettings.addItem(oj_dumppng);
+#else	
 	
 	//scroll text ein/aus (250hd has only 4 digits)
 #if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD)
@@ -1920,6 +1976,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	//lcdSettings.addItem(GenericMenuSeparatorLine);
 
 	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
+#endif
 
 	// vfd time
 #ifdef __sh__	

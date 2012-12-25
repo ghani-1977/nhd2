@@ -505,8 +505,6 @@ int CChannelList::show()
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
 	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
-	//width = w_max (768, 70);
-	//height = h_max (576, 50 + 30); // 30 for the bottom button box.
 
 	if (chanlist.empty()) 
 	{
@@ -540,8 +538,8 @@ int CChannelList::show()
 	
 	// paint all
 	paint();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -772,7 +770,9 @@ int CChannelList::show()
 				/* draw pip TV background */
 				frameBuffer->paintBoxRel(360, 144, 360, 288, COL_BACKGROUND);
 				//frameBuffer->paintBackgroundBoxRel(360, 144, 360, 288);
+#if !defined USE_OPENGL				
 				frameBuffer->blit();
+#endif				
 			}
 			#endif
 			  
@@ -933,8 +933,8 @@ int CChannelList::show()
 				res = - 2;
 			}
 		}
-		
-#ifdef FB_BLIT		
+			
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -965,8 +965,8 @@ int CChannelList::show()
 void CChannelList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width + 5, height + info_height + 5);
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
         clearItem2DetailsLine();	
@@ -1248,7 +1248,8 @@ int CChannelList::numericZap(int key)
 				channelList->adjustToChannelID(orgList->getActiveChannel_ChannelID(), false);
 				
 				this->frameBuffer->paintBackground();
-#ifdef FB_BLIT
+				
+#if !defined USE_OPENGL
 				this->frameBuffer->blit();
 #endif
 				res = channelList->exec();
@@ -1284,7 +1285,8 @@ int CChannelList::numericZap(int key)
 			if (channelList->getSize() != 0) 
 			{
 				this->frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 				this->frameBuffer->blit();
 #endif
 				//int newChannel = channelList->exec();
@@ -1318,7 +1320,8 @@ int CChannelList::numericZap(int key)
 		{
 			channelList->adjustToChannelID(orgList->getActiveChannel_ChannelID(), false);
 			this->frameBuffer->paintBackground();
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 			this->frameBuffer->blit();
 #endif
 			res = channelList->exec();
@@ -1364,7 +1367,7 @@ int CChannelList::numericZap(int key)
 				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->RenderString(ox+7+ i*((sx-14)>>2), oy+sy-3, sx, &valstr[i], COL_INFOBAR);
 			}
 			
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif
 
@@ -1445,7 +1448,7 @@ int CChannelList::numericZap(int key)
 
 	frameBuffer->paintBackgroundBoxRel(ox, oy, sx, sy);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 
@@ -1714,7 +1717,8 @@ void CChannelList::paintItem2DetailsLine(int pos, int ch_index)
 
 	// Clear
 	frameBuffer->paintBackgroundBoxRel(xpos - 10, y - 10, ConnectLineBox_Width + 10, height+info_height + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 

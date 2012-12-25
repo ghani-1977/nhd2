@@ -16,6 +16,10 @@
 #include "neutrinoyparser.h"
 #include "controlapi.h"
 
+#ifdef ENABLE_LCDAPI
+#include "lcdapi.h"
+#endif
+
 //-------------------------------------------------------------------------
 // No Class Helpers
 const char * _getISO639Description(const char * const iso);
@@ -28,6 +32,9 @@ class CNeutrinoAPI
 	CSectionsdClient	*Sectionsd;
 	CZapitClient		*Zapit;
 	CTimerdClient		*Timerd;
+#ifdef ENABLE_LCDAPI
+	CLCDAPI                 *LcdAPI;
+#endif	
 	CEventServer		*EventServer;
 
 	// complete channellists

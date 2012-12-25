@@ -59,8 +59,7 @@ CMountChooser::CMountChooser(const neutrino_locale_t Name, const std::string & I
 			s += g_settings.network_nfs_dir[i];
 			s +=")";
 			snprintf(indexStr,2,"%d",i);
-			addItem(new CMenuForwarderNonLocalized(s.c_str(),true,NULL,this,(std::string("MID:") + std::string(indexStr)).c_str()),
-				(strcmp(selectedLocalDir,g_settings.network_nfs_local_dir[i]) == 0));
+			addItem(new CMenuForwarderNonLocalized(s.c_str(),true,NULL,this,(std::string("MID:") + std::string(indexStr)).c_str()), (strcmp(selectedLocalDir,g_settings.network_nfs_local_dir[i]) == 0));
 		}
 	}	
 }

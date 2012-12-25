@@ -426,7 +426,7 @@ void CTextBox::refreshScroll(void)
 		frameBuffer->paintBoxRel(m_cFrameScrollRel.iX+m_cFrame.iX, m_cFrameScrollRel.iY+m_cFrame.iY, m_cFrameScrollRel.iWidth, m_cFrameScrollRel.iHeight, m_textBackgroundColor);
 	}
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -454,7 +454,8 @@ void CTextBox::refreshText(void)
 
 		m_pcFontText->RenderString(m_cFrameTextRel.iX + TEXT_BORDER_WIDTH + x_center+m_cFrame.iX, y+m_cFrame.iY, m_cFrameTextRel.iWidth, m_cLineArray[i].c_str(), COL_MENUCONTENT, 0, true); // UTF-8
 	}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -509,7 +510,7 @@ void CTextBox::refresh(void)
 	refreshScroll();
 	refreshText();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -548,7 +549,8 @@ void CTextBox::hide (void)
 	
 	//TRACE("[CTextBox]->hide \r\n");
 	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX - 10, m_cFrame.iY - 10, m_cFrame.iWidth + 10, m_cFrame.iHeight + 10);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 	frameBuffer = NULL;

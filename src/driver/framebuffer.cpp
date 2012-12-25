@@ -187,7 +187,7 @@ void CFrameBuffer::init(const char * const fbDevice)
 		perror("mmap");
 		goto nolfb;
 	}
-#ifdef FB_BLIT
+
 #ifdef __sh__ 
 	//we add 2MB at the end of the buffer, the rest does the blitter 
 	lfb += 1920 * 1080;
@@ -200,7 +200,6 @@ void CFrameBuffer::init(const char * const fbDevice)
 #else
 	enableManualBlit();
 #endif /*sh*/ 
-#endif /*FB_BLIT*/
 #endif /* USE_OPENGL */
 
 	// icons cache
@@ -337,8 +336,7 @@ bool CFrameBuffer::getActive() const
 void CFrameBuffer::setActive(bool enable)
 {
 	active = enable;
-	
-#ifdef FB_BLIT	
+		
 #if !defined __sh__ && !defined USE_OPENGL
 	if(enable)
 	{
@@ -356,7 +354,6 @@ void CFrameBuffer::setActive(bool enable)
 		}
 	}
 #endif
-#endif
 }
 
 t_fb_var_screeninfo *CFrameBuffer::getScreenInfo()
@@ -365,7 +362,7 @@ t_fb_var_screeninfo *CFrameBuffer::getScreenInfo()
 }
 
 // borrowed from e2 :-P
-void CFrameBuffer::setVideoMode(unsigned int nxRes, unsigned int nyRes, unsigned int nbpp)
+void CFrameBuffer::setFrameBufferMode(unsigned int nxRes, unsigned int nyRes, unsigned int nbpp)
 {
 	screeninfo.xres_virtual = screeninfo.xres = nxRes;
 	screeninfo.yres_virtual = (screeninfo.yres = nyRes)*2;
@@ -453,7 +450,7 @@ int CFrameBuffer::setMode()
 	bpp = DEFAULT_BPP;
 	stride = xRes * 4;
 #else
-	setVideoMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
+	setFrameBufferMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 #endif	
 
 	setBlendMode(0); //non-premultiplied alpha
@@ -461,7 +458,7 @@ int CFrameBuffer::setMode()
 	// clear frameBuffer
 	paintBackground();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	blit();
 #endif
 
@@ -568,14 +565,6 @@ void CFrameBuffer::setContrast( int value )
 #endif	
 }
 
-void CFrameBuffer::setAlphaFade(int in, int num, int tr)
-{
-	for (int i=0; i<num; i++) 
-	{
-		cmap.transp[in+i]=tr;
-	}
-}
-
 void CFrameBuffer::paletteFade(int i, __u32 rgb1, __u32 rgb2, int level)
 {
 	__u16 *r = cmap.red+i;
@@ -615,15 +604,9 @@ void CFrameBuffer::paletteSet(struct fb_cmap *map)
 	if(map == NULL)
 		map = &cmap;
 
-	// 8 bit
-	if(bpp == 8) 
-	{
-		//printf("Set palette for %dbit\n", bpp);
-		ioctl(fd, FBIOPUTCMAP, map);
-	}
-
 	// 32 bit palette
 	uint32_t  rl, ro, gl, go, bl, bo, tl, to;
+	
         rl = screeninfo.red.length;
         ro = screeninfo.red.offset;
         gl = screeninfo.green.length;
@@ -1899,7 +1882,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 	return fbbuff;
 }
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 
 #ifndef FBIO_WAITFORVSYNC
 #define FBIO_WAITFORVSYNC _IOW('F', 0x20, __u32)

@@ -270,7 +270,8 @@ void cDvbSubtitleConverter::Clear(void)
 	if(running && (max_x - min_x > 0) && (max_y - min_y > 0)) 
 	{
 		CFrameBuffer::getInstance()->paintBackgroundBoxRel (min_x, min_y, max_x - min_x, max_y-min_y);
-#ifdef FB_BLIT	
+	
+#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
 #endif		
 	}
@@ -386,7 +387,7 @@ int cDvbSubtitleConverter::Action(void)
 
 					sb->Draw(min_x, min_y, max_x, max_y);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					CFrameBuffer::getInstance()->blit();
 #endif
 

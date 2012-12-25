@@ -28,6 +28,7 @@
 
 #include <gui/widget/messagebox.h>
 
+
 CListBoxExt::CListBoxExt(void) : CListBox("")
 {
 	saveBoxCaption = NONEXISTANT_LOCALE;

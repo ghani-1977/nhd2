@@ -50,7 +50,14 @@ extern tallchans allchans;
 extern CBouquetManager *g_bouquetManager;
 extern t_channel_id live_channel_id;
 
-#define EVENTDEV "/dev/input/event0"
+#define NUMBER_OF_EVENT_DEVICES 4
+ 
+const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {
+	"/dev/input/event0", 
+	"/dev/input/event1", 
+	"/dev/input/event2", 
+	"/dev/input/event3"
+};
 
 //-----------------------------------------------------------------------------
 enum {	// not defined in input.h but used like that, at least in 2.4.22
@@ -771,26 +778,33 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh) {
 	if (hh->ParamList["repeat"] != "")
 		repeat = atoi(hh->ParamList["repeat"].c_str());
 
-	int evd = open(EVENTDEV, O_RDWR);
-	if (evd < 0) {
-		hh->SendError();
-		perror("opening event0 failed");
-		return;
-	}
-	if (rc_send(evd, sendcode, KEY_PRESSED) < 0) {
-		perror("writing 'KEY_PRESSED' event failed");
+	bool ret = false;
+	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
+	{
+		int evd = open(RC_EVENT_DEVICE[i], O_RDWR);
+		if (evd < 0) {
+			printf("[nhttpd] opening event%d failed\n", i);
+			continue;
+		}
+		if (rc_send(evd, sendcode, KEY_PRESSED) < 0) {
+			perror("writing 'KEY_PRESSED' event failed");
+			close(evd);
+			continue;
+		}
+		if (rc_send(evd, sendcode, KEY_RELEASED) < 0) {
+			perror("writing 'KEY_RELEASED' event failed");
+			close(evd);
+			continue;
+		}
+		ret = true;
 		hh->SendError();
 		close(evd);
-		return;
 	}
-	if (rc_send(evd, sendcode, KEY_RELEASED) < 0) {
-		perror("writing 'KEY_RELEASED' event failed");
-		close(evd);
+	
+	if (ret)
+		hh->SendOk();
+	else
 		hh->SendError();
-		return;
-	}
-	close(evd);
-	hh->SendOk();
 }
 //-----------------------------------------------------------------------------
 void CControlAPI::AspectRatioCGI(CyhookHandler *hh)
@@ -1433,7 +1447,28 @@ void CControlAPI::StartPluginCGI(CyhookHandler *hh)
 //-----------------------------------------------------------------------------
 void CControlAPI::LCDAction(CyhookHandler *hh)
 {
-	hh->SendOk();
+	int error=0;
+
+#ifdef ENABLE_LCDAPI
+	if (hh->ParamList.empty())
+	{
+		hh->SendError();
+		return;
+	}
+
+	if (hh->ParamList["png"] != "")
+		if(! NeutrinoAPI->LcdAPI->ShowPng((char*)hh->ParamList["png"].c_str()))
+			error=1;
+
+	if (hh->ParamList["shotpng"] != "")
+		if(! NeutrinoAPI->LcdAPI->ShotPng((char*)hh->ParamList["shotpng"].c_str()))
+			error=1;
+#endif
+
+	if(error) 	
+		hh->SendError();
+	else 		
+		hh->SendOk();
 }
 
 //-------------------------------------------------------------------------

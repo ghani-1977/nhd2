@@ -102,7 +102,7 @@ uint32_t GLCD_Menu::index2color(int i) {
 
 GLCD_Menu::GLCD_Menu()
 {
-	width = w_max (40, 10);
+	width = w_max (MENU_WIDTH, 10);
 	selected = -1;
 
 	notifier = new GLCD_Menu_Notifier();

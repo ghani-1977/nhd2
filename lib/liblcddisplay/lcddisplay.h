@@ -78,6 +78,7 @@ class CLCDDisplay
 		unsigned char inverted;
 		bool flipped;
 		int is_oled;	//1=oled, 2=lcd, 3=???
+		int last_brightness;
 		
 		raw_display_t _buffer;
 		int _stride;
@@ -113,6 +114,8 @@ class CLCDDisplay
 		void dump_screen(raw_display_t *screen);
 		void load_screen_element(const raw_lcd_element_t * element, int left, int top);
 		void load_screen(const raw_display_t * const screen);
+		bool dump_png_element(const char * const filename, raw_lcd_element_t * element);
+		bool dump_png(const char * const filename);
 		bool load_png_element(const char * const filename, raw_lcd_element_t * element);
 		bool load_png(const char * const filename);
 		

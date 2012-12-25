@@ -227,13 +227,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	bool in_search = 0;
 
 	// windows size
-	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	//int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	//width  = w_max (62 * fw, 20);
-	//height = h_max (23 * fh, 20);
-	//width = w_max (768, 70);
-	//height = h_max (576, 50 + 30); // 30 for the bottom button box.
-	
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
 	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
@@ -282,7 +275,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	paint(channel_id);
 	showFunctionBar(true);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 
@@ -573,7 +566,8 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				res = menu_return::RETURN_EXIT_ALL;
 			}
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -586,7 +580,8 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 void EventList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 	showFunctionBar(false);
@@ -767,7 +762,7 @@ void EventList::paint(t_channel_id channel_id)
 
 	frameBuffer->paintBoxRel(x + width- 13, ypos+ 2+ int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);	
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }
@@ -785,7 +780,8 @@ void  EventList::showFunctionBar(bool show)
 	if (! show)
 	{
 		frameBuffer->paintBackgroundBoxRel(x, by, width, bh);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 		return;

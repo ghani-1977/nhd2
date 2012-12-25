@@ -197,8 +197,8 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 	//}
 
 	paint();
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -501,8 +501,8 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 				timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 			}
 		}
-		
-#ifdef FB_BLIT		
+			
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -536,7 +536,7 @@ void CMenuWidget::hide()
 	//else
 	frameBuffer->paintBackgroundBoxRel(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5); //15=sb_width, ((RADIUS_MID * 3) + 1)= foot 
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }

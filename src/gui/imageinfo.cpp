@@ -86,7 +86,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 
 	paint_pig( (width - width/3), y, width/3, height/3);	
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();	
 #endif
 
@@ -108,7 +108,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();	
 #endif		
 	}
@@ -123,7 +123,8 @@ void CImageInfo::hide()
 	videoDecoder->Pig(-1, -1, -1, -1);
 	
 	frameBuffer->paintBackgroundBoxRel(0 , 0, max_width, max_height);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }

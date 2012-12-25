@@ -467,7 +467,7 @@ void CPictureViewer::showBusy (int sx, int sy, int width, char r, char g, char b
 	m_busy_cpp = cpp;
 	free (fb_buffer);
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
 #endif
 }
@@ -494,7 +494,7 @@ void CPictureViewer::hideBusy()
 		m_busy_buffer = NULL;
 	}
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();	
 #endif
 }

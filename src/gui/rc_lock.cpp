@@ -37,6 +37,7 @@
 #include <gui/widget/messagebox.h>
 #include <gui/widget/stringinput.h>
 
+
 const std::string CRCLock::NO_USER_INPUT = "noUserInput";
 
 // -- Menue Handler Interface

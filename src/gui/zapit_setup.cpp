@@ -77,7 +77,6 @@ const CMenuOptionChooser::keyval SECTIONSD_SCAN_OPTIONS[SECTIONSD_SCAN_OPTIONS_C
 
 CZapitSetup::CZapitSetup()
 {
-	//width = w_max (500, 100);
 	selected = -1;
 }
 
@@ -164,7 +163,7 @@ bool CZapitSetup::changeNotify(const neutrino_locale_t OptionName, void *)
 //select menu
 CSelectChannelWidget::CSelectChannelWidget()
 {
-	//width = w_max (500, 100);
+
 }
 
 CSelectChannelWidget::~CSelectChannelWidget()

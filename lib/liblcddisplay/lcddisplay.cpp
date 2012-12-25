@@ -64,12 +64,14 @@ CLCDDisplay::CLCDDisplay()
 	flipped = false;
 	inverted = 0;
 	is_oled = 0;
+	last_brightness = 0;
 	
 	//open device
 	fd = open("/dev/dbox/oled0", O_RDWR);
 	
 	if (fd < 0)
 	{
+		xres = 128;
 		if (!access("/proc/stb/lcd/oled_brightness", W_OK) || !access("/proc/stb/fp/oled_brightness", W_OK) )
 			is_oled = 2;
 		fd = open(LCD_DEVICE, O_RDWR);
@@ -183,6 +185,14 @@ int CLCDDisplay::setLCDBrightness(int brightness)
 			printf("[LCD] can't set lcd brightness (%m)\n");
 		close(fp);
 	}
+	
+	if (brightness == 0)
+	{
+		memset(_buffer, inverted, raw_buffer_size);
+		update();
+	}
+
+	last_brightness = brightness;
 
 	return(0);
 }
@@ -253,7 +263,7 @@ void CLCDDisplay::convert_data ()
 void CLCDDisplay::update()
 {
 #ifndef PLATFORM_GENERIC
-	if (fd >= 0)
+	if ((fd >= 0) && (last_brightness > 0))
 	{
 		if (is_oled == 0 || is_oled == 2)
 		{
@@ -269,25 +279,28 @@ void CLCDDisplay::update()
 			unsigned char raw[132*8];
 			int x, y, yy;
 			
+			memset(raw, 0x00, 132*8);
+			
 			for (y=0; y<8; y++)
 			{
-				for (x=0; x<132; x++)
+				// display has only 128 but buffer must be 132
+				for (x=0; x<128; x++)
 				{
 					int pix=0;
 					for (yy=0; yy<8; yy++)
 					{
-						pix|=(_buffer[(y*8+yy)*132+x]>=108)<<yy;
+						pix|=(_buffer[(y*8+yy)*width+x]>=108)<<yy;
 					}
 					
 					if (flipped)
 					{
 						/* 8 pixels per byte, swap bits */
 #define BIT_SWAP(a) (( ((a << 7)&0x80) + ((a << 5)&0x40) + ((a << 3)&0x20) + ((a << 1)&0x10) + ((a >> 1)&0x08) + ((a >> 3)&0x04) + ((a >> 5)&0x02) + ((a >> 7)&0x01) )&0xff)
-						raw[(7 - y) * 132 + (131 - x)] = BIT_SWAP(pix ^ inverted);
+						raw[(7 - y) * 132 + (132-1 - x - 2)] = BIT_SWAP(pix ^ inverted);
 					}
 					else
 					{
-						raw[y * 132 + x] = pix ^ inverted;
+						raw[y * 132 + x + 2] = pix ^ inverted;
 					}
 				}
 			}
@@ -682,7 +695,7 @@ bool CLCDDisplay::load_png_element(const char * const filename, raw_lcd_element_
 							for (pass = 0; pass < number_passes; pass++)
 							{
 								fbptr = (png_byte *)element->buffer;
-								for (i = 0; i < height; i++)
+								for (i = 0; i < element->header.height; i++)
 								{
 									//fbptr = row_pointers[i];
 									//png_read_rows(png_ptr, &fbptr, NULL, 1);
@@ -712,6 +725,98 @@ bool CLCDDisplay::load_png(const char * const filename)
 	element.buffer_size = raw_buffer_size;
 	element.buffer = _buffer;
 	return load_png_element(filename, &element);
+}
+
+bool CLCDDisplay::dump_png_element(const char * const filename, raw_lcd_element_t * element)
+{
+	png_structp  png_ptr;
+	png_infop    info_ptr;
+	unsigned int i;
+	png_byte *   fbptr;
+	FILE *       fp;
+	bool         ret_value = false;
+ 
+        /* create file */
+        fp = fopen(filename, "wb");
+        if (!fp)
+                printf("[CLCDDisplay] File %s could not be opened for writing\n", filename);
+	else
+	{
+	        /* initialize stuff */
+        	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	        if (!png_ptr)
+        	        printf("[CLCDDisplay] png_create_write_struct failed\n");
+		else
+		{
+		        info_ptr = png_create_info_struct(png_ptr);
+		        if (!info_ptr)
+                		printf("[CLCDDisplay] png_create_info_struct failed\n");
+			else
+			{
+			        if (setjmp(png_jmpbuf(png_ptr)))
+			                printf("[CLCDDisplay] Error during init_io\n");
+				else
+				{
+					unsigned int lcd_height = yres;
+					unsigned int lcd_width = xres;
+
+        				png_init_io(png_ptr, fp);
+
+
+        				/* write header */
+        				if (setjmp(png_jmpbuf(png_ptr)))
+        				        printf("[CLCDDisplay] Error during writing header\n");
+
+        				png_set_IHDR(png_ptr, info_ptr, element->header.width, element->header.height,
+        				             element->header.bpp, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
+        				             PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+        				png_write_info(png_ptr, info_ptr);
+
+
+        				/* write bytes */
+					if (setjmp(png_jmpbuf(png_ptr)))
+					{
+        				        printf("[CLCDDisplay] Error during writing bytes\n");
+						return ret_value;
+					}
+
+					ret_value = true;
+
+					fbptr = (png_byte *)element->buffer;
+					for (i = 0; i < element->header.height; i++)
+					{
+						png_write_row(png_ptr, fbptr);
+						fbptr += lcd_width;
+					}
+
+        				/* end write */
+        				if (setjmp(png_jmpbuf(png_ptr)))
+					{
+        				        printf("[CLCDDisplay] Error during end of write\n");
+						return ret_value;
+					}
+
+        				png_write_end(png_ptr, NULL);
+				}
+			}
+		}
+        	fclose(fp);
+	}
+
+	return ret_value;
+}
+
+bool CLCDDisplay::dump_png(const char * const filename)
+{
+	raw_lcd_element_t element;
+	element.buffer_size = raw_buffer_size;
+	element.buffer = _buffer;
+	element.header.width = xres;
+	element.header.height = yres;
+	element.header.bpp = 8;
+	return dump_png_element(filename, &element);
 }
 
 

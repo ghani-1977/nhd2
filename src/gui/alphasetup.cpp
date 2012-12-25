@@ -77,7 +77,7 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	width = w_max(450, 0);
+	width = w_max(MENU_WIDTH - 100, 0);
 
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
@@ -98,7 +98,7 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 	
 	paint();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -213,7 +213,7 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 				}
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -230,7 +230,7 @@ void CAlphaSetup::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 }

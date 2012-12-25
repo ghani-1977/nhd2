@@ -533,8 +533,8 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	{
 		show_Data();
 	}
-	
-#ifdef FB_BLIT	
+		
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -708,8 +708,8 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 					}
 				}
 			}
-			
-#ifdef FB_BLIT			
+				
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif			
 		}
@@ -817,7 +817,7 @@ void CInfoViewer::showSubchan()
 	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 
@@ -850,7 +850,7 @@ void CInfoViewer::showSubchan()
 
 		frameBuffer->RestoreScreen(x - borderwidth, y - borderwidth, dx + 2 * borderwidth, dy + 2 * borderwidth, pixbuf);
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
   		
@@ -1054,7 +1054,7 @@ void CInfoViewer::killRadiotext()
 {
 	frameBuffer->paintBackgroundBox(rt_x, rt_y, rt_w, rt_h);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -1090,7 +1090,7 @@ void CInfoViewer::showRadiotext()
 		{
 			frameBuffer->paintBackgroundBox(rt_x, rt_y, rt_w, rt_h);
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif
 		}
@@ -1111,7 +1111,7 @@ void CInfoViewer::showRadiotext()
 					frameBuffer->paintBoxRel(rt_x, rt_y, rt_dx, rt_dy, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(rt_x+10, rt_y+ 30, rt_dx-20, stext[0], COL_INFOBAR, 0, RTisIsUTF); // UTF-8
 					
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					frameBuffer->blit();
 #endif
 				}
@@ -1168,7 +1168,7 @@ void CInfoViewer::showRadiotext()
 						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(rts_x, rts_y + (ii++)*rt_dy, rts_dx, g_Radiotext->RT_Text[i], COL_INFOBAR, 0, RTisIsUTF); // UTF-8
 				}
 				
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 					frameBuffer->blit();
 #endif				
 			}
@@ -1215,7 +1215,7 @@ void CInfoViewer::showRadiotext()
 		frameBuffer->useBackground(frameBuffer->loadBackground(image));// set useBackground true or false
 		frameBuffer->paintBackground();
 		
-#ifdef __sh__
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 //		RadioAudio->SetBackgroundImage(image);
@@ -1894,8 +1894,8 @@ void CInfoViewer::killTitle()
 		is_visible = false;
 
 		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY - 30, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET );
-		
-#ifdef FB_BLIT		
+				
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif
 

@@ -55,13 +55,8 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #define CORNER_BOTTOM		0x2
 #define CORNER_BOTH		0x3
 
-// FB HW BLIT
-#if !defined (PLATFORM_GENERIC)
-#define FB_BLIT
-#endif
-
 // resolution
-#define DEFAULT_XRES		1280
+#define DEFAULT_XRES		960
 #define DEFAULT_YRES		720
 
 // bitmap
@@ -126,8 +121,6 @@ class CFrameBuffer
 
 		fb_cmap cmap;
 		__u16 red[256], green[256], blue[256], trans[256];
-		
-		void paletteFade(int i, __u32 rgb1, __u32 rgb2, int level);
 
 		bool	active;
 
@@ -156,14 +149,14 @@ class CFrameBuffer
 
 		static CFrameBuffer* getInstance();
 
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		void enableManualBlit();
 		void disableManualBlit();
 		void blit();
 #endif
 
 		void init(const char * const fbDevice = "/dev/fb0");		
-		void setVideoMode(unsigned int xRes, unsigned int yRes, unsigned int bpp);
+		void setFrameBufferMode(unsigned int xRes, unsigned int yRes, unsigned int bpp);
 		int setMode();
 
 		int getFileHandle() const; //only used for plugins (games) !!
@@ -188,8 +181,9 @@ class CFrameBuffer
 		void setContrast( int value);
 
 		/* Palette stuff */
-		void setAlphaFade(int in, int num, int tr);
+		void paletteFade(int i, __u32 rgb1, __u32 rgb2, int level);
 		void paletteGenFade(int in, __u32 rgb1, __u32 rgb2, int num, int tr=0);
+		
 		void paletteSetColor(int i, __u32 rgb, int tr);
 		void paletteSet(struct fb_cmap *map = NULL);
 

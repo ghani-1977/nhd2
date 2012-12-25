@@ -93,7 +93,7 @@ void CBEBouquetWidget::paintItem(int pos)
 			has_channels = ((*Bouquets)[current]->tvChannels.size() > 0) || ((*Bouquets)[current]->radioChannels.size() > 0);
 		color   = has_channels ? COL_MENUCONTENT : COL_MENUCONTENTINACTIVE;
 		bgcolor = has_channels ? COL_MENUCONTENT_PLUS_0 : COL_MENUCONTENTINACTIVE_PLUS_0;
-		frameBuffer->paintBoxRel(x,ypos, width- 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
 	}
 
 	if(current < Bouquets->size()) 
@@ -122,7 +122,7 @@ void CBEBouquetWidget::paint()
 
 	int ypos = y+ theight;
 	int sb = fheight* listmaxshow;
-	frameBuffer->paintBoxRel(x + width- 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
 	int sbc= ((Bouquets->size()- 1)/ listmaxshow)+ 1;
 	float sbh= (sb- 4)/ sbc;
@@ -176,7 +176,8 @@ void CBEBouquetWidget::paintFoot()
 void CBEBouquetWidget::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height + ButtonHeight);
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
@@ -193,10 +194,13 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 
 	//width  = w_max (500, 0);
 	//height = h_max (440, 50);
-	int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	width  = w_max (64 * fw, 20);
-	height = h_max (20 * fh, 50);
+	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	//int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
+	//width  = w_max (64 * fw, 20);
+	//height = h_max (20 * fh, 50);
+	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
+	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
+	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
 	
 	listmaxshow = (height-theight-0)/fheight;
 	height = theight+0+listmaxshow*fheight; // recalc height
@@ -209,7 +213,7 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 	paint();
 	paintFoot();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 
@@ -433,7 +437,8 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 			// kein canceling...
 		}
-#ifdef FB_BLIT
+
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}

@@ -73,7 +73,7 @@ CColorChooser::CColorChooser(const neutrino_locale_t Name, unsigned char *R, uns
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	observer = Observer;
 	name = Name;
-	width = w_max(360, 0);
+	width = w_max(MENU_WIDTH - 200, 0);
 	height = h_max(hheight+ mheight* 4, 0);
 
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
@@ -115,7 +115,7 @@ int CColorChooser::exec(CMenuTarget* parent, const std::string &)
 	paint();
 	setColor();
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 
@@ -221,7 +221,7 @@ int CColorChooser::exec(CMenuTarget* parent, const std::string &)
 				}
 		}
 		
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
 	}
@@ -238,7 +238,7 @@ void CColorChooser::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
 	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 }
