@@ -1982,7 +1982,7 @@ void CNeutrinoApp::SetupFonts()
 	if (g_fontRenderer != NULL)
 		delete g_fontRenderer;
 
-	g_fontRenderer = new FBFontRenderClass(82, 72); /* the screen resolution in dpi, default 72x72*/
+	g_fontRenderer = new FBFontRenderClass(72, 72); /* the screen resolution in dpi, default 72x72*/
 
 	if(font.filename != NULL)
 		free((void *)font.filename);

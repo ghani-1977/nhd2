@@ -398,6 +398,7 @@ class CMenuWidget : public CMenuTarget
 		bool		     	exit_pressed;
 		
 		fb_pixel_t		* background;
+		int			full_width, full_height;
 		bool			savescreen;
 		
 		void Init(const std::string & Icon, const int mwidth, const int mheight);

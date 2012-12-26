@@ -94,8 +94,10 @@ CMenuWidget::CMenuWidget()
         selected = -1;
         iconOffset = 0;
 	offx = offy = 0;
-	//savescreen	= false;
-	//background	= NULL;
+	
+	//
+	savescreen	= false;
+	background	= NULL;
 }
 
 CMenuWidget::CMenuWidget(const neutrino_locale_t Name, const std::string & Icon, const int mwidth, const int mheight )
@@ -129,6 +131,10 @@ void CMenuWidget::Init(const std::string & Icon, const int mwidth, const int mhe
 
         current_page=0;
 	offx = offy = 0;
+	
+	//
+	savescreen	= false;
+	background	= NULL;
 }
 
 void CMenuWidget::move(int xoff, int yoff)
@@ -190,11 +196,6 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
         }
         else
 		fadeValue = g_settings.gtx_alpha;
-	
-	//if(savescreen) 
-	//{
-	//	saveScreen();
-	//}
 
 	paint();
 		
@@ -531,10 +532,10 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 
 void CMenuWidget::hide()
 {
-	//if( savescreen && background)
-	//	restoreScreen();//FIXME
-	//else
-	frameBuffer->paintBackgroundBoxRel(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5); //15=sb_width, ((RADIUS_MID * 3) + 1)= foot 
+	if( savescreen && background)
+		restoreScreen();//FIXME
+	else
+		frameBuffer->paintBackgroundBoxRel(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5); //15=sb_width, ((RADIUS_MID * 3) + 1)= foot 
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -617,6 +618,16 @@ void CMenuWidget::paint()
 		sb_width = SCROLLBAR_WIDTH;
 	else
 		sb_width = 0;
+	
+	//
+	full_width = width + sb_width;
+	full_height = height + ((RADIUS_MID * 3) + 1) + 5 + 5  /*height + 25 + 5*/;	//separator height = 5
+	
+	//
+	if(savescreen) 
+	{
+		saveScreen();
+	}
 
 	//CMenuWidget Head
 	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -630,7 +641,7 @@ void CMenuWidget::paint()
 	frameBuffer->paintIcon(iconfile, x + 8, y + hheight/2 - icon_h/2);
 	
 	// head title (centered)
-	int stringstartposX = x /*+ 8 + icon_w*/ + (width >> 1) - ( neededWidth >> 1);
+	int stringstartposX = x + (width >> 1) - ( neededWidth >> 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + hheight + 1, width - BORDER_RIGHT - (stringstartposX - x), l_name, COL_MENUHEAD, 0, true); // UTF-8
 	
 	// paint separator
@@ -645,7 +656,6 @@ void CMenuWidget::paint()
 	
 	// all height
 	HEIGHT = y + height + 25 + 5;
-	//
 	
 	//item_start_y
 	item_start_y = y + hheight + sp_height;
@@ -714,45 +724,33 @@ void CMenuWidget::paintItems()
 
 void CMenuWidget::saveScreen()
 {
-	#if 0
-	//if(!savescreen)
-	//	return;
+	if(!savescreen)
+		return;
 
-	//delete[] background;
-	
-	if(background) 
-	{
-		delete [] background;
-		background = NULL;
-	}
+	delete[] background;
 
-	background = new fb_pixel_t[(width + SCROLLBAR_WIDTH)*(height + ((RADIUS_MID * 3) + 1) + 5)];
+	background = new fb_pixel_t[full_width*full_height];
 	
 	if(background)
 	{
-		frameBuffer->SaveScreen(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5, background);
-		//frameBuffer->blit();
+		frameBuffer->SaveScreen(x, y, full_width, full_height, background);
 	}
-	#endif
 }
 
 void CMenuWidget::restoreScreen()
 {
-	#if 0
 	if(background) 
 	{
 		if(savescreen)
-			frameBuffer->RestoreScreen(x, y, width + SCROLLBAR_WIDTH, height + ((RADIUS_MID * 3) + 1) + 5, background);
+			frameBuffer->RestoreScreen(x, y, full_width, full_height, background);
 		
 		//delete [] background;
 		//background = NULL;
 	}
-	#endif
 }
 
 void CMenuWidget::enableSaveScreen(bool enable)
 {
-	#if 0
 	savescreen = enable;
 	
 	if(!enable && background) 
@@ -760,7 +758,6 @@ void CMenuWidget::enableSaveScreen(bool enable)
 		delete[] background;
 		background = NULL;
 	}
-	#endif
 }
 
 //CMenuOptionNumberChooser
@@ -945,6 +942,8 @@ int CMenuOptionChooser::exec(CMenuTarget*)
 		char cnt[5];
 		CMenuWidget * menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
 		menu->move(20, 0);
+		menu->enableSaveScreen(true);
+		
 		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 		
 		// intros
@@ -1158,7 +1157,7 @@ void CMenuOptionStringChooser::addOption(const char * const value)
 	options.push_back(std::string(value));
 }
 
-int CMenuOptionStringChooser::exec(CMenuTarget* parent)
+int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 {
 	bool wantsRepaint = false;
 	int ret = menu_return::RETURN_NONE;
@@ -1170,9 +1169,11 @@ int CMenuOptionStringChooser::exec(CMenuTarget* parent)
 	{
 		int select = -1;
 		char cnt[5];
-
-		CMenuWidget* menu = new CMenuWidget(optionName, NEUTRINO_ICON_SETTINGS);
+		
+		CMenuWidget * menu = new CMenuWidget(optionName, NEUTRINO_ICON_SETTINGS);
 		//if(parent) menu->move(20, 0);
+		menu->enableSaveScreen(true);
+		
 		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 		
 		// intros

@@ -355,6 +355,8 @@ int CChannelList::doChannelMenu(void)
 		return 0;
 
 	CMenuWidget * menu = new CMenuWidget(LOCALE_CHANNELLIST_EDIT, NEUTRINO_ICON_SETTINGS);
+	menu->enableSaveScreen(true);
+	
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 
 	sprintf(cnt, "%d", i);

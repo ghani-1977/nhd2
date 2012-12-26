@@ -265,7 +265,7 @@ void CAlphaSetup::paintSlider(const int x, const int y, const unsigned char * co
 	
 	int slider_w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth("100", true); //UTF-8
 	
-	int startx = width - icon_w - slider_w - 30;
+	int startx = width - icon_w - slider_w - 50;
 
 	frameBuffer->paintBoxRel(x + startx, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
 

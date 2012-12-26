@@ -858,7 +858,6 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 		  			break;
 				}
 	  		}
-	  		//else if ( (msg == (neutrino_msg_t)g_settings.key_channelList_pageup)
 	  		else if ((msg == CRCInput::RC_page_up) || (msg == CRCInput::RC_green)) 
 			{
 				switch (this->currentSwapMode) 
@@ -905,7 +904,8 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 	  		} 
 			else if (msg == (neutrino_msg_t) CRCInput::RC_red) 
 			{
-				CMenuWidget menuWidgetActions (LOCALE_EPGPLUS_ACTIONS, NEUTRINO_ICON_FEATURES, 400);
+				CMenuWidget menuWidgetActions(LOCALE_EPGPLUS_ACTIONS, NEUTRINO_ICON_FEATURES, 400);
+				menuWidgetActions.enableSaveScreen(true);
 
 		  		menuWidgetActions.addItem (new CMenuForwarder (LOCALE_EPGPLUS_RECORD, true, NULL, new MenuTargetAddRecordTimer (this), NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED), false);
 
@@ -920,6 +920,8 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 			else if (msg == (neutrino_msg_t) CRCInput::RC_blue) 
 			{
 				CMenuWidget menuWidgetOptions (LOCALE_EPGPLUS_OPTIONS, NEUTRINO_ICON_FEATURES, 500);
+				menuWidgetOptions.enableSaveScreen(true);
+				
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchSwapMode (this));
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchViewMode (this));
 
@@ -1016,7 +1018,7 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 						if (this->duration - 30 * 60 > 30 * 60) 
 						{
 			  				this->duration -= 30 * 60;
-			  				this->hide ();
+			  				this->hide();
 			  				this->refreshAll = true;
 						}
 		  			}
@@ -1108,7 +1110,7 @@ int EpgPlus::exec (CChannelList * channelList, int selectedChannelIndex, CBouque
 			{
 				this->channelList->zapTo (this->selectedChannelEntry->index);
 			} 
-			else if ( /*msg == CRCInput::RC_help ||*/ msg == CRCInput::RC_info) 
+			else if ( msg == CRCInput::RC_info ) 
 			{
 				TCChannelEventEntries::const_iterator It = this->getSelectedEvent ();
 
@@ -1198,7 +1200,7 @@ EpgPlus::TCChannelEventEntries::const_iterator EpgPlus::getSelectedEvent () cons
 
 void EpgPlus::hide ()
 {
-  	this->frameBuffer->paintBackgroundBoxRel(this->usableScreenX - 10, this->usableScreenY - 10, this->usableScreenWidth + 10, this->usableScreenHeight + 10);	
+  	this->frameBuffer->paintBackgroundBoxRel(this->usableScreenX, this->usableScreenY, this->usableScreenWidth, this->usableScreenHeight);	
 
 #if !defined USE_OPENGL
 	this->frameBuffer->blit();
