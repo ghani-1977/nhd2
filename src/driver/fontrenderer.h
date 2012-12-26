@@ -41,9 +41,9 @@
 class FBFontRenderClass;
 class Font
 {
-	CFrameBuffer	*frameBuffer;
+	CFrameBuffer	* frameBuffer;
 	FTC_ImageTypeRec	font;
-	FBFontRenderClass *renderer;
+	FBFontRenderClass * renderer;
 	FT_Face		face;
 	FT_Size		size;
 	FTC_ScalerRec  scaler;
@@ -51,7 +51,7 @@ class Font
 	FT_Error getGlyphBitmap(FT_ULong glyph_index, FTC_SBit *sbit);
 
 	// these are HACKED values, because the font metrics were unusable.
-	int height,ascender,descender,upper,lower;
+	int height, ascender, descender, upper, lower;
 	int fontwidth;
 
 	public:
@@ -92,9 +92,9 @@ class FBFontRenderClass
 		FTC_SBitCache	sbitsCache;	/* the glyph small bitmaps cache   */
 
 		FTC_FaceID getFaceID(const char * const family, const char * const style);
-		FT_Error getGlyphBitmap(FTC_ImageTypeRec *font, FT_ULong glyph_index, FTC_SBit *sbit);
+		FT_Error getGlyphBitmap(FTC_ImageTypeRec * font, FT_ULong glyph_index, FTC_SBit *sbit);
+		FT_Error getGlyphBitmap(FTC_ScalerRec *sc, FT_ULong glyph_index, FTC_SBit *sbit);
 		
-		//test
 		int xres;	/* the screen resolution in dpi */
 		int yres;	/* defaults to 72 dpi */
 
@@ -109,7 +109,6 @@ class FBFontRenderClass
 		                                     FT_Pointer  request_data,
 		                                     FT_Face*    aface);
 
-		//FT_Face getFace(const char *family, const char *style);
 		Font *getFont(const char * const family, const char * const style, int size);
 
 		std::string getFamily(const char * const filename) const;

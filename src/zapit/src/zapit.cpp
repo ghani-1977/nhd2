@@ -927,15 +927,6 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 		audio_mode = def_audio_mode;
 		tuxtx_set_pid(0, 0, (char *) thischannel->getTeletextLang());
 	}
-	
-	#if 0
-	/* set saved vol */
-	audioDecoder->setVolume(volume_left, volume_right);
-	
-	// audio mode
-	if(audioDecoder)
-		audioDecoder->setChannel(audio_mode);
-	#endif
 }
 
 // return 0, -1 fails

@@ -1982,7 +1982,7 @@ void CNeutrinoApp::SetupFonts()
 	if (g_fontRenderer != NULL)
 		delete g_fontRenderer;
 
-	g_fontRenderer = new FBFontRenderClass();
+	g_fontRenderer = new FBFontRenderClass(82, 72); /* the screen resolution in dpi, default 72x72*/
 
 	if(font.filename != NULL)
 		free((void *)font.filename);
@@ -4306,15 +4306,15 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				if (g_settings.current_volume < 100 - /*5*/ a_step )
-					g_settings.current_volume += /*5*/ a_step;
+				if (g_settings.current_volume < 100 - a_step )
+					g_settings.current_volume += a_step;
 				else
 					g_settings.current_volume = 100;
 			}
 			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				if (g_settings.current_volume > /*5*/ a_step)
-					g_settings.current_volume -= /*5*/ a_step;
+				if (g_settings.current_volume > a_step)
+					g_settings.current_volume -= a_step;
 				else
 					g_settings.current_volume = 0;
 			}
@@ -4344,10 +4344,10 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			{
 				vol = g_settings.current_volume;
 
-				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), /*g_settings.current_volume*/ vol);
+				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
 
 				char p[4]; // 3 digits + '\0'
-				sprintf(p, "%3d", /*g_settings.current_volume*/ vol);
+				sprintf(p, "%3d", vol);
 
 				// erase the numbers
 				frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);
