@@ -409,10 +409,10 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		else
 		{
 			// ChannelNumber
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + /*ChanWidth*/10, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + 10, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
 		
 			// ChannelName
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth /*+ 20 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth(strChanNum)*/, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 		}
 	}
 
@@ -1658,6 +1658,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		{
 	  		int seit = (jetzt - info_CurrentNext.current_zeit.startzeit + 30) / 60;
 	  		int rest = (info_CurrentNext.current_zeit.dauer / 60) - seit;
+			
 	  		if (seit < 0) 
 			{
 				runningPercent = 0;
@@ -1673,13 +1674,6 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 
 	  		struct tm * pStartZeit = localtime(&info_CurrentNext.current_zeit.startzeit);
 	  		sprintf(runningStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
-			
-			//FIXME
-			//long int EndTime( info_CurrentNext.current_zeit.startzeit + info_CurrentNext.current_zeit.dauer );
-			//time_t EndTime = info_CurrentNext.current_zeit.startzeit + info_CurrentNext.current_zeit.dauer;
-			//struct tm *pEndZeit = localtime((time_t*)&EndTime /*&EndTime*/ );
-			
-			//sprintf(runningStart,"%02d:%02d-%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min, pEndZeit->tm_hour, pEndZeit->tm_min);
 		} 
 		else
 			last_curr_id = 0;
@@ -1690,13 +1684,6 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 	  		sprintf (nextDuration, "%d min", dauer);
 	  		struct tm *pStartZeit = localtime (&info_CurrentNext.next_zeit.startzeit);
 	  		sprintf(nextStart, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
-			
-			//FIXME
-			//long int EndTime( info_CurrentNext.next_zeit.startzeit + info_CurrentNext.next_zeit.dauer );
-			//time_t EndTime = info_CurrentNext.next_zeit.startzeit + info_CurrentNext.next_zeit.dauer;
-			//struct tm *pEndZeit = localtime((time_t*)&EndTime /*&EndTime*/ );
-			
-			//sprintf(nextStart, "%02d:%02d-%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min, pEndZeit->tm_hour, pEndZeit->tm_min);
 		} 
 		else
 			last_next_id = 0;
@@ -1704,21 +1691,18 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		int height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight() / 3;
 		int ChanInfoY = BoxStartY + ChanHeight + 10;
 		
-		int EPGTimeWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00");
+		int EPGTimeWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00:00"); //FIXME
 
 		if (showButtonBar) 
 		{
 	  		//percent
 	  		if (info_CurrentNext.flags & CSectionsdClient::epgflags::has_current) 
 			{
-				//printf("CInfoViewer::show_Data: runningPercent %d\n", runningPercent);
-				
 				if(!calledFromEvent || (oldrunningPercent != runningPercent)) 
 				{
 					oldrunningPercent = runningPercent;
 				}
 
-				//
 				// hline
 				int height = g_SignalFont->getHeight() - 1;
 				int HlineYPos = BoxStartY + ChanHeight + 4 - 2 * height;
@@ -1779,7 +1763,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					// refresh box
 					frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + height, /*100*/EPGTimeWidth, nextStart, COL_MENUCONTENTINACTIVE ); //TEST
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, nextStart, COL_MENUCONTENTINACTIVE ); //TEST
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(xStart, ChanInfoY + height, duration2TextPos - xStart - 5, info_CurrentNext.next_name, COL_MENUCONTENTINACTIVE, 0, true); //FIXME
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + height, duration2Width, nextDuration, COL_MENUCONTENTINACTIVE ); //FIXME
 
@@ -1794,7 +1778,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					// refresh box
 			  		frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 					
-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, /*100*/EPGTimeWidth, runningStart, COL_INFOBAR);
+			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, runningStart, COL_INFOBAR);
 			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration1TextPos - xStart - 5, info_CurrentNext.current_name, COL_INFOBAR, 0, true);
 
 			  		last_curr_id = info_CurrentNext.current_uniqueKey;
@@ -1804,7 +1788,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
 		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + height, duration1Width, runningRest, COL_INFOBAR);
 
-				// next ä
+				// next 
 				ChanInfoY += height;
 
 				if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 

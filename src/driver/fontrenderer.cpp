@@ -607,9 +607,10 @@ int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 
 	int use_kerning = FT_HAS_KERNING(face);
 	int x = 0;
-	int lastindex = 0; // 0==missing glyph (never has kerning)
+	int lastindex = 0; 	// 0==missing glyph (never has kerning)
 	FT_Vector kerning;
-	int pen1 = -1; // "pen" positions for kerning, pen2 is "x"
+	int pen1 = -1; 		// "pen" positions for kerning, pen2 is "x"
+	
 	for (; *text; text++)
 	{
 		FTC_SBit glyph;
@@ -623,15 +624,17 @@ int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 
 		if (!index)
 			continue;
+		
 		if (getGlyphBitmap(index, &glyph))
 		{
 			dprintf(DEBUG_NORMAL, "failed to get glyph bitmap.\n");
 			continue;
 		}
+		
 		//kerning
 		if(use_kerning)
 		{
-			FT_Get_Kerning(face,lastindex,index,0,&kerning);
+			FT_Get_Kerning(face, lastindex, index, 0, &kerning);
 			x += (kerning.x) >> 6; // kerning!
 		}
 

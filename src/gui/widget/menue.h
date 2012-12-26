@@ -41,7 +41,7 @@
 #include <vector>
 
 
-#define MENU_WIDTH	720	//NOTE: if you are using 1280x720 fb set it to 650
+#define MENU_WIDTH	DEFAULT_XRES/2	//DEFAULT_XRES=960->550, 1280->720
 #define MENU_HEIGHT	576
 
 struct menu_return

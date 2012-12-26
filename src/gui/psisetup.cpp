@@ -132,7 +132,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	width = w_max(MENU_WIDTH - 100, 0);
+	width = w_max(MENU_WIDTH, 0);
 
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
@@ -467,17 +467,26 @@ void CPSISetup::paintSlider(const int x, const int y, const unsigned char * cons
 
 	int sspos = (*spos)*100/255;
 	char wert[5];
+	
+	int icon_w = 120;
+	int icon_h = 11;
+	
+	frameBuffer->getIconSize(NEUTRINO_ICON_VOLUMEBODY, &icon_w, &icon_h);
+	
+	int slider_w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth("100", true); //UTF-8
+	
+	int startx = width - icon_w - slider_w - 30;
 
-	frameBuffer->paintBoxRel(x + 200, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintBoxRel(x + startx, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
 
-	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + 200, y + 2 + mheight / 4);
-	frameBuffer->paintIcon(iconname, x + 203 + sspos, y + mheight / 4);
+	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + startx, y + 2 + mheight / 4);
+	frameBuffer->paintIcon(iconname, x + startx + 3 + sspos, y + mheight / 4);
 
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x, y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
 	
 	sprintf(wert, "%3d", sspos); // UTF-8 encoded
 
-	frameBuffer->paintBoxRel(x + 200 + 120 + 10, y, 50, mheight, COL_MENUCONTENT_PLUS_0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 200 + 120 + 10, y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
+	frameBuffer->paintBoxRel(x + startx + 120 + 10, y, 50, mheight, COL_MENUCONTENT_PLUS_0);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + startx + 120 + 10, y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
 }
 

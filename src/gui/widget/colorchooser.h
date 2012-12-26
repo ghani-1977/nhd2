@@ -47,7 +47,8 @@ class CColorChooser : public CMenuTarget
 		int y;
 		int width;
 		int height;
-		int hheight,mheight; // head/menu font height
+		int hheight, mheight; // head/menu font height
+		int startx;  //startposx for color preview window
 
 		unsigned char * value[4]; // r, g, b, alpha
 

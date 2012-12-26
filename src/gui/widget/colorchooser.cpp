@@ -73,7 +73,7 @@ CColorChooser::CColorChooser(const neutrino_locale_t Name, unsigned char *R, uns
 	mheight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	observer = Observer;
 	name = Name;
-	width = w_max(MENU_WIDTH - 200, 0);
+	width = w_max(MENU_WIDTH, 0);
 	height = h_max(hheight+ mheight* 4, 0);
 
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
@@ -83,6 +83,8 @@ CColorChooser::CColorChooser(const neutrino_locale_t Name, unsigned char *R, uns
 	value[VALUE_G]     = G;
 	value[VALUE_B]     = B;
 	value[VALUE_ALPHA] = Alpha;
+	
+	startx = width - mheight*4 - 30;
 }
 
 void CColorChooser::setColor()
@@ -95,7 +97,7 @@ void CColorChooser::setColor()
 
 	fb_pixel_t col = ((tAlpha << 24) & 0xFF000000) | color;
 	
-	frameBuffer->paintBoxRel(x + 222, y + hheight + 2 + 5,  mheight*4 - 4 ,mheight*4 - 4 -10, col);
+	frameBuffer->paintBoxRel(x + /*3 *(width/4)*/startx + 2, y + hheight + 2 + 5,  mheight*4 - 4 ,mheight*4 - 4 -10, col);
 }
 
 int CColorChooser::exec(CMenuTarget* parent, const std::string &)
@@ -236,7 +238,7 @@ int CColorChooser::exec(CMenuTarget* parent, const std::string &)
 
 void CColorChooser::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -246,28 +248,30 @@ void CColorChooser::hide()
 void CColorChooser::paint()
 {
 	// head
-	frameBuffer->paintBoxRel(x, y, width,hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
+	frameBuffer->paintBoxRel(x, y, width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
 	
 	// head title
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+hheight, width, g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
 
 	// menu box
-	frameBuffer->paintBoxRel(x, y+hheight, width,height-hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);//round
+	frameBuffer->paintBoxRel(x, y + hheight, width, height - hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);//round
 
+	// slider
 	for (int i = 0; i < 4; i++)
 		paintSlider(x + 10, y + hheight + mheight * i, value[i], colorchooser_names[i], iconnames[i], (i == 0));
 
 	//color preview
-	frameBuffer->paintBoxRel(x + 220, y + hheight + 5, mheight*4, mheight*4-10, COL_MENUHEAD_PLUS_0);
-	frameBuffer->paintBoxRel(x + 222,y+hheight+2+5, mheight*4-4, mheight*4-4-10, 254);
+	frameBuffer->paintBoxRel(x + /*3*(width/4)*/startx, y + hheight + 5, mheight*4, mheight*4-10, COL_MENUHEAD_PLUS_0);
+	frameBuffer->paintBoxRel(x + /*3*(width/4)*/startx + 2, y + hheight + 2 + 5, mheight*4 - 4, mheight*4 - 4 -10, 254);
 }
 
 void CColorChooser::paintSlider(int x, int y, unsigned char *spos, const neutrino_locale_t text, const char * const iconname, const bool selected)
 {
 	if (!spos)
 		return;
-	frameBuffer->paintBoxRel(x+70,y,120,mheight, COL_MENUCONTENT_PLUS_0);
-	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x+70, y+2+mheight/4);
+	
+	frameBuffer->paintBoxRel(x + 70, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + 70, y + 2 + mheight/4);
 	frameBuffer->paintIcon(selected ? iconname : NEUTRINO_ICON_VOLUMESLIDER2, x+73+(*spos), y+mheight/4);
 
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x,y+mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
