@@ -4516,6 +4516,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		
 		if( mode == mode_scart ) 
 		{
+			// do not things
 		}
 		
 #if ENABLE_RADIOTEXT		
@@ -4540,8 +4541,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		// show time in vfd
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
 		
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_SCART);
+		//if(videoDecoder)
+		//	videoDecoder->SetInput(INPUT_SCART);
 
 		// zapit standby
 		if(!recordingstatus && !timeshiftstatus)
@@ -4605,7 +4606,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
 		
 		CVFD::getInstance()->ShowText(tmp); // UTF-8
-#endif		
+#endif
 
 		// zapit startplayback
 		g_Zapit->setStandby(false);
@@ -4615,8 +4616,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 			g_Zapit->startPlayBack();
 
 		// video wake up
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_ENCODER);
+		//if(videoDecoder)
+		//	videoDecoder->SetInput(INPUT_ENCODER);
 
 		g_Sectionsd->setPauseScanning(false);
 		g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );
