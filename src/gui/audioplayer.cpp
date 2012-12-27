@@ -1588,7 +1588,7 @@ void CAudioPlayerGui::hide()
 	if(m_visible)
 	{
 		// main box
-		m_frameBuffer->paintBackgroundBoxRel(m_x - ConnectLineBox_Width-1, m_y + m_title_height - 1, m_width + ConnectLineBox_Width+2, m_height + 2 - m_title_height);
+		m_frameBuffer->paintBackgroundBoxRel(m_x - ConnectLineBox_Width - 1, m_y + m_title_height - 1, m_width + ConnectLineBox_Width + 2, m_height + 2 - m_title_height);
 
 		clearItemID3DetailsLine();
 		

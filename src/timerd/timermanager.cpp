@@ -56,14 +56,12 @@ void CTimerManager::Init(void)
 	m_isTimeSet = false;
 	wakeup = 0; 	//fallback
 
-//#ifdef __sh__
 	int fd = open("/proc/stb/fp/was_timer_wakeup", O_RDONLY);
 	unsigned char buffer[2];
 	
 	int ret = read(fd, buffer, 2);
 	
 	int was_timer_wakeup = atoi((const char*) buffer);
-	//printf("[timerd] was_timer_wakeup: %d\n", was_timer_wakeup);
 
 	if(ret < 0)
 		printf("[timerd] can not read was_timer_wakeup\n");
@@ -76,19 +74,10 @@ void CTimerManager::Init(void)
 		if(wakeup)
 		{
 			creat("/tmp/.wakeup", 0);
-
-			//clear wakeup event
-			//system("/bin/cubefpctl --cleartimers");
 		}
 	}
 
 	close(fd);
-#if 0
-	printf("[timerd] wakeup from standby: %s\n", wakeup ? "yes" : "no");
-
-	if(wakeup)
-		creat("/tmp/.wakeup", 0);
-#endif
 
 	loadRecordingSafety();
 
@@ -100,7 +89,7 @@ void CTimerManager::Init(void)
 	dprintf("timermanager created\n");
 }
 
-CTimerManager* CTimerManager::getInstance()
+CTimerManager * CTimerManager::getInstance()
 {
 	static CTimerManager *instance=NULL;
 	if(!instance)
@@ -227,7 +216,7 @@ void* CTimerManager::timerThread(void *arg)
 	return 0;
 }
 
-CTimerEvent* CTimerManager::getNextEvent()
+CTimerEvent * CTimerManager::getNextEvent()
 {
 	pthread_mutex_lock(&tm_eventsMutex);
 	CTimerEvent *erg = events[0];
@@ -278,6 +267,7 @@ bool CTimerManager::removeEvent(int eventID)
 	else
 		res = false;
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -295,6 +285,7 @@ bool CTimerManager::stopEvent(int eventID)
 	else
 		res = false;
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -312,6 +303,7 @@ bool CTimerManager::listEvents(CTimerEventMap &Events)
 		Events[pos->second->eventID] = pos->second;
 	}
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return true;
 }
 
@@ -326,6 +318,7 @@ CTimerd::CTimerEventTypes* CTimerManager::getEventType(int eventID)
 	else
 		res = NULL;
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -373,6 +366,7 @@ int CTimerManager::modifyEvent(int eventID, time_t announceTime, time_t alarmTim
 	else
 		res = 0;
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -398,6 +392,7 @@ int CTimerManager::modifyEvent(int eventID, unsigned char apids)
 		}
 	}
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -422,6 +417,7 @@ int CTimerManager::rescheduleEvent(int eventID, time_t announceTime, time_t alar
 	else
 		res = 0;
 	pthread_mutex_unlock(&tm_eventsMutex);
+	
 	return res;
 }
 
@@ -447,6 +443,7 @@ void CTimerManager::loadEventsFromConfig()
 			CTimerd::CTimerEventTypes type=(CTimerd::CTimerEventTypes)config.getInt32 ("EVENT_TYPE_"+id,0);
 			dprintf("loading timer %d, id %s, EVENT_TYPE %d\n",i,id.c_str(),type);
 			time_t now = time(NULL);
+			
 			switch(type)
 			{
 				case CTimerd::TIMER_SHUTDOWN :
@@ -686,7 +683,7 @@ bool CTimerManager::shutdown()
 {
 
 	time_t nextAnnounceTime=0;
-	bool status=false;
+	bool status = false;
 	dprintf("stopping timermanager thread ...\n");
 	
 	dprintf("Waiting for timermanager thread to terminate ...\n");
@@ -725,19 +722,12 @@ bool CTimerManager::shutdown()
 
 	if(nextAnnounceTime != 0)
 	{
-#if 0
-		int minutes=((nextAnnounceTime-time(NULL))/60)-3; //Wakeup 3 min befor next announce
-		if(minutes<1)
-			minutes=1;	//1 minute is minimum
-#endif
-
-//#ifdef __sh__
 		int minutes = ((nextAnnounceTime -time(NULL))/60);
 
 		//Set WakeUp Time
 		char WakeupTime[11];
 		WakeupTime[11]='\0';
-		//sprintf(WakeupTime, "%lu", (nextAnnounceTime + 3600));
+		
 		//summer
 		sprintf(WakeupTime, "%lu", (nextAnnounceTime - 180));	//3 min for safe time recording
 		
@@ -751,13 +741,10 @@ bool CTimerManager::shutdown()
 		if ( ret < 0)
 		{
 			// Wakeup not supported
-			//printf("[timerd] Wakeup not supported %d, errno=%d\n", nextAnnounceTime, errno);
-			//printf("[timerd] Wakeup not supported (%d min.), errno=%d\n", minutes, errno);
 			printf("[timerd] failed to set wakeup timer");
 		}
 		else
 		{
-			//printf("wakeup in %d . programmed\n", nextAnnounceTime);
 			printf("[timerd] wakeup in %d . min programmed\n", minutes);
 
 			//Set Wakeup Timer
@@ -773,26 +760,26 @@ bool CTimerManager::shutdown()
 
 			fclose(fd);
 			
-			//set RTC
-			//system("/bin/cubefpctl --setgmtoffset");
-			
 			status = true;
 		}
 		
-		#if 0 //abip
+#if vfd_support_wakeup
 		time_t wakeup_time;
 		char timebuf[6];
 		FILE *f = fopen("/proc/stb/fp/wakeup_time", "r");
+		
 		if (f)
 		{
 			int tmp;
 			if (fscanf(f, "%u", &tmp) != 1)
 				printf("read /proc/stb/fp/wakeup_time failed (%m)\n");
 			else
-				wakeup_time=tmp;
+				wakeup_time = tmp;
 			fclose(f);
 		}
+		
 		printf("wakeup_time %d \n",wakeup_time); 
+		
 		tm *now=localtime(&wakeup_time);
 		timebuf[0]=1;
 		timebuf[1]=now->tm_min;
@@ -807,11 +794,12 @@ bool CTimerManager::shutdown()
 		memset(&data, 0, sizeof(struct vfd_ioctl_data));
 		memcpy(&data, timebuf, 6); 
 
-		int file_vfd = open ("/dev/dbox/vfd", O_WRONLY);
+		int file_vfd = open ("/dev/vfd", O_WRONLY);
 		ioctl(file_vfd, VFDSETTIMERWAKEUP, &data);
 		close (file_vfd);
-		#endif
-//#endif		
+		
+		status = true;
+#endif		
 	}
 
 	pthread_mutex_unlock(&tm_eventsMutex);

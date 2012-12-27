@@ -4181,8 +4181,6 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 	{
 		if( current_muted ) 
 		{
-			//frameBuffer->paintBoxRel(x, y, dx, dy, COL_INFOBAR_PLUS_0);
-			
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x+(offset/2), y + (offset/2) );
 
 #if !defined USE_OPENGL
@@ -4325,6 +4323,10 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			}
 
 			setvol(g_settings.current_volume);
+			
+			//FIXME
+			if (current_muted && msg == CRCInput::RC_plus)
+				AudioMute(false); 
 
 			timeoutEnd = CRCInput::calcTimeoutEnd(nowait ? 1 : 3);
 		}
@@ -4356,7 +4358,10 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 				
 #if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif				
+#endif
+				//FIXME
+				if (mode != mode_scart && mode != mode_pic && (g_settings.current_volume == 0) )
+					AudioMute(true, true);
 			}
 		}
 

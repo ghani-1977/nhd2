@@ -973,7 +973,7 @@ void CEpgData::hide()
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->setSize((int)(g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->getSize() / BIG_FONT_FAKTOR));
 	}
 
-	frameBuffer->paintBackgroundBox (sx, sy- toph, sx + ox, sy + oy + 30); 	// 30: button bar height
+	frameBuffer->paintBackgroundBox (sx, sy- toph, sx + ox, sy + oy); 	// 30: button bar height
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -993,16 +993,15 @@ void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, 
 
 	bool res;
 	if ( id!= 0 )
-		//res = g_Sectionsd->getEPGid( id, *startzeit, &epgData );
 		res = sectionsd_getEPGid(id, *startzeit, &epgData);
 	else
-		//res = g_Sectionsd->getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData );
 		res = sectionsd_getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData );
 
 	if ( res )
 	{
 		// If we have items, merge and localize them (e.g. actor1, actor2, ... -> Actors)
-		if (false == epgData.itemDescriptions.empty()) {
+		if (false == epgData.itemDescriptions.empty()) 
+		{
 			reformatExtendedEvents("Year of production", g_Locale->getText(LOCALE_EPGEXTENDED_YEAR_OF_PRODUCTION), false, epgData);
 			reformatExtendedEvents("Original title", g_Locale->getText(LOCALE_EPGEXTENDED_ORIGINAL_TITLE), false, epgData);
 			reformatExtendedEvents("Director", g_Locale->getText(LOCALE_EPGEXTENDED_DIRECTOR), false, epgData);

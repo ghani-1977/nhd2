@@ -61,7 +61,7 @@ int convertSetupAlpha2Alpha(unsigned char alpha)
 
 void recalcColor(unsigned char &orginal, int fade)
 {
-	if(fade==100)
+	if(fade == 100)
 	{
 		return;
 	}
