@@ -4155,8 +4155,6 @@ void CNeutrinoApp::saveEpg()
 // mute
 void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 {
-	//printf("MUTE: val %d current %d event %d\n", newValue, current_muted, isEvent);
-
 	int dx = 0;
 	int dy = 0;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE,&dx, &dy);
@@ -4182,19 +4180,14 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 		if( current_muted ) 
 		{
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x+(offset/2), y + (offset/2) );
-
-#if !defined USE_OPENGL
-			frameBuffer->blit();
-#endif
 		}
 		else
 		{
-			frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);
-
+			frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);	
+		}
 #if !defined USE_OPENGL
 			frameBuffer->blit();
-#endif	
-		}
+#endif		
 	}
 }
 
@@ -4326,7 +4319,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			
 			//FIXME
 			if (current_muted && msg == CRCInput::RC_plus)
-				AudioMute(false); 
+				AudioMute(0, true);
 
 			timeoutEnd = CRCInput::calcTimeoutEnd(nowait ? 1 : 3);
 		}

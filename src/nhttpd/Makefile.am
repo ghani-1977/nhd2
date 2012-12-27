@@ -15,7 +15,3 @@ INCLUDES = \
 noinst_LIBRARIES = libnhttpd.a
 libnhttpd_a_SOURCES = yhttpd.cpp
 
-installdir = $(CONFIGDIR)
-
-install_DATA = \
-	nhttpd.conf
