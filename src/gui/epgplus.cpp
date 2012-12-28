@@ -336,13 +336,14 @@ int EpgPlus::ChannelEventEntry::getUsedHeight ()
 Font *EpgPlus::ChannelEntry::font = NULL;
 int EpgPlus::ChannelEntry::separationLineHeight = 0;
 
-EpgPlus::ChannelEntry::ChannelEntry (const CZapitChannel * channel, int index, CFrameBuffer * frameBuffer, Footer * footer, CBouquetList * bouquetList, int x, int y, int width)
+EpgPlus::ChannelEntry::ChannelEntry(const CZapitChannel * channel, int index, CFrameBuffer * frameBuffer, Footer * footer, CBouquetList * bouquetList, int x, int y, int width)
 {
 	this->channel = channel;
 	
-	if (channel != NULL) {
+	if (channel != NULL) 
+	{
 		std::stringstream displayName;
-		displayName << index + 1 << " " << channel->getName ();
+		displayName << index + 1 << " " << channel->getName();
 	
 		this->displayName = displayName.str ();
 	}
@@ -373,11 +374,21 @@ EpgPlus::ChannelEntry::~ChannelEntry ()
 	this->channelEventEntries.clear();
 }
 
+#include <gui/pictureviewer.h>
+extern CPictureViewer * g_PicViewer;
 void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 {
-	this->frameBuffer->paintBoxRel (this->x, this->y, this->width, this->font->getHeight (), isSelected ? COL_MENUCONTENTSELECTED_PLUS_0 : COL_MENUCONTENT_PLUS_0);
+	this->frameBuffer->paintBoxRel (this->x, this->y, this->width, this->font->getHeight(), isSelected ? COL_MENUCONTENTSELECTED_PLUS_0 : COL_MENUCONTENT_PLUS_0);
 	
-	this->font->RenderString (this->x + 2, this->y + this->font->getHeight (), this->width - 4, this->displayName, isSelected ? COL_MENUCONTENTSELECTED : COL_MENUCONTENT, 0, true);
+	//FIXME
+	// display channel picon
+	bool logo_ok = false;
+		
+	logo_ok = g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2);
+	
+	if(!logo_ok)
+		// display channel number+ channel name
+		this->font->RenderString (this->x + 2, this->y + this->font->getHeight(), this->width - 4, this->displayName, isSelected ? COL_MENUCONTENTSELECTED : COL_MENUCONTENT, 0, true);
 	
 	if (isSelected) 
 	{
@@ -388,7 +399,7 @@ void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 			{
 				if ((*bouquet->channelList)[j]->number == this->channel->number) 
 				{
-					this->footer->setBouquetChannelName (bouquet->channelList->getName (), this->channel->getName ());
+					this->footer->setBouquetChannelName(bouquet->channelList->getName (), this->channel->getName ());
 	
 					bouquet = NULL;
 	
@@ -399,6 +410,7 @@ void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 				break;
 		}
 	}
+	
 	// paint the separation line
 	if (separationLineHeight > 0) 
 	{
@@ -530,24 +542,31 @@ void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventL
 
 void EpgPlus::createChannelEntries (int selectedChannelEntryIndex)
 {
-	for (TChannelEntries::iterator It = this->displayedChannelEntries.begin ();
-		It != this->displayedChannelEntries.end (); It++) {
+	for (TChannelEntries::iterator It = this->displayedChannelEntries.begin (); It != this->displayedChannelEntries.end (); It++) 
+	{
 		delete *It;
 	}
+	
 	this->displayedChannelEntries.clear ();
 	
 	this->selectedChannelEntry = NULL;
 	
-	if (selectedChannelEntryIndex < this->channelList->getSize ()) {
-		for (;;) {
-		if (selectedChannelEntryIndex < this->channelListStartIndex) {
-			this->channelListStartIndex -= this->maxNumberOfDisplayableEntries;
-			if (this->channelListStartIndex < 0)
-			this->channelListStartIndex = 0;
-		} else if (selectedChannelEntryIndex >= this->channelListStartIndex + this->maxNumberOfDisplayableEntries) {
-			this->channelListStartIndex += this->maxNumberOfDisplayableEntries;
-		} else
-			break;
+	if (selectedChannelEntryIndex < this->channelList->getSize ()) 
+	{
+		for (;;) 
+		{
+			if (selectedChannelEntryIndex < this->channelListStartIndex) 
+			{
+				this->channelListStartIndex -= this->maxNumberOfDisplayableEntries;
+				if (this->channelListStartIndex < 0)
+					this->channelListStartIndex = 0;
+			} 
+			else if (selectedChannelEntryIndex >= this->channelListStartIndex + this->maxNumberOfDisplayableEntries) 
+			{
+				this->channelListStartIndex += this->maxNumberOfDisplayableEntries;
+			} 
+			else
+				break;
 		}
 	
 		int yPosChannelEntry = this->channelsTableY;
@@ -555,91 +574,113 @@ void EpgPlus::createChannelEntries (int selectedChannelEntryIndex)
 	
 		for (int i = this->channelListStartIndex; (i < this->channelListStartIndex + this->maxNumberOfDisplayableEntries)
 			&& (i < this->channelList->getSize ());
-			++i, yPosChannelEntry += this->entryHeight, yPosEventEntry += this->entryHeight) {
-	
-		CZapitChannel * channel = (*this->channelList)[i];
-	
-		ChannelEntry *channelEntry = new ChannelEntry (channel, i, this->frameBuffer, this->footer, this->bouquetList, this->channelsTableX + 2, yPosChannelEntry, this->channelsTableWidth);
-		//printf("Going to get getEventsServiceKey for %llx\n", (channel->channel_id & 0xFFFFFFFFFFFFULL));
-		//CChannelEventList channelEventList = g_Sectionsd->getEventsServiceKey (channel->channel->channel_id & 0xFFFFFFFFFFFFULL);
-		CChannelEventList channelEventList;
-		sectionsd_getEventsServiceKey(channel->channel_id & 0xFFFFFFFFFFFFULL, channelEventList);
-		//printf("channelEventList size %d\n", channelEventList.size());
-	
-		int xPosEventEntry = this->eventsTableX;
-		int widthEventEntry = 0;
-		time_t lastEndTime = this->startTime;
-	
-		CChannelEventList::const_iterator lastIt (channelEventList.end ());
-		//for (CChannelEventList::const_iterator It = channelEventList.begin (); (It != channelEventList.end ()) && (It->startTime < (this->startTime + this->duration)); ++It) 
-		for (CChannelEventList::const_iterator It = channelEventList.begin (); It != channelEventList.end (); ++It) 
+			++i, yPosChannelEntry += this->entryHeight, yPosEventEntry += this->entryHeight) 
 		{
-	//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** Check1 event %s event start %ld this start %ld\n", It->description.c_str(), It->startTime, (this->startTime + this->duration));
-			if(!(It->startTime < (this->startTime + this->duration)) )
-				continue;
-			if ((lastIt == channelEventList.end ()) || (lastIt->startTime != It->startTime)) {
-			int startTimeDiff = It->startTime - this->startTime;
-			int endTimeDiff = this->startTime + time_t (this->duration) - It->startTime - time_t (It->duration);
-	//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** Check event %s\n", It->description.c_str());
-			if ((startTimeDiff >= 0) && (endTimeDiff >= 0)) {
-				// channel event fits completely in the visible part of time line
-				startTimeDiff = 0;
-				endTimeDiff = 0;
-			} else if ((startTimeDiff < 0) && (endTimeDiff < 0)) {
-				// channel event starts and ends outside visible part of the time line but covers complete visible part
-			} else if ((startTimeDiff < 0) && (endTimeDiff < this->duration)) {
-				// channel event starts before visible part of the time line but ends in the visible part
-				endTimeDiff = 0;
-			} else if ((endTimeDiff < 0) && (startTimeDiff < this->duration)) {
-				// channel event ends after visible part of the time line but starts in the visible part
-				startTimeDiff = 0;
-			} else if (startTimeDiff > 0) {	// channel event starts and ends after visible part of the time line => break the loop
-	//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** break 1\n");
-				break;
-			} else {				// channel event starts and ends after visible part of the time line => ignore the channel event
-	//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** continue 1 startTimeDiff %ld endTimeDiff %ld\n", startTimeDiff, endTimeDiff);
-				continue;
+			CZapitChannel * channel = (*this->channelList)[i];
+	
+			ChannelEntry * channelEntry = new ChannelEntry (channel, i, this->frameBuffer, this->footer, this->bouquetList, this->channelsTableX + 2, yPosChannelEntry, this->channelsTableWidth);
+			//printf("Going to get getEventsServiceKey for %llx\n", (channel->channel_id & 0xFFFFFFFFFFFFULL));
+			//CChannelEventList channelEventList = g_Sectionsd->getEventsServiceKey (channel->channel->channel_id & 0xFFFFFFFFFFFFULL);
+			CChannelEventList channelEventList;
+			sectionsd_getEventsServiceKey(channel->channel_id & 0xFFFFFFFFFFFFULL, channelEventList);
+			//printf("channelEventList size %d\n", channelEventList.size());
+	
+			int xPosEventEntry = this->eventsTableX;
+			int widthEventEntry = 0;
+			time_t lastEndTime = this->startTime;
+		
+			CChannelEventList::const_iterator lastIt (channelEventList.end ());
+			
+			//for (CChannelEventList::const_iterator It = channelEventList.begin (); (It != channelEventList.end ()) && (It->startTime < (this->startTime + this->duration)); ++It) 
+			for (CChannelEventList::const_iterator It = channelEventList.begin (); It != channelEventList.end (); ++It) 
+			{
+				//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** Check1 event %s event start %ld this start %ld\n", It->description.c_str(), It->startTime, (this->startTime + this->duration));
+				if(!(It->startTime < (this->startTime + this->duration)) )
+					continue;
+				
+				if ((lastIt == channelEventList.end ()) || (lastIt->startTime != It->startTime)) 
+				{
+					int startTimeDiff = It->startTime - this->startTime;
+					int endTimeDiff = this->startTime + time_t (this->duration) - It->startTime - time_t (It->duration);
+					//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** Check event %s\n", It->description.c_str());
+					if ((startTimeDiff >= 0) && (endTimeDiff >= 0)) 
+					{
+						// channel event fits completely in the visible part of time line
+						startTimeDiff = 0;
+						endTimeDiff = 0;
+					} 
+					else if ((startTimeDiff < 0) && (endTimeDiff < 0))
+					{
+						// channel event starts and ends outside visible part of the time line but covers complete visible part
+					} 
+					else if ((startTimeDiff < 0) && (endTimeDiff < this->duration)) 
+					{
+						// channel event starts before visible part of the time line but ends in the visible part
+						endTimeDiff = 0;
+					} 
+					else if ((endTimeDiff < 0) && (startTimeDiff < this->duration)) 
+					{
+						// channel event ends after visible part of the time line but starts in the visible part
+						startTimeDiff = 0;
+					} 
+					else if (startTimeDiff > 0) 
+					{	
+						// channel event starts and ends after visible part of the time line => break the loop
+						//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** break 1\n");
+						break;
+					} 
+					else 
+					{				
+						// channel event starts and ends after visible part of the time line => ignore the channel event
+						//if(0x2bc000b004b7ULL == (channel->channel_id & 0xFFFFFFFFFFFFULL)) printf("*** continue 1 startTimeDiff %ld endTimeDiff %ld\n", startTimeDiff, endTimeDiff);
+						continue;
+					}
+		
+					if (lastEndTime < It->startTime) 
+					{	
+						// there is a gap between last end time and new start time => fill it with a new event entry
+				
+						CChannelEvent channelEvent;
+						channelEvent.startTime = lastEndTime;
+						channelEvent.duration = It->startTime - channelEvent.startTime;
+				
+						ChannelEventEntry *channelEventEntry = new ChannelEventEntry (&channelEvent, this->frameBuffer, this->timeLine, this->footer, this->eventsTableX + ((channelEvent.startTime - this->startTime) * this->eventsTableWidth) / this->duration, yPosEventEntry, (channelEvent.duration * this->eventsTableWidth) / this->duration + 1);
+						channelEntry->channelEventEntries.push_back (channelEventEntry);
+					}
+					
+					// correct position
+					xPosEventEntry = this->eventsTableX + ((It->startTime - startTimeDiff - this->startTime) * this->eventsTableWidth) / this->duration;
+		
+					// correct width
+					widthEventEntry = ((It->duration + startTimeDiff + endTimeDiff) * this->eventsTableWidth) / this->duration + 1;
+		
+					if (widthEventEntry < 0)
+						widthEventEntry = 0;
+		
+					if (xPosEventEntry + widthEventEntry > this->eventsTableX + this->eventsTableWidth)
+						widthEventEntry = this->eventsTableX + this->eventsTableWidth - xPosEventEntry;
+		
+					ChannelEventEntry *channelEventEntry = new ChannelEventEntry (&(*It) , this->frameBuffer, this->timeLine, this->footer, xPosEventEntry, yPosEventEntry, widthEventEntry);
+		
+					channelEntry->channelEventEntries.push_back (channelEventEntry);
+					lastEndTime = It->startTime + It->duration;
+				}
+				
+				lastIt = It;
 			}
 	
-			if (lastEndTime < It->startTime) {	// there is a gap between last end time and new start time => fill it with a new event entry
-	
+			if (lastEndTime < this->startTime + time_t (this->duration)) 
+			{	
+				// there is a gap between last end time and end of the timeline => fill it with a new event entry
 				CChannelEvent channelEvent;
 				channelEvent.startTime = lastEndTime;
-				channelEvent.duration = It->startTime - channelEvent.startTime;
-	
+				channelEvent.duration = this->startTime + this->duration - channelEvent.startTime;
+			
 				ChannelEventEntry *channelEventEntry = new ChannelEventEntry (&channelEvent, this->frameBuffer, this->timeLine, this->footer, this->eventsTableX + ((channelEvent.startTime - this->startTime) * this->eventsTableWidth) / this->duration, yPosEventEntry, (channelEvent.duration * this->eventsTableWidth) / this->duration + 1);
 				channelEntry->channelEventEntries.push_back (channelEventEntry);
 			}
-			// correct position
-			xPosEventEntry = this->eventsTableX + ((It->startTime - startTimeDiff - this->startTime) * this->eventsTableWidth) / this->duration;
-	
-			// correct width
-			widthEventEntry = ((It->duration + startTimeDiff + endTimeDiff) * this->eventsTableWidth) / this->duration + 1;
-	
-			if (widthEventEntry < 0)
-				widthEventEntry = 0;
-	
-			if (xPosEventEntry + widthEventEntry > this->eventsTableX + this->eventsTableWidth)
-				widthEventEntry = this->eventsTableX + this->eventsTableWidth - xPosEventEntry;
-	
-			ChannelEventEntry *channelEventEntry = new ChannelEventEntry (&(*It) , this->frameBuffer, this->timeLine, this->footer, xPosEventEntry, yPosEventEntry, widthEventEntry);
-	
-			channelEntry->channelEventEntries.push_back (channelEventEntry);
-			lastEndTime = It->startTime + It->duration;
-			}
-			lastIt = It;
-		}
-	
-		if (lastEndTime < this->startTime + time_t (this->duration)) {	// there is a gap between last end time and end of the timeline => fill it with a new event entry
-	
-			CChannelEvent channelEvent;
-			channelEvent.startTime = lastEndTime;
-			channelEvent.duration = this->startTime + this->duration - channelEvent.startTime;
-	
-			ChannelEventEntry *channelEventEntry = new ChannelEventEntry (&channelEvent, this->frameBuffer, this->timeLine, this->footer, this->eventsTableX + ((channelEvent.startTime - this->startTime) * this->eventsTableWidth) / this->duration, yPosEventEntry, (channelEvent.duration * this->eventsTableWidth) / this->duration + 1);
-			channelEntry->channelEventEntries.push_back (channelEventEntry);
-		}
-		this->displayedChannelEntries.push_back (channelEntry);
+		
+			this->displayedChannelEntries.push_back (channelEntry);
 		}
 	
 		this->selectedChannelEntry = this->displayedChannelEntries[selectedChannelEntryIndex - this->channelListStartIndex];
