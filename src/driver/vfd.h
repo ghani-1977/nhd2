@@ -116,7 +116,7 @@ typedef enum
 
 #endif //spark7162
 
-#if defined(PLATFORM_UFS910)
+#if defined(PLATFORM_UFS910) || defined(PLATFORM_UFS913)
 
 typedef enum
 {
@@ -139,7 +139,7 @@ typedef enum
 } ufs910_vfd_icon;
 
 
-// neutrino common translate for ufs910
+// neutrino common translate for ufs910  / ufs913
 typedef enum
 {
 	VFD_ICON_MUTE		= vfd_910_mute,		// UFS910 hasn't all icons, therefore a value wich doesn't change anything
@@ -161,9 +161,9 @@ typedef enum
 	VFD_ICON_LOCK 		= vfd_910_lock,
 } vfd_icon;
 
-#endif //ufs910
+#endif //ufs910, ufs913
 
-#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162)
+#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162) && !defined(PLATFORM_UFS913)
 
 // duckbox
 // token from micom

@@ -582,7 +582,7 @@ void CVFD::Clear()
 	ShowText("    "); // 4 empty digits
 #elif defined __sh__ 
 	struct vfd_ioctl_data data;
-#if defined (PLATFORM_UFS910)			/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
+#if defined (PLATFORM_UFS910) || defined (PLATFORM_UFS913)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
 	data.start_address = 0x01;
 	data.length = 0x0;
 	openDevice();	
@@ -604,7 +604,7 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 	if(!has_lcd) 
 		return;
 	
-#if defined (PLATFORM_UFS910)
+#if defined (PLATFORM_UFS910) || defined (PLATFORM_UFS913)
 	int i;
 	struct vfd_ioctl_data data;
 	
@@ -645,7 +645,7 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
 		perror("VFDICONDISPLAYONOFF");	
 #else
-#if defined (PLATFORM_UFS910)
+#if defined (PLATFORM_UFS910) || defined (PLATFORM_UFS913)
 	if (icon == 17)				/* returning because not existing icon at ufs910 */
 	{
 		closeDevice();	
