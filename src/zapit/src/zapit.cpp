@@ -979,9 +979,11 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	
 	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
+	int retry = false;
+ tune_again:
 	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
-			return -1;
+		return -1;
 
 	// check if nvod
 	if (live_channel->getServiceType() == ST_NVOD_REFERENCE_SERVICE) 
@@ -992,6 +994,13 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	// parse pat pmt
 	failed = !parse_channel_pat_pmt(live_channel, live_fe);
+	
+	if(failed && !retry)
+	{
+		retry = true;
+		printf("[zapit] trying again...\n");
+		goto tune_again;
+	}
 
 	if ((!failed) && (live_channel->getAudioPid() == 0) && (live_channel->getVideoPid() == 0)) 
 	{
@@ -3545,7 +3554,7 @@ void * sdt_thread(void * arg)
 	return 0;
 }
 
-//#define CHECK_FOR_LOCK
+#define CHECK_FOR_LOCK
 
 int zapit_main_thread(void *data)
 {

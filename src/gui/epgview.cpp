@@ -53,7 +53,7 @@
 
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 52
-#define PIC_H 39
+
 static CProgressBar * timescale;
 
 #define ICON_LARGE_WIDTH 26
@@ -152,9 +152,6 @@ void CEpgData::start()
 	//top
 	topheight     = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->getHeight();
 	topboxheight  = topheight + 6;
-
-	if(topboxheight < PIC_H) 
-		topboxheight = PIC_H;
 
 	//bottom
 	botheight     = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->getHeight();
@@ -468,6 +465,7 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	int pos;
 	std::string text1 = epgData.title;
 	std::string text2 = "";
+	
 	if (g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->getRenderWidth(text1, true) > ox - PIC_W - 5)
 	{
 		do
@@ -496,11 +494,12 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	
 	//channel logo
 	bool logo_ok = false;
-	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx+10, sy- toph+ (toph-PIC_H)/2/*5*/, PIC_W, PIC_H);
+	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx+15 +(logo_ok? PIC_W+10: 0), sy- toph+ topheight+ 3, ox-15- (logo_ok ? PIC_W+5: 0), text1, COL_MENUHEAD, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx+15 +(logo_ok? PIC_W+10: 0), sy- toph+ topheight+ 3, ox - 15 - (logo_ok ? PIC_W + 5: 0), text1, COL_MENUHEAD, 0, true);
+	
 	if (!(text2.empty()))
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W+10: 0), sy - toph + 2* topheight + 3, ox - 15 - (logo_ok ? PIC_W+5: 0), text2, COL_MENUHEAD, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W+10: 0), sy - toph + 2* topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5: 0), text2, COL_MENUHEAD, 0, true);
 
 }
 

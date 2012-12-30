@@ -385,8 +385,6 @@ fe_status_t CFrontend::getStatus(void) const
 	
 	if( ioctl(fd, FE_READ_STATUS, &status) < 0)
 		perror("FE_READ_STATUS");
-	
-	dprintf(DEBUG_INFO, "CFrontend::getStatus: 0x%x\n", status);
 
 	return (fe_status_t) (status & FE_HAS_LOCK);
 }

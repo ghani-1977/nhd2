@@ -83,8 +83,6 @@ extern CBouquetList   * RADIOfavList;
 extern CBouquetList   * RADIOallList;
 
 #define PIC_W 52
-#define PIC_H 39
-
 
 extern t_channel_id rec_channel_id;
 extern t_channel_id live_channel_id;
@@ -519,9 +517,6 @@ int CChannelList::show()
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 
-	if(theight < PIC_H) 
-		theight = PIC_H;
-
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	listmaxshow = (height - theight - buttonHeight -0)/fheight;
 	height = theight + buttonHeight + listmaxshow * fheight;
@@ -788,10 +783,10 @@ int CChannelList::show()
 			paintHead();
 			//TEST: repaint logo
 			// refresh logo box
-			frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y+(theight-PIC_H)/2, PIC_W, PIC_H, COL_MENUHEAD_PLUS_0);
+			frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 			// paint logo
-			g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y+(theight-PIC_H)/2, PIC_W, PIC_H);
+			g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight);
 		}
 		else if (CRCInput::isNumeric(msg) && ( /*this->historyMode ||*/ g_settings.sms_channel)) 
 		{
@@ -1795,10 +1790,10 @@ void CChannelList::paintItem(int pos)
 		paintDetails(curr);
 
 		// refresh logo box
-		frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y + (theight-PIC_H)/2, PIC_W, PIC_H, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 		// paint logo
-		g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y+(theight-PIC_H)/2, PIC_W, PIC_H);
+		g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight);
 
 		// infobox
 		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);

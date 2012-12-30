@@ -107,8 +107,10 @@ void DMX::closefd(void)
 {
 	if (isOpen())
 	{
-		//close(fd);
 		dmx->Stop();
+		
+		//FIXME:???
+		close();
 
 		fd = -1;
 	}
@@ -468,7 +470,8 @@ int DMX::immediate_start(void)
 		closefd();
 	}
 
-	if (real_pauseCounter != 0) {
+	if (real_pauseCounter != 0) 
+	{
 		dprintf("DMX::immediate_start: realPausecounter !=0 (%d)!\n", real_pauseCounter);
 		return 0;
 	}
@@ -621,14 +624,20 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 		   does nothing in that case), so we can just continue here. */
 	}
 
-	if (sections_debug) { // friendly debug output...
-		if(pID==0x12 && filters[0].filter != 0x4e) { // Only EIT
+	if (sections_debug) 
+	{ 
+		// friendly debug output...
+		if(pID==0x12 && filters[0].filter != 0x4e) 
+		{ 
+			// Only EIT
 			printdate_ms(stderr);
 			fprintf(stderr, "changeDMX [EIT]-> %d (0x%x/0x%x) %s (%ld seconds)\n",
 				new_filter_index, filters[new_filter_index].filter,
 				filters[new_filter_index].mask, dmx_filter_types[new_filter_index],
 				time_monotonic()-lastChanged);
-		} else {
+		} 
+		else 
+		{
 			printdate_ms(stderr);
 			fprintf(stderr, "changeDMX [%x]-> %d (0x%x/0x%x) (%ld seconds)\n", pID,
 				new_filter_index, filters[new_filter_index].filter,

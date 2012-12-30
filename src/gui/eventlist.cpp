@@ -62,8 +62,6 @@ extern t_channel_id live_channel_id;
 #include <algorithm>
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 52
-#define PIC_H 39
-
 
 void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
@@ -233,8 +231,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 
 	iheight = 30;	// info bar height (see below, hard coded at this time)
 	theight  = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->getHeight();
-
-	if(theight < PIC_H) theight = PIC_H;
 
 	fheight1 = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight();
 	{
@@ -732,7 +728,7 @@ void EventList::paintHead(t_channel_id channel_id)
 	}
 
 	// logo
-        logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y + (theight-PIC_H)/2, PIC_W, PIC_H);
+        logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight);
 
 	// title
 	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + BORDER_LEFT + (logo_ok? 5 + PIC_W:0), y + theight+1, width - BORDER_LEFT - (logo_ok? 5 + PIC_W:0) - BORDER_RIGHT - icon_h_w - 5 - timestr_len, name.c_str(), COL_MENUHEAD, 0, true); // UTF-8
