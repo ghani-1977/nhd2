@@ -4155,9 +4155,9 @@ void CNeutrinoApp::saveEpg()
 // mute
 void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 {
-	int dx = 0;
-	int dy = 0;
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE,&dx, &dy);
+	int dx = 32;
+	int dy = 32;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE, &dx, &dy);
 	int offset = (dx/4);
 	dx += offset;
 	dy += offset;
@@ -4177,16 +4177,43 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 
 	if( isEvent && ( mode != mode_scart ) && ( mode != mode_audio) && ( mode != mode_pic))
 	{
+		//FIXME:
+		fb_pixel_t * mute_pixbuf = NULL;
+
 		if( current_muted ) 
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x+(offset/2), y + (offset/2) );
+			if(!mute_pixbuf)
+				mute_pixbuf = new fb_pixel_t[dx * dy];
+			
+			if(mute_pixbuf)
+			{
+				frameBuffer->SaveScreen(x, y, dx, dy, mute_pixbuf);
+			
+#if !defined USE_OPENGL
+				frameBuffer->blit();			
+#endif			
+			}
+		
+			frameBuffer->paintBoxRel(x, y, dx, dy, COL_MENUCONTENT_PLUS_0);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x + (offset/2), y + (offset/2) );
 		}
 		else
 		{
-			frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);	
-		}
+			if( mute_pixbuf) 
+			{
+				frameBuffer->RestoreScreen(x, y, dx, dy, mute_pixbuf);
+
 #if !defined USE_OPENGL
-			frameBuffer->blit();
+				frameBuffer->blit();
+#endif		
+				delete [] mute_pixbuf;
+			}
+			else
+				frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);
+		}
+		
+#if !defined USE_OPENGL
+		frameBuffer->blit();
 #endif		
 	}
 }

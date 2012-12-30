@@ -541,16 +541,33 @@ bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, 
 	return false;
 }
 
+// get size
+void CPictureViewer::getSize(const char* name, int* width, int *height)
+{
+	CFormathandler * fh;
+
+	fh = fh_getsize(name, width, height, INT_MAX, INT_MAX);
+	
+	if (fh == NULL) 
+	{
+		*width = 0;
+		*height = 0;
+	}
+}
+
 // display logos
-bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height)
+bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale)
 {	
         char fname[255];
 	bool ret = false;
 	bool logo_ok = false;
 	
+	int logo_w, logo_h;
+	
 	// first png, then jpg, then gif
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
 	
+	// check for log
 	for (int i = 0; i < 3; i++)
 	{
 		sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
@@ -561,6 +578,36 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		}
 	}
 	
+	// scale logo
+	if(!upscale)
+	{
+		// get logo real size
+		getSize(fname, &logo_w, &logo_h);
+		
+		printf("Channel logo: %s w:(%d) h:(%d)\n", fname, logo_w, logo_h);
+		
+		//rescale logo image
+		float aspect = (float)(logo_w) / (float)(logo_h);
+		
+		if (((float)(logo_w) / (float)width) > ((float)(logo_h) / (float)height)) 
+		{
+			logo_w = width;
+			logo_h = (int)(width / aspect);
+		}
+		else
+		{
+			logo_h = height;
+			logo_w = (int)(height * aspect);
+		}
+	}
+	else
+	{
+		logo_w = width;
+		logo_h = height;
+	}
+	//
+	
+	// show logo
 	if(logo_ok)
 	{
 		dprintf(DEBUG_INFO, "CPictureViewer::DisplayLogo file: %s\n", fname);
@@ -568,10 +615,13 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		std::string logo_name = fname; // UTF-8
 		
 		if( logo_name.find(".png") == (logo_name.length() - 4) )
-			ret = DisplayImage(fname, posx, posy, width, height, true); 	// with alpha channal
+			//ret = DisplayImage(fname, posx, posy, width, height, true); 	// with alpha channal
+			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h, true); 	// with alpha channal
 		else
-			ret = DisplayImage(fname, posx, posy, width, height);		//jpg/gif without alpha channel	
+			//ret = DisplayImage(fname, posx, posy, width, height);
+			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h);
         }
+        //
 
 	return ret;
 }
