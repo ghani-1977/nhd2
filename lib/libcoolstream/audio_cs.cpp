@@ -134,13 +134,16 @@ int cAudio::SetMute(int enable)
 #if !defined (PLATFORM_GENERIC)
 	//HACK?
 	FILE *f;
-	if((f = fopen("/proc/stb/audio/j1_mute", "wb")) == NULL) {
+	if((f = fopen("/proc/stb/audio/j1_mute", "wb")) == NULL) 
+	{
 		printf("cannot open /proc/stb/audio/j1_mute(%m)\n");
 	}
-	
-	fprintf(f, "%d", enable);
+	else
+	{
+		fprintf(f, "%d", enable);
 
-	fclose(f);
+		fclose(f);
+	}
 #endif 
 #endif
 
@@ -194,10 +197,12 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	{
 		printf("cannot open /proc/stb/avs/0/volume(%m)\n");
 	}
+	else
+	{
+		fprintf(f, "%d", left); /* in -1dB */
 
-	fprintf(f, "%d", left); /* in -1dB */
-
-	fclose(f);
+		fclose(f);
+	}
 #endif // !generic
 #endif
 	

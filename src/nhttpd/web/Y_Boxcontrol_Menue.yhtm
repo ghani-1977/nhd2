@@ -96,7 +96,7 @@ function init(){
 				{=if-equal:{=var-get:fbshot=}~true~
 				<li><a target="work" title="{=L:bc.menue.remote_osd_desc=}" href="Y_Tools_remote_osd.yhtm">{=L:bc.menue.remote_osd=}</a></li>
 				~
-				<li class="disabled" title="{=L:bc.menue.osd_screenshot_desc_ni=}">{=L:bc.menue.osd_screenshot=}</li>
+				<li class="disabled" title="{=L:bc.menue.remote_osd_desc_ni=}">{=L:bc.menue.remote_osd=}</li>
 				=}
 			</ul>
 		</div>
