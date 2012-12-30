@@ -85,7 +85,8 @@ DMX::~DMX()
 	pthread_mutex_destroy(&pauselock);
 	pthread_mutex_destroy(&start_stop_mutex);
 	pthread_cond_destroy (&change_cond);
-	closefd();
+	//closefd();
+	close();
 }
 
 ssize_t DMX::read(char * const /*buf*/, const size_t /*buflength*/, const unsigned /*timeoutMInSeconds*/)
@@ -108,9 +109,6 @@ void DMX::closefd(void)
 	if (isOpen())
 	{
 		dmx->Stop();
-		
-		//FIXME:???
-		close();
 
 		fd = -1;
 	}
@@ -527,8 +525,6 @@ int DMX::real_pause(void)
 	{
 		immediate_stop();
 	}
-	//else
-	//	dprintf("real_pause: counter %d\n", real_pauseCounter);
 
 	unlock();
 
@@ -544,8 +540,6 @@ int DMX::real_unpause(void)
 		immediate_start();
 		//dprintf("real_unpause DONE: %d\n", real_pauseCounter);
 	}
-	//else
-	//	dprintf("real_unpause NOT DONE: %d\n", real_pauseCounter);
 
 	unlock();
 
@@ -557,7 +551,6 @@ int DMX::request_pause(void)
 	real_pause(); // unlocked
 
 	lock();
-	//dprintf("request_pause: %d\n", real_pauseCounter);
 
 	real_pauseCounter++;
 
@@ -593,6 +586,7 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 {
 	if (sections_debug)
 		showProfiling("changeDMX: before pthread_mutex_lock(&start_stop_mutex)");
+	
 	lock();
 
 	if (sections_debug)
@@ -601,18 +595,6 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	filter_index = new_filter_index;
 	first_skipped = 0;
 
-#if 0
-	/* i have to think about this. This #if 0 now makes .change() automatically unpause the
-	 * demux.  No idea if there are negative side effects - we will find out :)  -- seife
-	 */
-	if (!isOpen())
-	{
-		pthread_cond_signal(&change_cond);
-		unlock();
-		dprintf("DMX::change(%d): not open!\n",new_filter_index);
-		return 1;
-	}
-#endif
 	if (new_current_service != -1)
 		current_service = new_current_service;
 
@@ -627,7 +609,7 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	if (sections_debug) 
 	{ 
 		// friendly debug output...
-		if(pID==0x12 && filters[0].filter != 0x4e) 
+		if(pID == 0x12 && filters[0].filter != 0x4e) 
 		{ 
 			// Only EIT
 			printdate_ms(stderr);
@@ -646,6 +628,9 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	}
 
 	closefd();
+	
+	//FIXME
+	close();
 
 	int rc = immediate_start();
 
