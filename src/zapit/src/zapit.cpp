@@ -3674,11 +3674,8 @@ int zapit_main_thread(void *data)
 #ifdef CHECK_FOR_LOCK
 		if (check_lock && !standby && live_channel && time(NULL) > lastlockcheck && scan_runs == 0) 
 		{
-			//printf("checking for lock...\n");
-			
 			if ( (live_fe->getStatus() & FE_HAS_LOCK) == 0) 
 			{
-				//printf("[zapit] LOCK LOST! trying rezap... channel: '%s'\n", live_channel->getName().c_str());
 				zapit( live_channel->getChannelID(), current_is_nvod, true);
 			}
 			
