@@ -21,7 +21,7 @@
 //-----------------------------------------------------------------------------
 #ifndef CONFIG_SYSTEM_BY_COMPILER 				// use Compiler directive to set CONFIG_SYSTEM
 //#define CONFIG_SYSTEM_TUXBOX	y				// Tuxbox project
-#define CONFIG_SYSTEM_TUXBOX_COOLSTREAM	y	// Tuxbox project for coolstream
+#define CONFIG_SYSTEM_TUXBOX_COOLSTREAM	y			// Tuxbox project for coolstream
 #endif
 //-----------------------------------------------------------------------------
 // General central Definitions <configure!>

@@ -611,166 +611,133 @@ int CControlAPI::rc_send(int ev, unsigned int code, unsigned int value)
 	return write(ev,&iev,sizeof(iev));
 }
 
-//-----------------------------------------------------------------------------
-// security: use const char-Pointers
-struct key {
-	const char *name;
-	const int code;
-};
-
-#ifndef KEY_TOPLEFT
-#define KEY_TOPLEFT	0x1a2
-#endif
-
-#ifndef KEY_TOPRIGHT
-#define KEY_TOPRIGHT	0x1a3
-#endif
-
-#ifndef KEY_BOTTOMLEFT
-#define KEY_BOTTOMLEFT	0x1a4
-#endif
-
-#ifndef KEY_BOTTOMRIGHT
-#define KEY_BOTTOMRIGHT	0x1a5
-#endif
-
-#if defined PLATFORM_CUBEREVO || defined PLATFORM_CUBEREVO_MINI || defined PLATFORM_CUBEREVO_MINI2 || defined PLATFORM_CUBEREVO_MINI_FTA || defined PLATFORM_CUBEREVO_250HD || defined PLATFORM_CUBEREVO_2000HD || defined PLATFORM_CUBEREVO_9500HD
-static const struct key keynames[] = {
-	{"KEY_POWER",           0x74},
-        {"KEY_MUTE",              0x71},
-        {"KEY_1",               KEY_1},
-        {"KEY_2",               KEY_2},
-        {"KEY_3",               KEY_3},
-        {"KEY_4",               KEY_4},
-        {"KEY_5",               KEY_5},
-        {"KEY_6",               KEY_6},
-        {"KEY_7",               KEY_7},
-        {"KEY_8",               KEY_8},
-        {"KEY_9",               KEY_9},
-        {"KEY_0",               KEY_0},
-
-        {"KEY_INFO",            0x166},
-        {"KEY_MODE",            KEY_MODE},
-        {"KEY_SETUP",           KEY_MENU},
-        {"KEY_EPG",             KEY_EPG},
-        {"KEY_FAVORITES",       KEY_FAVORITES},
-        {"KEY_HOME",            0x9E},
-        {"KEY_UP",              KEY_UP},
-        {"KEY_LEFT",            KEY_LEFT},
-        {"KEY_OK",              KEY_OK},
-        {"KEY_RIGHT",           KEY_RIGHT},
-        {"KEY_DOWN",            KEY_DOWN},
-        {"KEY_VOLUMEUP",        0xBB},
-        {"KEY_VOLUMEDOWN",      0xBC},
-        {"KEY_PAGEUP",          KEY_PAGEUP},
-        {"KEY_PAGEDOWN",        KEY_PAGEDOWN},
-        {"KEY_TV",              0x3B},
-        {"KEY_TEXT",            KEY_TEXT},
-        {"KEY_RADIO",           KEY_RADIO},
-        {"KEY_RED",             KEY_RED},
-        {"KEY_GREEN",           KEY_GREEN},
-        {"KEY_YELLOW",          KEY_YELLOW},
-        {"KEY_BLUE",            KEY_BLUE},
-        {"KEY_SAT",             KEY_SAT},
-        {"KEY_HELP",            KEY_HELP},
-        {"KEY_NEXT",            KEY_NEXT},
-        {"KEY_PREVIOUS",        KEY_PREVIOUS},
-        {"KEY_TIME",            KEY_TIME},
-        {"KEY_AUDIO",           KEY_AUDIO},
-        {"KEY_REWIND",          KEY_REWIND},
-        {"KEY_FORWARD",         KEY_FORWARD},
-        {"KEY_PAUSE",           KEY_PAUSE},
-        {"KEY_RECORD",          KEY_RECORD},
-        {"KEY_STOP",            KEY_STOP},
-        {"KEY_PLAY",           KEY_PLAY},
-	{"KEY_NET", 0x96},
-	{"KEY_RECALL",  0x3C},
-	{"KEY_BOOKMARK", 0x3F},
-	{"KEY_VIDEO", 0x90},
-	{"KEY_MUSIC", 0xC1},
-	{"KEY_PICTURE", 0x3E},
-	{"KEY_PIP", 0x41},
-	{"KEY_PIPPOS", 0xBE},
-	{"KEY_PIPSWAP", 0xBF},
-	{"KEY_PIPSUB", 0xC0},
-	{"KEY_FEEDS", 0xBD},
-	{"KEY_DVBSUB", 0X172},
-	{"KEY_REPEAT", 0x40},
-	{"KEY_SLOWMOTION", 0x199},
-	
-};
-#else
-static const struct key keynames[] = {
-	{"KEY_POWER",		KEY_POWER},
-	{"KEY_MUTE",		KEY_MUTE},
-	{"KEY_1",			KEY_1},
-	{"KEY_2",			KEY_2},
-	{"KEY_3",			KEY_3},
-	{"KEY_4",			KEY_4},
-	{"KEY_5",			KEY_5},
-	{"KEY_6",			KEY_6},
-	{"KEY_7",			KEY_7},
-	{"KEY_8",			KEY_8},
-	{"KEY_9",			KEY_9},
-	{"KEY_0",			KEY_0},
-	{"KEY_INFO",		KEY_INFO},
-	{"KEY_MODE",		KEY_MODE},
-	{"KEY_SETUP",		KEY_MENU},
-	{"KEY_EPG",			KEY_EPG},
-	{"KEY_FAVORITES",	KEY_FAVORITES},
-	{"KEY_HOME",		KEY_EXIT},
-	{"KEY_UP",			KEY_UP},
-	{"KEY_LEFT",		KEY_LEFT},
-	{"KEY_OK",			KEY_OK},
-	{"KEY_RIGHT",		KEY_RIGHT},
-	{"KEY_DOWN",		KEY_DOWN},
-	{"KEY_VOLUMEUP",	KEY_VOLUMEUP},
-	{"KEY_VOLUMEDOWN",	KEY_VOLUMEDOWN},
-	{"KEY_PAGEUP",		KEY_PAGEUP},
-	{"KEY_PAGEDOWN",	KEY_PAGEDOWN},
-	{"KEY_TV",			KEY_TV},
-	{"KEY_TEXT",		KEY_TEXT},
-	{"KEY_RADIO",		KEY_RADIO},
-	{"KEY_RED",			KEY_RED},
-	{"KEY_GREEN",		KEY_GREEN},
-	{"KEY_YELLOW",		KEY_YELLOW},
-	{"KEY_BLUE",		KEY_BLUE},
-	{"KEY_SAT",			KEY_SAT},
-	{"KEY_HELP",		KEY_HELP},
-	{"KEY_NEXT",		KEY_NEXT},
-	{"KEY_PREVIOUS",	KEY_PREVIOUS},
-	{"KEY_TIME", 		KEY_TIME},
-	{"KEY_AUDIO",		KEY_AUDIO},
-	{"KEY_REWIND",		KEY_REWIND},
-	{"KEY_FORWARD",		KEY_FORWARD},
-	{"KEY_PAUSE",		KEY_PAUSE},
-	{"KEY_RECORD",		KEY_RECORD},
-	{"KEY_STOP",		KEY_STOP},
-	{"KEY_PLAY",		KEY_PLAY}
-};
-#endif
-
 // The code here is based on rcsim. Thx Carjay!
-void CControlAPI::RCEmCGI(CyhookHandler *hh) {
-	if (hh->ParamList.empty()) {
+void CControlAPI::RCEmCGI(CyhookHandler *hh) 
+{
+	if (hh->ParamList.empty()) 
+	{
 		hh->SendError();
 		return;
 	}
+	
 	std::string keyname = hh->ParamList["1"];
 	int sendcode = -1;
-	for (unsigned int i = 0; sendcode == -1 && i < sizeof(keynames)
-			/ sizeof(key); i++) {
-		if (!strcmp(keyname.c_str(), keynames[i].name))
-			sendcode = keynames[i].code;
-	}
-
-	if (sendcode == -1) {
+	
+	//for (unsigned int i = 0; sendcode == -1 && i < sizeof(keynames)/ sizeof(key); i++) 
+	//{
+	//	if (!strcmp(keyname.c_str(), keynames[i].name))
+	//		sendcode = keynames[i].code;
+	//}
+	
+	//FIXME: use keymap.conf this belong to all boxes models
+	CConfigFile * Config = new CConfigFile(',');
+	Config->loadConfig(NEUTRINO_KEYMAP_FILE);
+	
+	if ( !strcmp(keyname.c_str(), "KEY_POWER"))
+		sendcode = Config->getInt32("key_standby", KEY_POWER);
+	else if ( !strcmp(keyname.c_str(), "KEY_MUTE"))
+		sendcode = Config->getInt32("key_spkr", KEY_MUTE);
+	else if ( !strcmp(keyname.c_str(), "KEY_1"))
+		sendcode = Config->getInt32("key_1", KEY_1);
+	else if ( !strcmp(keyname.c_str(), "KEY_2"))
+		sendcode = Config->getInt32("key_2", KEY_2);
+	else if ( !strcmp(keyname.c_str(), "KEY_3"))
+		sendcode = Config->getInt32("key_3", KEY_3);
+	else if ( !strcmp(keyname.c_str(), "KEY_4"))
+		sendcode = Config->getInt32("key_4", KEY_4);
+	else if ( !strcmp(keyname.c_str(), "KEY_5"))
+		sendcode = Config->getInt32("key_5", KEY_5);
+	else if ( !strcmp(keyname.c_str(), "KEY_6"))
+		sendcode = Config->getInt32("key_6", KEY_6);
+	else if ( !strcmp(keyname.c_str(), "KEY_7"))
+		sendcode = Config->getInt32("key_7", KEY_7);
+	else if ( !strcmp(keyname.c_str(), "KEY_8"))
+		sendcode = Config->getInt32("key_8", KEY_8);
+	else if ( !strcmp(keyname.c_str(), "KEY_9"))
+		sendcode = Config->getInt32("key_9", KEY_9);
+	else if ( !strcmp(keyname.c_str(), "KEY_0"))
+		sendcode = Config->getInt32("key_0", KEY_0);
+	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
+		sendcode = Config->getInt32("key_info", KEY_INFO);
+	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
+		sendcode = Config->getInt32("key_mode", KEY_MODE);
+	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
+		sendcode = Config->getInt32("key_setup", KEY_MENU);
+	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
+		sendcode = Config->getInt32("key_epg", KEY_EPG);
+	else if ( !strcmp(keyname.c_str(), "KEY_FAVORITES"))
+		sendcode = Config->getInt32("key_favorites", KEY_FAVORITES);
+	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
+		sendcode = Config->getInt32("key_home", KEY_HOME);
+	else if ( !strcmp(keyname.c_str(), "KEY_UP"))
+		sendcode = Config->getInt32("key_up", KEY_UP);
+	else if ( !strcmp(keyname.c_str(), "KEY_LEFT"))
+		sendcode = Config->getInt32("key_left", KEY_LEFT);
+	else if ( !strcmp(keyname.c_str(), "KEY_OK"))
+		sendcode = Config->getInt32("key_ok", KEY_OK);
+	else if ( !strcmp(keyname.c_str(), "KEY_RIGHT"))
+		sendcode = Config->getInt32("key_right", KEY_RIGHT);
+	else if ( !strcmp(keyname.c_str(), "KEY_DOWN"))
+		sendcode = Config->getInt32("key_down", KEY_DOWN);
+	else if ( !strcmp(keyname.c_str(), "KEY_VOLUMEUP"))
+		sendcode = Config->getInt32("key_plus", KEY_VOLUMEUP);
+	else if ( !strcmp(keyname.c_str(), "KEY_VOLUMEDOWN"))
+		sendcode = Config->getInt32("key_minus", KEY_VOLUMEDOWN);
+	else if ( !strcmp(keyname.c_str(), "KEY_PAGEUP"))
+		sendcode = Config->getInt32("key_page_up", KEY_PAGEUP);
+	else if ( !strcmp(keyname.c_str(), "KEY_PAGEDOWN"))
+		sendcode = Config->getInt32("key_page_down", KEY_PAGEDOWN);
+	else if ( !strcmp(keyname.c_str(), "KEY_TV"))
+		sendcode = Config->getInt32("key_mode", KEY_MODE);
+	else if ( !strcmp(keyname.c_str(), "KEY_TEXT"))
+		sendcode = Config->getInt32("key_text", KEY_TEXT);
+	else if ( !strcmp(keyname.c_str(), "KEY_RADIO"))
+		sendcode = Config->getInt32("key_mode", KEY_MODE);
+	else if ( !strcmp(keyname.c_str(), "KEY_RED"))
+		sendcode = Config->getInt32("key_red", KEY_RED);
+	else if ( !strcmp(keyname.c_str(), "KEY_GREEN"))
+		sendcode = Config->getInt32("key_green", KEY_GREEN);
+	else if ( !strcmp(keyname.c_str(), "KEY_YELLOW"))
+		sendcode = Config->getInt32("key_yellow", KEY_YELLOW);
+	else if ( !strcmp(keyname.c_str(), "KEY_BLUE"))
+		sendcode = Config->getInt32("key_blue", KEY_BLUE);
+	else if ( !strcmp(keyname.c_str(), "KEY_SAT"))
+		sendcode = Config->getInt32("key_sat", KEY_SAT);
+	else if ( !strcmp(keyname.c_str(), "KEY_HELP"))
+		sendcode = Config->getInt32("key_info", KEY_HELP);
+	else if ( !strcmp(keyname.c_str(), "KEY_NEXT"))
+		sendcode = Config->getInt32("key_next", KEY_NEXT);
+	else if ( !strcmp(keyname.c_str(), "KEY_PREVIOUS"))
+		sendcode = Config->getInt32("key_prev", KEY_PREVIOUS);
+	else if ( !strcmp(keyname.c_str(), "KEY_TIME"))
+		sendcode = Config->getInt32("key_timeshift", KEY_TIME);
+	else if ( !strcmp(keyname.c_str(), "KEY_AUDIO"))
+		sendcode = Config->getInt32("key_audio", KEY_AUDIO);
+	else if ( !strcmp(keyname.c_str(), "KEY_REWIND"))
+		sendcode = Config->getInt32("key_rewind", KEY_REWIND);
+	else if ( !strcmp(keyname.c_str(), "KEY_FORWARD"))
+		sendcode = Config->getInt32("key_forward", KEY_FORWARD);
+	else if ( !strcmp(keyname.c_str(), "KEY_PAUSE"))
+		sendcode = Config->getInt32("key_pause", KEY_PAUSE);
+	else if ( !strcmp(keyname.c_str(), "KEY_RECORD"))
+		sendcode = Config->getInt32("key_record", KEY_RECORD);
+	else if ( !strcmp(keyname.c_str(), "KEY_STOP"))
+		sendcode = Config->getInt32("key_stop", KEY_STOP);
+	else if ( !strcmp(keyname.c_str(), "KEY_PLAY"))
+		sendcode = Config->getInt32("key_play", KEY_PLAY);
+	
+	delete Config;
+	
+	if (sendcode == -1) 
+	{
 		printf("[nhttpd] Key %s not found\n", keyname.c_str());
 		hh->SendError();
 		return;
 	}
+	
 	unsigned int repeat = 1;
 	unsigned int delay = 250;
+	
 	if (hh->ParamList["delay"] != "")
 		delay = atoi(hh->ParamList["delay"].c_str());
 	if (hh->ParamList["duration"] != "")
@@ -2172,7 +2139,7 @@ void CControlAPI::doNewTimer(CyhookHandler *hh)
 		if(_rec_dir == "")
 		{
 			// get Default Recordingdir
-			CConfigFile *Config = new CConfigFile(',');
+			CConfigFile * Config = new CConfigFile(',');
 			Config->loadConfig(NEUTRINO_CONFIGFILE);
 			_rec_dir = Config->getString("network_nfs_recordingdir", "/mnt/filme");
 			delete Config;//Memory leak: Config
@@ -2438,7 +2405,7 @@ void CControlAPI::logoCGI(CyhookHandler *hh)
 void CControlAPI::ConfigCGI(CyhookHandler *hh)
 {
 	bool load = true;
-	CConfigFile *Config = new CConfigFile(',');
+	CConfigFile * Config = new CConfigFile(',');
 	ConfigDataMap conf;
 	std::string config_filename="";
 	std::string error = "";

@@ -247,9 +247,9 @@ bool loadKeyMap(const char * const fileName)
 	key_blue	= configfile.getInt32("key_blue", KEY_BLUE);
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_audio = configfile.getInt32("key_audio", /*0x3D*/0x188);
-	key_video = configfile.getInt32("key_video", /*0x90*/0xE2);		
-	key_text = configfile.getInt32("key_text", /*0x173*/0x184);
+	key_audio = configfile.getInt32("key_audio", 0x188);
+	key_video = configfile.getInt32("key_video", 0xE2);		
+	key_text = configfile.getInt32("key_text", 0x184);
 #else
 	key_audio = configfile.getInt32("key_audio", KEY_AUDIO);
 	key_video = configfile.getInt32("key_video", KEY_VIDEO);		
@@ -269,7 +269,7 @@ bool loadKeyMap(const char * const fileName)
 #endif			
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_recall = configfile.getInt32("key_recall", /*0x3C*/0x19C);
+	key_recall = configfile.getInt32("key_recall", 0x19C);
 #else
 	key_recall = configfile.getInt32("key_recall", KEY_BACK);
 #endif			
@@ -288,7 +288,7 @@ bool loadKeyMap(const char * const fileName)
 #if defined (PLATFORM_GIGABLUE)
 	key_mode = configfile.getInt32("key_mode", 0x181);
 #elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_mode = configfile.getInt32("key_mode", /*0x3B*/0x181);
+	key_mode = configfile.getInt32("key_mode", 0x181);
 #else			
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);
 #endif			
@@ -302,25 +302,25 @@ bool loadKeyMap(const char * const fileName)
 #endif			
 
 	/* added from cuberevo3000hd so fix it please */
-	key_music = configfile.getInt32("key_music", /*KEY_MUSIC*/0x3F );
-	key_picture = configfile.getInt32("key_picture", /*KEY_PICTURE*/ 0x169 );
+	key_music = configfile.getInt32("key_music", 0x3F );
+	key_picture = configfile.getInt32("key_picture", 0x169 );
 			
-	key_repeat = configfile.getInt32("key_repeat", /*KEY_REPEAT*/0x81);
-	key_slow = configfile.getInt32("key_slow", /*KEY_SLOW*/0x199 );
+	key_repeat = configfile.getInt32("key_repeat", 0x81);
+	key_slow = configfile.getInt32("key_slow", 0x199 );
 			
 	key_dvbsub = configfile.getInt32("key_dvbsub", KEY_DVBSUB);
 
 	key_pip = configfile.getInt32("key_pip", KEY_PIP);
-	key_pippos = configfile.getInt32("key_pippos", /*KEY_PIPPOS*/0x175);
-	key_pipswap = configfile.getInt32("key_pipswap", /*KEY_PIPSWAP*/0X9E);
-	key_pipsubch = configfile.getInt32("key_pipsubch", /*KEY_PIPSUBCH*/0x188);
+	key_pippos = configfile.getInt32("key_pippos", 0x175);
+	key_pipswap = configfile.getInt32("key_pipswap", 0X9E);
+	key_pipsubch = configfile.getInt32("key_pipsubch", 0x188);
 
 	key_net = configfile.getInt32("key_net", KEY_NET);
 			
-	key_bookmark = configfile.getInt32("key_bookmark", /*KEY_BOOKMARK*/0x9C);
+	key_bookmark = configfile.getInt32("key_bookmark", 0x9C);
 
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_multifeed = configfile.getInt32("key_multifeed", /*KEY_MULTIFEED*/0x42);
+	key_multifeed = configfile.getInt32("key_multifeed", 0x42);
 #else
 	key_multifeed = configfile.getInt32("key_multifeed", 0x165);
 #endif
