@@ -307,14 +307,6 @@ void CPlugins::startScriptPlugin(int number)
 		return;
 	}
 	
-	#if 0
-	FILE *f = popen(script,"r");
-	if (f != NULL)
-	{
-		printf("CPlugins::startScriptPlugin: script %s successfull started\n", script);
-		pclose(f);
-	} 
-	#endif
 	if( safe_system(script) )
 	{
 		printf("CPlugins::startScriptPlugin: script %s successfull started\n", script);
@@ -357,6 +349,7 @@ void CPlugins::startPlugin(int number,int param)
 
 	g_RCInput->clearRCMsg();
 	
+#if 0	
 	// fb
 	if (plugin_list[number].fb)
 	{
@@ -386,11 +379,7 @@ void CPlugins::startPlugin(int number,int param)
 	{
 		CVFD::getInstance()->pause();
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-		lcd_fd = open("/dev/dbox/fp0", O_RDWR);
-#else
-		lcd_fd = open("/dev/vfd", O_RDWR);
-#endif		
+		lcd_fd = open("/dev/vfd", O_RDWR);		
 
 		startparam = makeParam(P_ID_LCD, lcd_fd, startparam);
 	}	
@@ -523,6 +512,21 @@ void CPlugins::startPlugin(int number,int param)
 		par = par->next;
 		delete tmp;
 	}
+#else
+	g_RCInput->stopInput();
+	
+	printf("Starting %s\n", plugin_list[number].pluginfile.c_str());
+	
+	safe_system((char *) plugin_list[number].pluginfile.c_str());
+	
+	frameBuffer->paintBackground();
+#ifdef FB_BLIT
+	frameBuffer->blit();
+#endif	
+	
+	g_RCInput->restartInput();
+	g_RCInput->clearRCMsg();
+#endif
 }
 
 bool CPlugins::hasPlugin(CPlugins::p_type_t type)
