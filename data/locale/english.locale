@@ -154,7 +154,13 @@ colorthememenu.dblue_theme DarkBlue theme
 colorthememenu.dvb2k_theme DVB2000 theme
 colorthememenu.gray Gray theme
 colorthememenu.head Theme Selector
+colorthememenu.head2 Load themes
+colorthememenu.name Theme name
 colorthememenu.neutrino_theme Neutrino theme
+colorthememenu.question Use selected theme?
+colorthememenu.save Save current theme
+colorthememenu.select1 User Theme
+colorthememenu.select2 Standard Theme
 colorthememenu.red_theme Simply Red theme
 colorthememenu.pinky_theme Pinky theme
 colorthememenu.neutrinohd2_theme NeutrinoHD2 theme

@@ -150,6 +150,8 @@ CMenuWidget::~CMenuWidget()
 		CMenuItem * item = items[count];
 		
 		if ((item != GenericMenuSeparator) && (item != GenericMenuSeparatorLine) && (item != GenericMenuBack))
+		//TEST
+		//if ((item != GenericMenuSeparator) && (item != GenericMenuSeparatorLine) && (item != GenericMenuBack) && (item != GenericMenuCancel))
 			delete item;
 	}
 

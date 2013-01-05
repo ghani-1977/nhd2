@@ -584,8 +584,6 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		// get logo real size
 		getSize(fname, &logo_w, &logo_h);
 		
-		printf("Channel logo: %s w:(%d) h:(%d)\n", fname, logo_w, logo_h);
-		
 		//rescale logo image
 		float aspect = (float)(logo_w) / (float)(logo_h);
 		
@@ -615,10 +613,8 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		std::string logo_name = fname; // UTF-8
 		
 		if( logo_name.find(".png") == (logo_name.length() - 4) )
-			//ret = DisplayImage(fname, posx, posy, width, height, true); 	// with alpha channal
 			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h, true); 	// with alpha channal
 		else
-			//ret = DisplayImage(fname, posx, posy, width, height);
 			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h);
         }
         //

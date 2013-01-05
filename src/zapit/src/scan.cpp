@@ -242,6 +242,7 @@ _repeat:
 			actual_freq = tI->second.feparams.frequency/1000;
 
 		processed_transponders++;
+		
 		eventServer->sendEvent(CZapitClient::EVT_SCAN_REPORT_NUM_SCANNED_TRANSPONDERS, CEventServer::INITID_ZAPIT, &processed_transponders, sizeof(processed_transponders));
 		eventServer->sendEvent(CZapitClient::EVT_SCAN_PROVIDER, CEventServer::INITID_ZAPIT, (void *) " ", 2);
 		eventServer->sendEvent(CZapitClient::EVT_SCAN_SERVICENAME, CEventServer::INITID_ZAPIT, (void *) " ", 2);
@@ -357,6 +358,7 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 	uint8_t system = 0, modulation = 1;
 	int xml_fec;
 	FrontendParameters feparams;
+	
 	memset(&feparams, 0x00, sizeof(FrontendParameters));
 
 	freq_id_t freq;
@@ -424,6 +426,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 	processed_transponders = 0;
 
 	TIMER_START();
+	
 	sat_iterator_t sit = satellitePositions.find(satellitePosition);
 
 	if(sit == satellitePositions.end()) 
@@ -435,6 +438,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 
 	eventServer->sendEvent(CZapitClient::EVT_SCAN_REPORT_NUM_SCANNED_TRANSPONDERS, CEventServer::INITID_ZAPIT, &processed_transponders, sizeof(processed_transponders));
 	eventServer->sendEvent(CZapitClient::EVT_SCAN_SATELLITE, CEventServer::INITID_ZAPIT, sit->second.name.c_str(), sit->second.name.size() + 1);
+	
 	tps = search->xmlChildrenNode;
 
 	/* TPs from current service list */
@@ -467,7 +471,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 		tps = tps->xmlNextNode;
 	}
 	
-	eventServer->sendEvent ( CZapitClient::EVT_SCAN_NUM_TRANSPONDERS, CEventServer::INITID_ZAPIT,&found_transponders, sizeof(found_transponders));
+	eventServer->sendEvent( CZapitClient::EVT_SCAN_NUM_TRANSPONDERS, CEventServer::INITID_ZAPIT, &found_transponders, sizeof(found_transponders));
 
 	get_sdts(satellitePosition, feindex);
 
@@ -503,6 +507,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 			}
 		}
 	}
+	
 	TIMER_STOP("[scan] scanning took");
 }
 
@@ -511,6 +516,7 @@ void stop_scan(const bool success)
 	/* notify client about end of scan */
 	scan_runs = 0;
 	eventServer->sendEvent(success ? CZapitClient::EVT_SCAN_COMPLETE : CZapitClient::EVT_SCAN_FAILED, CEventServer::INITID_ZAPIT);
+	
 	if (scanBouquetManager) 
 	{
 		scanBouquetManager->clearAll();

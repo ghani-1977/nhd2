@@ -1,6 +1,6 @@
 #	yWeb language file (German/Deutsch) by yjogol
 #	language version: 1.1
-#	$Date: 2010-03-18 19:34:14 +0100 (Do, 18 M�r 2010) $
+#	$Date: 2010-03-18 19:34:14 +0100 (Do, 18 M�r 2010) $
 #	$Revision: 509 $
 =========== GENERAL / GLOBAL
 global.no_iframes=Dein Browser unterstützt keine IFrames.
@@ -85,6 +85,9 @@ bc.menue.lcd_screenshot_desc_ni=lcshot nicht installiert in /bin oder /var/bin
 bc.menue.osd_screenshot_desc=osd screenshot machen
 bc.menue.osd_screenshot=OSD Screenshot
 bc.menue.osd_screenshot_desc_ni=fbshot nicht installiert in /bin oder /var/bin
+bc.menue.tv_screenshot_desc=TV Screenshot erstellen
+bc.menue.tv_screenshot=TV Screenshot
+bc.menue.tv_screenshot_desc_ni=grab nicht installiert in /bin, /usr/bin oder /var/bin
 bc.menue.remote_osd_desc=Fernbedienung und On Screen Display
 bc.menue.remote_osd=Fernbed. & OSD
 bc.menue.remote_osd_desc_ni=dboxshot nicht installiert in /bin oder /var/bin
@@ -126,9 +129,11 @@ bc.msg.popup_to_screen=Popup auf Bildschirm
 bc.msg.send_message=Nachricht senden
 
 ======== Boxcontrol - Remote & OSD
-bc.osd.shot=Schnappschuss
+bc.osd.shot=OSD Schnappschuss
 bc.osd.delete_shots=Schnappschuss löschen
 bc.osd.shap_wait_text=Schnappschuss wird erstellt
+bc.tv.shot=TV Schnappschuss
+bc.all.shot=Schnappschuss
 
 ========= Boxcontrol - Others
 bc.channels=Sender

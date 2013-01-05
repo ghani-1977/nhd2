@@ -896,7 +896,6 @@ int EventList::findEvents(void)
 		evtlist.clear();
 		if(m_search_list == SEARCH_LIST_CHANNEL)
 		{
-			//g_Sectionsd->getEventsServiceKeySearchAdd(evtlist,m_search_channel_id & 0xFFFFFFFFFFFFULL,m_search_epg_item,m_search_keyword);
 			sectionsd_getEventsServiceKey(m_search_channel_id & 0xFFFFFFFFFFFFULL, evtlist, m_search_epg_item,m_search_keyword);
 		}
 		else if(m_search_list == SEARCH_LIST_BOUQUET)
@@ -905,7 +904,7 @@ int EventList::findEvents(void)
 			for(int channel = 0; channel < channel_nr; channel++)
 			{
 				channel_id = bouquetList->Bouquets[m_search_bouquet_id]->channelList->getChannelFromIndex(channel)->channel_id;
-				//g_Sectionsd->getEventsServiceKeySearchAdd(evtlist,channel_id & 0xFFFFFFFFFFFFULL,m_search_epg_item,m_search_keyword);
+				
 				sectionsd_getEventsServiceKey(channel_id & 0xFFFFFFFFFFFFULL, evtlist, m_search_epg_item,m_search_keyword);
 			}
 		}
@@ -920,7 +919,7 @@ int EventList::findEvents(void)
 				for(int channel = 0; channel < channel_nr; channel++)
 				{
 					channel_id = bouquetList->Bouquets[bouquet]->channelList->getChannelFromIndex(channel)->channel_id;
-					//g_Sectionsd->getEventsServiceKeySearchAdd(evtlist,channel_id & 0xFFFFFFFFFFFFULL,m_search_epg_item,m_search_keyword);
+					
 					sectionsd_getEventsServiceKey(channel_id & 0xFFFFFFFFFFFFULL,evtlist, m_search_epg_item,m_search_keyword);
 				}
 			}
@@ -1022,18 +1021,18 @@ CEventFinderMenu::CEventFinderMenu(int* event, int* search_epg_item, std::string
 	m_search_bouquet_id = search_bouquet_id;
 }
 
-int CEventFinderMenu::exec(CMenuTarget* parent, const std::string &actionkey)
+int CEventFinderMenu::exec(CMenuTarget * parent, const std::string &actionkey)
 {
 	int res = menu_return::RETURN_REPAINT;
 	
-	if(actionkey =="")
+	if(actionkey == "")
 	{
 		if(parent != NULL)
 			parent->hide();
 		//printf("0\n");
 		showMenu();
 	}
-	else if(actionkey =="1")
+	else if(actionkey == "1")
 	{
 		//printf("1\n");
 		*m_event = true;
@@ -1060,7 +1059,7 @@ int CEventFinderMenu::exec(CMenuTarget* parent, const std::string &actionkey)
 		}
 		*/
 	}	
-	else if(actionkey =="3")
+	else if(actionkey == "3")
 	{
 		//printf("3\n");
 		// get channel id / bouquet id

@@ -1,6 +1,6 @@
 #	yWeb language file (Englisch) by yjogol
 #	language version: 1.1
-#	$Date: 2010-03-18 19:34:14 +0100 (Do, 18 Mär 2010) $
+#	$Date: 2010-03-18 19:34:14 +0100 (Do, 18 Mï¿½r 2010) $
 #	$Revision: 509 $
 =========== GENERAL / GLOBAL
 global.no_iframes=Your Browser does not support IFrames.
@@ -87,6 +87,9 @@ bc.menue.lcd_screenshot_desc_ni=lcshot not installed at /bin or /var/bin
 bc.menue.osd_screenshot_desc=make osd screenshot
 bc.menue.osd_screenshot=OSD Screenshot
 bc.menue.osd_screenshot_desc_ni=fbshot not installed at /bin or /var/bin
+bc.menue.tv_screenshot_desc=make tv screenshot
+bc.menue.tv_screenshot=TV Screenshot
+bc.menue.tv_screenshot_desc_ni=grab not installed at /bin, /usr/bin or /var/bin
 bc.menue.remote_osd_desc=remote and osd
 bc.menue.remote_osd=Remote & OSD
 bc.menue.remote_osd_desc_ni=dboxshot not installed at /bin or /var/bin
@@ -128,9 +131,11 @@ bc.msg.popup_to_screen=Message as popup
 bc.msg.send_message=send message
 
 ======== Boxcontrol - Remote & OSD
-bc.osd.shot=Shot
+bc.osd.shot=OSD Shot
 bc.osd.delete_shots=Delete shots
 bc.osd.shap_wait_text=Take Snapshot
+bc.tv.shot=TV Shot
+bc.all.shot=Shot
 
 ========= Boxcontrol - Others
 bc.channels=Channels

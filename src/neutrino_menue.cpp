@@ -150,6 +150,7 @@
 
 #include "gui/proxyserver_setup.h"
 #include "gui/opkg_manager.h"
+#include "gui/themes.h"
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
@@ -1712,8 +1713,10 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	colorSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
 	// Themes
-	CMenuWidget * colorSettings_Themes = new CMenuWidget(LOCALE_COLORTHEMEMENU_HEAD, NEUTRINO_ICON_SETTINGS);
-	InitColorThemesSettings(*colorSettings_Themes);
+	CThemes * colorSettings_Themes = new CThemes();
+	//CMenuWidget * colorSettings_Themes = new CMenuWidget(LOCALE_COLORTHEMEMENU_HEAD, NEUTRINO_ICON_SETTINGS);
+	//InitColorThemesSettings(*colorSettings_Themes);
+ 
 
 	colorSettings.addItem( new CMenuForwarder(LOCALE_COLORMENU_THEMESELECT, true, NULL, colorSettings_Themes, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN) );
 
@@ -1763,36 +1766,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	CAlphaSetup * chAlphaSetup = new CAlphaSetup(LOCALE_COLORMENU_GTX_ALPHA, &g_settings.gtx_alpha);
 	colorSettings.addItem( new CMenuForwarder(LOCALE_COLORMENU_GTX_ALPHA, true, NULL, chAlphaSetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
 #endif
-}
-
-void CNeutrinoApp::InitColorThemesSettings(CMenuWidget &colorSettings_Themes)
-{
-	// intros
-	colorSettings_Themes.addItem(GenericMenuBack);
-	colorSettings_Themes.addItem(GenericMenuSeparatorLine);
-	
-	// load colors
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_EXTRA_LOADCOLORS, true, NULL, this, "loadcolors"));
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_EXTRA_SAVECOLORS, true, NULL, this, "savecolors"));
-	colorSettings_Themes.addItem(GenericMenuSeparatorLine);
-	
-	//nhd2
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINOHD2_THEME, true, NULL, this, "theme_nhd2"));
-	
-	//neutrino themes
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME, true, NULL, this, "theme_neutrino"));
-	
-	// classic
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_CLASSIC_THEME, true, NULL, this, "theme_classic"));
-	
-	// gray
-	colorSettings_Themes.addItem( new CMenuForwarder(LOCALE_COLORTHEMEMENU_GRAY, true, NULL, this, "theme_ru") );
-	
-	// dvb2k
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_DVB2K_THEME, true, NULL, this, "theme_dvb2k"));
-	
-	// red
-	colorSettings_Themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_RED_THEME, true, NULL, this, "theme_red"));
 }
 
 void CNeutrinoApp::InitColorSettingsMenuColors(CMenuWidget &colorSettings_menuColors)
@@ -1952,10 +1925,10 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	//scroll text ein/aus (250hd has only 4 digits)
 #if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD)
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
-#endif
 
 	// menutitle on vfd
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_MENUTITLEVFD, &g_settings.menutitle_vfd, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
+#endif	
 
 	//
 	lcdSettings.addItem(GenericMenuSeparatorLine);
@@ -2013,7 +1986,6 @@ enum keynames {
         MPKEY_AUDIO,
         MPKEY_TIME,
         MPKEY_BOOKMARK,
-        
 	KEY_TIMESHIFT,
 	
 	// media
@@ -2105,7 +2077,7 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
         LOCALE_MPKEY_BOOKMARK,
 	LOCALE_EXTRA_KEY_TIMESHIFT,
 	
-	// meida
+	// media
 	LOCALE_KEYBINDINGMENU_VIDEO,
 	LOCALE_KEYBINDINGMENU_MUSIC,
 	LOCALE_KEYBINDINGMENU_PICTURE,
@@ -2343,7 +2315,7 @@ const CMenuOptionChooser::keyval MAINMENU_RECORDING_OPTIONS[MAINMENU_RECORDING_O
 
 // USERMENU
 // This is just a quick helper for the usermenu only. I already made it a class for future use.
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) //FIXME:???
 #define BUTTONMAX 8
 #else
 #define BUTTONMAX 4
@@ -2406,7 +2378,7 @@ class CKeyHelper
                                 button = 2;
                         if(prefered_key == CRCInput::RC_blue)
                                 button = 3;
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) //FIXME:???
 			if(prefered_key == CRCInput::RC_f1)
                                 button = 4;
 			if(prefered_key == CRCInput::RC_f2)
@@ -2469,7 +2441,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 		-1, 
 		-1, 
 		-1,
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) //FIXME:???
 		-1,
 		-1,
 		-1,
@@ -2718,30 +2690,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                 }
         }
 
-        // Allow some tailoring for privat image bakers ;)
-        if (button == SNeutrinoSettings::BUTTON_RED) 
-	{
-        }
-        else if( button == SNeutrinoSettings::BUTTON_GREEN) 
-	{
-        }
-        else if( button == SNeutrinoSettings::BUTTON_YELLOW) 
-	{
-        }
-        else if( button == SNeutrinoSettings::BUTTON_BLUE) 
-	{
-#ifdef _EXPERIMENTAL_SETTINGS_
-                //Experimental Settings
-                if(menu_prev != -1)
-                        menu->addItem(GenericMenuSeparatorLine);
-                menu_items ++;
-                menu_key++;
-                // FYI: there is a memory leak with 'new CExperimentalSettingsMenuHandler()
-                menu_item = new CMenuForwarder(LOCALE_EXPERIMENTALSETTINGS, true, NULL, new CExperimentalSettingsMenuHandler(), "-1", CRCInput::convertDigitToKey(menu_key), "");
-                menu->addItem(menu_item, false);
-#endif
-        }
-
         // show menu if there are more than 2 items only
 	// otherwise, we start the item directly (must be the last one)
         if(menu_items > 1 ) 
@@ -2752,9 +2700,6 @@ bool CNeutrinoApp::showUserMenu(int button)
 	}
         else if (menu_item != NULL)
                 menu_item->exec( NULL );
-
-        // restore mute symbol
-        //AudioMute(current_muted, true);
 
         // clear the heap
         if(tmpFavorites)

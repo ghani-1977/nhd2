@@ -157,14 +157,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		/* neutrino.cpp */
 		void firstChannel();
 		
-		// themes
-		void setupColors_red();
-		void setupColors_ru();
-		void setupColors_classic();
-		void setupColors_neutrino();
-		void setupColors_dvb2k();
-		void setupColors_nhd2();
-		
 		void setupRecordingDevice(void);
 		void startNextRecording();
 		
@@ -189,7 +181,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void InitColorSettingsMenuColors(CMenuWidget &);
 		void InitColorSettings(CMenuWidget &);
 		void InitLanguageSettings(CMenuWidget &);
-		void InitColorThemesSettings(CMenuWidget &);
 		void InitColorSettingsStatusBarColors(CMenuWidget &colorSettings_menuColors);
 		void InitColorSettingsTiming(CMenuWidget &colorSettings_timing);
 		void InitLcdSettings(CMenuWidget &lcdSettings);

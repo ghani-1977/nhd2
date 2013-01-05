@@ -1375,7 +1375,7 @@ bool CFrameBuffer::loadBackgroundPic(const std::string & filename, bool show)
 	// if not found
 	if (background == NULL) 
 	{
-		background=0;
+		background = 0;
 		return false;
 	}
 
@@ -1837,7 +1837,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 	unsigned char * rgbbuff;
 	fb_pixel_t * fbbuff = NULL;
 
-  	fh = fh_getsize (name.c_str (), &x, &y, INT_MAX, INT_MAX);
+  	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
   	if (!fh) 
 	{
 		return NULL;

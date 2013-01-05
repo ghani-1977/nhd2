@@ -125,6 +125,9 @@ TUXBOX_APPS_DIRECTORY_ONE(libdir,LIBDIR,libdir,/lib,/tuxbox,
 
 TUXBOX_APPS_DIRECTORY_ONE(plugindir,PLUGINDIR,localstatedir,/var,/tuxbox/plugins,
 	[--with-plugindir=PATH   ],[where to find the plugins])
+
+TUXBOX_APPS_DIRECTORY_ONE(themesdir,THEMESDIR,datadir,/share,/tuxbox/neutrino/themes,
+	[--with-themesdir=PATH     ],[where to find the themes (don't change)])
 ])
 
 dnl automake <= 1.6 needs this specifications
@@ -421,7 +424,7 @@ AC_ARG_WITH(boxtype,
 
 AC_ARG_WITH(boxmodel,
 	[  --with-boxmodel         valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
-                          valid for ipbox: ip200, ip250, ip350, ip400, ipbox55, ipbox99, ipbox9900],
+                          valid for ipbox: ip200, ip250, ip350, ip400, ipbox55, ipbox99, ipbox9900, ufs910, ufs922, ufs912, ufs913],
 	[case "${withval}" in
 		dm500|dm500plus|dm600pvr|dm56x0|dm7000|dm7020|dm7025|dm500hd|dm7020hd|dm8000|dm800|dm800se)
 			if test "$BOXTYPE" = "dreambox"; then
@@ -502,20 +505,6 @@ AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
 AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
 AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
 
-AM_CONDITIONAL(BOXTYPE_CUBEREVO, test "$BOXMODEL" = "cuberevo")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_MINI_FTA, test "$BOXMODEL" = "cuberevo_mini_fta")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
-AM_CONDITIONAL(BOXTYPE_CUBEREVO_9500HD, test "$BOXMODEL" = "cuberevo_9500HD")
-
-AM_CONDITIONAL(BOXTYPE_UFS910, test "$BOXMODEL" = "ufs910")
-AM_CONDITIONAL(BOXTYPE_UFS912, test "$BOXMODEL" = "ufs912")
-AM_CONDITIONAL(BOXTYPE_UFS913, test "$BOXMODEL" = "ufs913")
-AM_CONDITIONAL(BOXTYPE_UFS922, test "$BOXMODEL" = "ufs922")
-AM_CONDITIONAL(BOXTYPE_UFC960, test "$BOXMODEL" = "ufc960")
-
 AM_CONDITIONAL(BOXTYPE_IP200, test "$BOXMODEL" = "ip200")
 AM_CONDITIONAL(BOXTYPE_IP250, test "$BOXMODEL" = "ip250")
 AM_CONDITIONAL(BOXTYPE_IP350, test "$BOXMODEL" = "ip350")
@@ -569,6 +558,20 @@ AM_CONDITIONAL(BOXMODEL_TMTWIN,test "$BOXMODEL" = "tmtwin")
 AM_CONDITIONAL(BOXMODEL_TM2T,test "$BOXMODEL" = "tm2t")
 AM_CONDITIONAL(BOXMODEL_TMSINGLE,test "$BOXMODEL" = "tmsingle")
 
+AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI_FTA, test "$BOXMODEL" = "cuberevo_mini_fta")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
+AM_CONDITIONAL(BOXMODEL_CUBEREVO_9500HD, test "$BOXMODEL" = "cuberevo_9500HD")
+
+AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
+AM_CONDITIONAL(BOXMODEL_UFS912,test "$BOXMODEL" = "ufs912")
+AM_CONDITIONAL(BOXMODEL_UFS913,test "$BOXMODEL" = "ufs913")
+AM_CONDITIONAL(BOXMODEL_UFS922,test "$BOXMODEL" = "ufs922")
+AM_CONDITIONAL(BOXMODEL_UFC960,test "$BOXMODEL" = "ufc960")
+
 if test "$BOXTYPE" = "generic"; then
 	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
 elif test "$BOXTYPE" = "gigablue"; then
@@ -588,45 +591,6 @@ elif test "$BOXTYPE" = "ipbox"; then
 	AC_DEFINE(PLATFORM_IPBOX, 1, [building for ipbox])
 elif test "$BOXTYPE" = "kathrein"; then
 	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
-
-elif test "$BOXMODEL" = "cuberevo"; then
-	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
-elif test "$BOXMODEL" = "cuberevo_mini"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_MINI, 1, [building for cuberevo_mini])
-elif test "$BOXMODEL" = "cuberevo_mini2"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_MINI2, 1, [building for cuberevo_mini2])
-elif test "$BOXMODEL" = "cuberevo_mini_fta"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_MINI_FTA, 1, [building for cuberevo_mini_fta])
-elif test "$BOXMODEL" = "cuberevo_250hd"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_250HD, 1, [building for cuberevo_250hd])
-elif test "$BOXMODEL" = "cuberevo_2000hd"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_2000HD, 1, [building for cuberevo_2000hd])
-elif test "$BOXMODEL" = "cuberevo_9500hd"; then
-	AC_DEFINE(PLATFORM_CUBEREVO_9500HD, 1, [building for cuberevo_9500hd])
-
-elif test "$BOXMODEL" = "ufs910"; then
-	AC_DEFINE(PLATFORM_UFS910, 1, [building for a ufs910])
-elif test "$BOXMODEL" = "ufs912"; then
-	AC_DEFINE(PLATFORM_UFS912, 1, [building for a ufs912])
-elif test "$BOXMODEL" = "ufs913"; then
-	AC_DEFINE(PLATFORM_UFS913, 1, [building for a ufs913])
-elif test "$BOXMODEL" = "ufs922"; then
-	AC_DEFINE(PLATFORM_UFS922, 1, [building for an ufs922])
-
-elif test "$BOXMODEL" = "ip200"; then
-	AC_DEFINE(PLATFORM_IP200, 1, [building for a ip200])
-elif test "$BOXMODEL" = "ip250"; then
-	AC_DEFINE(PLATFORM_IP250, 1, [building for a ip250])
-elif test "$BOXMODEL" = "ip350"; then
-	AC_DEFINE(PLATFORM_IP350, 1, [building for a ip350])
-elif test "$BOXMODEL" = "ip400"; then
-	AC_DEFINE(PLATFORM_IP400, 1, [building for a ip400])
-elif test "$BOXMODEL" = "ipbox55"; then
-	AC_DEFINE(PLATFORM_IPBOX55, 1, [building for a ipbox55])
-elif test "$BOXMODEL" = "ipbox99"; then
-	AC_DEFINE(PLATFORM_IPBOX99, 1, [building for a ipbox99])
-elif test "$BOXMODEL" = "ipbox9900"; then
-	AC_DEFINE(PLATFORM_IPBOX9900, 1, [building for a ipbox9900])
 
 elif test "$BOXTYPE" = "spark7162"; then
 	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for fulan spark 7162])
@@ -712,6 +676,42 @@ elif test "$BOXMODEL" = "tm2t"; then
 elif test "$BOXMODEL" = "tmsingle"; then
 	AC_DEFINE(BOXMODEL_TMSINGLE, 1, [technomate single])
 
+elif test "$BOXMODEL" = "cuberevo"; then
+	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
+elif test "$BOXMODEL" = "cuberevo_mini"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_MINI, 1, [building for cuberevo_mini])
+elif test "$BOXMODEL" = "cuberevo_mini2"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_MINI2, 1, [building for cuberevo_mini2])
+elif test "$BOXMODEL" = "cuberevo_mini_fta"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_MINI_FTA, 1, [building for cuberevo_mini_fta])
+elif test "$BOXMODEL" = "cuberevo_250hd"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_250HD, 1, [building for cuberevo_250hd])
+elif test "$BOXMODEL" = "cuberevo_2000hd"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_2000HD, 1, [building for cuberevo_2000hd])
+elif test "$BOXMODEL" = "cuberevo_9500hd"; then
+	AC_DEFINE(PLATFORM_CUBEREVO_9500HD, 1, [building for cuberevo_9500hd])
+elif test "$BOXMODEL" = "ufs910"; then
+	AC_DEFINE(PLATFORM_UFS910, 1, [building for a ufs910])
+elif test "$BOXMODEL" = "ufs912"; then
+	AC_DEFINE(PLATFORM_UFS912, 1, [building for a ufs912])
+elif test "$BOXMODEL" = "ufs913"; then
+	AC_DEFINE(PLATFORM_UFS913, 1, [building for a ufs913])
+elif test "$BOXMODEL" = "ufs922"; then
+	AC_DEFINE(PLATFORM_UFS922, 1, [building for an ufs922])
+elif test "$BOXMODEL" = "ip200"; then
+	AC_DEFINE(PLATFORM_IP200, 1, [building for a ip200])
+elif test "$BOXMODEL" = "ip250"; then
+	AC_DEFINE(PLATFORM_IP250, 1, [building for a ip250])
+elif test "$BOXMODEL" = "ip350"; then
+	AC_DEFINE(PLATFORM_IP350, 1, [building for a ip350])
+elif test "$BOXMODEL" = "ip400"; then
+	AC_DEFINE(PLATFORM_IP400, 1, [building for a ip400])
+elif test "$BOXMODEL" = "ipbox55"; then
+	AC_DEFINE(PLATFORM_IPBOX55, 1, [building for a ipbox55])
+elif test "$BOXMODEL" = "ipbox99"; then
+	AC_DEFINE(PLATFORM_IPBOX99, 1, [building for a ipbox99])
+elif test "$BOXMODEL" = "ipbox9900"; then
+	AC_DEFINE(PLATFORM_IPBOX9900, 1, [building for a ipbox9900])
 fi
 ])
 

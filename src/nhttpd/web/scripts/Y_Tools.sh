@@ -467,13 +467,23 @@ do_lcshot()
 # -----------------------------------------------------------
 do_fbshot()
 {
+	grab=/bin/grab
+	if [ -e "/var/bin/grab" ]; then
+		grab=/var/bin/grab
+	fi
+
+	if [ -e "/usr/bin/grab" ]; then
+		grab=/usr/bin/grab
+	fi
+
 	if [ "$1" = "fb" ]; then
 		shift 1
-		if [ -e "/usr/bin/grab" ]; then
-			/usr/bin/grab -o $*
-		else
-			/bin/grab -o $*
-		fi
+		$grab -o $*
+	elif [ "$1" = "tv" ]; then
+		shift 1
+		$grab -v $*
+	else
+		$grab $*
 	fi
 }
 # -----------------------------------------------------------

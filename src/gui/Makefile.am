@@ -43,7 +43,7 @@ libneutrino_gui_a_SOURCES = \
 	timeosd.cpp epgplus.cpp epg_menu.cpp \
 	streaminfo2.cpp dboxinfo.cpp \
 	plugins.cpp imageinfo.cpp audio_select.cpp moviebrowser.cpp movieinfo.cpp \
-	scan_setup.cpp zapit_setup.cpp proxyserver_setup.cpp
+	scan_setup.cpp zapit_setup.cpp proxyserver_setup.cpp themes.cpp
 
 libneutrino_gui2_a_SOURCES = \
 	color.cpp motorcontrol.cpp hdd_menu.cpp \

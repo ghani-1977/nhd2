@@ -979,8 +979,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	
 	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
-	int retry = false;
- tune_again:
 	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 		return -1;
@@ -994,13 +992,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	// parse pat pmt
 	failed = !parse_channel_pat_pmt(live_channel, live_fe);
-	
-	if(failed && !retry)
-	{
-		retry = true;
-		printf("[zapit] trying again...\n");
-		goto tune_again;
-	}
 
 	if ((!failed) && (live_channel->getAudioPid() == 0) && (live_channel->getVideoPid() == 0)) 
 	{
@@ -1079,26 +1070,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	
 	// capmt
 	dprintf(DEBUG_NORMAL, "%s sending capmt....\n", __FUNCTION__);
-	#if 0
-	int demux_index = -1;
-	int ca_mask = 0;
-	
-	demux_index = frontend->fenumber;
 
-#if defined (PLATFORM_GIGABLUE)
-	ca_mask = 1;
-
-#else
-	ca_mask |= 1 << frontend->fenumber;
-#endif	
-	
-	cam1->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask );
-	
-	// ci cam //FIXME: boxes without ci cam
-	ci->SendCaPMT(rec_channel->getCaPmt(), frontend->fenumber);
-	#else
 	sendCaPmt(rec_channel, record_fe);
-	#endif
 
 	return 0;
 }
@@ -1252,9 +1225,6 @@ void unsetRecordMode(void)
 	
 	// cam1 stop
 	cam1->sendMessage(0, 0);
-	
-	// socket
-	//cam0->setCaSocket();
 	
 	// cam0 update	
 	demux_index = live_fe->fenumber;

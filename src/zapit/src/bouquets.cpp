@@ -213,7 +213,6 @@ void CBouquetManager::writeBouquetFooter(FILE * bouq_fd)
 
 void CBouquetManager::writeBouquetChannels(FILE * bouq_fd, uint32_t i, bool bUser)
 {
-	//bool write_names = bUser ? true : config.getBool("writeChannelsNames", true);
 	bool write_names = 1;
 
 	for ( unsigned int j = 0; j < Bouquets[i]->tvChannels.size(); j++) 
@@ -269,6 +268,7 @@ void CBouquetManager::saveBouquets(void)
 	
 	bouq_fd = fopen(BOUQUETS_XML, "w");
 	fprintf(bouq_fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
+	
 	for (unsigned int i = 0; i < Bouquets.size(); i++) 
 	{
 		if (Bouquets[i] != remainChannels) 
@@ -283,6 +283,7 @@ void CBouquetManager::saveBouquets(void)
 			}
 		}
 	}
+	
 	fprintf(bouq_fd, "</zapit>\n");
 	fdatasync(fileno(bouq_fd));
 	fclose(bouq_fd);
@@ -295,6 +296,7 @@ void CBouquetManager::saveUBouquets(void)
 	
 	ubouq_fd = fopen(UBOUQUETS_XML, "w");
 	fprintf(ubouq_fd, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<zapit>\n");
+	
 	for (unsigned int i = 0; i < Bouquets.size(); i++) 
 	{
 		if (Bouquets[i] != remainChannels) 
@@ -307,6 +309,7 @@ void CBouquetManager::saveUBouquets(void)
 			}
 		}
 	}
+	
 	fprintf(ubouq_fd, "</zapit>\n");
 	fdatasync(fileno(ubouq_fd));
 	fclose(ubouq_fd);
@@ -343,8 +346,9 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 	{
 		while (!(Bouquets.empty())) 
 		{
-			CZapitBouquet* bouquet;
+			CZapitBouquet * bouquet;
 			int dest = g_bouquetManager->existsBouquet(Bouquets[0]->Name.c_str());
+			
 			dprintf(DEBUG_DEBUG, "save Bouquets: dest %d for name %s\n", dest, Bouquets[0]->Name.c_str());
 
 			if(dest == -1) 
@@ -356,6 +360,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 				bouquet = g_bouquetManager->Bouquets[dest];
 
 			/* list from scanned exist in file */
+			// tv bouquets
 			for(unsigned int i = 0; i < Bouquets[0]->tvChannels.size(); i++) 
 			{
 				if(!(g_bouquetManager->existsChannelInBouquet(dest, Bouquets[0]->tvChannels[i]->getChannelID()))) 
@@ -365,7 +370,8 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 					dprintf(DEBUG_DEBUG, "save Bouquets: adding channel %s\n", Bouquets[0]->tvChannels[i]->getName().c_str());
 				}
 			}
-
+			
+			// radio bouquets
 			for(unsigned int i = 0; i < Bouquets[0]->radioChannels.size(); i++) 
 			{
 				if(!(g_bouquetManager->existsChannelInBouquet(dest, Bouquets[0]->radioChannels[i]->getChannelID()))) 
@@ -450,7 +456,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		dprintf(DEBUG_INFO, "found %d bouquets\n", Bouquets.size());
 	}
 }
-
+/*
 void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 {
 	xmlDocPtr parser;
@@ -473,6 +479,123 @@ void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 		parseBouquetsXml(xmlDocGetRootElement(parser), true);
 		xmlFreeDoc(parser);
 		parser = NULL;
+	}
+
+	renumServices();
+}
+*/
+void CBouquetManager::makeBouquetfromCurrentservices(const xmlNodePtr root)
+{
+	xmlNodePtr provider = root->xmlChildrenNode;
+	
+	// TODO: use locales
+	CZapitBouquet * newBouquet = addBouquet("Neue Sender");
+	newBouquet->bHidden = false;
+	newBouquet->bLocked = false;
+			
+	t_original_network_id original_network_id;
+	t_service_id          service_id;
+	t_transport_stream_id transport_stream_id;
+	t_satellite_position  satellitePosition;
+	
+	while (provider) {
+		
+		xmlNodePtr transponder = provider->xmlChildrenNode;
+		
+		while (xmlGetNextOccurence(transponder, "transponder") != NULL) {
+			
+			xmlNodePtr channel_node = transponder->xmlChildrenNode;
+			
+			while (xmlGetNextOccurence(channel_node, "channel") != NULL) {
+				
+				if (strncmp(xmlGetAttribute(channel_node, "action"), "remove", 6)) {
+					
+					GET_ATTR(provider, "position", SCANF_SATELLITE_POSITION_TYPE, satellitePosition);
+					GET_ATTR(transponder, "onid", SCANF_ORIGINAL_NETWORK_ID_TYPE, original_network_id);
+					GET_ATTR(transponder, "id", SCANF_TRANSPORT_STREAM_ID_TYPE, transport_stream_id);
+					GET_ATTR(channel_node, "service_id", SCANF_SERVICE_ID_TYPE, service_id);
+								
+					CZapitChannel* chan = findChannelByChannelID(CREATE_CHANNEL_ID);
+
+					if (chan != NULL)
+						newBouquet->addService(chan);
+				}
+			
+				channel_node = channel_node->xmlNextNode;
+			}
+			transponder = transponder->xmlNextNode;
+		}
+		provider = provider->xmlNextNode;
+	}
+}
+
+/*
+void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
+{
+	xmlDocPtr parser;
+
+	if (ignoreBouquetFile == false)
+	{
+		parser = parseXmlFile(UBOUQUETS_XML);
+		if (parser != NULL)
+		{
+			printf("reading %s\n", UBOUQUETS_XML);
+			parseBouquetsXml(xmlDocGetRootElement(parser));
+			xmlFreeDoc(parser);
+		}
+
+		parser = parseXmlFile(BOUQUETS_XML);
+		if (parser != NULL)
+		{
+			printf("reading %s\n", BOUQUETS_XML);
+			parseBouquetsXml(xmlDocGetRootElement(parser));
+			xmlFreeDoc(parser);
+		}
+
+		parser = parseXmlFile(CURRENTSERVICES_XML);
+		if (parser != NULL)
+		{
+			printf("reading %s\n", CURRENTSERVICES_XML);
+			makeBouquetfromCurrentservices(xmlDocGetRootElement(parser));
+			xmlFreeDoc(parser);
+		}
+	}
+	
+	renumServices();
+}
+*/
+void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
+{
+	xmlDocPtr parser;
+	
+	if (ignoreBouquetFile == false) 
+	{
+		parser = parseXmlFile(BOUQUETS_XML);
+		if (parser != NULL) 
+		{
+			printf("reading %s\n", BOUQUETS_XML);
+			parseBouquetsXml(xmlDocGetRootElement(parser), false);
+			xmlFreeDoc(parser);
+			parser = NULL;
+		}
+		sortBouquets();
+	}
+	
+	parser = parseXmlFile(UBOUQUETS_XML);
+	if (parser != NULL) 
+	{
+		printf("reading %s\n", UBOUQUETS_XML);
+		parseBouquetsXml(xmlDocGetRootElement(parser), true);
+		xmlFreeDoc(parser);
+		parser = NULL;
+	}
+	
+	parser = parseXmlFile(CURRENTSERVICES_XML);
+	if (parser != NULL)
+	{
+		printf("reading %s\n", CURRENTSERVICES_XML);
+		makeBouquetfromCurrentservices(xmlDocGetRootElement(parser));
+		xmlFreeDoc(parser);
 	}
 
 	renumServices();
