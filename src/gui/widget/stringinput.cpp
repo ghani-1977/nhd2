@@ -457,7 +457,7 @@ int CStringInput::handleOthers(const neutrino_msg_t msg, const neutrino_msg_data
 
 void CStringInput::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();

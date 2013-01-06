@@ -138,7 +138,7 @@ void CProgressWindow::showStatusMessageUTF(const std::string & text)
 #endif	
 
 #ifdef LCD_UPDATE
-	CVFD::getInstance()->showProgressBar2(-1,text.c_str()); // set local text in VFD
+	CVFD::getInstance()->showProgressBar2(-1, text.c_str()); // set local text in VFD
 #endif // VFD_UPDATE
 }
 
@@ -150,7 +150,7 @@ unsigned int CProgressWindow::getGlobalStatus(void)
 
 void CProgressWindow::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();

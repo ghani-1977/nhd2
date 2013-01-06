@@ -185,7 +185,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 		parent->hide();
 
 
-	bool fadeIn = false /*g_settings.widget_fade*/;
+	bool fadeIn = false;
 	bool fadeOut = false;
 	int fadeValue;
 	uint32_t fadeTimer = 0;

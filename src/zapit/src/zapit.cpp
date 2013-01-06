@@ -930,6 +930,7 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 }
 
 // return 0, -1 fails
+#define RETUNE_PAT_FAILED
 int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 {
 	bool transponder_change = false;
@@ -979,6 +980,12 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	
 	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
+#ifdef RETUNE_PAT_FAILED	
+	int retry = false;
+	
+tune_again:
+#endif
+
 	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 		return -1;
@@ -992,6 +999,15 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 
 	// parse pat pmt
 	failed = !parse_channel_pat_pmt(live_channel, live_fe);
+	
+#ifdef RETUNE_PAT_FAILED	
+	if(failed && !retry)
+	{
+		retry = true;
+		dprintf(DEBUG_NORMAL, "[zapit] trying again\n");
+		goto tune_again;
+	}
+#endif	
 
 	if ((!failed) && (live_channel->getAudioPid() == 0) && (live_channel->getVideoPid() == 0)) 
 	{
@@ -2342,8 +2358,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandBoolean msgBoolean;
 			CBasicServer::receive_data(connfd, &msgBoolean, sizeof(msgBoolean));
 
-			if(!audioDecoder) break;
+			if(!audioDecoder) 
+				break;
+			
 			//printf("[zapit] mute %d\n", msgBoolean.truefalse);
+			
 			if (msgBoolean.truefalse)
 				audioDecoder->SetMute(true);
 			else
@@ -3552,26 +3571,29 @@ int zapit_main_thread(void *data)
 	// audio decoder
 	audioDecoder = new cAudio();
 	
-#if defined (PLATFORM_SPARK7162)
-	//lib-stb-hal/libspark
-	/* 
-	* this is a strange hack: the drivers seem to only work correctly after
-	* demux0 has been used once. After that, we can use demux1,2,... 
-	*/
-	struct dmx_pes_filter_params p;
-	int dmx = open("/dev/dvb/adapter0/demux0", O_RDWR );
-	if (dmx < 0)
-		printf("%s: ERROR open /dev/dvb/adapter0/demux0 (%m)\n", __func__);
-	else
+#if defined (__sh__)
+	if(FrontendCount > 1)
 	{
-		memset(&p, 0, sizeof(p));
-		p.output = DMX_OUT_DECODER;
-		p.input  = DMX_IN_FRONTEND;
-		p.flags  = DMX_IMMEDIATE_START;
-		p.pes_type = DMX_PES_VIDEO;
-		ioctl(dmx, DMX_SET_PES_FILTER, &p);
-		ioctl(dmx, DMX_STOP);
-		close(dmx);
+		//lib-stb-hal/libspark
+		/* 
+		* this is a strange hack: the drivers seem to only work correctly after
+		* demux0 has been used once. After that, we can use demux1,2,... 
+		*/
+		struct dmx_pes_filter_params p;
+		int dmx = open("/dev/dvb/adapter0/demux0", O_RDWR );
+		if (dmx < 0)
+			printf("%s: ERROR open /dev/dvb/adapter0/demux0 (%m)\n", __func__);
+		else
+		{
+			memset(&p, 0, sizeof(p));
+			p.output = DMX_OUT_DECODER;
+			p.input  = DMX_IN_FRONTEND;
+			p.flags  = DMX_IMMEDIATE_START;
+			p.pes_type = DMX_PES_VIDEO;
+			ioctl(dmx, DMX_SET_PES_FILTER, &p);
+			ioctl(dmx, DMX_STOP);
+			close(dmx);
+		}
 	}
 #endif	
 

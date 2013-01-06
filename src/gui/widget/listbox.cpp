@@ -62,7 +62,7 @@ void CListBox::paint()
 {
 	liststart = (selected/listmaxshow)*listmaxshow;
 
-	for(unsigned int count=0;count<listmaxshow;count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 	{
 		paintItem(count);
 	}
@@ -111,7 +111,7 @@ void CListBox::paintItem(int pos)
 
 void CListBox::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height+ButtonHeight + 10);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height+ButtonHeight);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -173,6 +173,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string & actionKey)
 
 	bool loop=true;
 	modified = false;
+	
 	while (loop)
 	{
 		g_RCInput->getMsg(&msg, &data, g_settings.timing[SNeutrinoSettings::TIMING_EPG]);

@@ -533,37 +533,31 @@ void CBouquetManager::makeBouquetfromCurrentservices(const xmlNodePtr root)
 void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 {
 	xmlDocPtr parser;
-
-	if (ignoreBouquetFile == false)
+	
+	if (ignoreBouquetFile == false) 
 	{
-		parser = parseXmlFile(UBOUQUETS_XML);
-		if (parser != NULL)
-		{
-			printf("reading %s\n", UBOUQUETS_XML);
-			parseBouquetsXml(xmlDocGetRootElement(parser));
-			xmlFreeDoc(parser);
-		}
-
 		parser = parseXmlFile(BOUQUETS_XML);
-		if (parser != NULL)
+		if (parser != NULL) 
 		{
-			printf("reading %s\n", BOUQUETS_XML);
-			parseBouquetsXml(xmlDocGetRootElement(parser));
+			parseBouquetsXml(xmlDocGetRootElement(parser), false);
 			xmlFreeDoc(parser);
+			parser = NULL;
 		}
-
-		parser = parseXmlFile(CURRENTSERVICES_XML);
-		if (parser != NULL)
-		{
-			printf("reading %s\n", CURRENTSERVICES_XML);
-			makeBouquetfromCurrentservices(xmlDocGetRootElement(parser));
-			xmlFreeDoc(parser);
-		}
+		sortBouquets();
 	}
 	
+	parser = parseXmlFile(UBOUQUETS_XML);
+	if (parser != NULL) 
+	{
+		parseBouquetsXml(xmlDocGetRootElement(parser), true);
+		xmlFreeDoc(parser);
+		parser = NULL;
+	}
+
 	renumServices();
 }
 */
+
 void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 {
 	xmlDocPtr parser;

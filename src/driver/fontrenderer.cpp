@@ -427,7 +427,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	int pen1=-1; // "pen" positions for kerning, pen2 is "x"
 
 	static fb_pixel_t oldbgcolor = 0, oldfgcolor = 0;
-	static fb_pixel_t colors[256] = {0};
+	static fb_pixel_t colors[256];// = {0};
 
 	fb_pixel_t bgcolor = frameBuffer->realcolor[color];
 	fb_pixel_t fgcolor = frameBuffer->realcolor[(((((int)color) + 2) | 7) - 2)];
@@ -462,9 +462,9 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				 (((fgb + deltab * i / 255) & ((1 << bl) - 1)) << bo) |
 				 (((fgt + deltat * i / 255) & ((1 << tl) - 1)) << to));
 				 
-			/* font bg blending */
-			if(((255-i) > 128))
-				colors[255 - i] |=  0xFF << to;
+			// font bg blending
+			//if( 1 && (255 - i) > 128 )
+			//	colors[255 - i] |=  0xFF << to;
 		}
 	}
 	
@@ -526,14 +526,14 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		int pitch   = glyph->pitch;
 
 		// paint
-		if(ap>-1)
+		if(ap > -1)
 		{
 			for (int ay = 0; ay < h; ay++)
 			{
 				fb_pixel_t * td = (fb_pixel_t *)d;
 
 				int ax;
-				for (ax=0; ax < w + spread_by; ax++)
+				for (ax = 0; ax < w + spread_by; ax++)
 				{
 					if (stylemodifier != Font::Embolden)
 					{
@@ -545,7 +545,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 					else
 					{
 						int start, end;
-						int color = -1;
+						int lcolor = -1;
 
 						if (ax < w)
 							start = 0;
@@ -558,11 +558,11 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 							end = spread_by + 1;
 
 						for (int i = start; i < end; i++)
-							if (color < *(s - i))
-								color = *(s - i);
+							if (lcolor < *(s - i))
+								lcolor = *(s - i);
 						
-						if (color != 0)
-							*td = colors[color];
+						if (lcolor != 0)
+							*td = colors[lcolor];
 						td++;
 
 						s++;
@@ -577,6 +577,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 
 			if(pen1>x)
 				x = pen1;
+			
 			pen1 = x;
 			lastindex = index;
 		}

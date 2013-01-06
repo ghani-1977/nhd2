@@ -446,7 +446,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	if( showButtonBar )
 	{
-		sec_timer_id = g_RCInput->addTimer (1*1000*1000, false);
+		sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
 		
 		// green
 		showButton_Audio();
@@ -629,7 +629,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				if ((!fadeOut) && false /*g_settings.widget_fade*/) 
 				{
 					fadeOut = true;
-					fadeTimer = g_RCInput->addTimer (FADE_TIME, false);
+					fadeTimer = g_RCInput->addTimer(FADE_TIME, false);
 					timeoutEnd = CRCInput::calcTimeoutEnd (1);
 				} 
 				else 
@@ -715,14 +715,14 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 		}
 
 		if (hideIt)
-			killTitle ();
+			killTitle();
 
-		g_RCInput->killTimer (sec_timer_id);
+		g_RCInput->killTimer(sec_timer_id);
 		sec_timer_id = 0;
 
 		if (fadeIn || fadeOut) 
 		{
-			g_RCInput->killTimer (fadeTimer);
+			g_RCInput->killTimer(fadeTimer);
 			frameBuffer->setBlendLevel(g_settings.gtx_alpha);
 		}
 
@@ -1253,7 +1253,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if (data == fadeTimer) 
 		{
 	  		// hierher kann das event nur dann kommen, wenn ein anderes Fenster im Vordergrund ist!
-	  		g_RCInput->killTimer (fadeTimer);
+	  		g_RCInput->killTimer(fadeTimer);
 
 	  		frameBuffer->setBlendLevel(g_settings.gtx_alpha);
 

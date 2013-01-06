@@ -547,7 +547,7 @@ int CChannelList::show()
 	// loop control
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
-	bool loop=true;
+	bool loop = true;
 	while (loop) 
 	{
 		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd );

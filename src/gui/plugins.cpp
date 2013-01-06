@@ -489,7 +489,7 @@ void CPlugins::startPlugin(int number,int param)
 		// restore fb
 		if (plugin_list[number].fb)
 		{	
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 			frameBuffer->blit();
 #endif			
 		}
@@ -520,7 +520,7 @@ void CPlugins::startPlugin(int number,int param)
 	safe_system((char *) plugin_list[number].pluginfile.c_str());
 	
 	frameBuffer->paintBackground();
-#ifdef FB_BLIT
+#if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
 	

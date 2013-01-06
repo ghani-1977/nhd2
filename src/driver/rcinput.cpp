@@ -729,7 +729,7 @@ void CRCInput::getMsgAbsoluteTimeout(neutrino_msg_t * msg, neutrino_msg_data_t *
 	{
 		// recalculate timeout....
 		//unsigned long long ta= *TimeoutEnd;
-		*TimeoutEnd= *TimeoutEnd + *(long long*) *data;
+		*TimeoutEnd = *TimeoutEnd + *(long long*) *data;
 	}
 }
 
@@ -772,7 +772,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 		{
 			gettimeofday( &tv, NULL );
 			unsigned long long t_n= (unsigned long long) tv.tv_usec + (unsigned long long)((unsigned long long) tv.tv_sec * (unsigned long long) 1000000);
-			if ( timers[0].times_out< t_n )
+			if ( timers[0].times_out < t_n )
 			{
 				timer_id = checkTimers();
 				*msg = NeutrinoMessages::EVT_TIMER;
@@ -789,7 +789,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 			}
 		}
 		else
-			targetTimeout= Timeout;
+			targetTimeout = Timeout;
 
 		tvselect.tv_sec = targetTimeout/1000000;
 		tvselect.tv_usec = targetTimeout%1000000;
@@ -803,7 +803,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 #ifdef KEYBOARD_INSTEAD_OF_REMOTE_CONTROL
 		if (true)
 #else
-		if (fd_keyb> 0)
+		if (fd_keyb > 0)
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
 		FD_SET(fd_keyb, &rfds);
 

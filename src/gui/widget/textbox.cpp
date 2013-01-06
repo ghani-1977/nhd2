@@ -60,7 +60,7 @@
 
 #include <system/debug.h>
 
-#define	TEXT_BORDER_WIDTH			 8
+#define	TEXT_BORDER_WIDTH			8
 #define	SCROLL_FRAME_WIDTH			10
 #define	SCROLL_MARKER_BORDER		 	2
 
@@ -548,7 +548,7 @@ void CTextBox::hide (void)
 		return;
 	
 	//TRACE("[CTextBox]->hide \r\n");
-	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX - 10, m_cFrame.iY - 10, m_cFrame.iWidth + 10, m_cFrame.iHeight + 10);
+	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX, m_cFrame.iY, m_cFrame.iWidth, m_cFrame.iHeight);
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();

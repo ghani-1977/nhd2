@@ -395,21 +395,25 @@ void CBEChannelWidget::deleteChannel()
 
 	if (selected >= Channels->size())
 		selected = Channels->empty() ? 0 : (Channels->size() - 1);
+	
 	channelsChanged = true;
 	paint();
 }
 
 void CBEChannelWidget::addChannel()
 {
-	CBEChannelSelectWidget* channelSelectWidget = new CBEChannelSelectWidget(caption, bouquet, mode);
+	CBEChannelSelectWidget * channelSelectWidget = new CBEChannelSelectWidget(caption, bouquet, mode);
 
 	channelSelectWidget->exec(this, "");
+	
 	if (channelSelectWidget->hasChanged())
 	{
 		channelsChanged = true;
 		Channels = mode == CZapitClient::MODE_TV ? &(g_bouquetManager->Bouquets[bouquet]->tvChannels) : &(g_bouquetManager->Bouquets[bouquet]->radioChannels);
 	}
+	
 	delete channelSelectWidget;
+	
 	paintHead();
 	paint();
 	paintFoot();

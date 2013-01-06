@@ -509,7 +509,7 @@ bool CMsgBox::hide(void)
 
 	// delete window
 	// delete m_pcWindow;
-	m_pcWindow->paintBackgroundBoxRel(m_cBoxFrame.iX - 10, m_cBoxFrame.iY - 10, m_cBoxFrame.iWidth + 10, m_cBoxFrame.iHeight + 10);
+	m_pcWindow->paintBackgroundBoxRel(m_cBoxFrame.iX, m_cBoxFrame.iY, m_cBoxFrame.iWidth, m_cBoxFrame.iHeight);
 	
 #if !defined USE_OPENGL
 	m_pcWindow->blit();

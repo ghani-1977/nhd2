@@ -54,7 +54,7 @@ class CTimeOSD
 	public:
 		CTimeOSD();
 		~CTimeOSD();
-		void show(time_t time_show);
+		void show(/*time_t time_show*/ int Position);
 		void update(time_t time_show = 0);
 		void updatePos(short runningPercent);
 		void hide();

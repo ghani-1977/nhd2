@@ -55,7 +55,7 @@
 
 #include <system/debug.h>
 
-#define	TEXT_BORDER_WIDTH			 8
+#define	TEXT_BORDER_WIDTH			8
 #define ROW_BORDER_WIDTH             		4
 #define	SCROLL_FRAME_WIDTH			10
 #define	SCROLL_MARKER_BORDER		 	2
@@ -308,6 +308,7 @@ void CListFrame::onNewLineArray(void)
 
 	maxTextWidth = 300; // TODO
 	m_nNrOfLines = m_pLines->lineArray[0].size();
+	
 	if(m_nNrOfLines > 0 )
 	{
 		/* check if we have to recalculate the window frame size, due to auto width and auto height */
@@ -490,13 +491,9 @@ void CListFrame::refreshHeaderList(void)
 	for(int row = 0; row < m_pLines->rows && loop == true; row++)
 	{
 		width = m_pLines->rowWidth[row] ;
-		//if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH)
-		//test
-		if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH)
+		if(width > m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH)
 		{
-			//width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH;
-			//test
-			width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - TEXT_BORDER_WIDTH;
+			width = m_cFrameHeaderListRel.iWidth - x + m_cFrameHeaderListRel.iX - 2*TEXT_BORDER_WIDTH;
 
 			dprintf(DEBUG_DEBUG, "   normalize width to %d , x:%d \r\n",width,x);
 			loop = false;
@@ -586,6 +583,7 @@ void CListFrame::scrollPageDown(const int pages)
 	{
 		m_nCurrentPage = m_nNrOfPages - 1;
 	}
+	
 	m_nCurrentLine = m_nCurrentPage * m_nLinesPerPage; 
 	if(m_nSelectedLine < m_nCurrentLine || m_nSelectedLine -m_nCurrentLine >= m_nLinesPerPage )
 	{

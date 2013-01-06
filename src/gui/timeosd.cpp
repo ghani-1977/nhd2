@@ -44,12 +44,14 @@ static CProgressBar * timescale;
 #define BARLEN 200
 #define SHADOW_OFFSET	5
 
+// in us
+#define FADE_TIME 40000
 
 CTimeOSD::CTimeOSD()
 {
 	frameBuffer = CFrameBuffer::getInstance();
-	visible=false;
-	m_mode=MODE_ASC;
+	visible = false;
+	m_mode = MODE_ASC;
 	GetDimensions();
 
 	if(!timescale)
@@ -70,7 +72,7 @@ CTimeOSD::~CTimeOSD()
 extern CMoviePlayerGui::state playstate;
 extern int speed;
 extern unsigned int ac3state;
-extern int position;
+//extern int position;
 extern int duration;
 extern std::string g_file_epg;
 extern std::string g_file_epg1;
@@ -78,20 +80,19 @@ extern bool isMovieBrowser;
 extern int timeshift;
 extern bool isHTTP;
 
-void CTimeOSD::show(time_t time_show)
+void CTimeOSD::show(int Position)
 {	
 	// show / update
 	GetDimensions();
 	visible = true;
-	m_time_dis  = time(NULL);
-	m_time_show = time_show;
+	//m_time_dis  = time(NULL);
+	//m_time_show = time_show;
 	
-
 	// timescale
 	timescale->reset();
 	  
 	// time shadow
-	frameBuffer->paintBoxRel(m_xend - m_width - 10 + SHADOW_OFFSET, m_y + SHADOW_OFFSET, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
+	//frameBuffer->paintBoxRel(m_xend - m_width - 10 + SHADOW_OFFSET, m_y + SHADOW_OFFSET, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
 	
 	if(!timeshift)
 	{
@@ -194,10 +195,10 @@ void CTimeOSD::show(time_t time_show)
 		// infos
 		
 		// duration
-		char runningRest[32]; // %d can be 10 digits max...	
-		sprintf(runningRest, "%d min", (duration + 30000) / 60000 );	
+		char runningTotal[32]; // %d can be 10 digits max...	
+		sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
 		
-		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
+		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal);
 		int durationTextPos = BoxEndX - durationWidth - 15;
 		
 		int speedWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("-8");
@@ -212,11 +213,18 @@ void CTimeOSD::show(time_t time_show)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 		// duration
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningRest, COL_INFOBAR);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningTotal, COL_INFOBAR);
+		
+		// runningrest
+		
+		// runningpercent
+		char runningRest[32];
+		sprintf(runningRest, "%d min", Position/60);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 + 25, durationWidth, runningRest, COL_INFOBAR);
 	}
 	
 	// time
-	update();	
+	//update();
 }
 
 void CTimeOSD::GetDimensions()
@@ -242,7 +250,7 @@ void CTimeOSD::update(time_t time_show)
 {
 	time_t tDisplayTime;
 	static time_t oldDisplayTime = 0;
-	char cDisplayTime[8+1];
+	char cDisplayTime[8 + 1];
 	fb_pixel_t color1, color2;
 
 	//printf("CTimeOSD::update time %ld\n", time_show);
@@ -282,21 +290,26 @@ void CTimeOSD::update(time_t time_show)
 	}
 
 	if(tDisplayTime < 0)
-		tDisplayTime=0;
+		tDisplayTime = 0;
 
 	if(tDisplayTime != oldDisplayTime) 
 	{
 		oldDisplayTime = tDisplayTime;
 		strftime(cDisplayTime, 9, "%T", gmtime(&tDisplayTime));
+		
+		// time shadow
+		frameBuffer->paintBoxRel(m_xend - m_width - 10 + SHADOW_OFFSET, m_y + SHADOW_OFFSET, m_width + 10, m_height, COL_INFOBAR_SHADOW_PLUS_0);
 
+		// time window
 		frameBuffer->paintBoxRel(m_xend - m_width - 10, m_y, m_width + 10, m_height, color1 );
 
+		// time
 		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5, m_y + m_height, m_width + 5, cDisplayTime, color2);
 	}
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
+#endif
 }
 
 void CTimeOSD::updatePos(short runningPercent)
@@ -308,6 +321,7 @@ void CTimeOSD::updatePos(short runningPercent)
 void CTimeOSD::hide()
 {
 	GetDimensions();
+	
 	//printf("CTimeOSD::hide: x %d y %d xend %d yend %d\n", m_xstart, m_y , m_xend, m_height + 15);
 
 	if(!visible)

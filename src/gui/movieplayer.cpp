@@ -1594,10 +1594,12 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
 			{
 				FileTime.update(position / 1000);
+				//FileTime.show(position / 1000);
 			} 
 			else 
 			{
 				FileTime.update((duration - position) / 1000);
+				//FileTime.show(position / 1000);
 			}
 			
 			if(!timeshift)
@@ -1674,12 +1676,17 @@ void CMoviePlayerGui::PlayFile(void)
 				if(isVlc)
 					duration = VlcGetStreamLength();
 				else
+				{
+					//playback->GetPosition(position);
 					playback->GetDuration(duration);
+				}
 			}
 		}
 		
 		// control loop
-		g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
+		//g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
+		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR]);
+		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
@@ -1713,6 +1720,11 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 		}
 		
+		if ( msg == CRCInput::RC_timeout )
+		{
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
+		}else
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 
 		{
 			//exit play
@@ -1790,6 +1802,7 @@ void CMoviePlayerGui::PlayFile(void)
 						{
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
+							//FileTime.show(position / 1000);
 							
 							FileTime.updatePos(file_prozent);
 						}
@@ -1846,6 +1859,7 @@ void CMoviePlayerGui::PlayFile(void)
 						{
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
+							//FileTime.show(position / 1000);
 							
 							FileTime.updatePos(file_prozent);
 						}
@@ -1984,6 +1998,7 @@ void CMoviePlayerGui::PlayFile(void)
 						{
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
+							//FileTime.show(position / 1000);
 							
 							if(!timeshift)
 								FileTime.updatePos(file_prozent);
@@ -2030,6 +2045,7 @@ void CMoviePlayerGui::PlayFile(void)
 						{
 							FileTime.SetMode(CTimeOSD::MODE_DESC);
 							FileTime.update((duration - position) / 1000);
+							//FileTime.show(position / 1000);
 							
 							FileTime.updatePos(file_prozent);
 						}
