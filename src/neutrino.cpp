@@ -643,6 +643,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.infobar_Text_red   = configfile.getInt32( "infobar_Text_red", 100);
 	g_settings.infobar_Text_green = configfile.getInt32( "infobar_Text_green", 100);
 	g_settings.infobar_Text_blue  = configfile.getInt32( "infobar_Text_blue", 100);
+	
+	g_settings.colored_events_alpha = configfile.getInt32( "colored_events_alpha", 0x00 );
+	g_settings.colored_events_red = configfile.getInt32( "colored_events_red", 95 );
+	g_settings.colored_events_green = configfile.getInt32( "colored_events_green", 70 );
+	g_settings.colored_events_blue = configfile.getInt32( "colored_events_blue", 0 );
 
 	strcpy( g_settings.font_file, configfile.getString( "font_file", FONTDIR"/neutrino.ttf" ).c_str() );
 
@@ -1094,6 +1099,11 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "infobar_Text_red", g_settings.infobar_Text_red );
 	configfile.setInt32( "infobar_Text_green", g_settings.infobar_Text_green );
 	configfile.setInt32( "infobar_Text_blue", g_settings.infobar_Text_blue );
+	
+	configfile.setInt32( "colored_events_alpha", g_settings.colored_events_alpha );
+	configfile.setInt32( "colored_events_red", g_settings.colored_events_red );
+	configfile.setInt32( "colored_events_green", g_settings.colored_events_green );
+	configfile.setInt32( "colored_events_blue", g_settings.colored_events_blue );
 
 	configfile.setInt32( "screen_StartX", g_settings.screen_StartX );
 	configfile.setInt32( "screen_StartY", g_settings.screen_StartY );

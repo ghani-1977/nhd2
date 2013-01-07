@@ -657,18 +657,43 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 		sendcode = Config->getInt32("key_9", KEY_9);
 	else if ( !strcmp(keyname.c_str(), "KEY_0"))
 		sendcode = Config->getInt32("key_0", KEY_0);
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
+	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
+		sendcode = Config->getInt32("key_info", 0x166);
+#else	
 	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
 		sendcode = Config->getInt32("key_info", KEY_INFO);
+#endif	
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
+		sendcode = Config->getInt32("key_mode", 0x181);
+#else	
 	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
 		sendcode = Config->getInt32("key_mode", KEY_MODE);
+#endif	
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
+	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
+		sendcode = Config->getInt32("key_setup", 0x8B);
+#else	
 	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
 		sendcode = Config->getInt32("key_setup", KEY_MENU);
+#endif	
+#if defined (PLATFORM_GIGABLUE)
+	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
+		sendcode = Config->getInt32("key_epg", 0x8A);
+#else	
 	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
 		sendcode = Config->getInt32("key_epg", KEY_EPG);
+#endif	
 	else if ( !strcmp(keyname.c_str(), "KEY_FAVORITES"))
 		sendcode = Config->getInt32("key_favorites", KEY_FAVORITES);
+#if defined (PLATFORM_GIGABLUE)	
+	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
+		sendcode = Config->getInt32("key_home", 0xAE);
+#else	
 	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
 		sendcode = Config->getInt32("key_home", KEY_HOME);
+#endif	
 	else if ( !strcmp(keyname.c_str(), "KEY_UP"))
 		sendcode = Config->getInt32("key_up", KEY_UP);
 	else if ( !strcmp(keyname.c_str(), "KEY_LEFT"))

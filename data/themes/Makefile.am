@@ -11,4 +11,5 @@ install_DATA = \
 	NeutrinoHD2.theme \
 	Olive.theme \
 	Red.theme \
-	VirginMedia.theme
+	VirginMedia.theme \
+	NovaTux.theme

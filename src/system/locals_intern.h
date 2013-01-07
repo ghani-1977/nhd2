@@ -577,6 +577,7 @@ const char *locale_real_names[] = {
 	"miscsettings.head",
 	"miscsettings.hwsections",
 	"miscsettings.infobar_sat_display",
+	"miscsettings.infobar_colored_events",
 	//test
 	"miscsettings.infobar_showca",
 	"miscsettings.infobar_radiotext",

@@ -249,10 +249,10 @@ void CThemes::rememberOldTheme(bool remember)
 		oldThemeValues[38] = g_settings.infobar_Text_green;
 		oldThemeValues[39] = g_settings.infobar_Text_blue;
 		
-		//oldThemeValues[40] = g_settings.colored_events_alpha;
-		//oldThemeValues[41] = g_settings.colored_events_red;
-		//oldThemeValues[42] = g_settings.colored_events_green;
-		//oldThemeValues[43] = g_settings.colored_events_blue;
+		oldThemeValues[40] = g_settings.colored_events_alpha;
+		oldThemeValues[41] = g_settings.colored_events_red;
+		oldThemeValues[42] = g_settings.colored_events_green;
+		oldThemeValues[43] = g_settings.colored_events_blue;
 	} 
 	else 
 	{
@@ -297,10 +297,10 @@ void CThemes::rememberOldTheme(bool remember)
 		g_settings.infobar_Text_green 			= oldThemeValues[38];
 		g_settings.infobar_Text_blue 			= oldThemeValues[39];
 		
-		//g_settings.colored_events_alpha			= oldThemeValues[40];
-		//g_settings.colored_events_red 			= oldThemeValues[41];
-		//g_settings.colored_events_green 		= oldThemeValues[42];
-		//g_settings.colored_events_blue 			= oldThemeValues[43];
+		g_settings.colored_events_alpha			= oldThemeValues[40];
+		g_settings.colored_events_red 			= oldThemeValues[41];
+		g_settings.colored_events_green 		= oldThemeValues[42];
+		g_settings.colored_events_blue 			= oldThemeValues[43];
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -355,10 +355,10 @@ void CThemes::readFile(char* themename)
 		g_settings.infobar_Text_green = themefile.getInt32( "infobar_Text_green", 0x64 );
 		g_settings.infobar_Text_blue = themefile.getInt32( "infobar_Text_blue", 0x64 );
 		
-		//g_settings.colored_events_alpha = themefile.getInt32( "colored_events_alpha", 0x00 );
-		//g_settings.colored_events_red = themefile.getInt32( "colored_events_red", 95 );
-		//g_settings.colored_events_green = themefile.getInt32( "colored_events_green", 70 );
-		//g_settings.colored_events_blue = themefile.getInt32( "colored_events_blue", 0 );
+		g_settings.colored_events_alpha = themefile.getInt32( "colored_events_alpha", 0x00 );
+		g_settings.colored_events_red = themefile.getInt32( "colored_events_red", 95 );
+		g_settings.colored_events_green = themefile.getInt32( "colored_events_green", 70 );
+		g_settings.colored_events_blue = themefile.getInt32( "colored_events_blue", 0 );
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -413,10 +413,10 @@ void CThemes::saveFile(char * themename)
 	themefile.setInt32( "infobar_Text_green", g_settings.infobar_Text_green );
 	themefile.setInt32( "infobar_Text_blue", g_settings.infobar_Text_blue );
 	
-	//themefile.setInt32( "colored_events_alpha", g_settings.colored_events_alpha );
-	//themefile.setInt32( "colored_events_red", g_settings.colored_events_red );
-	//themefile.setInt32( "colored_events_green", g_settings.colored_events_green );
-	//themefile.setInt32( "colored_events_blue", g_settings.colored_events_blue );
+	themefile.setInt32( "colored_events_alpha", g_settings.colored_events_alpha );
+	themefile.setInt32( "colored_events_red", g_settings.colored_events_red );
+	themefile.setInt32( "colored_events_green", g_settings.colored_events_green );
+	themefile.setInt32( "colored_events_blue", g_settings.colored_events_blue );
 
 	if (!themefile.saveConfig(themename))
 		printf("[neutrino theme] %s write error\n", themename);
@@ -477,10 +477,10 @@ void CThemes::setupDefaultColors()
 	g_settings.infobar_Text_green = 0x64;
 	g_settings.infobar_Text_blue  = 0x64;
 
-	//g_settings.colored_events_alpha = 0x00;
-	//g_settings.colored_events_red = 95;
-	//g_settings.colored_events_green = 70;
-	//g_settings.colored_events_blue = 0;
+	g_settings.colored_events_alpha = 0x00;
+	g_settings.colored_events_red = 95;
+	g_settings.colored_events_green = 70;
+	g_settings.colored_events_blue = 0;
 }
 
 // nhd2
