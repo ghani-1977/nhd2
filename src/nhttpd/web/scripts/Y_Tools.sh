@@ -32,6 +32,7 @@ skin_get()
 	done
 	echo "$html_option_list"
 }
+
 # -----------------------------------------------------------
 # Set Skin: override css   $1=Skin-Name [Function inactive]
 # -----------------------------------------------------------
@@ -50,6 +51,7 @@ skin_set()
 	msg="Skin changed - Now browsers Refresh/actualization explain"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # Image Backup - build form
 # -----------------------------------------------------------
@@ -65,6 +67,7 @@ image_upload()
 	fi
 	y_format_message_html
 }
+
 # ===========================================================
 # Flashimage
 # ===========================================================
@@ -76,6 +79,7 @@ image_backup_mtd()
 	rm /tmp/*.img
 	cat /dev/mtd/$1 > /tmp/flash_mtd$1.img
 }
+
 # -----------------------------------
 # Sende Download-Page ($1=mtd Nummer)
 # -----------------------------------
@@ -86,6 +90,7 @@ image_delete_download_page()
 #	msg="<div class='y_work_box'><b>The image file in tmp was extinguished.</b></div>"
 #	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # Flash ($1=mtd Nummer) Upload-File $2=true/false =simulate
 # -----------------------------------------------------------
@@ -152,6 +157,7 @@ flash_mtd()
 		y_format_message_html
 	fi
 }
+
 # -----------------------------------------------------------
 # copies Uploadfile to $1
 # -----------------------------------------------------------
@@ -164,6 +170,7 @@ upload_copy()
 		msg="Upload-Problem.<br>Try again, please."
 	fi
 }
+
 # -----------------------------------------------------------
 bootlogo_upload()
 {
@@ -171,6 +178,7 @@ bootlogo_upload()
 	upload_copy "$y_boot_logo"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 bootlogo_lcd_upload()
 {
@@ -178,6 +186,7 @@ bootlogo_lcd_upload()
 	upload_copy "$y_boot_logo_lcd"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 ucodes_upload()
 {
@@ -185,6 +194,7 @@ ucodes_upload()
 	upload_copy "$y_path_ucodes/$1"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 zapit_upload()
 {
@@ -192,6 +202,7 @@ zapit_upload()
 	upload_copy "$y_path_zapit/$1"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # Mount from Neutrino-Settings $1=nr
 # -----------------------------------------------------------
@@ -258,6 +269,7 @@ do_mount()
 	msg="mount cmd:$cmd<br><br>res=$res<br>view Mounts;<br>$m"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # unmount $1=local_dir
 # -----------------------------------------------------------
@@ -265,6 +277,7 @@ do_unmount()
 {
 	umount $1
 }
+
 # -----------------------------------------------------------
 # AutoMount
 # deactivate mount "#" replaces "---" and "=" replaced ",,"
@@ -282,12 +295,14 @@ do_automount_list()
 		i=`expr $i + 1`
 	done
 }
+
 # -----------------------------------------------------------
 do_automount_getline()
 {
 	mountname=`echo "$2"|sed -e "s/---/#/g"`
 	cat $1|sed -n "/^[#]*$mountname[^a-zA-Z0-9]/p"
 }
+
 # -----------------------------------------------------------
 # $1:filename, $2:mountname, $3-*:mountstring
 # -----------------------------------------------------------
@@ -312,6 +327,7 @@ do_automount_setline()
 
 	kill -HUP `cat /var/run/automount.pid`
 }
+
 # -----------------------------------------------------------
 # Execute shell command
 # 1: directory 2: append [true|false] 3+: cmd
@@ -346,6 +362,7 @@ do_cmd()
 	echo 'parent.document.f.cmd.focus();'
 	echo '</script></body></html>'
 }
+
 # -----------------------------------------------------------
 # yInstaller
 # un-tar uploaded file to /tmp. Execute included install.sh
@@ -417,6 +434,7 @@ do_ext_installer()
 		echo "error: $y_install not found. wget=$wgetlog $e"
 	fi
 }
+
 do_ext_uninstaller()
 {
 	uinst="/var/tuxbox/config/ext/uninstall.sh"
@@ -425,6 +443,7 @@ do_ext_uninstaller()
 		`$uinst $1_uninstall.inc`
 	fi 
 }
+
 # -----------------------------------------------------------
 # view /proc/$1 Informations
 # -----------------------------------------------------------
@@ -434,6 +453,7 @@ proc()
 	msg="<b>proc: $1</b><br><br>$msg"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # wake up $1=MAC
 # -----------------------------------------------------------
@@ -449,6 +469,7 @@ wol()
 	msg="<b>Wake on LAN $1</b><br><br>$msg"
 	y_format_message_html
 }
+
 # -----------------------------------------------------------
 # lcd shot
 # $1= optionen | leer
@@ -461,6 +482,7 @@ do_lcshot()
 		/bin/lcshot $*
 	fi
 }
+
 # -----------------------------------------------------------
 # osd shot
 # $1= fb | dbox bzw. leer
@@ -486,6 +508,7 @@ do_fbshot()
 		$grab $*
 	fi
 }
+
 # -----------------------------------------------------------
 # delete fbshot created graphics
 # -----------------------------------------------------------
@@ -532,11 +555,13 @@ do_settings_backup_restore()
 		;;
 	esac
 }
+
 restart_neutrino()
 {
 	echo "fixme"
 #	kill -HUP `pidof neutrino`
 }
+
 # -----------------------------------------------------------
 # Main
 # -----------------------------------------------------------

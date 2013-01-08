@@ -492,8 +492,7 @@ end-block~frame_live_epg
 
 # ------- Remote
 start-block~remote
-{=var-set:defaultfb={=if-equal:{=global-var-get:boxtype=}~cuberevo~Cuberevo~default=}=}
-{=if-equal:Nokia~{=if-equal:{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=var-get:defaultfb=}=}~default~{=func:get_boxtype=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=var-get:defaultfb=}=}=}~{=include-block:Y_Blocks.txt;remote_standard=}~{=if-equal:{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;default=}~Sagem~{=include-block:Y_Blocks.txt;remote_sagem=}~{=include-block:Y_Blocks.txt;remote_cuberevo=}=}=}
+{=if-equal:Cuberevo~{=if-equal:{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=var-get:defaultfb=}=}~default~{=func:get_boxtype=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=var-get:defaultfb=}=}=}~{=include-block:Y_Blocks.txt;remote_cuberevo=}~{=if-equal:{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;default=}~Dream~{=include-block:Y_Blocks.txt;remote_dream=}~{=include-block:Y_Blocks.txt;remote_cuberevo=}=}=}
 end-block~remote
 
 
@@ -627,4 +626,48 @@ start-block~remote_cuberevo
   <area shape="rect" href="javascript:rcsim('KEY_REPEAT')" coords="23, 439, 42, 445" />
 </map>
 end-block~remote_cuberevo
+
+# ------- Remote Dream
+start-block~remote_dream
+<img src="images/rc_dm.jpg" usemap="#rc"/>
+<map name="rc">
+  <area shape="rect" href="javascript:rcsim('KEY_POWER')" coords="112, 44, 144, 63" />
+  <area shape="rect" href="javascript:rcsim('KEY_1')" coords="47, 113, 79, 132" />
+  <area shape="rect" href="javascript:rcsim('KEY_2')" coords="93, 113, 125, 132" />
+  <area shape="rect" href="javascript:rcsim('KEY_3')" coords="136, 113, 168, 132" />
+  <area shape="rect" href="javascript:rcsim('KEY_4')" coords="46, 139, 78, 158" />
+  <area shape="rect" href="javascript:rcsim('KEY_5')" coords="91, 139, 123, 158" />
+  <area shape="rect" href="javascript:rcsim('KEY_6')" coords="136, 139, 168, 158" />
+  <area shape="rect" href="javascript:rcsim('KEY_7')" coords="46, 164, 78, 183" />
+  <area shape="rect" href="javascript:rcsim('KEY_8')" coords="91, 164, 123, 183" />
+  <area shape="rect" href="javascript:rcsim('KEY_9')" coords="136, 164, 168, 183" />
+  <area shape="rect" href="javascript:rcsim('KEY_TOPLEFT')" coords="46, 188, 78, 207" />
+  <area shape="rect" href="javascript:rcsim('KEY_0')" coords="90, 188, 122, 207" />
+  <area shape="rect" href="javascript:rcsim('KEY_TOPRIGHT')" coords="135, 188, 167, 207" />
+  <area shape="circle" href="javascript:rcsim('KEY_VOLUMEUP')" coords="53, 240, 14" />
+  <area shape="circle" href="javascript:rcsim('KEY_VOLUMEDOWN')" coords="67, 273, 14" />    
+  <area shape="rect" href="javascript:rcsim('KEY_MUTE')" coords="91, 224, 123, 243" />
+  <area shape="rect" href="javascript:rcsim('KEY_HOME')" coords="91, 250, 123, 269" />    
+  <area shape="circle" href="javascript:rcsim('KEY_PAGEUP')" coords="161, 240, 14" />
+  <area shape="circle" href="javascript:rcsim('KEY_PAGEDOWN')" coords="148, 273, 14" />
+  <area shape="circle" href="javascript:rcsim('KEY_INFO')" coords="49, 306, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_AUDIO')" coords="53, 380, 12" />  
+  <area shape="circle" href="javascript:rcsim('KEY_SETUP')" coords="166, 306, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_VIDEO')" coords="162, 380, 12" />
+  <area shape="poly" href="javascript:rcsim('KEY_UP')" coords="69, 305, 109, 294, 146, 306, 142, 313, 106, 323, 70, 312" />
+  <area shape="poly" href="javascript:rcsim('KEY_LEFT')" coords="51, 335, 61, 321, 85, 326, 82, 354, 63, 362, 53, 348" />
+  <area shape="poly" href="javascript:rcsim('KEY_OK')" coords="91, 328, 126, 328, 127, 343, 124, 354, 92, 355, 89, 340" />
+  <area shape="poly" href="javascript:rcsim('KEY_RIGHT')" coords="130, 323, 153, 316, 162, 340, 154, 366, 138, 362, 130, 353" />
+  <area shape="poly" href="javascript:rcsim('KEY_DOWN')" coords="69, 368, 109, 357, 146, 369, 142, 376, 106, 386, 70, 375" />
+  <area shape="circle" href="javascript:rcsim('KEY_RED')" coords="57, 421, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_GREEN')" coords="91, 421, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_YELLOW')" coords="124, 421, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_BLUE')" coords="158, 421, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_TV')" coords="61, 460, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_RADIO')" coords="91, 460, 12" />
+  <area shape="circle" href="javascript:rcsim('KEY_TEXT')" coords="123, 460, 12" />   
+  <area shape="circle" href="javascript:rcsim('KEY_HELP')" coords="153, 460, 12" />   
+</map>
+end-block~remote_dream
+
 

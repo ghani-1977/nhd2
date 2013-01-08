@@ -1,7 +1,7 @@
 #!/bin/sh
 # -----------------------------------------------------------
 # Live (yjogol)
-# $Date: 2010-03-05 06:37:09 +0100 (Fr, 05 Mär 2010) $
+# $Date: 2010-03-05 06:37:09 +0100 (Fr, 05 Mï¿½r 2010) $
 # $Revision: 451 $
 # -----------------------------------------------------------
 
@@ -11,21 +11,27 @@
 # -----------------------------------------------------------
 live_lock()
 {
+	# un/lock lcd
 	if [ "$boxtype" != "cuberevo" ]; then
 		call_webserver "control/lcd?lock=1&clear=1&rect=10,10,110,50,1,0&xpos=20&ypos=27&size=22&font=2&text=%20%20%20%20yWeb%0A%20%20LiveView&update=1" >/dev/null
 	fi
+
 	call_webserver "control/rc?lock" >/dev/null
 	call_webserver "control/zapto?stopplayback" >/dev/null
 }
+
 # -----------------------------------------------------------
 live_unlock()
 {
+	# un/lock lcd
 	if [ "$boxtype" != "cuberevo" ]; then
 		call_webserver "control/lcd?lock=0" >/dev/null
 	fi
+
 	call_webserver "control/rc?unlock"  >/dev/null
 	call_webserver "control/zapto?startplayback" >/dev/null
 }
+
 # -----------------------------------------------------------
 prepare_tv()
 {
@@ -34,6 +40,7 @@ prepare_tv()
 		call_webserver "control/system?setAViAExtPlayBack=spts" >/dev/null
 	fi
 }
+
 # -----------------------------------------------------------
 prepare_radio()
 {
