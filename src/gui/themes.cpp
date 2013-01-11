@@ -47,6 +47,7 @@
 
 #include "themes.h"
 
+
 #define THEMEDIR DATADIR "/neutrino/themes/"
 #define USERDIR "/var" THEMEDIR
 #define FILE_PREFIX ".theme"
@@ -59,7 +60,7 @@ CThemes::CThemes()
 	hasThemeChanged = false;
 }
 
-int CThemes::exec(CMenuTarget* parent, const std::string & actionKey)
+int CThemes::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	int res = menu_return::RETURN_REPAINT;
 
@@ -83,6 +84,7 @@ int CThemes::exec(CMenuTarget* parent, const std::string & actionKey)
 			else
 				readFile((char*)((std::string)THEMEDIR + themeFile + FILE_PREFIX).c_str());
 		}
+		
 		return res;
 	}
 
@@ -253,6 +255,11 @@ void CThemes::rememberOldTheme(bool remember)
 		oldThemeValues[41] = g_settings.colored_events_red;
 		oldThemeValues[42] = g_settings.colored_events_green;
 		oldThemeValues[43] = g_settings.colored_events_blue;
+		
+		oldThemeValues[44] = g_settings.menu_help_statusbar_alpha;
+		oldThemeValues[45] = g_settings.menu_help_statusbar_red;
+		oldThemeValues[46] = g_settings.menu_help_statusbar_green;
+		oldThemeValues[47] = g_settings.menu_help_statusbar_blue;
 	} 
 	else 
 	{
@@ -301,6 +308,11 @@ void CThemes::rememberOldTheme(bool remember)
 		g_settings.colored_events_red 			= oldThemeValues[41];
 		g_settings.colored_events_green 		= oldThemeValues[42];
 		g_settings.colored_events_blue 			= oldThemeValues[43];
+		
+		g_settings.menu_help_statusbar_alpha		= oldThemeValues[44];
+		g_settings.menu_help_statusbar_red 		= oldThemeValues[45];
+		g_settings.menu_help_statusbar_green 		= oldThemeValues[46];
+		g_settings.menu_help_statusbar_blue 		= oldThemeValues[47];
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -359,6 +371,11 @@ void CThemes::readFile(char* themename)
 		g_settings.colored_events_red = themefile.getInt32( "colored_events_red", 95 );
 		g_settings.colored_events_green = themefile.getInt32( "colored_events_green", 70 );
 		g_settings.colored_events_blue = themefile.getInt32( "colored_events_blue", 0 );
+		
+		g_settings.menu_help_statusbar_alpha = themefile.getInt32( "menu_help_statusbar_alpha", 0x00 );
+		g_settings.menu_help_statusbar_red = themefile.getInt32( "menu_help_statusbar_red", 50 );
+		g_settings.menu_help_statusbar_green = themefile.getInt32( "menu_help_statusbar_green", 50 );
+		g_settings.menu_help_statusbar_blue = themefile.getInt32( "menu_help_statusbar_blue", 50 );
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -417,6 +434,11 @@ void CThemes::saveFile(char * themename)
 	themefile.setInt32( "colored_events_red", g_settings.colored_events_red );
 	themefile.setInt32( "colored_events_green", g_settings.colored_events_green );
 	themefile.setInt32( "colored_events_blue", g_settings.colored_events_blue );
+	
+	themefile.setInt32( "menu_help_statusbar_alpha", g_settings.menu_help_statusbar_alpha );
+	themefile.setInt32( "menu_help_statusbar_red", g_settings.menu_help_statusbar_red );
+	themefile.setInt32( "menu_help_statusbar_green", g_settings.menu_help_statusbar_green );
+	themefile.setInt32( "menu_help_statusbar_blue", g_settings.menu_help_statusbar_blue );
 
 	if (!themefile.saveConfig(themename))
 		printf("[neutrino theme] %s write error\n", themename);
@@ -481,6 +503,11 @@ void CThemes::setupDefaultColors()
 	g_settings.colored_events_red = 95;
 	g_settings.colored_events_green = 70;
 	g_settings.colored_events_blue = 0;
+	
+	g_settings.menu_help_statusbar_alpha = 0x00;
+	g_settings.menu_help_statusbar_red = 50;
+	g_settings.menu_help_statusbar_green = 50;
+	g_settings.menu_help_statusbar_blue = 50;
 }
 
 // nhd2
@@ -535,6 +562,11 @@ void CThemes::setupColors_nhd2()
 	g_settings.infobar_Text_red   = 100;
 	g_settings.infobar_Text_green = 100;
 	g_settings.infobar_Text_blue  = 100;
+	
+	g_settings.menu_help_statusbar_alpha = 0x00;
+	g_settings.menu_help_statusbar_red = 50;
+	g_settings.menu_help_statusbar_green = 50;
+	g_settings.menu_help_statusbar_blue = 50;
 }
 
 

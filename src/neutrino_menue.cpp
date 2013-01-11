@@ -1744,8 +1744,8 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	// help text
 	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPTXT, &g_settings.help_txt, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
-	// help bar
-	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPBAR, &g_settings.help_bar, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
+	// help bar //FIXME: needed only on start wizard
+	//colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPBAR, &g_settings.help_bar, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 
 	// osd-timing
 	CMenuWidget *colorSettings_timing = new CMenuWidget(LOCALE_COLORMENU_TIMING, NEUTRINO_ICON_SETTINGS);
@@ -1768,7 +1768,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 void CNeutrinoApp::InitColorSettingsMenuColors(CMenuWidget &colorSettings_menuColors)
 {
 	// intros
-	colorSettings_menuColors.addItem(GenericMenuSeparator);
+	//colorSettings_menuColors.addItem(GenericMenuSeparator);
 	colorSettings_menuColors.addItem(GenericMenuBack);
 
 	// head
@@ -1779,16 +1779,16 @@ void CNeutrinoApp::InitColorSettingsMenuColors(CMenuWidget &colorSettings_menuCo
 	CColorChooser* chContentcolor = new CColorChooser(LOCALE_COLORMENU_BACKGROUND, &g_settings.menu_Content_red, &g_settings.menu_Content_green, &g_settings.menu_Content_blue,&g_settings.menu_Content_alpha, colorSetupNotifier);
 	CColorChooser* chContentTextcolor = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.menu_Content_Text_red, &g_settings.menu_Content_Text_green, &g_settings.menu_Content_Text_blue,NULL, colorSetupNotifier);
 
-	// selected
-	CColorChooser* chContentSelectedcolor = new CColorChooser(LOCALE_COLORMENU_BACKGROUND, &g_settings.menu_Content_Selected_red, &g_settings.menu_Content_Selected_green, &g_settings.menu_Content_Selected_blue,&g_settings.menu_Content_Selected_alpha, colorSetupNotifier);
-	CColorChooser* chContentSelectedTextcolor = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.menu_Content_Selected_Text_red, &g_settings.menu_Content_Selected_Text_green, &g_settings.menu_Content_Selected_Text_blue,NULL, colorSetupNotifier);
-
 	// inactive
 	CColorChooser* chContentInactivecolor = new CColorChooser(LOCALE_COLORMENU_BACKGROUND, &g_settings.menu_Content_inactive_red, &g_settings.menu_Content_inactive_green, &g_settings.menu_Content_inactive_blue,&g_settings.menu_Content_inactive_alpha, colorSetupNotifier);
 	CColorChooser* chContentInactiveTextcolor = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.menu_Content_inactive_Text_red, &g_settings.menu_Content_inactive_Text_green, &g_settings.menu_Content_inactive_Text_blue, NULL, colorSetupNotifier);
 	
-	// clolored events
-	CColorChooser* chColored_Events = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR,	&g_settings.colored_events_red, &g_settings.colored_events_green, &g_settings.colored_events_blue, NULL, colorSetupNotifier);
+	// selected
+	CColorChooser* chContentSelectedcolor = new CColorChooser(LOCALE_COLORMENU_BACKGROUND, &g_settings.menu_Content_Selected_red, &g_settings.menu_Content_Selected_green, &g_settings.menu_Content_Selected_blue,&g_settings.menu_Content_Selected_alpha, colorSetupNotifier);
+	CColorChooser* chContentSelectedTextcolor = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.menu_Content_Selected_Text_red, &g_settings.menu_Content_Selected_Text_green, &g_settings.menu_Content_Selected_Text_blue,NULL, colorSetupNotifier);
+	
+	// help statusbar
+	CColorChooser * chHelpStatusBar = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.menu_help_statusbar_red, &g_settings.menu_help_statusbar_green, &g_settings.menu_help_statusbar_blue, NULL, colorSetupNotifier);
 
 	// head
 	colorSettings_menuColors.addItem( new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_COLORMENUSETUP_MENUHEAD));
@@ -1810,26 +1810,35 @@ void CNeutrinoApp::InitColorSettingsMenuColors(CMenuWidget &colorSettings_menuCo
 	colorSettings_menuColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_BACKGROUND, true, NULL, chContentSelectedcolor ));
 	colorSettings_menuColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_TEXTCOLOR, true, NULL, chContentSelectedTextcolor ));
 	
-	// clored events
-	colorSettings_menuColors.addItem( new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MISCSETTINGS_INFOBAR_COLORED_EVENTS));
-	colorSettings_menuColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_TEXTCOLOR, true, NULL, chColored_Events ));
+	// help statusbar
+	colorSettings_menuColors.addItem( new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_COLORMENU_HELPBAR));
+	colorSettings_menuColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_TEXTCOLOR, true, NULL, chHelpStatusBar ));
 }
 
 void CNeutrinoApp::InitColorSettingsStatusBarColors(CMenuWidget &colorSettings_statusbarColors)
 {
 	// intros
-	colorSettings_statusbarColors.addItem(GenericMenuSeparator);
+	//colorSettings_statusbarColors.addItem(GenericMenuSeparator);
 	colorSettings_statusbarColors.addItem(GenericMenuBack);
 
+	// bg
 	CColorChooser * chInfobarcolor = new CColorChooser(LOCALE_COLORMENU_BACKGROUND, &g_settings.infobar_red, &g_settings.infobar_green, &g_settings.infobar_blue,&g_settings.infobar_alpha, colorSetupNotifier);
-
+	
+	// text
 	CColorChooser * chInfobarTextcolor = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.infobar_Text_red, &g_settings.infobar_Text_green, &g_settings.infobar_Text_blue,NULL, colorSetupNotifier);
+	
+	// clolored events
+	CColorChooser * chColored_Events = new CColorChooser(LOCALE_COLORMENU_TEXTCOLOR, &g_settings.colored_events_red, &g_settings.colored_events_green, &g_settings.colored_events_blue, NULL, colorSetupNotifier);
 
 	colorSettings_statusbarColors.addItem( new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_COLORSTATUSBAR_TEXT));
 
 	colorSettings_statusbarColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_BACKGROUND, true, NULL, chInfobarcolor ));
 
 	colorSettings_statusbarColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_TEXTCOLOR, true, NULL, chInfobarTextcolor ));
+	
+	// clored events
+	colorSettings_statusbarColors.addItem( new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MISCSETTINGS_INFOBAR_COLORED_EVENTS));
+	colorSettings_statusbarColors.addItem( new CMenuForwarder(LOCALE_COLORMENU_TEXTCOLOR, true, NULL, chColored_Events ));
 }
 
 void CNeutrinoApp::InitColorSettingsTiming(CMenuWidget &colorSettings_timing)

@@ -338,10 +338,17 @@ bool CColorSetupNotifier::changeNotify(const neutrino_locale_t, void *)
 	                              convertSetupColor2RGB(g_settings.infobar_Text_red, g_settings.infobar_Text_green, g_settings.infobar_Text_blue),
 	                              8, convertSetupAlpha2Alpha(g_settings.infobar_alpha) );
 
+	// colored events
 	frameBuffer->paletteGenFade(COL_COLORED_EVENTS_INFOBAR,
 	                              convertSetupColor2RGB(g_settings.infobar_red, g_settings.infobar_green, g_settings.infobar_blue),
 	                              convertSetupColor2RGB(g_settings.colored_events_red, g_settings.colored_events_green, g_settings.colored_events_blue),
 	                              8, convertSetupAlpha2Alpha(g_settings.infobar_alpha) );
+				      
+	// help_statusbar
+	frameBuffer->paletteGenFade(COL_MENU_HELP_STATUSBAR,
+	                              convertSetupColor2RGB(g_settings.menu_Head_red, g_settings.menu_Head_green, g_settings.menu_Head_blue),
+	                              convertSetupColor2RGB(g_settings.menu_help_statusbar_red, g_settings.menu_help_statusbar_green, g_settings.menu_help_statusbar_blue),
+	                              8, convertSetupAlpha2Alpha(g_settings.menu_Head_alpha) );
 
 	frameBuffer->paletteSet();
 
@@ -889,11 +896,7 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 		if(audioDecoder)
 			audioDecoder->SetHdmiDD(g_settings.hdmi_dd );
 
-		CNeutrinoApp::getInstance()->loadColors(NEUTRINO_SETTINGS_FILE);
-
 		CNeutrinoApp::getInstance()->SetupTiming();
-		
-		//ShowHintUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MISCSETTINGS_RESET));
 	}
 	else if(actionKey == "backup") 
 	{

@@ -218,6 +218,11 @@ struct SNeutrinoSettings
 	unsigned char colored_events_red;
 	unsigned char colored_events_green;
 	unsigned char colored_events_blue;
+	
+	unsigned char menu_help_statusbar_alpha;
+	unsigned char menu_help_statusbar_red;
+	unsigned char menu_help_statusbar_green;
+	unsigned char menu_help_statusbar_blue;
 
 	char	font_file[100];
 

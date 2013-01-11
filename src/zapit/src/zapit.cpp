@@ -845,36 +845,41 @@ static bool parse_channel_pat_pmt(CZapitChannel * thischannel, CFrontend * fe)
 {
 	dprintf(DEBUG_NORMAL, "%s looking up pids for channel_id (%llx)\n", __FUNCTION__, thischannel->getChannelID());
 	
+	bool failed = false;
+	
 	// get program map table pid from program association table
 	if (thischannel->getPmtPid() == 0) 
 	{
-		dprintf(DEBUG_NORMAL, "[zapit] no pmt pid, going to parse pat\n");
+		dprintf(DEBUG_NORMAL, "[zapit] no pmt pid, going to parse pat\n");	
 		
 		if (parse_pat(thischannel, fe) < 0)
 		{
 			dprintf(DEBUG_NORMAL, "[zapit] pat parsing failed\n");
-			return false;
+			
+			failed = true;
 		}
 	}
 
 	/* parse program map table and store pids */
-	if (parse_pmt(thischannel, fe) < 0) 
+	if ( !failed && parse_pmt(thischannel, fe) < 0) 
 	{
-		dprintf(DEBUG_NORMAL, "[zapit] pmt parsing failed\n");
+		dprintf(DEBUG_NORMAL, "[zapit] pmt parsing failed\n");	
 		
 		if (parse_pat(thischannel, fe) < 0) 
 		{
 			dprintf(DEBUG_NORMAL, "pat parsing failed\n");
-			return false;
+			
+			failed = true;
 		}
 		else if (parse_pmt(thischannel, fe) < 0) 
 		{
 			dprintf(DEBUG_NORMAL, "[zapit] pmt parsing failed\n");
-			return false;
+			
+			failed = true;
 		}
 	}
 	
-	return true;
+	return !failed;
 }
 
 static void restore_channel_pids(CZapitChannel * thischannel)

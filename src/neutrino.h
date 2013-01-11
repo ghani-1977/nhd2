@@ -220,7 +220,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void CmdParser(int argc, char **argv);
 	
 		bool doGuiRecord(char * preselectedDir, bool addTimer = false);
-		void saveColors(const char * fname);
 		void loadKeys(const char * fname);
 		void saveKeys(const char * fname);
 		CNeutrinoApp();
@@ -230,7 +229,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		
 		void saveSetup(const char * fname);
 		int loadSetup(const char * fname);
-		void loadColors(const char * fname);
 		void SetupTiming();
 		void SetupFonts();
 
