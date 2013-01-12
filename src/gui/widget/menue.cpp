@@ -537,7 +537,7 @@ void CMenuWidget::hide()
 	if( savescreen && background)
 		restoreScreen();//FIXME
 	else
-		frameBuffer->paintBackgroundBoxRel(x, y, /*width + SCROLLBAR_WIDTH*/full_width, /*height + ((RADIUS_MID * 3) + 1) + 5*/full_height); //15=sb_width, ((RADIUS_MID * 3) + 1)= foot 
+		frameBuffer->paintBackgroundBoxRel(x, y, full_width, full_height); 
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -622,8 +622,10 @@ void CMenuWidget::paint()
 		sb_width = 0;
 	
 	//
+	int sp_height = 5;
+	
 	full_width = width + sb_width;
-	full_height = height + ((RADIUS_MID * 3) + 1) + 5 + 5;	//separator height = 5
+	full_height = height + ((RADIUS_MID * 3) + 1) + 2*sp_height;	//separator height = 5
 	
 	//
 	if(savescreen) 
@@ -647,29 +649,17 @@ void CMenuWidget::paint()
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + hheight + 1, width - BORDER_RIGHT - (stringstartposX - x), l_name, COL_MENUHEAD, 0, true); // UTF-8
 	
 	// paint separator
-	int sp_height = 5;
 	frameBuffer->paintBoxRel(x, y + hheight, width + sb_width, sp_height, COL_MENUCONTENTDARK_PLUS_0 );
 	
 	// recalculate total height
 	if(total_pages < 2)
-		height = height + sp_height;
+		height = height + 2*sp_height;
 	
 	//paint foot
-	//if(total_pages > 1)
-	//{
-	//	//height = height;
-	//	frameBuffer->paintBoxRel(x, y + height, width + sb_width, (RADIUS_MID * 3) + 1, COL_MENUHEAD_PLUS_0 );
-	//}
-	//else
-	//{
-		//height = height + sp_height;
-	frameBuffer->paintBoxRel(x, y + height, width + sb_width, (RADIUS_MID * 3) + 1 + sp_height, COL_MENUHEAD_PLUS_0 );
-	//}
-	
-	//height = height + sp_height;
+	frameBuffer->paintBoxRel(x, y + height, width + sb_width, (RADIUS_MID * 3) + 1, COL_MENUHEAD_PLUS_0 );
 	
 	// all height
-	HEIGHT = y + height + 25 + sp_height; //FIXME:25???
+	HEIGHT = y + full_height;
 	
 	//item_start_y
 	item_start_y = y + hheight + sp_height;
@@ -684,14 +674,6 @@ void CMenuWidget::paintItems()
 	int item_height = height - (item_start_y - y); // all items height without sep up/down
 	
 	//printf("CMenuWidget::paintItems: y(%d) item_start_y(%d) item_height(%d)\n", y, item_start_y, item_height);
-	
-	// recalculate itemsheight
-	int foot_separator = 5;
-	
-	if(total_pages > 1)
-		item_height = item_height;
-	else
-		item_height = item_height + foot_separator;
 
 	//Item not currently on screen
 	if (selected >= 0)
@@ -713,13 +695,8 @@ void CMenuWidget::paintItems()
 		frameBuffer->paintBoxRel(x + width + 2, item_start_y + 2 + current_page * sbh, 11, sbh, COL_MENUCONTENT_PLUS_3);
 	}
 	
-	//int foot_separator = 5;
-	
 	// paint items background
-	//if(total_pages > 1)
-		frameBuffer->paintBoxRel(x, item_start_y, width, item_height, COL_MENUCONTENTDARK_PLUS_0 );
-	//else
-	//	frameBuffer->paintBoxRel(x, item_start_y, width, item_height + foot_separator, COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintBoxRel(x, item_start_y, width, item_height, COL_MENUCONTENTDARK_PLUS_0 );
 
 	int ypos = item_start_y;
 	

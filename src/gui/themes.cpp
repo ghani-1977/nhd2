@@ -66,7 +66,7 @@ int CThemes::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	if( !actionKey.empty() )
 	{
-		if (actionKey=="theme_neutrino")
+		if (actionKey == "theme_neutrino")
 		{
 			setupDefaultColors();
 			notifier = new CColorSetupNotifier();
@@ -158,19 +158,19 @@ int CThemes::Show()
 	//themes.addIntroItems(LOCALE_COLORTHEMEMENU_HEAD2);
 	
 	//set default theme
-	themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME,    true, NULL, this, "theme_neutrino", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
+	themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME, true, NULL, this, "theme_neutrino", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
 	
 	readThemes(themes);
 
 	CStringInputSMS nameInput(LOCALE_COLORTHEMEMENU_NAME, &file_name, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789- ");
-	CMenuForwarder *m1 = new CMenuForwarder(LOCALE_COLORTHEMEMENU_SAVE, true , NULL, &nameInput, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN);
+	CMenuForwarder * m1 = new CMenuForwarder(LOCALE_COLORTHEMEMENU_SAVE, true , NULL, &nameInput, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED);
 
 	// Don't show SAVE if UserDir does'nt exist
 	if ( access(USERDIR, F_OK) != 0 ) 
 	{ 
 		// check for existance
 		// mkdir must be called for each subdir which does not exist 
-		//mkdir (USERDIR, S_IRUSR | S_IREAD | S_IWUSR | S_IWRITE | S_IXUSR | S_IEXEC) == 0) {
+		// mkdir (USERDIR, S_IRUSR | S_IREAD | S_IWUSR | S_IWRITE | S_IXUSR | S_IEXEC) == 0) {
 		
 		if (system (((std::string)"mkdir -p " + USERDIR).c_str()) != 0) 
 		{
@@ -180,7 +180,7 @@ int CThemes::Show()
 	
 	if (access(USERDIR, F_OK) == 0 ) 
 	{
-		themes.addItem(GenericMenuSeparatorLine);
+		//themes.addItem(GenericMenuSeparatorLine);
 		themes.addItem(m1);
 	} 
 	else 
@@ -191,7 +191,8 @@ int CThemes::Show()
 
 	int res = themes.exec(NULL, "");
 
-	if (file_name.length() > 1) {
+	if (file_name.length() > 1) 
+	{
 		saveFile((char*)((std::string)USERDIR + file_name + FILE_PREFIX).c_str());
 	}
 

@@ -71,7 +71,7 @@ void CCAMMenuHandler::init(void)
 	ci = cDvbCi::getInstance();
 }
 
-int CCAMMenuHandler::exec(CMenuTarget* parent, const std::string &actionkey)
+int CCAMMenuHandler::exec(CMenuTarget * parent, const std::string &actionkey)
 {
 	printf("CCAMMenuHandler::exec: actionkey %s\n", actionkey.c_str());
 
@@ -99,7 +99,7 @@ int CCAMMenuHandler::doMainMenu()
 	char str1[255];
 	char str2[255];
 
-	CMenuWidget* cammenu = new CMenuWidget(LOCALE_CAM_SETTINGS, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget * cammenu = new CMenuWidget(LOCALE_CAM_SETTINGS, NEUTRINO_ICON_SETTINGS);
 	
 	// intros
 	//cammenu->addItem(GenericMenuSeparator);
