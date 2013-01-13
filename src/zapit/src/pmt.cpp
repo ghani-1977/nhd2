@@ -174,7 +174,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0x59: /* dvbsub descriptor */
-				if (esInfo->stream_type==0x06) 
+				if (esInfo->stream_type == 0x06) 
 				{
 					unsigned char fieldCount=descriptor_length/8;
 					for (unsigned char fIdx=0; fIdx<fieldCount; fIdx++)
@@ -258,7 +258,16 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			default:
-				dprintf(DEBUG_DEBUG, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
+				//dprintf(DEBUG_DEBUG, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
+#if 1
+				printf("0x%2X dump:", descriptor_tag);
+				for (i = 0; i < descriptor_length; i++) 
+				{
+					printf("%c", buffer[pos + 2 + i]);
+					if (((i+1) % 8) == 0)
+						printf("\n");
+				}
+#endif
 				break;
 		}
 	}
@@ -294,7 +303,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 		case 0x05:// private section
 			{
-				int tmp=0;	
+				int tmp = 0;	
 				// Houdini: shameless stolen from enigma dvbservices.cpp
 				for (pos = 5; pos < ES_info_length + 5; pos += descriptor_length + 2) 
 				{
@@ -307,12 +316,14 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 							if ( ((buffer[pos + 2]<<24) | (buffer[pos + 3]<<16) | (buffer[pos + 4]<<8) | (buffer[pos + 5])) == 190 )
 								tmp |= 1;
 							break;
+							
 						case 0x90:
 							{
 								if ( descriptor_length == 4 && !buffer[pos + 2] && !buffer[pos + 3] && buffer[pos + 4] == 0xFF && buffer[pos + 5] == 0xFF )
 									tmp |= 2;
 							}
 							//break;??
+							
 						default:
 							break;
 					}

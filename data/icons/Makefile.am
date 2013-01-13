@@ -40,7 +40,7 @@ install_DATA += \
 
 # background
 install_DATA += \
-	radio.jpg scan.jpg shutdown.jpg start.jpg
+	radiomode.jpg scan.jpg shutdown.jpg start.jpg
 
 
 

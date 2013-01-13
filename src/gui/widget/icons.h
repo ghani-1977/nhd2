@@ -89,7 +89,6 @@
 #define NEUTRINO_ICON_FF 			"mp_f-skip"
 #define NEUTRINO_ICON_PROTECTING		"protecting"
 #define NEUTRINO_ICON_QUESTION			"question"
-#define NEUTRINO_ICON_RADIOMODE			"radiomode"
 #define NEUTRINO_ICON_RECORDING			"recording"
 #define NEUTRINO_ICON_REC			"rec"
 #define NEUTRINO_ICON_SETTINGS			"settings"

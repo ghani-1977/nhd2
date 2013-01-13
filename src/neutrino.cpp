@@ -2831,7 +2831,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radio.jpg");
+					frameBuffer->loadBackgroundPic("radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -2857,7 +2857,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radio.jpg");
+					frameBuffer->loadBackgroundPic("radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -4423,7 +4423,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 		channelList->zapTo( firstchannel.channelNumber -1 );
 	}
 
-	frameBuffer->loadBackgroundPic("radio.jpg");
+	frameBuffer->loadBackgroundPic("radiomode.jpg");
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();

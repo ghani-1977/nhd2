@@ -422,8 +422,7 @@ void bouquet_name_descriptor(const unsigned char * const)
 
 uint8_t fix_service_type(uint8_t type)
 {
-	if((type == 0x9A) || (type == 0x86) || (type==0xc3)
-		|| (type==0xc5) || (type==0xc6))
+	if( (type == 0x9A) || (type == 0x86) || (type==0xc3) || (type==0xc5) || (type==0xc6) )
 			return 1;
 	return type;
 }
@@ -451,16 +450,19 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 	{
 		case CZapitClient::ST_TVRADIO:
 			if ( (service_type == 1 ) || (service_type == 2) )
-				service_wr=true;
+				service_wr = true;
 			break;
+			
 		case CZapitClient::ST_TV:
 			if ( service_type == 1 )
-				service_wr=true;
+				service_wr = true;
 			break;
+			
 		case CZapitClient::ST_RADIO:
 			if ( service_type == 2 )
-				service_wr=true;
+				service_wr = true;
 			break;
+			
 		case CZapitClient::ST_ALL:
 			service_wr=true;
 			break;
@@ -493,7 +495,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		in_blacklist = true;
 	} 
 	else if( (strncasecmp("POLSAT",providerName.c_str(),6)==0) || 
-			(strncmp("D1",providerName.c_str(),2)==0)  || (strncmp("OTV",providerName.c_str(),3)==0)  ||
+			(strncmp("D1",providerName.c_str(),2)==0)  || (strncmp("OTV",providerName.c_str(),3) == 0)  ||
 			(providerName=="REALITY TV")  || (providerName=="PL Media")  || 
 			(providerName=="ANIMAL PL")  || (providerName=="DISCOVERY") )
 	{
@@ -545,6 +547,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		//if(strcmp(serviceName.c_str(), I->second.getName().c_str())) 
 		{
 			//printf("[scan] channel %s (%llx at %d) exist with name %s at %d !!\n", serviceName.c_str(), channel_id, freq, I->second.getName().c_str(), I->second.getFreqId());//FIXME
+			
 			service_wr = 0;
 			I->second.setName(serviceName);
 			I->second.setServiceType(real_type);
@@ -593,7 +596,6 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		unsigned short network_descriptors_length=0;
 		unsigned short pos=0;
 
-
 		unsigned char filter[DMX_FILTER_SIZE];
 		unsigned char mask[DMX_FILTER_SIZE];
 
@@ -634,7 +636,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		} 
 		else 
 		{
-			providerName=lastProviderName;
+			providerName = lastProviderName;
 		}
 		if (providerName == "")
 			providerName = CDVBString(UNKNOWN_PROVIDER_NAME, strlen(UNKNOWN_PROVIDER_NAME)).getContent();
@@ -676,7 +678,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		case ST_NVOD_REFERENCE_SERVICE:
 		case ST_NVOD_TIME_SHIFTED_SERVICE:
 			{
-				CZapitBouquet* bouquet;
+				CZapitBouquet * bouquet;
 				int bouquetId;
 				char pname[100];
 				
@@ -747,14 +749,17 @@ void current_service_descriptor(const unsigned char * const buffer, const t_serv
                    if ( (service_type == 1 ) || (service_type == 2) )
                            service_wr=true;
                    break;
+		   
             case CZapitClient::ST_TV:
                    if ( service_type == 1 )
                            service_wr=true;
                    break;
+		   
             case CZapitClient::ST_RADIO:
                    if ( service_type == 2 )
                            service_wr=true;
                    break;
+		   
             case CZapitClient::ST_ALL:
                    service_wr=true;
                    break;

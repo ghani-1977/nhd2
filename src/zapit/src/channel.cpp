@@ -91,18 +91,15 @@ int CZapitChannel::addAudioChannel(const unsigned short pid, const CZapitAudioCh
 		if ((* aI)->pid == pid) 
 		{
 			(* aI)->description = description;
-                        //(* aI)->isAc3 = isAc3;
-			//test
 			(* aI)->audioChannelType = audioChannelType;
                         (* aI)->componentTag = componentTag;
+			
 			return -1;
 		}
 	}
 	
 	CZapitAudioChannel *tmp = new CZapitAudioChannel();
 	tmp->pid = pid;
-	//tmp->isAc3 = isAc3;
-	//test
 	tmp->audioChannelType = audioChannelType;
 	tmp->description = description;
 	tmp->componentTag = componentTag;
@@ -153,11 +150,12 @@ bool CZapitChannel::isHD()
 {
 	switch(serviceType) 
 	{
-		case 0x11: 
-		case 0x19:
+		case ST_MPEG_2_HD_TELEVISION_SERVICE: 
+		case ST_MPEG_4_HD_TELEVISION_SERVICE:
 			return true;
 			
-		case 0x1: 
+		case ST_DIGITAL_TELEVISION_SERVICE: 
+		case ST_MPEG_4_SD_TELEVISION_SERVICE:
 		{
 				char * temp = (char *) name.c_str();
 				int len = name.size();
@@ -167,9 +165,24 @@ bool CZapitChannel::isHD()
 				}
 				return false;
 		}
-		case 0x2:
-		  
+		
+		case ST_DIGITAL_RADIO_SOUND_SERVICE:
 			return false;
+			
+		default:
+			return false;
+	}
+}
+
+bool CZapitChannel::is3DTV()
+{
+	switch(serviceType) 
+	{
+		case ST_3DTV1_TELEVISION_SERVICE: 
+		case ST_3DTV2_TELEVISION_SERVICE:
+		case ST_3DTV3_TELEVISION_SERVICE:
+			return true;
+				
 		default:
 			return false;
 	}
@@ -209,6 +222,7 @@ void CZapitChannel::addTTXSubtitle(const unsigned int pid, const std::string lan
 		tmpSub = new CZapitTTXSub();
 		channelSubs.push_back(tmpSub);
 	}
+	
 	tmpSub->pId=pid;
 	tmpSub->ISO639_language_code=langCode;
 	tmpSub->teletext_magazine_number=mag_nr;
@@ -279,6 +293,7 @@ CZapitAbsSub* CZapitChannel::getChannelSub(int index)
 			retval = channelSubs[index];
 		}
 	}
+	
 	return retval;
 }
 
@@ -299,6 +314,7 @@ void CZapitChannel::setCaPmt(CCaPmt *pCaPmt)
 { 
 	if(caPmt)
 		delete caPmt;
+	
 	caPmt = pCaPmt; 
 }
 
@@ -306,6 +322,7 @@ void CZapitChannel::setRawPmt(unsigned char * pmt, int len)
 {
 	if(rawPmt)
 		delete[] rawPmt;
+	
 	rawPmt = pmt;
 	pmtLen = len;
 }
