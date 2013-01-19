@@ -615,6 +615,37 @@ void CZapitClient::getVolume(unsigned int *left, unsigned int *right)
         close_connection();
 }
 
+/* set volume percent */
+void CZapitClient::setVolumePercent(unsigned int percent, t_channel_id channel_id, const unsigned int apid)
+{
+	CZapitMessages::commandVolumePercent msg;
+
+	msg.apid = apid;
+	msg.channel_id = channel_id;
+	msg.percent = percent;
+
+	send(CZapitMessages::CMD_SET_VOLUME_PERCENT, (char*)&msg, sizeof(msg));
+
+	close_connection();
+}
+
+/* get volume percent */
+void CZapitClient::getVolumePercent(unsigned int *percent, t_channel_id channel_id, const unsigned int apid, const bool is_ac3)
+{
+	CZapitMessages::commandVolumePercent msg;
+
+	msg.apid = apid;
+	msg.is_ac3 = is_ac3;
+	msg.channel_id = channel_id;
+
+	send(CZapitMessages::CMD_GET_VOLUME_PERCENT, (char*)&msg, sizeof(msg));
+
+	CBasicClient::receive_data((char*)&msg, sizeof(msg));
+	*percent = msg.percent;
+
+	close_connection();
+}
+
 /* delivery_system */
 delivery_system_t CZapitClient::getDeliverySystem(void)
 {

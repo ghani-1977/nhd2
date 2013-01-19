@@ -99,8 +99,6 @@ extern CFrontend * getFE(int index);
 #define ASIZE 100
 
 // in us
-#define FADE_TIME 40000
-
 #define LCD_UPDATE_TIME_TV_MODE (60 * 1000 * 1000)
 
 
@@ -262,17 +260,11 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	std::string ChannelName = Channel;
 
 	bool show_dot = true;
-	bool fadeOut = false;
-	int fadeValue;
 	bool new_chan = false;
 
 	showButtonBar = !calledFromNumZap;
-	bool fadeIn = false && (!is_visible) && showButtonBar;
 
 	is_visible = true;
-	
-	if ( !calledFromNumZap && fadeIn)
-		fadeTimer = g_RCInput->addTimer(FADE_TIME, false);
 
 	newfreq = true;
 	
@@ -287,16 +279,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	if (!gotTime)
 		gotTime = timeset;
-
-	if (fadeIn) 
-	{
-		fadeValue = 0x10;
-		frameBuffer->setBlendLevel(fadeValue);
-	}
-	else
-	{
-		fadeValue = g_settings.gtx_alpha;
-	}
 
 	int col_NumBoxText;
 	int col_NumBox;
@@ -446,8 +428,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	if( showButtonBar )
 	{
-		sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
-		
 		// green
 		showButton_Audio();
 			
@@ -587,66 +567,15 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				g_RCInput->postMsg (NeutrinoMessages::SHOW_EPG, 0);
 				res = messages_return::cancel_info;
 			} 
-			else if ((msg == NeutrinoMessages::EVT_TIMER) && (data == fadeTimer)) 
-			{
-				if (fadeOut) 
-				{ 
-					// disappear
-					fadeValue -= 0x10;
-					if (fadeValue <= 0x10) 
-					{
-						fadeValue = g_settings.gtx_alpha;
-						g_RCInput->killTimer (fadeTimer);
-						res = messages_return::cancel_info;
-					} 
-					else
-						frameBuffer->setBlendLevel(fadeValue);
-				} 
-				else 
-				{ 
-					// appears
-					fadeValue += 0x10;
-
-					if (fadeValue >= g_settings.gtx_alpha) 
-					{
-						fadeValue = g_settings.gtx_alpha;
-						g_RCInput->killTimer (fadeTimer);
-						fadeIn = false;
-						frameBuffer->setBlendLevel(g_settings.gtx_alpha);
-					} 
-					else
-						frameBuffer->setBlendLevel(fadeValue);
-				}
-			} 
 			else if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) 
 			{
-				if (fadeIn) 
-				{
-					g_RCInput->killTimer (fadeTimer);
-					fadeIn = false;
-				}
-
-				if ((!fadeOut) && false /*g_settings.widget_fade*/) 
-				{
-					fadeOut = true;
-					fadeTimer = g_RCInput->addTimer(FADE_TIME, false);
-					timeoutEnd = CRCInput::calcTimeoutEnd (1);
-				} 
-				else 
-				{
-#if 0
-					if ((msg != CRCInput::RC_timeout) && (msg != CRCInput::RC_ok))
-						if (!timeshift)
-							g_RCInput->postMsg (msg, data);
-#endif
-					res = messages_return::cancel_info;
-				}
+				res = messages_return::cancel_info;
 			} 
-			else if ((msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id)) 
+			else if ( msg == NeutrinoMessages::EVT_TIMER ) //FIXME:???
 			{
 				showSNR();
 				
-				paintTime (show_dot, false);
+				paintTime(show_dot, false);
 				showRecordIcon (show_dot);
 				show_dot = !show_dot;
 				
@@ -692,14 +621,8 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 				} 
 				else 
 				{
-					if (msg == CRCInput::RC_standby) 
-					{
-						g_RCInput->killTimer (sec_timer_id);
-						if (fadeIn || fadeOut)
-							g_RCInput->killTimer (fadeTimer);
-					}
-
 					res = neutrino->handleMsg (msg, data);
+					
 					if (res & messages_return::unhandled) 
 					{
 						// raus hier und im Hauptfenster behandeln...
@@ -716,15 +639,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 		if (hideIt)
 			killTitle();
-
-		g_RCInput->killTimer(sec_timer_id);
-		sec_timer_id = 0;
-
-		if (fadeIn || fadeOut) 
-		{
-			g_RCInput->killTimer(fadeTimer);
-			frameBuffer->setBlendLevel(g_settings.gtx_alpha);
-		}
 
 		if (virtual_zap_mode)
 			CNeutrinoApp::getInstance()->channelList->virtual_zap_mode(msg == CRCInput::RC_right);
@@ -1250,30 +1164,16 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_TIMER) 
 	{
-		if (data == fadeTimer) 
-		{
-	  		// hierher kann das event nur dann kommen, wenn ein anderes Fenster im Vordergrund ist!
-	  		g_RCInput->killTimer(fadeTimer);
-
-	  		frameBuffer->setBlendLevel(g_settings.gtx_alpha);
-
-	  		return messages_return::handled;
-		} 
-		else if (data == lcdUpdateTimer) 
+		if (data == lcdUpdateTimer) 
 		{
 			//printf("CInfoViewer::handleMsg: lcdUpdateTimer\n");
+			
 			if ( is_visible )
 				show_Data( true );
 
 #if ENABLE_LCD
 	  		showLcdPercentOver();
 #endif			
-
-	  		return messages_return::handled;
-		} 
-		else if (data == sec_timer_id) 
-		{
-			showSNR();
 
 	  		return messages_return::handled;
 		}

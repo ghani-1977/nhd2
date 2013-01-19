@@ -36,6 +36,16 @@ AC_ARG_ENABLE(keyboard-no-rc,
          [  --enable-keyboard-no-rc             enable keyboard control, disable rc control],
          [AC_DEFINE(KEYBOARD_INSTEAD_OF_REMOTE_CONTROL,1,[enable keyboard control, disable rc control])])
 
+# opengl framebuffer (x86)
+AC_ARG_ENABLE(opengl,
+	AS_HELP_STRING(--enable-opengl,include opengl framebuffer support for x86),
+	,[enable_opengl=no])
+AM_CONDITIONAL(USE_OPENGL,test "$enable_opengl" = "yes")
+
+if test "$enable_opengl" = "yes"; then
+AC_DEFINE(USE_OPENGL,1,[include gstreamer engine])
+fi
+
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
 	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),

@@ -580,8 +580,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.streaming_force_avi_rawaudio = configfile.getInt32( "streaming_force_avi_rawaudio", 0 );
 	g_settings.streaming_resolution = configfile.getInt32( "streaming_resolution", 0 );
 	g_settings.streaming_vlc10 = configfile.getInt32( "streaming_vlc10", 0);
-	g_settings.streaming_show_tv_in_browser = configfile.getInt32("streaming_show_tv_in_browser", 0);
-	g_settings.streaming_allow_multiselect = configfile.getBool("streaming_allow_multiselect", false);
 	// end movieplayer
 
 	// OSD
@@ -1045,8 +1043,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32 ( "streaming_transcode_video_codec", g_settings.streaming_transcode_video_codec );
 	configfile.setInt32 ( "streaming_resolution", g_settings.streaming_resolution );
 	configfile.setInt32 ( "streaming_vlc10", g_settings.streaming_vlc10 );
-	configfile.setInt32 ( "streaming_show_tv_in_browser", g_settings.streaming_show_tv_in_browser);
-	configfile.setBool ("streaming_allow_multiselect", g_settings.streaming_allow_multiselect);
 	// END MOVIEPLAYER
 
 	// OSD
@@ -3018,6 +3014,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		{
 			shift_timer = 0;
 			startAutoRecord(true);
+			
 			return messages_return::handled;
 		} 
 		else if(data == scrambled_timer) 

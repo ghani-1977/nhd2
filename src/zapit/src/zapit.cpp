@@ -2397,6 +2397,59 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 		}
 		
+		case CZapitMessages::CMD_SET_VOLUME_PERCENT: 
+		{
+			CZapitMessages::commandVolumePercent msgVolumePercent;
+			CBasicServer::receive_data(connfd, &msgVolumePercent, sizeof(msgVolumePercent));
+			
+			if (!msgVolumePercent.channel_id)
+				msgVolumePercent.channel_id = live_channel_id;
+			
+			if (!msgVolumePercent.apid)
+				msgVolumePercent.apid = live_channel->getAudioPid();
+			
+			//volume_map[make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid)] = msgVolumePercent.percent;
+			break;
+		}
+		
+		case CZapitMessages::CMD_GET_VOLUME_PERCENT: 
+		{
+			CZapitMessages::commandVolumePercent msgVolumePercent;
+			CBasicServer::receive_data(connfd, &msgVolumePercent, sizeof(msgVolumePercent));
+			
+			bool isMoviePlayer = msgVolumePercent.channel_id && msgVolumePercent.apid;
+			
+			if (!isMoviePlayer) 
+			{
+				if (!msgVolumePercent.channel_id)
+					msgVolumePercent.channel_id = live_channel_id;
+				
+				if (!msgVolumePercent.apid)
+					msgVolumePercent.apid = live_channel->getAudioPid();
+			}
+			
+			//t_chan_apid chan_apid = make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid);
+			//volume_map_it = volume_map.find(chan_apid);
+			
+			//if (volume_map_it != volume_map.end())
+			//	msgVolumePercent.percent = volume_map[chan_apid];
+			//else if (isMoviePlayer)
+			//	msgVolumePercent.percent = msgVolumePercent.is_ac3 ? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
+			//else for (int  i = 0; i < live_channel->getAudioChannelCount(); i++)
+			//{
+				//if (msgVolumePercent.apid == live_channel->getAudioPid(i)) 
+				//{
+					//msgVolumePercent.percent =
+						//(current_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3)
+						//? VOLUME_DEFAULT_AC3
+						//: VOLUME_DEFAULT_PCM;
+					//break;
+				//}
+			//}
+			CBasicServer::send_data(connfd, &msgVolumePercent, sizeof(msgVolumePercent));
+			break;
+		}
+		
 		case CZapitMessages::CMD_SET_STANDBY: 
 		{
 			CZapitMessages::commandBoolean msgBoolean;

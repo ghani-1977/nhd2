@@ -190,6 +190,27 @@ int CAudioSelectMenuHandler::doMenu()
 		}
 
 	}
+	
+	// adjust volume
+	#if 0
+	AudioSelector.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_VOLUME_ADJUST));
+
+	// setting volume percent to zapit with channel_id/apid = 0 means current channel and pid
+	//CVolume::getInstance()->SetCurrentChannel(0);
+	//CVolume::getInstance()->SetCurrentPid(0);
+	
+	int percent[count];
+	
+	for (uint i = 0; i < count; i++) 
+	{
+		//percent[i] = CZapit::getInstance()->GetPidVolume(0, g_RemoteControl->current_PIDs.APIDs[i].pid);
+		
+		AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[i],
+					i == g_RemoteControl->current_PIDs.PIDs.selected_apid,
+					0, /*999*/100, /*CVolume::getInstance()*/NULL, 0, 0, NONEXISTANT_LOCALE,
+					g_RemoteControl->current_PIDs.APIDs[i].desc));
+	}
+	#endif
 
 	return AudioSelector.exec(NULL, "");
 }

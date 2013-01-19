@@ -147,6 +147,7 @@ const char *locale_real_names[] = {
 	"audiomenu.avsync",
 	"audiomenu.avsync_am",
 	"audiomenu.clockrec",
+	"audiomenu.volume_adjust",
 	
 	"audiomenu.ac3_delay",
 	"audiomenu.pcm_delay",

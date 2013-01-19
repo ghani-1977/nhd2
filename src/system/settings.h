@@ -146,17 +146,6 @@ struct SNeutrinoSettings
 	int streaming_transcode_video_codec;
 	int streaming_resolution;
 	int streaming_vlc10;
-	#if 0
-	int streaming_use_buffer;
-	int streaming_buffer_segment_size;
-	int streaming_stopsectionsd;
-	#endif
-	int streaming_show_tv_in_browser;
-	int streaming_allow_multiselect;
-	#if 0
-	int streaming_use_reclength;
-	std::string streaming_moviedir;
-	#endif
 	// END MOVIEPLAYER
 
 	// OSD

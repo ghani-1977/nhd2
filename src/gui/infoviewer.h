@@ -52,11 +52,8 @@ class CInfoViewer
 		
 		bool           gotTime;
 		bool           recordModeActive;
-#ifndef SKIP_CA_STATUS
 		bool           CA_Status;
-#endif
-		
-		bool         	showButtonBar;
+		bool           showButtonBar;
 		
 		int            BoxEndX;
 		int            BoxEndY;
@@ -93,10 +90,8 @@ class CInfoViewer
 		t_channel_id   channel_id;
 
 		char           aspectRatio;
-
-		uint32_t           sec_timer_id;
-		uint32_t           fadeTimer;
 		bool           virtual_zap_mode;
+		
 		CChannelEventList               evtlist;
 		CChannelEventList::iterator     eli;
 
@@ -111,10 +106,9 @@ class CInfoViewer
 		void showIcon_RadioText(bool rt_available) const;
 #endif		
 	
-#ifndef SKIP_CA_STATUS
 		void showIcon_CA_Status(int);
 		void paint_ca_icons(int, char*);
-#endif
+
 		void showIcon_VTXT()      const;
 		void showRecordIcon(const bool show);
 		void showIcon_SubT() const;
@@ -162,9 +156,7 @@ class CInfoViewer
 		CSectionsdClient::CurrentNextInfo getCurrentNextInfo() { return info_CurrentNext; }
 	
 		void	showSubchan();
-#ifndef SKIP_CA_STATUS
 		void	Set_CA_Status(int Status);
-#endif
 	
 		int     handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
 		void    clearVirtualZapMode() {virtual_zap_mode = false;}

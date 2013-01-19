@@ -44,8 +44,6 @@ static CProgressBar * timescale;
 #define BARLEN 200
 #define SHADOW_OFFSET	5
 
-// in us
-#define FADE_TIME 40000
 
 CTimeOSD::CTimeOSD()
 {

@@ -39,12 +39,9 @@
 #include <linux/stmfb.h>
 #endif
 
-#if defined (PLATFORM_GENERIC)
-#define USE_OPENGL 1
 #ifdef USE_OPENGL
 class GLThreadObj;
 #endif
-#endif /*PLATFORM_GENERIC*/
 
 // 32 bit
 #define fb_pixel_t uint32_t		// unsigned int 32 bit data

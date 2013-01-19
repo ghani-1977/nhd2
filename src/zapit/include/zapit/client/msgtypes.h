@@ -143,7 +143,10 @@ class CZapitMessages
 			
 			CMD_GETRECORDPIDS		  = 109,
 			
-			CMD_SCANSETFEMODE              = 111,
+			CMD_SCANSETFEMODE                 = 111,
+			
+			CMD_SET_VOLUME_PERCENT		  = 112,
+			CMD_GET_VOLUME_PERCENT		  = 113,
 		};
 
 		struct commandBoolean
@@ -160,6 +163,14 @@ class CZapitMessages
 		{
 			unsigned int left;
 			unsigned int right;
+		};
+		
+		struct commandVolumePercent
+		{
+			bool is_ac3;
+			t_channel_id channel_id;
+			unsigned int apid;
+			unsigned int percent;
 		};
 
 		struct commandSetRecordMode

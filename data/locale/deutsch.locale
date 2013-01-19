@@ -22,9 +22,9 @@ audiomenu.ost ost
 audiomenu.PCMOffset Lautstärkeabsenkung PCM
 audiomenu.spdif_dd DD über SPDIF
 audiomenu.stereo Stereo
-
 audiomenu.ac3_delay AC3 Delay
 audiomenu.pcm_delay PCM Delay
+audiomenu.volume_adjust Lautstärke ändern, in %
 
 audiomenu.auto_lang Tonwahl automatisch
 audiomenu.auto_subs Untertitel automatisch
@@ -1185,7 +1185,7 @@ scants.abort_header Breche Scan ab
 scants.actcable Kabel:
 scants.actsatellite Satellit:
 scants.actterrestrial Terrestrial:
-scants.bouquet Favoriten
+scants.bouquet Bouquet
 scants.bouquet_create neu erstellen
 scants.bouquet_erase löschen
 scants.bouquet_leave nicht ändern
