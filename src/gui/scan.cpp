@@ -87,8 +87,11 @@ CScanTs::CScanTs(int num)
 	feindex = num;
 }
 
-int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
+int CScanTs::exec(CMenuTarget * parent, const std::string & actionKey)
 {
+	if(parent)
+		parent->hide();
+	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
@@ -109,7 +112,7 @@ int CScanTs::exec(CMenuTarget* parent, const std::string & actionKey)
 	height      = h_max(hheight + (10 * mheight), 0); //9 lines
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
-	xpos_radar = x + /*500*/ + width - 90;
+	xpos_radar = x + width - 90;
 	ypos_radar = y + hheight + (mheight >> 1);
 	xpos1 = x + BORDER_LEFT;
 

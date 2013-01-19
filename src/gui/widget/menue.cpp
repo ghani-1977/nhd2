@@ -129,7 +129,7 @@ void CMenuWidget::Init(const std::string & Icon, const int mwidth, const int mhe
       	height = mheight;
         wanted_height = mheight;
 
-        current_page=0;
+        current_page = 0;
 	offx = offy = 0;
 	
 	//
@@ -150,8 +150,6 @@ CMenuWidget::~CMenuWidget()
 		CMenuItem * item = items[count];
 		
 		if ((item != GenericMenuSeparator) && (item != GenericMenuSeparatorLine) && (item != GenericMenuBack))
-		//TEST
-		//if ((item != GenericMenuSeparator) && (item != GenericMenuSeparatorLine) && (item != GenericMenuBack) && (item != GenericMenuCancel))
 			delete item;
 	}
 
@@ -496,8 +494,10 @@ void CMenuWidget::paint()
 	page_start.clear();
 	page_start.push_back(0);
 	total_pages = 1;
+	
+	int fheight = (RADIUS_MID * 3) + 1;
 
-	for (unsigned int i= 0; i< items.size(); i++) 
+	for (unsigned int i = 0; i < items.size(); i++) 
 	{
 		item_height = items[i]->getHeight();
 		itemHeightTotal += item_height;
@@ -516,7 +516,7 @@ void CMenuWidget::paint()
 	// icon offset
 	iconOffset = 0;
 
-	for (unsigned int i= 0; i< items.size(); i++) 
+	for (unsigned int i = 0; i < items.size(); i++) 
 	{
 		if ((!(items[i]->iconName.empty())) || CRCInput::isNumeric(items[i]->directKey))
 		{
@@ -533,17 +533,17 @@ void CMenuWidget::paint()
 	x = offx + frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width ) >> 1 );
 	y = offy + frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 1 );
 
-	int sb_width;
+	int sb_width = 0;
+	
 	if(total_pages > 1)
 		sb_width = SCROLLBAR_WIDTH;
 	else
 		sb_width = 0;
-	
-	//
+
 	int sp_height = 5;
 	
 	full_width = width + sb_width;
-	full_height = height + ((RADIUS_MID * 3) + 1) + 2*sp_height;	//separator height = 5
+	full_height = height + 2*sp_height + fheight;
 	
 	//
 	if(savescreen) 
@@ -551,7 +551,7 @@ void CMenuWidget::paint()
 		saveScreen();
 	}
 
-	//CMenuWidget Head
+	// paint head
 	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	//paint icon
@@ -574,9 +574,9 @@ void CMenuWidget::paint()
 		height = height + 2*sp_height;
 	
 	//paint foot
-	frameBuffer->paintBoxRel(x, y + height, width + sb_width, (RADIUS_MID * 3) + 1, COL_MENUHEAD_PLUS_0 );
+	frameBuffer->paintBoxRel(x, y + height, width + sb_width, fheight, COL_MENUHEAD_PLUS_0 );
 	
-	// all height
+	// all height position
 	HEIGHT = y + full_height;
 	
 	//item_start_y
@@ -616,6 +616,7 @@ void CMenuWidget::paintItems()
 	// paint items background
 	frameBuffer->paintBoxRel(x, item_start_y, width, item_height, COL_MENUCONTENTDARK_PLUS_0 );
 
+	// paint items
 	int ypos = item_start_y;
 	
 	for (unsigned int count = 0; count < items.size(); count++) 
@@ -852,18 +853,21 @@ int CMenuOptionChooser::getOptionValue(void) const
 }
 
 //FIXME: need to save/restore pulldowned menus
-int CMenuOptionChooser::exec(CMenuTarget*)
+int CMenuOptionChooser::exec(CMenuTarget * parent)
 {
 	bool wantsRepaint = false;
 	int ret = menu_return::RETURN_NONE;
+	
+	if (parent)
+		parent->hide();
 
 	// pulldown
-	if( msg == CRCInput::RC_ok && pulldown) 
+	if( (!parent || msg == CRCInput::RC_ok) && pulldown ) 
 	{
 		int select = -1;
 		char cnt[5];
 		CMenuWidget * menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
-		menu->move(20, 0);
+		//menu->move(20, 0);
 		menu->enableSaveScreen(true);
 		
 		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
@@ -919,7 +923,8 @@ int CMenuOptionChooser::exec(CMenuTarget*)
 		}
 	}
 	
-	paint(true);
+	if(parent)
+		paint(true);
 	
 	if(observ)
 		wantsRepaint = observ->changeNotify(optionName, optionValue);
@@ -1084,8 +1089,8 @@ int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 	bool wantsRepaint = false;
 	int ret = menu_return::RETURN_NONE;
 
-	//if (parent)
-	//	parent->hide();
+	if (parent)
+		parent->hide();
 
 	if( (!parent || msg == CRCInput::RC_ok) && pulldown ) 
 	{
@@ -1093,8 +1098,9 @@ int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 		char cnt[5];
 		
 		CMenuWidget * menu = new CMenuWidget(optionName, NEUTRINO_ICON_SETTINGS);
-		if(parent) 
-			menu->move(20, 0);
+		
+		//if(parent) 
+		//	menu->move(20, 0);
 		menu->enableSaveScreen(true);
 		
 		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
@@ -1317,6 +1323,7 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 {
 	unsigned char color   = COL_MENUCONTENT;
 	fb_pixel_t    bgcolor = COL_MENUCONTENT_PLUS_0;
+	
 	if (selected)
 	{
 		color   = COL_MENUCONTENTSELECTED;

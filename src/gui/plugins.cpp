@@ -149,6 +149,10 @@ void CPlugins::loadPlugins()
 	number_of_plugins = 0;
 	plugin_list.clear();
 
+	// for compatibility with neutrinoHD
+	scanDir("/lib/tuxbox/plugins");
+	scanDir("/var/plugins");
+	
 	scanDir(PLUGINDIR);
 	
 	sort(plugin_list.begin(), plugin_list.end());

@@ -187,7 +187,7 @@ void CTimeOSD::show(int Position)
 		{
 			sprintf(strSpeed, "%d", speed);
 			
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_MENUCONTENTINACTIVE); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_MENU_HELP_STATUSBAR ); // UTF-8
 		}
 		
 		// infos

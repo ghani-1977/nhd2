@@ -318,7 +318,7 @@ class CMenuOptionChooser : public CAbstractMenuOptionChooser
 
 		int paint( bool selected );
 
-		int exec(CMenuTarget* parent);
+		int exec(CMenuTarget * parent);
 };
 
 class CMenuOptionStringChooser : public CMenuItem
