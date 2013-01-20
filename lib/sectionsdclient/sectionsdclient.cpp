@@ -626,7 +626,7 @@ bool CSectionsdClient::getActualEPGServiceKey(const t_channel_id channel_id, CEP
 			return true;
 		}
 		else
-			printf("no response from sectionsd\n");
+			printf("[sectionsdclient] no response from sectionsd\n");
 	}
 
 	close_connection();
@@ -682,7 +682,7 @@ bool CSectionsdClient::getEPGid(const event_id_t eventid, const time_t starttime
 			return true;
 		}
 		else
-			printf("no response from sectionsd\n");
+			printf("[sectionsdclient] no response from sectionsd\n");
 	}
 
 	close_connection();
@@ -722,7 +722,7 @@ bool CSectionsdClient::getEPGidShort(const event_id_t eventid, CShortEPGData * e
 			return true;
 		}
 		else
-			printf("no response from sectionsd\n");
+			printf("[sectionsdclient] no response from sectionsd\n");
 	}
 
 	close_connection();

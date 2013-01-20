@@ -31,11 +31,12 @@
 #include <syscall.h>
 
 #include <timermanager.h>
-#include <debug.h>
 #include <sectionsdclient/sectionsdclient.h>
 
 #include <connection/basicserver.h>
 #include <timerdclient/timerdmsg.h>
+
+#include <system/debug.h>
 
 
 int timerd_debug = 0;
@@ -64,7 +65,8 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			{
 				for (pos = events.begin(); pos != events.end(); pos++)
 				{
-					printf("ID: %u type: %u\n",pos->second->eventID,pos->second->eventType);
+					dprintf(DEBUG_INFO, "[timerd] ID: %u type: %u\n",pos->second->eventID,pos->second->eventType);
+					
 					if(pos->second->eventType == CTimerd::TIMER_SLEEPTIMER)
 					{
 						rspGetSleeptimer.eventID = pos->second->eventID;
@@ -403,19 +405,20 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &rspAddTimer, sizeof(rspAddTimer));
 
 			break;
+			
 		case CTimerdMsg::CMD_REMOVETIMER:						//	timer entfernen
-			dprintf("TIMERD: command remove\n");
+			dprintf(DEBUG_INFO, "TIMERD: command remove\n");
 			CTimerdMsg::commandRemoveTimer msgRemoveTimer;
 			CBasicServer::receive_data(connfd,&msgRemoveTimer, sizeof(msgRemoveTimer));
-			dprintf("TIMERD: command remove %d\n",msgRemoveTimer.eventID);
+			dprintf(DEBUG_INFO, "TIMERD: command remove %d\n",msgRemoveTimer.eventID);
 			CTimerManager::getInstance()->removeEvent(msgRemoveTimer.eventID);
 			break;
 
 		case CTimerdMsg::CMD_STOPTIMER:						//	timer stoppen
-			dprintf("TIMERD: command stop\n");
+			dprintf(DEBUG_INFO, "TIMERD: command stop\n");
 			CTimerdMsg::commandRemoveTimer msgStopTimer;
 			CBasicServer::receive_data(connfd,&msgStopTimer, sizeof(msgStopTimer));
-			dprintf("TIMERD: command stop %d\n",msgStopTimer.eventID);
+			dprintf(DEBUG_INFO, "TIMERD: command stop %d\n",msgStopTimer.eventID);
 			CTimerManager::getInstance()->stopEvent(msgStopTimer.eventID);
 			break;
 
@@ -457,7 +460,7 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			}
 			break;
 		default:
-			dprintf("unknown command\n");
+			printf("unknown command\n");
 	}
 	return true;
 }
@@ -466,7 +469,7 @@ int timerd_main_thread(void *data)
 {
 	pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, 0);
 
-	printf("[timerd] startup, tid %ld\n", syscall(__NR_gettid));
+	dprintf(DEBUG_NORMAL, "[timerd] startup, tid %ld\n", syscall(__NR_gettid));
 
 	CBasicServer timerd_server;
 
@@ -478,7 +481,7 @@ int timerd_main_thread(void *data)
 
 	timerd_server.run(timerd_parse_command, CTimerdMsg::ACTVERSION);
 	
-	printf("[timerd] shutdown complete\n");
+	dprintf(DEBUG_NORMAL, "[timerd] shutdown complete\n");
 	
 	return 0;
 }

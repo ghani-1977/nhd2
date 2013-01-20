@@ -43,10 +43,12 @@
 
 #include <global.h>
 #include <daemonc/remotecontrol.h>
+#include <stdlib.h>
+
+#include <system/debug.h>
+
 
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
-
-#include <stdlib.h>
 
 int CSleepTimerWidget::exec(CMenuTarget* parent, const std::string &)
 {
@@ -83,7 +85,7 @@ int CSleepTimerWidget::exec(CMenuTarget* parent, const std::string &)
 	if(shutdown_min != new_val) 
 	{
 		shutdown_min = new_val;
-		printf("sleeptimer min: %d\n",shutdown_min);
+		dprintf(DEBUG_NORMAL, "sleeptimer min: %d\n", shutdown_min);
 		if (shutdown_min == 0)	// if set to zero remove existing sleeptimer 
 		{
 			if(g_Timerd->getSleeptimerID() > 0) 
