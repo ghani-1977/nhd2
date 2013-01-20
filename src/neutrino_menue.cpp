@@ -1741,11 +1741,8 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	// OSD
 	colorSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_VIDEOMENU_OSD));
 	
-	// help text
-	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPTXT, &g_settings.help_txt, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
-	
-	// help bar //FIXME: needed only on start wizard
-	//colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPBAR, &g_settings.help_bar, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
+	// help bar
+	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPBAR, &g_settings.help_bar, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 
 	// osd-timing
 	CMenuWidget *colorSettings_timing = new CMenuWidget(LOCALE_COLORMENU_TIMING, NEUTRINO_ICON_SETTINGS);

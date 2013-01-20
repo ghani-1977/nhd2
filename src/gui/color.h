@@ -58,7 +58,7 @@
 #define COL_MENUFOOT			254-8*9
 #define COL_COLORED_EVENTS_INFOBAR	254-8*8
 
-#define COL_MENUFOOT_PLUS_0		COL_COLORED_EVENTS_INFOBAR //FIXME:(CFrameBuffer::getInstance()->realcolor[(COL_MENUFOOT + 0)])
+#define COL_MENUFOOT_PLUS_0		(CFrameBuffer::getInstance()->realcolor[(COL_MENUFOOT + 0)])
 
 #define COL_INFOBAR_SHADOW		254-8*7
 #define COL_INFOBAR			254-8*6

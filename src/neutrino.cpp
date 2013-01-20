@@ -586,8 +586,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.gtx_alpha = configfile.getInt32( "gtx_alpha", 255);
 	
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
-	g_settings.help_txt = configfile.getInt32( "help_txt", 1);		//on
-	g_settings.help_bar = configfile.getInt32( "help_bar", 1);		//off
+	
+	g_settings.help_bar = configfile.getInt32( "help_bar", 0);		//off
 	g_settings.menutitle_vfd = configfile.getInt32( "menutitle_vfd", 0);	// off
 
 	// themes
@@ -1134,7 +1134,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		configfile.setInt32(locale_real_names[timing_setting_name[i]], g_settings.timing[i]);
 	
-	configfile.setInt32( "help_txt", g_settings.help_txt);
 	configfile.setInt32( "help_bar", g_settings.help_bar);
 	configfile.setInt32( "menutitle_vfd", g_settings.menutitle_vfd);
 	// END OSD
@@ -4533,11 +4532,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	int returnval = menu_return::RETURN_REPAINT;
 
-	if(actionKey == "help_recording") 
-	{
-		ShowLocalizedMessage(LOCALE_SETTINGS_HELP, LOCALE_RECORDINGMENU_HELP, CMessageBox::mbrBack, CMessageBox::mbBack);
-	}
-	else if(actionKey=="shutdown") 
+	if(actionKey=="shutdown") 
 	{
 		ExitRun();
 	}

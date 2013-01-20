@@ -268,7 +268,6 @@ struct SNeutrinoSettings
 	
 	int volume_pos;
 	int help_bar;
-	int help_txt;
 	int menutitle_vfd;
 	// END OSD
 
