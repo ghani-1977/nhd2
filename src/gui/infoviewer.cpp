@@ -362,7 +362,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 			if (satNameWidth > (ChanWidth + 70))
 				satNameWidth = ChanWidth + 70;
 				
-			g_SignalFont->RenderString ( BoxStartX + 5, BoxStartY + (chanH*3)/2, satNameWidth, sit->second.name, COL_MENU_HELP_STATUSBAR );
+			g_SignalFont->RenderString ( BoxStartX + 5, BoxStartY + (chanH*3)/2, satNameWidth, sit->second.name, COL_COLORED_EVENTS_INFOBAR );
 		}
 	}
 
@@ -414,7 +414,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 			
 	int widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
 			
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (chanH*3)/2, widthtime, datestr, COL_MENU_HELP_STATUSBAR, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (chanH*3)/2, widthtime, datestr, COL_COLORED_EVENTS_INFOBAR, 0, true); // UTF-8
 		
 	// botton bar
 	frameBuffer->paintBoxRel(BoxStartX, BoxEndY - 20, BoxWidth, 20, COL_INFOBAR_BUTTONS_BACKGROUND );
@@ -1447,7 +1447,7 @@ void CInfoViewer::showSNR()
 				int freqWidth = g_SignalFont->getRenderWidth(freq);
 				int FreqStartX = BoxStartX + ChanWidth + 80;
 
-				g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_MENU_HELP_STATUSBAR );
+				g_SignalFont->RenderString(FreqStartX, BoxStartY + (chanH*3)/2, freqWidth, freq, COL_COLORED_EVENTS_INFOBAR );
 			
 				if(live_fe != NULL)
 				{
@@ -1500,7 +1500,7 @@ void CInfoViewer::showSNR()
 					posx = posx + barwidth + 2;
 					sw = g_SignalFont->getRenderWidth(percent);
 
-					g_SignalFont->RenderString (posx, posy, sw, percent, COL_MENU_HELP_STATUSBAR );
+					g_SignalFont->RenderString (posx, posy, sw, percent, COL_COLORED_EVENTS_INFOBAR );
 				}
 
 				//SNR
@@ -1514,7 +1514,7 @@ void CInfoViewer::showSNR()
 					snr_posx = snr_posx + barwidth + 2;
 					sw = g_SignalFont->getRenderWidth(percent);
 					
-					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_MENU_HELP_STATUSBAR );
+					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_COLORED_EVENTS_INFOBAR );
 				}
 			
 			}

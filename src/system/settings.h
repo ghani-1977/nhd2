@@ -203,15 +203,20 @@ struct SNeutrinoSettings
 	unsigned char infobar_Text_green;
 	unsigned char infobar_Text_blue;
 	
-	unsigned char colored_events_alpha;
-	unsigned char colored_events_red;
-	unsigned char colored_events_green;
-	unsigned char colored_events_blue;
+	unsigned char infobar_colored_events_alpha;
+	unsigned char infobar_colored_events_red;
+	unsigned char infobar_colored_events_green;
+	unsigned char infobar_colored_events_blue;
 	
-	unsigned char menu_help_statusbar_alpha;
-	unsigned char menu_help_statusbar_red;
-	unsigned char menu_help_statusbar_green;
-	unsigned char menu_help_statusbar_blue;
+	unsigned char menu_Foot_alpha;
+	unsigned char menu_Foot_red;
+	unsigned char menu_Foot_green;
+	unsigned char menu_Foot_blue;
+	
+	unsigned char menu_Foot_Text_alpha;
+	unsigned char menu_Foot_Text_red;
+	unsigned char menu_Foot_Text_green;
+	unsigned char menu_Foot_Text_blue;
 
 	char	font_file[100];
 

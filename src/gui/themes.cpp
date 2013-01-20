@@ -252,15 +252,20 @@ void CThemes::rememberOldTheme(bool remember)
 		oldThemeValues[38] = g_settings.infobar_Text_green;
 		oldThemeValues[39] = g_settings.infobar_Text_blue;
 		
-		oldThemeValues[40] = g_settings.colored_events_alpha;
-		oldThemeValues[41] = g_settings.colored_events_red;
-		oldThemeValues[42] = g_settings.colored_events_green;
-		oldThemeValues[43] = g_settings.colored_events_blue;
+		oldThemeValues[40] = g_settings.infobar_colored_events_alpha;
+		oldThemeValues[41] = g_settings.infobar_colored_events_red;
+		oldThemeValues[42] = g_settings.infobar_colored_events_green;
+		oldThemeValues[43] = g_settings.infobar_colored_events_blue;
 		
-		oldThemeValues[44] = g_settings.menu_help_statusbar_alpha;
-		oldThemeValues[45] = g_settings.menu_help_statusbar_red;
-		oldThemeValues[46] = g_settings.menu_help_statusbar_green;
-		oldThemeValues[47] = g_settings.menu_help_statusbar_blue;
+		oldThemeValues[44]  = g_settings.menu_Foot_alpha;
+		oldThemeValues[45]  = g_settings.menu_Foot_red;
+		oldThemeValues[46]  = g_settings.menu_Foot_green;
+		oldThemeValues[47]  = g_settings.menu_Foot_blue;
+		
+		oldThemeValues[48] = g_settings.menu_Foot_Text_alpha;
+		oldThemeValues[49] = g_settings.menu_Foot_Text_red;
+		oldThemeValues[50] = g_settings.menu_Foot_Text_green;
+		oldThemeValues[51] = g_settings.menu_Foot_Text_blue;
 	} 
 	else 
 	{
@@ -305,15 +310,20 @@ void CThemes::rememberOldTheme(bool remember)
 		g_settings.infobar_Text_green 			= oldThemeValues[38];
 		g_settings.infobar_Text_blue 			= oldThemeValues[39];
 		
-		g_settings.colored_events_alpha			= oldThemeValues[40];
-		g_settings.colored_events_red 			= oldThemeValues[41];
-		g_settings.colored_events_green 		= oldThemeValues[42];
-		g_settings.colored_events_blue 			= oldThemeValues[43];
+		g_settings.infobar_colored_events_alpha		= oldThemeValues[40];
+		g_settings.infobar_colored_events_red 		= oldThemeValues[41];
+		g_settings.infobar_colored_events_green 	= oldThemeValues[42];
+		g_settings.infobar_colored_events_blue 		= oldThemeValues[43];
 		
-		g_settings.menu_help_statusbar_alpha		= oldThemeValues[44];
-		g_settings.menu_help_statusbar_red 		= oldThemeValues[45];
-		g_settings.menu_help_statusbar_green 		= oldThemeValues[46];
-		g_settings.menu_help_statusbar_blue 		= oldThemeValues[47];
+		g_settings.menu_Foot_alpha 			= oldThemeValues[44];
+		g_settings.menu_Foot_red 			= oldThemeValues[45];
+		g_settings.menu_Foot_green 			= oldThemeValues[46];
+		g_settings.menu_Foot_blue 			= oldThemeValues[47];
+		
+		g_settings.menu_Foot_Text_alpha			= oldThemeValues[48];
+		g_settings.menu_Foot_Text_red 			= oldThemeValues[49];
+		g_settings.menu_Foot_Text_green 		= oldThemeValues[50];
+		g_settings.menu_Foot_Text_blue 			= oldThemeValues[51];
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -368,15 +378,20 @@ void CThemes::readFile(char* themename)
 		g_settings.infobar_Text_green = themefile.getInt32( "infobar_Text_green", 0x64 );
 		g_settings.infobar_Text_blue = themefile.getInt32( "infobar_Text_blue", 0x64 );
 		
-		g_settings.colored_events_alpha = themefile.getInt32( "colored_events_alpha", 0x00 );
-		g_settings.colored_events_red = themefile.getInt32( "colored_events_red", 95 );
-		g_settings.colored_events_green = themefile.getInt32( "colored_events_green", 70 );
-		g_settings.colored_events_blue = themefile.getInt32( "colored_events_blue", 0 );
+		g_settings.infobar_colored_events_alpha = themefile.getInt32( "infobar_colored_events_alpha", 0x00 );
+		g_settings.infobar_colored_events_red = themefile.getInt32( "infobar_colored_events_red", 95 );
+		g_settings.infobar_colored_events_green = themefile.getInt32( "infobar_colored_events_green", 70 );
+		g_settings.infobar_colored_events_blue = themefile.getInt32( "infobar_colored_events_blue", 0 );
 		
-		g_settings.menu_help_statusbar_alpha = themefile.getInt32( "menu_help_statusbar_alpha", 0x00 );
-		g_settings.menu_help_statusbar_red = themefile.getInt32( "menu_help_statusbar_red", 50 );
-		g_settings.menu_help_statusbar_green = themefile.getInt32( "menu_help_statusbar_green", 50 );
-		g_settings.menu_help_statusbar_blue = themefile.getInt32( "menu_help_statusbar_blue", 50 );
+		g_settings.menu_Foot_alpha = themefile.getInt32( "menu_Foot_alpha", 0x00 );
+		g_settings.menu_Foot_red = themefile.getInt32( "menu_Foot_red", 0x00 );
+		g_settings.menu_Foot_green = themefile.getInt32( "menu_Foot_green", 0x0A );
+		g_settings.menu_Foot_blue = themefile.getInt32( "menu_Foot_blue", 0x19 );
+		
+		g_settings.menu_Foot_Text_alpha = themefile.getInt32( "menu_Foot_Text_alpha", 0x00 );
+		g_settings.menu_Foot_Text_red = themefile.getInt32( "menu_Foot_Text_red", 50 );
+		g_settings.menu_Foot_Text_green = themefile.getInt32( "menu_Foot_Text_green", 50 );
+		g_settings.menu_Foot_Text_blue = themefile.getInt32( "menu_Foot_Text_blue", 50 );
 
 		notifier = new CColorSetupNotifier;
 		notifier->changeNotify(NONEXISTANT_LOCALE, NULL);
@@ -431,15 +446,20 @@ void CThemes::saveFile(char * themename)
 	themefile.setInt32( "infobar_Text_green", g_settings.infobar_Text_green );
 	themefile.setInt32( "infobar_Text_blue", g_settings.infobar_Text_blue );
 	
-	themefile.setInt32( "colored_events_alpha", g_settings.colored_events_alpha );
-	themefile.setInt32( "colored_events_red", g_settings.colored_events_red );
-	themefile.setInt32( "colored_events_green", g_settings.colored_events_green );
-	themefile.setInt32( "colored_events_blue", g_settings.colored_events_blue );
+	themefile.setInt32( "infobar_colored_events_alpha", g_settings.infobar_colored_events_alpha );
+	themefile.setInt32( "infobar_colored_events_red", g_settings.infobar_colored_events_red );
+	themefile.setInt32( "infobar_colored_events_green", g_settings.infobar_colored_events_green );
+	themefile.setInt32( "infobar_colored_events_blue", g_settings.infobar_colored_events_blue );
 	
-	themefile.setInt32( "menu_help_statusbar_alpha", g_settings.menu_help_statusbar_alpha );
-	themefile.setInt32( "menu_help_statusbar_red", g_settings.menu_help_statusbar_red );
-	themefile.setInt32( "menu_help_statusbar_green", g_settings.menu_help_statusbar_green );
-	themefile.setInt32( "menu_help_statusbar_blue", g_settings.menu_help_statusbar_blue );
+	themefile.setInt32( "menu_Foot_alpha", g_settings.menu_Foot_alpha );
+	themefile.setInt32( "menu_Foot_red", g_settings.menu_Foot_red );
+	themefile.setInt32( "menu_Foot_green", g_settings.menu_Foot_green );
+	themefile.setInt32( "menu_Foot_blue", g_settings.menu_Foot_blue );
+	
+	themefile.setInt32( "menu_Foot_Text_alpha", g_settings.menu_Foot_Text_alpha );
+	themefile.setInt32( "menu_Foot_Text_red", g_settings.menu_Foot_Text_red );
+	themefile.setInt32( "menu_Foot_Text_green", g_settings.menu_Foot_Text_green );
+	themefile.setInt32( "menu_Foot_Text_blue", g_settings.menu_Foot_Text_blue );
 
 	if (!themefile.saveConfig(themename))
 		printf("[neutrino theme] %s write error\n", themename);
@@ -500,75 +520,19 @@ void CThemes::setupDefaultColors()
 	g_settings.infobar_Text_green = 0x64;
 	g_settings.infobar_Text_blue  = 0x64;
 
-	g_settings.colored_events_alpha = 0x00;
-	g_settings.colored_events_red = 95;
-	g_settings.colored_events_green = 70;
-	g_settings.colored_events_blue = 0;
+	g_settings.infobar_colored_events_alpha = 0x00;
+	g_settings.infobar_colored_events_red = 95;
+	g_settings.infobar_colored_events_green = 70;
+	g_settings.infobar_colored_events_blue = 0;
 	
-	g_settings.menu_help_statusbar_alpha = 0x00;
-	g_settings.menu_help_statusbar_red = 50;
-	g_settings.menu_help_statusbar_green = 50;
-	g_settings.menu_help_statusbar_blue = 50;
-}
-
-// nhd2
-void CThemes::setupColors_nhd2()
-{
-	g_settings.menu_Head_alpha = 0;
-	g_settings.menu_Head_red   = 35;
-	g_settings.menu_Head_green = 35;
-	g_settings.menu_Head_blue  = 35;
-
-	g_settings.menu_Head_Text_alpha = 0;
-	g_settings.menu_Head_Text_red   = 100;
-	g_settings.menu_Head_Text_green = 100;
-	g_settings.menu_Head_Text_blue  = 100;
-
-	g_settings.menu_Content_alpha = 20;
-	g_settings.menu_Content_red   = 50;
-	g_settings.menu_Content_green = 50;
-	g_settings.menu_Content_blue  = 50;
-
-	g_settings.menu_Content_Text_alpha = 0;
-	g_settings.menu_Content_Text_red   = 100;
-	g_settings.menu_Content_Text_green = 100;
-	g_settings.menu_Content_Text_blue  = 100;
-
-	g_settings.menu_Content_Selected_alpha = 15;
-	g_settings.menu_Content_Selected_red   = 20;
-	g_settings.menu_Content_Selected_green = 20;
-	g_settings.menu_Content_Selected_blue  = 20;
-
-	g_settings.menu_Content_Selected_Text_alpha  = 0;
-	g_settings.menu_Content_Selected_Text_red    = 100;
-	g_settings.menu_Content_Selected_Text_green  = 100;
-	g_settings.menu_Content_Selected_Text_blue   = 100;
-
-	g_settings.menu_Content_inactive_alpha = 20;
-	g_settings.menu_Content_inactive_red   = 50;
-	g_settings.menu_Content_inactive_green = 50;
-	g_settings.menu_Content_inactive_blue  = 50;
-
-	g_settings.menu_Content_inactive_Text_alpha  = 0;
-	g_settings.menu_Content_inactive_Text_red    = 70;
-	g_settings.menu_Content_inactive_Text_green  = 70;
-	g_settings.menu_Content_inactive_Text_blue   = 70;
-
-	g_settings.infobar_alpha = 20;
-	g_settings.infobar_red   = 50;
-	g_settings.infobar_green = 50;
-	g_settings.infobar_blue  = 50;
-
-	g_settings.infobar_Text_alpha = 0;
-	g_settings.infobar_Text_red   = 100;
-	g_settings.infobar_Text_green = 100;
-	g_settings.infobar_Text_blue  = 100;
+	g_settings.menu_Foot_alpha = 0x00;
+	g_settings.menu_Foot_red   = 0x00;
+	g_settings.menu_Foot_green = 0x0A;
+	g_settings.menu_Foot_blue  = 0x19;
 	
-	g_settings.menu_help_statusbar_alpha = 0x00;
-	g_settings.menu_help_statusbar_red = 50;
-	g_settings.menu_help_statusbar_green = 50;
-	g_settings.menu_help_statusbar_blue = 50;
+	g_settings.menu_Foot_Text_alpha = 0x00;
+	g_settings.menu_Foot_Text_red = 50;
+	g_settings.menu_Foot_Text_green = 50;
+	g_settings.menu_Foot_Text_blue = 50;
 }
-
-
 
