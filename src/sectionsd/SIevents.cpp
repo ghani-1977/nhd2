@@ -47,6 +47,7 @@
 #include "SIsections.hpp"
 #include <dmxapi.h>
 
+
 const std::string languangeOFF = "OFF";
 
 SIevent::SIevent(const struct eit_event *e)
@@ -121,7 +122,9 @@ int SIevent::saveXML(FILE *file, const char *serviceName) const
 {
 	if(saveXML0(file))
 		return 1;
-	if(serviceName) {
+	
+	if(serviceName) 
+	{
 		if(fprintf(file, "    <service_name>")<0)
 			return 2;
 		saveStringToXMLfile(file, serviceName);
@@ -296,8 +299,10 @@ void SIevent::setExtendedText(const std::string &lang, const std::string &text)
 void SIevent::dump(void) const
 {
 	printf("Unique key: %llx\n", uniqueKey());
+	
 	if(original_network_id)
 		printf("Original-Network-ID: %hu\n", original_network_id);
+	
 	if (service_id)
 		printf("Service-ID: %hu\n", service_id);
 	printf("Event-ID: %hu\n", eventID);
@@ -339,6 +344,7 @@ void SIevent::dump(void) const
 	for_each(ratings.begin(), ratings.end(), printSIparentalRating());
 	for_each(linkage_descs.begin(), linkage_descs.end(), printSIlinkage());
 }
+
 #if 0
 void SIevent::dumpSmall(void) const
 {

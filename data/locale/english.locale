@@ -137,8 +137,8 @@ colormenu.blendmode Transparency mode
 colormenu.gtx_alpha Transparency
 colormenu.gain Color gain
 colormenu.head Color Settings
-colormenu.menucolors Menucolor
-colormenu.statusbar Infobar
+colormenu.menucolors Menu color
+colormenu.statusbar Infobar color
 colormenu.textcolor Textcolor
 colormenu.themeselect select theme
 colormenu.timing OSD Timing
@@ -147,7 +147,7 @@ colormenusetup.menucontent Window-Content
 colormenusetup.menucontent_inactive Window-Content inactive
 colormenusetup.menucontent_selected Window-Content selected
 colormenusetup.menuhead Menu Header
-colorstatusbar.head Infobar
+colorstatusbar.head Infobar color
 colorstatusbar.text Infobar
 colorthememenu.classic_theme Classic theme
 colorthememenu.dblue_theme DarkBlue theme

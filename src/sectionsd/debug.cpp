@@ -24,9 +24,11 @@
 #include <time.h>
 #include <sys/time.h>
 
-bool sections_debug;
 
-void printdate_ms(FILE *f) {
+//bool sections_debug;
+
+void printdate_ms(FILE *f) 
+{
 	timeval now;
 	gettimeofday(&now, NULL);
 	struct tm *tm = localtime(&now.tv_sec);

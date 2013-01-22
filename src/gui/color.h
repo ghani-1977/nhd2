@@ -55,6 +55,7 @@
 #define COL_BACKGROUND 			255
 
 // neutrino colors
+#define COL_COLORED_EVENTS_CHANNELLIST	254-8*10
 #define COL_MENUFOOT			254-8*9
 #define COL_COLORED_EVENTS_INFOBAR	254-8*8
 

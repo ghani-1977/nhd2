@@ -35,7 +35,7 @@
 #include <dmx_cs.h>
 
 #include "SIutils.hpp"
-#include "debug.h"
+#include <system/debug.h>
 
 #include <zapit/frontend_c.h>
 extern CFrontend * live_fe;
@@ -142,9 +142,12 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 	int size = TDT ? sizeof(struct SI_section_TDT_header) : sizeof(tdt_tot_header);
 	int r = dmxUTC->Read(buf, TDT ? size : sizeof(buf));
-	if (r < size) {
-		if (TDT || sections_debug) /* not having TOT is common, no need to log */
+	
+	if (r < size) 
+	{
+		if (TDT) /* not having TOT is common, no need to log */
 			perror("[sectionsd] getUTC: read");
+		
 		dmxUTC->Stop();
 		return false;
 	}
@@ -153,9 +156,10 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 
 	int64_t tmp = tdt_tot_header.UTC_time.time;
 	memmove(cUTC, (&tdt_tot_header.UTC_time), 5);
+	
 	if ((cUTC[2] > 0x23) || (cUTC[3] > 0x59) || (cUTC[4] > 0x59)) // no valid time
 	{
-		printf("[sectionsd] getUTC: invalid %s section received: %02x %02x %02x %02x %02x\n",
+		dprintf(DEBUG_DEBUG, "[sectionsd] getUTC: invalid %s section received: %02x %02x %02x %02x %02x\n",
 		       TDT ? "TDT" : "TOT", cUTC[0], cUTC[1], cUTC[2], cUTC[3], cUTC[4]);
 		ret = false;
 	}
@@ -168,6 +172,7 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 	{
 		int off = sizeof(tdt_tot_header);
 		int rem = loop_length;
+		
 		while (rem >= 15)
 		{
 			unsigned char *b2 = &buf[off];
@@ -179,7 +184,7 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 				cc[3] = 0;
 				memmove(cc, to->country_code, 3);
 				time_t t = changeUTCtoCtime(&b2[2+6],0);
-				xprintf("getUTC(TOT): len=%d cc=%s reg_id=%d "
+				dprintf(DEBUG_DEBUG, "getUTC(TOT): len=%d cc=%s reg_id=%d "
 					"pol=%d offs=%04x new=%04x when=%s",
 					b2[1], cc, to->country_region_id,
 					to->local_time_offset_polarity, htons(to->local_time_offset),
@@ -187,13 +192,14 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 			} 
 			else 
 			{
-				xprintf("getUTC(TOT): descriptor != 0x58: 0x%02x\n", b2[0]);
+				dprintf(DEBUG_DEBUG, "getUTC(TOT): descriptor != 0x58: 0x%02x\n", b2[0]);
 			}
 			off += b2[1] + 2;
 			rem -= b2[1] + 2;
+			
 			if (off + rem > (int)sizeof(buf))
 			{
-				xprintf("getUTC(TOT): not enough buffer space? (%d/%d)\n", off+rem, sizeof(buf));
+				dprintf(DEBUG_DEBUG, "getUTC(TOT): not enough buffer space? (%d/%d)\n", off+rem, sizeof(buf));
 				break;
 			}
 		}

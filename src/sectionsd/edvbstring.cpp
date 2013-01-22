@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 
+
 std::map<std::string, int> CountryCodeDefaultMapping;
 std::map<int, int> TransponderDefaultMapping;
 std::set<int> TransponderUseTwoCharMapping;
@@ -12,14 +13,17 @@ std::set<int> TransponderUseTwoCharMapping;
 int readEncodingFile()
 {
 	FILE *f = fopen("/var/tuxbox/config/encoding.conf", "rt");
-	if (f) {
+	if (f) 
+	{
 		CountryCodeDefaultMapping.clear();
 		TransponderDefaultMapping.clear();
 		TransponderUseTwoCharMapping.clear();
 		char line[256];
 		size_t bufsize=256;
 		char countrycode[256];
-		while(fgets(line, bufsize, f)) {
+		
+		while(fgets(line, bufsize, f)) 
+		{
 			if ( line[0] == '#' )
 				continue;
 			int tsid, onid, encoding;

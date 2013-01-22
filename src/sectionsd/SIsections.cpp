@@ -918,6 +918,7 @@ void SIsectionSDT::parse(void)
 
 	parsed = 1;
 }
+
 #ifdef UPDATE_NETWORKS
 /************************************/
 /*
@@ -1316,6 +1317,7 @@ void SIsectionNIT::parse(void)
 	parsed = 1;
 }
 #endif
+
 #ifndef DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
 // Liest n Bytes aus einem Socket per read
 // Liefert 0 bei timeout

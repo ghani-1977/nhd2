@@ -131,7 +131,7 @@ void* CTimerManager::timerThread(void *arg)
 		else
 		{
 			time_t now = time(NULL);
-			dprintf(DEBUG_DEBUG, "[timermanager] Timer Thread time: %u\n", (uint) now);
+			//dprintf(DEBUG_DEBUG, "[timermanager] Timer Thread time: %u\n", (uint) now);
 
 			// fire events who's time has come
 			CTimerEvent *event;

@@ -39,6 +39,7 @@
 #include <map>
 
 #include "abstime.h"
+#include <system/debug.h>
 
 /*
 #define DEBUG_MUTEX 1
@@ -92,7 +93,7 @@ DMX::~DMX()
 ssize_t DMX::read(char * const /*buf*/, const size_t /*buflength*/, const unsigned /*timeoutMInSeconds*/)
 {
 	//FIXME is this used ??
-	printf("[sectionsd] ******************************* DMX::read called *******************************\n");
+	dprintf(DEBUG_DEBUG, "[sectionsd] DMX::read called\n");
 	return 0;
 	//return readNbytes(fd, buf, buflength, timeoutMInSeconds);
 }
@@ -147,15 +148,14 @@ int DMX::stop(void)
 
 void DMX::lock(void)
 {
-	//dprintf("DMX::lock, thread %lu\n", pthread_self());
 #ifdef DEBUG_MUTEX
 	int rc = pthread_mutex_lock(&start_stop_mutex);
 	if (rc != 0)
 	{
-		fprintf(stderr, "[sectionsd] mutex_lock: %d %d %d\n", rc, EINVAL, EDEADLK);
-		fflush(stderr);
-		fprintf(stderr, "[sectionsd] pid: %d\n", getpid());
-		fflush(stderr);
+		dprintf(DEBUG_DEBUG, "[sectionsd] mutex_lock: %d %d %d\n", rc, EINVAL, EDEADLK);
+		//fflush(stderr);
+		dprintf(DEBUG_DEBUG, "[sectionsd] pid: %d\n", getpid());
+		//fflush(stderr);
 	}
 #else
 	pthread_mutex_lock(&start_stop_mutex);
@@ -169,10 +169,10 @@ void DMX::unlock(void)
 	int rc = pthread_mutex_unlock(&start_stop_mutex);
 	if (rc != 0)
 	{
-		fprintf(stderr, "[sectionsd] mutex_unlock: %d %d %d\n", rc, EINVAL, EPERM);
-		fflush(stderr);
-		fprintf(stderr, "[sectionsd] pid: %d\n", getpid());
-		fflush(stderr);
+		dprintf(DEBUG_DEBUG, "[sectionsd] mutex_unlock: %d %d %d\n", rc, EINVAL, EPERM);
+		//fflush(stderr);
+		dprintf(DEBUG_DEBUG, "[sectionsd] pid: %d\n", getpid());
+		//fflush(stderr);
 	}
 #else
 	pthread_mutex_unlock(&start_stop_mutex);
@@ -278,7 +278,6 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	/* filter == 0 && maks == 0 => EIT dummy filter to slow down EIT thread startup */
 	if (pID == 0x12 && filters[filter_index].filter == 0 && filters[filter_index].mask == 0)
 	{
-		//dprintf("dmx: dummy filter, sleeping for %d ms\n", timeoutInMSeconds);
 		usleep(timeoutInMSeconds * 1000);
 		timeouts++;
 		return -1;
@@ -294,12 +293,12 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 		unlock();
 		if (rc <= 0)
 		{
-			dprintf("dmx.read timeout - filter: %x - timeout# %d\n", filters[filter_index].filter, timeouts);
+			dprintf(DEBUG_DEBUG, "dmx.read timeout - filter: %x - timeout# %d\n", filters[filter_index].filter, timeouts);
 			timeouts++;
 		}
 		else
 		{
-			dprintf("dmx.read rc: %d - filter: %x\n", rc, filters[filter_index].filter);
+			dprintf(DEBUG_DEBUG, "dmx.read rc: %d - filter: %x\n", rc, filters[filter_index].filter);
 			// restart DMX
 			real_pause();
 			real_unpause();
@@ -313,7 +312,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	if (section_length <= 0)
 	{
 		unlock();
-		fprintf(stderr, "[sectionsd] section_length <= 0: %d [%s:%s:%d] please report!\n", section_length, __FILE__,__FUNCTION__,__LINE__);
+		dprintf(DEBUG_DEBUG, "[sectionsd] section_length <= 0: %d [%s:%s:%d] please report!\n", section_length, __FILE__,__FUNCTION__,__LINE__);
 		return -1;
 	}
 
@@ -321,7 +320,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 
 	if (rc != section_length + 3)
 	{
-		xprintf("rc != section_length + 3 (%d != %d + 3)\n", rc, section_length);
+		dprintf(DEBUG_DEBUG, "rc != section_length + 3 (%d != %d + 3)\n", rc, section_length);
 		unlock();
 		// DMX restart required? This should never happen anyway.
 		real_pause();
@@ -332,7 +331,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	// check if the filter worked correctly
 	if (((initial_header->table_id ^ filters[filter_index].filter) & filters[filter_index].mask) != 0)
 	{
-		printf("[sectionsd] filter 0x%x mask 0x%x -> skip sections for table 0x%x\n", filters[filter_index].filter, filters[filter_index].mask, initial_header->table_id);
+		dprintf(DEBUG_DEBUG, "[sectionsd] filter 0x%x mask 0x%x -> skip sections for table 0x%x\n", filters[filter_index].filter, filters[filter_index].mask, initial_header->table_id);
 		unlock();
 		real_pause();
 		real_unpause();
@@ -344,7 +343,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	if ((section_length < 5) ||
 			(initial_header->table_id >= 0x4e && initial_header->table_id <= 0x6f && section_length < 14))
 	{
-		dprintf("section too short: table %x, length: %d\n", initial_header->table_id, section_length);
+		dprintf(DEBUG_DEBUG, "section too short: table %x, length: %d\n", initial_header->table_id, section_length);
 		return -1;
 	}
 
@@ -377,7 +376,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 				if (initial_header->table_id == 0x4e &&
 						eh_tbl_extension_id == current_service &&
 						extended_header->version_number != eit_version) {
-					dprintf("EIT old: %d new version: %d\n",eit_version,extended_header->version_number);
+					dprintf(DEBUG_DEBUG, "EIT old: %d new version: %d\n",eit_version,extended_header->version_number);
 					eit_version = extended_header->version_number;
 				}
 				return rc;
@@ -396,7 +395,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 				//the current section was read before
 				if (di->second == extended_header->version_number) {
 #ifdef DEBUG_CACHED_SECTIONS
-					dprintf("[sectionsd] skipped duplicate section for table 0x%02x table_extension 0x%04x section 0x%02x\n",
+					dprintf(DEBUG_DEBUG, "[sectionsd] skipped duplicate section for table 0x%02x table_extension 0x%04x section 0x%02x\n",
 						initial_header->table_id,
 						eh_tbl_extension_id,
 						extended_header->section_number);
@@ -421,9 +420,10 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 						timeouts = -2;
 					return -1;
 				}
-				else {
+				else 
+				{
 #ifdef DEBUG_CACHED_SECTIONS
-					dprintf("[sectionsd] version update from 0x%02x to 0x%02x for table 0x%02x table_extension 0x%04x section 0x%02x\n",
+					dprintf(DEBUG_DEBUG, "[sectionsd] version update from 0x%02x to 0x%02x for table 0x%02x table_extension 0x%04x section 0x%02x\n",
 						di->second,
 						extended_header->version_number,
 						initial_header->table_id,
@@ -437,7 +437,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 			else
 			{
 #ifdef DEBUG_CACHED_SECTIONS
-				dprintf("[sectionsd] new section for table 0x%02x table_extension 0x%04x section 0x%02x\n",
+				dprintf(DEBUG_DEBUG, "[sectionsd] new section for table 0x%02x table_extension 0x%04x section 0x%02x\n",
 					initial_header->table_id,
 					eh_tbl_extension_id,
 					extended_header->section_number);
@@ -464,13 +464,13 @@ int DMX::immediate_start(void)
 {
 	if (isOpen())
 	{
-		xprintf("DMX::imediate_start: isOpen()\n");
+		dprintf(DEBUG_DEBUG, "DMX::imediate_start: isOpen()\n");
 		closefd();
 	}
 
 	if (real_pauseCounter != 0) 
 	{
-		dprintf("DMX::immediate_start: realPausecounter !=0 (%d)!\n", real_pauseCounter);
+		dprintf(DEBUG_DEBUG, "DMX::immediate_start: realPausecounter !=0 (%d)!\n", real_pauseCounter);
 		return 0;
 	}
 
@@ -514,8 +514,9 @@ int DMX::start(void)
 
 int DMX::real_pause(void)
 {
-	if (!isOpen()) {
-		dprintf("DMX::real_pause: (!isOpen())\n");
+	if (!isOpen()) 
+	{
+		dprintf(DEBUG_DEBUG, "DMX::real_pause: (!isOpen())\n");
 		return 1;
 	}
 
@@ -538,7 +539,6 @@ int DMX::real_unpause(void)
 	if (real_pauseCounter == 0)
 	{
 		immediate_start();
-		//dprintf("real_unpause DONE: %d\n", real_pauseCounter);
 	}
 
 	unlock();
@@ -564,7 +564,6 @@ int DMX::request_unpause(void)
 {
 	lock();
 
-	//dprintf("request_unpause: %d\n", real_pauseCounter);
 	--real_pauseCounter;
 
 	unlock();
@@ -584,13 +583,13 @@ const char *dmx_filter_types [] = {
 
 int DMX::change(const int new_filter_index, const int new_current_service)
 {
-	if (sections_debug)
-		showProfiling("changeDMX: before pthread_mutex_lock(&start_stop_mutex)");
+	//if (sections_debug)
+	dprintf(DEBUG_DEBUG, "changeDMX: before pthread_mutex_lock(&start_stop_mutex)\n");
 	
 	lock();
 
-	if (sections_debug)
-		showProfiling("changeDMX: after pthread_mutex_lock(&start_stop_mutex)");
+	//if (sections_debug)
+	dprintf(DEBUG_DEBUG, "changeDMX: after pthread_mutex_lock(&start_stop_mutex)\n");
 
 	filter_index = new_filter_index;
 	first_skipped = 0;
@@ -600,32 +599,34 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 
 	if (real_pauseCounter > 0)
 	{
-		printf("changeDMX: for 0x%x not ignored! even though real_pauseCounter> 0 (%d)\n",
+		dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x not ignored! even though real_pauseCounter> 0 (%d)\n",
 		       filters[new_filter_index].filter, real_pauseCounter);
 		/* immediate_start() checks for real_pauseCounter again (and
 		   does nothing in that case), so we can just continue here. */
 	}
 
-	if (sections_debug) 
+	//if (sections_debug) 
+	//{ 
+	// friendly debug output...
+	if(pID == 0x12 && filters[0].filter != 0x4e) 
 	{ 
-		// friendly debug output...
-		if(pID == 0x12 && filters[0].filter != 0x4e) 
-		{ 
-			// Only EIT
-			printdate_ms(stderr);
-			fprintf(stderr, "changeDMX [EIT]-> %d (0x%x/0x%x) %s (%ld seconds)\n",
-				new_filter_index, filters[new_filter_index].filter,
-				filters[new_filter_index].mask, dmx_filter_types[new_filter_index],
-				time_monotonic()-lastChanged);
-		} 
-		else 
-		{
-			printdate_ms(stderr);
-			fprintf(stderr, "changeDMX [%x]-> %d (0x%x/0x%x) (%ld seconds)\n", pID,
-				new_filter_index, filters[new_filter_index].filter,
-				filters[new_filter_index].mask, time_monotonic()-lastChanged);
-		}
+		// Only EIT
+		printdate_ms(stderr);
+			
+		dprintf(DEBUG_DEBUG, "changeDMX [EIT]-> %d (0x%x/0x%x) %s (%ld seconds)\n",
+			new_filter_index, filters[new_filter_index].filter,
+			filters[new_filter_index].mask, dmx_filter_types[new_filter_index],
+			time_monotonic()-lastChanged);
+	} 
+	else 
+	{
+		printdate_ms(stderr);
+			
+		dprintf(DEBUG_DEBUG, "changeDMX [%x]-> %d (0x%x/0x%x) (%ld seconds)\n", pID,
+			new_filter_index, filters[new_filter_index].filter,
+			filters[new_filter_index].mask, time_monotonic()-lastChanged);
 	}
+	//}
 
 	closefd();
 	
@@ -640,8 +641,7 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 		return rc;
 	}
 
-	if (sections_debug)
-		showProfiling("after DMX_SET_FILTER");
+	dprintf(DEBUG_DEBUG, "after DMX_SET_FILTER\n");
 
 	pthread_cond_signal(&change_cond);
 
@@ -678,14 +678,15 @@ ssize_t DMX::readNbytes(int _fd, char *buf, const size_t n, unsigned timeoutInMS
 	if ((ufds.revents & POLLERR) != 0) /* POLLERR means buffer error, i.e. buffer overflow */
 	{
 		printdate_ms(stderr);
-		fprintf(stderr, "[sectionsd] DMX::readNbytes received POLLERR, pid 0x%x, filter[%d] "
+		
+		dprintf(DEBUG_DEBUG, "[sectionsd] DMX::readNbytes received POLLERR, pid 0x%x, filter[%d] "
 			"filter 0x%02x mask 0x%02x\n", pID, filter_index,
 			filters[filter_index].filter, filters[filter_index].mask);
 		return -1;
 	}
 	if (!(ufds.revents&POLLIN))
 	{
-		xprintf("%s: not ufds.revents&POLLIN, please report!\n", __FUNCTION__);
+		dprintf(DEBUG_DEBUG, "%s: not ufds.revents&POLLIN, please report!\n", __FUNCTION__);
 		// POLLHUP, beim dmx bedeutet das DMXDEV_STATE_TIMEDOUT
 		// kommt wenn ein Timeout im Filter gesetzt wurde
 		// dprintf("revents: 0x%hx\n", ufds.revents);
@@ -720,7 +721,7 @@ int DMX::setPid(const unsigned short new_pid)
 
 	if (real_pauseCounter > 0)
 	{
-		dprintf("changeDMX: for 0x%x ignored! because of real_pauseCounter> 0 (%d)\n", new_pid, real_pauseCounter);
+		dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x ignored! because of real_pauseCounter> 0 (%d)\n", new_pid, real_pauseCounter);
 		unlock();
 		return 0;	// not running (e.g. streaming)
 	}

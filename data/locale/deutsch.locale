@@ -138,8 +138,8 @@ colormenu.blendmode Transparenz mode
 colormenu.gtx_alpha Transparenz
 colormenu.gain Farbe
 colormenu.head Farb-Einstellungen
-colormenu.menucolors Menüfarben
-colormenu.statusbar Infobar
+colormenu.menucolors Menü Farben
+colormenu.statusbar Infobar Farben
 colormenu.textcolor Textfarbe
 colormenu.themeselect Theme auswählen
 colormenu.timing OSD Timeouts
@@ -148,7 +148,7 @@ colormenusetup.menucontent Fensterinhalt
 colormenusetup.menucontent_inactive Fensterinhalt deaktiviert
 colormenusetup.menucontent_selected Fensterinhalt selektiert
 colormenusetup.menuhead Titelleiste
-colorstatusbar.head Infobar
+colorstatusbar.head Infobar Farben
 colorstatusbar.text Infobar
 colorthememenu.classic_theme Klassik theme
 colorthememenu.dblue_theme DarkBlue theme

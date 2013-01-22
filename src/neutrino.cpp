@@ -156,9 +156,6 @@
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 
-// debug
-extern int sections_debug;
-
 int old_b_id = -1;
 
 // hintbox
@@ -1650,15 +1647,9 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 			setDebugLevel(dl);
 			x++;
 		}
-		else if ((!strcmp(argv[x], "-sd"))) 
-		{
-			dprintf(DEBUG_NORMAL, "Sectionsd debug enabled\n");
-			sections_debug = 1;
-			x++;
-		}
 		else 
 		{
-			dprintf(DEBUG_NORMAL, "Usage: neutrino [-sd] [-v | --verbose 0..3]\n");
+			dprintf(DEBUG_NORMAL, "Usage: neutrino [-v | --verbose 0..2]\n");
 			exit(1);
 		}
 	}
@@ -1684,7 +1675,7 @@ void CNeutrinoApp::SetupFonts()
 	if (g_fontRenderer != NULL)
 		delete g_fontRenderer;
 
-	g_fontRenderer = new FBFontRenderClass(72, 72); /* the screen resolution in dpi, default 72x72*/
+	g_fontRenderer = new FBFontRenderClass(86, 72); /* the screen resolution in dpi, default 72x72*/
 
 	if(font.filename != NULL)
 		free((void *)font.filename);
@@ -5166,7 +5157,7 @@ int main(int argc, char *argv[])
 	printf(">>> NeutrinoHD2 (compiled %s %s) (SVN Rev:%s) <<<\n", __DATE__, __TIME__, SVNVERSION);
 	
 	// set debug level (default normal)
-	setDebugLevel(DEBUG_INFO);
+	setDebugLevel(DEBUG_NORMAL);
 
 	// sighandler
         signal(SIGTERM, sighandler);

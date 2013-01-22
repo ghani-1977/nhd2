@@ -28,12 +28,6 @@
 #include <stdio.h>
 
 
-extern bool sections_debug;
-
-#define dprintf(fmt, args...) do { if (sections_debug) { printdate_ms(stdout); printf(fmt, ## args); fflush(stdout); }} while (0)
-#define dputs(str)            do { if (sections_debug) { printdate_ms(stdout); puts(str);            fflush(stdout); }} while (0)
-#define xprintf(fmt, args...) do { printdate_ms(stderr); fprintf(stderr, fmt, ## args); } while (0)
-
 void printdate_ms(FILE* f);
 
 #endif /* __sectionsd__debug_h__ */
