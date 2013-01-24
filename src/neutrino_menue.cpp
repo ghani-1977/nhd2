@@ -206,16 +206,11 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	// radio modus
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_RADIOMODE, true, "", this, "radio", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, "radio", LOCALE_HELPTEXT_RADIOMODE ));	
-	
-	// vcr-scart
-#if defined (PLATFORM_CUBEREVO ) || defined (PLATFORM_CUBEREVO_9500HD)
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SCARTMODE, true, "", this, "scart", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "scart", LOCALE_HELPTEXT_SCART ));
-#endif
 
 	//MediaPlayer e.g internet radio/audioplayer/movieplayer/picplayer/upnp
 	// Media player main menu
-	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_MEDIAPLAYER, true, "", &MediaPlayer, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, "mediaplayer", LOCALE_HELPTEXT_MEDIAPLAYER ));
+	//mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_MEDIAPLAYER, true, "", &MediaPlayer, NULL, /*CRCInput::convertDigitToKey(shortcut++), NULL*/CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "mediaplayer", LOCALE_HELPTEXT_MEDIAPLAYER ));
 	
 	int shortcutMediaPlayer = 1;
 	
@@ -232,7 +227,10 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	// movieplayer ts browser
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEBROWSER_HEAD, true, "", moviePlayerGui, "tsmoviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "tsmoviebrowser", LOCALE_HELPTEXT_TSMOVIEBROWSER ));
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_RECORDS, true, "", moviePlayerGui, "tsmoviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "tsmoviebrowser", LOCALE_HELPTEXT_TSMOVIEBROWSER ));
+	
+	// movieplayer movie browser
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_MOVIES, true, "", moviePlayerGui, "moviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "tsmoviebrowser", LOCALE_HELPTEXT_TSMOVIEBROWSER ));
 
 	// // movieplayer multiForamt
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, "", moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "fileplayback", LOCALE_HELPTEXT_FILEPLAYBACK ));
@@ -252,7 +250,12 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	//UPNP Browser
 #if ENABLE_UPNP	
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_UPNPBROWSER_HEAD, true, "", new CUpnpBrowserGui(), NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "upnpbrowser", LOCALE_HELPTEXT_UPNPBROWSER ));
-#endif	
+#endif
+
+	// vcr-scart
+#if defined (PLATFORM_CUBEREVO ) || defined (PLATFORM_CUBEREVO_9500HD)
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SCARTMODE, true, "", this, "scart", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "scart", LOCALE_HELPTEXT_SCART ));
+#endif
 	
 	//Main Setting Menu
 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );

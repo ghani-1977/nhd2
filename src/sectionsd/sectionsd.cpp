@@ -31,7 +31,6 @@
 #include <malloc.h>
 #include <dmxapi.h>
 #include <dmx.h>
-#include <debug.h>
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -594,7 +593,7 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 			SIevent *eptr = new SIevent(evt);
 			if (!eptr)
 			{
-				dprintf(DEBUG_NORMAL, "[sectionsd::addEvent] new SIevent1 failed.\n");
+				dprintf(DEBUG_INFO, "[sectionsd::addEvent] new SIevent1 failed.\n");
 				return;
 				//throw std::bad_alloc();
 			}
@@ -798,7 +797,7 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 
 		if (!eptr)
 		{
-			dprintf(DEBUG_NORMAL, "[sectionsd::addEvent] new SIevent failed.\n");
+			dprintf(DEBUG_INFO, "[sectionsd::addEvent] new SIevent failed.\n");
 			unlockEvents();
 			return;
 			//throw std::bad_alloc();
@@ -972,7 +971,7 @@ static void addNVODevent(const SIevent &evt)
 
 	if (!eptr)
 	{
-		dprintf(DEBUG_NORMAL, "[sectionsd::addNVODevent] new SIevent failed.\n");
+		dprintf(DEBUG_INFO, "[sectionsd::addNVODevent] new SIevent failed.\n");
 		return;
 		//throw std::bad_alloc();
 	}
@@ -1052,7 +1051,7 @@ xmlNodePtr FindTransponder(xmlNodePtr provider, const t_original_network_id onid
 	if ( (tsid == 1) && (onid == 1) ) {
 		if ((getProvbyPosition(provider, 0x50) != NULL) && (getProvbyPosition(provider, 0x130) != NULL)) {
 			//If 5E and 13E are used together we can't determine whose SDT this is.
-			dprintf(DEBUG_NORMAL, "Sirius and Eutelsat suck big time!\n");
+			dprintf(DEBUG_INFO, "Sirius and Eutelsat suck big time!\n");
 			return NULL;
 		}
 	}
@@ -1560,7 +1559,7 @@ static bool addService(const SIservice &s, const int is_actual)
 
 		if (!sp)
 		{
-			dprintf(DEBUG_NORMAL, "[sectionsd::addService] new SIservice failed.\n");
+			dprintf(DEBUG_INFO, "[sectionsd::addService] new SIservice failed.\n");
 			//return false;
 			throw std::bad_alloc();
 		}
@@ -1623,7 +1622,7 @@ static int addBouquetEntry(const SIbouquet &s/*, int section_nr, int count*/)
 
 		if (!bp)
 		{
-			dprintf(DEBUG_NORMAL, "[sectionsd::addBouquetEntry] new SIbouquet failed.\n");
+			dprintf(DEBUG_INFO, "[sectionsd::addBouquetEntry] new SIbouquet failed.\n");
 			unlockBouquets();
 			throw std::bad_alloc();
 		}
@@ -1675,7 +1674,7 @@ static bool addTransponder(const SInetwork &s, const bool is_actual)
 
 		if (!nw)
 		{
-			dprintf(DEBUG_NORMAL, "[sectionsd::updateNetwork] new SInetwork failed.\n");
+			dprintf(DEBUG_INFO, "[sectionsd::updateNetwork] new SInetwork failed.\n");
 			unlockTransponders();
 			throw std::bad_alloc();
 		}
@@ -3959,9 +3958,12 @@ static void *insertEventsfromFile(void *)
 
 		xmlDocPtr index_parser = parseXmlFile(indexname.c_str());
 
-		if (index_parser != NULL) {
+		if (index_parser != NULL) 
+		{
 			time_t now = time_monotonic_ms();
-			printdate_ms(stdout);
+			
+			//printdate_ms(stdout);
+			
 			printf("[sectionsd] Reading Information from file %s:\n", indexname.c_str());
 
 			eventfile = xmlDocGetRootElement(index_parser)->xmlChildrenNode;
@@ -4095,7 +4097,7 @@ static void *insertEventsfromFile(void *)
 			}
 
 			xmlFreeDoc(index_parser);
-			printdate_ms(stdout);
+			//printdate_ms(stdout);
 			printf("[sectionsd] Reading Information finished after %ld miliseconds (%d events)\n",
 			       time_monotonic_ms()-now, ev_count);
 		}
@@ -5972,10 +5974,12 @@ static void *sdtThread(void *)
 			pthread_mutex_lock( &dmxSDT.start_stop_mutex );
 			/* this is the "last" thread. Means: if this one goes to sleep, sectionsd
 			   sleeps mostly. Worth printing. */
-			printdate_ms(stdout);
+			//printdate_ms(stdout);
 			printf("dmxSDT: going to sleep...\n");
-			if ((auto_scanning > 0) && (!startup)) {
-				if ((auto_scanning == 1) || (auto_scanning == 3)) {
+			if ((auto_scanning > 0) && (!startup)) 
+			{
+				if ((auto_scanning == 1) || (auto_scanning == 3)) 
+				{
 					if (updateTP(scanType)) {
 						eventServer->sendEvent(CSectionsdClient::EVT_SERVICES_UPDATE, CEventServer::INITID_SECTIONSD);
 					}
@@ -8070,7 +8074,7 @@ void sectionsd_main_thread(void */*data*/)
 			{
 				//printf("[sectionsd] EIT update: len %d, %02X %02X %02X %02X %02X %02X version %02X\n", ret, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], ((SI_section_header*)buf)->version_number);
 
-				printdate_ms(stdout);
+				//printdate_ms(stdout);
 				printf("EIT Update Filter: new version 0x%x, Activate cnThread\n", ((SI_section_header*)buf)->version_number);
 				writeLockMessaging();
 				//						messaging_skipped_sections_ID[0].clear();

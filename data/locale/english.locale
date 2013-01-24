@@ -717,6 +717,9 @@ mainsettings.streaming Movieplayer
 mainsettings.timezone Timezone
 mainsettings.video Video Setup
 menu.back back
+menu.navi Navi
+menu.enter Enter
+menu.exit Exit
 messagebox.back Back
 messagebox.cancel Cancel
 messagebox.discard Discard changes?
@@ -924,7 +927,9 @@ movieplayer.defdir start dir.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.fileplayback Media Archiv
+movieplayer.records Records
+movieplayer.movies Movies
+movieplayer.fileplayback Files
 movieplayer.showtshelp Help
 movieplayer.goto Jump to ...
 movieplayer.goto.h1 = -> absolute jump

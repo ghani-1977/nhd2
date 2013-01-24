@@ -718,6 +718,9 @@ mainsettings.streaming Movieplayer
 mainsettings.timezone Zeitzone
 mainsettings.video Video Einstellungen
 menu.back Zurück
+menu.navi Navi
+menu.enter bestätigen
+menu.exit verlassen
 messagebox.back Zurück
 messagebox.cancel Abbruch
 messagebox.discard Wollen Sie die Änderungen verwerfen?
@@ -925,7 +928,9 @@ movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.fileplayback Media Archiv
+movieplayer.records Aufnahmen
+movieplayer.movies Movies
+movieplayer.fileplayback Datei
 movieplayer.showtshelp Hilfe
 movieplayer.goto Springe zu ...
 movieplayer.goto.h1 = -> absoluter Sprung

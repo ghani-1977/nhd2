@@ -448,6 +448,8 @@ void CMovieBrowser::init(void)
 	//restart_mb_timeout = 0;
 	m_file_info_stale = true;
 	m_seriename_stale = true;
+	
+	Hide_records = false;
 
 	m_pcWindow = CFrameBuffer::getInstance();
 	m_pcBrowser = NULL;
@@ -848,7 +850,7 @@ int CMovieBrowser::exec(CMenuTarget* parent, const std::string & actionKey)
 
 			if(current_list != NULL)
 			{
-				CHintBox loadBox(LOCALE_MOVIEBROWSER_HEAD,g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE));
+				CHintBox loadBox(LOCALE_MOVIEBROWSER_HEAD, g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE));
 				loadBox.paint();
 				
 				for(unsigned int i = 0; i< current_list->size();i++)
@@ -1622,7 +1624,7 @@ void CMovieBrowser::refreshFoot(void)
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
 	// draw the background first
-	m_pcWindow->paintBoxRel(m_cBoxFrame.iX+m_cBoxFrameFootRel.iX, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight+ 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	m_pcWindow->paintBoxRel(m_cBoxFrame.iX+m_cBoxFrameFootRel.iX, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight+ 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0/*, RADIUS_MID, CORNER_BOTTOM*/ );
 
 	int width = m_cBoxFrameFootRel.iWidth>>2;
 	
@@ -2534,6 +2536,7 @@ void CMovieBrowser::loadAllTsFileNamesFromStorage(void)
 	}
 
 	TRACE("[mb] Dir%d, Files:%d \r\n",m_dirNames.size(),m_vMovieInfo.size());
+	
 	/*
 	if(m_vMovieInfo.size() == 0)
 	{
@@ -2590,10 +2593,16 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 			}
 			else
 			{
-				//int test = flist[i].getFileName().find(".ts") ;
-				
-				// dirty way to use filter ;-8
 				int test = -1;
+				
+				if(Hide_records == false)
+				{
+					test = flist[i].getFileName().find(".ts") ;
+				}
+				else
+				{
+				// dirty way to use filter ;-8
+				//int test = -1;
 				int ext_pos = 0;
 				ext_pos = flist[i].getFileName().rfind('.');
 				
@@ -2603,7 +2612,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
 					
 					if( 
-					    (strcasecmp("ts", extension.c_str()) == 0) ||
+					    //(strcasecmp("ts", extension.c_str()) == 0) ||
 					    (strcasecmp("mpg", extension.c_str()) == 0) ||
 					    (strcasecmp("mpeg", extension.c_str()) == 0) ||
 					    (strcasecmp("divx", extension.c_str()) == 0) ||	    
@@ -2636,6 +2645,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					  
 							//return true;
 						test = 0;
+				}
 				}
 				//
 				
@@ -2941,7 +2951,6 @@ void CMovieBrowser::loadMovies(void)
 {
 	time_t time_start = time(NULL);
 	clock_t clock_start = clock()/10000; // CLOCKS_PER_SECOND
-	//clock_t clock_prev = clock_start;
 	clock_t clock_act = clock_start;
 
 	TRACE("[mb] loadMovies: \n");
@@ -2949,15 +2958,12 @@ void CMovieBrowser::loadMovies(void)
 	CHintBox loadBox(LOCALE_MOVIEBROWSER_HEAD, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 	loadBox.paint();
 
-	//clock_act = clock()/10000;TRACE("[mb] *1: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
 	loadAllTsFileNamesFromStorage(); // P1
-	//clock_act = clock()/10000;TRACE("[mb] *2: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act;	
-	//loadAllMovieInfo(); // P1
-	//clock_act = clock()/10000;TRACE("[mb] *3: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
+
 	m_file_info_stale = false;
 	m_seriename_stale = true; // we reloded the movie info, so make sure the other list are  updated later on as well
         updateSerienames();
-	//clock_act = clock()/10000;TRACE("[mb] *4: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
+	
         if(m_settings.serie_auto_create == 1)
         {
 		 autoFindSerie();
@@ -2965,14 +2971,12 @@ void CMovieBrowser::loadMovies(void)
 
 	loadBox.hide();
 
-	//clock_act = clock()/10000;TRACE("[mb] *5: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
 	refreshBrowserList();	
-	//clock_act = clock()/10000;TRACE("[mb] *6: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
 	refreshLastPlayList();	
 	refreshLastRecordList();
 	refreshFilterList();
 	refreshMovieInfo();	// is done by refreshBrowserList if needed
-	//clock_act = clock()/10000;TRACE("[mb] *7: time %9ld  clock %6ld  dclock %6ld*\n",(long)time(NULL),clock_act,clock_act - clock_prev);clock_prev = clock_act; 
+	
 	TRACE("[mb] ***Total:time %ld clock %ld***\n",(time(NULL)-time_start), clock_act-clock_start);
 }
 

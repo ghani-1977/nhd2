@@ -1431,7 +1431,7 @@ void CFileBrowser::paintFoot()
 	int ty2 = by2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
 
 	// foot
-	frameBuffer->paintBoxRel(x, y + height - (2 * foheight ), width, (2 * foheight ), COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM );
+	frameBuffer->paintBoxRel(x, y + height - (2 * foheight ), width, (2 * foheight ), COL_INFOBAR_SHADOW_PLUS_1/*, RADIUS_MID, CORNER_BOTTOM*/ );
 
 	if (!(filelist.empty()))
 	{

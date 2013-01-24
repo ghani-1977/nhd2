@@ -28,7 +28,7 @@
 #include <stdio.h>
 
 
-void printdate_ms(FILE* f);
+//void printdate_ms(FILE* f);
 
 #endif /* __sectionsd__debug_h__ */
 

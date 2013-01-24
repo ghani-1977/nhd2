@@ -2849,7 +2849,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			  
 				StopSubtitles();
 
-				moviePlayerGui->exec(NULL, "fileplayback");
+				moviePlayerGui->exec(NULL, "moviebrowser");
 
 				if( mode == mode_radio )
 				{

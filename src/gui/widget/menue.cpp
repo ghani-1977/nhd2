@@ -785,10 +785,11 @@ int CMenuOptionNumberChooser::paint(bool selected)
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_LEFT, &l_icon_w, &l_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_LEFT, x + BORDER_LEFT, HEIGHT - fheight + (fheight - l_icon_h)/2);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RIGHT, x + BORDER_LEFT + 2 + l_icon_w + 2, HEIGHT - fheight + (fheight - l_icon_h)/2);
 				
 			int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 				
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)"Navi", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + 2*l_icon_w + 10, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)g_Locale->getText(LOCALE_MENU_NAVI), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// ok icon
 			int ok_icon_w = 0;
@@ -797,7 +798,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &ok_icon_w, &ok_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + dx/2 - 20, HEIGHT - fheight + (fheight - ok_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)"Enter", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)g_Locale->getText(LOCALE_MENU_ENTER), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// exit icon
 			int exit_icon_w = 0;
@@ -806,7 +807,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HOME, &exit_icon_w, &exit_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + dx - BORDER_RIGHT - 24 - 30, HEIGHT - fheight + (fheight - exit_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)"Exit", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)g_Locale->getText(LOCALE_MENU_EXIT), COL_MENUFOOT, 0, true); // UTF-8
 		}
 	}
 	else
@@ -1076,10 +1077,11 @@ int CMenuOptionChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_LEFT, &l_icon_w, &l_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_LEFT, x + BORDER_LEFT, HEIGHT - fheight + (fheight - l_icon_h)/2);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RIGHT, x + BORDER_LEFT + 2 + l_icon_w + 2, HEIGHT - fheight + (fheight - l_icon_h)/2);
 				
 			int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 				
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)"Navi", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + 2*l_icon_w + 10, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)g_Locale->getText(LOCALE_MENU_NAVI), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// ok icon
 			int ok_icon_w = 0;
@@ -1088,7 +1090,7 @@ int CMenuOptionChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &ok_icon_w, &ok_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + dx/2 - 20, HEIGHT - fheight + (fheight - ok_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)"Enter", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)g_Locale->getText(LOCALE_MENU_ENTER), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// exit icon
 			int exit_icon_w = 0;
@@ -1097,7 +1099,7 @@ int CMenuOptionChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HOME, &exit_icon_w, &exit_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + dx - BORDER_RIGHT - 24 - 30, HEIGHT - fheight + (fheight - exit_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)"Exit", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)g_Locale->getText(LOCALE_MENU_EXIT), COL_MENUFOOT, 0, true); // UTF-8
 		}
 	}
 	else
@@ -1330,10 +1332,11 @@ int CMenuOptionStringChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_LEFT, &l_icon_w, &l_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_LEFT, x + BORDER_LEFT, HEIGHT - fheight + (fheight - l_icon_h)/2);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RIGHT, x + BORDER_LEFT + 2 + l_icon_w + 2, HEIGHT - fheight + (fheight - l_icon_h)/2);
 				
 			int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 				
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)"Navi", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + 2*l_icon_w + 10, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)g_Locale->getText(LOCALE_MENU_NAVI), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// ok icon
 			int ok_icon_w = 0;
@@ -1342,7 +1345,7 @@ int CMenuOptionStringChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &ok_icon_w, &ok_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + dx/2 - 20, HEIGHT - fheight + (fheight - ok_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)"Enter", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)g_Locale->getText(LOCALE_MENU_ENTER), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// exit icon
 			int exit_icon_w = 0;
@@ -1351,7 +1354,7 @@ int CMenuOptionStringChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HOME, &exit_icon_w, &exit_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + dx - BORDER_RIGHT - 24 - 30, HEIGHT - fheight + (fheight - exit_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)"Exit", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)g_Locale->getText(LOCALE_MENU_EXIT), COL_MENUFOOT, 0, true); // UTF-8
 		}
 	}
 	else
@@ -1494,10 +1497,11 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_LEFT, &l_icon_w, &l_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_LEFT, x + BORDER_LEFT, HEIGHT - fheight + (fheight - l_icon_h)/2);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RIGHT, x + BORDER_LEFT + 2 + l_icon_w + 2, HEIGHT - fheight + (fheight - l_icon_h)/2);
 				
 			int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 				
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)"Navi", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + 2*l_icon_w + 10, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)g_Locale->getText(LOCALE_MENU_NAVI), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// ok icon
 			int ok_icon_w = 0;
@@ -1506,7 +1510,7 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &ok_icon_w, &ok_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + dx/2 - 20, HEIGHT - fheight + (fheight - ok_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)"Enter", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)g_Locale->getText(LOCALE_MENU_ENTER), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// exit icon
 			int exit_icon_w = 0;
@@ -1515,7 +1519,7 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HOME, &exit_icon_w, &exit_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + dx - BORDER_RIGHT - 24 - 30, HEIGHT - fheight + (fheight - exit_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)"Exit", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)g_Locale->getText(LOCALE_MENU_EXIT), COL_MENUFOOT, 0, true); // UTF-8
 		}
 	}
 	else
@@ -1662,7 +1666,7 @@ int CMenuForwarder::paint(bool selected)
 				
 			int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 				
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)"Back", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + l_icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + BORDER_LEFT + l_icon_w + 5 -x), (const char *)g_Locale->getText(LOCALE_MENU_BACK), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// ok icon
 			int ok_icon_w = 0;
@@ -1671,7 +1675,7 @@ int CMenuForwarder::paint(bool selected)
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &ok_icon_w, &ok_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + dx/2 - 20, HEIGHT - fheight + (fheight - ok_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)"Enter", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx/2 -20 + 24 + 5, HEIGHT - HelpTextHeight/3, dx - (x + dx/2 -20 + 24 + 5 - x), (const char *)g_Locale->getText(LOCALE_MENU_ENTER), COL_MENUFOOT, 0, true); // UTF-8
 				
 			// exit icon
 			int exit_icon_w = 0;
@@ -1680,7 +1684,7 @@ int CMenuForwarder::paint(bool selected)
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HOME, &exit_icon_w, &exit_icon_h);
 				
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x + dx - BORDER_RIGHT - 24 - 30, HEIGHT - fheight + (fheight - exit_icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)"Exit", COL_MENUFOOT, 0, true); // UTF-8 //FIXME: use locale
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + dx - BORDER_RIGHT - 30, HEIGHT - HelpTextHeight/3, dx -(x + dx - BORDER_RIGHT - 30 - x), (const char *)g_Locale->getText(LOCALE_MENU_EXIT), COL_MENUFOOT, 0, true); // UTF-8
 		}
 	}
 	else

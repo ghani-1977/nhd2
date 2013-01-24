@@ -657,24 +657,24 @@ void CTimerManager::saveEventsToConfig()
 	CConfigFile config(',');
 	config.clear();
 	
-	dprintf(DEBUG_NORMAL, "[timermanager] save %d events to config ...\n", events.size());
+	dprintf(DEBUG_INFO, "[timermanager] save %d events to config ...\n", events.size());
 	
 	CTimerEventMap::iterator pos = events.begin();
 	for(;pos != events.end();pos++)
 	{
 		CTimerEvent *event = pos->second;
-		dprintf(DEBUG_NORMAL, "[timermanager] event #%d\n",event->eventID);
+		dprintf(DEBUG_INFO, "[timermanager] event #%d\n",event->eventID);
 		event->saveToConfig(&config);
 	}
-	dprintf(DEBUG_NORMAL, "\n");
+	dprintf(DEBUG_INFO, "\n");
 	
 	config.setInt32 ("EXTRA_TIME_START", m_extraTimeStart);
-	dprintf(DEBUG_NORMAL, "[timermanager] setting EXTRA_TIME_START to %d\n",m_extraTimeStart);
+	dprintf(DEBUG_INFO, "[timermanager] setting EXTRA_TIME_START to %d\n",m_extraTimeStart);
 	config.setInt32 ("EXTRA_TIME_END", m_extraTimeEnd);
-	dprintf(DEBUG_NORMAL, "[timermanager] setting EXTRA_TIME_END to %d\n",m_extraTimeEnd);
-	dprintf(DEBUG_NORMAL, "[timermanager] now saving config to %s...\n",CONFIGFILE);
+	dprintf(DEBUG_INFO, "[timermanager] setting EXTRA_TIME_END to %d\n",m_extraTimeEnd);
+	dprintf(DEBUG_INFO, "[timermanager] now saving config to %s...\n",CONFIGFILE);
 	config.saveConfig(CONFIGFILE);
-	dprintf(DEBUG_NORMAL, "[timermanager] config saved!\n");
+	dprintf(DEBUG_INFO, "[timermanager] config saved!\n");
 	m_saveEvents=false;			
 
 	// Freigeben !!!
@@ -1072,7 +1072,7 @@ void CTimerEvent::saveToConfig(CConfigFile *config)
 	}
 
 	allIDs.push_back(eventID);
-	dprintf(DEBUG_NORMAL, "[timermanager] adding %d to IDS\n",eventID);
+	dprintf(DEBUG_INFO, "[timermanager] adding %d to IDS\n",eventID);
 	//SetInt-Vector haengt komischerweise nur an, deswegen erst loeschen
 	config->setString("IDS","");
 	config->setInt32Vector ("IDS",allIDs);
@@ -1081,28 +1081,28 @@ void CTimerEvent::saveToConfig(CConfigFile *config)
 	ostr << eventID;
 	std::string id=ostr.str();
 	config->setInt32("EVENT_TYPE_"+id, eventType);
-	dprintf(DEBUG_NORMAL, "[timermanager] set EVENT_TYPE_%s to %d\n",id.c_str(),eventType);
+	dprintf(DEBUG_INFO, "[timermanager] set EVENT_TYPE_%s to %d\n",id.c_str(),eventType);
 
 	config->setInt32("EVENT_STATE_"+id, eventState);
-	dprintf(DEBUG_NORMAL, "[timermanager] set EVENT_STATE_%s to %d\n",id.c_str(),eventState);
+	dprintf(DEBUG_INFO, "[timermanager] set EVENT_STATE_%s to %d\n",id.c_str(),eventState);
 
 	config->setInt32("PREVIOUS_STATE_"+id, previousState);
 	dprintf(DEBUG_NORMAL, "[timermanager] set PREVIOUS_STATE_%s to %d\n",id.c_str(),previousState);
 
 	config->setInt32("EVENT_REPEAT_"+id, eventRepeat);
-	dprintf(DEBUG_NORMAL, "[timermanager] set EVENT_REPEAT_%s to %d\n",id.c_str(),eventRepeat);
+	dprintf(DEBUG_INFO, "[timermanager] set EVENT_REPEAT_%s to %d\n",id.c_str(),eventRepeat);
 
 	config->setInt32("ANNOUNCE_TIME_"+id, announceTime);
-	dprintf(DEBUG_NORMAL, "[timermanager] set ANNOUNCE_TIME_%s to %ld\n",id.c_str(),(long)announceTime);
+	dprintf(DEBUG_INFO, "[timermanager] set ANNOUNCE_TIME_%s to %ld\n",id.c_str(),(long)announceTime);
 
 	config->setInt32("ALARM_TIME_"+id, alarmTime);
-	dprintf(DEBUG_NORMAL, "[timermanager] set ALARM_TIME_%s to %ld\n",id.c_str(),(long)alarmTime);
+	dprintf(DEBUG_INFO, "[timermanager] set ALARM_TIME_%s to %ld\n",id.c_str(),(long)alarmTime);
 
 	config->setInt32("STOP_TIME_"+id, stopTime);
-	dprintf(DEBUG_NORMAL, "[timermanager] set STOP_TIME_%s to %ld\n",id.c_str(),(long)stopTime);
+	dprintf(DEBUG_INFO, "[timermanager] set STOP_TIME_%s to %ld\n",id.c_str(),(long)stopTime);
 
 	config->setInt32("REPEAT_COUNT_"+id,repeatCount);
-	dprintf(DEBUG_NORMAL, "[timermanager] set REPEAT_COUNT_%s to %d\n",id.c_str(),repeatCount);
+	dprintf(DEBUG_INFO, "[timermanager] set REPEAT_COUNT_%s to %d\n",id.c_str(),repeatCount);
 }
 
 void CTimerEvent_Shutdown::announceEvent()

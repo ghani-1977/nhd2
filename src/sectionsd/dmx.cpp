@@ -25,7 +25,6 @@
 
 #include <dmx.h>
 #include <dmxapi.h>
-#include <debug.h>
 
 #include <endian.h>
 #include <errno.h>
@@ -611,7 +610,7 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	if(pID == 0x12 && filters[0].filter != 0x4e) 
 	{ 
 		// Only EIT
-		printdate_ms(stderr);
+		//printdate_ms(stderr);
 			
 		dprintf(DEBUG_DEBUG, "changeDMX [EIT]-> %d (0x%x/0x%x) %s (%ld seconds)\n",
 			new_filter_index, filters[new_filter_index].filter,
@@ -620,7 +619,7 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	} 
 	else 
 	{
-		printdate_ms(stderr);
+		//printdate_ms(stderr);
 			
 		dprintf(DEBUG_DEBUG, "changeDMX [%x]-> %d (0x%x/0x%x) (%ld seconds)\n", pID,
 			new_filter_index, filters[new_filter_index].filter,
@@ -677,7 +676,7 @@ ssize_t DMX::readNbytes(int _fd, char *buf, const size_t n, unsigned timeoutInMS
 	}
 	if ((ufds.revents & POLLERR) != 0) /* POLLERR means buffer error, i.e. buffer overflow */
 	{
-		printdate_ms(stderr);
+		//printdate_ms(stderr);
 		
 		dprintf(DEBUG_DEBUG, "[sectionsd] DMX::readNbytes received POLLERR, pid 0x%x, filter[%d] "
 			"filter 0x%02x mask 0x%02x\n", pID, filter_index,

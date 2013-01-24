@@ -478,6 +478,15 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	if (actionKey == "tsmoviebrowser") 
 	{
 		isMovieBrowser = true;
+		moviebrowser->Hide_records = false;
+		timeshift = 0;
+		isHTTP = false;
+		PlayFile();
+	}
+	if (actionKey == "moviebrowser") 
+	{
+		isMovieBrowser = true;
+		moviebrowser->Hide_records = true;
 		timeshift = 0;
 		isHTTP = false;
 		PlayFile();
