@@ -92,7 +92,8 @@ DMX::~DMX()
 ssize_t DMX::read(char * const /*buf*/, const size_t /*buflength*/, const unsigned /*timeoutMInSeconds*/)
 {
 	//FIXME is this used ??
-	dprintf(DEBUG_DEBUG, "[sectionsd] DMX::read called\n");
+	//dprintf(DEBUG_DEBUG, "[sectionsd] DMX::read called\n");
+	
 	return 0;
 	//return readNbytes(fd, buf, buflength, timeoutMInSeconds);
 }
@@ -292,12 +293,12 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 		unlock();
 		if (rc <= 0)
 		{
-			dprintf(DEBUG_DEBUG, "dmx.read timeout - filter: %x - timeout# %d\n", filters[filter_index].filter, timeouts);
+			//dprintf(DEBUG_DEBUG, "dmx.read timeout - filter: %x - timeout# %d\n", filters[filter_index].filter, timeouts);
 			timeouts++;
 		}
 		else
 		{
-			dprintf(DEBUG_DEBUG, "dmx.read rc: %d - filter: %x\n", rc, filters[filter_index].filter);
+			//dprintf(DEBUG_DEBUG, "dmx.read rc: %d - filter: %x\n", rc, filters[filter_index].filter);
 			// restart DMX
 			real_pause();
 			real_unpause();
@@ -311,7 +312,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	if (section_length <= 0)
 	{
 		unlock();
-		dprintf(DEBUG_DEBUG, "[sectionsd] section_length <= 0: %d [%s:%s:%d] please report!\n", section_length, __FILE__,__FUNCTION__,__LINE__);
+		//dprintf(DEBUG_DEBUG, "[sectionsd] section_length <= 0: %d [%s:%s:%d] please report!\n", section_length, __FILE__,__FUNCTION__,__LINE__);
 		return -1;
 	}
 
@@ -319,7 +320,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 
 	if (rc != section_length + 3)
 	{
-		dprintf(DEBUG_DEBUG, "rc != section_length + 3 (%d != %d + 3)\n", rc, section_length);
+		//dprintf(DEBUG_DEBUG, "rc != section_length + 3 (%d != %d + 3)\n", rc, section_length);
 		unlock();
 		// DMX restart required? This should never happen anyway.
 		real_pause();
@@ -330,7 +331,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	// check if the filter worked correctly
 	if (((initial_header->table_id ^ filters[filter_index].filter) & filters[filter_index].mask) != 0)
 	{
-		dprintf(DEBUG_DEBUG, "[sectionsd] filter 0x%x mask 0x%x -> skip sections for table 0x%x\n", filters[filter_index].filter, filters[filter_index].mask, initial_header->table_id);
+		//dprintf(DEBUG_DEBUG, "[sectionsd] filter 0x%x mask 0x%x -> skip sections for table 0x%x\n", filters[filter_index].filter, filters[filter_index].mask, initial_header->table_id);
 		unlock();
 		real_pause();
 		real_unpause();
@@ -342,7 +343,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 	if ((section_length < 5) ||
 			(initial_header->table_id >= 0x4e && initial_header->table_id <= 0x6f && section_length < 14))
 	{
-		dprintf(DEBUG_DEBUG, "section too short: table %x, length: %d\n", initial_header->table_id, section_length);
+		//dprintf(DEBUG_DEBUG, "section too short: table %x, length: %d\n", initial_header->table_id, section_length);
 		return -1;
 	}
 
@@ -375,7 +376,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 				if (initial_header->table_id == 0x4e &&
 						eh_tbl_extension_id == current_service &&
 						extended_header->version_number != eit_version) {
-					dprintf(DEBUG_DEBUG, "EIT old: %d new version: %d\n",eit_version,extended_header->version_number);
+					//dprintf(DEBUG_DEBUG, "EIT old: %d new version: %d\n",eit_version,extended_header->version_number);
 					eit_version = extended_header->version_number;
 				}
 				return rc;
@@ -463,13 +464,13 @@ int DMX::immediate_start(void)
 {
 	if (isOpen())
 	{
-		dprintf(DEBUG_DEBUG, "DMX::imediate_start: isOpen()\n");
+		//dprintf(DEBUG_DEBUG, "DMX::imediate_start: isOpen()\n");
 		closefd();
 	}
 
 	if (real_pauseCounter != 0) 
 	{
-		dprintf(DEBUG_DEBUG, "DMX::immediate_start: realPausecounter !=0 (%d)!\n", real_pauseCounter);
+		//dprintf(DEBUG_DEBUG, "DMX::immediate_start: realPausecounter !=0 (%d)!\n", real_pauseCounter);
 		return 0;
 	}
 
@@ -515,7 +516,7 @@ int DMX::real_pause(void)
 {
 	if (!isOpen()) 
 	{
-		dprintf(DEBUG_DEBUG, "DMX::real_pause: (!isOpen())\n");
+		//dprintf(DEBUG_DEBUG, "DMX::real_pause: (!isOpen())\n");
 		return 1;
 	}
 
@@ -587,7 +588,6 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 	
 	lock();
 
-	//if (sections_debug)
 	dprintf(DEBUG_DEBUG, "changeDMX: after pthread_mutex_lock(&start_stop_mutex)\n");
 
 	filter_index = new_filter_index;
@@ -598,14 +598,11 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 
 	if (real_pauseCounter > 0)
 	{
-		dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x not ignored! even though real_pauseCounter> 0 (%d)\n",
-		       filters[new_filter_index].filter, real_pauseCounter);
+		dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x not ignored! even though real_pauseCounter> 0 (%d)\n", filters[new_filter_index].filter, real_pauseCounter);
 		/* immediate_start() checks for real_pauseCounter again (and
 		   does nothing in that case), so we can just continue here. */
 	}
 
-	//if (sections_debug) 
-	//{ 
 	// friendly debug output...
 	if(pID == 0x12 && filters[0].filter != 0x4e) 
 	{ 
@@ -625,11 +622,10 @@ int DMX::change(const int new_filter_index, const int new_current_service)
 			new_filter_index, filters[new_filter_index].filter,
 			filters[new_filter_index].mask, time_monotonic()-lastChanged);
 	}
-	//}
 
 	closefd();
 	
-	//FIXME
+	//FIXME:HACK
 	close();
 
 	int rc = immediate_start();
@@ -678,14 +674,13 @@ ssize_t DMX::readNbytes(int _fd, char *buf, const size_t n, unsigned timeoutInMS
 	{
 		//printdate_ms(stderr);
 		
-		dprintf(DEBUG_DEBUG, "[sectionsd] DMX::readNbytes received POLLERR, pid 0x%x, filter[%d] "
-			"filter 0x%02x mask 0x%02x\n", pID, filter_index,
-			filters[filter_index].filter, filters[filter_index].mask);
+		//dprintf(DEBUG_DEBUG, "[sectionsd] DMX::readNbytes received POLLERR, pid 0x%x, filter[%d] " "filter 0x%02x mask 0x%02x\n", pID, filter_index, filters[filter_index].filter, filters[filter_index].mask);
 		return -1;
 	}
 	if (!(ufds.revents&POLLIN))
 	{
-		dprintf(DEBUG_DEBUG, "%s: not ufds.revents&POLLIN, please report!\n", __FUNCTION__);
+		//dprintf(DEBUG_DEBUG, "%s: not ufds.revents&POLLIN, please report!\n", __FUNCTION__);
+		
 		// POLLHUP, beim dmx bedeutet das DMXDEV_STATE_TIMEDOUT
 		// kommt wenn ein Timeout im Filter gesetzt wurde
 		// dprintf("revents: 0x%hx\n", ufds.revents);
@@ -720,7 +715,8 @@ int DMX::setPid(const unsigned short new_pid)
 
 	if (real_pauseCounter > 0)
 	{
-		dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x ignored! because of real_pauseCounter> 0 (%d)\n", new_pid, real_pauseCounter);
+		//dprintf(DEBUG_DEBUG, "changeDMX: for 0x%x ignored! because of real_pauseCounter> 0 (%d)\n", new_pid, real_pauseCounter);
+		
 		unlock();
 		return 0;	// not running (e.g. streaming)
 	}
