@@ -225,12 +225,10 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	
 	servicename = name;
 
-	if (strlen((char *)name.c_str()) == 0)			/* if there is a null string Neutrino has a segfault on ufs910			*/
-		return;	
-
 	if (mode != MODE_TVRADIO)
 		return;
 
+	// scroll text
 	#if 0
 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT] == 1)
 	{
@@ -727,9 +725,13 @@ void CVFD::ShowText(char * str)
 
 #ifdef __sh__
 	int len = strlen(str);
+	
+	if(len == 0)     //NOTE: on some boxes aotom can not handle this.
+		return;
+	
 	int i;
 	
-	for(i = len-1; i > 0; i--) 
+	for(i = len - 1; i > 0; i--) 
 	{
 		if(str[i] == ' ')
 			str[i] = 0;
