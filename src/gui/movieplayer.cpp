@@ -1654,6 +1654,7 @@ void CMoviePlayerGui::PlayFile(void)
 			// open file
 			// PlayBack Start
 			if(!playback->Start((char *)filename)) 
+			//if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3))
 			{
 				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();

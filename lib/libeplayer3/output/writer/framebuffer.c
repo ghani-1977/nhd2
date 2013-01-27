@@ -108,7 +108,7 @@ static int writeData(void* _call)
     int res = 0;
     unsigned char* dst;
     
-    WriterFBCallData_t* call = (WriterFBCallData_t*) _call;
+    WriterFBCallData_t * call = (WriterFBCallData_t*) _call;
     
     fb_printf(100, "\n");
 
@@ -168,7 +168,8 @@ static int writeData(void* _call)
             dst += dst_delta;
             src += src_stride;
         }
-    } else
+    } 
+    else
     {
          for (y = 0; y < call->Height; y++)
                 memset(call->destination + ((call->y + y) * call->destStride) + call->x * 4, 0, call->Width * 4);

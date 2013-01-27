@@ -384,7 +384,7 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 	return true;
 }
 
-bool cDemux::pesFilter(const unsigned short Pid)
+bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
 {  
 	if (demux_fd < 0)
 		return false;
@@ -409,30 +409,21 @@ bool cDemux::pesFilter(const unsigned short Pid)
 	pid = Pid;
 
 	pes.pid      	= Pid;
-	pes.input    	= DMX_IN_FRONTEND;
+	pes.input    	= Input;
 	pes.output   	= DMX_OUT_DECODER;
 	pes.flags    	= DMX_IMMEDIATE_START;
 
 	switch(type) 
 	{
-		case DMX_VIDEO_CHANNEL:
-#if defined (PLATFORM_GENERIC)
-			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
-#endif		  
+		case DMX_VIDEO_CHANNEL:		  
 			pes.pes_type = DMX_PES_VIDEO;
 			break;
 			
-		case DMX_AUDIO_CHANNEL:
-#if defined (PLATFORM_GENERIC)
-			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
-#endif		  
+		case DMX_AUDIO_CHANNEL:		  
 			pes.pes_type = DMX_PES_AUDIO;
 			break;
 			
-		case DMX_PCR_ONLY_CHANNEL:
-#if defined (PLATFORM_GENERIC)
-			pes.output   = DMX_OUT_TS_TAP;     	/* to dvr */
-#endif		  
+		case DMX_PCR_ONLY_CHANNEL:		  
 			pes.pes_type = DMX_PES_PCR;
 			break;
 			

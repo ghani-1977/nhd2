@@ -3823,7 +3823,6 @@ int zapit_main_thread(void *data)
 	for(fe_map_iterator_t it = femap.begin(); it != femap.end(); it++)
 		delete it->second;
 
-	dprintf(DEBUG_INFO, "frontend deleted\n");
 	dprintf(DEBUG_INFO, "zapit shutdown complete :-)\n");
 
 	return 0;
