@@ -432,7 +432,7 @@ class CRCInput
 		static const char * getSpecialKeyName(const unsigned int key);
 		static std::string getKeyName(const unsigned int key);
 
-		int addTimer(unsigned long long Interval, bool oneshot= true, bool correct_time= true );
+		int addTimer(unsigned long long Interval, bool oneshot = true, bool correct_time = true );
 		int addTimer(struct timeval Timeout);
 		int addTimer(const time_t *Timeout);
 
