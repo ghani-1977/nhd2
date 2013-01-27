@@ -27,7 +27,7 @@
 
 #include <config.h>
 
-#if 1
+#if !defined (__sh__) && !defined (ENABLE_GSTREAMER)
 #include <linux/soundcard.h>
 #endif
 
