@@ -474,7 +474,7 @@ bool cPlayback::Start(char * filename)
 		return false;
 	}
 #else
-	//NOTE: add sample ts player
+	//FIXME: add sample ts player
 	dprintf(DEBUG_NORMAL, "[playback_cs.cpp]: no player found, sorry we can not play");
 	playing = false;
 #endif
