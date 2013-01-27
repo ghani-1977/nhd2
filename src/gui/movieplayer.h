@@ -92,7 +92,7 @@ class CMoviePlayerGui : public CMenuTarget
 
 		void showHelpTS(void);
 		void showFileInfoVLC(void);
-
+		
 	public:
 		CMoviePlayerGui();
 		~CMoviePlayerGui();
