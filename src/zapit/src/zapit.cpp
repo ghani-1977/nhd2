@@ -3355,6 +3355,7 @@ void * sdt_thread(void * arg)
 			continue;
 
 		tcur = time(0);
+		
 		if(wtime && ((tcur - wtime) > 2) && !sdt_wakeup) 
 		{
 			dprintf(DEBUG_INFO, "[sdt monitor] wakeup...\n");

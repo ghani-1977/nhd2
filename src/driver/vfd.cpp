@@ -84,7 +84,7 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 // xtrend 5XXX has no vfd
-#if defined (PLATFORM_XTREND)
+#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC)
 	has_lcd = 0;
 #else
 	has_lcd = 1;

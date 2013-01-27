@@ -11,7 +11,9 @@ INCLUDES = \
 if ENABLE_GSTREAMER
 INCLUDES += @GST_CFLAGS@
 else
+if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
+endif
 endif
 
 noinst_LIBRARIES = libcoolstream.a

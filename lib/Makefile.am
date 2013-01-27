@@ -11,7 +11,7 @@ SUBDIRS = \
 	libdvbsub \
 	libcoolstream
 
-if !ENABLE_GSTREAMER
+if ENABLE_LIBEPLAYER3
 SUBDIRS += libeplayer3
 endif
 

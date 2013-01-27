@@ -209,8 +209,13 @@ static char* Codec2Encoding(enum CodecID id, int* version)
     case CODEC_ID_DVB_SUBTITLE:
     case CODEC_ID_XSUB:
     case CODEC_ID_MOV_TEXT:
+#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(56, 72, 2)      
     case CODEC_ID_HDMV_PGS_SUBTITLE:
+#endif
+
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,38,1)
     case CODEC_ID_DVB_TELETEXT:
+#endif      
         return "S_TEXT/SRT"; /* fixme */
 #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
     case CODEC_ID_SRT:
@@ -565,9 +570,11 @@ if(!context->playback->BackWard && audioMute)
                         {
                             int decoded_data_size = samples_size;
 
-                            bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec,
-                                (short *)(samples), &decoded_data_size, &avpkt);
-
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
+                            bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
+#else
+			    bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
+#endif
 
                             if(bytesDone < 0) // Error Happend
                                 break;
@@ -691,7 +698,11 @@ if(!context->playback->BackWard && audioMute)
                            AVSubtitle sub;
                            int got_sub_ptr;
 
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)			   
                            if (avcodec_decode_subtitle2(((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, &packet) < 0)
+#else
+			   if (avcodec_decode_subtitle( ((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, packet.data, packet.size ) < 0)
+#endif
                            {
                                ffmpeg_err("error decoding subtitle\n");
                            } else
@@ -832,7 +843,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 #else
         ffmpeg_err("avformat_open_input failed %d (%s)\n", err, filename);
 #endif
-        av_strerror(err, error, 512);
+        //av_strerror(err, error, 512);
         ffmpeg_err("Cause: %s\n", error);
 
         releaseMutex(FILENAME, __FUNCTION__,__LINE__);
@@ -1351,11 +1362,13 @@ static int container_ffmpeg_seek_bytes(off_t pos) {
     if (current_pos > pos)
         flag |= AVSEEK_FLAG_BACKWARD;
 
+#if LIBAVCODEC_VERSION_MAJOR > 54
     if (avformat_seek_file(avContext, -1, INT64_MIN, pos, INT64_MAX, flag) < 0)
     {
         ffmpeg_err( "Error seeking\n");
         return cERR_CONTAINER_FFMPEG_ERR;
     }
+#endif    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
     ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
@@ -1397,11 +1410,13 @@ static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes) {
 /* fixme: should we adapt INT64_MIN/MAX to some better value?
  * take a loog in ffmpeg to be sure what this paramter are doing
  */
+#if LIBAVCODEC_VERSION_MAJOR > 54
     if (avformat_seek_file(avContext, -1, INT64_MIN, newpos, INT64_MAX, flag) < 0)
     {
         ffmpeg_err( "Error seeking\n");
         return cERR_CONTAINER_FFMPEG_ERR;
     }
+#endif    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
     ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));

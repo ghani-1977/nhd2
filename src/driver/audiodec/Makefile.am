@@ -7,7 +7,7 @@ INCLUDES = \
         @FREETYPE_CFLAGS@ \
         @VORBISIDEC_CFLAGS@
 
-if !ENABLE_GSTREAMER
+if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 endif
 

@@ -72,10 +72,14 @@ class cAudio
 		int audio_num;
 		
 		// for pcm playback
+#ifdef __sh__		
 		int uNoOfChannels;
 		int uSampleRate;
 		int uBitsPerSample;
 		int bLittleEndian;
+#elif !defined (ENABLE_GSTREAMER)
+		int clipfd;
+#endif		
 		
 		bool Muted;
 #ifdef __sh__

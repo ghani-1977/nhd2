@@ -13,7 +13,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
 
-if !ENABLE_GSTREAMER
+if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 endif
 
@@ -70,10 +70,12 @@ if ENABLE_UPNP
 neutrino_LDADD += $(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a
 endif
 
-if !ENABLE_GSTREAMER
+if ENABLE_LIBEPLAYER3
 neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a -lass
 else
+if ENABLE_GSTREAMER
 neutrino_LDADD += -lgstreamer-0.10
+endif
 endif
 
 # LCD display

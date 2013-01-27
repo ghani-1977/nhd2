@@ -27,6 +27,10 @@
 
 #include <config.h>
 
+#if 1
+#include <linux/soundcard.h>
+#endif
+
 #include <linux/dvb/audio.h>
 
 #include "audio_cs.h"
@@ -47,6 +51,10 @@ cAudio::cAudio()
 	Muted = false;
 	
 	audio_fd = -1;	
+	
+#if !defined (__sh__) && !defined (ENABLE_GSTREAMER)
+	clipfd = -1;
+#endif
 	
 #ifndef __sh__
 	StreamType = AUDIO_STREAMTYPE_MPEG;
@@ -429,6 +437,7 @@ int cAudio::setChannel(int channel)
 }
 
 /* pcm writer needed for audioplayer */
+#ifdef __sh__
 static unsigned int SubFrameLen = 0;
 static unsigned int SubFramesPerPES = 0;
 
@@ -458,13 +467,14 @@ static unsigned char lpcm_prv[14];
 
 static unsigned char breakBuffer[8192];
 static unsigned int breakBufferFillSize = 0;
+#endif
 
 //Neutrino uses softdecoder to playback music, this has to be inserted as pcm in the player
 int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample, int LittleEndian)
 { 
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	dprintf(DEBUG_INFO, "%s rate: %d ch: %d bits: %d (%d bps)\n",FILENAME, SampleRate, NoOfChannels, BitsPerSample, (BitsPerSample / 8));	
 	
+#ifdef __sh__	
 	uNoOfChannels = NoOfChannels;
 	uSampleRate = SampleRate;
 	uBitsPerSample = BitsPerSample;
@@ -546,21 +556,62 @@ int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample,
 	// set audio source to memory this able us to inject data
 	setSource(AUDIO_SOURCE_MEMORY);
 	
-#ifdef __sh__	
 	SetStreamType(STREAM_TYPE_PROGRAM);
 	SetEncoding( (audio_encoding_t)AUDIO_ENCODING_LPCMA );
-#else	
-	
-	SetStreamType(AUDIO_STREAMTYPE_LPCMDVD);
-#endif
 
 	Start();
+#elif !defined (ENABLE_GSTREAMER)	
+	int fmt;
+	
+	if (clipfd > 0) 
+	{
+		printf("%s: clipfd already opened (%d)\n", __FUNCTION__, clipfd);
+		return -1;
+	}
+	
+	if (LittleEndian)
+		fmt = AFMT_S16_BE;
+	else
+		fmt = AFMT_S16_LE;
+	
+	clipfd = open("/dev/dsp", O_WRONLY);
+	
+	if(clipfd < 0)
+		clipfd = open("/dev/dsp1", O_WRONLY);
+	
+	if(clipfd < 0)
+		clipfd = open("/dev/sound/dsp", O_WRONLY);
+	
+	if(clipfd < 0)
+		clipfd = open("/dev/sound/dsp1", O_WRONLY);
+	
+	if(clipfd < 0)
+	{
+		printf("%s: clipfd open failed...(%m)\n", __FUNCTION__);
+		return -1;
+	}
+	
+	if (ioctl(clipfd, SNDCTL_DSP_SETFMT, &fmt))
+		perror("SNDCTL_DSP_SETFMT");
+	
+	if (ioctl(clipfd, SNDCTL_DSP_CHANNELS, &NoOfChannels))
+		perror("SNDCTL_DSP_CHANNELS");
+	
+	if (ioctl(clipfd, SNDCTL_DSP_SPEED, &SampleRate))
+		perror("SNDCTL_DSP_SPEED");
+	
+	if (ioctl(clipfd, SNDCTL_DSP_RESET))
+		perror("SNDCTL_DSP_RESET");
 
+	setVolume(volume, volume);
+#endif	
+	
 	return 0;
 }
 
 int cAudio::WriteClip(unsigned char * buffer, int size)
 {
+#ifdef __sh__ 
 	//unsigned int qty;
 	unsigned int n;
 	unsigned int injectBufferSize = sizeof(lpcm_pes)+sizeof(lpcm_prv)+SubFrameLen;
@@ -651,11 +702,29 @@ int cAudio::WriteClip(unsigned char * buffer, int size)
 	free(injectBuffer);
 	
 	return size;
+#elif !defined (ENABLE_GSTREAMER)
+	int ret;
+	
+	if (clipfd <= 0) 
+	{
+		printf("%s: clipfd not yet opened\n", __FUNCTION__);
+		return -1;
+	}
+	
+	ret = write(clipfd, buffer, size);
+	
+	if (ret < 0)
+		printf("%s: write error (%m)\n", __FUNCTION__);
+	
+	return ret;
+#endif
 }
 
 int cAudio::StopClip()
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	
+#ifdef __sh__
 	
 	breakBufferFillSize = 0;
 	
@@ -663,6 +732,18 @@ int cAudio::StopClip()
 
 	//
 	Close();
+#elif !defined (ENABLE_GSTREAMER)
+	if (clipfd < 0) 
+	{
+		printf("%s: clipfd not yet opened\n", __FUNCTION__);
+		return -1;
+	}
+	
+	close(clipfd);
+	clipfd = -1;
+	
+	setVolume(volume, volume);
+#endif	
 
 	return 0;
 }

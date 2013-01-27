@@ -46,6 +46,16 @@ if test "$enable_opengl" = "yes"; then
 AC_DEFINE(USE_OPENGL,1,[include gstreamer engine])
 fi
 
+# libeplayer3
+AC_ARG_ENABLE(libeplayer3,
+	AS_HELP_STRING(--enable-libeplayer3,include libeplayer3 gstreamer as player engine support),
+	,[enable_libeplayer3=no])
+AM_CONDITIONAL(ENABLE_LIBEPLAYER3,test "$enable_libeplayer3" = "yes")
+
+if test "$enable_libeplayer3" = "yes"; then
+AC_DEFINE(ENABLE_LIBEPLAYER3,1,[include libeplayer3 engine])
+fi
+
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
 	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),
