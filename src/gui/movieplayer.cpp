@@ -1589,7 +1589,7 @@ void CMoviePlayerGui::PlayFile(void)
 #if defined (PLATFORM_COOLSTREAM)
 					playback->SetAPid(g_currentapid, g_currentac3);
 #else					
-					playback->SetAPid(currentapid);
+					playback->SetAPid(g_currentapid);
 #endif					
 					apidchanged = 0;
 				}
