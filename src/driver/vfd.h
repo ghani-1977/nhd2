@@ -399,7 +399,7 @@ class CVFD
 		void Clear();
 		void ClearIcons();
 		void ShowIcon(vfd_icon icon, bool show);
-		void ShowText(char * str);
+		void ShowText(const char * str);
 
 		void ShowScrollText(char * str);
 

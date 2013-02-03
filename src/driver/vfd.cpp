@@ -84,10 +84,20 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 // xtrend 5XXX has no vfd
-#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC) || defined (PLATFORM_COOLSTREAM)
+#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
+#endif
+
+#if defined (PLATFORM_COOLSTREAM)
+	fd = open("/dev/display", O_RDONLY);
+	
+	if(fd < 0) 
+	{
+		perror("/dev/display");
+		has_lcd = 0;
+	}
 #endif
 	
 	text[0] = 0;
@@ -98,7 +108,10 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-	
+#if defined (PLATFORM_COOLSTREAM)
+	if(fd > 0)
+		close(fd);
+#endif
 }
 
 CVFD * CVFD::getInstance()
@@ -137,13 +150,15 @@ void CVFD::count_down()
 
 void CVFD::wake_up() 
 {
-//	if (atoi(g_settings.lcd_setting_dim_time) > 0) 
-//	{
-//		timeout_cnt = atoi(g_settings.lcd_setting_dim_time);
-//		atoi(g_settings.lcd_setting_dim_brightness) > 0 ?setBrightness(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]) : setPower(1);
-//	}
-//	else
-//		setPower(1);
+#if defined (PLATFORM_COOLSTREAM)  
+	if (atoi(g_settings.lcd_setting_dim_time) > 0) 
+	{
+		timeout_cnt = atoi(g_settings.lcd_setting_dim_time);
+		g_settings.lcd_setting_dim_brightness > 0 ?setBrightness(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]) : setPower(1);
+	}
+	else
+		setPower(1);
+#endif	
 }
 
 void * CVFD::TimeThread(void *)
@@ -183,6 +198,17 @@ void CVFD::setlcdparameter(int dimm, const int power)
 {
 	if(!has_lcd) 
 		return;
+	
+	if(dimm < 0)
+		dimm = 0;
+	else if(dimm > 15)
+		dimm = 15;
+
+	if(!power)
+		dimm = 0;
+
+	if(brightness == dimm)
+		return;
 
 	brightness = dimm;
 
@@ -202,6 +228,10 @@ void CVFD::setlcdparameter(int dimm, const int power)
 		perror("VFDBRIGHTNESS");
 	
 	closeDevice();
+#elif defined (PLATFORM_COOLSTREAM)
+	int ret = ioctl(fd, IOC_VFD_SET_BRIGHT, dimm);
+	if(ret < 0)
+		perror("IOC_VFD_SET_BRIGHT");
 #endif		
 }
 
@@ -221,7 +251,6 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 		return;
 
 	dprintf(DEBUG_DEBUG, "CVFD::showServicename: %s\n", name.c_str());
-	dprintf(DEBUG_DEBUG, "CVFD::showServicenameLen: %d\n", strlen((char *)name.c_str()));
 	
 	servicename = name;
 
@@ -254,7 +283,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	else
 	#endif
 	{
-		ShowText( (char *) servicename.c_str() );
+		ShowText(name.c_str() );
 	}
 
 	wake_up();
@@ -282,7 +311,7 @@ void CVFD::showTime(bool force)
 				hour = t->tm_hour;
 				minute = t->tm_min;
 				strftime(timestr, 20, "%H:%M", t);
-				ShowText((char *) timestr);
+				ShowText(timestr);
 			}
 		} 
 	}
@@ -317,7 +346,7 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 	if (mode != MODE_MENU_UTF8)
 		return;
 
-	ShowText((char *) text);
+	ShowText(text);
 	wake_up();
 }
 
@@ -331,7 +360,7 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 
 	dprintf(DEBUG_DEBUG, "CVFD::showAudioTrack: %s\n", title.c_str());
 	
-	ShowText((char *) title.c_str());
+	ShowText(title.c_str());
 	wake_up();
 }
 
@@ -374,9 +403,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 	// sow title
 	if(strlen(title))
-	{
-		ShowText((char *) title);
-	}
+		ShowText(title);
 
 	mode = m;
 
@@ -589,6 +616,12 @@ void CVFD::Clear()
 	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
 		perror("VFDDISPLAYCLR");
 	closeDevice();
+#elif (PLATFORM_COOLSTREAM)
+	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
+	if(ret < 0)
+		perror("IOC_VFD_SET_TEXT");
+	else
+		text[0] = 0;
 #else
 	data.start_address = 0;
 	openDevice();	
@@ -661,6 +694,10 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 		perror("VFDICONDISPLAYONOFF");
 #endif	
 	closeDevice();
+#elif defined (PLATFORM_COOLSTREAM)
+	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
+	if(ret < 0)
+		perror(show ? "IOC_VFD_SET_ICON" : "IOC_VFD_CLEAR_ICON");
 #endif
 }
 
@@ -721,26 +758,29 @@ void CVFD::ShowScrollText(char *str)
 	pthread_create(&vfd_scrollText, NULL, ThreadScrollText, (void *)str);
 }
 
-void CVFD::ShowText(char * str)
+void CVFD::ShowText(const char * str)
 {
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
 
-#ifdef __sh__
 	int len = strlen(str);
+	int i = 0;
 	
-	if(len == 0)     //NOTE: on some boxes aotom can not handle this.
-		return;
-	
-	int i;
-	
-	for(i = len - 1; i > 0; i--) 
+	if (len > 0)
 	{
-		if(str[i] == ' ')
-			str[i] = 0;
-		else
-			break;
+		for(i = len - 1; i > 0; i--) 
+		{
+			if (str[i - 1] != ' ')
+				break;
+		}
 	}
-	  
+	
+	if (((int)strlen(text) == i && !strncmp(str, text, i)) || len > 255)
+		return;
+
+	strncpy(text, str, i);
+	text[i] = '\0';
+	 
+#if defined (__sh__)	 
 	openDevice();
 	
 	if( write(fd , str, len > 16? 16 : len ) < 0)
@@ -757,6 +797,10 @@ void CVFD::ShowText(char * str)
 	fprintf(f,"%s", str);
 	
 	fclose(f);
+#elif defined (PLATFORM_COOLSTREAM)
+	int ret = ioctl(fd, IOC_VFD_SET_TEXT, len ? str : NULL);
+	if(ret < 0)
+		perror("IOC_VFD_SET_TEXT");
 #endif
 }
 
