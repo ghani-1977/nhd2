@@ -516,7 +516,7 @@ AC_ARG_WITH(boxmodel,
 			;;
 	esac],
 	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "spark" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" && test -z "$BOXMODEL"; then
-		AC_MSG_ERROR([this boxtype needs --with-boxmodel])
+		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
 	fi])
 
 AC_SUBST(BOXTYPE)

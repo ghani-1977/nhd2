@@ -384,7 +384,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	}
 
 	// channel logo/number/name
-#define PIC_W 52
+#define PIC_W 78
 #define PIC_H 39
 
 	if (satellitePosition != 0 && satellitePositions.size() ) 

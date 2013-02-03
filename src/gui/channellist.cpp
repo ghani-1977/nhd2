@@ -82,7 +82,7 @@ extern CBouquetList   * RADIOsatList;
 extern CBouquetList   * RADIOfavList;
 extern CBouquetList   * RADIOallList;
 
-#define PIC_W 52
+#define PIC_W 78
 
 extern t_channel_id rec_channel_id;
 extern t_channel_id live_channel_id;

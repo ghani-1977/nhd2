@@ -52,7 +52,7 @@
 #include <gui/pictureviewer.h>
 
 extern CPictureViewer * g_PicViewer;
-#define PIC_W 52
+#define PIC_W 78
 
 static CProgressBar * timescale;
 
