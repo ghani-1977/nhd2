@@ -377,7 +377,11 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_ANALOG_MODE))	/* video analoue mode */
 	{
 		if(videoDecoder)
+#if defined (PLATFORM_COOLSTREAM)
+			videoDecoder->SetVideoMode((analog_mode_t) g_settings.analog_mode);
+#else			
 			videoDecoder->SetAnalogMode(g_settings.analog_mode);
+#endif			
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_VIDEORATIO) || ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_VIDEOFORMAT ))	/* format aspect-ratio */
 	{
@@ -409,6 +413,7 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 			}
 		}
 	}
+#if !defined (PLATFORM_COOLSTREAM)	
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_VIDEOMENU_HDMI_COLOR_SPACE)) 
 	{
 		if(videoDecoder)
@@ -419,6 +424,7 @@ bool CVideoSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 		if(videoDecoder)
 			videoDecoder->SetWideScreen(g_settings.wss_mode);
 	}
+#endif	
 
 	return true;
 }
@@ -439,16 +445,25 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	}
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_AVSYNC)) 
 	{
+#if defined (PLATFORM_COOLSTREAM)
+		videoDecoder->SetSyncMode((AVSYNC_TYPE)g_settings.avsync);
+		audioDecoder->SetSyncMode((AVSYNC_TYPE)g_settings.avsync);
+		videoDemux->SetSyncMode((AVSYNC_TYPE)g_settings.avsync);
+		audioDemux->SetSyncMode((AVSYNC_TYPE)g_settings.avsync);
+		pcrDemux->SetSyncMode((AVSYNC_TYPE)g_settings.avsync);
+#else
 		if(videoDecoder)
 			videoDecoder->SetSyncMode(g_settings.avsync);			
 		
 		if(audioDecoder)
 			audioDecoder->SetSyncMode(g_settings.avsync);
+#endif		
 		
 		//videoDemux->SetSyncMode(g_settings.avsync);
 		//audioDemux->SetSyncMode(g_settings.avsync);
 		//pcrDemux->SetSyncMode((g_settings.avsync);		
 	}
+#if !defined (PLATFORM_COOLSTREAM)	
 	else if( ARE_LOCALES_EQUAL(OptionName, LOCALE_AUDIOMENU_AC3_DELAY) )
 	{
 		if(audioDecoder)
@@ -458,7 +473,8 @@ bool CAudioSetupNotifier::changeNotify(const neutrino_locale_t OptionName, void 
 	{
 		if(audioDecoder)
 			audioDecoder->setHwPCMDelay(g_settings.pcm_delay);
-	}	
+	}
+#endif	
 
 	return true;
 }
@@ -896,9 +912,14 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 			videoDecoder->SetVideoSystem(g_settings.video_Mode);
 
 			/*aspect-ratio*/
-			videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);	
+			videoDecoder->setAspectRatio(g_settings.video_Ratio, g_settings.video_Format);
+#if defined (PLATFORM_COOLSTREAM)
+			videoDecoder->SetVideoMode((analog_mode_t) g_settings.analog_mode);
+#else			
 			videoDecoder->SetAnalogMode( g_settings.analog_mode); 
-#ifdef __sh__		
+#endif
+
+#if !defined (PLATFORM_COOLSTREAM)	
 			videoDecoder->SetSpaceColour(g_settings.hdmi_color_space);
 #endif
 		}

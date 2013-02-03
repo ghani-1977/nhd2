@@ -24,6 +24,8 @@
 
 #include <inttypes.h>
 
+#include <config.h>
+
 #include "types.h"
 #include "channel.h"
 #include <zapit/satconfig.h>
@@ -59,7 +61,11 @@ static inline fe_modulation_t dvbs_get_modulation(fe_code_rate_t fec)
 #if HAVE_DVB_API_VERSION >= 5
 		return PSK_8;
 #else
+#if defined (PLATFORM_COOLSTREAM)
+		return PSK_8;
+#else		
 		return PSK8;
+#endif		
 #endif
 }
 

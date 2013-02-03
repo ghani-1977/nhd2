@@ -2630,8 +2630,12 @@ int GetTeletextPIDs(int source)
 	int res;
 
         cDemux * dmx = new cDemux();
-	//dmx->Open(DMX_PSI_CHANNEL, 1024, source );
+
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open(DMX_PSI_CHANNEL, 1024, live_fe );
+#endif	
 
         memset(filter, 0x00, DMX_FILTER_SIZE);
         memset(mask, 0x00, DMX_FILTER_SIZE);

@@ -53,7 +53,9 @@ if ENABLE_UPNP
 libneutrino_gui2_a_SOURCES += upnpbrowser.cpp
 endif
 
+if !BOXTYPE_COOLSTREAM
 libneutrino_gui2_a_SOURCES += cam_menu.cpp
+endif
 
 libtimerlist_a_SOURCES = timerlist.cpp
 

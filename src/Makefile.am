@@ -57,7 +57,6 @@ neutrino_LDADD = \
 	$(top_builddir)/lib/libmd5sum/libtuxbox-md5sum.a \
 	$(top_builddir)/lib/libdvbsub/libdvbsub.a \
 	$(top_builddir)/lib/libtuxtxt/libtuxtxt.a \
-	$(top_builddir)/lib/libcoolstream/libcoolstream.a \
 	@CURL_LIBS@ \
 	@FREETYPE_LIBS@ \
 	@PNG_LIBS@ \
@@ -65,6 +64,17 @@ neutrino_LDADD = \
 	@ID3TAG_LIBS@ \
 	@VORBISIDEC_LIBS@ \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
+
+if !BOXTYPE_COOLSTREAM
+neutrino_LDADD += $(top_builddir)/lib/libcoolstream/libcoolstream.a
+endif
+
+if BOXTYPE_COOLSTREAM
+neutrino_LDADD += \
+	-lcoolstream-mt \
+	-lnxp \
+	-lOpenThreads
+endif
 
 if ENABLE_UPNP
 neutrino_LDADD += $(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a

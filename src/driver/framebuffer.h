@@ -27,10 +27,11 @@
 
 #include <config.h>
 
+#include <stdint.h>
+
 #include <linux/fb.h>
 #include <linux/vt.h>
 
-#include <stdint.h>
 #include <string>
 #include <map>
 

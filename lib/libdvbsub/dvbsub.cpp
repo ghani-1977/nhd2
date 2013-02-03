@@ -283,7 +283,11 @@ static void* reader_thread(void * /*arg*/)
 
         dmx = new cDemux();
 
-	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe/*?live_fe->fenumber:0*/);	
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PES_CHANNEL);
+#else	
+	dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe);
+#endif	
 
 	while (reader_running) 
 	{
@@ -318,7 +322,11 @@ static void* reader_thread(void * /*arg*/)
 			clear_queue();
 			dmx->Stop();
 			//
+#if defined (PLATFORM_COOLSTREAM)
+			dmx->Open(DMX_PES_CHANNEL);
+#else			
 			dmx->Open(DMX_PES_CHANNEL, 64*1024, live_fe/*?live_fe->fenumber:0*/);	
+#endif			
 			//
 			dmx->pesFilter(dvbsub_pid);
 			dmx->Start();

@@ -35,7 +35,10 @@
 #include <zapit/pmt.h>
 #include <dmx_cs.h>
 
-#include <dvb-ci.h>
+//#if !defined (PLATFORM_COOLSTREAM)
+//#include <dvb-ci.h>
+//#endif
+
 #include <linux/dvb/dmx.h>
 
 #include <zapit/frontend_c.h>
@@ -47,7 +50,9 @@
 extern int currentMode;
 extern short scan_runs;
 
-extern cDvbCi * ci;
+//#if !defined (PLATFORM_COOLSTREAM)
+//extern cDvbCi * ci;
+//#endif
 
 
 /*
@@ -465,7 +470,11 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 	cDemux * dmx = new cDemux(); 
 	
 	// open
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open( DMX_PSI_CHANNEL, PMT_SIZE, fe );
+#endif	
 
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
@@ -646,7 +655,11 @@ int pmt_set_update_filter( CZapitChannel * const channel, int * fd, CFrontend * 
 		pmtDemux = new cDemux();
 	
 	// open 
+#if defined (PLATFORM_COOLSTREAM)
+	pmtDemux->Open(DMX_PSI_CHANNEL);
+#else	
 	pmtDemux->Open(DMX_PSI_CHANNEL, PMT_SIZE, fe );
+#endif	
 
 	if (channel->getPmtPid() == 0)
 		return -1;

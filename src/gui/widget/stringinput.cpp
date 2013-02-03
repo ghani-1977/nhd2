@@ -49,7 +49,6 @@
 #include <neutrino.h>
 
 
-
 CStringInput::CStringInput(const neutrino_locale_t Name, char* Value, int Size, const neutrino_locale_t Hint_1, const neutrino_locale_t Hint_2, const char * const Valid_Chars, CChangeObserver* Observ, const char * const Icon)
 {
 	frameBuffer = CFrameBuffer::getInstance();

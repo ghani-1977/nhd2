@@ -6339,7 +6339,11 @@ int eit_set_update_filter(int *fd)
 	if(eitDmx == NULL) 
 	{
 		eitDmx = new cDemux();
+#if defined (PLATFORM_COOLSTREAM)
+		eitDmx->Open(DMX_PSI_CHANNEL);
+#else
 		eitDmx->Open( DMX_PSI_CHANNEL, 4096, live_fe );
+#endif		
 	}
 
 	unsigned char filter[DMX_FILTER_SIZE];

@@ -22,6 +22,7 @@
  *
  */
 
+#include <stdio.h>
 
 #include <dmx.h>
 #include <dmxapi.h>
@@ -477,7 +478,11 @@ int DMX::immediate_start(void)
 	if(dmx == NULL) 
 	{
 		dmx = new cDemux();
+#if defined (PLATFORM_COOLSTREAM)
+		dmx->Open(DMX_PSI_CHANNEL);
+#else
 		dmx->Open( DMX_PSI_CHANNEL, dmxBufferSizeInKB*1024UL, live_fe );
+#endif		
 	}
 
 	fd = 1;

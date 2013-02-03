@@ -140,7 +140,11 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 	record->Open();
 
 	// start_recording
+#if defined (PLATFORM_COOLSTREAM)
+	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids, 0))
+#else	  
 	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids)) 
+#endif	  
 	{
 		record->Stop();
 		delete record;

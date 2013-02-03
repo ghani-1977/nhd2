@@ -41,6 +41,7 @@
 
 #include <string>
 
+
 class CStringInput : public CMenuTarget
 {
 	protected:

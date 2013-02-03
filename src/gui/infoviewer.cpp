@@ -1953,9 +1953,9 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 		}
 			
 		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 85, BoxEndY - ICON_Y_1 );
-//#if defined (PLATFORM_DUCKBOX) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_SPARK7162)
+#if !defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
-//#endif			
+#endif			
 		return;
 	}
 }

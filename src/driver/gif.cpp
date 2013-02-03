@@ -64,7 +64,11 @@ int fh_gif_load(const char *name,unsigned char **buffer,int* xp,int* yp)
 	ColorMapObject *cmap;
 	int cmaps;
 
+#if defined (PLATFORM_COOLSTREAM)
+	gft=DGifOpenFileName(name, NULL);
+#else
 	gft=DGifOpenFileName(name);
+#endif	
 	if(gft==NULL) gflush;
 	do
 	{
@@ -134,7 +138,12 @@ int fh_gif_getsize(const char *name,int *x,int *y, int wanted_width, int wanted_
 	int extcode;
 	GifRecordType rt;
 
+#if defined (PLATFORM_COOLSTREAM)
+	gft=DGifOpenFileName(name, NULL);
+#else	
 	gft=DGifOpenFileName(name);
+#endif
+
 	if(gft==NULL) gflush;
 	do
 	{

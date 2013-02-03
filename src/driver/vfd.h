@@ -33,6 +33,10 @@
 #include <pthread.h>
 #include <string>
 
+#if defined (PLATFORM_COOLSTREAM)
+#include <cs_vfd.h>
+#endif
+
 
 #if defined(PLATFORM_SPARK7162)
 /* SAB Triple VFD Icons								*/
@@ -163,8 +167,7 @@ typedef enum
 
 #endif //ufs910, ufs913
 
-#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162) && !defined(PLATFORM_UFS913)
-
+#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162) && !defined(PLATFORM_UFS913) && !defined (PLATFORM_COOLSTREAM)
 // duckbox
 // token from micom
 enum {
@@ -221,7 +224,6 @@ typedef enum
 	VFD_ICON_PAUSE		= ICON_PAUSE,
 	VFD_ICON_LOCK 		= ICON_SCRAMBLED,
 } vfd_icon;
-
 #endif  //common
 
 #ifdef __sh__

@@ -84,7 +84,7 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 // xtrend 5XXX has no vfd
-#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC)
+#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC) || defined (PLATFORM_COOLSTREAM)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
@@ -401,7 +401,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_TV, false);			
 			showAudioPlayMode(AUDIO_MODE_STOP);			
 			showclock = true;
+#if !defined (PLATFORM_COOLSTREAM)			
 			ShowIcon(VFD_ICON_LOCK, false);
+#endif			
 			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */

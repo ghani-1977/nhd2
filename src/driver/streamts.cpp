@@ -346,7 +346,11 @@ void * streamts_live_thread(void *data)
 
 	cDemux * dmx = new cDemux();
 	
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_TP_CHANNEL);
+#else	
 	dmx->Open( DMX_TP_CHANNEL, 3 * 3008 * 62, live_fe);	
+#endif	
 	
 	dmx->pesFilter(pids[0]);
 	for(int i = 1; i < demuxfd_count; i++)
@@ -368,8 +372,11 @@ void * streamts_live_thread(void *data)
 
 	printf("[streamts] Exiting LIVE STREAM thread, fd %d\n", fd);
 	
+#if !defined (PLATFORM_COOLSTREAM)	
 	for(int i = 1; i < demuxfd_count; i++)
 		dmx->removePid(pids[i]);
+#endif
+
 	dmx->Stop();
 	
 	delete dmx;

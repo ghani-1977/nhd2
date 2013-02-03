@@ -73,7 +73,11 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	
 	cDemux * dmx = new cDemux();
 	
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open(DMX_PSI_CHANNEL, NIT_SIZE, getFE(feindex));
+#endif	
 
 	unsigned char buffer[NIT_SIZE];
 

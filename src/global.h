@@ -32,6 +32,7 @@
 #ifndef __neutrino_global_h__
 #define __neutrino_global_h__
 
+#include <stdio.h>
 
 #include <zapit/client/zapitclient.h>
 #include <sectionsdclient/sectionsdclient.h>
@@ -44,6 +45,9 @@
 #include "driver/lcdd.h"
 #define CVFD CLCD
 #else
+#if defined (PLATFORM_COOLSTREAM)
+#include <cs_vfd.h>
+#endif
 #include "driver/vfd.h"
 #endif
 

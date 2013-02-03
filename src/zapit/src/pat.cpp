@@ -46,7 +46,11 @@ int parse_pat(CZapitChannel * const channel, CFrontend * fe)
 	cDemux * dmx = new cDemux();
 	
 	//open
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, fe );
+#endif	
 
 	/* buffer for program association table */
 	unsigned char buffer[PAT_SIZE];
@@ -110,7 +114,11 @@ int parse_pat(int feindex)
 	cDemux * dmx = new cDemux();
 	
 	// open
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open(DMX_PSI_CHANNEL, PAT_SIZE, getFE(feindex));
+#endif	
 
 	unsigned char filter[DMX_FILTER_SIZE];
 	unsigned char mask[DMX_FILTER_SIZE];

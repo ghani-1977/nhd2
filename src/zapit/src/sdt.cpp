@@ -55,7 +55,11 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	cDemux * dmx = new cDemux();
 	
 	//open
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open( DMX_PSI_CHANNEL, SDT_SIZE, getFE(feindex) );
+#endif	
 
 	unsigned char buffer[SDT_SIZE];
 
@@ -251,8 +255,12 @@ int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const 
 	
 	cDemux * dmx = new cDemux();
 	
-	/* open */
+	// open
+#if defined (PLATFORM_COOLSTREAM)
+	dmx->Open(DMX_PSI_CHANNEL);
+#else	
 	dmx->Open( DMX_PSI_CHANNEL, SDT_SIZE, fe );
+#endif	
 	
 	int ret = -1;
 

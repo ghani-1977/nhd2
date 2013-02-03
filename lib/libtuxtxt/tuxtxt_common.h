@@ -437,7 +437,11 @@ int tuxtxt_init_demuxer( int source )
 		
 		printf("TuxTxt: source demux %d\n", source);
 
-		dmx->Open(DMX_PES_CHANNEL, 2* 3008 * 62, /*source*/live_fe );		
+#if defined (PLATFORM_COOLSTREAM)
+		dmx->Open(DMX_PES_CHANNEL);
+#else		
+		dmx->Open(DMX_PES_CHANNEL, 2* 3008 * 62, live_fe );
+#endif		
 	}
 #if TUXTXT_DEBUG
 	printf("TuxTxt: initialized\n");

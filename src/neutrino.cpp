@@ -111,7 +111,9 @@
 #include "gui/filebrowser.h"
 #include "gui/widget/progressbar.h"
 
+#if !defined (PLATFORM_COOLSTREAM)
 #include "gui/cam_menu.h"
+#endif
 
 #include "gui/hdd_menu.h"
 
@@ -150,7 +152,9 @@
 #include <zapit/channel.h>
 #include <zapit/bouquets.h>
 
-#include "gui/svn_version.h"
+#if defined (PLATFORM_COOLSTREAM)
+#include <cs_api.h>
+#endif
 
 
 extern tallchans allchans;
@@ -258,7 +262,9 @@ CRemoteControl 		* g_RemoteControl;
 SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 CMoviePlayerGui		* moviePlayerGui;
 CPictureViewer 		* g_PicViewer;
+#if !defined (PLATFORM_COOLSTREAM)
 CCAMMenuHandler 	* g_CamHandler;
+#endif
 
 bool parentallocked = false;
 static char **global_argv;
@@ -294,7 +300,9 @@ static void initGlobals(void)
 	g_EventList     = NULL;
 	g_Locale        = new CLocaleManager;
 	g_PluginList    = NULL;
+#if !defined (PLATFORM_COOLSTREAM)	
 	g_CamHandler 	= NULL;
+#endif	
 
 #if ENABLE_RADIOTEXT
 	g_Radiotext     = NULL;
@@ -438,18 +446,32 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	prev_video_Mode = g_settings.video_Mode;
 	
 	//analog mode
+#if defined (PLATFORM_COOLSTREAM)
+	g_settings.analog_mode = configfile.getInt32("analog_mode", (int)ANALOG_SD_RGB_SCART); // default RGB
+#else
 	g_settings.analog_mode = configfile.getInt32("analog_mode", ANALOG_YUV); 	// default yuv
 	
 	g_settings.hdmi_color_space = configfile.getInt32("hdmi_color_space", HDMI_RGB); //default RGB
+#endif	
 
 	//aspect ratio
+#if defined (PLATFORM_COOLSTREAM)
+	g_settings.video_Ratio = configfile.getInt32("video_Ratio", DISPLAY_AR_16_9);		// 16:9
+#else
 	g_settings.video_Ratio = configfile.getInt32("video_Ratio", ASPECTRATIO_169);		// 16:9
+#endif	
 	 
-	// policy	
+	// policy
+#if defined (PLATFORM_COOLSTREAM)
+	g_settings.video_Format = configfile.getInt32("video_Format", DISPLAY_AR_MODE_LETTERBOX);
+#else
 	g_settings.video_Format = configfile.getInt32("video_Format", VIDEOFORMAT_PANSCAN2);
+#endif	
 
-	//wss	
+	//wss
+#if !defined (PLATFORM_COOLSTREAM)	
 	g_settings.wss_mode = configfile.getInt32("wss_mode", WSS_AUTO);
+#endif	
 	
 	g_settings.contrast = configfile.getInt32( "contrast", 130);
 	g_settings.saturation = configfile.getInt32( "saturation", 130);
@@ -462,10 +484,16 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.audio_DolbyDigital    = configfile.getBool("audio_DolbyDigital", false);
 	
 	// ac3
+#if !defined (PLATFORM_COOLSTREAM)	
 	g_settings.hdmi_dd = configfile.getInt32( "hdmi_dd", AC3_DOWNMIX);	// downmix
+#endif	
 	
 	// avsync
+#if defined (PLATFORM_COOLSTREAM)
+	g_settings.avsync = configfile.getInt32( "avsync", 1);
+#else
 	g_settings.avsync = configfile.getInt32( "avsync", AVSYNC_ON);
+#endif	
 	
 	// ac3 delay
 	g_settings.ac3_delay = configfile.getInt32( "ac3_delay", 0);
@@ -1996,6 +2024,14 @@ void CNeutrinoApp::InitZapper()
 	}
 }
 
+#if defined (PLATFORM_COOLSTREAM)
+static void CSSendMessage(uint32_t msg, uint32_t data)
+{
+	if (g_RCInput)
+		g_RCInput->postMsg(msg, data);
+}
+#endif
+
 // setup recording device
 void CNeutrinoApp::setupRecordingDevice(void)
 {
@@ -2022,6 +2058,11 @@ void CISendMessage(uint32_t msg, uint32_t data)
 int CNeutrinoApp::run(int argc, char **argv)
 {
 	CmdParser(argc, argv);
+	
+#if defined (PLATFORM_COOLSTREAM)
+	cs_api_init();
+	cs_register_messenger(CSSendMessage);
+#endif
 	
 	// font
 	font.name = NULL;
@@ -2166,8 +2207,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
+#if !defined (PLATFORM_COOLSTREAM)	
 	g_CamHandler = new CCAMMenuHandler();
 	g_CamHandler->init();	
+#endif	
 
 	// plugins
 	g_PluginList = new CPlugins;
@@ -2450,7 +2493,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	SHTDCNT::getInstance()->init();
 
 	// Cam-Ci
+#if !defined (PLATFORM_COOLSTREAM)	
 	cDvbCi::getInstance()->SetHook(CISendMessage);	
+#endif	
 
 	// real run ;-)
 	RealRun(mainMenu);
@@ -3041,11 +3086,13 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	}
 
 	// we assume g_CamHandler free/delete data if needed
+#if !defined (PLATFORM_COOLSTREAM)	
 	res = g_CamHandler->handleMsg(msg, data);
 	if( res != messages_return::unhandled ) 
 	{
 		return(res & (0xFFFFFFFF - messages_return::unhandled));
-	}	
+	}
+#endif	
 
 	// handle Keys
 	if( msg == CRCInput::RC_ok || msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
@@ -4133,15 +4180,19 @@ void CNeutrinoApp::tvMode( bool rezap )
 	}
 	else if( mode == mode_scart )
 	{
+#if !defined (PLATFORM_COOLSTREAM)	  
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_SCART);
+#endif		
 	}
 	else if( mode == mode_standby ) 
 	{
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 		
+#if !defined (PLATFORM_COOLSTREAM)		
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
+#endif		
 	}
 
 	bool stopauto = (mode != mode_ts);
@@ -4196,8 +4247,10 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 	} 
 	else 
 	{
+#if !defined (PLATFORM_COOLSTREAM)	  
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
+#endif		
 		
 		mode = mode_unknown;
 		
@@ -4389,16 +4442,21 @@ void CNeutrinoApp::radioMode( bool rezap)
 	}
 	else if( mode == mode_scart ) 
 	{
+#if !defined (PLATFORM_COOLSTREAM)	  
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_SCART);
+#endif		
 	}
 	else if( mode == mode_standby ) 
 	{
 #if 1	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-#endif		
+#endif
+
+#if !defined (PLATFORM_COOLSTREAM)
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
+#endif		
 	}
 
 	mode = mode_radio;
@@ -4919,6 +4977,11 @@ void stop_daemons()
 
 	// movieplayerGui
 	//delete moviePlayerGui;
+	
+#if defined (PLATFORM_COOLSTREAM)
+	cs_deregister_messenger();
+	cs_api_exit();
+#endif
 }
 
 // load keys
@@ -5154,7 +5217,7 @@ void sighandler (int signum)
 int main(int argc, char *argv[])
 {
 	// build date
-	printf(">>> NeutrinoHD2 (compiled %s %s) (SVN Rev:%s) <<<\n", __DATE__, __TIME__, SVNVERSION);
+	printf(">>> NeutrinoHD2 (compiled %s %s) <<<\n", __DATE__, __TIME__);
 	
 	// set debug level (default normal)
 	setDebugLevel(DEBUG_NORMAL);

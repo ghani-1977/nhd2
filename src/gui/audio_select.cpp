@@ -79,12 +79,14 @@ const CMenuOptionChooser::keyval AUDIOMENU_ANALOGOUT_OPTIONS[AUDIOMENU_ANALOGOUT
 };
 
 // ac3
+#if !defined (PLATFORM_COOLSTREAM)
 #define AC3_OPTION_COUNT 2
 const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 {
 	{ AC3_PASSTHROUGH, NONEXISTANT_LOCALE, "passthrough" },
 	{ AC3_DOWNMIX, NONEXISTANT_LOCALE, "downmix" }
 };
+#endif
 
 int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actionkey)
 {
@@ -127,9 +129,10 @@ int CAudioSelectMenuHandler::doMenu()
 	AudioSelector.addItem( oj );
 	
 	// ac3
+#if !defined (PLATFORM_COOLSTREAM)	
 	AudioSelector.addItem(GenericMenuSeparatorLine);
 	AudioSelector.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_HDMI_DD, &g_settings.hdmi_dd, AC3_OPTIONS, AC3_OPTION_COUNT, true, audioSetupNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
-
+#endif
 
 	//dvb/tuxtxt subs
 	CChannelList * channelList = CNeutrinoApp::getInstance()->channelList;

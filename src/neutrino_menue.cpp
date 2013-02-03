@@ -134,7 +134,9 @@
 #include "gui/hdd_menu.h"
 #include "gui/audio_select.h"
 
+#if !defined (PLATFORM_COOLSTREAM)
 #include "gui/cam_menu.h"
+#endif
 
 #include <zapit/getservices.h>
 #include <zapit/satconfig.h>
@@ -158,7 +160,9 @@ extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
 //extern bool has_hdd;				// defined in hdd_menu.cpp
 extern bool parentallocked;			// defined neutrino.cpp
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
+#if !defined (PLATFORM_COOLSTREAM)
 extern CCAMMenuHandler * g_CamHandler;		// defined neutrino.cpp
+#endif
 
 static CTimingSettingsNotifier timingsettingsnotifier;
 
@@ -341,6 +345,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 //Video Settings
 //hdmi color space
+#if !defined (PLATFORM_COOLSTREAM)
 #ifdef __sh__
 #define VIDEOMENU_HDMI_COLOR_SPACE_OPTION_COUNT 3
 const CMenuOptionChooser::keyval VIDEOMENU_HDMI_COLOR_SPACE_OPTIONS[VIDEOMENU_HDMI_COLOR_SPACE_OPTION_COUNT] =
@@ -366,6 +371,7 @@ const CMenuOptionChooser::keyval VIDEOMENU_HDMI_COLOR_SPACE_OPTIONS[VIDEOMENU_HD
 	 { HDMI_UNKNOW, NONEXISTANT_LOCALE, "Unknow" }
 };
 #endif
+#endif /* !coolstream*/
 
 //Analog Output 
 #ifdef __sh__
@@ -377,6 +383,15 @@ const CMenuOptionChooser::keyval VIDEOMENU_ANALOGUE_MODE_OPTIONS[VIDEOMENU_ANALO
 	 { ANALOG_CVBS, NONEXISTANT_LOCALE, "CVBS" },
 	 { ANALOG_SVIDEO, NONEXISTANT_LOCALE, "SVIDEO" }, //not used
 	 { ANALOG_YUV, NONEXISTANT_LOCALE, "YUV" }
+};
+#elif defined (PLATFORM_COOLSTREAM)
+#define VIDEOMENU_ANALOGUE_MODE_OPTION_COUNT 4
+const CMenuOptionChooser::keyval VIDEOMENU_ANALOGUE_MODE_OPTIONS[VIDEOMENU_ANALOGUE_MODE_OPTION_COUNT] =
+{
+	{ ANALOG_SD_RGB_SCART, NONEXISTANT_LOCALE, "RGB"   }, /* composite + RGB */
+	{ ANALOG_SD_YPRPB_SCART, NONEXISTANT_LOCALE, "YPbPr" }, /* YPbPr SCART */
+	{ ANALOG_HD_RGB_SCART, NONEXISTANT_LOCALE, "RGB Scart"   },
+	{ ANALOG_HD_YPRPB_SCART, NONEXISTANT_LOCALE, "YPbPr Scart" },
 };
 #else
 //rgb/cvbs/yuv
@@ -396,6 +411,13 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORAT
 {
 	{ ASPECTRATIO_43, LOCALE_VIDEOMENU_VIDEORATIO_43 },
 	{ ASPECTRATIO_169, LOCALE_VIDEOMENU_VIDEORATIO_169 }
+};
+#elif defined (PLATFORM_COOLSTREAM)
+#define VIDEOMENU_VIDEORATIO_OPTION_COUNT 2
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
+{
+	{ DISPLAY_AR_4_3, LOCALE_VIDEOMENU_VIDEORATIO_43         },
+	{ DISPLAY_AR_16_9, LOCALE_VIDEOMENU_VIDEORATIO_169        },
 };
 #else
 #define VIDEOMENU_VIDEORATIO_OPTION_COUNT 3
@@ -422,6 +444,16 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFO
 	{ VIDEOFORMAT_PANSCAN, LOCALE_VIDEOMENU_PANSCAN },
 	{ VIDEOFORMAT_FULLSCREEN, LOCALE_VIDEOMENU_FULLSCREEN },
 	{ VIDEOFORMAT_PANSCAN2, LOCALE_VIDEOMENU_PANSCAN2 }
+};
+#elif defined (PLATFORM_COOLSTREAM)
+#define VIDEOMENU_VIDEOFORMAT_OPTION_COUNT 4
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFORMAT_OPTION_COUNT] = 
+{
+	{ DISPLAY_AR_MODE_PANSCAN, LOCALE_VIDEOMENU_PANSCAN },
+	{ DISPLAY_AR_MODE_PANSCAN2, LOCALE_VIDEOMENU_PANSCAN2 },
+	{ DISPLAY_AR_MODE_LETTERBOX, LOCALE_VIDEOMENU_LETTERBOX },
+	{ DISPLAY_AR_MODE_NONE, LOCALE_VIDEOMENU_FULLSCREEN }
+	//{ 2, LOCALE_VIDEOMENU_AUTO } // whatever is this auto mode, it seems its totally broken
 };
 #else
 // giga
@@ -474,6 +506,23 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEOMODE_OPTIONS[VIDEOMENU_VIDEOMODE
 	{ VIDEO_STD_1080P50, NONEXISTANT_LOCALE, "1080p 50Hz" 	},
 	{ VIDEO_STD_PC, NONEXISTANT_LOCALE, "PC"		}
 };
+#elif defined (PLATFORM_COOLSTREAM)
+#define VIDEOMENU_VIDEOMODE_OPTION_COUNT 12
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEOMODE_OPTIONS[VIDEOMENU_VIDEOMODE_OPTION_COUNT] =
+{
+	{ VIDEO_STD_SECAM,   NONEXISTANT_LOCALE, "SECAM"	},
+	{ VIDEO_STD_PAL,     NONEXISTANT_LOCALE, "PAL"		},
+	{ VIDEO_STD_576P,    NONEXISTANT_LOCALE, "576p"		},
+	{ VIDEO_STD_720P50,  NONEXISTANT_LOCALE, "720p 50Hz"	},
+	{ VIDEO_STD_1080I50, NONEXISTANT_LOCALE, "1080i 50Hz"	},
+	{ VIDEO_STD_1080P24, NONEXISTANT_LOCALE, "1080p 24Hz"	},
+	{ VIDEO_STD_1080P25, NONEXISTANT_LOCALE, "1080p 25Hz"	},
+	{ VIDEO_STD_NTSC,    NONEXISTANT_LOCALE, "NTSC"		},
+	{ VIDEO_STD_480P,    NONEXISTANT_LOCALE, "480p"		},
+	{ VIDEO_STD_720P60,  NONEXISTANT_LOCALE, "720p 60Hz"	},
+	{ VIDEO_STD_1080I60, NONEXISTANT_LOCALE, "1080i 60Hz"	},
+	{ VIDEO_STD_AUTO,    NONEXISTANT_LOCALE, "Auto"         }
+};
 #else
 // giga
 /*
@@ -518,6 +567,7 @@ auto(4:3_off)
 >16:9_letterbox_center 
 14:9_full_format
 */
+#if !defined (PLATFORM_COOLSTREAM)
 #ifdef __sh__
 #define VIDEOMENU_WSS_OPTION_COUNT 3
 const CMenuOptionChooser::keyval VIDEOMENU_WSS_OPTIONS[VIDEOMENU_WSS_OPTION_COUNT] =
@@ -558,6 +608,7 @@ const CMenuOptionChooser::keyval VIDEOMENU_WSS_OPTIONS[VIDEOMENU_WSS_OPTION_COUN
 	
 };
 #endif
+#endif /* !coolstream*/
 
 void CNeutrinoApp::InitVideoSettings(CMenuWidget &videoSettings, CVideoSetupNotifier * videoSetupNotifier)
 {
@@ -582,11 +633,13 @@ void CNeutrinoApp::InitVideoSettings(CMenuWidget &videoSettings, CVideoSetupNoti
 	// video analogue mode
 	videoSettings.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_ANALOG_MODE, &g_settings.analog_mode, VIDEOMENU_ANALOGUE_MODE_OPTIONS, VIDEOMENU_ANALOGUE_MODE_OPTION_COUNT, true, videoSetupNotifier, CRCInput::convertDigitToKey(shortcutVideo++), "", true ));
 
+#if !defined (PLATFORM_COOLSTREAM)
 	// video hdmi space colour	
 	videoSettings.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_HDMI_COLOR_SPACE, &g_settings.hdmi_color_space, VIDEOMENU_HDMI_COLOR_SPACE_OPTIONS, VIDEOMENU_HDMI_COLOR_SPACE_OPTION_COUNT, true, videoSetupNotifier, CRCInput::convertDigitToKey(shortcutVideo++), "", true ));	
 	
 	// wss
 	videoSettings.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_WSS, &g_settings.wss_mode, VIDEOMENU_WSS_OPTIONS, VIDEOMENU_WSS_OPTION_COUNT, true, videoSetupNotifier, CRCInput::convertDigitToKey(shortcutVideo++), "", true ));
+#endif	
 
 	// video mode
 	videoSettings.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_VIDEOMODE, &g_settings.video_Mode, VIDEOMENU_VIDEOMODE_OPTIONS, VIDEOMENU_VIDEOMODE_OPTION_COUNT, true, videoSetupNotifier, CRCInput::convertDigitToKey(shortcutVideo++), "", true));
@@ -601,6 +654,15 @@ const CMenuOptionChooser::keyval AUDIOMENU_ANALOGOUT_OPTIONS[AUDIOMENU_ANALOGOUT
 	{ 2, LOCALE_AUDIOMENU_MONORIGHT }
 };
 
+#if defined (PLATFORM_COOLSTREAM)
+#define AUDIOMENU_AVSYNC_OPTION_COUNT 3
+const CMenuOptionChooser::keyval AUDIOMENU_AVSYNC_OPTIONS[AUDIOMENU_AVSYNC_OPTION_COUNT] =
+{
+        { 0, LOCALE_OPTIONS_OFF },
+        { 1, LOCALE_OPTIONS_ON  },
+        { 2, LOCALE_AUDIOMENU_AVSYNC_AM }
+};
+#else
 #define AUDIOMENU_AVSYNC_OPTION_COUNT 3
 const CMenuOptionChooser::keyval AUDIOMENU_AVSYNC_OPTIONS[AUDIOMENU_AVSYNC_OPTION_COUNT] =
 {
@@ -608,8 +670,10 @@ const CMenuOptionChooser::keyval AUDIOMENU_AVSYNC_OPTIONS[AUDIOMENU_AVSYNC_OPTIO
         { AVSYNC_ON, LOCALE_OPTIONS_ON  },
         { AVSYNC_AM, LOCALE_AUDIOMENU_AVSYNC_AM }
 };
+#endif
 
 // ac3
+#if !defined (PLATFORM_COOLSTREAM)
 #define AC3_OPTION_COUNT 2
 const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 {
@@ -630,6 +694,7 @@ const CMenuOptionChooser::keyval AUDIODELAY_OPTIONS[AUDIODELAY_OPTION_COUNT] =
 	{ 750, NONEXISTANT_LOCALE, "750" },
 	{ 1000, NONEXISTANT_LOCALE, "1000" },
 };
+#endif
 
 void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNotifier * audioSetupNotifier)
 {
@@ -648,8 +713,10 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	// analog output
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_ANALOGOUT, &g_settings.audio_AnalogMode, AUDIOMENU_ANALOGOUT_OPTIONS, AUDIOMENU_ANALOGOUT_OPTION_COUNT, true, audioSetupNotifier, CRCInput::convertDigitToKey(shortcutAudio++), "", true ));
 
+#if !defined (PLATFORM_COOLSTREAM)	
 	// hdmi-dd
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_HDMI_DD, &g_settings.hdmi_dd, AC3_OPTIONS, AC3_OPTION_COUNT, true, audioSetupNotifier, CRCInput::convertDigitToKey(shortcutAudio++) ));	
+#endif	
 
 	// A/V sync
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AVSYNC, &g_settings.avsync, AUDIOMENU_AVSYNC_OPTIONS, AUDIOMENU_AVSYNC_OPTION_COUNT, true, audioSetupNotifier, CRCInput::convertDigitToKey(shortcutAudio++), "", true ));
@@ -657,11 +724,13 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	//audioSettings.addItem(GenericMenuSeparator);
 	audioSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 	
+#if !defined (PLATFORM_COOLSTREAM)	
 	// ac3 delay
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AC3_DELAY, &g_settings.ac3_delay, AUDIODELAY_OPTIONS, AUDIODELAY_OPTION_COUNT, true, audioSetupNotifier, CRCInput::convertDigitToKey(shortcutAudio++) ));
 	
 	// pcm delay
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_PCM_DELAY, &g_settings.pcm_delay, AUDIODELAY_OPTIONS, AUDIODELAY_OPTION_COUNT, true, audioSetupNotifier, CRCInput::convertDigitToKey(shortcutAudio++) ));
+#endif	
 	
 	// pref sub/lang
 	audioSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_PREF_LANG_HEAD));
@@ -796,7 +865,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_RESET_CHANNELS, true, NULL, resetNotifier, "channels", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "service", LOCALE_HELPTEXT_DELETECHANNELS ));
 	
 	// CI Cam 	
-#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_SPARK7162)
+#if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
 	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_CAM_SETTINGS, true, "", g_CamHandler, NULL, CRCInput::convertDigitToKey(shortcutService++), NULL, "cam", LOCALE_HELPTEXT_CAM ));

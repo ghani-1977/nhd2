@@ -216,12 +216,15 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFO
 
 // ac3
 extern CAudioSetupNotifier * audioSetupNotifier;	/* defined neutrino.cpp */
+
+#if !defined (PLATFORM_COOLSTREAM)
 #define AC3_OPTION_COUNT 2
 const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 {
 	{ AC3_PASSTHROUGH, NONEXISTANT_LOCALE, "passthrough" },
 	{ AC3_DOWNMIX, NONEXISTANT_LOCALE, "downmix" }
 };
+#endif
 
 static const char FILENAME[] = "movieplayer.cpp";
 
@@ -1130,7 +1133,11 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{
+#if defined (PLATFORM_COOLSTREAM)
+				playback->GetPosition(position, duration);
+#else				
 				playback->GetPosition(position);
+#endif				
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -1550,8 +1557,10 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				
 				// ac3
+#if !defined (PLATFORM_COOLSTREAM)				
 				APIDSelector.addItem(GenericMenuSeparatorLine);
 				APIDSelector.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_HDMI_DD, &g_settings.hdmi_dd, AC3_OPTIONS, AC3_OPTION_COUNT, true, audioSetupNotifier, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED ));
+#endif				
 				
 				// policy/aspect ratio
 				APIDSelector.addItem(GenericMenuSeparatorLine);
@@ -1577,7 +1586,11 @@ void CMoviePlayerGui::PlayFile(void)
 							ac3state = CInfoViewer::AC3_ACTIVE;
 					}
 
-					playback->SetAPid(g_currentapid);
+#if defined (PLATFORM_COOLSTREAM)
+					playback->SetAPid(g_currentapid, g_currentac3);
+#else					
+					playback->SetAPid(currentapid);
+#endif					
 					apidchanged = 0;
 				}
 				
@@ -1645,16 +1658,22 @@ void CMoviePlayerGui::PlayFile(void)
 			cutNeutrino();
 
 			// init player
+#if defined (PLATFORM_COOLSTREAM)
+			playback->Open(is_file_player ? PLAYMODE_FILE : PLAYMODE_TS);
+#else			
 			playback->Open();
+#endif			
 			
 			duration = 0;
 			if(p_movie_info != NULL)
 				duration = p_movie_info->length * 60 * 1000;
 			  
-			// open file
 			// PlayBack Start
+#if defined (PLATFORM_COOLSTREAM)			  
+			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3, duration))
+#else
 			if(!playback->Start((char *)filename)) 
-			//if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3))
+#endif
 			{
 				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();
@@ -1687,8 +1706,11 @@ void CMoviePlayerGui::PlayFile(void)
 					duration = VlcGetStreamLength();
 				else
 				{
-					//playback->GetPosition(position);
+#if defined (PLATFORM_COOLSTREAM)
+					playback->GetPosition(position, duration);
+#else					
 					playback->GetDuration(duration);
+#endif					
 				}
 			}
 		}
@@ -1703,9 +1725,14 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(!isVlc)
 			{
+#if defined (PLATFORM_COOLSTREAM)
+				if( playback->GetPosition(position, duration) )
+				{
+#else			  
 				if(playback->GetPosition(position)) 
 				{
 					playback->GetDuration(duration);
+#endif					
 					
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
@@ -2368,7 +2395,8 @@ void CMoviePlayerGui::PlayFile(void)
 			} 
 			else if (playstate != CMoviePlayerGui::PAUSE)
 				playstate = CMoviePlayerGui::SOFTRESET;
-		} 		
+		} 
+#if !defined (PLATFORM_COOLSTREAM)		
 		else if (msg == CRCInput::RC_slow) 
 		{
 			if (slow > 0)
@@ -2381,7 +2409,8 @@ void CMoviePlayerGui::PlayFile(void)
 			//update_lcd = true;
 			playstate = CMoviePlayerGui::SLOW;
 			update_lcd = true;
-		}		
+		}
+#endif		
 		else if(msg == CRCInput::RC_red)
 		{
 			if (FileTime.IsVisible()) 
