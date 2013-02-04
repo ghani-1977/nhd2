@@ -160,7 +160,7 @@ lib/libtuxtxt/Makefile
 lib/libdvbsub/Makefile
 lib/libupnpclient/Makefile
 lib/liblcddisplay/Makefile
-lib/libcoolstream/Makefile
+lib/libdvbapi/Makefile
 lib/libeplayer3/Makefile
 src/nhttpd/Makefile
 src/nhttpd/web/Makefile

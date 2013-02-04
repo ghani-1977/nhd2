@@ -2,8 +2,13 @@ INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/zapit/include \
 	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@AVCODEC_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 AM_CPPFLAGS = -D__STDC_CONSTANT_MACROS
 

@@ -10,8 +10,13 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libxmltree \
 	-I$(top_srcdir)/lib/libmd5sum \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
@@ -66,7 +71,7 @@ neutrino_LDADD = \
 	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if !BOXTYPE_COOLSTREAM
-neutrino_LDADD += $(top_builddir)/lib/libcoolstream/libcoolstream.a
+neutrino_LDADD += $(top_builddir)/lib/libdvbapi/libdvbapi.a
 endif
 
 if BOXTYPE_COOLSTREAM

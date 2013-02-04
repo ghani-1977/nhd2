@@ -20,9 +20,14 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libxmltree \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@CURL_CFLAGS@ \
 	@FREETYPE_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include

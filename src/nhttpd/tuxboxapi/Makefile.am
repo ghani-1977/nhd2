@@ -9,8 +9,13 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/xmltree \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 if !ENABLE_GSTREAMER
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include

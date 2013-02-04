@@ -59,24 +59,6 @@
 #include <ctype.h>
 #include <config.h>
 
-#if 0
-#ifdef HAVE_TRIPLEDRAGON
-#include <zapit/td-demux-compat.h>
-#include <tddevices.h>
-#define DMXDEV	"/dev/" DEVICE_NAME_DEMUX "1"
-#elif HAVE_DVB_API_VERSION < 3
-#include <ost/dmx.h>
-#define DMXDEV  "/dev/dvb/card0/demux0"
-#define DVRDEV  "/dev/dvb/card0/dvr0"
-#define dmx_pes_filter_params   dmxPesFilterParams
-#define pes_type                pesType
-#else
-#include <linux/dvb/dmx.h>
-#define DMXDEV  "/dev/dvb/adapter0/demux0"
-#define DVRDEV  "/dev/dvb/adapter0/dvr0"
-#endif
-#endif
-
 #include <global.h>
 #include <system/settings.h>
 #include <neutrino.h>

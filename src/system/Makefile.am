@@ -8,8 +8,13 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libmd5sum \
 	-I$(top_srcdir)/lib/libxmltree \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include

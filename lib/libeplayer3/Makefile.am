@@ -4,7 +4,7 @@ CXXFLAGS = -Wall
 
 INCLUDES = \
 	-I$(srcdir)/include \
-	-I$(top_srcdir)/lib/libcoolstream
+	-I$(top_srcdir)/lib/libdvbapi
 
 libeplayer3_a_SOURCES =  \
 	container/container.c container/container_ffmpeg.c \

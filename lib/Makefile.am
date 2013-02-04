@@ -8,8 +8,11 @@ SUBDIRS = \
 	libnet \
 	libxmltree \
 	libtuxtxt \
-	libdvbsub \
-	libcoolstream
+	libdvbsub
+
+if !BOXTYPE_COOLSTREAM
+SUBDIRS += libdvbapi
+endif
 
 if ENABLE_LIBEPLAYER3
 SUBDIRS += libeplayer3
