@@ -45,7 +45,10 @@
 #include <gui/rc_lock.h>
 #include <daemonc/remotecontrol.h>    		/* st_rmsg      */
 
-#include <zapit/client/zapitclient.h>
+/*zapit*/
+#include <client/zapitclient.h>
+
+/*gui*/
 #include <gui/scan_setup.h>
 
 #include <string>

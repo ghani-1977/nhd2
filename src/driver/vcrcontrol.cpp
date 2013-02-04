@@ -65,11 +65,12 @@
 #include <math.h>
 
 #include <daemonc/remotecontrol.h>
-#include <zapit/client/zapittools.h>
 
-#include <zapit/client/zapittypes.h>
-#include <zapit/frontend_c.h>
-#include <zapit/channel.h>
+/*zapit includes*/
+#include <client/zapittools.h>
+#include <client/zapittypes.h>
+#include <frontend_c.h>
+#include <channel.h>
 
 
 extern bool autoshift;

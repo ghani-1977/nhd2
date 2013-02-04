@@ -34,7 +34,7 @@
 #include <errno.h>
 
 #include <linux/dvb/dmx.h>
-#include <zapit/client/zapitclient.h>
+#include <client/zapitclient.h>
 
 #include "udpstreampes.h"
 

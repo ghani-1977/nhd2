@@ -34,11 +34,11 @@
 #include <system/debug.h>
 
 /* zapit */
-#include <zapit/descriptors.h>
-#include <zapit/getservices.h>
+#include <descriptors.h>
+#include <getservices.h>
 #include <dmx_cs.h>
-#include <zapit/nit.h>
-#include <zapit/scan.h>
+#include <nit.h>
+#include <scan.h>
 
 #define NIT_SIZE 1024
 

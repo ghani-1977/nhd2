@@ -30,9 +30,9 @@
 #include <system/debug.h>
 
 /* zapit */
-#include <zapit/settings.h>
-#include <zapit/descriptors.h>
-#include <zapit/pmt.h>
+#include <settings.h>
+#include <descriptors.h>
+#include <pmt.h>
 #include <dmx_cs.h>
 
 //#if !defined (PLATFORM_COOLSTREAM)
@@ -41,7 +41,7 @@
 
 #include <linux/dvb/dmx.h>
 
-#include <zapit/frontend_c.h>
+#include <frontend_c.h>
 
 
 #define PMT_SIZE 1024

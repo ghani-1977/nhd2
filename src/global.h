@@ -34,7 +34,7 @@
 
 #include <stdio.h>
 
-#include <zapit/client/zapitclient.h>
+#include <client/zapitclient.h>  /* zapit */
 #include <sectionsdclient/sectionsdclient.h>
 #include <timerdclient/timerdclient.h>
 

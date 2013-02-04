@@ -82,7 +82,8 @@
 #include <video_cs.h>
 #include <audio_cs.h>
 
-#include <zapit/channel.h>
+/*zapit includes*/
+#include <channel.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>

@@ -42,7 +42,9 @@
 
 #include <driver/encoding.h>
 #include <system/debug.h>
-#include <zapit/bouquets.h>
+
+/*zapit includes*/
+#include <bouquets.h>
 
 
 extern tallchans allchans;	// defined in bouquets.h

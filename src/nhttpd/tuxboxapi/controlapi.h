@@ -7,7 +7,9 @@
 // C++
 #include <string>
 // yhttpd
-#include <zapit/channel.h>
+
+/*zapit includes*/
+#include <channel.h>
 #include "yhook.h"
 
 // forward declaration

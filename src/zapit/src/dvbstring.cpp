@@ -21,8 +21,9 @@
  *
  */
 
-#include <zapit/dvbstring.h>
+#include <dvbstring.h>
 #include <xmlinterface.h>
+
 
 static const int ISO_6937_mapping [0xBA - 0xA8 + 1] = {0x00A4, // 0xA8
 						       0x2018, // 0xA9

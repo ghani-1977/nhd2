@@ -35,11 +35,15 @@
 #include <driver/framebuffer.h>
 #include <gui/widget/listbox.h>
 
-#include <zapit/client/zapitclient.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
 
 #include <string>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+
+/*zapit includes*/
+#include <channel.h>
+#include <bouquets.h>
+
 
 class CBEChannelSelectWidget : public CListBox
 {

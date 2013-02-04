@@ -43,7 +43,9 @@
 #endif
 #include "SIsections.hpp"
 #include <dmxapi.h>
-#include <zapit/dvbstring.h>
+
+/*zapit includes*/
+#include <dvbstring.h>
 #include <edvbstring.h>
 #ifdef ENABLE_FREESATEPG
 #include "FreesatTables.hpp"

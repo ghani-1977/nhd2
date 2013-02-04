@@ -41,11 +41,13 @@
 #include <gui/widget/icons.h>
 #include <daemonc/remotecontrol.h>
 
-#include <zapit/frontend_c.h>
 #include <video_cs.h>
 #include <audio_cs.h>
 #include <dmx_cs.h>
-#include <zapit/satconfig.h>
+
+/*zapit includes*/
+#include <frontend_c.h>
+#include <satconfig.h>
 
 
 extern cVideo * videoDecoder;

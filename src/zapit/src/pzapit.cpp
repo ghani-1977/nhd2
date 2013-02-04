@@ -26,7 +26,7 @@
 #include <iostream>
 #include <unistd.h> /* sleep */
 
-#include <zapit/client/zapitclient.h>
+#include <client/zapitclient.h>
 
 #include <video_cs.h>
 

@@ -1,5 +1,5 @@
 INCLUDES = \
-	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/nhttpd \
 	-I$(top_srcdir)/src/nhttpd/yhttpd_core \
@@ -12,7 +12,8 @@ INCLUDES = \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
-INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+INCLUDES += -I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/lib/libcoolstream
 else
 INCLUDES += -I$(top_srcdir)/lib/libdvbapi
 endif

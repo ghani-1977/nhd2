@@ -66,7 +66,9 @@
 #include <connection/basicserver.h>
 
 #include <libxmltree/xmlinterface.h>
-#include <zapit/settings.h>
+
+/*zapit includes*/
+#include <settings.h>
 #include <configfile.h>
 
 // Daher nehmen wir SmartPointers aus der Boost-Lib (www.boost.org)
@@ -205,7 +207,8 @@ static pthread_rwlock_t messagingLock = PTHREAD_RWLOCK_INITIALIZER;
 static pthread_cond_t timeThreadSleepCond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t timeThreadSleepMutex = PTHREAD_MUTEX_INITIALIZER;
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <frontend_c.h>
 extern CFrontend * live_fe;
 
 

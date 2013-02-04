@@ -27,9 +27,12 @@
 // tuxbox
 #include <global.h>
 #include <neutrinoMessages.h>
-#include <zapit/client/zapittools.h>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+
+/*zapit includes*/
+#include <client/zapittools.h>
+#include <channel.h>
+#include <bouquets.h>
+
 #include <configfile.h>
 // yhttpd
 #include "yhttpd.h"

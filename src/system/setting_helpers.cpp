@@ -60,9 +60,11 @@
 #include <video_cs.h>
 #include <dmx_cs.h>
 
-#include <zapit/frontend_c.h>
-#include <gui/scan_setup.h>
+/*zapit includes*/
+#include <frontend_c.h>
 
+/*gui includes*/
+#include <gui/scan_setup.h>
 #include <gui/filebrowser.h>
 
 

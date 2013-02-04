@@ -24,7 +24,7 @@
 
 #include "channel.h"
 #include "ci.h"
-#include <zapit/frontend_c.h>
+#include "frontend_c.h"
 
 
 int parse_pmt(CZapitChannel * const channel, CFrontend * fe);

@@ -51,7 +51,8 @@
 #include <sys/mount.h>
 #include <unistd.h>
 
-#include <zapit/client/zapittools.h>
+/*zapit includes*/
+#include <client/zapittools.h>
 
 class CNFSMountGuiNotifier : public CChangeObserver
 {

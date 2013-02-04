@@ -25,7 +25,7 @@
 #include <linux/dvb/dmx.h>
 #include <linux/dvb/version.h>
 
-#include <zapit/frontend_c.h>
+#include <frontend_c.h>
 
 
 #define DEMUX_POLL_TIMEOUT 0  			// timeout in ms

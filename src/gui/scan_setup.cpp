@@ -55,9 +55,10 @@
 
 #include <global.h>
 
-#include <zapit/frontend_c.h>
-#include <zapit/getservices.h>
-#include <zapit/satconfig.h>
+/*zapit includes*/
+#include <frontend_c.h>
+#include <getservices.h>
+#include <satconfig.h>
 
 
 // global

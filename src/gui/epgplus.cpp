@@ -39,7 +39,9 @@
 #include <gui/widget/stringinput.h>
 #include "bouquetlist.h"
 
-#include <zapit/client/zapittools.h>
+/*zapit includes*/
+#include <client/zapittools.h>
+
 #include <driver/rcinput.h>
 #include <driver/screen_max.h>
 

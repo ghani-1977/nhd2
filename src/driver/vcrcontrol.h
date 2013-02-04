@@ -40,7 +40,8 @@
 
 #include <neutrinoMessages.h>
 
-#include <zapit/client/zapitclient.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
 
 
 class CVCRControl

@@ -29,9 +29,9 @@
 #include "record_cs.h"
 
 #include <system/debug.h>
-#include <zapit/client/zapittypes.h>
+//#include <client/zapittypes.h>
 
-#include <zapit/frontend_c.h>
+#include <frontend_c.h>
 
 extern CFrontend * record_fe;
 

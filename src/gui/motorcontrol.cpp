@@ -41,8 +41,9 @@
 #include <system/settings.h>
 #include <driver/screen_max.h>
 
-#include <zapit/satconfig.h>
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <satconfig.h>
+#include <frontend_c.h>
 
 
 static int g_sig;

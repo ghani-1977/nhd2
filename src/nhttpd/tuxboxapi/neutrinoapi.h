@@ -9,7 +9,9 @@
 #include <eventserver.h>
 #include <sectionsdclient/sectionsdclient.h>
 #include <timerdclient/timerdclient.h>
-#include <zapit/client/zapitclient.h>
+
+/*zapit includes*/
+#include <client/zapitclient.h>
 
 // nhttpd
 #include "helper.h"

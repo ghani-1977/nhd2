@@ -2,7 +2,7 @@ SUBDIRS = yhttpd_core yhttpd_mods tuxboxapi web
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/src/nhttpd/yhttpd_core \
 	-I$(top_srcdir)/src/nhttpd/yhttpd_mods \
 	-I$(top_srcdir)/src/nhttpd/tuxboxapi \

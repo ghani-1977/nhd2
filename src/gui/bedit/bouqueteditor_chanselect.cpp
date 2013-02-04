@@ -42,9 +42,10 @@
 #include <driver/screen_max.h>
 #include <gui/widget/icons.h>
 
-#include <zapit/client/zapitclient.h>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
+#include <channel.h>
+#include <bouquets.h>
 
 
 extern tallchans allchans;

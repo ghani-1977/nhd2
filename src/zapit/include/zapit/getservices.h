@@ -29,7 +29,7 @@
 #include "ci.h"
 #include "descriptors.h"
 #include "sdt.h"
-#include "types.h"
+#include "client/zapittypes.h"
 #include <xmlinterface.h>
 
 #include <map>

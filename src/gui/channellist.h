@@ -37,8 +37,10 @@
 #include <system/lastchannel.h>
 
 #include <sectionsdclient/sectionsdclient.h>
-#include <zapit/client/zapitclient.h>
-#include <zapit/channel.h>
+
+/*zapit includes*/
+#include <client/zapitclient.h>
+#include <channel.h>
 
 #include <string>
 #include <vector>

@@ -23,7 +23,7 @@
 
 #include <cstring>
 
-#include <zapit/ci.h>
+#include <ci.h>
 #include <messagetools.h>	/* get_length_field_size */
 
 

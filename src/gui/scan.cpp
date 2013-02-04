@@ -52,8 +52,9 @@
 #include <global.h>
 #include <neutrino.h>
 
-#include <zapit/satconfig.h>
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <satconfig.h>
+#include <frontend_c.h>
 
 #include <gui/pictureviewer.h>
 

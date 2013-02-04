@@ -23,7 +23,7 @@
 #define __zapit_pat_h__
 
 #include "channel.h"
-#include <zapit/frontend_c.h>
+#include "frontend_c.h"
 
 
 int parse_pat(CZapitChannel * const channel, CFrontend * fe);

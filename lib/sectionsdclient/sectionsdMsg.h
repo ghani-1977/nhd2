@@ -28,7 +28,7 @@
 
 
 #include <connection/basicmessage.h>
-#include <zapit/client/zapittypes.h>  /* t_channel_id */
+#include <client/zapittypes.h>  /* t_channel_id */
 
 
 #define SECTIONSD_UDS_NAME "/tmp/sectionsd.sock"

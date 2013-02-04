@@ -36,12 +36,12 @@
 #include <system/debug.h>
 
 /* zapit */
-#include <zapit/settings.h>
-#include <zapit/getservices.h>
+#include <settings.h>
+#include <getservices.h>
 #include <connection/basicserver.h>
-#include <zapit/client/msgtypes.h>
-#include <zapit/frontend_c.h>
-#include <zapit/satconfig.h>
+#include <client/msgtypes.h>
+#include <frontend_c.h>
+#include <satconfig.h>
 
 
 extern transponder_list_t transponders;

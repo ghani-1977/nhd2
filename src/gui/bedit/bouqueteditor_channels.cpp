@@ -48,7 +48,8 @@
 #include <gui/widget/buttons.h>
 #include <gui/widget/icons.h>
 
-#include <zapit/client/zapitclient.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 

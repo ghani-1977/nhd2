@@ -44,7 +44,9 @@
 
 #include <global.h>
 #include <neutrino.h>
-#include <zapit/client/zapittools.h>
+
+/*zapit includes*/
+#include <client/zapittools.h>
 
 
 unsigned int CBaseDec::mSamplerate = 0;

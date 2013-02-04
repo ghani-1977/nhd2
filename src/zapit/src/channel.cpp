@@ -19,7 +19,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <zapit/channel.h>
+#include <channel.h>
 
 /* system */
 #include <system/debug.h>

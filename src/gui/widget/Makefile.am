@@ -1,11 +1,17 @@
 INCLUDES = \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
-	-I$(top_srcdir)/lib/libcoolstream \
 	@FREETYPE_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 noinst_LIBRARIES = libneutrino_gui_widget.a libneutrino_gui_widget2.a 
 

@@ -35,9 +35,10 @@
 #include <driver/framebuffer.h>
 #include <gui/widget/menue.h>
 
-#include <zapit/client/zapitclient.h>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+/*zapit*/
+#include <client/zapitclient.h>
+#include <channel.h>
+#include <bouquets.h>
 
 #include <string>
 

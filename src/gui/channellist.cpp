@@ -56,14 +56,15 @@
 
 #include <gui/bouquetlist.h>
 #include <daemonc/remotecontrol.h>
-#include <zapit/client/zapittools.h>
 #include <driver/vcrcontrol.h>
 #include <gui/pictureviewer.h>
-#include <zapit/bouquets.h>
-#include <zapit/satconfig.h>
-#include <zapit/getservices.h>
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <client/zapittools.h>
+#include <bouquets.h>
+#include <satconfig.h>
+#include <getservices.h>
+#include <frontend_c.h>
 
 #include <gui/epgplus.h>
 #include <system/debug.h>

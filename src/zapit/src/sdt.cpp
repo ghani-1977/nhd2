@@ -30,11 +30,11 @@
 #include <system/debug.h>
 
 /* zapit */
-#include <zapit/descriptors.h>
-#include <zapit/sdt.h>
-#include <zapit/settings.h>
-#include <zapit/types.h>
-#include <zapit/bouquets.h>
+#include <descriptors.h>
+#include <sdt.h>
+#include <settings.h>
+#include <client/zapittypes.h>
+#include <bouquets.h>
 
 #include <dmx_cs.h>
 

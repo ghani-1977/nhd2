@@ -26,9 +26,11 @@
 #include <string.h>
 
 #include <dmx_cs.h>
-#include <zapit/cam.h>
-#include <zapit/channel.h>
-#include <zapit/frontend_c.h>
+
+/*zapit includes*/
+#include <cam.h>
+#include <channel.h>
+#include <frontend_c.h>
 
 
 #define TS_SIZE 188

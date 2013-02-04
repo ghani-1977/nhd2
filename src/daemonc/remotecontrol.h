@@ -35,7 +35,8 @@
 
 #include <driver/rcinput.h> 			/* neutrino_msg_t, neutrino_msg_data_t */
 
-#include <zapit/client/zapitclient.h>
+/*zapit*/
+#include <client/zapitclient.h>
 
 #include <vector>
 #include <string>

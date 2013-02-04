@@ -46,7 +46,8 @@
 #define DEBUG_CACHED_SECTIONS 1
 */
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <frontend_c.h>
 extern CFrontend * live_fe;			/* zapit.cpp */
 
 typedef std::map<sections_id_t, version_number_t, std::less<sections_id_t> > MyDMXOrderUniqueKey;

@@ -55,7 +55,8 @@
 #include <plugins.h>
 #include <driver/encoding.h>
 
-#include <zapit/client/zapittools.h>
+/*zapit includes*/
+#include <client/zapittools.h>
 
 #include <daemonc/remotecontrol.h>
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */

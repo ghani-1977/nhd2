@@ -33,10 +33,10 @@
 /* tuxbox headers */
 #include <configfile.h>
 
-#include <zapit/bouquets.h>
-#include <zapit/getservices.h> /* LoadServices */
-#include <zapit/sdt.h>
-#include <zapit/settings.h>
+#include <bouquets.h>
+#include <getservices.h> /* LoadServices */
+#include <sdt.h>
+#include <settings.h>
 #include <xmlinterface.h>
 
 /* system */

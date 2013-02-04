@@ -31,7 +31,7 @@
 #include <system/debug.h>
 	
 #include <configfile.h>
-#include <zapit/frontend_c.h>
+#include <frontend_c.h>
 
 extern CFrontend * live_fe;
 

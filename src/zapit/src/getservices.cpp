@@ -19,12 +19,12 @@
  *
  */
 
-#include <zapit/bouquets.h>
-#include <zapit/channel.h>
-#include <zapit/frontend_c.h>
-#include <zapit/getservices.h>
-#include <zapit/settings.h>
-#include <zapit/satconfig.h>
+#include <bouquets.h>
+#include <channel.h>
+#include <frontend_c.h>
+#include <getservices.h>
+#include <settings.h>
+#include <satconfig.h>
 #include <xmlinterface.h>
 
 #include <math.h>

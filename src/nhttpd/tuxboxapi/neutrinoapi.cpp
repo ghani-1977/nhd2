@@ -30,14 +30,18 @@
 #include <gui/color.h>
 #include <gui/widget/icons.h>
 #include <daemonc/remotecontrol.h>
-#include <zapit/frontend_c.h>
+
+/* dvbapi*/
 #include <video_cs.h>
 #include <audio_cs.h>
 #include <dmx_cs.h>
-#include <zapit/satconfig.h>
-#include <zapit/client/zapitclient.h>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+
+/*zapit includes*/
+#include <frontend_c.h>
+#include <satconfig.h>
+#include <client/zapitclient.h>
+#include <channel.h>
+#include <bouquets.h>
 
 
 extern tallchans allchans;

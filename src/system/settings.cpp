@@ -24,19 +24,11 @@
 #include <cstring>
 #include <system/settings.h>
 
-#include <zapit/settings.h>
-#include <zapit/satconfig.h>
-
 #include <config.h>
 #include <global.h>
 #include <neutrino.h>
 
 #include <gui/widget/icons.h>
-
-#include <zapit/getservices.h>
-#include <zapit/satconfig.h>
-
-#include <zapit/frontend_c.h>
 
 
 const int default_timing[TIMING_SETTING_COUNT] =

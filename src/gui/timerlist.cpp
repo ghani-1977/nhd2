@@ -65,11 +65,12 @@
 #include <global.h>
 #include <neutrino.h>
 
-#include <zapit/client/zapitclient.h>
-#include <zapit/client/zapittools.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
+#include <client/zapittools.h>
+#include <channel.h>
+#include <bouquets.h>
 
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
 extern CBouquetManager *g_bouquetManager;
 
 #include <string.h>

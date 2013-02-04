@@ -22,7 +22,7 @@
 #ifndef __zapit_descriptors_h__
 #define __zapit_descriptors_h__
 
-#include "types.h"
+#include "client/zapittypes.h"
 
 void generic_descriptor(const unsigned char * const buffer);
 void video_stream_descriptor(const unsigned char * const buffer);

@@ -36,11 +36,14 @@
 #include <driver/framebuffer.h>
 #include <gui/widget/menue.h>
 
-#include <zapit/client/zapitclient.h>
+/*zapit*/
+#include <client/zapitclient.h>
 
 #include <string>
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+
+/*zapit includes*/
+#include <channel.h>
+#include <bouquets.h>
 
 class CBEChannelWidget : public CMenuWidget
 {

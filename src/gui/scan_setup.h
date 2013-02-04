@@ -31,7 +31,7 @@
 
 #include <driver/framebuffer.h>
 
-#include <zapit/settings.h>
+#include <settings.h>  /*zapit/settings.h*/
 
 #include <string>
 

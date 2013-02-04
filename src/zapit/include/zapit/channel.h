@@ -31,9 +31,9 @@
 #include <sectionsdclient/sectionsdclient.h>
 
 /* zapit */
-#include <zapit/client/zapitclient.h>
+#include "client/zapitclient.h"
 #include "ci.h"
-#include "types.h"
+#include "client/zapittypes.h"
 
 
 /* audio map struct */

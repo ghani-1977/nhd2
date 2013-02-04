@@ -34,7 +34,7 @@
 
 #include <system/localize.h>
 #include <configfile.h>
-#include <zapit/client/zapitclient.h>
+#include <client/zapitclient.h> /*zapit*/
 
 #include <string>
 

@@ -125,9 +125,10 @@
 
 #include <timerdclient/timerdmsg.h>
 
-#include <zapit/frontend_c.h>
-#include <zapit/getservices.h>
-#include <zapit/satconfig.h>
+/*zapit includes*/
+#include <frontend_c.h>
+#include <getservices.h>
+#include <satconfig.h>
 
 #include <string.h>
 #include <linux/reboot.h>
@@ -149,8 +150,9 @@
 // dvbsubs selct menu
 #include <gui/dvbsub_select.h>
 
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+/*zapit includes*/
+#include <channel.h>
+#include <bouquets.h>
 
 #if defined (PLATFORM_COOLSTREAM)
 #include <cs_api.h>

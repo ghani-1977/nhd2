@@ -14,7 +14,7 @@ SUBDIRS = widget bedit
 INCLUDES = \
 	-I$(top_srcdir)/daemons \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libnet \
@@ -24,7 +24,8 @@ INCLUDES = \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
-INCLUDES += -I$(top_srcdir)/lib/libcoolstream
+INCLUDES += -I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/lib/libcoolstream
 else
 INCLUDES += -I$(top_srcdir)/lib/libdvbapi
 endif

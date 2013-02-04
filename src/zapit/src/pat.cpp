@@ -24,9 +24,9 @@
 #include <cstring>
 
 #include <system/debug.h>
-#include <zapit/pat.h>
+#include <pat.h>
 #include <dmx_cs.h>
-#include <zapit/frontend_c.h>
+#include <frontend_c.h>
 
 #define PAT_SIZE 1024
 

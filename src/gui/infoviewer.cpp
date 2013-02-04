@@ -62,8 +62,11 @@
 #include <sys/timeb.h>
 #include <time.h>
 #include <sys/param.h>
-#include <zapit/satconfig.h>
-#include <zapit/frontend_c.h>
+
+/*zapit includes*/
+#include <satconfig.h>
+#include <frontend_c.h>
+
 #include <video_cs.h>
 
 #include <system/debug.h>

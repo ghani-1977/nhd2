@@ -54,10 +54,10 @@
 extern CBouquetList * bouquetList;
 extern t_channel_id live_channel_id;
 
-#include <zapit/client/zapitclient.h> 		/* CZapitClient::Utf8_to_Latin1 */
+#include <client/zapitclient.h> 		/* CZapitClient::Utf8_to_Latin1 */
 #include <driver/screen_max.h>
 
-#include <zapit/client/zapittools.h>
+#include <client/zapittools.h>			/*zapit*/
 
 #include <algorithm>
 extern CPictureViewer * g_PicViewer;

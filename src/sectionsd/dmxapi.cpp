@@ -37,7 +37,8 @@
 #include "SIutils.hpp"
 #include <system/debug.h>
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <frontend_c.h>
 extern CFrontend * live_fe;
 
 #ifndef DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD

@@ -37,7 +37,7 @@
 
 #include <driver/framebuffer.h>
 #include <system/lastchannel.h>
-#include <zapit/bouquets.h>
+#include <bouquets.h> /*zapit*/
 
 #include <string>
 #include <vector>

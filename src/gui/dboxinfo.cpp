@@ -46,7 +46,8 @@
 #include <sys/sysinfo.h>
 #include <sys/vfs.h>
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <frontend_c.h>
 
 
 static const int FSHIFT = 16;              /* nr of bits of precision */

@@ -14,7 +14,8 @@
 #include <syscall.h>
 
 #include <dmx_cs.h>
-#include <zapit/frontend_c.h>
+
+#include <frontend_c.h>
 extern CFrontend * live_fe;
 
 tuxtxt_cache_struct tuxtxt_cache;

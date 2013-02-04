@@ -124,7 +124,6 @@
 
 #include <video_cs.h>
 #include <audio_cs.h>
-#include <zapit/frontend_c.h>
 
 #include <xmlinterface.h>
 
@@ -138,13 +137,14 @@
 #include "gui/cam_menu.h"
 #endif
 
-#include <zapit/getservices.h>
-#include <zapit/satconfig.h>
-
 #include "gui/scan_setup.h"
 #include "gui/zapit_setup.h"
 
-#include <zapit/client/zapitclient.h>
+/*zapit includes*/
+#include <getservices.h>
+#include <satconfig.h>
+#include <client/zapitclient.h>
+#include <frontend_c.h>
 
 #if ENABLE_GRAPHLCD
 #include "gui/glcdsetup.h"

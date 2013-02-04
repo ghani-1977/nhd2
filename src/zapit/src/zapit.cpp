@@ -49,16 +49,16 @@
 #include <system/debug.h>
 
 /* zapit headers */
-#include <zapit/cam.h>
-#include <zapit/client/msgtypes.h>
-#include <zapit/getservices.h>
-#include <zapit/pat.h>
-#include <zapit/pmt.h>
-#include <zapit/scan.h>
-#include <zapit/settings.h>
-#include <zapit/zapit.h>
-#include <zapit/satconfig.h>
-#include <zapit/frontend_c.h>
+#include <cam.h>
+#include <client/msgtypes.h>
+#include <getservices.h>
+#include <pat.h>
+#include <pmt.h>
+#include <scan.h>
+#include <settings.h>
+#include <zapit.h>
+#include <satconfig.h>
+#include <frontend_c.h>
 
 /* libxmltree */
 #include <xmlinterface.h>

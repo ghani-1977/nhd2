@@ -39,10 +39,11 @@
 #include <gui/widget/messagebox.h>
 #include <gui/widget/stringinput.h>
 
-#include <zapit/client/zapitclient.h>
-
+/*zapit includes*/
+#include <client/zapitclient.h>
 
 #include <gui/bouquetlist.h>
+
 
 extern CBouquetList * bouquetList;       /* neutrino.cpp */
 extern t_channel_id live_channel_id;

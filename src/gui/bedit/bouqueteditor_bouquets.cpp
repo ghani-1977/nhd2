@@ -47,8 +47,9 @@
 #include <gui/widget/messagebox.h>
 #include <gui/widget/stringinput.h>
 
-#include <zapit/client/zapitclient.h>
-#include <zapit/client/zapittools.h>
+/*zapit includes*/
+#include <client/zapitclient.h>
+#include <client/zapittools.h>
 
 
 extern CBouquetManager * g_bouquetManager;

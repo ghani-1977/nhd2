@@ -35,19 +35,19 @@
 /* libevent */
 #include <eventserver.h>
 
-#include <zapit/bouquets.h>
-#include <zapit/client/zapitclient.h>
-#include <zapit/getservices.h>
-#include <zapit/nit.h>
-#include <zapit/scan.h>
-#include <zapit/sdt.h>
-#include <zapit/settings.h>
-#include <zapit/satconfig.h>
-#include <zapit/frontend_c.h>
+#include <bouquets.h>
+#include <client/zapitclient.h>
+#include <getservices.h>
+#include <nit.h>
+#include <scan.h>
+#include <sdt.h>
+#include <settings.h>
+#include <satconfig.h>
+#include <frontend_c.h>
 
 #include <xmlinterface.h>
 
-#include <zapit/client/msgtypes.h>
+#include <client/msgtypes.h>
 
 
 extern CBouquetManager *g_bouquetManager;

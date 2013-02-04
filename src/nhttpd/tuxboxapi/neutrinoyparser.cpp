@@ -17,7 +17,7 @@
 #include "ytypes_globals.h"
 #include "mod_yparser.h"
 // tuxbox
-#include <zapit/client/zapittools.h> //timer list
+#include <client/zapittools.h> //timer list
 // nhttpd
 #include "neutrinoyparser.h"
 #include "neutrinoapi.h"
@@ -26,8 +26,9 @@
 #include <neutrino.h>
 #include <system/settings.h>
 
-#include <zapit/channel.h>
-#include <zapit/bouquets.h>
+/*zapit includes*/
+#include <channel.h>
+#include <bouquets.h>
 
 extern tallchans allchans;
 extern CBouquetManager *g_bouquetManager;
