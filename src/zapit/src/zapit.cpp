@@ -991,12 +991,6 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	
 	dprintf(DEBUG_NORMAL, "%s zap to %s(%llx) fe(%d,%d)\n", __FUNCTION__, live_channel->getName().c_str(), live_channel_id, live_fe->fe_adapter, live_fe->fenumber );
 
-#ifdef RETUNE_PAT_FAILED	
-	int retry = false;
-	
-tune_again:
-#endif
-
 	// tune live frontend
 	if(!tune_to_channel(live_fe, live_channel, transponder_change))
 		return -1;
@@ -1007,6 +1001,12 @@ tune_again:
 		current_is_nvod = true;
 		return 0;
 	}
+	
+#ifdef RETUNE_PAT_FAILED	
+	int retry = false;
+	
+tune_again:
+#endif	
 
 	// parse pat pmt
 	failed = !parse_channel_pat_pmt(live_channel, live_fe);
@@ -1014,6 +1014,7 @@ tune_again:
 #ifdef RETUNE_PAT_FAILED	
 	if(failed && !retry)
 	{
+		usleep(2000);  /* give some 2000us for demuxer: borrowed from e2*/
 		retry = true;
 		dprintf(DEBUG_NORMAL, "[zapit] trying again\n");
 		goto tune_again;
