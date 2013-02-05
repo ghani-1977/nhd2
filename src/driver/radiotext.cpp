@@ -71,7 +71,8 @@ extern "C" {
 #include "radiotext.h"
 #include "radiotools.h"
 
-#include <zapit/frontend_c.h>
+/*zapit includes*/
+#include <frontend_c.h>
 
 
 extern CFrontend * live_fe;
@@ -2438,11 +2439,15 @@ void CRadioText::setPid(uint inPid)
 		// open the device if first pid
 		if (0 == oldPid)
 		{
-			if (audioDemux == NULL) {
+			if (audioDemux == NULL) 
+			{
 				audioDemux = new cDemux();
-				//audioDemux->Open(DMX_TP_CHANNEL /*DMX_AUDIO_CHANNEL*/,0,128*1024);
-				//audioDemux->Open(DMX_PES_CHANNEL,0,128*1024);
+#if defined (PLATFORM_COOLSTREAM)
+				audioDemux->Open( DMX_PES_CHANNEL );
+#else
 				audioDemux->Open( DMX_PES_CHANNEL, 128*1024, live_fe );
+#endif
+
 #if 0
 				bool ret = false;
 				if (audioDemux->pesFilter(pid))
@@ -2457,13 +2462,6 @@ void CRadioText::setPid(uint inPid)
 				}
 #endif
 				//            audioDemux->Stop()
-#if 0
-				dmxfd = open(DMXDEV, O_RDWR|O_NONBLOCK);
-				if (dmxfd < 0) {
-					perror(DMXDEV);
-					pthread_exit(NULL);
-				}
-#endif
 			}
 			rt.rt_object = this;
 			rt.fd = dmxfd;
