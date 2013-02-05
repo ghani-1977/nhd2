@@ -3658,8 +3658,9 @@ void * sdt_thread(void * arg)
 	return 0;
 }
 
+#if !defined (PLATFORM_GENERIC)
 #define CHECK_FOR_LOCK
-
+#endif
 int zapit_main_thread(void *data)
 {
 	Z_start_arg *ZapStart_arg = (Z_start_arg *) data;
