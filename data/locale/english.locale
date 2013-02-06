@@ -682,6 +682,10 @@ lcdmenu.epgalign_center center
 lcdmenu.epgalign_left left
 lcdmenu.statusline.both_audio Volume / Playtime / Audio
 lcdmenu.dump_png Dump output to PNG
+lcdmenu.ledcolor Led Color
+lcdmenu.ledcolor_red Red
+lcdmenu.ledcolor_blue Blue
+lcdmenu.ledcolor_purple Purple
 mainmenu.audioplayer Audioplayer
 mainmenu.inetradio Internet Radio
 mainmenu.clearsectionsd Clear EPG Cache

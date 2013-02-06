@@ -267,7 +267,6 @@ struct SNeutrinoSettings
 	int screen_height;
 	
 	int volume_pos;
-	int help_bar;
 	int menutitle_vfd;
 	// END OSD
 
@@ -487,6 +486,7 @@ struct SNeutrinoSettings
 	char lcd_setting_dim_time[4];
 	//char lcd_setting_dim_brightness[4];
 	int lcd_setting_dim_brightness;
+	int lcd_ledcolor;
 	// END VFD
 	
 #if ENABLE_GRAPHLCD

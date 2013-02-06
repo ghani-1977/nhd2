@@ -1812,9 +1812,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 
 	// OSD
 	colorSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_VIDEOMENU_OSD));
-	
-	// help bar
-	colorSettings.addItem(new CMenuOptionChooser(LOCALE_COLORMENU_HELPBAR, &g_settings.help_bar, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 
 	// osd-timing
 	CMenuWidget *colorSettings_timing = new CMenuWidget(LOCALE_COLORMENU_TIMING, NEUTRINO_ICON_SETTINGS);
@@ -1959,6 +1956,15 @@ const CMenuOptionChooser::keyval LCDMENU_EPGALIGN_OPTIONS[LCDMENU_EPGALIGN_OPTIO
 };
 #endif
 
+/* led color */
+#define LCDMENU_LEDCOLOR_OPTION_COUNT 3
+const CMenuOptionChooser::keyval LCDMENU_LEDCOLOR_OPTIONS[LCDMENU_LEDCOLOR_OPTION_COUNT] =
+{
+	{ 1, LOCALE_LCDMENU_LEDCOLOR_RED },
+	{ 2, LOCALE_LCDMENU_LEDCOLOR_BLUE },
+	{ 3, LOCALE_LCDMENU_LEDCOLOR_PURPLE },
+};
+
 /* Init LCD Settings */
 void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 {
@@ -1977,8 +1983,10 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	CLcdNotifier * lcdnotifier = new CLcdNotifier();	
 
 	// vfd power
+#if !defined (PLATFORM_GIGABLUE)	
 	CMenuOptionChooser * oj2 = new CMenuOptionChooser(LOCALE_LCDMENU_POWER, &g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
 	lcdSettings.addItem(oj2);
+#endif	
 	
 #if defined (PLATFORM_DREAMBOX)
 	//option invert
@@ -2008,7 +2016,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 
 	// menutitle on vfd
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_MENUTITLEVFD, &g_settings.menutitle_vfd, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
-#endif	
+//#endif	
 
 	//
 	lcdSettings.addItem(GenericMenuSeparatorLine);
@@ -2026,6 +2034,10 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	//lcdSettings.addItem(GenericMenuSeparatorLine);
 
 	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
+#elif defined (PLATFORM_GIGABLUE)
+	// led color
+	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_LEDCOLOR, &g_settings.lcd_ledcolor, LCDMENU_LEDCOLOR_OPTIONS, LCDMENU_LEDCOLOR_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
+#endif	
 #endif
 
 	// vfd time

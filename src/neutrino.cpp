@@ -611,10 +611,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	// OSD
 	g_settings.gtx_alpha = configfile.getInt32( "gtx_alpha", 255);
-	
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
-	
-	g_settings.help_bar = configfile.getInt32( "help_bar", 0);		//off
 	g_settings.menutitle_vfd = configfile.getInt32( "menutitle_vfd", 0);	// off
 
 	// themes
@@ -914,6 +911,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	strcpy(g_settings.lcd_setting_dim_time, configfile.getString("lcd_dim_time","0").c_str());
 	g_settings.lcd_setting_dim_brightness = configfile.getInt32("lcd_dim_brightness", 0);
+	
+	g_settings.lcd_ledcolor = configfile.getInt32("lcd_ledcolor", 1);
 	// END VFD
 	
 #if ENABLE_GRAPHLCD
@@ -1161,7 +1160,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		configfile.setInt32(locale_real_names[timing_setting_name[i]], g_settings.timing[i]);
 	
-	configfile.setInt32( "help_bar", g_settings.help_bar);
 	configfile.setInt32( "menutitle_vfd", g_settings.menutitle_vfd);
 	// END OSD
 
@@ -1349,6 +1347,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	configfile.setString("lcd_dim_time", g_settings.lcd_setting_dim_time);
 	configfile.setInt32("lcd_dim_brightness", g_settings.lcd_setting_dim_brightness);
+	
+	configfile.setInt32("lcd_ledcolor", g_settings.lcd_ledcolor);
 	// END VFD
 	
 #if ENABLE_GRAPHLCD
@@ -2404,9 +2404,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// start assistant
 	if(loadSettingsErg) 
 	{
-		// set help bar
-		g_settings.help_bar = 1;
-		
 		// startup pic
 		frameBuffer->loadBackgroundPic("start.jpg");	
 
@@ -2446,8 +2443,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 		ShowHintUTF(LOCALE_MESSAGEBOX_INFO, loadSettingsErg ==  1 ? g_Locale->getText(LOCALE_SETTINGS_NOCONFFILE) : g_Locale->getText(LOCALE_SETTINGS_MISSINGOPTIONSCONFFILE));
 		
 		configfile.setModifiedFlag(true);
-		
-		g_settings.help_bar = 0;
 
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 	}

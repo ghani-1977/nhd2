@@ -365,6 +365,9 @@ class CVFD
 
 		~CVFD();
 		bool has_lcd;
+#if defined (PLATFORM_GIGABLUE)		
+		bool is4digits;
+#endif		
 		
 		void setlcdparameter(void);
 
@@ -407,6 +410,8 @@ class CVFD
 		
 		void setFan(bool enable);
 		void setFPTime(void);
+		
+		void vfd_led(const char * led);
 		
 #ifdef __sh__
 		void openDevice();

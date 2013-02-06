@@ -90,6 +90,10 @@ CVFD::CVFD()
 	has_lcd = 1;
 #endif
 
+#if defined (PLATFORM_GIGABLUE)		
+	is4digits = true;
+#endif	
+
 #if defined (PLATFORM_COOLSTREAM)
 	fd = open("/dev/display", O_RDONLY);
 	
@@ -342,6 +346,11 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 {
 	if(!has_lcd) 
 		return;
+	
+#if defined (PLATFORM_GIGABLUE)		
+	if(is4digits)
+		return;
+#endif	
 
 	if (mode != MODE_MENU_UTF8)
 		return;
@@ -354,6 +363,11 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 {
 	if(!has_lcd) 
 		return;
+	
+#if defined (PLATFORM_GIGABLUE)		
+	if(is4digits)
+		return;
+#endif	
 
 	if (mode != MODE_AUDIO) 
 		return;
@@ -368,6 +382,11 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 {
 	if(!has_lcd) 
 		return;
+	
+#if defined (PLATFORM_GIGABLUE)		
+	if(is4digits)
+		return;
+#endif	
 
 	switch(m) 
 	{
@@ -763,6 +782,11 @@ void CVFD::ShowText(const char * str)
 	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
 
 	int len = strlen(str);
+	
+	//FIXME: some vfd treiber can not handle NULL string len
+	if(len == 0)
+		return;
+	
 	int i = 0;
 	
 	if (len > 0)
@@ -790,9 +814,7 @@ void CVFD::ShowText(const char * str)
 #elif defined (PLATFORM_GIGABLUE)	
 	FILE *f;
 	if((f = fopen("/proc/vfd","w")) == NULL) 
-	{
 		return;
-	}
 	
 	fprintf(f,"%s", str);
 	
@@ -815,4 +837,16 @@ void CVFD::setFan(bool enable)
 	//closeDevice();
 #endif	
 }
+
+void CVFD::vfd_led(const char * led)
+{
+	FILE *f;
+	if((f = fopen("/proc/stb/fp/led0_pattern","w")) == NULL) 
+		return;
+	
+	fprintf(f,"%s", led);
+	fclose(f);
+}
+
+
 

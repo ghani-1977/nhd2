@@ -683,6 +683,10 @@ lcdmenu.epgalign_center mittig
 lcdmenu.epgalign_left links
 lcdmenu.statusline.both_audio Laut. / Fort. / Audio
 lcdmenu.dump_png Ausgabe in PNG schreiben
+lcdmenu.ledcolor Led Color
+lcdmenu.ledcolor_red Rot
+lcdmenu.ledcolor_blue Blau
+lcdmenu.ledcolor_purple Lila
 mainmenu.audioplayer Audioplayer
 mainmenu.inetradio Internetradio
 mainmenu.clearsectionsd Lösche EPG Cache
