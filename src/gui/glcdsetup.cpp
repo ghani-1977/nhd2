@@ -25,7 +25,10 @@
 #include <stdio.h>
 #include <global.h>
 #include <neutrino.h>
-#include <zapit/channel.h>
+
+/*zapit includes*/
+#include <channel.h>
+
 #include <driver/fontrenderer.h>
 #include <driver/rcinput.h>
 #include <daemonc/remotecontrol.h>
