@@ -53,6 +53,7 @@
 
 extern CBouquetList * bouquetList;
 extern t_channel_id live_channel_id;
+extern char recDir[255];// defined in neutrino.cpp
 
 #include <client/zapitclient.h> 		/* CZapitClient::Utf8_to_Latin1 */
 #include <driver/screen_max.h>
@@ -305,15 +306,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				paint(channel_id);
 			else
 				paintItem(selected - liststart, channel_id);
-
-#if 0
-			if ((g_settings.key_channelList_addremind != CRCInput::RC_nokey) ||
-					((g_settings.recording_type != CNeutrinoApp::RECORDING_OFF) &&
-					 (g_settings.key_channelList_addrecord != CRCInput::RC_nokey)))
-			{
-				showFunctionBar(true);
-			}
-#endif
 		}
 		else if (msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown)
 		{
@@ -338,14 +330,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				paint(channel_id);
 			else
 				paintItem(selected - liststart, channel_id);
-#if 0
-			if ((g_settings.key_channelList_addremind != CRCInput::RC_nokey) ||
-					((g_settings.recording_type != CNeutrinoApp::RECORDING_OFF) &&
-					 (g_settings.key_channelList_addrecord != CRCInput::RC_nokey)))
-			{
-				showFunctionBar(true);
-			}
-#endif
 		}
 
 		#if 0
@@ -353,6 +337,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_sort)
 		{
 			unsigned long long selected_id = evtlist[selected].eventID;
+			
 			if(sort_mode == 0)
 			{
 				sort_mode++;
@@ -409,7 +394,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		//  --- or set addrecord timer key to "red key" (zwen 2003-07-29)
 		else if ( msg == (neutrino_msg_t)g_settings.key_channelList_addrecord )
 		{
-			if (g_settings.recording_type != CNeutrinoApp::RECORDING_OFF)
+			if (recDir != NULL)
 			{
 				int tID = -1;
 				CTimerd::CTimerEventTypes etype = isScheduled(channel_id, &evtlist[selected], &tID);
@@ -790,7 +775,7 @@ void  EventList::showFunctionBar(bool show)
 	frameBuffer->paintBoxRel(x, by, width, bh, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 
 	// -- Button: Timer Record & Channelswitch
-	if ((g_settings.recording_type != CNeutrinoApp::RECORDING_OFF) && ((unsigned int) g_settings.key_channelList_addrecord != CRCInput::RC_nokey))	  
+	if ( (recDir != NULL) && ((unsigned int) g_settings.key_channelList_addrecord != CRCInput::RC_nokey))	  
 	{
 		pos = 0;
 		// FIXME : display other icons depending on g_settings.key_channelList_addrecord

@@ -173,6 +173,8 @@ extern Zapit_config zapitCfg;	//defined in neutrino.cpp
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config *Cfg);
 
+extern char recDir[255];// defined in neutrino.cpp
+
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -861,8 +863,8 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_BOUQUETEDITOR_NAME, true, "", new CBEBouquetWidget(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "service", LOCALE_HELPTEXT_BOUQUETSEDITOR ));
 	
 	// delete Services
-	CDataResetNotifier * resetNotifier = new CDataResetNotifier();
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_RESET_CHANNELS, true, NULL, resetNotifier, "channels", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "service", LOCALE_HELPTEXT_DELETECHANNELS ));
+	//CDataResetNotifier * resetNotifier = new CDataResetNotifier();
+	//service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_RESET_CHANNELS, true, NULL, resetNotifier, "channels", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "service", LOCALE_HELPTEXT_DELETECHANNELS ));
 	
 	// CI Cam 	
 #if !defined (PLATFORM_CUBEREVO_2000HD) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_CUBEREVO_MINI_FTA) && !defined (PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
@@ -971,7 +973,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 		
 	// updatesettings
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_UPDATE, true, "", updateSettings, NULL, CRCInput::convertDigitToKey(shortcutService++), NULL, "service", LOCALE_HELPTEXT_SOFTWAREUPDATE ));
+	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_UPDATE, true, "", updateSettings, NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "service", LOCALE_HELPTEXT_SOFTWAREUPDATE ));
 #endif	
 }
 
@@ -1198,7 +1200,7 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	// reset factory setup
 	miscSettingsGeneral.addItem(GenericMenuSeparatorLine);
 	CDataResetNotifier * resetNotifier = new CDataResetNotifier();
-	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_MISCSETTINGS_RESET, true, NULL, resetNotifier, "settings", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
+	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_MISCSETTINGS_RESET, true, NULL, resetNotifier, "factory", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN ));
 	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_SETTINGS_BACKUP,  true, NULL, resetNotifier, "backup", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW ));
 	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_SETTINGS_RESTORE, true, NULL, resetNotifier, "restore", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE ));
 
@@ -1624,8 +1626,9 @@ void CNeutrinoApp::InitRecordingSettings(CMenuWidget &recordingSettings)
 
 	//if(1) 
 	//if(has_hdd)
-	struct statfs s;
-	if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
+	//struct statfs s;
+	//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
+	if (recDir != NULL)
 	{
 		//auto timeshift (permanent timeshift)
 		recordingSettings.addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_AUTO_TIMESHIFT, &g_settings.auto_timeshift, true, 0, 300, NULL));
@@ -2600,17 +2603,8 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu_prev = SNeutrinoSettings::ITEM_BAR;
 				break;
 
-			case SNeutrinoSettings::ITEM_FAVORITS:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_FAVORITS;
-                                tmpFavorites = new CFavorites;
-                                keyhelper.get(&key, &icon, CRCInput::RC_green);
-                                menu_item = new CMenuForwarder(LOCALE_FAVORITES_MENUEADD, true, NULL, tmpFavorites, "-1", key, icon);
-                                menu->addItem(menu_item, false);
-                                break;
-
                         case SNeutrinoSettings::ITEM_RECORD:
-                                if(g_settings.recording_type == RECORDING_OFF)
+				if(recDir == NULL)
                                         break;
 
                                 menu_items++;

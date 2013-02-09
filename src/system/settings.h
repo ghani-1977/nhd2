@@ -109,7 +109,7 @@ struct SNeutrinoSettings
 	char record_safety_time_before[3];
 	char record_safety_time_after[3];
 
-	int  recording_type;
+	//int  recording_type;
 
 	char network_nfs_recordingdir[100];
 
@@ -353,14 +353,13 @@ struct SNeutrinoSettings
                 ITEM_MOVIEPLAYER_MB = 9,
                 ITEM_TIMERLIST = 10,
                 ITEM_REMOTE = 11,
-                ITEM_FAVORITS = 12,
-                ITEM_TECHINFO = 13,
-                ITEM_PLUGIN = 14,
-                ITEM_VTXT = 15,
-                ITEM_GAME = 16,
-                ITEM_OPKG = 17,
+                ITEM_TECHINFO = 12,
+                ITEM_PLUGIN = 13,
+                ITEM_VTXT = 14,
+                ITEM_GAME = 15,
+                ITEM_OPKG = 16,
 #if ENABLE_GRAPHLCD                
-                ITEM_GLCD = 18,
+                ITEM_GLCD = 17,
 #endif 
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;

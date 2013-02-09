@@ -72,6 +72,7 @@
 #include <bouquets.h>
 
 extern CBouquetManager *g_bouquetManager;
+extern char recDir[255];// defined in neutrino.cpp
 
 #include <string.h>
 
@@ -108,6 +109,7 @@ public:
 	bool changeNotify(const neutrino_locale_t OptionName, void *)
 	{
 		CTimerd::CTimerEventTypes type = (CTimerd::CTimerEventTypes) *iType;
+		
 		if(type == CTimerd::TIMER_RECORD)
 		{
 			*stopTime=(time(NULL)/60)*60;
@@ -116,7 +118,7 @@ public:
 						tmTime2->tm_year+1900,
 						tmTime2->tm_hour, tmTime2->tm_min);
 			m1->setActive(true);
-			m6->setActive((g_settings.recording_type == RECORDING_FILE));
+			m6->setActive(/*(g_settings.recording_type == RECORDING_FILE)*/(recDir != NULL)? true: false);
 		}
 		else
 		{
@@ -1004,7 +1006,8 @@ int CTimerList::modifyTimer()
 	{
 		printf("[CTimerList] warning: no network devices available\n");
 	}
-	bool recDirEnabled = recDirs.hasItem() && (timer->eventType == CTimerd::TIMER_RECORD) && (g_settings.recording_type == RECORDING_FILE);
+	
+	bool recDirEnabled = recDirs.hasItem() && (timer->eventType == CTimerd::TIMER_RECORD) && /*(g_settings.recording_type == RECORDING_FILE)*/(recDir != NULL);
 	CMenuForwarder* m6 = new CMenuForwarder(LOCALE_TIMERLIST_RECORDING_DIR,recDirEnabled,timer->recordingDir, &recDirs);
 
 	timerSettings.addItem(GenericMenuSeparatorLine);

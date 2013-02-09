@@ -563,7 +563,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end network
 
 	// recording
-	g_settings.recording_type = configfile.getInt32("recording_type", RECORDING_FILE);
 	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
 	g_settings.temp_timeshift = configfile.getInt32( "temp_timeshift", 0 );
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
@@ -751,15 +750,15 @@ int CNeutrinoApp::loadSetup(const char * fname)
         //-------------------------------------------
         // this is as the current neutrino usermen
         const char* usermenu_default[SNeutrinoSettings::BUTTON_MAX]={
-                "2,3,4,13",                     // RED
+                "2,3,4,12",                     // RED
                 "6",                            // GREEN
                 "7",                            // YELLOW
-                "12,10,11,14,15,16",   		// BLUE
+                "10,11,13,14,15",   		// BLUE
 #if defined (PLATFORM_GIGABLUE)
-		"2",				// F1
-		"3",				// F2
-		"4",				// F3
-		"5",				// F4
+		"0",				// F1
+		"0",				// F2
+		"0",				// F3
+		"0",				// F4
 #endif
         };
         char txt1[81];
@@ -1776,7 +1775,7 @@ int startAutoRecord(bool addTimer)
 {
 	CTimerd::RecordingInfo eventinfo;
 
-	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() || (g_settings.recording_type != RECORDING_FILE))
+	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() || (recDir != NULL))
 		return 0;
 
 	eventinfo.channel_id = live_channel_id;
@@ -1894,13 +1893,10 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			bool doRecord = true;
 
 			// rec dir
-			if (g_settings.recording_type == RECORDING_FILE) //FILE MODE
-			{
-				strcpy(recDir, (preselectedDir != NULL) ? preselectedDir : g_settings.network_nfs_recordingdir);
+			strcpy(recDir, (preselectedDir != NULL) ? preselectedDir : g_settings.network_nfs_recordingdir);
 				
-				(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = recDir;
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::doGuiRecord: start record to dir %s\n", recDir);
-			}
+			(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = recDir;
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::doGuiRecord: start record to dir %s\n", recDir);
 
 			// start to record baby
 			if( !doRecord || (CVCRControl::getInstance()->Record(&eventinfo) == false ) ) 
@@ -2037,7 +2033,7 @@ static void CSSendMessage(uint32_t msg, uint32_t data)
 // setup recording device
 void CNeutrinoApp::setupRecordingDevice(void)
 {
-	if (g_settings.recording_type == RECORDING_FILE)
+	if (recDir != NULL)
 	{
 		recordingdevice = new CVCRControl::CFileDevice(g_settings.network_nfs_recordingdir );
 
@@ -2245,8 +2241,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	Timerlist = new CTimerList;	// defined in neutrino.h
 
 	// setup recording device
-	if (g_settings.recording_type != RECORDING_OFF)
-		setupRecordingDevice();
+	setupRecordingDevice();
 
 	dprintf( DEBUG_NORMAL, "CNeutrinoApp::run: menue setup\n");
 
@@ -2685,7 +2680,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
 			{
-			   	if( g_settings.recording_type == RECORDING_FILE )
+				if (recDir != NULL)
 				{
 					dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: timeshift try, timeshiftstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
 					
@@ -3495,42 +3490,31 @@ _repeat:
 	{
 		system(NEUTRINO_RECORDING_TIMER_SCRIPT);
 
-		if (g_settings.recording_type == RECORDING_FILE) 
+		char * recDir = ((CTimerd::RecordingInfo*)data)->recordingDir;
+
+		// ether-wake
+		for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 		{
-			char * recDir = ((CTimerd::RecordingInfo*)data)->recordingDir;
-
-			// ether-wake
-			for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+			if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
 			{
-				if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
-				{
-					dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: waking up %s (%s)\n",g_settings.network_nfs_ip[i].c_str(),recDir);
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: waking up %s (%s)\n",g_settings.network_nfs_ip[i].c_str(),recDir);
 					
-					std::string command = "etherwake ";
-					command += g_settings.network_nfs_mac[i];
+				std::string command = "etherwake ";
+				command += g_settings.network_nfs_mac[i];
 
-					if(system(command.c_str()) != 0)
-						perror("etherwake failed");
-					break;
-				}
+				if(system(command.c_str()) != 0)
+					perror("etherwake failed");
+				break;
 			}
-
-			//stop autoshift
-			if(autoshift) 
-			{
-				stopAutoRecord();
-				recordingstatus = 0;
-			}
-
-			//wakeup hdd
-			//if(has_hdd) 
-			//{
-			//	char cmd[100];	
-			//	sprintf(cmd, "(rm /media/sda1/.wakeup; touch /media/sda1/.wakeup; sync) > /dev/null  2> /dev/null &");
-			//	system(cmd);
-			//}
 		}
-		
+
+		//stop autoshift
+		if(autoshift) 
+		{
+			stopAutoRecord();
+			recordingstatus = 0;
+		}
+
 		if( g_settings.recording_zap_on_announce ) 
 		{
 			if(recordingstatus==0) 
@@ -4499,13 +4483,14 @@ void CNeutrinoApp::startNextRecording()
 		{
 			recording_id = nextRecordingInfo->eventID;
 			
-			if (g_settings.recording_type == RECORDING_FILE) 
+			if (recDir != NULL)
 			{
 				char *recDir = strlen(nextRecordingInfo->recordingDir) > 0 ? nextRecordingInfo->recordingDir : g_settings.network_nfs_recordingdir;
 
 				if (!CFSMounter::isMounted(recDir)) 
 				{
 					doRecord = false;
+					
 					for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 					{
 						if (strcmp(g_settings.network_nfs_local_dir[i],recDir) == 0) 

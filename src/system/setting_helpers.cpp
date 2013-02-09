@@ -794,7 +794,7 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEBROWSER_HEAD} ,
         {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME} ,
         {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD} ,
-        {SNeutrinoSettings::ITEM_FAVORITS, LOCALE_FAVORITES_MENUEADD} ,
+        //{SNeutrinoSettings::ITEM_FAVORITS, LOCALE_FAVORITES_MENUEADD} ,
         {SNeutrinoSettings::ITEM_TECHINFO, LOCALE_EPGMENU_STREAMINFO},
         {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS},
         {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT} ,
@@ -820,10 +820,10 @@ int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
         menu.addItem(GenericMenuSeparatorLine);
 
         char text[10];
-        for(int item = 0; item < SNeutrinoSettings::ITEM_MAX && item < 13; item++) // Do not show more than 13 items
+        for(int item = 0; item < SNeutrinoSettings::ITEM_MAX; item++) // Do not show more than 13 items
         {
                 snprintf(text,10,"%d:",item);
-                text[9]=0;// terminate for sure
+                text[9] = 0;// terminate for sure
                 
                 menu.addItem( new CMenuOptionChooser(text, &g_settings.usermenu[button][item], USERMENU_ITEM_OPTIONS, USERMENU_ITEM_OPTION_COUNT,true, NULL, CRCInput::RC_nokey, "", true ));
         }
@@ -885,16 +885,7 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 	CFileBrowser fileBrowser;
 	CFileFilter fileFilter;
 
-	if(actionKey == "channels") 
-	{
-		int result = ShowMsgUTF(LOCALE_RESET_CHANNELS, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
-		if(result != CMessageBox::mbrYes) 
-			return true;
-	
-		system("rm -f /var/tuxbox/config/zapit/*.xml");
-		g_Zapit->reinitChannels();
-	}
-	else if( actionKey == "settings") 
+	if( actionKey == "factory") 
 	{
 		int result = ShowMsgUTF(LOCALE_RESET_SETTINGS, g_Locale->getText(LOCALE_RESET_CONFIRM), CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo);
 		if(result != CMessageBox::mbrYes) 

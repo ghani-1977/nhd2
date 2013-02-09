@@ -84,15 +84,6 @@ typedef struct font_sizes_groups
 
 class CNeutrinoApp : public CMenuTarget, CChangeObserver
 {
- 	public:
-		enum
-		{
-			RECORDING_OFF    = 0,
-			RECORDING_SERVER = 1,
-			RECORDING_VCR    = 2,
-			RECORDING_FILE   = 3
-		};
-
  	private:
 		CFrameBuffer * frameBuffer;
 

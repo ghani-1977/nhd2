@@ -259,65 +259,54 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 	switch (Tid[0]) 
 	{
 		case 0x00: /* program_association_section */
-			//sct.timeout = 2000;
 			to = 2000;
 			break;
 
 		case 0x01: /* conditional_access_section */
-			//sct.timeout = 6000;
 			to = 6000;
 			break;
 
 		case 0x02: /* program_map_section */
-			//sct.timeout = 1500;
 			to = 1500;
 			break;
 
 		case 0x03: /* transport_stream_description_section */
-			//sct.timeout = 10000;
 			to = 10000;
 			break;
 
 		/* 0x04 - 0x3F: reserved */
 
 		case 0x40: /* network_information_section - actual_network */
-			//sct.timeout = 10000;
 			to = 10000;
 			break;
 
 		case 0x41: /* network_information_section - other_network */
-			//sct.timeout = 15000;
 			to = 15000;
 			break;
 
 		case 0x42: /* service_description_section - actual_transport_stream */
-			//sct.timeout = 10000;
 			to = 10000;
 			break;
 
 		/* 0x43 - 0x45: reserved for future use */
 
 		case 0x46: /* service_description_section - other_transport_stream */
-			//sct.timeout = 10000;
 			to = 10000;
 			break;
 
 		/* 0x47 - 0x49: reserved for future use */
 
 		case 0x4A: /* bouquet_association_section */
-			//sct.timeout = 11000;
 			to = 11000;
 			break;
 
 		/* 0x4B - 0x4D: reserved for future use */
 
 		case 0x4E: /* event_information_section - actual_transport_stream, present/following */
-			//sct.timeout = 2000; 
 			to = 2000;
 			break;
 
 		case 0x4F: /* event_information_section - other_transport_stream, present/following */
-			//sct.timeout = 10000;
 			to = 10000;
 			break;
 
@@ -325,26 +314,22 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
 			sct.flags |= DMX_ONESHOT;
 			//sct.pid     = 0x0014;
-			//sct.timeout = 30000;
 			to = 30000;
 			break;
 
 		case 0x71: /* running_status_section */
 			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			//sct.timeout = 0;
 			to = 0;
 			break;
 
 		case 0x72: /* stuffing_section */
 			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			//sct.timeout = 0;
 			to = 0;
 			break;
 
 		case 0x73: /* time_offset_section */ /* UTC */
 			sct.flags |= DMX_ONESHOT;
 			//sct.pid     = 0x0014;
-			//sct.timeout = 30000;
 			to = 30000;
 			break;
 
@@ -352,12 +337,10 @@ bool cDemux::sectionFilter(unsigned short Pid, const unsigned char * const Tid, 
 
 		case 0x7E: /* discontinuity_information_section */
 			sct.flags  &= (~DMX_CHECK_CRC); /* section has no CRC */
-			//sct.timeout = 0;
 			to = 0;
 			break;
 
 		case 0x7F: /* selection_information_section */
-			//sct.timeout = 0;
 			to = 0;
 			break;
 
