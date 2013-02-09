@@ -794,7 +794,6 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEBROWSER_HEAD} ,
         {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME} ,
         {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD} ,
-        //{SNeutrinoSettings::ITEM_FAVORITS, LOCALE_FAVORITES_MENUEADD} ,
         {SNeutrinoSettings::ITEM_TECHINFO, LOCALE_EPGMENU_STREAMINFO},
         {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS},
         {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT} ,
@@ -811,7 +810,7 @@ int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
                 parent->hide();
 
         CMenuWidget menu(local , NEUTRINO_ICON_KEYBINDING);
-        menu.addItem(GenericMenuSeparator);
+       // menu.addItem(GenericMenuSeparator);
         menu.addItem(GenericMenuBack);
         menu.addItem(GenericMenuSeparatorLine);
 
