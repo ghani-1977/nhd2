@@ -218,34 +218,47 @@ void streamts_main_thread(void * /*data*/)
 			perror("poll");
 			continue;
 		}
+		
 		if(pollres == 0)
 			continue;
-		for (i = poll_cnt - 1; i >= 0; i--) {
-			if (pfd[i].revents & (POLLIN | POLLPRI | POLLHUP | POLLRDHUP)) {
+		
+		for (i = poll_cnt - 1; i >= 0; i--) 
+		{
+			if (pfd[i].revents & (POLLIN | POLLPRI | POLLHUP | POLLRDHUP)) 
+			{
 				printf("fd %d has events %x\n", pfd[i].fd, pfd[i].revents);
-				if (pfd[i].fd == listenfd) {
+				if (pfd[i].fd == listenfd) 
+				{
 					if(connfd >= 0)
 						close(connfd);
 					connfd = accept (listenfd, (struct sockaddr *) &servaddr, (socklen_t *) & clilen);
 					printf("new connection, fd %d\n", connfd);
-					if(connfd < 0) {
+					
+					if(connfd < 0) 
+					{
 						perror("accept");
 						continue;
 					}
-					if(st != 0) {
+					
+					if(st != 0) 
+					{
 						printf("New connection, stopping stream thread\n");
 						exit_flag = 1;
 						pthread_join(st, NULL);
 						tcnt --;
 					}
+					
 					pfd[tcnt].fd = connfd;
 					pfd[tcnt].events = POLLRDHUP | POLLHUP;
 					pfd[tcnt].revents = 0;
 					tcnt++;
 					exit_flag = 0;
 					pthread_create (&st, NULL, streamts_live_thread, (void *) connfd);
-				} else {
-					if (pfd[i].revents & (POLLHUP | POLLRDHUP)) {
+				} 
+				else 
+				{
+					if (pfd[i].revents & (POLLHUP | POLLRDHUP)) 
+					{
 						connfd = -1;
 						printf("Client disconnected, stopping stream thread\n");
 						exit_flag = 1;
@@ -260,12 +273,15 @@ void streamts_main_thread(void * /*data*/)
 	}
 	printf("[streamts] Stopping STREAM thread keeper\n");
 	close(listenfd);
-	if(st != 0) {
+	
+	if(st != 0) 
+	{
 		printf("[streamts] Stopping stream thread\n");
 		exit_flag = 1;
 		pthread_join(st, NULL);
 		close(connfd);
 	}
+	
 	return;
 }
 
@@ -282,7 +298,9 @@ void * streamts_live_thread(void *data)
 
 	printf("[streamts] Starting LIVE STREAM thread, fd %d\n", fd);
 	fp = fdopen(fd, "r+");
-	if(fp == NULL) {
+	
+	if(fp == NULL) 
+	{
 		perror("fdopen");
 		return 0;
 	}
@@ -461,22 +479,30 @@ void streamts_file_thread(void *data)
 	size_t pos;
 	ssize_t r;
 
-	while (!exit_flag) {
+	while (!exit_flag) 
+	{
 		/* always read IN_SIZE bytes */
-		for (pos = 0; pos < IN_SIZE; pos += r) {
+		for (pos = 0; pos < IN_SIZE; pos += r) 
+		{
 			r = read(dvrfd, buf + pos, IN_SIZE - pos);
-			if (r == -1) {
+			if (r == -1) 
+			{
 				/* Error */
 				exit_flag = 1;
 				break;
-			} else if (r == 0) {
+			} 
+			else if (r == 0) 
+			{
 				/* End of file */
-				if (mode == 3) {
+				if (mode == 3) 
+				{
 					close(dvrfd);
 					sprintf(&tsfile[tsfilelen], ".%03d", ++fileslice);
 					dvrfd = open(tsfile, O_RDONLY);
 				}
-				if ((dvrfd == -1) || (mode != 3)) {
+				
+				if ((dvrfd == -1) || (mode != 3)) 
+				{
 					exit_flag = 1;
 					break;
 				}

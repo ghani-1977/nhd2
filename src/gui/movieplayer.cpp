@@ -1085,9 +1085,9 @@ void CMoviePlayerGui::PlayFile(void)
 		// exit
 		if (exit) 
 		{
-#if ENABLE_GSTREAMER		  
+//#if ENABLE_GSTREAMER		  
 			playback->Stop();
-#endif			
+//#endif			
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");			
@@ -1717,9 +1717,9 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 		
 		// control loop
-		//g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
-		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR]);
-		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
+		g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
+		//unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR]);
+		//g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
@@ -1757,12 +1757,12 @@ void CMoviePlayerGui::PlayFile(void)
 					file_prozent = (unsigned char) (position / (duration / 100));
 			}
 		}
-		
+		/*
 		if ( msg == CRCInput::RC_timeout )
 		{
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
-		}else
+		}else*/
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 
 		{
 			//exit play
@@ -2455,9 +2455,9 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{
-#if ENABLE_GSTREAMER		  
+//#if ENABLE_GSTREAMER		  
 			playback->Stop();
-#endif			
+//#endif			
 
 			if (isMovieBrowser == true) 
 			{

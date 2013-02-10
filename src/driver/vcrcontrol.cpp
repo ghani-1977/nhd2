@@ -87,10 +87,6 @@ CMovieInfo * g_cMovieInfo;
 MI_MOVIE_INFO * g_movieInfo;
 int safe_mkdir(char * path);
 
-//CFrontend * getFE(int index);
-//CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod);
-//extern CFrontend * live_fe;
-
 static CVCRControl vcrControl;
 
 CVCRControl * CVCRControl::getInstance()
@@ -146,8 +142,9 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
         // assume smallest apid ist std apid
         if (apids & TIMERD_APIDS_STD)
         {
-                uint32_t apid_min=UINT_MAX;
-                uint32_t apid_min_idx=0;
+                uint32_t apid_min = UINT_MAX;
+                uint32_t apid_min_idx = 0;
+		
                 for(unsigned int i = 0; i < allpids.APIDs.size(); i++)
                 {
                         if (allpids.APIDs[i].pid < apid_min && !allpids.APIDs[i].is_ac3)
@@ -176,6 +173,7 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
                                 apid_min_idx = i;
                         }
                 }
+                
                 for(unsigned int i = 0; i < allpids.APIDs.size(); i++)
                 {
                         if (allpids.APIDs[i].pid != apid_min && !allpids.APIDs[i].is_ac3)
@@ -202,8 +200,9 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
                 // add non ac3 apid if ac3 not found
                 if (!(apids & TIMERD_APIDS_STD) && !ac3_found)
                 {
-                        uint32_t apid_min=UINT_MAX;
-                        uint32_t apid_min_idx=0;
+                        uint32_t apid_min = UINT_MAX;
+                        uint32_t apid_min_idx = 0;
+			
                         for(unsigned int i = 0; i < allpids.APIDs.size(); i++)
                         {
                                 if (allpids.APIDs[i].pid < apid_min && !allpids.APIDs[i].is_ac3)
@@ -224,8 +223,9 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
         // no apid selected use standard
         if (apid_list.empty() && !allpids.APIDs.empty())
         {
-                uint32_t apid_min=UINT_MAX;
-                uint32_t apid_min_idx=0;
+                uint32_t apid_min = UINT_MAX;
+                uint32_t apid_min_idx = 0;
+		
                 for(unsigned int i = 0; i < allpids.APIDs.size(); i++)
                 {
                         if (allpids.APIDs[i].pid < apid_min && !allpids.APIDs[i].is_ac3)

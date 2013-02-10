@@ -194,6 +194,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				}	break;
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
+					#if 0
 					GstIterator *children;
 					if (audioSink)
 					{
@@ -210,7 +211,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
-					
+					#endif
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
@@ -220,6 +221,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
+					#if 0
 					if (audioSink)
 					{
 						gst_object_unref(GST_OBJECT(audioSink));
@@ -230,6 +232,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 						gst_object_unref(GST_OBJECT(videoSink));
 						videoSink = NULL;
 					}
+					#endif
 				}	break;
 				case GST_STATE_CHANGE_READY_TO_NULL:
 				{
@@ -253,10 +256,10 @@ cPlayback::cPlayback(int num)
 	gst_init(NULL, NULL);
 #endif	
 	
-	mAudioStream = 0;
-	mSpeed = 0;
+	//mAudioStream = 0;
+	//mSpeed = 0;
 
-	playing = false;
+	//playing = false;
 }
 
 cPlayback::~cPlayback()
@@ -268,7 +271,12 @@ cPlayback::~cPlayback()
 //Used by Fileplay
 bool cPlayback::Open()
 {
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );	
+	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );
+	
+	mAudioStream = 0;
+	mSpeed = 0;
+
+	playing = false;
 	
 #if defined ENABLE_LIBEPLAYER3
 	player = (Context_t*)malloc(sizeof(Context_t));
@@ -316,17 +324,18 @@ void cPlayback::Close(void)
 	if (m_gst_playbin)
 	{
 		// disconnect sync handler callback
-		GstBus * bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, NULL, NULL);
-		gst_object_unref(bus);
+		//GstBus * bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
+		//gst_bus_set_sync_handler(bus, NULL, NULL);
+		//gst_object_unref(bus);
+		gst_bus_set_sync_handler(gst_pipeline_get_bus (GST_PIPELINE (m_gst_playbin)), NULL, NULL);
 		
 		printf("GST bus handler closed\n");
 	}
 	
-#if defined (PLATFORM_GENERIC)	
-	if(playing)
-		Stop();
-#endif
+//#if defined (PLATFORM_GENERIC)	
+	//if(playing)
+	//	Stop();
+//#endif
 	
 	//if (m_stream_tags)
 	//	gst_tag_list_free(m_stream_tags);
@@ -334,6 +343,7 @@ void cPlayback::Close(void)
 	// close gst
 	if (m_gst_playbin)
 	{
+		#if 0
 		if (audioSink)
 		{
 			gst_object_unref(GST_OBJECT(audioSink));
@@ -349,15 +359,17 @@ void cPlayback::Close(void)
 			
 			printf("GST video Sink closed\n");
 		}
+		#endif
 		
 		// unref m_gst_playbin
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
 		printf("GST playbin closed\n");
 		
-		m_gst_playbin = NULL;
+		//m_gst_playbin = NULL;
 	}
 #elif defined ENABLE_LIBEPLAYER3
-	Stop();
+	if(playing)
+		Stop();
 	
 	if(player && player->output) 
 	{
@@ -427,11 +439,14 @@ bool cPlayback::Start(char * filename)
 	{
 		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
+		
+		g_free(uri);
 	
 		//gstbus handler
-		bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
-		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
-		gst_object_unref(bus); 
+		//bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
+		//gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
+		//gst_object_unref(bus); 
+		gst_bus_set_sync_handler(gst_pipeline_get_bus (GST_PIPELINE (m_gst_playbin)), Gst_bus_call, this);
 		
 		// state playing
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
@@ -440,13 +455,18 @@ bool cPlayback::Start(char * filename)
 	}
 	else
 	{
+		if (m_gst_playbin)
+			gst_object_unref(GST_OBJECT(m_gst_playbin));
+
+		m_gst_playbin = 0;
+		
 		dprintf(DEBUG_NORMAL, "failed to create GStreamer pipeline!, sorry we can not play\n");
 		playing = false;
 		
 		return false;
 	}
 	
-	g_free(uri);
+	//g_free(uri);
 	
 	// set buffer size
 	int m_buffer_size = 5*1024*1024;

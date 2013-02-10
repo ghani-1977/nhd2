@@ -199,7 +199,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				director_mode = 0;
 				needs_nvods = (msg == NeutrinoMessages:: EVT_ZAP_ISNVOD);
 
-				// TODO: add channel->getfeIndex()
 				g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, true );
 				CNeutrinoApp::getInstance()->channelList->adjustToChannelID(current_channel_id);
 				
@@ -222,10 +221,12 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 					current_sub_channel_id = *(t_channel_id *)data;
 
 					for(unsigned int i = 0; i < subChannels.size(); i++)
-					if (subChannels[i].getChannelID() == (*(t_channel_id *)data))
 					{
-						selected_subchannel = i;
-						break;
+						if (subChannels[i].getChannelID() == (*(t_channel_id *)data))
+						{
+							selected_subchannel = i;
+							break;
+						}
 					}
 				}
 			}
@@ -421,7 +422,7 @@ void CRemoteControl::getSubChannels()
 	if ( subChannels.size() == 0 )
 	{
 		CSectionsdClient::LinkageDescriptorList	linkedServices;
-		//if ( g_Sectionsd->getLinkageDescriptorsUniqueKey( current_EPGid, linkedServices ) )
+		
 		if ( sectionsd_getLinkageDescriptorsUniqueKey( current_EPGid, linkedServices ) )
 		{
 			if ( linkedServices.size()> 1 )
@@ -457,7 +458,7 @@ void CRemoteControl::getNVODs()
 	if ( subChannels.size() == 0 )
 	{
 		CSectionsdClient::NVODTimesList	NVODs;
-		//if ( g_Sectionsd->getNVODTimesServiceKey( current_channel_id & 0xFFFFFFFFFFFFULL, NVODs ) )
+		
 		if ( sectionsd_getNVODTimesServiceKey( current_channel_id & 0xFFFFFFFFFFFFULL, NVODs ) )
 		{
 			are_subchannels = false;
@@ -599,7 +600,7 @@ void CRemoteControl::processAPIDnames()
 		if ( current_EPGid != 0 )
 		{
 			CSectionsdClient::ComponentTagList tags;
-			//if ( g_Sectionsd->getComponentTagsUniqueKey( current_EPGid, tags ) )
+
 			if ( sectionsd_getComponentTagsUniqueKey( current_EPGid, tags ) )
 			{
 				has_unresolved_ctags = false;
