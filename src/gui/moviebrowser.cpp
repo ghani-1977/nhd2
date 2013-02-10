@@ -3258,7 +3258,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO* movie_info)
 
 	// intros
 	//optionsMenu.addItem(GenericMenuSeparator);
-	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_SAVE_ALL, true, NULL, this, "save_options",              CRCInput::RC_red,  NEUTRINO_ICON_BUTTON_RED));
+	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_SAVE, true, NULL, this, "save_options",              CRCInput::RC_red,  NEUTRINO_ICON_BUTTON_RED));
 	optionsMenu.addItem(GenericMenuSeparatorLine);
 	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_LOAD_DEFAULT, true, NULL, this, "loaddefault",              CRCInput::RC_green/*blue*/,  NEUTRINO_ICON_BUTTON_GREEN/*BLUE*/));
 	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_OPTION_BROWSER, true, NULL, &optionsMenuBrowser,NULL,       CRCInput::RC_yellow/*green*/, NEUTRINO_ICON_BUTTON_YELLOW/*GREEN*/));
