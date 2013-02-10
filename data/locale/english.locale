@@ -931,9 +931,9 @@ movieplayer.defdir start dir.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.records Records
-movieplayer.movies Movies
-movieplayer.fileplayback Files
+movieplayer.records Records Browser
+movieplayer.movies Movies Browser
+movieplayer.fileplayback Files Browser
 movieplayer.showtshelp Help
 movieplayer.goto Jump to ...
 movieplayer.goto.h1 = -> absolute jump
@@ -1565,12 +1565,12 @@ miscsettings.restorewarn Do you want to restore the previous settings?
 
 opkgmanager.head OPKG Manager
 
-keybinding.key_video Moviebrowser
+keybinding.key_video Records browser
 keybinding.key_music Audioplayer
 keybinding.key_picture PictureViewer
 keybinding.key_timelist Timerlist
 keybinding.key_net Internet Radio
-keybinding.key_video_player File Player
+keybinding.key_video_player Movies Browser
 
 audiomenu.volumebar_audiosteps Volume Step Size
 

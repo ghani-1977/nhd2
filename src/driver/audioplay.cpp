@@ -301,3 +301,10 @@ bool CAudioPlayer::readMetaData(CAudiofile* const file, const bool nice)
 	return CBaseDec::GetMetaDataBase(file, nice);
 }
 
+bool CAudioPlayer::readCoverData(CAudiofile * const file, const bool nice)
+{
+	return CBaseDec::GetCoverDataBase(file, nice);
+}
+
+
+

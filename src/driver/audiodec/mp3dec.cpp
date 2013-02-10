@@ -273,7 +273,7 @@ inline signed short CMP3Dec::MadFixedToSShort(const mad_fixed_t Fixed)
 /****************************************************************************
  * Print human readable informations about an audio MPEG frame.             *
  ****************************************************************************/
-void CMP3Dec::CreateInfo(CAudioMetaData* m, int FrameNumber)
+void CMP3Dec::CreateInfo(CAudioMetaData * m, int FrameNumber)
 {
 	if ( !m )
 		return;
@@ -864,9 +864,10 @@ CMP3Dec* CMP3Dec::getInstance()
 	return MP3Dec;
 }
 
-bool CMP3Dec::GetMetaData(FILE* in, const bool nice, CAudioMetaData* const m)
+bool CMP3Dec::GetMetaData(FILE * in, const bool nice, CAudioMetaData * const m)
 {
 	bool res;
+	
 	if ( in && m )
 	{
 		res = GetMP3Info(in, nice, m);
@@ -1012,8 +1013,7 @@ long CMP3Dec::scanHeader( FILE* input, struct mad_header* const header,
  * Inspired by get_fileinfo() from Robert Leslie's "MAD Plug-in for Winamp" and
  * decode_filter() from Robert Leslie's "madplay".
  */
-bool CMP3Dec::GetMP3Info( FILE* input, const bool nice,
-						  CAudioMetaData* const meta )
+bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const meta )
 {
 	struct mad_header header;
 	struct tag ftag;
@@ -1021,8 +1021,7 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice,
 	tag_init( &ftag );
 	bool result = true;
 
-	if ( ( meta->audio_start_pos = scanHeader(input, &header, &ftag, nice) )
-		 != -1 )
+	if ( ( meta->audio_start_pos = scanHeader(input, &header, &ftag, nice) ) != -1 )
 	{
 		meta->type = CAudioMetaData::MP3;
 		meta->bitrate = header.bitrate;
@@ -1084,7 +1083,7 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice,
 	return result;
 }
 
-void CMP3Dec::GetID3(FILE* in, CAudioMetaData* const m)
+void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 {
 	unsigned int i;
 	struct id3_frame const *frame;
@@ -1118,12 +1117,12 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData* const m)
 
 	/* text information */
 
-	struct id3_file *id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
+	struct id3_file * id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
 	if(id3file == 0)
 		printf("error open id3 file\n");
 	else
 	{
-		id3_tag *tag=id3_file_tag(id3file);
+		id3_tag * tag = id3_file_tag(id3file);
 		if(tag)
 		{
 			for(i = 0; i < sizeof(info) / sizeof(info[0]); ++i)
@@ -1259,10 +1258,85 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData* const m)
 
 		id3_finish_file(id3file);
 	}
+	
 	if(0)
 	{
 		fail:
 			printf("id3: not enough memory to display tag\n");
+	}
+}
+
+void CMP3Dec::SaveCover(FILE * in)
+{
+	unsigned int i;
+	int ret;
+	struct id3_frame const *frame;
+	id3_ucs4_t const *ucs4;
+	id3_utf8_t *utf8;
+	const char * coverfile = "/tmp/cover.jpg";
+
+	/* text information */
+	struct id3_file *id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
+    
+	if(id3file == 0)
+		printf("error open id3 file\n");
+	else
+	{
+		id3_tag * tag = id3_file_tag(id3file);
+		if(tag)
+		{
+			if (frame = id3_tag_findframe(tag, "APIC", 0))
+			//for (i = 0; (frame = id3_tag_findframe(tag, "APIC", i)); i++)
+			{
+				printf("Cover found\n");
+				// Picture file data
+				unsigned int j;
+				union id3_field const *field;
+				
+				for (j = 0; (field = id3_frame_field(frame, j)); j++)
+				{
+					switch (id3_field_type(field))
+					{
+						case ID3_FIELD_TYPE_BINARYDATA:
+							id3_length_t size;
+							id3_byte_t const *data;
+
+							data = id3_field_getbinarydata(field, &size);
+							if ( data )
+							{
+								FILE * pFile;
+								pFile = fopen ( coverfile , "wb" );
+								fwrite (data , 1 , size , pFile );
+								fclose (pFile);
+							}	
+							break;
+							
+						case ID3_FIELD_TYPE_INT8:
+							//pic->type = id3_field_getint(field);
+							break;
+							
+						default:
+							break;
+					}
+				}
+			}
+			else
+			{
+				remove(coverfile);
+			}
+		
+			id3_tag_delete(tag);
+		}
+		else
+			printf("error open id3 tag\n");
+
+		id3_finish_file(id3file);
+	}
+    
+	if(0)
+	{
+fail:
+		printf("id3: not enough memory to display tag\n");
 	}
 }
 

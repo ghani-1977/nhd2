@@ -72,6 +72,7 @@ class CMP3Dec : public CBaseDec
 								State* const state, CAudioMetaData* m,
 								time_t* const t, unsigned int* const secondsToSkip);
 		bool GetMetaData(FILE *in, const bool nice, CAudioMetaData* const m);
+		void SaveCover(FILE*);
 		CMP3Dec(){};
 };
 

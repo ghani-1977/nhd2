@@ -194,6 +194,7 @@ void CTimeOSD::show(int Position)
 		
 		// duration
 		char runningTotal[32]; // %d can be 10 digits max...	
+		//sprintf(runningTotal, "%d / %d min", Position/60, (duration + 30000) / 60000 );	
 		sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
 		
 		int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal);
@@ -216,9 +217,9 @@ void CTimeOSD::show(int Position)
 		// runningrest
 		
 		// runningpercent
-		char runningRest[32];
-		sprintf(runningRest, "%d min", Position/60);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 + 25, durationWidth, runningRest, COL_INFOBAR);
+		//char running[32];
+		//sprintf(running, "%d min", Position/60);
+		//g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 + 25, durationWidth, running, COL_INFOBAR);
 	}
 	
 	// time

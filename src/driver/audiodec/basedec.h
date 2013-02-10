@@ -51,6 +51,7 @@ class CBaseDec
 		static RetCode DecoderBase(CAudiofile* const in, const int OutputFd, State* const state, time_t* const t, unsigned int* const secondsToSkip);
 	
 		static bool GetMetaDataBase(CAudiofile* const in, const bool nice);
+		static bool GetCoverDataBase(CAudiofile* const in, const bool nice);
 		static void Init();
 
 		CBaseDec(){};

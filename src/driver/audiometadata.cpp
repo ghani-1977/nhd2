@@ -39,7 +39,7 @@
 // constructor
 CAudioMetaData::CAudioMetaData()
 {
-    clear();
+	clear();
 }
 
 // copy constructor

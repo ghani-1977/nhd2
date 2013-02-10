@@ -239,6 +239,9 @@ int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
 		m_current = -1;
 	else
 		m_current = 0;
+	
+	int ret;
+	ret = remove("/tmp/cover.jpg");
 
 	m_selected = 0;
 
@@ -1933,6 +1936,11 @@ void CAudioPlayerGui::paintInfo()
 			tmp += " / ";
 			tmp += m_curr_audiofile.MetaData.title;
 		}
+		
+		// show cover
+        	if ( SaveCover(m_curr_audiofile) )
+			g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		xstart=(m_width-w)/2;
 		if(xstart < 10)
@@ -2286,6 +2294,12 @@ void CAudioPlayerGui::updateMetaData()
 	{
 		updateLcd = true;
 	}
+	
+	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
+	{
+		remove("/tmp/cover.jpg");
+	}
+	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
 #if !defined (PLATFORM_GIGABLUE)	
 	if(updateLcd)
@@ -2297,7 +2311,10 @@ void CAudioPlayerGui::updateMetaData()
 	
 	if(updateMeta || updateScreen)
 	{
-		m_frameBuffer->paintBoxRel(m_x + 10, m_y + 4 + 2*m_fheight, m_width - 20, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
+		//FIXME:???
+		//m_frameBuffer->paintBoxRel(m_x + 10, m_y + 4 + 2*m_fheight, m_width - 20, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
+		m_frameBuffer->paintBoxRel(m_x + 10 + m_title_height, m_y + 4 + 2*m_fheight, m_width - 20 - m_title_height, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
+		
 		int xstart = ((m_width - 20 - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(m_metainfo))/2)+10;
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + xstart, m_y + 4 + 2*m_fheight + m_sheight, m_width- 2*xstart, m_metainfo, COL_MENUCONTENTSELECTED);
 	}
@@ -2563,10 +2580,12 @@ void CAudioPlayerGui::getFileInfoToDisplay(std::string &info, CAudiofileExt &fil
 		fileInfo += file.MetaData.album;
 		fileInfo += ')';
 	} 
+	
 	if (fileInfo.empty())
 	{
 		fileInfo += "Unknown";
 	}
+	
 	file.firstChar = tolower(fileInfo[0]);
 	info += fileInfo;
 }
@@ -2574,6 +2593,7 @@ void CAudioPlayerGui::getFileInfoToDisplay(std::string &info, CAudiofileExt &fil
 void CAudioPlayerGui::addToPlaylist(CAudiofileExt &file)
 {	
 	//printf("add2Playlist: %s\n", file.Filename.c_str());
+	
 	if (m_select_title_by_name)
 	{	
 		if (!file.MetaData.bitrate)
@@ -2985,3 +3005,10 @@ std::string CAudioPlayerGui::absPath2Rel(const std::string& fromDir, const std::
 	res = res + relFilepath;
 	return res;
 }
+
+bool CAudioPlayerGui::SaveCover(CAudiofileExt &File)
+{
+	return CAudioPlayer::getInstance()->readCoverData(&File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
+}
+
+

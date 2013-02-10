@@ -137,11 +137,10 @@ bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 
 	if ( in->FileType == CFile::FILE_MP3 /*|| in->FileType == CFile::FILE_OGG*/ || in->FileType == CFile::FILE_WAV || in->FileType == CFile::FILE_CDR || in->FileType == CFile::FILE_FLAC )
 	{
-		FILE* fp = fopen( in->Filename.c_str(), "r" );
+		FILE * fp = fopen( in->Filename.c_str(), "r" );
 		if ( fp == NULL )
 		{
-			fprintf( stderr, "Error opening file %s for meta data reading.\n",
-					 in->Filename.c_str() );
+			fprintf( stderr, "Error opening file %s for meta data reading.\n", in->Filename.c_str() );
 			Status = false;
 		}
 		else
@@ -168,10 +167,45 @@ bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 			{
 				Status = CFlacDec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
 			}
+			
 			if ( fclose( fp ) == EOF )
 			{
-				fprintf( stderr, "Could not close file %s.\n",
-						 in->Filename.c_str() );
+				fprintf( stderr, "Could not close file %s.\n", in->Filename.c_str() );
+			}
+		}
+	}
+	else
+	{
+		fprintf( stderr, "GetMetaDataBase: Filetype is not supported for " );
+		fprintf( stderr, "meta data reading.\n" );
+		Status = false;
+	}
+
+	return Status;
+}
+
+bool CBaseDec::GetCoverDataBase(CAudiofile * const in, const bool nice)
+{
+	bool Status = true;
+
+	if (in->FileType == CFile::FILE_MP3)
+	{
+		FILE* fp = fopen( in->Filename.c_str(), "r" );
+		if ( fp == NULL )
+		{
+			fprintf( stderr, "Error opening file %s for meta data reading.\n", in->Filename.c_str() );
+			Status = false;
+		}
+		else
+		{
+			if(in->FileType == CFile::FILE_MP3)
+			{
+				CMP3Dec::getInstance()->SaveCover(fp);
+			}
+			
+			if ( fclose( fp ) == EOF )
+			{
+				fprintf( stderr, "Could not close file %s.\n", in->Filename.c_str() );
 			}
 		}
 	}

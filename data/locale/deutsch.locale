@@ -932,9 +932,9 @@ movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.records Aufnahmen
-movieplayer.movies Movies
-movieplayer.fileplayback Datei
+movieplayer.records Aufnahmen Browser
+movieplayer.movies Movies Browser
+movieplayer.fileplayback Datei Browser
 movieplayer.showtshelp Hilfe
 movieplayer.goto Springe zu ...
 movieplayer.goto.h1 = -> absoluter Sprung
@@ -1567,12 +1567,12 @@ miscsettings.restorewarn Alle Settings werden ersetzt?
 
 opkgmanager.head OPKG Manager
 
-keybinding.key_video Moviebrowser
+keybinding.key_video Aufnahmen Browser
 keybinding.key_music Audioplayer
 keybinding.key_picture PictureViewer
 keybinding.key_timelist Timerlist
 keybinding.key_net Internet Radio
-keybinding.key_video_player Datei Player
+keybinding.key_video_player Movies Browser
 
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 

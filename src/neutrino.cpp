@@ -4592,24 +4592,24 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		g_RCInput->postMsg( NeutrinoMessages::VCR_ON, 0 );
 		returnval = menu_return::RETURN_EXIT_ALL;
 	}	
-	else if(actionKey=="network") 
+	else if(actionKey == "network") 
 	{
 		networkConfig.automatic_start = (network_automatic_start == 1);
 		networkConfig.stopNetwork();
 		networkConfig.commitConfig();
 		networkConfig.startNetwork();
 	}
-	else if(actionKey=="networktest") 
+	else if(actionKey == "networktest") 
 	{
 		dprintf(DEBUG_INFO, "CNeutrinoApp::exec: doing network test...\n");
 		testNetworkSettings(networkConfig.address.c_str(), networkConfig.netmask.c_str(), networkConfig.broadcast.c_str(), networkConfig.gateway.c_str(), networkConfig.nameserver.c_str(), networkConfig.inet_static);
 	}
-	else if(actionKey=="networkshow") 
+	else if(actionKey == "networkshow") 
 	{
 		dprintf(DEBUG_INFO, "CNeutrinoApp::exec: showing current network settings...\n");
 		showCurrentNetworkSettings();
 	}
-	else if(actionKey=="savesettings") 
+	else if(actionKey == "savesettings") 
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT)); // UTF-8
 		hintBox->paint();
