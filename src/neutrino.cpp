@@ -749,7 +749,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
-        const char* usermenu_default[SNeutrinoSettings::BUTTON_MAX]={
+        const char * usermenu_default[SNeutrinoSettings::BUTTON_MAX]={
                 "2,3,4,12",                     // RED
                 "6",                            // GREEN
                 "7",                            // YELLOW

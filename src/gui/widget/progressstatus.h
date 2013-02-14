@@ -29,12 +29,12 @@
 
 class CProgress_StatusViewer
 {
- public:
-	virtual void showGlobalStatus(const unsigned int prog) = 0;
-	virtual unsigned int getGlobalStatus(void) = 0;
-	virtual void showLocalStatus(const unsigned int prog) = 0;
-	virtual void showStatusMessageUTF(const std::string & text) = 0;
-	virtual ~CProgress_StatusViewer(){}
+	public:
+		virtual void showGlobalStatus(const unsigned int prog) = 0;
+		virtual unsigned int getGlobalStatus(void) = 0;
+		virtual void showLocalStatus(const unsigned int prog) = 0;
+		virtual void showStatusMessageUTF(const std::string & text) = 0;
+		virtual ~CProgress_StatusViewer(){}
 };
 
 #endif

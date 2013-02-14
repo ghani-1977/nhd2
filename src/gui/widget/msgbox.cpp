@@ -849,7 +849,7 @@ int ShowMsg2UTF(	const char * const Title,
 					g_settings.screen_EndY - g_settings.screen_StartY-60); 
 	
 	//TRACE("\r\n->ShowTextUTF %s\r\n",Text);
-   	CMsgBox* msgBox = new CMsgBox(		Text, 
+   	CMsgBox * msgBox = new CMsgBox(		Text, 
    										g_Font[SNeutrinoSettings::FONT_TYPE_MENU], 
    										mode, 
    										&position, 

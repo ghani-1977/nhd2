@@ -36,9 +36,11 @@
 #include <driver/fb_window.h>
 #include <system/localize.h>
 #include <gui/widget/icons.h>
+#include <gui/widget/menue.h>
 
 #include <string>
 #include <vector>
+
 
 class CHintBox
 {
@@ -63,7 +65,7 @@ class CHintBox
 
 	public:
 		// Text is UTF-8 encoded
-		CHintBox(const neutrino_locale_t Caption, const char * const Text, const int Width = 450, const char * const Icon = NEUTRINO_ICON_INFO);
+		CHintBox(const neutrino_locale_t Caption, const char * const Text, const int Width = MENU_WIDTH, const char * const Icon = NEUTRINO_ICON_INFO);
 		~CHintBox(void);
 
 		bool has_scrollbar(void);
@@ -75,8 +77,8 @@ class CHintBox
 };
 
 // Text is UTF-8 encoded
-int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const int Width = 450, int timeout = -1, const char * const Icon = NEUTRINO_ICON_INFO);
-int ShowLocalizedHint(const neutrino_locale_t Caption, const neutrino_locale_t Text, const int Width = 450, int timeout = -1, const char * const Icon = NEUTRINO_ICON_INFO);
+int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const int Width = MENU_WIDTH, int timeout = -1, const char * const Icon = NEUTRINO_ICON_INFO);
+int ShowLocalizedHint(const neutrino_locale_t Caption, const neutrino_locale_t Text, const int Width = MENU_WIDTH, int timeout = -1, const char * const Icon = NEUTRINO_ICON_INFO);
 
 
 #endif

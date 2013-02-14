@@ -98,6 +98,7 @@ bool CMovieInfo::convertTs2XmlName(std::string * filename)
 	int bytes = -1;
 	int ext_pos = 0;
 	ext_pos = filename->rfind('.');
+	
 	if( ext_pos > 0)
 	{
 		std::string extension;
@@ -480,6 +481,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		print_buffer += ": ";
 		print_buffer += movie_info.serieName;
 	}
+	
 	if (!movie_info.epgChannel.empty()) 
 	{
 		print_buffer += "\n\n";
@@ -487,6 +489,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		print_buffer += ": ";
 		print_buffer += movie_info.epgChannel;
 	}
+	
 	if (movie_info.quality != 0) 
 	{
 		print_buffer += "\n";
@@ -495,6 +498,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		snprintf(date_char, 12, "%2d", movie_info.quality);
 		print_buffer += date_char;
 	}
+	
 	if (movie_info.parentalLockAge != 0) 
 	{
 		print_buffer += "\n";
@@ -504,6 +508,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		print_buffer += date_char;
 		print_buffer += " Jahre";
 	}
+	
 	if (movie_info.length != 0) 
 	{
 		print_buffer += "\n";
@@ -512,6 +517,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		snprintf(date_char, 12, "%3d", movie_info.length);
 		print_buffer += date_char;
 	}
+	
 	if (movie_info.audioPids.size() != 0) 
 	{
 		print_buffer += "\n";
@@ -536,6 +542,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 	date_tm = localtime(&movie_info.file.Time);
 	snprintf(date_char, 12, "%02d.%02d.%04d", date_tm->tm_mday, date_tm->tm_mon + 1, date_tm->tm_year + 1900);
 	print_buffer += date_char;
+	
 	if (movie_info.file.Size != 0) 
 	{
 		print_buffer += "\n";
@@ -553,7 +560,6 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 	print_buffer += "\n";
 
 	ShowMsg2UTF(movie_info.epgTitle.empty()? movie_info.file.getFileName().c_str() : movie_info.epgTitle.c_str(), print_buffer.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
-
 }
 
 /************************************************************************

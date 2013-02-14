@@ -295,10 +295,12 @@ void CTextBox::refreshTextLineArray(void)
 		/* If not autowidth, we just take the actuall textframe width */
 		lineBreakWidth = m_cFrameTextRel.iWidth - 2*TEXT_BORDER_WIDTH;
 	}
+	
 	if(max_width)
 		lineBreakWidth = max_width;
 	//printf("TextBox: lineBreakWidth %d\n", lineBreakWidth);
 	int TextChars = m_cText.size();
+	
 	// do not parse, if text is empty 
 	if(TextChars > 0)
 	{
@@ -325,13 +327,13 @@ void CTextBox::refreshTextLineArray(void)
 			aktWord = m_cText.substr(pos_prev, pos - pos_prev + 1);
 			aktWordWidth = m_pcFontText->getRenderWidth(aktWord, true);
 			pos_prev = pos + 1;
+			
 			//if(aktWord.find("&quot;") == )
 			if(1)
 			{
 				//TRACE_1("     aktWord: >%s< pos:%d\r\n",aktWord.c_str(),pos);
 
-				if( aktWidth + aktWordWidth > lineBreakWidth &&
-						!(m_nMode & NO_AUTO_LINEBREAK))
+				if( aktWidth + aktWordWidth > lineBreakWidth && !(m_nMode & NO_AUTO_LINEBREAK))
 				{
 					/* we need a new line before we can continue */
 					m_cLineArray.push_back(aktLine);

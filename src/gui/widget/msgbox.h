@@ -156,7 +156,7 @@ extern int ShowMsg2UTF(	const neutrino_locale_t Caption,
 						const CMsgBox::result_ Default, 
 						const uint32_t ShowButtons, 
 						const char * const Icon = NULL, 
-						const int Width = 450, 
+						const int Width = MENU_WIDTH, 
 						const int timeout = -1, 
 						bool returnDefaultOnTimeout = false); // UTF-8
 
@@ -165,7 +165,7 @@ extern int ShowMsg2UTF(	const char * const Title,
 						const CMsgBox::result_ Default, 
 						const uint32_t ShowButtons, 
 						const char * const Icon = NULL, 
-						const int Width = 450, 
+						const int Width = MENU_WIDTH, 
 						const int timeout = -1, 
 						bool returnDefaultOnTimeout = false); // UTF-8
 						

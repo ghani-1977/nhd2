@@ -1544,11 +1544,8 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
 	int height = getHeight();
 	const char * l_text = getName();
-	
 	int stringstartposX = x + (offx == 0? BORDER_LEFT : offx) + BORDER_LEFT;
-
 	const char * option_text = getOption();	
-
 	unsigned char color   = COL_MENUCONTENT;
 	fb_pixel_t    bgcolor = COL_MENUCONTENT_PLUS_0;
 
@@ -1574,9 +1571,6 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 			/* get icon size */
 			int icon_w = 128;
 			int icon_h = 128;
-			
-			//int hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-			//int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 			
 			//refresh pic box
 			frameBuffer->paintBoxRel(x + BORDER_LEFT + (dx/3)*2 + (((dx - (dx/3)*2 - BORDER_RIGHT)/2) - icon_w/2), ( frameBuffer->getScreenHeight(true) - icon_h)/2, icon_w, icon_h, COL_MENUCONTENTDARK_PLUS_0 ); // 25 foot height
@@ -1671,6 +1665,7 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	{
 		int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(option_text, true);
 		int stringstartposOption = std::max(stringstartposX + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_text, true) + BORDER_LEFT + BORDER_LEFT/2, x + (dx/3)*2 - stringwidth - BORDER_RIGHT ); //+ offx
+		
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, (dx/3)*2 - (stringstartposOption- x),  option_text, color, 0, true);
 	}
 

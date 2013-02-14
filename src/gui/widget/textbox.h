@@ -72,7 +72,7 @@ class CBox
 	public:
 		/* Constructor */
 		inline CBox(){;};
-		inline CBox( const int _iX, const int _iY, const int _iWidth, const int _iHeight){iX=_iX; iY=_iY; iWidth=_iWidth; iHeight=_iHeight;};
+		inline CBox( const int _iX, const int _iY, const int _iWidth, const int _iHeight){iX =_iX; iY=_iY; iWidth =_iWidth; iHeight =_iHeight;};
 		inline ~CBox(){;};
 		/* Functions */
 		/* Variables */

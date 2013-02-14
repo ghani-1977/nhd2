@@ -39,6 +39,7 @@
 #include <gui/widget/drawable.h>
 
 #include "icons.h"
+#include "menue.h"
 
 #include <string>
 #include <vector>
@@ -69,7 +70,7 @@ class CHintBoxExt
 	public:
 		CHintBoxExt(const neutrino_locale_t Caption, const char * const Text, const int Width, const char * const Icon);
 
-		CHintBoxExt(const neutrino_locale_t Caption, ContentLines& lines, const int Width = 450, const char * const Icon = NEUTRINO_ICON_INFO);
+		CHintBoxExt(const neutrino_locale_t Caption, ContentLines& lines, const int Width = MENU_WIDTH, const char * const Icon = NEUTRINO_ICON_INFO);
 
 		~CHintBoxExt(void);
 		
