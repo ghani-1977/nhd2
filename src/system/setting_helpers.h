@@ -35,6 +35,9 @@
 
 #include <gui/widget/menue.h>
 
+/* zapit includes */
+#include <client/zapittypes.h>
+
 #include <string>
 
 unsigned long long getcurrenttime();
@@ -247,6 +250,18 @@ class CScanSetupNotifier : public CChangeObserver
 		void addItem(int list , CMenuItem* item);
 		bool changeNotify(const neutrino_locale_t, void * Data);
 };
+
+// volume conf
+class CAudioSetupNotifierVolPercent : public CChangeObserver
+{
+		int apid;
+		t_channel_id channel_id;
+	public:
+		bool changeNotify(const neutrino_locale_t OptionName, void *);
+		void setChannelId(t_channel_id cid = 0) { channel_id = cid; }
+		void setAPid(int a = 0) { apid = a; }
+};
+//
 
 int safe_mkdir(char * path);
 int check_dir(const char * newdir);

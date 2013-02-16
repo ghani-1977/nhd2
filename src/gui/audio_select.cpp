@@ -47,6 +47,11 @@ extern CRemoteControl * g_RemoteControl; 		/* defined neutrino.cpp */
 extern CAPIDChangeExec * APIDChanger;			/* defined neutrino.cpp */
 extern CAudioSetupNotifier * audioSetupNotifier;	/* defined neutrino.cpp */
 
+// volume conf
+extern CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
+extern cAudio * audioDecoder;
+//
+
 // dvbsub
 extern int dvbsub_getpid();				// defined in libdvbsub
 //extern int dvbsub_getpid(int * pid, int * running);				// defined in libdvbsub
@@ -93,9 +98,7 @@ int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actio
 	int res = menu_return::RETURN_EXIT_ALL;
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
 	doMenu();
 
@@ -114,7 +117,7 @@ int CAudioSelectMenuHandler::doMenu()
 	
 	unsigned int shortcut_num = 1;
 
-	for(count=0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
+	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
 		char apid[5];
 		sprintf(apid, "%d", count);
@@ -194,24 +197,35 @@ int CAudioSelectMenuHandler::doMenu()
 
 	}
 	
-	// adjust volume
-	#if 0
+	// volume conf
+	#if 1
 	AudioSelector.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_VOLUME_ADJUST));
 
 	// setting volume percent to zapit with channel_id/apid = 0 means current channel and pid
-	//CVolume::getInstance()->SetCurrentChannel(0);
-	//CVolume::getInstance()->SetCurrentPid(0);
-	
-	int percent[count];
+	int percent[g_RemoteControl->current_PIDs.APIDs.size()];
+	audioSetupNotifierVolPercent->setChannelId(0);
+	audioSetupNotifierVolPercent->setAPid(0);
 	
 	for (uint i = 0; i < count; i++) 
 	{
 		//percent[i] = CZapit::getInstance()->GetPidVolume(0, g_RemoteControl->current_PIDs.APIDs[i].pid);
 		
-		AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[i],
-					i == g_RemoteControl->current_PIDs.PIDs.selected_apid,
-					0, /*999*/100, /*CVolume::getInstance()*/NULL, 0, 0, NONEXISTANT_LOCALE,
-					g_RemoteControl->current_PIDs.APIDs[i].desc));
+		//AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[i],
+		//			i == g_RemoteControl->current_PIDs.PIDs.selected_apid,
+		//			0, /*999*/100, /*CVolume::getInstance()*/NULL, 0, 0, NONEXISTANT_LOCALE,
+		//			g_RemoteControl->current_PIDs.APIDs[i].desc));
+		
+		g_Zapit->getVolumePercent((unsigned int *) &percent[ i /*count*/], 0, g_RemoteControl->current_PIDs.APIDs[/*count*/ i].pid);
+		
+		int is_active = /*count*/i == g_RemoteControl->current_PIDs.PIDs.selected_apid;
+		
+		AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[/*count*/ i],
+			is_active,
+			0, 999, audioSetupNotifierVolPercent, 0, 0, NONEXISTANT_LOCALE,
+			g_RemoteControl->current_PIDs.APIDs[/*count*/ i].desc));
+			
+		if (is_active)
+			g_settings.current_volume_percent = percent[ /*count*/ i];
 	}
 	#endif
 

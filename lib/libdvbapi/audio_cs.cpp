@@ -64,6 +64,9 @@ cAudio::cAudio()
 	
 	m_pcm_delay = -1,
 	m_ac3_delay = -1;
+	
+	//
+	percent = 100;
 }
 
 cAudio::~cAudio(void)
@@ -840,4 +843,24 @@ int cAudio::setHwAC3Delay(int delay)
 	
 	return -1;
 }
+
+int cAudio::getPercent(void) 
+{
+	return percent;
+}
+
+int cAudio::setPercent(int perc) 
+{
+	dprintf(DEBUG_INFO, "%s %d (muted: %d)\n", __func__, perc, Muted);
+	
+	int old_percent = percent;
+	percent = perc;
+	
+	if (percent < 0 || percent > 999)
+		percent = 100;
+	if(!Muted)
+		setVolume(volume, volume);
+	return old_percent;
+}
+
 

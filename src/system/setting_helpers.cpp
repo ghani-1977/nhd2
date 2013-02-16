@@ -1088,6 +1088,34 @@ void CScanSetupNotifier::addItem(int list, CMenuItem* item)
 	}
 }
 
+// volume conf
+bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionName __attribute__((unused)), void *data)
+{
+	// audio_select.cpp, set channel specific volume
+	g_settings.current_volume_percent = *((int *) (data));
+
+	// assume steps of 5.
+	if ((g_settings.current_volume_percent % 5) == 1)
+		g_settings.current_volume_percent += 4;
+	else if (g_settings.current_volume_percent < 4)
+		g_settings.current_volume_percent = 0;
+	else
+		g_settings.current_volume_percent -= 4;
+
+	int v = audioDecoder->getVolume();
+	if (v * g_settings.current_volume_percent > 10000)
+		g_settings.current_volume_percent = 10000 / v;
+	else {
+		g_settings.current_volume_percent /= 5;
+		g_settings.current_volume_percent *= 5;
+	}
+	*((int *) (data)) = g_settings.current_volume_percent;
+
+	g_Zapit->setVolumePercent(g_settings.current_volume_percent, channel_id, apid);
+	audioDecoder->setPercent(g_settings.current_volume_percent);
+	return true;
+}
+
 // mkdir (0755)
 int safe_mkdir(char * path)
 {

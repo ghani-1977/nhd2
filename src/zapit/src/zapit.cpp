@@ -90,6 +90,14 @@ unsigned int def_volume_left = 0, def_volume_right = 0;
 int audio_mode = 0;
 int def_audio_mode = 0;
 
+/* volume conf */
+#define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
+#define VOLUME_DEFAULT_PCM 75
+#define VOLUME_DEFAULT_AC3 100
+typedef pair<t_channel_id, int> t_chan_apid;
+map<t_chan_apid, int> volume_map;
+map<t_chan_apid, int>::iterator volume_map_it;
+
 /* live/record channel id */
 t_channel_id live_channel_id;
 t_channel_id rec_channel_id;
@@ -629,6 +637,22 @@ void saveZapitSettings(bool write, bool write_a)
 		  	fdatasync(fileno(audio_config_file));
                   	fclose(audio_config_file);
                 }
+                
+                // volume conf
+		FILE *volume_config_file = fopen(VOLUME_CONFIG_FILE, "w");
+		
+		if (volume_config_file) 
+		{
+			for (volume_map_it = volume_map.begin(); volume_map_it != volume_map.end(); volume_map_it++) 
+			{
+				fprintf(volume_config_file, "%llx %d %d\n", (uint64_t) volume_map_it->first.first,
+					(int) volume_map_it->first.second, (int) volume_map_it->second);
+			}
+			fflush(volume_config_file);
+			fdatasync(fileno(volume_config_file));
+			fclose(volume_config_file);
+		}
+		//
         }
 }
 
@@ -638,6 +662,7 @@ void load_audio_map()
 	
         FILE *audio_config_file = fopen(AUDIO_CONFIG_FILE, "r");
 	audio_map.clear();
+	
         if (audio_config_file) 
 	{
           	t_channel_id chan;
@@ -663,6 +688,27 @@ void load_audio_map()
 
           	fclose(audio_config_file);
         }
+        
+        // volume conf
+	FILE *volume_config_file = fopen(VOLUME_CONFIG_FILE, "r");
+	
+	volume_map.clear();
+	
+	if (volume_config_file) 
+	{
+		char s[1000];
+		while (fgets(s, sizeof(s), volume_config_file)) 
+		{
+			t_channel_id chan;
+			int apid, percent;
+			if (3 == sscanf(s, "%llx %d %d", &chan, &apid, &percent)) 
+			{
+				volume_map[make_pair(chan, apid)] = percent;
+			} 
+		}
+		
+		fclose(volume_config_file);
+	}
 }
 
 void loadZapitSettings()
@@ -938,6 +984,19 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 		audio_mode = def_audio_mode;
 		tuxtx_set_pid(0, 0, (char *) thischannel->getTeletextLang());
 	}
+	
+	// volume conf
+	t_chan_apid chan_apid = make_pair(live_channel_id, thischannel->getAudioPid());
+	volume_map_it = volume_map.find(chan_apid);
+	
+	if((volume_map_it != volume_map.end()) )
+		audioDecoder->setPercent(volume_map_it->second);
+	else if (thischannel->getAudioChannel()) {
+		audioDecoder->setPercent(
+			(thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)
+			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
+	}
+	//
 }
 
 // return 0, -1 fails
@@ -1205,6 +1264,17 @@ int change_audio_pid(uint8_t index)
 	//start demux filter
 	if (audioDemux->Start() < 0)
 		return -1;
+	
+	// volume conf
+	t_chan_apid chan_apid = make_pair(live_channel_id, live_channel->getAudioPid());
+	volume_map_it = volume_map.find(chan_apid);
+	if (volume_map_it != volume_map.end())
+		audioDecoder->setPercent(volume_map[chan_apid]);
+	else
+		audioDecoder->setPercent(
+			(currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3)
+			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
+	//
 
 	//start audio playback
 	if (audioDecoder && (audioDecoder->Start() < 0))
@@ -2428,7 +2498,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if (!msgVolumePercent.apid)
 				msgVolumePercent.apid = live_channel->getAudioPid();
 			
-			//volume_map[make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid)] = msgVolumePercent.percent;
+			volume_map[make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid)] = msgVolumePercent.percent;
 			break;
 		}
 		
@@ -2448,24 +2518,24 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					msgVolumePercent.apid = live_channel->getAudioPid();
 			}
 			
-			//t_chan_apid chan_apid = make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid);
-			//volume_map_it = volume_map.find(chan_apid);
+			t_chan_apid chan_apid = make_pair(msgVolumePercent.channel_id, msgVolumePercent.apid);
+			volume_map_it = volume_map.find(chan_apid);
 			
-			//if (volume_map_it != volume_map.end())
-			//	msgVolumePercent.percent = volume_map[chan_apid];
-			//else if (isMoviePlayer)
-			//	msgVolumePercent.percent = msgVolumePercent.is_ac3 ? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
-			//else for (int  i = 0; i < live_channel->getAudioChannelCount(); i++)
-			//{
-				//if (msgVolumePercent.apid == live_channel->getAudioPid(i)) 
-				//{
-					//msgVolumePercent.percent =
-						//(current_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3)
-						//? VOLUME_DEFAULT_AC3
-						//: VOLUME_DEFAULT_PCM;
-					//break;
-				//}
-			//}
+			if (volume_map_it != volume_map.end())
+				msgVolumePercent.percent = volume_map[chan_apid];
+			else if (isMoviePlayer)
+				msgVolumePercent.percent = msgVolumePercent.is_ac3 ? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
+			else for (int  i = 0; i < live_channel->getAudioChannelCount(); i++)
+			{
+				if (msgVolumePercent.apid == live_channel->getAudioPid(i)) 
+				{
+					msgVolumePercent.percent =
+						(live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3)
+						? VOLUME_DEFAULT_AC3
+						: VOLUME_DEFAULT_PCM;
+					break;
+				}
+			}
 			CBasicServer::send_data(connfd, &msgVolumePercent, sizeof(msgVolumePercent));
 			break;
 		}

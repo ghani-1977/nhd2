@@ -246,6 +246,9 @@ CAPIDChangeExec		* APIDChanger;
 CVideoSetupNotifier	* videoSetupNotifier;
 CAudioSetupNotifier	* audioSetupNotifier;
 
+// volume conf
+CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
+
 /* bouquets lists */
 CBouquetList   		* bouquetList; 				//current bqt list
 
@@ -888,6 +891,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.current_volume = configfile.getInt32("current_volume", 100);
 	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "2" ).c_str() );
+	
+	g_settings.current_volume_percent = 100;
 	// END MISC OPTS
 
 	// HDD
@@ -2157,6 +2162,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_HDMI_DD, NULL);
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AC3_DELAY, NULL);
+	
+	// volume conf
+	audioSetupNotifierVolPercent = new CAudioSetupNotifierVolPercent;
 	
 #if ENABLE_GRAPHLCD
 	nGLCD::getInstance();
