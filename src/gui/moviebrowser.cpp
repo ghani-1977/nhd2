@@ -3403,10 +3403,10 @@ int CMovieBrowser::showStartPosSelectionMenu(void) // P2
 	startPosSelectionMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_START_RECORD_START, true, NULL));
 	position[menu_nr++] = 0;
 
-	startPosSelectionMenu.addItem(GenericMenuSeparatorLine);
+	//startPosSelectionMenu.addItem(GenericMenuSeparatorLine);
 	int sep_pos = menu_nr;
 
-	for(int i =0 ; i < MI_MOVIE_BOOK_USER_MAX && menu_nr < MAX_NUMBER_OF_BOOKMARK_ITEMS; i++ )
+	for(int i = 0 ; i < MI_MOVIE_BOOK_USER_MAX && menu_nr < MAX_NUMBER_OF_BOOKMARK_ITEMS; i++ )
 	{
 		if( m_movieSelectionHandler->bookmarks.user[i].pos != 0 )
 		{
@@ -3417,6 +3417,8 @@ int CMovieBrowser::showStartPosSelectionMenu(void) // P2
 				
 			snprintf(book[i], 19,"%5d min",position[menu_nr]/60);
 			TRACE("[mb] adding boomark menu N %d, position %d\n", menu_nr, position[menu_nr]);
+			
+			startPosSelectionMenu.addItem(GenericMenuSeparatorLine);
 			startPosSelectionMenu.addItem(new CMenuForwarderNonLocalized (m_movieSelectionHandler->bookmarks.user[i].name.c_str(), 	true, book[i]));
 			menu_nr++;
 		}

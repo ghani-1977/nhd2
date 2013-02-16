@@ -615,7 +615,7 @@ infoviewer.noepg Keine EPG-Information verfügbar
 infoviewer.notavailable Kanal (zur Zeit) nicht verfügbar.
 infoviewer.now jetzt
 infoviewer.selecttime Startzeiten
-infoviewer.streaminfo Features
+infoviewer.features Features
 infoviewer.subchan_disp_pos Unterkanalanzeige
 infoviewer.subservice Bildregie
 infoviewer.waittime Warte auf Uhrzeit...

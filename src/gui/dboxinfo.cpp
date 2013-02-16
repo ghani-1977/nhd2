@@ -115,9 +115,10 @@ int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 	return res;
 }
 
+#define SHADOW_OFFSET	5
 void CDBoxInfoWidget::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
+	frameBuffer->paintBackgroundBoxRel(x, y, width + SHADOW_OFFSET, height + SHADOW_OFFSET);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -128,6 +129,9 @@ void CDBoxInfoWidget::paint()
 {
 	int ypos=y;
 	int i = 0;
+	
+	// paint shadow
+	frameBuffer->paintBoxRel(x + SHADOW_OFFSET, ypos + SHADOW_OFFSET, width, height, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH);
 
 	// head
 	frameBuffer->paintBoxRel(x, ypos, width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);

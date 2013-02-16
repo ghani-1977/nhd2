@@ -40,6 +40,7 @@
 #include <global.h>
 #include <neutrino.h>
 
+
 CMessageBox::CMessageBox(const neutrino_locale_t Caption, const char * const Text, const int Width, const char * const Icon, const CMessageBox::result_ Default, const uint32_t ShowButtons) : CHintBoxExt(Caption, Text, Width, Icon)
 {
 	returnDefaultOnTimeout = false;

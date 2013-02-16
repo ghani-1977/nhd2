@@ -286,12 +286,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 
 	mainMenu.addItem( new CMenuForwarderItemMenuIcon(LOCALE_DBOXINFO, true, "", new CDBoxInfoWidget, NULL, CRCInput::RC_info, NEUTRINO_ICON_BUTTON_HELP_SMALL, "boxinfo", LOCALE_HELPTEXT_BOXINFO ));
-	
-	//test_menu
-#if ENABLE_TEST_MENU
-	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	mainMenu.addItem(new CMenuForwarderNonLocalizedItemMenuIcon("Test menu", true, NULL, new CTestMenu() ));
-#endif
 	// end main menu
 
 	// main settings
@@ -962,7 +956,7 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	
 	//proxyserver submenu
 	updateSettings->addItem(GenericMenuSeparatorLine);
-	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_0, NEUTRINO_ICON_BUTTON_0));
+	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
 
 	// check update
 	//FIXME: allow update only when the rootfs is jffs2/squashfs
@@ -1524,7 +1518,7 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	
 	//proxyserver submenu
 	networkSettings.addItem(GenericMenuSeparatorLine);
-	networkSettings.addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_0, NEUTRINO_ICON_BUTTON_0));
+	networkSettings.addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
 
 	networkSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_NETWORKMENU_MOUNT));
 	networkSettings.addItem(new CMenuForwarder(LOCALE_NFS_MOUNT , true, NULL, new CNFSMountGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
@@ -2545,7 +2539,6 @@ bool CNeutrinoApp::showUserMenu(int button)
 	};
 
         /* define classes */
-        CFavorites * tmpFavorites                               = NULL;
         CPauseSectionsdNotifier * tmpPauseSectionsdNotifier     = NULL;
         CAudioSelectMenuHandler * tmpAudioSelectMenuHandler     = NULL;
         CMenuWidget * tmpNVODSelector                           = NULL;
@@ -2578,7 +2571,7 @@ bool CNeutrinoApp::showUserMenu(int button)
         else if( button == SNeutrinoSettings::BUTTON_BLUE) 
 	{
                 if( txt.empty() )
-                        txt = g_Locale->getText(LOCALE_INFOVIEWER_STREAMINFO);
+                        txt = g_Locale->getText(LOCALE_INFOVIEWER_FEATURES);
         }
 
         CMenuWidget * menu = new CMenuWidget(txt.c_str() , NEUTRINO_ICON_FEATURES);
@@ -2614,11 +2607,19 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu->addItem(menu_item, false);
                                 break;
 
-                        case SNeutrinoSettings::ITEM_MOVIEPLAYER_MB:
+                        case SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB:
+                                menu_items++;
+                                menu_prev = SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB;
+                                keyhelper.get(&key, &icon, CRCInput::RC_green);
+                                menu_item = new CMenuForwarder(LOCALE_MOVIEPLAYER_RECORDS, true, NULL, moviePlayerGui, "tsmoviebrowser", key, icon);
+                                menu->addItem(menu_item, false);
+                                break;
+				
+			case SNeutrinoSettings::ITEM_MOVIEPLAYER_MB:
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_MOVIEPLAYER_MB;
                                 keyhelper.get(&key, &icon, CRCInput::RC_green);
-                                menu_item = new CMenuForwarder(LOCALE_MOVIEBROWSER_HEAD, true, NULL, moviePlayerGui, "tsmoviebrowser", key, icon);
+                                menu_item = new CMenuForwarder(LOCALE_MOVIEPLAYER_MOVIES, true, NULL, moviePlayerGui, "moviebrowser", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
 
@@ -2788,9 +2789,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                 menu_item->exec( NULL );
 
         // clear the heap
-        if(tmpFavorites)
-		delete tmpFavorites;
-
         if(tmpPauseSectionsdNotifier)
 		delete tmpPauseSectionsdNotifier;
 

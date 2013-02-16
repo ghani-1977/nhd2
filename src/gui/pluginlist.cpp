@@ -269,18 +269,22 @@ void CPluginList::paintItem(int pos)
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
 	}
 
-	if(liststart+pos == 0)
+	if(liststart + pos == 0)
 	{	//back is half-height...
 		itemheight = (fheight / 2) + 3;
+		
+		//
 		frameBuffer->paintBoxRel(x     , ypos + itemheight    , width     , 15, COL_MENUCONTENT_PLUS_0);
+		
+		//
 		frameBuffer->paintBoxRel(x + 10, ypos + itemheight + 5, width - 20,  1, COL_MENUCONTENT_PLUS_5);
 		frameBuffer->paintBoxRel(x + 10, ypos + itemheight + 6, width - 20,  1, COL_MENUCONTENT_PLUS_2);
 	}
-	else if(liststart==0)
+	else if(liststart == 0)
 	{
 		ypos -= (fheight / 2) - 15;
 		if(pos==(int)listmaxshow-1)
-			frameBuffer->paintBoxRel(x,ypos+itemheight, width, (fheight / 2)-15, COL_MENUCONTENT_PLUS_0);
+			frameBuffer->paintBoxRel(x, ypos + itemheight, width, (fheight / 2)-15, COL_MENUCONTENT_PLUS_0);
 	}
 	
 	frameBuffer->paintBoxRel(x, ypos, width, itemheight, bgcolor );

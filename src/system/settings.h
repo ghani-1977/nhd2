@@ -361,6 +361,7 @@ struct SNeutrinoSettings
 #if ENABLE_GRAPHLCD                
                 ITEM_GLCD = 17,
 #endif 
+		ITEM_MOVIEPLAYER_TSMB = 18,
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	

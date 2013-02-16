@@ -782,29 +782,30 @@ unsigned long long getcurrenttime()
 #define USERMENU_ITEM_OPTION_COUNT SNeutrinoSettings::ITEM_MAX
 const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUNT] =
 {
-        {SNeutrinoSettings::ITEM_NONE, LOCALE_USERMENU_ITEM_NONE} ,
-        {SNeutrinoSettings::ITEM_BAR, LOCALE_USERMENU_ITEM_BAR} ,
-        {SNeutrinoSettings::ITEM_EPG_LIST, LOCALE_EPGMENU_EVENTLIST} ,
-        {SNeutrinoSettings::ITEM_EPG_SUPER, LOCALE_EPGMENU_EPGPLUS} ,
-        {SNeutrinoSettings::ITEM_EPG_INFO, LOCALE_EPGMENU_EVENTINFO} ,
-        {SNeutrinoSettings::ITEM_EPG_MISC, LOCALE_USERMENU_ITEM_EPG_MISC} ,
-        {SNeutrinoSettings::ITEM_AUDIO_SELECT, LOCALE_AUDIOSELECTMENUE_HEAD} ,
-        {SNeutrinoSettings::ITEM_SUBCHANNEL, LOCALE_INFOVIEWER_SUBSERVICE} ,
+        {SNeutrinoSettings::ITEM_NONE, LOCALE_USERMENU_ITEM_NONE},
+        {SNeutrinoSettings::ITEM_BAR, LOCALE_USERMENU_ITEM_BAR},
+        {SNeutrinoSettings::ITEM_EPG_LIST, LOCALE_EPGMENU_EVENTLIST},
+        {SNeutrinoSettings::ITEM_EPG_SUPER, LOCALE_EPGMENU_EPGPLUS},
+        {SNeutrinoSettings::ITEM_EPG_INFO, LOCALE_EPGMENU_EVENTINFO},
+        {SNeutrinoSettings::ITEM_EPG_MISC, LOCALE_USERMENU_ITEM_EPG_MISC},
+        {SNeutrinoSettings::ITEM_AUDIO_SELECT, LOCALE_AUDIOSELECTMENUE_HEAD},
+        {SNeutrinoSettings::ITEM_SUBCHANNEL, LOCALE_INFOVIEWER_SUBSERVICE},
         {SNeutrinoSettings::ITEM_RECORD, LOCALE_TIMERLIST_TYPE_RECORD} ,
-        {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEBROWSER_HEAD} ,
-        {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME} ,
-        {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD} ,
+        {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEPLAYER_MOVIES},
+        {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME},
+        {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD},
         {SNeutrinoSettings::ITEM_TECHINFO, LOCALE_EPGMENU_STREAMINFO},
         {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS},
-        {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT} ,
+        {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT},
         {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES},
         {SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER},
 #if ENABLE_GRAPHLCD        
         {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD},
 #endif
+	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS},
 };
 
-int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
+int CUserMenuMenu::exec(CMenuTarget * parent, const std::string & actionKey)
 {
         if(parent != NULL)
                 parent->hide();
@@ -827,7 +828,7 @@ int CUserMenuMenu::exec(CMenuTarget* parent, const std::string & actionKey)
                 menu.addItem( new CMenuOptionChooser(text, &g_settings.usermenu[button][item], USERMENU_ITEM_OPTIONS, USERMENU_ITEM_OPTION_COUNT,true, NULL, CRCInput::RC_nokey, "", true ));
         }
 
-        menu.exec(NULL,"");
+        menu.exec(NULL, "");
 
         return menu_return::RETURN_REPAINT;
 }
