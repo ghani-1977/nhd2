@@ -170,15 +170,20 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	int ret = 0;
 	
 #ifdef __sh__	
-	volume = left;
+	volume = (left * percent)/100;
 	
+	// map volume
 	if (volume < 0)
 		volume = 0;
 	else if (volume > 100)
 		volume = 100;
 	
+	volume = 63 - volume * 63 / 100;
+	//
+	
 	char sVolume[4];
-	sprintf(sVolume, "%d", (int)(63-(int)(volume * 0.63)));
+	
+	sprintf(sVolume, "%d", (int)volume);
 
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
 	write(fd, sVolume, strlen(sVolume));

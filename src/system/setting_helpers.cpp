@@ -1113,6 +1113,7 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 
 	g_Zapit->setVolumePercent(g_settings.current_volume_percent, channel_id, apid);
 	audioDecoder->setPercent(g_settings.current_volume_percent);
+	
 	return true;
 }
 

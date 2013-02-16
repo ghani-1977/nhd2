@@ -95,14 +95,25 @@ const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 
 int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actionkey)
 {
-	int res = menu_return::RETURN_EXIT_ALL;
+	int sel= atoi(actionkey.c_str());
+	
+	if(sel >= 0) 
+	{
+		if (g_RemoteControl->current_PIDs.PIDs.selected_apid != (unsigned int) sel )
+		{
+			g_Zapit->setVolumePercent((unsigned int) g_settings.current_volume_percent);
+			g_RemoteControl->setAPID(sel);
+			g_Zapit->getVolumePercent((unsigned int *) &g_settings.current_volume_percent);
+			audioDecoder->setPercent(g_settings.current_volume_percent);
+		}
+
+		return menu_return::RETURN_EXIT;
+	}
 
 	if (parent) 
 		parent->hide();
 
-	doMenu();
-
-	return res;
+	return doMenu ();
 }
 
 int CAudioSelectMenuHandler::doMenu()
