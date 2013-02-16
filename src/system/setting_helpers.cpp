@@ -564,9 +564,13 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 	//printf("CAPIDChangeExec exec: %s\n", actionKey.c_str());
 
 	unsigned int sel= atoi(actionKey.c_str());
+	
 	if (g_RemoteControl->current_PIDs.PIDs.selected_apid != sel )
 	{
+		g_Zapit->setVolumePercent((unsigned int) g_settings.current_volume_percent);
 		g_RemoteControl->setAPID(sel);
+		g_Zapit->getVolumePercent((unsigned int *) &g_settings.current_volume_percent);
+		audioDecoder->setPercent(g_settings.current_volume_percent);
 	}
 
 	return menu_return::RETURN_EXIT;
