@@ -369,27 +369,27 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
   
 			paintChar(selected);
 		}
-		else if (msg== CRCInput::RC_blue)
+		else if (msg == CRCInput::RC_blue)
 		{
 			keyBluePressed();
 		}
-		else if (msg==CRCInput::RC_up)
+		else if (msg == CRCInput::RC_up)
 		{
 			keyUpPressed();
 		}
-		else if (msg==CRCInput::RC_down)
+		else if (msg == CRCInput::RC_down)
 		{
 			keyDownPressed();
-		} else if (msg==CRCInput::RC_plus)
+		} else if (msg == CRCInput::RC_plus)
 		{
 			keyPlusPressed();
-		} else if (msg==CRCInput::RC_minus)
+		} else if (msg == CRCInput::RC_minus)
 		{
 			keyMinusPressed();
 		}
 		else if (msg==CRCInput::RC_ok)
 		{
-			loop=false;
+			loop = false;
 		}
 		else if ( (msg==CRCInput::RC_home) || (msg==CRCInput::RC_timeout) )
 		{
@@ -398,7 +398,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 				continue;
 
 			strncpy(value, oldval, size);
-			loop=false;
+			loop = false;
 		}
 		else
 		{

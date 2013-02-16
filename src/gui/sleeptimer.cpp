@@ -71,7 +71,7 @@ int CSleepTimerWidget::exec(CMenuTarget* parent, const std::string &)
   		int current_epg_zeit_dauer_rest = (info_CurrentNext.current_zeit.dauer + 150 - (jetzt - info_CurrentNext.current_zeit.startzeit ))/60 ;
   		if(shutdown_min == 0 && current_epg_zeit_dauer_rest > 0 && current_epg_zeit_dauer_rest < 1000)
   		{
-  			sprintf(value,"%03d",current_epg_zeit_dauer_rest);
+  			sprintf(value,"%03d", current_epg_zeit_dauer_rest);
   		}
   	}
 
@@ -80,21 +80,15 @@ int CSleepTimerWidget::exec(CMenuTarget* parent, const std::string &)
 	inbox->hide ();
 
 	delete inbox;
-	
-	//FIXME: trying to loop msgs
-	// control loop
-	neutrino_msg_t msg;
-	neutrino_msg_data_t data;	//ignore
-	
-	g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
 
 	int new_val = atoi(value);
+		
 	if(shutdown_min != new_val) 
 	{
 		shutdown_min = new_val;
 		dprintf(DEBUG_NORMAL, "sleeptimer min: %d\n", shutdown_min);
 		
-		if (shutdown_min == 0 || msg == CRCInput::RC_home)	// if set to zero remove existing sleeptimer 
+		if (shutdown_min == 0)	// if set to zero remove existing sleeptimer 
 		{
 			if(g_Timerd->getSleeptimerID() > 0) 
 			{
@@ -102,7 +96,7 @@ int CSleepTimerWidget::exec(CMenuTarget* parent, const std::string &)
 			}
 		}
 		else	// set the sleeptimer to actual time + shutdown mins and announce 1 min before
-			g_Timerd->setSleeptimer(time(NULL) + ((shutdown_min -1) * 60),time(NULL) + shutdown_min * 60,0);
+			g_Timerd->setSleeptimer(time(NULL) + ((shutdown_min -1) * 60), time(NULL) + shutdown_min * 60, 0);
 	}
 	
 	return res;
