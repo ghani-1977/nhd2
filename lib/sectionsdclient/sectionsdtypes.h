@@ -24,7 +24,9 @@
 #ifndef __sectionsdtypes_h__
 #define __sectionsdtypes_h__
 
+/* zapit includes */
 #include <client/zapittypes.h>  /* t_channel_id, t_service_id, t_original_network_id, t_transport_stream_id; */
+
 
 typedef uint64_t event_id_t;
 #define CREATE_EVENT_ID(channel_id,event_nr) ((((event_id_t)channel_id) << 16) | event_nr)
