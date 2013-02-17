@@ -8,13 +8,19 @@ install_DATA = \
 	tuxtxt.otb
 
 
-#install_DATA += \
-#	md_khmurabi_10.ttf \
-#	micron_bold.ttf \
-#	micron_italic.ttf \
-#	micron.ttf \
-#	neutrino.ttf \
-#	pakenham.ttf \
-#	DejaVuLGCSansMono-Bold.ttf \
-#	tuxtxt.ttf \
-#	tuxtxt.otb
+install_DATA += \
+	md_khmurabi_10.ttf \
+	micron_bold.ttf \
+	micron_italic.ttf \
+	micron_italic_old.ttf \
+	DejaVuLGCSansMono-Bold.ttf \
+	12.pcf.gz \
+	14B.pcf.gz \
+	15B.pcf.gz \
+	ae_AlMateen.ttf \
+	DejaVuLGCSansMono-Bold.ttf \
+	lcd.ttf \
+	nmsbd.ttf \
+	tuxcal.ttf \
+	tuxmail.ttf
+	

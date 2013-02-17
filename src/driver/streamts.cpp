@@ -363,6 +363,8 @@ void * streamts_live_thread(void *data)
 		perror("malloc");
 		return 0;
 	}
+	
+	live_fe->locked = true;
 
 	cDemux * dmx = new cDemux();
 	
@@ -398,10 +400,13 @@ void * streamts_live_thread(void *data)
 #endif
 
 	dmx->Stop();
-	
 	delete dmx;
+	
 	free(buf);
 	close(fd);
+	
+	live_fe->locked = false;
+	
 	return 0;
 }
 
