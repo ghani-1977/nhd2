@@ -468,7 +468,8 @@ int cVideo::SetSpaceColour(int colour_space)
 
 #if !defined (PLATFORM_GENERIC)
 #ifdef __sh__
-	int fd = open("/proc/stb/video/colorformat", O_RDWR);
+	//int fd = open("/proc/stb/video/colorformat", O_RDWR);
+	int fd = open("/proc/stb/avs/0/colorformat", O_RDWR);
 #else
 	int fd = open("/proc/stb/video/hdmi_colorspace", O_RDWR);
 #endif	

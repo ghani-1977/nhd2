@@ -18,7 +18,6 @@ install_DATA += \
 	14B.pcf.gz \
 	15B.pcf.gz \
 	ae_AlMateen.ttf \
-	DejaVuLGCSansMono-Bold.ttf \
 	lcd.ttf \
 	nmsbd.ttf \
 	tuxcal.ttf \

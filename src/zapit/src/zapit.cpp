@@ -1148,8 +1148,8 @@ int zapit_to_record(const t_channel_id channel_id)
 	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 		return -1;
 	
-	if(record_fe->tuned)
-		record_fe->locked = true;
+	//if(record_fe->tuned)
+	//	record_fe->locked = true;
 	
 	// parse pat_pmt
 	if(!parse_channel_pat_pmt(rec_channel, record_fe))
@@ -1312,6 +1312,12 @@ void setRecordMode(void)
 		return;
 
 	currentMode |= RECORD_MODE;
+	
+	if(record_fe)
+	{
+		if(record_fe->tuned)
+		      record_fe->locked = true;
+	}
 	 
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_ACTIVATED, CEventServer::INITID_ZAPIT );
 }
