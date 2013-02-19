@@ -379,9 +379,9 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,spark,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,technomate,coolstream,hypercube],
+	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,technomate,coolstream,hypercube],
 	[case "${withval}" in
-		generic|dgs|gigablue|dreambox|xtrend|spark|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|technomate|coolstream|hypercube)
+		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|technomate|coolstream|hypercube)
 			BOXTYPE="$withval"
 			;;
 		cu*)
@@ -401,7 +401,7 @@ AC_ARG_WITH(boxtype,
 			BOXMODEL="$withval"
 			;;
 		spa*)
-			BOXTYPE="spark"
+			BOXTYPE="fulan"
 			BOXMODEL="$withval"
 			;;
 		uf*)
@@ -434,7 +434,7 @@ AC_ARG_WITH(boxmodel,
 				valid for gigablue: gbsolo,gb800se,gb800ue,gbquad
 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
 				valid for xtrend: et4x00,et5x00,et6x00,et9x00
-				valid for spark: spark7111, spark7162
+				valid for fulan: spark, spark7162
 				valid for kathrein: ufs910, ufs922, ufs912, ufs913
 				valid for ipbox: ipbox55, ipbox99, ipbox9900
 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
@@ -469,8 +469,8 @@ AC_ARG_WITH(boxmodel,
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 			fi
 			;;
-		spark7111|spark7162)
-			if test "$BOXTYPE" = "spark"; then
+		spark|spark7162)
+			if test "$BOXTYPE" = "fulan"; then
 				BOXMODEL="$withval"
 			else
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
@@ -515,7 +515,7 @@ AC_ARG_WITH(boxmodel,
 			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
 			;;
 	esac],
-	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "spark" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" && test -z "$BOXMODEL"; then
+	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" && test -z "$BOXMODEL"; then
 		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
 	fi])
 
@@ -527,7 +527,7 @@ AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
 AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
 AM_CONDITIONAL(BOXTYPE_DREAMBOX, test "$BOXTYPE" = "dreambox")
 AM_CONDITIONAL(BOXTYPE_XTREND, test "$BOXTYPE" = "xtrend")
-AM_CONDITIONAL(BOXTYPE_SPARK, test "$BOXTYPE" = "spark")
+AM_CONDITIONAL(BOXTYPE_FULAN, test "$BOXTYPE" = "fulan")
 AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
 AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
 AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
@@ -575,7 +575,7 @@ AM_CONDITIONAL(BOXMODEL_ET5X00,test "$BOXMODEL" = "et5x00")
 AM_CONDITIONAL(BOXMODEL_ET6X00,test "$BOXMODEL" = "et6x00")
 AM_CONDITIONAL(BOXMODEL_ET9X00,test "$BOXMODEL" = "et9x00")
 
-AM_CONDITIONAL(BOXMODEL_SPARK7111,test "$BOXMODEL" = "spark7111")
+AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
 AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
 
 AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
@@ -612,8 +612,8 @@ elif test "$BOXTYPE" = "dreambox"; then
 	AC_DEFINE(PLATFORM_DREAMBOX, 1, [building for dreambox])
 elif test "$BOXTYPE" = "xtrend"; then
 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
-elif test "$BOXTYPE" = "spark"; then
-	AC_DEFINE(PLATFORM_SPARK, 1, [building for spark])
+elif test "$BOXTYPE" = "fulan"; then
+	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
 elif test "$BOXTYPE" = "kathrein"; then
 	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
 elif test "$BOXTYPE" = "ipbox"; then
@@ -698,8 +698,8 @@ elif test "$BOXMODEL" = "et6x00"; then
 elif test "$BOXMODEL" = "et9x00"; then
 	AC_DEFINE(BOXMODEL_ET9X00, 1, [building for xtrend et9x00])
 
-elif test "$BOXMODEL" = "spark7111"; then
-	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7111])
+elif test "$BOXMODEL" = "spark"; then
+	AC_DEFINE(PLATFORM_SPARK, 1, [building for spark 7111])
 elif test "$BOXMODEL" = "spark7162"; then
 	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
 
