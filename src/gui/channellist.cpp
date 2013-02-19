@@ -1098,11 +1098,12 @@ int CChannelList::hasChannel(int nChannelNr)
 
 int CChannelList::hasChannelID(t_channel_id channel_id)
 {
-	for (uint32_t i=0;i<chanlist.size();i++) 
+	for (uint32_t i = 0; i < chanlist.size(); i++) 
 	{
 		if (chanlist[i]->channel_id == channel_id)
 			return i;
 	}
+	
 	return -1;
 }
 
@@ -1117,14 +1118,15 @@ bool CChannelList::zapTo_ChannelID(const t_channel_id channel_id)
 {
 	printf("CChannelList::zapTo_ChannelID %llx\n", channel_id);
 	
-	for (unsigned int i=0; i<chanlist.size(); i++) 
+	for (unsigned int i = 0; i < chanlist.size(); i++) 
 	{
 		if (chanlist[i]->channel_id == channel_id) 
 		{
-			zapTo (i);
+			zapTo(i);
 			return true;
 		}
 	}
+	
 	return false;
 }
 
@@ -1137,7 +1139,7 @@ void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
 		return;
 	}
 
-	if ( (pos >= (signed int) chanlist.size()) || (pos< 0) ) 
+	if ( (pos >= (signed int) chanlist.size()) || (pos < 0) ) 
 	{
 		pos = 0;
 	}
@@ -1154,7 +1156,7 @@ void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
 	
 	printf("CChannelList::zapTo me %s tuned %d new %d %s -> %llx\n", name.c_str(), tuned, pos, chan->name.c_str(), chan->channel_id);
 	
-	if ( pos !=(int)tuned ) 
+	if ( pos != (int)tuned ) 
 	{
 #if ENABLE_RADIOTEXT	  
 		if ((g_settings.radiotext_enable) && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio) && (g_Radiotext))

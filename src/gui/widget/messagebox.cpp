@@ -54,12 +54,16 @@ CMessageBox::CMessageBox(const neutrino_locale_t Caption, const char * const Tex
 	int MaxButtonTextWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(g_Locale->getText(LOCALE_MESSAGEBOX_CANCEL), true); // UTF-8
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth + 5;
 	int num = 0;
+	
 	if (showbuttons & mbYes)
 		num++;
+	
 	if (showbuttons & mbNo)
 		num++;
+	
 	if (showbuttons & (mbCancel | mbBack | mbOk))
 		num++;
+	
 	int new_width = 15 + num*ButtonWidth;
 	if(new_width > m_width)
 		m_width = new_width;
@@ -77,12 +81,16 @@ CMessageBox::CMessageBox(const neutrino_locale_t Caption, ContentLines& Lines, c
 	int MaxButtonTextWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(g_Locale->getText(LOCALE_MESSAGEBOX_CANCEL), true); // UTF-8
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth + 5;
 	int num = 0;
+	
 	if (showbuttons & mbYes)
 		num++;
+	
 	if (showbuttons & mbNo)
 		num++;
+	
 	if (showbuttons & (mbCancel | mbBack | mbOk))
 		num++;
+	
 	int new_width = 15 + num*ButtonWidth;
 	if(new_width > m_width)
 		m_width = new_width;
@@ -106,13 +114,15 @@ void CMessageBox::paintButtons()
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth;
 
 	int ButtonSpacing = (m_width - 20 - (ButtonWidth * 3)) / 2;
-	if(ButtonSpacing <= 5) ButtonSpacing = 5;
+	if(ButtonSpacing <= 5) 
+		ButtonSpacing = 5;
 
 	int xpos = 10;
 	int iw, ih;
 	int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
 	const int noname = 20;
 	
+	// yes
 	if (showbuttons & mbYes)
 	{
 		if (result == mbrYes)
@@ -125,6 +135,7 @@ void CMessageBox::paintButtons()
 			color   = COL_INFOBAR_SHADOW;
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
+		
 		CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iw, &ih);
 		m_window->paintBoxRel(xpos, m_height - m_fheight - noname, ButtonWidth, m_fheight, (CFBWindow::color_t)bgcolor);
 		//m_window->paintIcon(NEUTRINO_ICON_BUTTON_RED, xpos + 14, m_height - m_fheight - 15);
@@ -135,6 +146,7 @@ void CMessageBox::paintButtons()
 		xpos += ButtonWidth + ButtonSpacing;
 	}
 
+	// no
 	if (showbuttons & mbNo)
 	{
 		if (result == mbrNo)
@@ -157,6 +169,7 @@ void CMessageBox::paintButtons()
 	}
 
 
+	// cancel|back|ok
 	if (showbuttons & (mbCancel | mbBack | mbOk))
 	{
 		if (result >= mbrCancel)

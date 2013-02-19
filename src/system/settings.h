@@ -537,12 +537,6 @@ extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 #define SCROLLBAR_WIDTH		15
 /* end default values */
 
-// recording
-const int RECORDING_OFF    = 0;
-const int RECORDING_SERVER = 1;
-const int RECORDING_VCR    = 2;
-const int RECORDING_FILE   = 3;
-
 // parentallock
 const int PARENTALLOCK_PROMPT_NEVER          = 0;
 const int PARENTALLOCK_PROMPT_ONSTART        = 1;

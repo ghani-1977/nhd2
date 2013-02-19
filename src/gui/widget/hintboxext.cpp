@@ -157,7 +157,9 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 	if (m_startEntryOfPage.size() > 1)
 	{
 		m_height = maxOverallHeight;
-	} else {
+	} 
+	else 
+	{
 		m_maxEntriesPerPage = line;
 	}
 
@@ -202,7 +204,7 @@ void CHintBoxExt::paint(bool toround)
 		return;
 	}
 
-        CFrameBuffer* frameBuffer = CFrameBuffer::getInstance();
+        CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
         m_window = new CFBWindow(frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - m_width ) >> 1),
                                frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - m_height) >> 2),
                                m_width + borderwidth,

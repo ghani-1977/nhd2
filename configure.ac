@@ -16,13 +16,8 @@ AM_PROG_LIBTOOL
 
 TUXBOX_APPS_LIB_CONFIG(CURL,curl-config)
 TUXBOX_APPS_LIB_CONFIG(FREETYPE,freetype-config)
-if test "$BOXTYPE" = "coolstream" -o "$BOXTYPE" = "spark"; then
-TUXBOX_APPS_LIB_PKGCONFIG_CHECK(ID3TAG,libid3tag)
-TUXBOX_APPS_LIB_PKGCONFIG(MAD,libmad)
-else
 TUXBOX_APPS_LIB_PKGCONFIG(ID3TAG,id3tag)
 TUXBOX_APPS_LIB_PKGCONFIG(MAD,mad)
-fi
 if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate"; then
 TUXBOX_APPS_LIB_PKGCONFIG(VORBISIDEC,vorbis)
 else

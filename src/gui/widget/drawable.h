@@ -101,20 +101,20 @@ class Drawable
  */
 class DText : public Drawable
 {
-public:
-	DText(std::string& text);
+	public:
+		DText(std::string& text);
 
-	DText(const char *text);
+		DText(const char *text);
 
-	void init();
+		void init();
 
-	void draw(CFBWindow *window, int x, int y, int width);
-	
-	void print();
+		void draw(CFBWindow *window, int x, int y, int width);
+		
+		void print();
 
-protected:
+	protected:
 
-	std::string m_text;
+		std::string m_text;
 
 };
 
@@ -124,20 +124,20 @@ protected:
  */
 class DIcon : public Drawable
 {
-public:
-	DIcon(std::string& icon);
+	public:
+		DIcon(std::string& icon);
 
-	DIcon(const char  *icon);
+		DIcon(const char  *icon);
 
-	void init();
+		void init();
 
-	void draw(CFBWindow *window, int x, int y, int width);
-	
-	void print();
+		void draw(CFBWindow *window, int x, int y, int width);
+		
+		void print();
 
-protected:
+	protected:
 
-	std::string m_icon;
+		std::string m_icon;
 };
 
 /**
@@ -146,18 +146,18 @@ protected:
  */
 class DPagebreak : public Drawable
 {
-public:
-	DPagebreak();
+	public:
+		DPagebreak();
 
-	void draw(CFBWindow *window, int x, int y, int width);
-	
-	void print();
+		void draw(CFBWindow *window, int x, int y, int width);
+		
+		void print();
 
-	DType getType();
+		DType getType();
 
-protected:
+	protected:
 
-private:
+	private:
 	
 };
 
