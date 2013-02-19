@@ -42,12 +42,9 @@
 #include <math.h>
 #include <system/debug.h>
 
+
 #if defined(PLATFORM_SPARK7162)
 static struct aotom_ioctl_data aotom_data;
-#endif
-
-#if defined (PLATFORM_SPARK)
-#include <aotom_main.h>
 #endif
 
 //konfetti: let us share the device with evremote and fp_control
