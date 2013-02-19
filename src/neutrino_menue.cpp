@@ -2008,12 +2008,11 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 #else	
 	
 	//scroll text ein/aus (250hd has only 4 digits)
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD)
+#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_SPARK)
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
 
 	// menutitle on vfd
-	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_MENUTITLEVFD, &g_settings.menutitle_vfd, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
-//#endif	
+	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_MENUTITLEVFD, &g_settings.menutitle_vfd, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));	
 
 	//
 	lcdSettings.addItem(GenericMenuSeparatorLine);

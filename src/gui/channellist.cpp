@@ -1938,19 +1938,25 @@ void CChannelList::paintItem(int pos)
 			{
 				if (!(chan->currentEvent.description.empty())) 
 				{
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());
-#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-#endif				
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
+//					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());
+//#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
+					if (CVFD::getInstance()->is4digits)
+						snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
+					else
+						snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());
+//#endif				
 				} 
 				else
 				{				
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
-#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-#endif
+//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
+//					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
+//#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
+					if (CVFD::getInstance()->is4digits)
+						snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
+					else
+						snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
+//#endif
 				}
 			
 				//CVFD::getInstance()->showMenuText(0, nameAndDescription, -1, true); // UTF-8

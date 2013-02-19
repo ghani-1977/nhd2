@@ -943,9 +943,9 @@ void updateLcd(const std::string & sel_filename)
 			break;
 	}
 	
-#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
+//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
 	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);
-#endif	
+//#endif	
 }
 
 void CMoviePlayerGui::PlayFile(void)

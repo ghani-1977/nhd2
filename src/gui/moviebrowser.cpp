@@ -934,11 +934,11 @@ int CMovieBrowser::exec(const char * path)
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
+//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));
-#endif
+//#endif
 
 	// might be removed, for development it is good to reload the settings at any startup for testing
 	//loadSettings(&m_settings);
@@ -1156,11 +1156,11 @@ int CMovieBrowser::paint(void)
 {
 	TRACE("[mb]->Paint\r\n");
 
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
+//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));
-#endif	
+//#endif	
 
 	Font * font = NULL;
 
@@ -1339,12 +1339,12 @@ void CMovieBrowser::refreshLCD(void)
 		//lcd->showMenuText(0, " ", -1, true); // UTF-8
 		//lcd->showMenuText(1, " ", -1, true); // UTF-8
 	}
-#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)	
+//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)	
 	else
 	{
 		CVFD::getInstance()->showMenuText(0, m_movieSelectionHandler->epgTitle.c_str(), -1, true); // UTF-8
 	} 
-#endif	
+//#endif	
 }
 
 void CMovieBrowser::refreshFilterList(void)
@@ -3807,10 +3807,10 @@ int CMenuSelector::paint( bool selected )
 	int stringstartposName = x + offx + BORDER_RIGHT;
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName, y + height, dx- (stringstartposName - x), optionName, color, 0, true); // UTF-8
 
-#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
+//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
 	if (selected)
 		CVFD::getInstance()->showMenuText(0, optionName, -1, true); // UTF-8
-#endif		
+//#endif		
 
 	return y + height;
 }

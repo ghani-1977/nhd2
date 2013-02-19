@@ -1483,11 +1483,11 @@ void CFileBrowser::paint()
 	//if (filelist[0].Name.length() != 0)
 	//	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 30, y+ 5 );
 
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
+//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_FILEBROWSER_HEAD));
-#endif	
+//#endif	
 
 	// paint items
 	for(unsigned int count = 0; count<listmaxshow; count++)

@@ -2000,15 +2000,18 @@ void CNeutrinoApp::InitZapper()
 		channelList->adjustToChannelID(live_channel_id);
 
 		// show service name in vfd (250hd has only 4 digit so we show service number)
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
-		char tmp[5];
-		
-		sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
-		
-		CVFD::getInstance()->ShowText(tmp); // UTF-8
-#else
-		CVFD::getInstance()->showServicename(channelList->getActiveChannelName());
-#endif	
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
+		if (CVFD::getInstance()->is4digits)
+		{
+			char tmp[5];
+			
+			sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
+			
+			CVFD::getInstance()->ShowText(tmp); // UTF-8
+		}
+		else
+			CVFD::getInstance()->showServicename(channelList->getActiveChannelName());
+//#endif	
 
 		// start epg scanning
 		g_Sectionsd->setPauseScanning(false);
@@ -2110,11 +2113,12 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CVFD::getInstance()->Clear();
 
 	// show msg in vfd
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
-	CVFD::getInstance()->ShowText( (char *)"NHD2");
-#else
-	CVFD::getInstance()->ShowText((char *)"NEUTRINOHD2");
-#endif	
+//#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
+	if (CVFD::getInstance()->is4digits)
+		CVFD::getInstance()->ShowText( (char *)"NHD2");
+	else
+		CVFD::getInstance()->ShowText((char *)"NEUTRINOHD2");
+//#endif	
 	
 	// zapit	
 	//zapit start parameters
@@ -3788,11 +3792,12 @@ void CNeutrinoApp::ExitRun(int retcode)
 		CVFD::getInstance()->setMode(CVFD::MODE_SHUTDOWN);
 		
 		// show good bye in VFD
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
-		CVFD::getInstance()->ShowText((char *) "NHD2");
-#else
-		CVFD::getInstance()->ShowText((char *) "Good Bye");
-#endif		
+//#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
+		if (CVFD::getInstance()->is4digits)
+			CVFD::getInstance()->ShowText((char *) "BYE");
+		else
+			CVFD::getInstance()->ShowText((char *) "Good Bye");
+//#endif		
 
 		dprintf(DEBUG_INFO, "ExitRun (retcode:%d)\n", retcode);
 
@@ -4361,13 +4366,16 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		// vfd mode
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 		
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)		
-		char tmp[5];
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)		
+		if (CVFD::getInstance()->is4digits)
+		{
+			char tmp[5];
 		
-		sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
+			sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
 		
-		CVFD::getInstance()->ShowText(tmp); // UTF-8
-#endif
+			CVFD::getInstance()->ShowText(tmp); // UTF-8
+		}
+//#endif
 
 		// zapit startplayback
 		g_Zapit->setStandby(false);

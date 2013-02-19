@@ -306,11 +306,12 @@ int CBouquetList::show(bool bShowChannelList)
 
 	//if(Bouquets.size() == 0)
 	//	return res;
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+	
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
+//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "");
-#endif	
+//#endif	
 	
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();

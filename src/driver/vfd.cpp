@@ -46,6 +46,10 @@
 static struct aotom_ioctl_data aotom_data;
 #endif
 
+#if defined (PLATFORM_SPARK)
+#include <aotom_main.h>
+#endif
+
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
 #ifdef __sh__
@@ -90,8 +94,10 @@ CVFD::CVFD()
 	has_lcd = 1;
 #endif
 
-#if defined (PLATFORM_GIGABLUE)		
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBREVO_250HD) || defined (PLATFORM_SPARK)
 	is4digits = true;
+#else
+	is4digits = false;
 #endif	
 
 #if defined (PLATFORM_COOLSTREAM)
@@ -200,7 +206,7 @@ void CVFD::init()
 
 void CVFD::setlcdparameter(int dimm, const int power)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 	
 	if(dimm < 0)
@@ -241,7 +247,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 void CVFD::setlcdparameter(void)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 	last_toggle_state_power = g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
@@ -251,9 +257,9 @@ void CVFD::setlcdparameter(void)
 
 void CVFD::showServicename(const std::string & name) // UTF-8
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
-
+		
 	dprintf(DEBUG_DEBUG, "CVFD::showServicename: %s\n", name.c_str());
 	
 	servicename = name;
@@ -344,13 +350,8 @@ void CVFD::showRCLock(int duration)
 
 void CVFD::showMenuText(const int position, const char * text, const int highlight, const bool utf_encoded)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
-	
-#if defined (PLATFORM_GIGABLUE)		
-	if(is4digits)
-		return;
-#endif	
 
 	if (mode != MODE_MENU_UTF8)
 		return;
@@ -361,13 +362,8 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 
 void CVFD::showAudioTrack(const std::string & artist, const std::string & title, const std::string & album)
 {
-	if(!has_lcd) 
-		return;
-	
-#if defined (PLATFORM_GIGABLUE)		
-	if(is4digits)
-		return;
-#endif	
+	if(!has_lcd && is4digits) 
+		return;	
 
 	if (mode != MODE_AUDIO) 
 		return;
@@ -380,13 +376,8 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 
 void CVFD::showAudioPlayMode(AUDIOMODES m)
 {
-	if(!has_lcd) 
-		return;
-	
-#if defined (PLATFORM_GIGABLUE)		
-	if(is4digits)
-		return;
-#endif	
+	if(!has_lcd && is4digits) 
+		return;	
 
 	switch(m) 
 	{
@@ -417,7 +408,7 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 
 void CVFD::setMode(const MODES m, const char * const title)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 	// sow title
@@ -430,11 +421,8 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 	switch (m) 
 	{
-		case MODE_TVRADIO:
-#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE)	
+		case MODE_TVRADIO:	
 			showServicename(servicename);
-#endif
-		
 			ShowIcon(VFD_ICON_MP3, false);	
 			ShowIcon(VFD_ICON_TV, true);			
 			showclock = true;
@@ -501,7 +489,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 void CVFD::setBrightness(int bright)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = bright;
@@ -520,7 +508,7 @@ int CVFD::getBrightness()
 
 void CVFD::setBrightnessStandby(int bright)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = bright;
@@ -538,7 +526,7 @@ int CVFD::getBrightnessStandby()
 
 void CVFD::setPower(int power)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 #ifdef __sh__
@@ -576,7 +564,7 @@ int CVFD::getPower()
 
 void CVFD::togglePower(void)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 
 	last_toggle_state_power = 1 - last_toggle_state_power;
@@ -585,7 +573,7 @@ void CVFD::togglePower(void)
 
 void CVFD::setMuted(bool mu)
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 	
 	muted = mu;	
@@ -653,7 +641,7 @@ void CVFD::Clear()
 
 void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 {
-	if(!has_lcd) 
+	if(!has_lcd && is4digits) 
 		return;
 	
 #if defined (PLATFORM_UFS910) || defined (PLATFORM_UFS913)
@@ -684,6 +672,9 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 
 void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
+	if(!has_lcd && is4digits) 
+		return;
+	
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
 #ifdef __sh__
@@ -720,7 +711,7 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 #endif
 }
 
-void* CVFD::ThreadScrollText(void * arg)
+void * CVFD::ThreadScrollText(void * arg)
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 

@@ -954,11 +954,11 @@ void CUpnpBrowserGui::paintDevice()
 	// LCD
 	if(g_settings.menutitle_vfd)
 	{
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)	  
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)	  
+//		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "Select UPnP Device");
-#endif
+//#endif
 		CVFD::getInstance()->showMenuText(0, m_devices[m_selecteddevice].friendlyname.c_str(), -1, true);
 	}
 
@@ -1049,11 +1049,11 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	// LCD
 	if(g_settings.menutitle_vfd)
 	{
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)	  
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#else
+//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)	  
+//		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+//#else
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "Select UPnP Entry");
-#endif
+//#endif
 		CVFD::getInstance()->showMenuText(0, (*entry)[selected].title.c_str(), -1, true);
 	}
 
