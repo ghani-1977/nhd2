@@ -479,12 +479,6 @@ int CChannelList::exec()
 	
 	if ( nNewChannel > -1) 
 	{
-#if 0
-		if(this != CNeutrinoApp::getInstance ()->channelList)
-			CNeutrinoApp::getInstance ()->channelList->adjustToChannelID(chanlist[nNewChannel]->channel_id, false);
-		zapTo(nNewChannel);
-#endif
-		//channelList->zapTo(bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->getKey(nNewChannel)-1);
 		CNeutrinoApp::getInstance()->channelList->zapTo(getKey(nNewChannel)-1);
 	}
 
@@ -663,8 +657,6 @@ int CChannelList::show()
 				actzap = true; 
 				zapTo(selected); 
 			}
-			
-                        //paintHead();
                 }
                 else if ( msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown )
                 {
@@ -695,8 +687,6 @@ int CChannelList::show()
 				actzap = true; 
 				zapTo(selected); 
 			}
-			
-                        //paintHead();
                 }
 		else if ((msg == (neutrino_msg_t)g_settings.key_bouquet_up) && (bouquetList != NULL)) 
 		{
@@ -939,6 +929,7 @@ int CChannelList::show()
 	
 	hide();
 	
+	// bouquets mode
 	if (bShowBouquetList) 
 	{
 		res = bouquetList->exec(true);
@@ -1654,6 +1645,7 @@ void CChannelList::paintDetails(int index)
 				noch= 0;
 			sprintf(cNoch, "(%d / %d min)", seit, noch);
 		}
+		
 		int seit_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(cSeit, true); // UTF-8
 		int noch_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(cNoch, true); // UTF-8
 

@@ -217,7 +217,7 @@ CAudioPlayerGui::~CAudioPlayerGui()
 	m_title2Pos.clear();
 }
 
-int CAudioPlayerGui::exec(CMenuTarget* parent, const std::string &)
+int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 {
 	CAudioPlayer::getInstance()->init();
 	
@@ -1789,6 +1789,7 @@ const struct button_label AudioPlayerButtons[][4] =
 void CAudioPlayerGui::paintFoot()
 {
 	//printf("paintFoot{\n");
+	
 	int top;
 
 	if (m_show_playlist)
@@ -1910,12 +1911,10 @@ void CAudioPlayerGui::paintInfo()
 		int xstart = (m_width - w) / 2;
 		if(xstart < 10)
 			xstart = 10;
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_fheight, m_width - 20,
-				tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 		// second line (Artist/Title...)
-		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO &&
-				!m_curr_audiofile.MetaData.bitrate)
+		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO && !m_curr_audiofile.MetaData.bitrate)
 		{
 			GetMetaData(m_curr_audiofile);
 		}
@@ -1988,7 +1987,6 @@ void CAudioPlayerGui::paint()
 	m_frameBuffer->blit();
 #endif
 	m_visible = true;
-
 }
 
 void CAudioPlayerGui::clearItemID3DetailsLine()
@@ -2946,7 +2944,6 @@ void CAudioPlayerGui::savePlaylist()
 
 bool CAudioPlayerGui::askToOverwriteFile(const std::string& filename) 
 {
-
 	char msg[filename.length() + 127];
 	snprintf(msg,
 		filename.length() + 126,

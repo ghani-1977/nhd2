@@ -158,7 +158,8 @@ std::string g_file_epg1;
 
 bool showaudioselectdialog = false;
 
-bool isHTTP = false;
+bool isVlc = false;
+bool isWebTV = false;
 
 #define TIMESHIFT_SECONDS 3
 
@@ -328,6 +329,11 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("wma");
 	tsfilefilter.addFilter("ogg");
 	
+	// webtv
+	tsfilefilter.addFilter("m3u");
+	tsfilefilter.addFilter("pls");
+	//
+	
 	// vlcfilefilter
 	vlcfilefilter.addFilter ("ts");
 	vlcfilefilter.addFilter ("mpg");
@@ -455,9 +461,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}	
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
 	bool usedBackground = frameBuffer->getuseBackground();
 
@@ -484,15 +488,17 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isMovieBrowser = true;
 		moviebrowser->Hide_records = false;
 		timeshift = 0;
-		isHTTP = false;
+		isWebTV = false;
+		isVlc = false;
 		PlayFile();
 	}
-	if (actionKey == "moviebrowser") 
+	else if (actionKey == "moviebrowser") 
 	{
 		isMovieBrowser = true;
 		moviebrowser->Hide_records = true;
 		timeshift = 0;
-		isHTTP = false;
+		isWebTV = false;
+		isVlc = false;
 		PlayFile();
 	}
 	else if (actionKey == "fileplayback") 
@@ -500,7 +506,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isMovieBrowser = false;
 		timeshift = 0;
 		//stream
-		isHTTP = false;
+		isWebTV = false;
+		isVlc = false;
 		
 		PlayFile();
 	}
@@ -520,7 +527,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if ( actionKey == "vlcplayback" ) 
 	{
-		isHTTP = true;
+		isVlc = true;
+		isWebTV = false;
 		streamtype = STREAMTYPE_FILE;
 		isMovieBrowser = false;
 		timeshift = 0;
@@ -528,7 +536,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if ( actionKey == "dvdplayback" ) 
 	{
-		isHTTP = true;
+		isVlc = true;
+		isWebTV = false;
 		streamtype = STREAMTYPE_DVD;
 		isMovieBrowser = false;
 		timeshift = 0;
@@ -536,8 +545,17 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if ( actionKey == "vcdplayback" ) 
 	{
-		isHTTP = true;
+		isVlc = true;
+		isWebTV = false;
 		streamtype = STREAMTYPE_SVCD;
+		isMovieBrowser = false;
+		timeshift = 0;
+		PlayFile();
+	}
+	else if(actionKey == "webtv")
+	{
+		isVlc = false;
+		isWebTV = true;
 		isMovieBrowser = false;
 		timeshift = 0;
 		PlayFile();
@@ -676,7 +694,7 @@ bool VlcRequestStream(char* mrl, int  transcodeVideo, int transcodeAudio)
 		souturl += "}:";
 	}
 	souturl += "std{access=http,mux=ts,dst=";
-//	souturl += g_settings.streaming_server_ip;
+	//souturl += g_settings.streaming_server_ip;
 	souturl += ':';
 	souturl += g_settings.streaming_server_port;
 	souturl += "/dboxstream}";
@@ -915,8 +933,8 @@ void updateLcd(const std::string & sel_filename)
 	switch (playstate) 
 	{
 		case CMoviePlayerGui::PAUSE:
-			lcd = "|| ";
-			lcd += sel_filename;
+			//lcd = "|| ";
+			lcd = sel_filename;
 			break;
 			
 		case CMoviePlayerGui::REW:
@@ -938,8 +956,8 @@ void updateLcd(const std::string & sel_filename)
 			break;
 
 		default:
-			lcd = "> ";
-			lcd += sel_filename;
+			//lcd = "> ";
+			lcd = sel_filename;
 			break;
 	}
 	
@@ -962,7 +980,7 @@ void CMoviePlayerGui::PlayFile(void)
 	playstate = CMoviePlayerGui::STOPPED;
 	bool is_file_player = false;
 	std::string stream_url;
-	bool isVlc = false;
+	//bool isVlc = false;
 	bool aborted = false;
 	char mrl[200];
 	CFileList _filelist;
@@ -970,15 +988,16 @@ void CMoviePlayerGui::PlayFile(void)
 	std::string title = "";
 	bool cdDvd = false;
 
-	if (isHTTP == true)
+	// vlc
+	if (isVlc == true)
 	{
 		stream_url = "http://";
 		stream_url += g_settings.streaming_server_ip;
 		stream_url += ':';
 		stream_url += g_settings.streaming_server_port;
 		stream_url += "/dboxstream";
-		filename = stream_url.c_str();;
-		isVlc = true;
+		filename = stream_url.c_str();
+		//isVlc = true;
 		open_filebrowser = isVlc;
 			
 		if(streamtype == STREAMTYPE_DVD)
@@ -1002,6 +1021,32 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 							
 		sel_filename = "VLC Player";
+		update_lcd = true;
+		start_play = true;
+		
+		g_file_epg = std::string(rindex(filename, '/') + 1);
+		g_file_epg1 = std::string(rindex(filename, '/') + 1);
+		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+		
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+		// hide ts icon
+		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
+#endif		
+	}
+	
+	// webtv
+	if(isWebTV)
+	{
+		filename = g_settings.webtv_url.c_str();
+		
+		if(!g_settings.webtv_name.empty())
+			sel_filename = g_settings.webtv_name.c_str();
+		else
+			sel_filename = "WebTV";
+		
+		open_filebrowser = false;
+		
 		update_lcd = true;
 		start_play = true;
 		
@@ -2417,7 +2462,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			
-			if(isHTTP)
+			if(isVlc)
 				showFileInfoVLC();
 			else if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);

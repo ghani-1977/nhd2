@@ -419,6 +419,16 @@ bool cPlayback::Start(char * filename)
 	{
             isHTTP = true;
 	}
+	else if(!strncmp("rtmp://", filename, 7))
+	{
+	    printf("rtmp://\n");
+            isHTTP = true;
+	}
+	else if(!strncmp("mms://", filename, 6))
+	{
+	    printf("mss://\n");
+            isHTTP = true;
+	}
 	else
 	    strcat(file, "file://");
 	

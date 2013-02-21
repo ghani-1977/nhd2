@@ -69,7 +69,7 @@ class CChannelList
 
 		std::string             name;
 		std::vector<CZapitChannel*>	chanlist;
-		CZapProtection* 	zapProtection;
+		CZapProtection * 	zapProtection;
 
 		int 			width;
 		int 			height;

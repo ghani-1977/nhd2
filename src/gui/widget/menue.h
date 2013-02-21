@@ -194,7 +194,7 @@ class CMenuForwarder : public CMenuItem
 		int paint(bool selected = false );
 		int getHeight(void) const;
 		int getWidth(void) const;
-		int exec(CMenuTarget* parent);
+		int exec(CMenuTarget * parent);
 		bool isSelectable(void) const
 		{
 			return active;
@@ -223,7 +223,7 @@ class CMenuForwarderItemMenuIcon : public CMenuItem
 		int paint(bool selected = false );
 		int getHeight(void) const;
 		int getWidth(void) const;
-		int exec(CMenuTarget* parent);
+		int exec(CMenuTarget * parent);
 		bool isSelectable(void) const
 		{
 			return active;

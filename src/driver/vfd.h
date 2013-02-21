@@ -415,7 +415,7 @@ class CVFD
 
 		CVFD();
 
-		static void* TimeThread(void*);
+		static void * TimeThread(void*);
 		void setlcdparameter(int dimm, int power);
 		
 		// scroll text
@@ -425,7 +425,8 @@ class CVFD
 
 		~CVFD();
 		bool has_lcd;	
-		bool is4digits;		
+		bool is4digits;	
+		bool has_led;
 		
 		void setlcdparameter(void);
 

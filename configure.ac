@@ -185,6 +185,7 @@ data/lcd/Makefile
 data/lcd/icons/Makefile
 data/lcd/clock/Makefile
 data/themes/Makefile
+data/webtv/Makefile
 src/sectionsd/Makefile
 src/timerd/Makefile
 src/zapit/Makefile

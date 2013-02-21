@@ -1586,5 +1586,7 @@ const char *locale_real_names[] = {
 	"keybinding.key_video_player",
 	
 	"audiomenu.volumebar_audiosteps",
+	
+	"webtv.head",
 };
 #endif

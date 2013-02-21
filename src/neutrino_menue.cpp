@@ -153,6 +153,7 @@
 #include "gui/proxyserver_setup.h"
 #include "gui/opkg_manager.h"
 #include "gui/themes.h"
+#include "gui/webtv.h"
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
@@ -2549,6 +2550,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 	GLCD_Menu * glcdMenu 					= NULL;
 #endif
 	COPKGManager * tmpOPKGManager				= NULL;
+	CWebTV	* webtv						= NULL;
 
         std::string txt = g_settings.usermenu_text[button];
 
@@ -2769,6 +2771,18 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_item = new CMenuForwarder(LOCALE_OPKG_MANAGER, true, NULL, tmpOPKGManager, "-1", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
+				
+			// webtv
+			case SNeutrinoSettings::ITEM_WEBTV:
+                                menu_items++;
+                                menu_prev = SNeutrinoSettings::ITEM_WEBTV;
+                               
+				webtv = new CWebTV();
+				
+                                keyhelper.get(&key, &icon);
+                                menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, webtv, "-1", key, icon);
+                                menu->addItem(menu_item, false);
+                                break;
 
                         default:
                                 printf("[neutrino] WARNING! menu wrong item!!\n");
@@ -2815,6 +2829,9 @@ bool CNeutrinoApp::showUserMenu(int button)
 #endif
 	if(tmpOPKGManager)
 		delete tmpOPKGManager;
+	
+	if(webtv)
+		delete webtv;
 
         if(menu)
 		delete menu;

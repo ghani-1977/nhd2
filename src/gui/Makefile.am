@@ -53,7 +53,7 @@ libneutrino_gui_a_SOURCES = \
 
 libneutrino_gui2_a_SOURCES = \
 	color.cpp motorcontrol.cpp hdd_menu.cpp \
-	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp
+	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp webtv.cpp
 
 if ENABLE_UPNP
 libneutrino_gui2_a_SOURCES += upnpbrowser.cpp

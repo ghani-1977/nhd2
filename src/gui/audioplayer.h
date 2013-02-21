@@ -89,14 +89,18 @@ class CAudioPlayerGui : public CMenuTarget
 	public:
 		enum State
 		{
-			PLAY=0,
+			PLAY = 0,
 			STOP,
 			PAUSE,
 			FF,
 			REV
 		};
 
-		enum DisplayOrder {ARTIST_TITLE = 0, TITLE_ARTIST=1};
+		enum DisplayOrder 
+		{
+			ARTIST_TITLE = 0, 
+			TITLE_ARTIST = 1
+		};
 
 	private:
 		void Init(void);

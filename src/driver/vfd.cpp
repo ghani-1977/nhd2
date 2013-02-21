@@ -84,18 +84,25 @@ void CVFD::closeDevice()
 // constructor
 CVFD::CVFD()
 {
-// xtrend 5XXX has no vfd
+	// vfd
 #if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
 #endif
 
+	// 4digits
 #if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBREVO_250HD) || defined (PLATFORM_SPARK)
 	is4digits = true;
 #else
 	is4digits = false;
-#endif	
+#endif
+	// has led
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_SPARK)
+	has_led = true;
+#else	
+	has_led = false;
+#endif
 
 #if defined (PLATFORM_COOLSTREAM)
 	fd = open("/dev/display", O_RDONLY);
@@ -199,6 +206,11 @@ void CVFD::init()
 		perror("CVFD::init: pthread_create(TimeThread)");
 		return ;
 	}
+	
+	// set led color
+#if defined (PLATFORM_GIGABLUE)
+	vfd_led("1");  //1:, 2:, 3:
+#endif
 }
 
 void CVFD::setlcdparameter(int dimm, const int power)
@@ -828,12 +840,14 @@ void CVFD::setFan(bool enable)
 
 void CVFD::vfd_led(const char * led)
 {
+#if defined (PLATFORM_GIGABLUE)  
 	FILE *f;
 	if((f = fopen("/proc/stb/fp/led0_pattern","w")) == NULL) 
 		return;
 	
 	fprintf(f,"%s", led);
 	fclose(f);
+#endif	
 }
 
 

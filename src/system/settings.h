@@ -146,6 +146,10 @@ struct SNeutrinoSettings
 	int streaming_transcode_video_codec;
 	int streaming_resolution;
 	int streaming_vlc10;
+	
+	// webtv
+	std::string webtv_url;
+	std::string webtv_name;
 	// END MOVIEPLAYER
 
 	// OSD
@@ -362,6 +366,7 @@ struct SNeutrinoSettings
                 ITEM_GLCD = 17,
 #endif 
 		ITEM_MOVIEPLAYER_TSMB = 18,
+		ITEM_WEBTV = 19,
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	

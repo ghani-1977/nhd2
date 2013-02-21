@@ -807,6 +807,7 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD},
 #endif
 	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS},
+	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD},
 };
 
 int CUserMenuMenu::exec(CMenuTarget * parent, const std::string & actionKey)
