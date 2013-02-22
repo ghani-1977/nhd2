@@ -343,8 +343,8 @@ static void FFMPEGThread(Context_t *context) {
     }
     ffmpeg_printf(10, "Running!\n");
 
-    while ( context && context->playback && context->playback->isPlaying ) {
-
+    while ( context && context->playback && context->playback->isPlaying ) 
+    {
         //IF MOVIE IS PAUSED, WAIT
         if (context->playback->isPaused) {
             ffmpeg_printf(20, "paused\n");
@@ -362,49 +362,49 @@ static void FFMPEGThread(Context_t *context) {
 
 #define reverse_playback_3
 #ifdef reverse_playback_3
-if (context->playback->BackWard && av_gettime() >= showtime)
-{
-      audioMute = 1;
-      context->output->Command(context, OUTPUT_CLEAR, "v");
+	if (context->playback->BackWard && av_gettime() >= showtime)
+	{
+	      audioMute = 1;
+	      context->output->Command(context, OUTPUT_CLEAR, "v");
 
-      if(bofcount == 1)
-      {
-          showtime = av_gettime();
-          usleep(100000);
-          continue;
-      }
+	      if(bofcount == 1)
+	      {
+		  showtime = av_gettime();
+		  usleep(100000);
+		  continue;
+	      }
 
-      if(lastPts == -1)
-      {
-          if(currentVideoPts != -1)
-              lastPts = currentVideoPts;
-          else
-              lastPts = currentAudioPts;
-      }
+	      if(lastPts == -1)
+	      {
+		  if(currentVideoPts != -1)
+		      lastPts = currentVideoPts;
+		  else
+		      lastPts = currentAudioPts;
+	      }
 
 
-      if((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, (float) context->playback->Speed)) < 0)
-      {
-          ffmpeg_err( "Error seeking\n");
+	      if((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, (float) context->playback->Speed)) < 0)
+	      {
+		  ffmpeg_err( "Error seeking\n");
 
-          if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
-          {
-              bofcount = 1;
-          }
-      }
+		  if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
+		  {
+		      bofcount = 1;
+		  }
+	      }
 
-      lastPts = lastPts + (context->playback->Speed * 90000);
-      showtime = av_gettime() + 300000; //jump back all 300ms
-}
+	      lastPts = lastPts + (context->playback->Speed * 90000);
+	      showtime = av_gettime() + 300000; //jump back all 300ms
+	}
 
-if(!context->playback->BackWard && audioMute)
-{
-      lastPts = -1;
-      bofcount = 0;
-      showtime = 0;
-      audioMute = 0;
-      context->output->Command(context, OUTPUT_AUDIOMUTE, "0");
-}
+	if(!context->playback->BackWard && audioMute)
+	{
+	      lastPts = -1;
+	      bofcount = 0;
+	      showtime = 0;
+	      audioMute = 0;
+	      context->output->Command(context, OUTPUT_AUDIOMUTE, "0");
+	}
 #endif
 
 #ifdef reverse_playback_2
@@ -462,8 +462,8 @@ if(!context->playback->BackWard && audioMute)
                    lastPts = currentAudioPts;
 */
             }
-        } else
-        if (!context->playback->BackWard)
+        } 
+        else if (!context->playback->BackWard)
         {
            lastReverseSeek = 0;
            lastSeek = -1;
@@ -504,8 +504,10 @@ if(!context->playback->BackWard && audioMute)
 
             ffmpeg_printf(200, "packet.size %d - index %d\n", packet.size, index);
 
-            if (videoTrack != NULL) {
-                if (videoTrack->Id == index) {
+            if (videoTrack != NULL) 
+	    {
+                if (videoTrack->Id == index) 
+		{
                     currentVideoPts = videoTrack->pts = pts = calcPts(videoTrack->stream, &packet);
 
                     if ((currentVideoPts > latestPts) && (currentVideoPts != INVALID_PTS_VALUE))
@@ -538,8 +540,10 @@ if(!context->playback->BackWard && audioMute)
                 }
             }
 
-            if (audioTrack != NULL) {
-                if (audioTrack->Id == index) {
+            if (audioTrack != NULL) 
+	    {
+                if (audioTrack->Id == index) 
+		{
                     currentAudioPts = audioTrack->pts = pts = calcPts(audioTrack->stream, &packet);
 
                     if ((currentAudioPts > latestPts) && (!videoTrack))
@@ -658,8 +662,11 @@ if(!context->playback->BackWard && audioMute)
                 }
             }
 
-            if (subtitleTrack != NULL) {
-                if (subtitleTrack->Id == index) {
+	    // subtitle
+            if (subtitleTrack != NULL) 
+	    {
+                if (subtitleTrack->Id == index) 
+		{
                     float duration=3.0;
                     ffmpeg_printf(100, "subtitleTrack->stream %p \n", subtitleTrack->stream);
 
@@ -832,10 +839,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     av_register_all();
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) {
+    if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) 
 #else
-    if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0) {
+    if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0)
 #endif
+    {
         char error[512];
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
@@ -887,12 +895,13 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
     ffmpeg_printf(1, "number streams %d\n", avContext->nb_streams);
 
-    for ( n = 0; n < avContext->nb_streams; n++) {
+    for ( n = 0; n < avContext->nb_streams; n++) 
+    {
         Track_t track;
-        AVStream *stream = avContext->streams[n];
+        AVStream * stream = avContext->streams[n];
         int version = 0;
 
-        char* encoding = Codec2Encoding(stream->codec->codec_id, &version);
+        char * encoding = Codec2Encoding(stream->codec->codec_id, &version);
 
         if (encoding != NULL)
            ffmpeg_printf(1, "%d. encoding = %s - version %d\n", n, encoding, version);
@@ -902,7 +911,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
          */
         memset(&track, 0, sizeof(track));
 
-        switch (stream->codec->codec_type) {
+        switch (stream->codec->codec_type) 
+	{
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
         case AVMEDIA_TYPE_VIDEO:
 #else
@@ -910,7 +920,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 #endif        
             ffmpeg_printf(10, "CODEC_TYPE_VIDEO %d\n",stream->codec->codec_type);
 
-            if (encoding != NULL) {
+            if (encoding != NULL) 
+	    {
                 track.type           = eTypeES;
                 track.version        = version;
 
@@ -1281,7 +1292,8 @@ static int container_ffmpeg_play(Context_t *context)
         ffmpeg_printf(10, "is NOT Playing\n");
     }
 
-    if (hasPlayThreadStarted == 0) {
+    if (hasPlayThreadStarted == 0) 
+    {
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 

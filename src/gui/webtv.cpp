@@ -62,7 +62,9 @@ int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	readXml();
 	
-	return Show();
+	/*return*/ Show();
+	
+	return menu_return::RETURN_REPAINT;
 }
 
 // readxml file
@@ -127,6 +129,8 @@ bool CWebTV::readXml()
 
 int CWebTV::Show()
 {
+	int res = -1;
+	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 	
@@ -188,7 +192,7 @@ int CWebTV::Show()
 		{
 			g_RCInput->postMsg (msg, 0);
 			loop = false;
-			//res = -1;
+			res = -1;
 		}
 		else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup )
                 {
@@ -250,7 +254,7 @@ int CWebTV::Show()
 			if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
 			{
 				loop = false;
-				//res = - 1;
+				res = - 1;
 			}
 		}
 			
@@ -260,16 +264,9 @@ int CWebTV::Show()
 	}
 	
 	hide();
-	
-	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-	
-	//if(NeutrinoMessages::mode_ts == CNeutrinoApp::getInstance()->getMode())
-	//	return -1;
-
-	//printf("CWebTV::show res %d\n", res);
 			
 	//return (res);
-	return 0;
+	return res;
 	//
 }
 

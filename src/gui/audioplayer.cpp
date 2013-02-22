@@ -537,16 +537,7 @@ int CAudioPlayerGui::show()
 				m_selected -= step;
 				if((prevselected-step) < 0)
 					m_selected = m_playlist.size()-1;
-#if 0
-				if(m_selected == 0)
-				{
-					m_selected = m_playlist.size()-1;
-				}
-				else
-				{
-					m_selected--;
-				}
-#endif
+
 				paintItem(prevselected - m_liststart);
 				unsigned int oldliststart = m_liststart;
 				m_liststart = (m_selected/m_listmaxshow)*m_listmaxshow;
@@ -589,7 +580,7 @@ int CAudioPlayerGui::show()
 				}
 			}
 		}
-		else if (msg == CRCInput::RC_ok || msg == CRCInput::RC_play || msg == CRCInput::RC_vfdok)
+		else if (msg == CRCInput::RC_ok || msg == CRCInput::RC_play)
 		{
 			if (!m_playlist.empty()) 
 			{
