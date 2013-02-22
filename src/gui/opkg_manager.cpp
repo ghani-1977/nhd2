@@ -59,7 +59,7 @@
 
 COPKGManager::COPKGManager()
 {
-	width = 650;
+	width = MENU_WIDTH;
 	vp_pkg_menu = NULL;
 	v_pkg_list.clear();
 	v_pkg_installed.clear();
@@ -89,7 +89,7 @@ const char *pkg_menu_names[] = {
 	"Upgrade System",
 };
 
-int COPKGManager::exec(CMenuTarget* parent, const std::string &actionKey)
+int COPKGManager::exec(CMenuTarget * parent, const std::string &actionKey)
 {
 	int   res = menu_return::RETURN_REPAINT;
 
@@ -160,7 +160,7 @@ int COPKGManager::showPkgMenu(const int pkg_content_id)
 	if(!execCmd(pkg_types[OM_UPDATE].cmdstr))
 		DisplayInfoMessage("Update failed");
 		
-	CMenuWidget *menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
+	CMenuWidget * menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
 	
 	//menu->addIntroItems();
 	getPkgData(pkg_content_id);
@@ -292,7 +292,7 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 				int ipos = -1;
 				std::string line = buf;
 				while( (ipos = line.find('\n')) != -1 )
-					line = line.erase(ipos,1);
+					line = line.erase(ipos, 1);
 								
 				//add to lists
 				switch (pkg_content_id) 

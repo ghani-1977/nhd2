@@ -30,7 +30,13 @@
 #include <xmlinterface.h>
 
 
-#define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
+typedef struct webtv_channels {
+	char * title;
+	int url_key;
+	char * url;
+	char * description;
+	//bool locked;		// for parentallock
+} WebTVChannels;
 
 class CWebTV : public CMenuTarget
 {
@@ -38,15 +44,15 @@ class CWebTV : public CMenuTarget
 		xmlDocPtr parser;
 		bool readXml();
 		
-		std::vector<std::pair<char*, char*> > channels;
+		std::vector<WebTVChannels> channels;
 		
 		int            	width;
 		int            	height;
 		int            	x;
 		int            	y;
 		
-		int            	theight; 	// Fonthoehe Playlist-Titel
-		int            	fheight; 	// Fonthoehe Playlist-Inhalt
+		int            	theight; 	// title height
+		int            	fheight; 	// foot height (buttons???)
 		
 		unsigned int   	selected;
 		unsigned int   	liststart;
@@ -54,7 +60,6 @@ class CWebTV : public CMenuTarget
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
 		
-		//
 		CFrameBuffer * frameBuffer;
 		
 		int            m_LastMode;
@@ -68,7 +73,6 @@ class CWebTV : public CMenuTarget
 		void paint();
 		void paintHead();
 		void hide();
-		//
 		
 	public:
 		CWebTV();

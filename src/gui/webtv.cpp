@@ -31,11 +31,10 @@
 #include "movieplayer.h"
 #include "webtv.h"
 
-#include <playback_cs.h>
 
+#define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
-extern cPlayback * playback;
 
 CWebTV::CWebTV()
 {
@@ -50,7 +49,10 @@ CWebTV::CWebTV()
 CWebTV::~CWebTV()
 {
 	if (parser)
+	{
 		xmlFreeDoc(parser);
+		parser = NULL;
+	}
 }
 
 int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
@@ -60,19 +62,26 @@ int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	readXml();
 	
-	//Show();
-	//return menu_return::RETURN_REPAINT;
-	
 	return Show();
 }
 
 // readxml file
 bool CWebTV::readXml()
 {
+	WebTVChannels Channels_list;
+	
+	char * title = "";
+	int url_key = 0;
+	char * url = "";
+	char * description = "";
+	
 	channels.clear();
 	
 	if (parser)
+	{
 		xmlFreeDoc(parser);
+		parser = NULL;
+	}
 	
 	parser = parseXmlFile(DEFAULT_WEBTV_XMLFILE);
 	
@@ -87,11 +96,22 @@ bool CWebTV::readXml()
 		{
 			while ((xmlGetNextOccurence(l1, "webtv"))) 
 			{
-				char *title = xmlGetAttribute(l1, "title");
-				char *url = xmlGetAttribute(l1, "url");
-
-				if (title && url)
-					channels.push_back(std::make_pair(title, url));
+				title = xmlGetAttribute(l1, "title");
+				url_key = (int)xmlGetAttribute(l1, "urlkey");
+				url = xmlGetAttribute(l1, "url");
+				description = xmlGetAttribute(l1, "description");
+				//char * iconsrc = xmlGetAttribute(l1, "iconsrc");
+				//int type = (int)xmlGetAttribute(l1, "type");
+				
+				// fill
+				Channels_list.title = title;
+				Channels_list.url_key = url_key;
+				Channels_list.url = url;
+				Channels_list.description = description;
+				//Channels_list.iconsrc = iconsrc;
+				//Channels_list.type = type;
+				
+				channels.push_back(Channels_list);
 
 				l1 = l1->xmlNextNode;
 			}
@@ -110,8 +130,6 @@ int CWebTV::Show()
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 	
-	//int res = -1;
-	
 	// windows size
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
@@ -127,7 +145,7 @@ int CWebTV::Show()
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
-	listmaxshow = (height - theight - buttonHeight -0)/fheight;
+	listmaxshow = (height - theight - buttonHeight)/fheight;
 	height = theight + buttonHeight + listmaxshow * fheight;
 	info_height = fheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
 	
@@ -177,8 +195,6 @@ int CWebTV::Show()
                         int step = 0;
                         int prev_selected = selected;
 
-                        //step =  1;  // browse or step 1
-			//step =  msg == CRCInput::RC_page_up ? listmaxshow : 1;
 			step =  ((int) msg == g_settings.key_channelList_pageup) ? listmaxshow : 1;  // browse or step 1
                         selected -= step;
                         if((prev_selected-step) < 0)            // because of uint
@@ -198,7 +214,6 @@ int CWebTV::Show()
                         unsigned int step = 0;
                         int prev_selected = selected;
 
-                        //step =  1;  // browse or step 1
 			step =  ((int) msg == g_settings.key_channelList_pagedown) ? listmaxshow : 1;  // browse or step 1
                         selected += step;
 
@@ -221,48 +236,14 @@ int CWebTV::Show()
                 }
                 else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{	  
-			g_settings.webtv_url = channels[selected].second;
-			g_settings.webtv_name = channels[selected].first;
+			g_settings.webtv_url = channels[selected].url;
+			g_settings.webtv_name = channels[selected].title;
 			
 			hide();
 			
 			moviePlayerGui->exec(NULL, "webtv");
 			
 			loop = false;
-			
-			/*
-			// pause epg scanning
-			g_Sectionsd->setPauseScanning(true);
-			
-			// lock playback
-			g_Zapit->lockPlayBack();
-			
-			// tell neutrino we are in ts mode
-			CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, NeutrinoMessages::mode_ts);
-			
-			// save (remeber) last mode
-			m_LastMode = (CNeutrinoApp::getInstance()->getLastMode() | NeutrinoMessages::norezap);
-			
-			playback->Open();
-			
-			playback->Start( (char *)g_settings.webtv_url.c_str());
-			*/
-		}
-		else if( msg == CRCInput::RC_stop || msg == (neutrino_msg_t) g_settings.mpkey_stop)
-		{
-			/*
-			playback->Stop();
-			playback->Close();
-			
-			// unlock playback
-			g_Zapit->unlockPlayBack();
-			
-			// start epg scanning
-			g_Sectionsd->setPauseScanning(false);
-			
-			// tell neutrino that we are in the last mode
-			CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, m_LastMode);
-			*/
 		}
 		else 
 		{
@@ -340,7 +321,7 @@ void CWebTV::paintItem(int pos)
 	{
 		char nameAndDescription[255];
 		
-		snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr].first);
+		snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr].title);
 		
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, ypos + fheight, width - 40 - 15, nameAndDescription, color, 0, true);
 	}
@@ -360,7 +341,6 @@ void CWebTV::paintHead()
 	// head icon
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_STREAMING, &icon_w, &icon_h);
-	//frameBuffer->paintIcon(NEUTRINO_ICON_STREAMING, x + 10, y + title_height + 10);
 	frameBuffer->paintIcon(NEUTRINO_ICON_STREAMING, x + 10, y + ( theight - icon_h)/2 );
 	
 	// paint time/date
@@ -391,8 +371,8 @@ void CWebTV::paintDetails(int index)
 	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
 	
 	// name/description
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30, channels[index].first, COL_MENUCONTENTDARK, 0, true);
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* fheight- 2, width - 30, channels[index].second, COL_MENUCONTENTDARK, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30, channels[index].title, COL_MENUCONTENTDARK, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* fheight- 2, width - 30, channels[index].description, COL_MENUCONTENTDARK, 0, true); // UTF-8
 }
 
 void CWebTV::clearItem2DetailsLine ()

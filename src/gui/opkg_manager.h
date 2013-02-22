@@ -59,7 +59,7 @@ typedef enum
 typedef struct opkg_cmd_t
 {
 	const pkg_info_t info;
-	const char* cmdstr;
+	const char * cmdstr;
 
 } opkg_cmd_struct_t;
 
