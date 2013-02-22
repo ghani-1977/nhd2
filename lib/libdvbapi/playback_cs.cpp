@@ -252,14 +252,10 @@ cPlayback::cPlayback(int num)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
+	/* init gstreamer */
 #if ENABLE_GSTREAMER
 	gst_init(NULL, NULL);
 #endif	
-	
-	//mAudioStream = 0;
-	//mSpeed = 0;
-
-	//playing = false;
 }
 
 cPlayback::~cPlayback()
@@ -405,32 +401,26 @@ bool cPlayback::Start(char * filename)
 
 	if(!strncmp("http://", filename, 7))
 	{
-            isHTTP = true;
-	}
-	else if(!strncmp("vlc://", filename, 6))
-	{
-            isHTTP = true;
+		isHTTP = true;
 	}
 	else if(!strncmp("file://", filename, 7))
 	{
-	 
+		isHTTP = false;
 	}
 	else if(!strncmp("upnp://", filename, 7))
 	{
-            isHTTP = true;
+		isHTTP = true;
 	}
 	else if(!strncmp("rtmp://", filename, 7))
 	{
-	    printf("rtmp://\n");
-            isHTTP = true;
+		isHTTP = true;
 	}
 	else if(!strncmp("mms://", filename, 6))
 	{
-	    printf("mss://\n");
-            isHTTP = true;
+		isHTTP = true;
 	}
 	else
-	    strcat(file, "file://");
+		strcat(file, "file://");
 	
 	strcat(file, filename);
 

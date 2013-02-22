@@ -271,9 +271,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	m_screensaver = false;
 
 	if(parent)
-	{
 		parent->hide();
-	}
 	
 	bool usedBackground = m_frameBuffer->getuseBackground();
 	if (usedBackground)
@@ -464,7 +462,7 @@ int CAudioPlayerGui::show()
 			if (m_state != CAudioPlayerGui::STOP)
 				stop();
 			else
-				loop=false;
+				loop = false;
 		}
 		else if (msg == CRCInput::RC_left || msg == CRCInput::RC_vfdleft)
 		{

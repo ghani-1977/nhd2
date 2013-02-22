@@ -124,7 +124,8 @@ status = 1;
                      if (ret != cERR_PLAYBACK_NO_ERROR || playPts + (2 * 90000) >= lastPts)
                          dieNow = 1;
                      
-                 } else
+                 } 
+                 else
                  {
                       playback_err("playback already died ?\n");
                       dieNow = 1;
@@ -137,6 +138,7 @@ status = 1;
                      playback_err("something went wrong, expect end but never reached?\n");
                      dieNow = 1;
                  }
+
                  usleep(10000);
              }    
         }
@@ -205,7 +207,8 @@ static int PlaybackOpen(Context_t  *context, char * uri)
             if (context->container && context->container->assContainer)
                 context->container->assContainer->Command(context, CONTAINER_INIT, NULL);    
 
-        } else if (!strncmp("http://", uri, 7)) 
+        } 
+        else if (!strncmp("http://", uri, 7)) 
 	{
 /*            char * extension = NULL;*/
             context->playback->isFile = 0;
@@ -359,7 +362,7 @@ static int PlaybackClose(Context_t  *context)
     return ret;
 }
 
-static int PlaybackPlay(Context_t  *context) 
+static int PlaybackPlay(Context_t * context) 
 {
     pthread_attr_t attr;
     int ret = cERR_PLAYBACK_NO_ERROR;
@@ -380,7 +383,8 @@ static int PlaybackPlay(Context_t  *context)
             playback_err("clearing isCreationPhase!\n");
 
             context->playback->isCreationPhase = 0;	// allow thread to go into next state
-        } else 
+        } 
+        else 
 	{
             context->playback->isPlaying    = 1;
             context->playback->isPaused     = 0;

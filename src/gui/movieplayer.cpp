@@ -103,7 +103,7 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-cPlayback * playback;
+cPlayback * playback = NULL;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -594,7 +594,7 @@ size_t CurlDummyWrite (void *ptr, size_t size, size_t nmemb, void *data)
 
 CURLcode sendGetRequest (const std::string & url, std::string & response) 
 {
-	CURL *curl;
+	CURL * curl;
 	CURLcode httpres;
 
 	curl = curl_easy_init ();
@@ -605,6 +605,7 @@ CURLcode sendGetRequest (const std::string & url, std::string & response)
 	httpres = curl_easy_perform (curl);
 	//printf ("[movieplayer.cpp] HTTP Result: %d\n", httpres);
 	curl_easy_cleanup (curl);
+	
 	return httpres;
 }
 
@@ -612,7 +613,7 @@ CURLcode sendGetRequest (const std::string & url, std::string & response)
 #define TRANSCODE_VIDEO_MPEG1 1
 #define TRANSCODE_VIDEO_MPEG2 2
 
-bool VlcRequestStream(char* mrl, int  transcodeVideo, int transcodeAudio)
+bool VlcRequestStream(char * mrl, int  transcodeVideo, int transcodeAudio)
 {
 	CURLcode httpres;
 	std::string baseurl = "http://";
@@ -630,6 +631,7 @@ bool VlcRequestStream(char* mrl, int  transcodeVideo, int transcodeAudio)
 	//Resolve Resolution from Settings...
 	const char * res_horiz;
 	const char * res_vert;
+	
 	switch(g_settings.streaming_resolution)
 	{
 		case 0:
@@ -656,6 +658,7 @@ bool VlcRequestStream(char* mrl, int  transcodeVideo, int transcodeAudio)
 			res_horiz = "352";
 			res_vert = "288";
 	} //switch
+	
 	souturl = "#";
 	if(transcodeVideo!=TRANSCODE_VIDEO_OFF || transcodeAudio!=0)
 	{
@@ -803,6 +806,7 @@ void * VlcReceiveStreamStart (void *mrl)
 	baseurl += '/';
 	baseurl += "requests/status.xml";
 	CURLcode httpres = sendGetRequest(baseurl, response);
+	
 	if(httpres != 0)
 	{
 		DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEPLAYER_NOSTREAMINGSERVER));	// UTF-8
@@ -833,10 +837,11 @@ void * VlcReceiveStreamStart (void *mrl)
 			(!strcasecmp(sMRL.substr(sMRL.length()-3).c_str(), "vob") && !g_settings.streaming_transcode_audio) ||
 			(!strcasecmp(sMRL.substr(sMRL.length()-3).c_str(), "ac3") && !g_settings.streaming_transcode_audio) ||
 			g_settings.streaming_force_avi_rawaudio)
-			transcodeAudio=0;
+			transcodeAudio = 0;
 		else
-			transcodeAudio=1;
+			transcodeAudio = 1;
 	}
+	
 	VlcRequestStream((char*)mrl, transcodeVideo, transcodeAudio);
 
 // TODO: Better way to detect if http://<server>:8080/dboxstream is already alive. For example repetitive checking for HTTP 404.
@@ -1416,11 +1421,12 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				filename = NULL;
 				filebrowser->Filter = &vlcfilefilter;
+				
 				if(filebrowser->exec(Path_vlc.c_str()))
 				{
 					Path_vlc = filebrowser->getCurrentDir ();
 
-					CFile *file = filebrowser->getSelectedFile();
+					CFile * file = filebrowser->getSelectedFile();
 					_filelist.clear();
 					_filelist.push_back(*file);
 
@@ -1431,6 +1437,7 @@ void CMoviePlayerGui::PlayFile(void)
 						//printf ("[movieplayer.cpp] sel_filename: %s\n", filename);
 						int namepos = _filelist[0].Name.rfind("vlc://");
 						std::string mrl_str = "";
+						
 						if (g_settings.streaming_vlc10 > 1)
 						{
 							mrl_str += "file://";
@@ -2499,10 +2506,8 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		if (exit) 
-		{
-//#if ENABLE_GSTREAMER		  
-			playback->Stop();
-//#endif			
+		{	  
+			playback->Stop();			
 
 			if (isMovieBrowser == true) 
 			{
