@@ -86,11 +86,10 @@ cDvbCi * ci; //FIXME: boxes without ci cam
 map<t_channel_id, audio_map_set_t> audio_map;
 map<t_channel_id, audio_map_set_t>::iterator audio_map_it;
 unsigned int volume_left = 0, volume_right = 0;
-unsigned int def_volume_left = 0, def_volume_right = 0;
 int audio_mode = 0;
 int def_audio_mode = 0;
 
-/* volume conf */
+/* volume percent conf */
 #define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
 #define VOLUME_DEFAULT_PCM 75
 #define VOLUME_DEFAULT_AC3 100
@@ -980,12 +979,15 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	} 
 	else 
 	{
-		volume_left = volume_right = def_volume_left;
+		volume_left = volume_right = (thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
 		audio_mode = def_audio_mode;
 		tuxtx_set_pid(0, 0, (char *) thischannel->getTeletextLang());
 	}
 	
-	// volume conf
+	// set saved volume befor setpercent this will set volume again
+	//audioDecoder->setVolume(volume_left, volume_right);
+	
+	// volume conf //FIXME: brocken
 	t_chan_apid chan_apid = make_pair(live_channel_id, thischannel->getAudioPid());
 	volume_map_it = volume_map.find(chan_apid);
 	
@@ -996,10 +998,6 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 			(thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)
 			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
 	}
-	//
-	
-	//TEST
-	//audioDecoder->setVolume(volume_left, volume_right);
 }
 
 // return 0, -1 fails
@@ -1268,7 +1266,10 @@ int change_audio_pid(uint8_t index)
 	if (audioDemux->Start() < 0)
 		return -1;
 	
-	// volume conf
+	// set saved volume befor setpercent this will set volume again
+	//audioDecoder->setVolume(volume_left, volume_right);
+	
+	// volume conf //FIXME: brocken
 	t_chan_apid chan_apid = make_pair(live_channel_id, live_channel->getAudioPid());
 	volume_map_it = volume_map.find(chan_apid);
 	if (volume_map_it != volume_map.end())
@@ -1278,9 +1279,6 @@ int change_audio_pid(uint8_t index)
 			(currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3)
 			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
 			
-	//audioDecoder->setVolume(volume_left, volume_right);
-	//
-
 	//start audio playback
 	if (audioDecoder && (audioDecoder->Start() < 0))
 		return -1;

@@ -888,10 +888,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
-	g_settings.current_volume = configfile.getInt32("current_volume", 100);
+	g_settings.current_volume = configfile.getInt32("current_volume", 75);
 	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "2" ).c_str() );
-	
-	g_settings.current_volume_percent = 100;
 	// END MISC OPTS
 
 	// HDD
@@ -2141,12 +2139,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// dvbsub thread
 	dvbsub_init();
 
-	// Audio
+	// audio volume (default)
 	if(audioDecoder)
-	{
 		// set volume
 		audioDecoder->setVolume(g_settings.current_volume, g_settings.current_volume);
-	}
 
 	// Video
 	videoSetupNotifier = new CVideoSetupNotifier;
@@ -3968,7 +3964,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	int x = frameBuffer->getScreenX() + 10;
 	int y = frameBuffer->getScreenY() + 10;
 
-	int vol = g_settings.current_volume;
+	int vol = g_settings.current_volume = audioDecoder->getVolume();
 	
 	int sw = frameBuffer->getScreenWidth();
 	int sh = frameBuffer->getScreenHeight();
@@ -4056,17 +4052,17 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				if (g_settings.current_volume < 100 - a_step )
-					g_settings.current_volume += a_step;
+				if (g_settings.current_volume /*vol*/ < 100 - a_step )
+					g_settings.current_volume /*vol*/ += a_step;
 				else
-					g_settings.current_volume = 100;
+					g_settings.current_volume /*vol*/ = 100;
 			}
 			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				if (g_settings.current_volume > a_step)
-					g_settings.current_volume -= a_step;
+				if (g_settings.current_volume /*vol*/ > a_step)
+					g_settings.current_volume /*vol*/ -= a_step;
 				else
-					g_settings.current_volume = 0;
+					g_settings.current_volume /*vol*/ = 0;
 			}
 			else 
 			{
@@ -4074,7 +4070,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 				break;
 			}
 
-			setvol(g_settings.current_volume);
+			setvol(g_settings.current_volume /*vol*/);
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::ShowVolume(true);
@@ -4098,9 +4094,9 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 		if (bDoPaint) 
 		{
-			if(vol != g_settings.current_volume) 
+			if(vol != g_settings.current_volume /*audioDecoder->getVolume()*/) 
 			{
-				vol = g_settings.current_volume;
+				vol = g_settings.current_volume /*audioDecoder->getVolume()*/;
 
 				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
 
@@ -4122,7 +4118,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		}
 
 #if ENABLE_LCD
-		CVFD::getInstance()->showVolume(g_settings.current_volume);
+		CVFD::getInstance()->showVolume(g_settings.current_volume /*vol*/);
 #endif
 
 		if (msg != CRCInput::RC_timeout) 

@@ -448,8 +448,6 @@ struct SNeutrinoSettings
 	// vol
 	char current_volume;
 	char audio_step[3];
-	
-	unsigned int current_volume_percent;
 	// MISC OPTS
 
 	// HDD

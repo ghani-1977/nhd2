@@ -103,6 +103,8 @@ extern CFrontend * live_fe;
 extern CScanSettings * scanSettings;
 extern CFrontend * getFE(int index);
 
+extern t_channel_id live_channel_id;
+
 extern "C" int pinghost( const char *hostname );
 
 CSatelliteSetupNotifier::CSatelliteSetupNotifier(int num)
@@ -565,12 +567,11 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	unsigned int sel = atoi(actionKey.c_str());
 	
+	int percent[g_RemoteControl->current_PIDs.APIDs.size()];
+	
 	if (g_RemoteControl->current_PIDs.PIDs.selected_apid != sel )
 	{
-		g_Zapit->setVolumePercent((unsigned int) g_settings.current_volume_percent);
 		g_RemoteControl->setAPID(sel);
-		g_Zapit->getVolumePercent((unsigned int *) &g_settings.current_volume_percent);
-		audioDecoder->setPercent(g_settings.current_volume_percent);
 	}
 
 	return menu_return::RETURN_EXIT;
@@ -1097,28 +1098,13 @@ void CScanSetupNotifier::addItem(int list, CMenuItem* item)
 bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionName __attribute__((unused)), void *data)
 {
 	// audio_select.cpp, set channel specific volume
-	g_settings.current_volume_percent = *((int *) (data));
+	int current_volume_percent = *((int *) (data));
 
-	// assume steps of 5.
-	if ((g_settings.current_volume_percent % 5) == 1)
-		g_settings.current_volume_percent += 4;
-	else if (g_settings.current_volume_percent < 4)
-		g_settings.current_volume_percent = 0;
-	else
-		g_settings.current_volume_percent -= 4;
-
-	int v = audioDecoder->getVolume();
+	// ???
+	g_Zapit->setVolumePercent(current_volume_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
 	
-	if (v * g_settings.current_volume_percent > 10000)
-		g_settings.current_volume_percent = 10000 / v;
-	else {
-		g_settings.current_volume_percent /= 5;
-		g_settings.current_volume_percent *= 5;
-	}
-	*((int *) (data)) = g_settings.current_volume_percent;
-
-	g_Zapit->setVolumePercent(g_settings.current_volume_percent, channel_id, apid);
-	audioDecoder->setPercent(g_settings.current_volume_percent);
+	//
+	audioDecoder->setPercent(current_volume_percent);
 	
 	return true;
 }

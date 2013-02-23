@@ -842,11 +842,13 @@ int cAudio::setPercent(int perc)
 	int old_percent = percent;
 	percent = perc;
 	
-	if (percent < 0 || percent > 999)
+	if (percent < 0)
+		percent = 0;
+	else if (percent > 100)
 		percent = 100;
 	
 	if(!Muted)
-		setVolume(volume, volume);
+		setVolume(percent, percent);
 	
 	return old_percent;
 }

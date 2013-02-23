@@ -1619,10 +1619,7 @@ void CNeutrinoApp::InitRecordingSettings(CMenuWidget &recordingSettings)
 	// record time
 	recordingSettings.addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_RECORD_TIME, &g_settings.record_hours, true, 1, 24, NULL) );
 
-	//if(1) 
-	//if(has_hdd)
-	//struct statfs s;
-	//if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
+	// timeshift
 	if (recDir != NULL)
 	{
 		//auto timeshift (permanent timeshift)
