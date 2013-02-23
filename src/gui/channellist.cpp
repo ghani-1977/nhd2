@@ -994,7 +994,6 @@ int CChannelList::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				// CHANGETOLOCK mode and channel/bouquet is pre locked (0x100)
 				// ONSIGNAL mode and fsk(data) is beyond configured value
 				// if programm has already been unlocked, dont require pin
-#if 1
 				if ((data >= (neutrino_msg_data_t)g_settings.parentallock_lockage) &&
 					 ((chanlist[selected]->last_unlocked_EPGid != g_RemoteControl->current_EPGid) || (g_RemoteControl->current_EPGid == 0)) &&
 					 ((g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_CHANGETOLOCKED) || (data >= 0x100)))
@@ -1015,7 +1014,6 @@ int CChannelList::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				}
 				else
 					g_RemoteControl->startvideo();
-#endif
 			}
 		}
 		else

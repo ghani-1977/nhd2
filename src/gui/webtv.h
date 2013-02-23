@@ -32,10 +32,10 @@
 
 typedef struct webtv_channels {
 	char * title;
-	int url_key;
+	//char * urlkey;
 	char * url;
 	char * description;
-	//bool locked;		// for parentallock
+	char * locked;		// for parentallock
 } WebTVChannels;
 
 class CWebTV : public CMenuTarget
@@ -65,6 +65,8 @@ class CWebTV : public CMenuTarget
 		int            m_LastMode;
 		
 		int info_height;
+		
+		CZapProtection * 	zapProtection;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();

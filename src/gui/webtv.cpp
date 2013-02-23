@@ -44,6 +44,8 @@ CWebTV::CWebTV()
 	liststart = 0;
 	
 	parser = NULL;
+	
+	zapProtection = NULL;
 }
 
 CWebTV::~CWebTV()
@@ -62,7 +64,7 @@ int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	readXml();
 	
-	/*return*/ Show();
+	Show();
 	
 	return menu_return::RETURN_REPAINT;
 }
@@ -71,12 +73,7 @@ int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
 bool CWebTV::readXml()
 {
 	WebTVChannels Channels_list;
-	
-	char * title = "";
-	int url_key = 0;
-	char * url = "";
-	char * description = "";
-	
+	 
 	channels.clear();
 	
 	if (parser)
@@ -98,22 +95,27 @@ bool CWebTV::readXml()
 		{
 			while ((xmlGetNextOccurence(l1, "webtv"))) 
 			{
-				title = xmlGetAttribute(l1, "title");
-				url_key = (int)xmlGetAttribute(l1, "urlkey");
-				url = xmlGetAttribute(l1, "url");
-				description = xmlGetAttribute(l1, "description");
-				//char * iconsrc = xmlGetAttribute(l1, "iconsrc");
-				//int type = (int)xmlGetAttribute(l1, "type");
+				char * title = xmlGetAttribute(l1, (char *)"title");
+				//char * urlkey = xmlGetAttribute(l1, (char *)"urlkey");
+				char * url = xmlGetAttribute(l1, (char *)"url");
+				char * description = xmlGetAttribute(l1, (char *)"description");
+				char * locked = xmlGetAttribute(l1, (char *)"locked");
+				
+				bool ChLocked = locked ? (strcmp(locked, "1") == 0) : false;
 				
 				// fill
 				Channels_list.title = title;
-				Channels_list.url_key = url_key;
+				//Channels_list.urlkey = urlkey;
 				Channels_list.url = url;
 				Channels_list.description = description;
-				//Channels_list.iconsrc = iconsrc;
-				//Channels_list.type = type;
+				Channels_list.locked = locked;
 				
-				channels.push_back(Channels_list);
+				// parentallock
+				if ((g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_ONSIGNAL) && (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_CHANGETOLOCKED))
+					ChLocked = false;			
+			
+				if(!ChLocked)
+					channels.push_back(Channels_list);
 
 				l1 = l1->xmlNextNode;
 			}
@@ -246,7 +248,6 @@ int CWebTV::Show()
 			hide();
 			
 			moviePlayerGui->exec(NULL, "webtv");
-			
 			loop = false;
 		}
 		else 
@@ -332,7 +333,7 @@ void CWebTV::paintHead()
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
 	
 	// foot
-	int ButtonWidth = (width - 20) / 4;
+	//int ButtonWidth = (width - 20) / 4;
 	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
 	// head icon

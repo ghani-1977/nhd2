@@ -450,7 +450,7 @@ class CZapProtection : public CPINProtection
 	public:
 		int	fsk;
 
-		CZapProtection( char* validpin, int	FSK ) : CPINProtection(validpin){ fsk= FSK; };
+		CZapProtection( char * validpin, int FSK ) : CPINProtection(validpin){ fsk= FSK; };
 		bool check();
 };
 

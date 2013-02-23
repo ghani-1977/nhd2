@@ -413,8 +413,8 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		{
 			char * name = xmlGetAttribute(search, (char *) "name");
 			CZapitBouquet* newBouquet = addBouquet(name, bUser);
-			char* hidden = xmlGetAttribute(search, (char *) "hidden");
-			char* locked = xmlGetAttribute(search, (char *) "locked");
+			char * hidden = xmlGetAttribute(search, (char *) "hidden");
+			char * locked = xmlGetAttribute(search, (char *) "locked");
 			newBouquet->bHidden = hidden ? (strcmp(hidden, "1") == 0) : false;
 			newBouquet->bLocked = locked ? (strcmp(locked, "1") == 0) : false;
 			newBouquet->bFav = (strcmp(name, "Favorites") == 0);
