@@ -563,7 +563,7 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	//printf("CAPIDChangeExec exec: %s\n", actionKey.c_str());
 
-	unsigned int sel= atoi(actionKey.c_str());
+	unsigned int sel = atoi(actionKey.c_str());
 	
 	if (g_RemoteControl->current_PIDs.PIDs.selected_apid != sel )
 	{
@@ -1108,6 +1108,7 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 		g_settings.current_volume_percent -= 4;
 
 	int v = audioDecoder->getVolume();
+	
 	if (v * g_settings.current_volume_percent > 10000)
 		g_settings.current_volume_percent = 10000 / v;
 	else {

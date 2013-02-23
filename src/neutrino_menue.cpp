@@ -1985,7 +1985,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	CMenuOptionChooser * oj2 = new CMenuOptionChooser(LOCALE_LCDMENU_POWER, &g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
 	lcdSettings.addItem(oj2);
 #endif	
-	
+	// LCD
 #if defined (PLATFORM_DREAMBOX)
 	//option invert
 	CMenuOptionChooser* oj_inverse = new CMenuOptionChooser(LOCALE_LCDMENU_INVERSE, &g_settings.lcd_setting[SNeutrinoSettings::LCD_INVERSE], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
@@ -2010,26 +2010,24 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	
 	//scroll text ein/aus (250hd has only 4 digits)
 #if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_SPARK)
-	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
-
-	// menutitle on vfd
-	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_MENUTITLEVFD, &g_settings.menutitle_vfd, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));	
+	//lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
 
 	//
 	lcdSettings.addItem(GenericMenuSeparatorLine);
+	
 	//
 	CVfdControler * lcdsliders = new CVfdControler(LOCALE_LCDMENU_HEAD, NULL);
 
 	// dimm-time
-	//CStringInput * dim_time = new CStringInput(LOCALE_LCDMENU_DIM_TIME, g_settings.lcd_setting_dim_time, 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE,"0123456789 ");
-	//lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_DIM_TIME,true, g_settings.lcd_setting_dim_time, dim_time, NULL, CRCInput::convertDigitToKey(shortcutVFD++)));
+	CStringInput * dim_time = new CStringInput(LOCALE_LCDMENU_DIM_TIME, g_settings.lcd_setting_dim_time, 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE,"0123456789 ");
+	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_DIM_TIME,true, g_settings.lcd_setting_dim_time, dim_time, NULL, CRCInput::convertDigitToKey(shortcutVFD++)));
 
 	// dimm brightness
 	//CStringInput * dim_brightness = new CStringInput(LOCALE_LCDMENU_DIM_BRIGHTNESS, g_settings.lcd_setting_dim_brightness, 3,NONEXISTANT_LOCALE, NONEXISTANT_LOCALE,"0123456789 ");
 	//lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_DIM_BRIGHTNESS,true, g_settings.lcd_setting_dim_brightness, dim_brightness, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
 
-	//lcdSettings.addItem(GenericMenuSeparatorLine);
-
+	// lcd controller
+	lcdSettings.addItem(GenericMenuSeparatorLine);
 	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #elif defined (PLATFORM_GIGABLUE)
 	// led color

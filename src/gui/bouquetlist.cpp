@@ -56,7 +56,6 @@
 #include <neutrino.h>
 
 
-
 extern CBouquetManager * g_bouquetManager;
 
 CBouquetList::CBouquetList(const char * const Name)
@@ -68,8 +67,7 @@ CBouquetList::CBouquetList(const char * const Name)
 	if(Name == NULL)
 		name = g_Locale->getText(LOCALE_BOUQUETLIST_HEAD);
 	else
-		name = Name;
-		
+		name = Name;		
 }
 
 CBouquetList::~CBouquetList()
@@ -78,27 +76,30 @@ CBouquetList::~CBouquetList()
 	{
                	delete (*it);
         }
+        
 	Bouquets.clear();
 }
 
-CBouquet* CBouquetList::addBouquet(CZapitBouquet * zapitBouquet)
+CBouquet * CBouquetList::addBouquet(CZapitBouquet * zapitBouquet)
 {
-	CBouquet* tmp = addBouquet(zapitBouquet->Name.c_str(), -1, zapitBouquet->bLocked);
+	CBouquet * tmp = addBouquet(zapitBouquet->Name.c_str(), -1, zapitBouquet->bLocked);
 	tmp->zapitBouquet = zapitBouquet;
+	
 	return tmp;
 }
 
-CBouquet* CBouquetList::addBouquet(const char * const name, int BouquetKey, bool locked)
+CBouquet * CBouquetList::addBouquet(const char * const name, int BouquetKey, bool locked)
 {
-	if ( BouquetKey==-1 )
-		BouquetKey= Bouquets.size();
+	if ( BouquetKey == -1 )
+		BouquetKey = Bouquets.size();
 
 	CBouquet* tmp = new CBouquet( BouquetKey, name, locked );
 	Bouquets.push_back(tmp);
+	
 	return(tmp);
 }
 
-void CBouquetList::deleteBouquet(CBouquet*bouquet)
+void CBouquetList::deleteBouquet(CBouquet * bouquet)
 {
 	if (bouquet != NULL) 
 	{
@@ -119,7 +120,7 @@ int CBouquetList::getActiveBouquetNumber()
 
 void CBouquetList::adjustToChannel( int nChannelNr)
 {
-	for (uint32_t i=0; i<Bouquets.size(); i++) 
+	for (uint32_t i = 0; i<Bouquets.size(); i++) 
 	{
 		int nChannelPos = Bouquets[i]->channelList->hasChannel(nChannelNr);
 		if (nChannelPos > -1) 
@@ -146,10 +147,11 @@ void CBouquetList::adjustToChannelID(t_channel_id channel_id)
 	
 	printf("CBouquetList::adjustToChannelID to %llx\n", channel_id);
 	
-	for (uint32_t i=0; i < Bouquets.size(); i++) 
+	for (uint32_t i = 0; i < Bouquets.size(); i++) 
 	{
 		if(i == selected)
 			continue;
+		
 		int nChannelPos = Bouquets[i]->channelList->hasChannelID(channel_id);
 		if (nChannelPos > -1) 
 		{
@@ -227,11 +229,12 @@ int CBouquetList::doMenu()
 		return 0;
 
 	zapitBouquet = Bouquets[selected]->zapitBouquet;
+	
 	/* zapitBouquet not NULL only on real bouquets, not on virtual SAT or HD */
 	if(!zapitBouquet)
 		return 0;
 
-	CMenuWidget* menu = new CMenuWidget(LOCALE_CHANNELLIST_EDIT, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget * menu = new CMenuWidget(LOCALE_CHANNELLIST_EDIT, NEUTRINO_ICON_SETTINGS);
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 
 	sprintf(cnt, "%d", i);
@@ -241,6 +244,7 @@ int CBouquetList::doMenu()
 		ret = menu->exec(NULL, "");
 		delete menu;
 		delete selector;
+		
 		printf("CBouquetList::doMenu: %d selected\n", select);
 
 		if(select >= 0) 
@@ -264,6 +268,7 @@ int CBouquetList::doMenu()
 						tmp->addService((*channels)[i]);
 					return 1;
 					break;
+					
 				default:
 					break;
 			}
@@ -275,7 +280,9 @@ int CBouquetList::doMenu()
 		ret = menu->exec(NULL, "");
 		delete menu;
 		delete selector;
+		
 		printf("CBouquetList::doMenu: %d selected\n", select);
+		
 		if(select >= 0) 
 		{
 			old_selected = select;
@@ -284,16 +291,19 @@ int CBouquetList::doMenu()
 				case 0:
 					hide();
 					bouquet_id = g_bouquetManager->existsUBouquet(Bouquets[selected]->channelList->getName());
-					if(bouquet_id >= 0) {
+					if(bouquet_id >= 0) 
+					{
 						g_bouquetManager->deleteBouquet(bouquet_id);
 						return 1;
 					}
 					break;
+					
 				default:
 					break;
 			}
 		}
 	}
+	
 	return 0;
 }
 
@@ -319,9 +329,6 @@ int CBouquetList::show(bool bShowChannelList)
 	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
 	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
 	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
-	
-	//width = w_max (768, 70);
-	//height = h_max (576, 50 + 30); // 30 for the bottom button box.
 
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -334,7 +341,7 @@ int CBouquetList::show(bool bShowChannelList)
 	int maxpos= 1;
 	int i= Bouquets.size();
 	
-	while ((i= i/10)!=0)
+	while ((i = i/10)!=0)
 		maxpos++;
 
 	paintHead();
@@ -365,7 +372,7 @@ int CBouquetList::show(bool bShowChannelList)
 		if ((msg == CRCInput::RC_timeout) || (msg == (neutrino_msg_t)g_settings.key_channelList_cancel))
 		{
 			selected = oldselected;
-			loop=false;
+			loop = false;
 		}
 		else if(msg == CRCInput::RC_red || msg == CRCInput::RC_favorites) 
 		{
@@ -444,12 +451,14 @@ int CBouquetList::show(bool bShowChannelList)
 			step = ((int) msg == g_settings.key_channelList_pagedown) ? listmaxshow : 1;  // browse or step 1
 			selected += step;
 
-			if(selected >= Bouquets.size()) {
+			if(selected >= Bouquets.size()) 
+			{
 				if (((Bouquets.size() / listmaxshow) + 1) * listmaxshow == Bouquets.size() + listmaxshow) // last page has full entries
 					selected = 0;
 				else
 					selected = ((step == listmaxshow) && (selected < (((Bouquets.size() / listmaxshow) + 1) * listmaxshow))) ? (Bouquets.size() - 1) : 0;
 			}
+			
 			paintItem(prev_selected - liststart);
 			unsigned int oldliststart = liststart;
 			liststart = (selected/listmaxshow)*listmaxshow;
@@ -464,7 +473,7 @@ int CBouquetList::show(bool bShowChannelList)
 			if(!bShowChannelList || Bouquets[selected]->channelList->getSize() > 0) 
 			{
 				zapOnExit = true;
-				loop=false;
+				loop = false;
 			}
 		}
 		else if (CRCInput::isNumeric(msg)) 
@@ -565,7 +574,7 @@ void CBouquetList::paintItem(int pos)
 
 		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 		
-		if(g_settings.menutitle_vfd)
+		//if(g_settings.menutitle_vfd)
 		{
 			if(npos < (int) Bouquets.size())
 				CVFD::getInstance()->showMenuText(0, name, -1, true);		
@@ -575,8 +584,10 @@ void CBouquetList::paintItem(int pos)
 	{
 		if(npos < (int) Bouquets.size())
 			iscurrent = Bouquets[npos]->channelList->getSize() > 0;
+		
                 color = iscurrent ? COL_MENUCONTENT : COL_MENUCONTENTINACTIVE;
                 bgcolor = iscurrent ? COL_MENUCONTENT_PLUS_0 : COL_MENUCONTENTINACTIVE_PLUS_0;
+		
 		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
 	}
 
@@ -585,10 +596,10 @@ void CBouquetList::paintItem(int pos)
 		char tmp[10];
 		sprintf((char*) tmp, "%d", npos+ 1);
 
-		int numpos = x+5+numwidth- g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos,ypos+fheight, numwidth+5, tmp, color, fheight);
+		int numpos = x + 5 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + fheight, numwidth + 5, tmp, color, fheight);
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10, ypos+ fheight, width- numwidth- 20- 15, name, color, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, name, color, 0, true); // UTF-8
 	}
 }
 
@@ -605,16 +616,8 @@ void CBouquetList::paintHead()
 	// head box
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
-	// head icon
-	//frameBuffer->paintIcon(NEUTRINO_ICON_SETTINGS, x + 7, y + 5);
-	
 	// head title
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, name, COL_MENUHEAD, 0, true); // UTF-8
-	
-	// centered
-	//int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(name, true); // UTF-8
-	//int stringstartposX = x +(width >> 1) - (neededWidth >> 1);
-	//g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + theight, width - (stringstartposX - x) , name, COL_MENUHEAD, 0, true); // UTF-8
 }
 
 void CBouquetList::paint()
@@ -649,14 +652,14 @@ void CBouquetList::paint()
 		}
 	}
 
-	int ypos = y+ theight;
-	int sb = fheight* listmaxshow;
+	int ypos = y + theight;
+	int sb = fheight*listmaxshow;
 	
 	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((bsize - 1)/ listmaxshow)+ 1;
-	float sbh= (sb - 4)/ sbc;
-	int sbs= (selected/listmaxshow);
+	int sbc = ((bsize - 1)/ listmaxshow)+ 1;
+	float sbh = (sb - 4)/ sbc;
+	int sbs = (selected/listmaxshow);
 
-	frameBuffer->paintBoxRel(x+ width- 13, ypos+ 2+ int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 }

@@ -169,28 +169,29 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 	int ret = 0;
 	
+	volume = (left + right)/2;
+	
 #ifdef __sh__	
-	volume = (left * percent)/100;
+	//unsigned char vol = ( volume*percent)/100;  //FIXME:brocken
+	unsigned char vol = volume;
 	
 	// map volume
-	if (volume < 0)
-		volume = 0;
-	else if (volume > 100)
-		volume = 100;
+	if (vol < 0)
+		vol = 0;
+	else if (vol > 100)
+		vol = 100;
 	
-	volume = 63 - volume * 63 / 100;
+	vol = 63 - vol * 0.63;
 	//
 	
 	char sVolume[4];
 	
-	sprintf(sVolume, "%d", (int)volume);
+	sprintf(sVolume, "%d", (int)vol);
 
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
 	write(fd, sVolume, strlen(sVolume));
 	close(fd);
 #else
-	volume = left;
-	
 	// convert to -1dB steps
 	left = 63 - left * 63 / 100;
 	right = 63 - right * 63 / 100;
@@ -205,21 +206,6 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 	if(ret < 0)
 		perror("AUDIO_SET_MIXER");
-	
-#if !defined (PLATFORM_GENERIC)
-	//HACK?
-	FILE *f;
-	if((f = fopen("/proc/stb/avs/0/volume", "wb")) == NULL) 
-	{
-		printf("cannot open /proc/stb/avs/0/volume(%m)\n");
-	}
-	else
-	{
-		fprintf(f, "%d", left); /* in -1dB */
-
-		fclose(f);
-	}
-#endif // !generic
 #endif
 	
 	return ret;
@@ -849,11 +835,6 @@ int cAudio::setHwAC3Delay(int delay)
 	return -1;
 }
 
-int cAudio::getPercent(void) 
-{
-	return percent;
-}
-
 int cAudio::setPercent(int perc) 
 {
 	dprintf(DEBUG_INFO, "%s %d (muted: %d)\n", __func__, perc, Muted);
@@ -863,8 +844,10 @@ int cAudio::setPercent(int perc)
 	
 	if (percent < 0 || percent > 999)
 		percent = 100;
+	
 	if(!Muted)
 		setVolume(volume, volume);
+	
 	return old_percent;
 }
 

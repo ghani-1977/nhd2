@@ -168,7 +168,7 @@ void CVFD::wake_up()
 	if (atoi(g_settings.lcd_setting_dim_time) > 0) 
 	{
 		timeout_cnt = atoi(g_settings.lcd_setting_dim_time);
-		g_settings.lcd_setting_dim_brightness > 0 ?setBrightness(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]) : setPower(1);
+		g_settings.lcd_setting_dim_brightness > 0 ? setBrightness(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]) : setPower(1);
 	}
 	else
 		setPower(1);

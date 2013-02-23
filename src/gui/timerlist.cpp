@@ -752,25 +752,23 @@ void CTimerList::paintItem(int pos)
 			default:;
 			}
 
-			if(g_settings.menutitle_vfd)
-			{
-				CVFD::getInstance()->showMenuText(0, line1.c_str(), -1, true); // UTF-8
-				//CVFD::getInstance()->showMenuText(1, line2.c_str(), -1, true); // UTF-8
-			}
+			CVFD::getInstance()->showMenuText(0, line1.c_str(), -1, true); // UTF-8
 		}
 	}
 }
 
 void CTimerList::paintHead()
 {
-	frameBuffer->paintBoxRel(x, y, width, theight + 0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
-	frameBuffer->paintIcon(NEUTRINO_ICON_TIMER, x+5, y+4);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	frameBuffer->paintIcon(NEUTRINO_ICON_TIMER, x + 5, y + 4);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+35,y+theight+0, width- 45, g_Locale->getText(LOCALE_TIMERLIST_NAME), COL_MENUHEAD, 0, true); // UTF-8
 
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 30, y+ 5 );
 	
-/*	if (bouquetList!=NULL)
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x+ width- 60, y+ 5 );*/
+	/*	
+	if (bouquetList != NULL)
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x + width - 60, y+ 5 );
+	*/
 }
 
 const struct button_label TimerListButtons[3] =
@@ -802,14 +800,7 @@ void CTimerList::paint()
 	unsigned int page_nr = (listmaxshow == 0) ? 0 : (selected / listmaxshow);
 	liststart = page_nr * listmaxshow;
 
-	if(g_settings.menutitle_vfd)
-	{
-#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)	  
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );
-#else
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_TIMERLIST_NAME));
-#endif
-	}
+	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_TIMERLIST_NAME));
 
 	paintHead();
 	

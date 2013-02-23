@@ -37,7 +37,9 @@
 
 #include <driver/framebuffer.h>
 #include <system/lastchannel.h>
-#include <bouquets.h> /*zapit*/
+
+/* zapit includes */
+#include <bouquets.h>
 
 #include <string>
 #include <vector>
@@ -47,16 +49,15 @@ typedef enum bouquetSwitchMode
 {
 	bsmBouquets,	// pressing OK shows list of all Bouquets
 	bsmChannels,	// pressing OK shows list of all channels of active bouquets
-	bsmAllChannels	// OK shows lsit of all channels
+	bsmAllChannels	// OK shows list of all channels
 } BouquetSwitchMode;
 
 class CBouquet
 {
-
 	public:
 		int		unique_key;
 		bool		bLocked;
-		CChannelList*	channelList;
+		CChannelList *	channelList;
 		CZapitBouquet * zapitBouquet;
 
 		CBouquet(const int Unique_key, const char * const Name, const bool locked)
@@ -77,7 +78,7 @@ class CBouquet
 class CBouquetList
 {
 	private:
-		CFrameBuffer		*frameBuffer;
+		CFrameBuffer		* frameBuffer;
 
 		std::string		name;
 		unsigned int		selected;
@@ -98,6 +99,7 @@ class CBouquetList
 		void paint();
 		void paintHead();
 		void hide();
+		
 		int doMenu();
 
 	public:
@@ -105,10 +107,10 @@ class CBouquetList
 		~CBouquetList();
 
 		std::vector<CBouquet*>	Bouquets;
-
-		CChannelList* orgChannelList;
-		CBouquet* addBouquet(const char * const name, int BouquetKey=-1, bool locked=false );
-		CBouquet* addBouquet(CZapitBouquet * zapitBouquet);
+		CChannelList * orgChannelList;
+		
+		CBouquet * addBouquet(const char * const name, int BouquetKey=-1, bool locked=false );
+		CBouquet * addBouquet(CZapitBouquet * zapitBouquet);
 		void deleteBouquet(CBouquet* bouquet);
 		int getActiveBouquetNumber();
 		int activateBouquet(int id, bool bShowChannelList);
@@ -118,6 +120,5 @@ class CBouquetList
 		void adjustToChannelID(t_channel_id channel_id);
 		int exec( bool bShowChannelList);
 };
-
 
 #endif

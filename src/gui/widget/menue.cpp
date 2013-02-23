@@ -769,15 +769,12 @@ int CMenuOptionNumberChooser::paint(bool selected)
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x), l_option, color, 0, true); // UTF-8
 	
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if(selected)
 	{
-		if(selected)
-		{
-			char str[256];
-			snprintf(str, 255, "%s %s", l_optionName, l_option);
+		char str[256];
+		snprintf(str, 255, "%s %s", l_optionName, l_option);
 
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-		}
+		CVFD::getInstance()->showMenuText(0, str, -1, true);
 	}
 
 	return y + height;
@@ -992,15 +989,12 @@ int CMenuOptionChooser::paint( bool selected )
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x), l_option, color, 0, true); // UTF-8
 
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if (selected)
 	{
-		if (selected)
-		{
-			char str[256];
-			snprintf(str, 255, "%s %s", optionNameString.c_str(), l_option);
+		char str[256];
+		snprintf(str, 255, "%s %s", optionNameString.c_str(), l_option);
 
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-		}
+		CVFD::getInstance()->showMenuText(0, str, -1, true);
 	}
 
 	return y + height;
@@ -1178,15 +1172,12 @@ int CMenuOptionStringChooser::paint( bool selected )
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, stringwidth, optionValue, color, 0, true); // UTF-8
 	
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if (selected)
 	{
-		if (selected)
-		{
-			char str[256];
-			snprintf(str, 255, "%s %s", l_optionName, optionValue);
+		char str[256];
+		snprintf(str, 255, "%s %s", l_optionName, optionValue);
 
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-		}
+		CVFD::getInstance()->showMenuText(0, str, -1, true);
 	}
 
 	return y + height;
@@ -1274,12 +1265,9 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height,dx- (stringstartposOption - x), optionValue, color);
 
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if (selected)
 	{
-		if (selected)
-		{
-			CVFD::getInstance()->showMenuText(1, optionValue);
-		}
+		CVFD::getInstance()->showMenuText(1, optionValue);
 	}
 
 	return y + height;
@@ -1371,22 +1359,19 @@ int CMenuForwarder::paint(bool selected)
 	const char * option_text = getOption();
 
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if (selected)
 	{
-		if (selected)
+		char str[256];
+
+		if (option_text != NULL) 
 		{
-			char str[256];
+			snprintf(str, 255, "%s %s", l_text, option_text);
 
-			if (option_text != NULL) 
-			{
-				snprintf(str, 255, "%s %s", l_text, option_text);
-
-				CVFD::getInstance()->showMenuText(0, str, -1, true);
-			} 
-			else
-			{
-				CVFD::getInstance()->showMenuText(0, l_text, -1, true);
-			}
+			CVFD::getInstance()->showMenuText(0, str, -1, true);
+		} 
+		else
+		{
+			CVFD::getInstance()->showMenuText(0, l_text, -1, true);
 		}
 	}
 
@@ -1602,22 +1587,19 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	}
 	
 	// menutitle on VFD
-	if(g_settings.menutitle_vfd)
+	if (selected)
 	{
-		if (selected)
+		char str[256];
+
+		if (option_text != NULL) 
 		{
-			char str[256];
+			snprintf(str, 255, "%s %s", l_text, option_text);
 
-			if (option_text != NULL) 
-			{
-				snprintf(str, 255, "%s %s", l_text, option_text);
-
-				CVFD::getInstance()->showMenuText(0, str, -1, true);
-			} 
-			else
-			{
-				CVFD::getInstance()->showMenuText(0, l_text, -1, true);
-			}
+			CVFD::getInstance()->showMenuText(0, str, -1, true);
+		} 
+		else
+		{
+			CVFD::getInstance()->showMenuText(0, l_text, -1, true);
 		}
 	}
 	

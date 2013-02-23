@@ -1288,11 +1288,8 @@ void CFileBrowser::paintItem(unsigned int pos)
 
 		if ( actual_file->Name.length() > 0 )
 		{
-			if(g_settings.menutitle_vfd)
-			{
-				if (liststart+pos==selected)
-					CVFD::getInstance()->showMenuText(0, FILESYSTEM_ENCODING_TO_UTF8_STRING(actual_file->getFileName()).c_str(), -1, true); // UTF-8
-			}
+			if (liststart + pos == selected)
+				CVFD::getInstance()->showMenuText(0, FILESYSTEM_ENCODING_TO_UTF8_STRING(actual_file->getFileName()).c_str(), -1, true); // UTF-8
 
 			switch(actual_file->getType())
 			{

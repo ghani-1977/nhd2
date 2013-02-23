@@ -148,7 +148,7 @@ class cAudio
 		int setHwPCMDelay(int delay);
 		int setHwAC3Delay(int delay);
 		
-		int getPercent(void);
+		int getPercent(void) {return percent;}
 		int setPercent(int perc);
 };
 

@@ -997,6 +997,9 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
 	}
 	//
+	
+	//TEST
+	//audioDecoder->setVolume(volume_left, volume_right);
 }
 
 // return 0, -1 fails
@@ -1274,6 +1277,8 @@ int change_audio_pid(uint8_t index)
 		audioDecoder->setPercent(
 			(currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3)
 			? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM);
+			
+	//audioDecoder->setVolume(volume_left, volume_right);
 	//
 
 	//start audio playback

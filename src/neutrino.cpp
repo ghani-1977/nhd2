@@ -588,7 +588,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.recording_epg_for_filename      = configfile.getBool("recording_epg_for_filename", false);
 	g_settings.recording_save_in_channeldir      = configfile.getBool("recording_save_in_channeldir", false);
 	
-	g_settings.recording_zap_on_announce       = configfile.getBool("recording_zap_on_announce"      , false);
+	g_settings.recording_zap_on_announce       = configfile.getBool("recording_zap_on_announce", false);
 	// end recording
 
 	// movieplayer
@@ -614,7 +614,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// OSD
 	g_settings.gtx_alpha = configfile.getInt32( "gtx_alpha", 255);
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
-	g_settings.menutitle_vfd = configfile.getInt32( "menutitle_vfd", 0);	// off
 
 	// themes
 	// nhd2	
@@ -753,10 +752,10 @@ int CNeutrinoApp::loadSetup(const char * fname)
         //-------------------------------------------
         // this is as the current neutrino usermen
         const char * usermenu_default[SNeutrinoSettings::BUTTON_MAX]={
-                "2,3,4,12",                     // RED
+                "2, 3, 4, 12",                     // RED
                 "6",                            // GREEN
                 "7",                            // YELLOW
-                "10,11,13,14,15",   		// BLUE
+                "10, 11, 13, 14, 15, 19",   		// BLUE
 #if defined (PLATFORM_GIGABLUE)
 		"0",				// F1
 		"0",				// F2
@@ -1163,8 +1162,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		configfile.setInt32(locale_real_names[timing_setting_name[i]], g_settings.timing[i]);
-	
-	configfile.setInt32( "menutitle_vfd", g_settings.menutitle_vfd);
 	// END OSD
 
 	// KEYS
@@ -2518,8 +2515,8 @@ void CNeutrinoApp::quickZap(int msg)
 
 	StopSubtitles();
 	
-	if((bouquetList != NULL) && !(bouquetList->Bouquets.empty()))
-		bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->quickZap(msg, g_settings.zap_cycle);
+	if(g_settings.zap_cycle && (bouquetList!=NULL) && !(bouquetList->Bouquets.empty()))
+		bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->quickZap(msg, true);
 	else
 		channelList->quickZap(msg);
 }
@@ -4079,6 +4076,10 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 			setvol(g_settings.current_volume);
 			
+#ifdef ENABLE_GRAPHLCD
+			nGLCD::ShowVolume(true);
+#endif			
+			
 			//FIXME
 			if (current_muted && msg == CRCInput::RC_plus)
 				AudioMute(0, true);
@@ -4133,6 +4134,10 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		frameBuffer->blit();
 #endif		
 	} while (msg != CRCInput::RC_timeout);
+	
+#ifdef ENABLE_GRAPHLCD
+	nGLCD::ShowVolume(false);
+#endif	
 
 	if( (bDoPaint) && (pixbuf != NULL) ) 
 	{

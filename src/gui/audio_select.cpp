@@ -98,9 +98,7 @@ int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actio
 	int res = menu_return::RETURN_EXIT_ALL;
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
 	doMenu();
 
@@ -209,13 +207,13 @@ int CAudioSelectMenuHandler::doMenu()
 	
 	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
-		g_Zapit->getVolumePercent((unsigned int *) &percent[ count], 0, g_RemoteControl->current_PIDs.APIDs[count].pid);
+		g_Zapit->getVolumePercent((unsigned int *) &percent[count], 0, g_RemoteControl->current_PIDs.APIDs[count].pid);
 		
 		int is_active = count == g_RemoteControl->current_PIDs.PIDs.selected_apid;
 		
 		AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[count],
 			is_active,
-			0, 999, audioSetupNotifierVolPercent, 0, 0, NONEXISTANT_LOCALE,
+			0, 100, audioSetupNotifierVolPercent, 0, 0, NONEXISTANT_LOCALE,
 			g_RemoteControl->current_PIDs.APIDs[count].desc));
 			
 		if (is_active)

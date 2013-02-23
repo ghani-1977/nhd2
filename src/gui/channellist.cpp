@@ -96,8 +96,9 @@ extern int FrontendCount;			// defined in zapit.cpp
 extern CFrontend * getFE(int index);		// defined in zapit.cpp
 extern bool feCanTune(CZapitChannel * thischannel);
 
-extern CBouquetManager *g_bouquetManager;
+extern CBouquetManager * g_bouquetManager;
 
+/* events */
 void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode, t_channel_id *chidlist, int clen);
 void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
 void addChannelToBouquet(const unsigned int bouquet, const t_channel_id channel_id);
@@ -281,7 +282,7 @@ void CChannelList::SortSat(void)
 
 CZapitChannel * CChannelList::getChannel(int number)
 {
-	for (uint32_t i=0; i< chanlist.size();i++) 
+	for (uint32_t i = 0; i< chanlist.size();i++) 
 	{
 		if (chanlist[i]->number == number)
 			return chanlist[i];
@@ -292,7 +293,8 @@ CZapitChannel * CChannelList::getChannel(int number)
 
 CZapitChannel * CChannelList::getChannel(t_channel_id channel_id)
 {
-	for (uint32_t i=0; i< chanlist.size();i++) {
+	for (uint32_t i = 0; i< chanlist.size();i++) 
+	{
 		if (chanlist[i]->channel_id == channel_id)
 			return chanlist[i];
 	}
@@ -469,6 +471,7 @@ int CChannelList::doChannelMenu(void)
 				break;
 		}
 	}
+	
 	return 0;
 }
 
@@ -1007,7 +1010,7 @@ int CChannelList::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 						g_RemoteControl->startvideo();
 						
 						// remember it for the next time
-						chanlist[selected]->last_unlocked_EPGid= g_RemoteControl->current_EPGid;
+						chanlist[selected]->last_unlocked_EPGid = g_RemoteControl->current_EPGid;
 					}
 					delete zapProtection;
 					zapProtection = NULL;
@@ -1031,6 +1034,7 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 	unsigned int i;
 
 	//printf("CChannelList::adjustToChannelID me %x list size %d channel_id %llx\n", (int) this, chanlist.size(), channel_id);fflush(stdout);
+	
 	for (i = 0; i < chanlist.size(); i++) 
 	{
 		if(chanlist[i] == NULL) 
@@ -1065,7 +1069,9 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 					RADIOallList->adjustToChannelID(channel_id);
 				}
 			}
+			
 			//printf("CChannelList::adjustToChannelID me %x to %llx bToo %s OK: %d\n", (int) this, channel_id, bToo ? "yes" : "no", i);fflush(stdout);
+			
 			return true;
 		}
 	}
@@ -1077,11 +1083,12 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 
 int CChannelList::hasChannel(int nChannelNr)
 {
-	for (uint32_t i=0;i<chanlist.size();i++) 
+	for (uint32_t i = 0; i<chanlist.size(); i++) 
 	{
 		if (getKey(i) == nChannelNr)
 			return(i);
 	}
+	
 	return(-1);
 }
 
@@ -1242,13 +1249,6 @@ int CChannelList::numericZap(int key)
 				this->frameBuffer->blit();
 #endif
 				res = channelList->exec();
-#if 0
-				int newChannel = channelList->show() ;
-
-				if (newChannel > -1) { //FIXME handle edit/mode change ??
-					orgList->zapTo_ChannelID(channelList->chanlist[newChannel]->channel_id);
-				}
-#endif
 			}
 			delete channelList;
 			return res;
@@ -1314,13 +1314,6 @@ int CChannelList::numericZap(int key)
 			this->frameBuffer->blit();
 #endif
 			res = channelList->exec();
-#if 0
-			int newChannel = channelList->show() ;
-
-			if (newChannel > -1) { //FIXME handle edit/mode change ??
-				orgList->zapTo_ChannelID(channelList->chanlist[newChannel]->channel_id);
-			}
-#endif
 		}
 		delete channelList;
 		return res;
@@ -1350,7 +1343,7 @@ int CChannelList::numericZap(int key)
 
 			frameBuffer->paintBoxRel(ox, oy, sx, sy, COL_INFOBAR_PLUS_0);
 
-			for (int i=3; i>=0; i--) 
+			for (int i = 3; i >= 0; i--) 
 			{
 				valstr[i+ 1]= 0;
 				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->RenderString(ox+7+ i*((sx-14)>>2), oy+sy-3, sx, &valstr[i], COL_INFOBAR);
@@ -1360,7 +1353,7 @@ int CChannelList::numericZap(int key)
 			frameBuffer->blit();
 #endif
 
-			//test
+			// show infobar
 			showInfo(chn - 1);
 			lastchan = chn;
 		}
@@ -1480,9 +1473,11 @@ void CChannelList::virtual_zap_mode(bool up)
         int chn = getActiveChannelNumber() + (up ? 1 : -1);
         if (chn > (int)chanlist.size())
 		chn = 1;
+	
         if (chn == 0)
 		chn = (int)chanlist.size();
-        int lastchan= -1;
+	
+        int lastchan = -1;
         bool doZap = true;
         bool showEPG = false;
 	int epgpos = 0;
@@ -1586,8 +1581,8 @@ void CChannelList::quickZap(int key, bool cycle)
 
 	if ( (key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) )
 	{
-                if(selected==0)
-                        selected = chanlist.size()-1;
+                if(selected == 0)
+                        selected = chanlist.size() - 1;
                 else
                         selected--;
         }
@@ -1922,36 +1917,24 @@ void CChannelList::paintItem(int pos)
 		}
 
 		// show channame/event info in vfd
-		if(g_settings.menutitle_vfd)
+		if (curr == selected) 
 		{
-			if (curr == selected) 
+			if (!(chan->currentEvent.description.empty())) 
 			{
-				if (!(chan->currentEvent.description.empty())) 
-				{
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-//					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());
-//#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
-					if (CVFD::getInstance()->is4digits)
-						snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-					else
-						snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());
-//#endif				
-				} 
+				if (CVFD::getInstance()->is4digits)
+					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
 				else
-				{				
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-//					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
-//#elif defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
-					if (CVFD::getInstance()->is4digits)
-						snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-					else
-						snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
-//#endif
-				}
-			
-				//CVFD::getInstance()->showMenuText(0, nameAndDescription, -1, true); // UTF-8
-				CVFD::getInstance()->ShowText(nameAndDescription); // UTF-8
+					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());				
+			} 
+			else
+			{				
+				if (CVFD::getInstance()->is4digits)
+					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
+				else
+					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
 			}
+			
+			CVFD::getInstance()->ShowText(nameAndDescription); // UTF-8
 		}
 	}
 }
