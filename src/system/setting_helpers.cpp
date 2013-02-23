@@ -567,8 +567,6 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	unsigned int sel = atoi(actionKey.c_str());
 	
-	int percent[g_RemoteControl->current_PIDs.APIDs.size()];
-	
 	if (g_RemoteControl->current_PIDs.PIDs.selected_apid != sel )
 	{
 		g_RemoteControl->setAPID(sel);
@@ -1100,11 +1098,11 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	// audio_select.cpp, set channel specific volume
 	int current_volume_percent = *((int *) (data));
 
-	// ???
+	// save volume percent
 	g_Zapit->setVolumePercent(current_volume_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
 	
-	//
-	audioDecoder->setPercent(current_volume_percent);
+	// set volume for selected pid
+	audioDecoder->setVolume(current_volume_percent, current_volume_percent);
 	
 	return true;
 }

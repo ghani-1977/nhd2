@@ -64,9 +64,6 @@ cAudio::cAudio()
 	
 	m_pcm_delay = -1,
 	m_ac3_delay = -1;
-	
-	//
-	percent = 100;
 }
 
 cAudio::~cAudio(void)
@@ -172,7 +169,6 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	volume = (left + right)/2;
 	
 #ifdef __sh__	
-	//unsigned char vol = ( volume*percent)/100;  //FIXME:brocken
 	unsigned char vol = volume;
 	
 	// map volume
@@ -834,23 +830,4 @@ int cAudio::setHwAC3Delay(int delay)
 	
 	return -1;
 }
-
-int cAudio::setPercent(int perc) 
-{
-	dprintf(DEBUG_INFO, "%s %d (muted: %d)\n", __func__, perc, Muted);
-	
-	int old_percent = percent;
-	percent = perc;
-	
-	if (percent < 0)
-		percent = 0;
-	else if (percent > 100)
-		percent = 100;
-	
-	if(!Muted)
-		setVolume(percent, percent);
-	
-	return old_percent;
-}
-
 

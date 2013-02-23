@@ -111,6 +111,7 @@ class CZapitAudioChannel
 	                 DTS,
 	                 UNKNOWN,
 	       };
+	       
 	       ZapitAudioChannelType audioChannelType;
 };
 
