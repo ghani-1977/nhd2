@@ -435,9 +435,9 @@ class CMenuWidget : public CMenuTarget
 class CPINProtection
 {
 	protected:
-		char* validPIN;
+		char * validPIN;
 		bool check();
-		virtual CMenuTarget* getParent() = 0;
+		virtual CMenuTarget * getParent() = 0;
 	public:
 		CPINProtection( char* validpin){ validPIN = validpin;};
 		virtual ~CPINProtection(){}
@@ -446,42 +446,42 @@ class CPINProtection
 class CZapProtection : public CPINProtection
 {
 	protected:
-		virtual CMenuTarget* getParent() { return( NULL);};
+		virtual CMenuTarget * getParent() { return( NULL);};
 	public:
-		int	fsk;
+		int fsk;
 
-		CZapProtection( char * validpin, int FSK ) : CPINProtection(validpin){ fsk= FSK; };
+		CZapProtection( char * validpin, int FSK ) : CPINProtection(validpin){ fsk = FSK; };
 		bool check();
 };
 
 class CLockedMenuForwarder : public CMenuForwarder, public CPINProtection
 {
-	CMenuTarget* Parent;
+	CMenuTarget * Parent;
 	bool AlwaysAsk;
 
 	protected:
 		virtual CMenuTarget* getParent(){ return Parent;};
 	public:
-		CLockedMenuForwarder(const neutrino_locale_t Text, char* _validPIN, bool alwaysAsk=false, const bool Active=true, char *Option=NULL,
-		                     CMenuTarget* Target=NULL, const char * const ActionKey = NULL,
+		CLockedMenuForwarder(const neutrino_locale_t Text, char * _validPIN, bool alwaysAsk = false, const bool Active = true, char * Option = NULL,
+		                     CMenuTarget * Target = NULL, const char * const ActionKey = NULL,
 		                     neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL)
 
 		                     : CMenuForwarder(Text, Active, Option, Target, ActionKey, DirectKey, IconName) ,
 		                       CPINProtection( _validPIN){AlwaysAsk = alwaysAsk;};
 
-		virtual int exec(CMenuTarget* parent);
+		virtual int exec(CMenuTarget * parent);
 };
 
 class CLockedMenuForwarderItemMenuIcon : public CMenuForwarderItemMenuIcon, public CPINProtection
 {
-	CMenuTarget* Parent;
+	CMenuTarget * Parent;
 	bool AlwaysAsk;
 
 	protected:
 		virtual CMenuTarget* getParent(){ return Parent;};
 	public:
-		CLockedMenuForwarderItemMenuIcon(const neutrino_locale_t Text, char* _validPIN, bool alwaysAsk=false, const bool Active=true, char *Option=NULL,
-		                     CMenuTarget* Target=NULL, const char * const ActionKey = NULL,
+		CLockedMenuForwarderItemMenuIcon(const neutrino_locale_t Text, char * _validPIN, bool alwaysAsk = false, const bool Active = true, char * Option = NULL,
+		                     CMenuTarget * Target = NULL, const char * const ActionKey = NULL,
 		                     neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL, const char * const ItemIcon = NULL, const neutrino_locale_t HelpText = NONEXISTANT_LOCALE )
 
 		                     : CMenuForwarderItemMenuIcon(Text, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon, HelpText) ,

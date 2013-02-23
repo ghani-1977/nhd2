@@ -1819,19 +1819,19 @@ int CMenuSeparatorItemMenuIcon::paint(bool selected)
 
 bool CPINProtection::check()
 {
-	char cPIN[4];
+	char cPIN[5];
 	neutrino_locale_t hint = NONEXISTANT_LOCALE;
 	
 	do
 	{
 		cPIN[0] = 0;
-		CPINInput* PINInput = new CPINInput(LOCALE_PINPROTECTION_HEAD, cPIN, 4, hint);
+		CPINInput * PINInput = new CPINInput(LOCALE_PINPROTECTION_HEAD, cPIN, 4, hint);
 		PINInput->exec( getParent(), "");
 		delete PINInput;
 		hint = LOCALE_PINPROTECTION_WRONGCODE;
-	} while ((strncmp(cPIN,validPIN,4) != 0) && (cPIN[0] != 0));
+	} while ((strncmp(cPIN, validPIN, 4) != 0) && (cPIN[0] != 0));
 	
-	return ( strncmp(cPIN,validPIN,4) == 0);
+	return ( strncmp(cPIN,validPIN, 4) == 0);
 }
 
 bool CZapProtection::check()
@@ -1850,33 +1850,19 @@ bool CZapProtection::check()
 		delete PINInput;
 
 		hint2 = LOCALE_PINPROTECTION_WRONGCODE;
-	} while ( (strncmp(cPIN,validPIN,4) != 0) &&
+	} while ( (strncmp(cPIN,validPIN, 4) != 0) &&
 		  (cPIN[0] != 0) &&
 		  ( res == menu_return::RETURN_REPAINT ) &&
 		  ( fsk >= g_settings.parentallock_lockage ) );
 		  
-	return ( ( strncmp(cPIN,validPIN,4) == 0 ) ||
+	return ( ( strncmp(cPIN,validPIN, 4) == 0 ) ||
 			 ( fsk < g_settings.parentallock_lockage ) );
 }
 
-int CLockedMenuForwarder::exec(CMenuTarget* parent)
+int CLockedMenuForwarder::exec(CMenuTarget * parent)
 {
 	Parent = parent;
 	
-	if( (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_NEVER) || AlwaysAsk )
-		if (!check())
-		{
-			Parent = NULL;
-			return menu_return::RETURN_REPAINT;
-		}
-
-	Parent = NULL;
-	return CMenuForwarder::exec(parent);
-}
-
-int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
-{
-	Parent = parent;
 	if( (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_NEVER) || AlwaysAsk )
 	{
 		if (!check())
@@ -1887,6 +1873,25 @@ int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
 	}
 
 	Parent = NULL;
+	
+	return CMenuForwarder::exec(parent);
+}
+
+int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
+{
+	Parent = parent;
+	
+	if( (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_NEVER) || AlwaysAsk )
+	{
+		if (!check())
+		{
+			Parent = NULL;
+			return menu_return::RETURN_REPAINT;
+		}
+	}
+
+	Parent = NULL;
+	
 	return CMenuForwarderItemMenuIcon::exec(parent);
 }
 
