@@ -269,6 +269,8 @@ struct SNeutrinoSettings
 	int screen_EndY;
 	int screen_width;
 	int screen_height;
+	int screen_xres;
+	int screen_yres;
 	
 	int volume_pos;
 	// END OSD

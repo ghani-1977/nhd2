@@ -694,7 +694,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.screen_EndX = configfile.getInt32( "screen_EndX", frameBuffer->getScreenWidth(true) - 35 );
 	g_settings.screen_EndY = configfile.getInt32( "screen_EndY", frameBuffer->getScreenHeight(true) - 35 );
 	g_settings.screen_width = configfile.getInt32("screen_width", frameBuffer->getScreenWidth(true) );
-	g_settings.screen_height = configfile.getInt32("screen_height", frameBuffer->getScreenHeight(true) );	
+	g_settings.screen_height = configfile.getInt32("screen_height", frameBuffer->getScreenHeight(true) );
+	g_settings.screen_xres = configfile.getInt32("screen_xres", 100);
+	g_settings.screen_yres = configfile.getInt32("screen_yres", 100);
 	// END OSD
 
 	// keysbinding
@@ -1154,6 +1156,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "screen_EndY", g_settings.screen_EndY );
 	configfile.setInt32( "screen_width", g_settings.screen_width);
 	configfile.setInt32( "screen_height", g_settings.screen_height);
+	configfile.setInt32( "screen_xres", g_settings.screen_xres);
+	configfile.setInt32( "screen_yres", g_settings.screen_yres);
 
 	configfile.setString("font_file", g_settings.font_file);
 
@@ -1704,7 +1708,8 @@ void CNeutrinoApp::SetupFonts()
 	if (g_fontRenderer != NULL)
 		delete g_fontRenderer;
 
-	g_fontRenderer = new FBFontRenderClass(86, 72); /* the screen resolution in dpi, default 72x72*/
+	//g_fontRenderer = new FBFontRenderClass(72, 72); /* the screen resolution in dpi, default 72x72*/
+	g_fontRenderer = new FBFontRenderClass(72 * g_settings.screen_xres / 100, 72 * g_settings.screen_yres / 100);
 
 	if(font.filename != NULL)
 		free((void *)font.filename);
@@ -4671,7 +4676,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 	}
-	else if(actionKey=="restart") 
+	else if(actionKey == "restart") 
 	{
 		if (recordingstatus)
 			DisplayErrorMessage(g_Locale->getText(LOCALE_SERVICEMENU_RESTART_REFUSED_RECORDING));
@@ -4877,6 +4882,35 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 	} 
+	else if(actionKey == "select_font")
+	{
+		CFileBrowser fileBrowser;
+		CFileFilter fileFilter;
+		fileFilter.addFilter("ttf");
+		fileBrowser.Filter = &fileFilter;
+		if (fileBrowser.exec(FONTDIR) == true)
+		{
+			strcpy(g_settings.font_file, fileBrowser.getSelectedFile()->Name.c_str());
+			printf("[neutrino] new font file %s\n", fileBrowser.getSelectedFile()->Name.c_str());
+			CNeutrinoApp::getInstance()->SetupFonts();
+		}
+		return menu_return::RETURN_REPAINT;
+	}
+	else if (actionKey == "font_scaling") 
+	{
+		CMenuWidget fontscale(LOCALE_FONTMENU_HEAD, NEUTRINO_ICON_COLORS, MENU_WIDTH - 50);
+		
+		fontscale.enableSaveScreen(true);
+
+		fontscale.addItem(new CMenuOptionNumberChooser(LOCALE_FONTMENU_SCALING_X, &g_settings.screen_xres, true, 50, 200, NULL) );
+		//fontscale.addItem(new CMenuOptionNumberChooser(LOCALE_FONTMENU_SCALING_Y, &g_settings.screen_yres, true, 50, 200, NULL) );
+		
+		fontscale.exec(NULL, "");
+		
+		CNeutrinoApp::getInstance()->SetupFonts();
+		
+		return menu_return::RETURN_REPAINT;
+	}
 	else if(actionKey == "setfptime")
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );

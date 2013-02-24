@@ -463,6 +463,11 @@ fontmenu.eventlist Eventlist
 fontmenu.gamelist Gamelist
 fontmenu.head Fontsize settings
 fontmenu.infobar Infobar
+fontmenu.scaling Schriftgrössenfaktor
+fontmenu.scaling_x Horizontal (in %)
+fontmenu.scaling_x_hint2 Horizontal (in %) min 50 / max 200
+fontmenu.scaling_y Vertikal (in %)
+fontmenu.scaling_y_hint2 Vertikal (in %) min 50 / max 200
 fontsize.channel_num_zap direct selection
 fontsize.channellist Channellist
 fontsize.channellist_descr Description

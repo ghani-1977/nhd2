@@ -160,7 +160,7 @@ const CMenuOptionChooser::keyval MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS[MESSAGEBOX_
 #define TITLE_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUHEAD_PLUS_0)
 #define TITLE_FONT_COLOR ((CFBWindow::color_t)COL_MENUHEAD)
 
-#define TEXT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU]
+//#define TEXT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU]
 #define TITLE_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
 #define FOOT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
 
@@ -1141,28 +1141,19 @@ void CMovieBrowser::hide(void)
 		delete m_pcInfo;
 		m_pcInfo = NULL;
 	}
-	
-	/*if (m_pcWindow != NULL) 
-	{
-		delete m_pcWindow;
-
-		m_pcWindow = NULL;
-	}*/
-	
-	//m_pcInfo = NULL;
 }
 
 int CMovieBrowser::paint(void)
 {
 	TRACE("[mb]->Paint\r\n");
 
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-//#else
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));
-//#endif	
+	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));	
 
 	Font * font = NULL;
+	
+	//
+	m_pcFontTitle = TITLE_FONT;
+	m_pcFontFoot = FOOT_FONT;
 
 	m_pcBrowser = new CListFrame(&m_browserListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE, &m_cBoxFrameBrowserList);
 
@@ -1174,7 +1165,7 @@ int CMovieBrowser::paint(void)
 
 	m_pcInfo = new CTextBox(" ", NULL, CTextBox::SCROLL, &m_cBoxFrameInfo);	
 
-	if( m_pcBrowser == NULL || m_pcLastPlay == NULL || m_pcLastRecord == NULL || m_pcInfo == NULL || m_pcFilter == NULL)
+	if(m_pcBrowser == NULL || m_pcLastPlay == NULL || m_pcLastRecord == NULL || m_pcInfo == NULL || m_pcFilter == NULL)
 	{
 		//printf("[mb] paint, ERROR: not enought memory to allocate windows\n");
 		
@@ -1206,7 +1197,7 @@ int CMovieBrowser::paint(void)
 	//refreshTitle();
 	//refreshFoot();
 	//refreshLCD();
-	refresh();
+	//refresh();
 	
 	return (true);
 }
