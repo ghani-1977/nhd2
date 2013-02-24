@@ -477,13 +477,13 @@ int CChannelList::doChannelMenu(void)
 
 int CChannelList::exec()
 {
-  	displayNext = 0; // always start with current events
+	displayNext = 0; // always start with current events
+	
 	int nNewChannel = show();
 	
-	if ( nNewChannel > -1) 
-	{
+	// zapto
+	if ( nNewChannel > -1 && nNewChannel < (int) chanlist.size()) 
 		CNeutrinoApp::getInstance()->channelList->zapTo(getKey(nNewChannel)-1);
-	}
 
 	return nNewChannel;
 }
@@ -751,22 +751,7 @@ int CChannelList::show()
 			}
 		}
 		else if ( msg == CRCInput::RC_ok ) 
-		{
-			//TEST
-			#if 0
-			if(pip_selected)
-			{
-				printf("Channellist::show: PiP testing\n");
-				//pipzap = true;
-				/* draw pip TV background */
-				frameBuffer->paintBoxRel(360, 144, 360, 288, COL_BACKGROUND);
-				//frameBuffer->paintBackgroundBoxRel(360, 144, 360, 288);
-#if !defined USE_OPENGL				
-				frameBuffer->blit();
-#endif				
-			}
-			#endif
-			  
+		{	  
 			zapOnExit = true;
 			
 			loop=false;
@@ -775,69 +760,22 @@ int CChannelList::show()
 		{
 			new_mode_active = (new_mode_active ? 0 : 1);
 			paintHead();
-			//TEST: repaint logo
+
 			// refresh logo box
 			frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 			// paint logo
 			g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight);
 		}
-		else if (CRCInput::isNumeric(msg) && ( /*this->historyMode ||*/ g_settings.sms_channel)) 
-		{
-			/* 
-			//FIXME:disabled because when getting number bigger as the historymode size it crashes
+		else if (CRCInput::isNumeric(msg) && ( this->historyMode || g_settings.sms_channel)) 
+		{ 
 			if (this->historyMode) 
 			{ 
-				//numeric zap
-			      	switch (msg) 
-				{
-				        case CRCInput::RC_0:
-						selected = 0;
-						break;
-						
-				        case CRCInput::RC_1:
-						selected = 1;
-						break;
-						
-				        case CRCInput::RC_2:
-						selected = 2;
-						break;
-						
-				        case CRCInput::RC_3:
-						selected = 3;
-						break;
-						
-				        case CRCInput::RC_4:
-						selected = 4;
-						break;
-						
-				        case CRCInput::RC_5:
-						selected = 5;
-						break;
-						
-				        case CRCInput::RC_6:
-						selected = 6;
-						break;
-						
-				        case CRCInput::RC_7:
-						selected = 7;
-						break;
-						
-				        case CRCInput::RC_8:
-						selected = 8;
-						break;
-						
-				        case CRCInput::RC_9:
-						selected = 9;
-						break;
-		        	}
-		        	
-		      		zapOnExit = true;
-		      		loop = false;
+				selected = CRCInput::getNumericValue(msg);
+				zapOnExit = true;
+				loop = false;
     			}
-			else 
-			*/
-			if(g_settings.sms_channel) 
+			else if(g_settings.sms_channel) 
 			{
 				uint32_t i;
 				unsigned char smsKey = 0;
@@ -851,7 +789,7 @@ int CChannelList::show()
 
 				if (msg == CRCInput::RC_timeout || msg == CRCInput::RC_nokey) 
 				{
-					for(i = selected+1; i < chanlist.size(); i++) 
+					for(i = selected + 1; i < chanlist.size(); i++) 
 					{
 						char firstCharOfTitle = chanlist[i]->name.c_str()[0];
 						if(tolower(firstCharOfTitle) == smsKey) 
@@ -876,8 +814,8 @@ int CChannelList::show()
 					
 					if(i < chanlist.size()) 
 					{
-						int prevselected=selected;
-						selected=i;
+						int prevselected = selected;
+						selected = i;
 
 						paintItem(prevselected - liststart);
 						unsigned int oldliststart = liststart;
@@ -1129,6 +1067,7 @@ bool CChannelList::zapTo_ChannelID(const t_channel_id channel_id)
 // forceStoreToLastChannels defaults to false
 void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
 {
+	// show emty channellist error msg
 	if (chanlist.empty()) 
 	{
 		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8

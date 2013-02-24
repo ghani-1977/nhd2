@@ -99,6 +99,7 @@ typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
 volume_map_t vol_map;
 typedef volume_map_t::iterator volume_map_iterator_t;
 typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_t;
+unsigned int volume_percent;
 
 /* live/record channel id */
 t_channel_id live_channel_id;
@@ -1253,6 +1254,40 @@ int GetPidVolume(t_channel_id channel_id, int pid, bool ac3)
 	dprintf(DEBUG_INFO, "channel %llx pid %x map size %d percent %d", channel_id, pid, (int)vol_map.size(), percent);
 	
 	return percent;
+}
+
+void SetVolume(int vol)
+{
+	//unsigned char current_volume = vol;
+	audio_map[live_channel_id].volume = vol;
+	
+	//if (current_volume < 0)
+	if(audio_map[live_channel_id].volume < 0)
+		//current_volume = 0;
+		audio_map[live_channel_id].volume = 0;
+	//if (current_volume > 100)
+	if(audio_map[live_channel_id].volume > 100)
+		//current_volume = 100;
+		audio_map[live_channel_id].volume = 100;
+
+	int value = (/*current_volume*/audio_map[live_channel_id].volume*volume_percent) / 100;
+	
+	dprintf(DEBUG_INFO, "volume %d percent %d -> %d", /*current_volume*/audio_map[live_channel_id].volume, volume_percent, value);
+	
+	audioDecoder->setVolume(value, value);
+}
+
+int SetVolumePercent(int percent)
+{
+	int ret = volume_percent;
+
+	if (volume_percent != percent) 
+	{
+		volume_percent = percent;
+		SetVolume(audio_map[live_channel_id].volume);
+	}
+	
+	return ret;
 }
 
 int change_audio_pid(uint8_t index)
@@ -2560,19 +2595,28 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::commandVolume msgVolume;
 			CBasicServer::receive_data(connfd, &msgVolume, sizeof(msgVolume));
 			
+			#if 0
 			if(audioDecoder)
 				audioDecoder->setVolume(msgVolume.left, msgVolume.right);
 			
 			volume_left = msgVolume.left;
 			volume_right = msgVolume.right;
+			#else
+			audio_map[live_channel_id].volume = msgVolume.left;
+			SetVolume(msgVolume.left);
+			#endif
 			break;
 		}
 	
 		case CZapitMessages::CMD_GET_VOLUME: 
 		{
 			CZapitMessages::commandVolume msgVolume;
+			#if 0
 			msgVolume.left = volume_left;
 			msgVolume.right = volume_right;
+			#else
+			msgVolume.left = msgVolume.right = audio_map[live_channel_id].volume;
+			#endif
 			CBasicServer::send_data(connfd, &msgVolume, sizeof(msgVolume));
 			break;
 		}
@@ -2588,7 +2632,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if (!msgVolumePercent.apid)
 				msgVolumePercent.apid = live_channel->getAudioPid();
 			
+			volume_percent = msgVolumePercent.percent;
+			
 			SetPidVolume(live_channel_id, live_channel->getAudioPid(), msgVolumePercent.percent);
+			SetVolumePercent(msgVolumePercent.percent);
 			break;
 		}
 

@@ -48,7 +48,7 @@ class Helpbox
 		Helpbox();
 		~Helpbox();
 
-		void show(const neutrino_locale_t Caption, const int Width = MENU_WIDTH, int timeout = -1);
+		void show(const neutrino_locale_t Caption, const int Width = MENU_WIDTH - 50, int timeout = -1);
 
 		void addLine(std::string& text);
 		void addLine(const char *text);

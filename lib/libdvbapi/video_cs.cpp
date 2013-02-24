@@ -85,7 +85,9 @@ bool cVideo::Open(int num)
 	{
 		dprintf(DEBUG_INFO, "cVideo::Open %s\n", devname);
 		return true;
-	}	
+	}
+	
+	dprintf(DEBUG_INFO, "%s %s failed\n", __FUNCTION__, devname);
 
 	return false;
 }

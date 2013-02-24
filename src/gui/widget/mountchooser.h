@@ -55,7 +55,7 @@ class CMountChooser : public CMenuWidget
 		char * localDir;
 
 	public:
-		CMountChooser(const neutrino_locale_t Name,  const std::string & Icon = "", int * chosenIndex = NULL, char * chosenLocalDir = NULL, const char * const selectedLocalDir = "", const int mwidth = MENU_WIDTH, const int mheight = 576);
+		CMountChooser(const neutrino_locale_t Name,  const std::string & Icon = "", int * chosenIndex = NULL, char * chosenLocalDir = NULL, const char * const selectedLocalDir = "", const int mwidth = MENU_WIDTH - 50, const int mheight = 576);
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 		void setSelectedItem(int selection);
 };

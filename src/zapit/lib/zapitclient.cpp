@@ -602,7 +602,7 @@ void CZapitClient::setVolume(const unsigned int left, const unsigned int right)
 }
 
 /* get volume */
-void CZapitClient::getVolume(unsigned int *left, unsigned int *right)
+void CZapitClient::getVolume(unsigned int * left, unsigned int * right)
 {
         CZapitMessages::commandVolume msg;
 

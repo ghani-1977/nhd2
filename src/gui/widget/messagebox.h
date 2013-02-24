@@ -68,9 +68,9 @@ class CMessageBox : public CHintBoxExt
 		} buttons;
 	
 		// Text & Caption are always UTF-8 encoded
-		CMessageBox(const neutrino_locale_t Caption, const char * const Text, const int Width = MENU_WIDTH, const char * const Icon = NULL, const CMessageBox::result_ Default = mbrYes, const uint32_t ShowButtons = mbAll);
+		CMessageBox(const neutrino_locale_t Caption, const char * const Text, const int Width = MENU_WIDTH - 50, const char * const Icon = NULL, const CMessageBox::result_ Default = mbrYes, const uint32_t ShowButtons = mbAll);
 
-		CMessageBox(const neutrino_locale_t Caption, ContentLines& Lines, const int Width = MENU_WIDTH, const char * const Icon = NULL, const CMessageBox::result_ Default = mbrYes, const uint32_t ShowButtons = mbAll);
+		CMessageBox(const neutrino_locale_t Caption, ContentLines& Lines, const int Width = MENU_WIDTH - 50, const char * const Icon = NULL, const CMessageBox::result_ Default = mbrYes, const uint32_t ShowButtons = mbAll);
 
 		int exec(int timeout = -1);
 		void returnDefaultValueOnTimeout(bool returnDefault);
