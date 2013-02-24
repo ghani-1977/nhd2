@@ -215,7 +215,7 @@ void CVFD::init()
 
 void CVFD::setlcdparameter(int dimm, const int power)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 	
 	if(dimm < 0)
@@ -256,7 +256,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 void CVFD::setlcdparameter(void)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	last_toggle_state_power = g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
@@ -266,7 +266,7 @@ void CVFD::setlcdparameter(void)
 
 void CVFD::showServicename(const std::string & name) // UTF-8
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 		
 	dprintf(DEBUG_DEBUG, "CVFD::showServicename: %s\n", name.c_str());
@@ -359,7 +359,7 @@ void CVFD::showRCLock(int duration)
 
 void CVFD::showMenuText(const int position, const char * text, const int highlight, const bool utf_encoded)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	if (mode != MODE_MENU_UTF8)
@@ -371,7 +371,7 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 
 void CVFD::showAudioTrack(const std::string & artist, const std::string & title, const std::string & album)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;	
 
 	if (mode != MODE_AUDIO) 
@@ -385,7 +385,7 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 
 void CVFD::showAudioPlayMode(AUDIOMODES m)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;	
 
 	switch(m) 
@@ -417,7 +417,7 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 
 void CVFD::setMode(const MODES m, const char * const title)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	// sow title
@@ -498,7 +498,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 
 void CVFD::setBrightness(int bright)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = bright;
@@ -517,7 +517,7 @@ int CVFD::getBrightness()
 
 void CVFD::setBrightnessStandby(int bright)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = bright;
@@ -535,7 +535,7 @@ int CVFD::getBrightnessStandby()
 
 void CVFD::setPower(int power)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 #ifdef __sh__
@@ -573,7 +573,7 @@ int CVFD::getPower()
 
 void CVFD::togglePower(void)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	last_toggle_state_power = 1 - last_toggle_state_power;
@@ -582,7 +582,7 @@ void CVFD::togglePower(void)
 
 void CVFD::setMuted(bool mu)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 	
 	muted = mu;	
@@ -632,12 +632,6 @@ void CVFD::Clear()
 	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
 		perror("VFDDISPLAYCLR");
 	closeDevice();
-#elif (PLATFORM_COOLSTREAM)
-	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
-	if(ret < 0)
-		perror("IOC_VFD_SET_TEXT");
-	else
-		text[0] = 0;
 #else
 	data.start_address = 0;
 	openDevice();	
@@ -645,12 +639,18 @@ void CVFD::Clear()
 		perror("VFDDISPLAYCLR");
 	closeDevice();
 #endif
+#elif (PLATFORM_COOLSTREAM)
+	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
+	if(ret < 0)
+		perror("IOC_VFD_SET_TEXT");
+	else
+		text[0] = 0;
 #endif
 }
 
 void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 	
 #if defined (PLATFORM_UFS910) || defined (PLATFORM_UFS913)
@@ -681,7 +681,7 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 
 void CVFD::ShowIcon(vfd_icon icon, bool show)
 {
-	if(!has_lcd && is4digits) 
+	if(!has_lcd || is4digits) 
 		return;
 	
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);

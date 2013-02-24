@@ -172,7 +172,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				// don't show service name in standby mode
 				if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 				{
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
 					if (CVFD::getInstance()->is4digits)
 					{
 						char tmp[5];
@@ -183,7 +182,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 					}
 					else
 						CVFD::getInstance()->showServicename(current_channel_name); // UTF-8
-//#endif
 				}
 				
 				current_channel_id = new_id;
@@ -262,8 +260,10 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 					// ist nur ein neues Programm, kein neuer Kanal
 					// PIDs neu holen
 					g_Zapit->getPIDS( current_PIDs );
+					
 					// APID Bearbeitung neu anstossen
 					has_unresolved_ctags = true;
+					
 					// infobar indicate on epg change
 					g_InfoViewer->showEpgInfo();
 				}
@@ -284,8 +284,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			}
 
 			// is_video_started is only false if channel is locked
-			if ((!is_video_started) &&
-			    (info_CN.current_fsk == 0 || g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED))
+			if ((!is_video_started) && (info_CN.current_fsk == 0 || g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED))
 				g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, 0x100, false);
 			else
 				g_RCInput->postMsg(NeutrinoMessages::EVT_PROGRAMLOCKSTATUS, info_CN.current_fsk, false);
@@ -319,7 +318,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
 				if (CVFD::getInstance()->is4digits)
 				{
 					t_channel_id new_id = *(t_channel_id *)data;
@@ -338,8 +336,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 					CVFD::getInstance()->ShowText(tmp); // UTF-8
 				}
 				else
-					CVFD::getInstance()->showServicename(current_channel_name); // UTF-8
-//#endif	
+					CVFD::getInstance()->showServicename(current_channel_name); // UTF-8	
 			}
 			
 			// get pids
@@ -350,12 +347,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			sectionsd_setPrivatePid( current_PIDs.PIDs.privatepid );
 #endif
 
-			//tuxtxt
-#if 0
-			tuxtxt_stop();
-#endif
-
-			
 			t_channel_id * p = new t_channel_id;
 			*p = current_channel_id;
 			//char *p = new char[sizeof(t_channel_id)];
@@ -384,7 +375,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
 				if (CVFD::getInstance()->is4digits)
 				{
 					t_channel_id new_id = *(t_channel_id *)data;
@@ -404,7 +394,6 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				}
 				else
 					CVFD::getInstance()->showServicename(std::string("<") + current_channel_name + '>'); // UTF-8
-//#endif
 			}
 				
 			if ( current_EPGid != 0)

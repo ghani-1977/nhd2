@@ -1376,10 +1376,8 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			showIcon_Resolution();
 
 		// show failure..!
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK7162)
-//#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD)
 		CVFD::getInstance()->showServicename ("(" + g_RemoteControl->getCurrentChannelName () + ')');
-//#endif		
+		
 		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 		showFailure();
 
@@ -1401,10 +1399,8 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == channel_id) 
 		{
 	  		// show failure..!
-//#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD) || defined (PLATFORM_DUCKBOX) || defined (PLATFORM_SPARK7162)
-//#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_CUBEREVO_250HD)
 			CVFD::getInstance()->showServicename ("(" + g_RemoteControl->getCurrentChannelName () + ')');
-//#endif			
+			
 	  		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 	  		showFailure ();
 

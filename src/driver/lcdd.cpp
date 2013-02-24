@@ -104,6 +104,7 @@ CLCD::CLCD()
 	timeout_cnt = 0;
 	icon_dolby = false;
 	has_lcd = true;
+	is4digits = false;
 	clearClock = 0;
 }
 

@@ -93,24 +93,12 @@ int def_audio_mode = 0;
 #define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
 #define VOLUME_DEFAULT_PCM 75
 #define VOLUME_DEFAULT_AC3 100
-typedef struct chan_apid {
-	int apid;
-	int volume;
-}ChanApids;
-
-//map<t_channel_id, ChanApids> volume_map;
-//map<t_channel_id, ChanApids>::iterator volume_map_it;
-
 typedef std::pair<int, int> pid_pair_t;
 typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
 typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
 volume_map_t vol_map;
 typedef volume_map_t::iterator volume_map_iterator_t;
 typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_t;
-
-//typedef pair<t_channel_id, int> t_chan_apid;
-//map<t_chan_apid, int> volume_map;
-//map<t_chan_apid, int>::iterator volume_map_it;
 
 /* live/record channel id */
 t_channel_id live_channel_id;

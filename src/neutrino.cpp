@@ -1995,7 +1995,6 @@ void CNeutrinoApp::InitZapper()
 		channelList->adjustToChannelID(live_channel_id);
 
 		// show service name in vfd (250hd has only 4 digit so we show service number)
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)
 		if (CVFD::getInstance()->is4digits)
 		{
 			char tmp[5];
@@ -2005,8 +2004,7 @@ void CNeutrinoApp::InitZapper()
 			CVFD::getInstance()->ShowText(tmp); // UTF-8
 		}
 		else
-			CVFD::getInstance()->showServicename(channelList->getActiveChannelName());
-//#endif	
+			CVFD::getInstance()->showServicename(channelList->getActiveChannelName());	
 
 		// start epg scanning
 		g_Sectionsd->setPauseScanning(false);
@@ -4366,8 +4364,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		// vfd mode
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-		
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE)		
+				
 		if (CVFD::getInstance()->is4digits)
 		{
 			char tmp[5];
@@ -4376,7 +4373,6 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		
 			CVFD::getInstance()->ShowText(tmp); // UTF-8
 		}
-//#endif
 
 		// zapit startplayback
 		g_Zapit->setStandby(false);
