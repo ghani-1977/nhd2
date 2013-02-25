@@ -560,7 +560,7 @@ void CMenuWidget::paint()
 	
 	frameBuffer->getIconSize(iconfile.c_str(), &icon_w, &icon_h);
 	
-	frameBuffer->paintIcon(iconfile, x + 8, y + hheight/2 - icon_h/2);
+	frameBuffer->paintIcon(iconfile, x + 8, y + (hheight - icon_h)/2);
 	
 	// head title (centered)
 	int stringstartposX = x + (width >> 1) - ( neededWidth >> 1);
@@ -949,15 +949,19 @@ int CMenuOptionChooser::paint( bool selected )
 			l_option = g_Locale->getText(option);
 	}
 
+	// paint icon (left)
+	int icon_w;
+	int icon_h;
+		
 	if (!(iconName.empty()))
 	{
 		/* get icon size */
-		int icon_w;
-		int icon_h;
+		//int icon_w;
+		//int icon_h;
 		
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height - icon_h)/2) );
 	}
 	else if (CRCInput::isNumeric(directKey))
 	{
@@ -970,12 +974,12 @@ int CMenuOptionChooser::paint( bool selected )
 		if (!iconName.empty())
 		{
 			/* get icon size */
-			int icon_w;
-			int icon_h;
+			//int icon_w;
+			//int icon_h;
 			
 			frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 			
-			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height - icon_h)/2) );
 		}
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + (BORDER_LEFT + BORDER_LEFT/2), y+ height, height, CRCInput::getKeyName(directKey), color, height);
@@ -1393,18 +1397,18 @@ int CMenuForwarder::paint(bool selected)
 	frameBuffer->paintBoxRel(x + BORDER_LEFT, y, dx -(BORDER_LEFT + BORDER_RIGHT), height, bgcolor); //FIXME
 
 	//local-text
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, dx - BORDER_LEFT - - BORDER_LEFT/2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
+	//g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, dx - BORDER_LEFT - - BORDER_LEFT/2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
 	
-	//icons/keys
+	// paint icon/direkt-key
+	int icon_w = 0;
+	int icon_h = 0;
+	
 	if (!iconName.empty())
 	{
 		//get icon size
-		int icon_w = 0;
-		int icon_h = 0;
-		
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y + ((height - icon_h)/2) );
 	}
 	else if (CRCInput::isNumeric(directKey))
 	{
@@ -1417,16 +1421,16 @@ int CMenuForwarder::paint(bool selected)
 		if (!iconName.empty())
 		{
 			//get icon size
-			int icon_w = 0;
-			int icon_h = 0;
-			
 			frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 			
-			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
 		}
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + (BORDER_LEFT + BORDER_LEFT/2), y+ height, height, CRCInput::getKeyName(directKey), color, height);
 	}
+	
+	stringstartposX = x + BORDER_LEFT + 5 + icon_w + 5;
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, dx - BORDER_LEFT - 5 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
 
 	//option-text
 	if (option_text != NULL)
@@ -1606,19 +1610,15 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	// paint item
 	frameBuffer->paintBoxRel(x + BORDER_LEFT, y, (dx/3)*2, height, bgcolor);
 
-	//local-text
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, (dx/3)*2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
-
-	// icon/direkt-key	
+	// paint icon/direkt-key
+	int icon_w = 0;
+	int icon_h = 0;
+		
 	if (!iconName.empty())
 	{
-		// get icon size
-		int icon_w = 0;
-		int icon_h = 0;
-		
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
 	}
 	else if (CRCInput::isNumeric(directKey))
 	{
@@ -1630,17 +1630,18 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		
 		if (!iconName.empty())
 		{
-			// get icon size
-			int icon_w = 0;
-			int icon_h = 0;
-			
 			frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 			
-			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + BORDER_LEFT/2, y+ ((height/2- icon_h/2)) );
+			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
 		}
 		else
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + (BORDER_LEFT + BORDER_LEFT/2), y + height, height, CRCInput::getKeyName(directKey), color, height);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + (BORDER_LEFT + 5), y + height, height, CRCInput::getKeyName(directKey), color, height);
 	}
+	
+	//
+	//local-text
+	stringstartposX = x + BORDER_LEFT + 5 + icon_w + 5;
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, (dx/3)*2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
 	
 	//option-text
 	if (option_text != NULL)

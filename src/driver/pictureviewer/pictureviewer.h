@@ -63,6 +63,8 @@ class CPictureViewer
 		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true), bool alpha = false );
 		bool DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale = true);
 		void getSize(const char* name, int* width, int *height);
+		bool checkLogo(uint64_t channel_id);
+		void getLogoSize(uint64_t channel_id, int * width, int * height);
 
 	private:
 		CFormathandler * fh_root;

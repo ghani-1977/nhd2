@@ -212,7 +212,7 @@ void CInfoViewer::paintTime (bool show_dot, bool firstPaint)
 	
 			if (!firstPaint) 
 			{
-				frameBuffer->paintBoxRel (BoxEndX - time_width - LEFT_OFFSET, ChanNameY, time_width + LEFT_OFFSET, time_height, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
+				frameBuffer->paintBoxRel(BoxEndX - time_width - LEFT_OFFSET, ChanNameY, time_width + LEFT_OFFSET, time_height, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 			}
 	
 			timestr[2] = 0;
@@ -265,16 +265,10 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	bool show_dot = true;
 	bool new_chan = false;
-	//bool fadeOut = false;
-	//int fadeValue;
 
 	showButtonBar = !calledFromNumZap;
-	//bool fadeIn = !(!is_visible && showButtonBar);
 
 	is_visible = true;
-	
-	//if ( !calledFromNumZap && fadeIn)
-	//	fadeTimer = g_RCInput->addTimer(FADE_TIME, false);
 	
 	newfreq = true;
 	
@@ -289,16 +283,6 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 
 	if (!gotTime)
 		gotTime = timeset;
-	
-	//if (fadeIn) 
-	//{
-	//	fadeValue = 0x10;
-	//	frameBuffer->setBlendLevel(fadeValue);
-	//}
-	//else
-	//{
-	//	fadeValue = g_settings.gtx_alpha;
-	//}
 
 	int col_NumBoxText;
 	int col_NumBox;
@@ -387,32 +371,39 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	}
 
 	// channel logo/number/name
-#define PIC_W 78
+#define PIC_W 52
 #define PIC_H 39
 
 	if (satellitePosition != 0 && satellitePositions.size() ) 
 	{
-		PIC_X = (BoxStartX + 10);
+		//
+		// ChannelNumber
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + 10, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
+			
+		PIC_X = BoxStartX + ChanWidth;
 		PIC_Y = (ChanNameY + time_height - PIC_H);
 
 		// display channel picon
 		bool logo_ok = false;
 		
-		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H);
+		logo_ok = g_PicViewer->checkLogo(channel_id);
 
 		if(logo_ok)
 		{
-			// ChannelNumber
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
+			 int logo_w = PIC_W; 
+			 int logo_h = PIC_H;
+			 
+			 g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h);
+			 
+			 // paint logo
+			 g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, logo_w, logo_h >PIC_H?PIC_H:logo_h);
 		
 			// ChannelName
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth + 20 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth(strChanNum), ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+			if(1) // if show logo and channal name
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 20, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 		}
 		else
 		{
-			// ChannelNumber
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( BoxStartX + 10, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
-		
 			// ChannelName
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 		}
@@ -443,8 +434,13 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	showSNR();
 
 	// blue button
+	int icon_w;
+	int icon_h;
+		
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+	
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, ChanInfoX + 16*3 + asize * 3 + 2*7, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 16*4 + asize * 3 + 2*8, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 16*4 + asize * 3 + 2*8, BoxEndY+2 - 16 + icon_w, ButtonWidth - (2 + /*NEUTRINO_ICON_BUTTON_BLUE_WIDTH*/icon_w + 2 + 2), g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 
 	if( showButtonBar )
 	{
@@ -820,8 +816,13 @@ void CInfoViewer::showSubchan()
 
 		if (g_RemoteControl->director_mode) 
 		{
+			int icon_w;
+			int icon_h;
+		
+			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+	
 	  		frameBuffer->paintIcon (NEUTRINO_ICON_BUTTON_YELLOW, x + 8, y + dy - 20);
-	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
+	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30 - 16 + icon_w, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
 		}
 		
 #if !defined USE_OPENGL
@@ -1461,8 +1462,13 @@ void CInfoViewer::showButton_SubServices ()
 {
   	if (!(g_RemoteControl->subChannels.empty ())) 
 	{
-        	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2 + asize + 2, BoxEndY- ICON_Y_1 );
-        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2 + asize + 2 + NEUTRINO_ICON_BUTTON_YELLOW_WIDTH + 2, 
+		int icon_w;
+		int icon_h;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+	
+        	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2 + asize + 2, BoxEndY- ICON_Y_1 );
+        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_YELLOW_WIDTH*/icon_w + 2, 
 		BoxEndY+2, asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 }
@@ -1727,8 +1733,13 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 			{
 				// red button
 				// events text
-				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - ICON_Y_1 );
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+				int icon_w = 0;
+				int icon_h = 0;
+		
+				frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
+		
+				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, BoxEndY - ICON_Y_1 );
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	  		}
 		}
 
@@ -1846,11 +1857,16 @@ void CInfoViewer::showButton_Audio()
 {
   	// green, in case of several APIDs
   	uint32_t count = g_RemoteControl->current_PIDs.APIDs.size();
+	
+	int icon_w;
+	int icon_h;
+		
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
   	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2, BoxEndY- ICON_Y_1 );
 
   	if (count > 0) 
 	{
-		int sx = ChanInfoX + 2 + NEUTRINO_ICON_BUTTON_RED_WIDTH + 2 + asize + 2 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 2;
+		int sx = ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2;
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}

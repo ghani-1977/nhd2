@@ -249,14 +249,14 @@ class CFrameBuffer
 		enum 
 		{
 			TM_EMPTY  = 0,
-			TM_NONE   = 1,
-			TM_BLACK  = 2,
-			TM_INI    = 3
+			TM_NONE   = 1,	// No 'pseudo' transparency
+			TM_BLACK  = 2,	// Transparency when black content ('pseudo' transparency)
+			TM_INI    = 3	// Transparency depends on g_settings.infobar_alpha ???
 		};
 		
-		void * convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF, int m_transparent = TM_NONE, bool alpha = false);
-		void blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp = 0, uint32_t yp = 0, bool transp = false);
-		void displayRGB(unsigned char *rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb = true, int transp = 0xFF);
+		void * convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF, int m_transparent = TM_BLACK, bool alpha = false);
+		void blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp = 0, uint32_t yp = 0, bool transp = false);
+		void displayRGB(unsigned char * rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb = true, int transp = 0xFF);
 		
 		enum ScalingMode
 		{
@@ -265,8 +265,8 @@ class CFrameBuffer
 			COLOR = 2
 		};
 		
-		unsigned char * Resize(unsigned char *orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL);
-		fb_pixel_t * getImage (const std::string & name, int width, int height, int m_transparent = TM_NONE);
+		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL);
+		fb_pixel_t * getImage (const std::string & name, int width, int height);
 		fb_pixel_t * getIcon (const std::string & name, int *width, int *height);
 };
 

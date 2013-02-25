@@ -1089,7 +1089,7 @@ _display:
 	if (h != 0)
 		yy += (h - height) / 2;	
 
-	blit2FB(data, width, height, x, yy, 0, 0, true );
+	blit2FB(data, width, height, x, yy, 0, 0, true);
 
 	return true;
 }
@@ -1532,7 +1532,7 @@ void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsi
 		return NULL;
 	}
 	
-	if(alpha)
+	if(alpha) // 24 bits
 	{
 		for(i = 0; i < count ; i++)
 			fbbuff[i] = ((rgbbuff[i*4+3] << 24) & 0xFF000000) | 
@@ -1540,7 +1540,7 @@ void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsi
 		        	    ((rgbbuff[i*4+1] <<  8) & 0x0000FF00) | 
 			            ((rgbbuff[i*4+2])       & 0x000000FF);
 	}
-	else
+	else	//32 bits
 	{
 		switch (m_transparent) 
 		{
@@ -1602,8 +1602,8 @@ void CFrameBuffer::blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32
 	}
 }
 
-// display RGB
-void CFrameBuffer::displayRGB(unsigned char *rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb, int transp)
+// display RGB (used by pictureviewer)
+void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb, int transp)
 {
         void *fbbuff = NULL;
 
@@ -1622,9 +1622,9 @@ void CFrameBuffer::displayRGB(unsigned char *rgbbuff, int x_size, int y_size, in
         if(y_offs + y_size > (int)yRes) 
 		y_offs = 0;
 
-        /* blit buffer 2 fb */
+        /* convertrgb */
         fbbuff = convertRGB2FB(rgbbuff, x_size, y_size, transp);
-        if(fbbuff==NULL)
+        if(fbbuff == NULL)
                 return;
 
         /* ClearFB if image is smaller */
@@ -1632,6 +1632,7 @@ void CFrameBuffer::displayRGB(unsigned char *rgbbuff, int x_size, int y_size, in
         if(clearfb)
                 ClearFrameBuffer();
 
+	// blit2fb
         blit2FB(fbbuff, x_size, y_size, x_offs, y_offs, x_pan, y_pan);
 	
         free(fbbuff);
@@ -1782,7 +1783,7 @@ CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize(const char *name, int *x
 	return (NULL);
 }
 
-fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int height, int m_transparent)
+fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int height)
 {
 	int x, y;
 	CFormathandler *fh;
@@ -1793,7 +1794,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 	
   	if (fh) 
 	{
-		buffer = (unsigned char *) malloc (x * y * 3);
+		buffer = (unsigned char *) malloc (x * y * 4);
 		
 		if (buffer == NULL) 
 		{
@@ -1814,7 +1815,8 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			} 
 			
 			// convert RGB2FB
-			ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha), m_transparent );
+			ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha) );
+			
 			free(buffer);
 		} 
 		else 
@@ -1833,7 +1835,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *height)
 {
 	int x, y;
-	CFormathandler *fh;
+	CFormathandler * fh;
 	unsigned char * rgbbuff;
 	fb_pixel_t * fbbuff = NULL;
 
@@ -1843,7 +1845,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 		return NULL;
 	}
 	
-	rgbbuff = (unsigned char *) malloc (x * y * 3);
+	rgbbuff = (unsigned char *) malloc (x * y * 4);
 	
 	if (rgbbuff == NULL) 
 	{
@@ -1854,21 +1856,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 	if (fh->get_pic(name.c_str (), &rgbbuff, &x, &y) == FH_ERROR_OK) 
 	{
 		// convert RGB2FB
-		int count = x*y;
-
-		fbbuff = (fb_pixel_t *) malloc(count * sizeof(fb_pixel_t));
-		
-		//printf("CFrameBuffer::getIcon: %s, %d x %d buf %x\n", name.c_str (), x, y, fbbuff);
-		
-		for(int i = 0; i < count ; i++) 
-		{
-			int transp = 0;
-
-			if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
-				transp = 0xFF;
-
-			fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-		}
+		fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
 
 		// size
 		*width = x;

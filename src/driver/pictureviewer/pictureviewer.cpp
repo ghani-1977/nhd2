@@ -296,7 +296,7 @@ void CPictureViewer::Zoom(float factor)
 	
 	int oldx = m_CurrentPic_X;
 	int oldy = m_CurrentPic_Y;
-	unsigned char *oldBuf = m_CurrentPic_Buffer;
+	unsigned char * oldBuf = m_CurrentPic_Buffer;
 	m_CurrentPic_X = (int) (factor * m_CurrentPic_X);
 	m_CurrentPic_Y = (int) (factor * m_CurrentPic_Y);
 	
@@ -413,7 +413,7 @@ CPictureViewer::CPictureViewer ()
 	init_handlers();
 }
 
-void CPictureViewer::showBusy (int sx, int sy, int width, char r, char g, char b)
+void CPictureViewer::showBusy(int sx, int sy, int width, char r, char g, char b)
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::Show Busy\n");
 	
@@ -449,8 +449,8 @@ void CPictureViewer::showBusy (int sx, int sy, int width, char r, char g, char b
 	}
 	
 	busy_buffer_wrk = m_busy_buffer;
-	unsigned char *fb = (unsigned char *) CFrameBuffer::getInstance()->getFrameBufferPointer();
-	unsigned int stride = CFrameBuffer::getInstance ()->getStride();
+	unsigned char * fb = (unsigned char *) CFrameBuffer::getInstance()->getFrameBufferPointer();
+	unsigned int stride = CFrameBuffer::getInstance()->getStride();
 	
 	for (int y = sy; y < sy + width; y++) 
 	{
@@ -478,9 +478,9 @@ void CPictureViewer::hideBusy()
 	
 	if (m_busy_buffer != NULL) 
 	{
-		unsigned char *fb = (unsigned char *) CFrameBuffer::getInstance()->getFrameBufferPointer();
+		unsigned char * fb = (unsigned char *) CFrameBuffer::getInstance()->getFrameBufferPointer();
 		unsigned int stride = CFrameBuffer::getInstance()->getStride();
-		unsigned char *busy_buffer_wrk = m_busy_buffer;
+		unsigned char * busy_buffer_wrk = m_busy_buffer;
 	
 		for (int y = m_busy_y; y < m_busy_y + m_busy_width; y++) 
 		{
@@ -499,7 +499,7 @@ void CPictureViewer::hideBusy()
 #endif
 }
 
-void CPictureViewer::Cleanup ()
+void CPictureViewer::Cleanup()
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::Cleanup\n");
 	
@@ -522,6 +522,7 @@ void CPictureViewer::Cleanup ()
 	}
 }
 
+// channels logos
 // display image
 bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height, bool alpha)
 {
@@ -529,11 +530,11 @@ bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, 
 	
 	fb_pixel_t * data;
 	
-	data = CFrameBuffer::getInstance()->getImage(name, width, height, alpha?CFrameBuffer::TM_BLACK : CFrameBuffer::TM_NONE);
+	data = CFrameBuffer::getInstance()->getImage(name, width, height);
 
 	if(data) 
 	{
-		CFrameBuffer::getInstance()->blit2FB( data, width, height, posx, posy, 0, 0, alpha? true:false );
+		CFrameBuffer::getInstance()->blit2FB( data, width, height, posx, posy, 0, 0, alpha? true:false);
 		free(data);
 		return true;
 	}
@@ -555,19 +556,16 @@ void CPictureViewer::getSize(const char* name, int* width, int *height)
 	}
 }
 
-// display logos
-bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale)
+// check for logo
+bool CPictureViewer::checkLogo(uint64_t channel_id)
 {	
         char fname[255];
-	bool ret = false;
 	bool logo_ok = false;
-	
-	int logo_w, logo_h;
 	
 	// first png, then jpg, then gif
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
 	
-	// check for log
+	// check for logo
 	for (int i = 0; i < 3; i++)
 	{
 		sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
@@ -578,44 +576,105 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		}
 	}
 	
-	// scale logo
-	if(!upscale)
-	{
-		// get logo real size
-		getSize(fname, &logo_w, &logo_h);
-		
-		//rescale logo image
-		float aspect = (float)(logo_w) / (float)(logo_h);
-		
-		if (((float)(logo_w) / (float)width) > ((float)(logo_h) / (float)height)) 
-		{
-			logo_w = width;
-			logo_h = (int)(width / aspect);
-		}
-		else
-		{
-			logo_h = height;
-			logo_w = (int)(height * aspect);
-		}
-	}
-	else
-	{
-		logo_w = width;
-		logo_h = height;
-	}
-	//
+	return logo_ok;
+}
+
+void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height)
+{
+	char fname[255];
+	bool logo_ok = false;
 	
-	// show logo
+	//int logo_w, logo_h;
+	
+	// first png, then jpg, then gif
+	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
+	
+	// check for logo
+	for (int i = 0; i < 3; i++)
+	{
+		sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
+		if(!access(fname, F_OK)) 
+		{
+			logo_ok = true;
+			break;
+		}
+	}
+	
 	if(logo_ok)
 	{
-		dprintf(DEBUG_INFO, "CPictureViewer::DisplayLogo file: %s\n", fname);
-		
 		std::string logo_name = fname; // UTF-8
 		
+		// get logo real size
+		getSize(fname, width, height);
+	}
+}
+
+// display logos
+bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale)
+{	
+        char fname[255];
+	bool ret = false;
+	bool logo_ok = false;
+	
+	int logo_w, logo_h;
+	
+	// first png, then jpg, then gif
+	//logo_ok = checkLogo(channel_id);
+	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
+	
+	// check for logo
+	for (int i = 0; i < 3; i++)
+	{
+		sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), channel_id & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
+		if(!access(fname, F_OK)) 
+		{
+			logo_ok = true;
+			break;
+		}
+	}
+	
+	if(logo_ok)
+	{
+		std::string logo_name = fname; // UTF-8
+	
+		// scale
 		if( logo_name.find(".png") == (logo_name.length() - 4) )
-			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h, true); 	// with alpha channal
+		{
+			// scale logo
+			if(!upscale)
+			{
+				// get logo real size
+				getSize(fname, &logo_w, &logo_h);
+				
+				//rescale logo image
+				float aspect = (float)(logo_w) / (float)(logo_h);
+				
+				if (((float)(logo_w) / (float)width) > ((float)(logo_h) / (float)height)) 
+				{
+					logo_w = width;
+					logo_h = (int)(width / aspect);
+				}
+				else
+				{
+					logo_h = height;
+					logo_w = (int)(height * aspect);
+				}
+			}
+			else
+			{
+				logo_w = width;
+				logo_h = height;
+			}
+			
+			ret = DisplayImage(fname, posx, posy /*+ (height - logo_h)/2*/, logo_w, logo_h, true); 	// with alpha channal
+		}
 		else
-			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h);
+		{
+			logo_w = width;
+			logo_h = height;
+			
+			ret = DisplayImage(fname, posx, posy /*+ (height - logo_h)/2*/, logo_w, logo_h);
+		}
         }
         //
 
