@@ -127,7 +127,6 @@ void CAudiofileExt::operator=(const CAudiofileExt& src)
 }
 
 #include <curl/curl.h>
-//#include <curl/types.h>
 #include <curl/easy.h>
 
 struct MemoryStruct {
@@ -345,12 +344,8 @@ int CAudioPlayerGui::show()
 
 	int ret = -1;
 
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode( CVFD::MODE_AUDIO );
-//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-	paintLCD();
-//#endif	
+	paintLCD();	
 
 	bool loop = true;
 	bool update = true;
@@ -457,14 +452,14 @@ int CAudioPlayerGui::show()
 			clear_before_update = true;
 			update = true;
 		}
-		else if (msg == CRCInput::RC_home || msg == CRCInput::RC_vfdexit)
+		else if (msg == CRCInput::RC_home)
 		{ 
 			if (m_state != CAudioPlayerGui::STOP)
 				stop();
 			else
 				loop = false;
 		}
-		else if (msg == CRCInput::RC_left || msg == CRCInput::RC_vfdleft)
+		else if (msg == CRCInput::RC_left)
 		{
 			if (m_key_level == 1)
 			{
@@ -495,7 +490,7 @@ int CAudioPlayerGui::show()
 			}
 
 		}
-		else if (msg == CRCInput::RC_right || msg == CRCInput::RC_vfdright)
+		else if (msg == CRCInput::RC_right)
 		{
 			if (m_key_level == 1)
 			{
@@ -526,7 +521,7 @@ int CAudioPlayerGui::show()
 				}
 			}
 		}
-		else if( (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_up || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_up || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_vfdup)
+		else if( (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_up || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_up)
 		{
 			if(m_show_playlist && !m_playlist.empty() )
 			{
@@ -551,7 +546,7 @@ int CAudioPlayerGui::show()
 				}
 			}
 		}
-		else if((msg &~ CRCInput::RC_Repeat) == CRCInput::RC_down || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_down || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_vfddown )
+		else if((msg &~ CRCInput::RC_Repeat) == CRCInput::RC_down || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_down)
 		{
 			if(m_show_playlist && !m_playlist.empty() )
 			{
@@ -643,12 +638,8 @@ int CAudioPlayerGui::show()
 					{
 						savePlaylist();
 
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//						CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
 						CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-						paintLCD();
-//#endif						
+						paintLCD();						
 						update = true;
 					}
 				} 
@@ -733,25 +724,19 @@ int CAudioPlayerGui::show()
 					{
 						case 0:	
 							scanXmlFile(RADIO_STATION_XML_FILE); 	
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
+
 							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-							paintLCD();
-//#endif							
+							paintLCD();							
 							break;
 							
 						case 1:	openSCbrowser();
 							break;
 							
 						case 2:	readDir_ic();
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
 							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-							paintLCD();
-//#endif							
+							paintLCD();							
 							break;
+							
 						default: break;
 					}
 					
@@ -869,12 +854,9 @@ int CAudioPlayerGui::show()
 		{
 			CNFSSmallMenu nfsMenu;
 			nfsMenu.exec(this, "");
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//			CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
+
 			CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-			paintLCD();
-//#endif			
+			paintLCD();			
 			update = true;
 			//pushback key if...
 			//g_RCInput->postMsg( msg, data );
@@ -1473,12 +1455,9 @@ bool CAudioPlayerGui::openFilebrowser(void)
 		result = true;
 	}
 	
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
 	paintLCD();
-//#endif	
+	
 	// if playlist is turned off -> start playing immediately
 	if (!m_show_playlist && !m_playlist.empty())
 		play(m_selected);
@@ -1500,7 +1479,6 @@ bool CAudioPlayerGui::openSCbrowser(void)
 
 	hide();
 
-	//if (filebrowser.exec(SC_INIT_DIR))
 	if (filebrowser.exec(filebrowser.sc_init_dir.c_str()))
 	{
 #ifdef AUDIOPLAYER_TIME_DEBUG
@@ -1510,6 +1488,7 @@ bool CAudioPlayerGui::openSCbrowser(void)
 		CProgressWindow progress;
 		long maxProgress = (filebrowser.getSelectedFiles().size() > 1) ? filebrowser.getSelectedFiles().size() - 1: 1;
 		long currentProgress = -1;
+		
 		//if (maxProgress > SHOW_FILE_LOAD_LIMIT)
 		{
 			progress.setTitle(LOCALE_AUDIOPLAYER_READING_FILES);
@@ -1560,12 +1539,9 @@ bool CAudioPlayerGui::openSCbrowser(void)
 		result = true;
 	}
 	
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO);
-//#else
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
 	paintLCD();
-//#endif	
+	
 	// if playlist is turned off -> start playing immediately
 	if (!m_show_playlist && !m_playlist.empty())
 		play(m_selected);
@@ -1673,16 +1649,14 @@ void CAudioPlayerGui::paintItem(int pos)
 		int w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(dura) + 5;
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + 10, ypos + m_fheight, m_width - 30 - w, tmp, color, m_fheight, true); // UTF-8
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, dura, color, m_fheight);
-		
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)		
+			
 		if ((pos + m_liststart) == m_selected)
 		{
 			if (m_state == CAudioPlayerGui::STOP)
 			{	  
 				CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);				
 			}
-		}
-//#endif		
+		}		
 	}
 }
 
@@ -2386,10 +2360,8 @@ void CAudioPlayerGui::paintLCD()
 		case CAudioPlayerGui::PLAY:
 			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PLAY);
 
-			// audio-track
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);
-//#endif			
+			// audio-track	
+			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			
 #if ENABLE_LCD
 			if(m_curr_audiofile.FileType != CFile::STREAM_AUDIO && m_time_total != 0)
@@ -2405,24 +2377,18 @@ void CAudioPlayerGui::paintLCD()
 
 			break;
 		case CAudioPlayerGui::PAUSE:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PAUSE);
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);
-//#endif			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PAUSE);		
+			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 			
 		case CAudioPlayerGui::FF:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_FF);
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);
-//#endif			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_FF);		
+			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 			
 		case CAudioPlayerGui::REV:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_REV);
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)			
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);
-//#endif			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_REV);	
+			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 	}
 }
