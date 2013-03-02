@@ -312,11 +312,32 @@ void CWebTV::paintItem(int pos)
 	//name and description
 	if(curr < channels.size()) 
 	{
+		char tmp[10];
 		char nameAndDescription[255];
+		int l = 0;
 		
-		snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr].title);
+		sprintf((char*) tmp, "%d", curr + 1);
+		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s ", channels[curr].title);
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, ypos + fheight, width - 40 - 15, nameAndDescription, color, 0, true);
+		// nummer
+		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + fheight, numwidth + 5, tmp, color, fheight);
+		
+		// description
+		std::string Descr = channels[curr].description;
+		if(!(Descr.empty()))
+		{
+			snprintf(nameAndDescription + l, sizeof(nameAndDescription) -l, " - ");
+			
+			unsigned int ch_name_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(nameAndDescription, true);
+			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(channels[curr].description, true);
+			
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, nameAndDescription, color, 0, true);
+			
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len, ypos + fheight, ch_desc_len, channels[curr].description, (curr == selected)?COL_MENUCONTENTSELECTED : COL_COLORED_EVENTS_CHANNELLIST, 0, true);
+		}
+		else
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, nameAndDescription, color, 0, true);
 	}
 }
 
@@ -435,6 +456,19 @@ void CWebTV::paintItem2DetailsLine(int pos, int ch_index)
 void CWebTV::paint()
 {
 	liststart = (selected/listmaxshow)*listmaxshow;
+	
+	int lastnum =  liststart + listmaxshow;
+	
+	if(lastnum<10)
+		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("0");
+	else if(lastnum<100)
+		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("00");
+	else if(lastnum<1000)
+		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("000");
+	else if(lastnum<10000)
+		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("0000");
+	else // if(lastnum<100000)
+		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("00000");
 	
 	// channelslist body
 	frameBuffer->paintBoxRel(x, y + theight, width, height - buttonHeight - theight, COL_MENUCONTENT_PLUS_0);

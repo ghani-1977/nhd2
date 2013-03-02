@@ -1735,8 +1735,8 @@ void CChannelList::paintItem(int pos)
 		CZapitChannel * chan = chanlist[curr];
 		int prg_offset=0;
 		int title_offset=0;
-		uint8_t tcolor=(liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
-		int xtheight=fheight-2;
+		uint8_t tcolor = (liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
+		int xtheight = fheight-2;
 		
 		// due to extended info
 		prg_offset = 42;
@@ -1778,12 +1778,12 @@ void CChannelList::paintItem(int pos)
 
 		if (!(p_event->description.empty())) 
 		{
-			snprintf(nameAndDescription+l, sizeof(nameAndDescription)-l," - ");
+			snprintf(nameAndDescription + l, sizeof(nameAndDescription)-l," - ");
 			unsigned int ch_name_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(nameAndDescription, true);
 			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(p_event->description, true);
 
-			if ( (width- numwidth- 60- 15- prg_offset - ch_name_len)< ch_desc_len )
-				ch_desc_len = (width- numwidth- 60- 15 - 30 - ch_name_len - prg_offset); //30: hd icon width
+			if ( (width- numwidth - 60 - 15- prg_offset - ch_name_len)< ch_desc_len )
+				ch_desc_len = (width- numwidth- 60 - 15 - 30 - ch_name_len - prg_offset); //30: hd icon width
 			if (ch_desc_len< 0)
 				ch_desc_len = 0;
 			
@@ -1823,12 +1823,12 @@ void CChannelList::paintItem(int pos)
 			if (g_settings.channellist_epgtext_align_right)
 			{
 				// align right
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + width - 20 - ch_desc_len - 28, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? /*COL_MENUCONTENT*/ COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + width - 20 - ch_desc_len - 28, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
 			}
 			else
 			{
 				// align left
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x+ 5+ numwidth+ 10+ ch_name_len+ 5+prg_offset, ypos+ fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? /*COL_MENUCONTENT*/ COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len + 5 + prg_offset, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
 			}
 		}
 		else 
