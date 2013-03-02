@@ -62,7 +62,7 @@ extern char recDir[255];// defined in neutrino.cpp
 
 #include <algorithm>
 extern CPictureViewer * g_PicViewer;
-#define PIC_W 52
+#define PIC_W 78
 
 void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);

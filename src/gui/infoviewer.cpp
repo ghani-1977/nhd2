@@ -371,7 +371,7 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	}
 
 	// channel logo/number/name
-#define PIC_W 52
+#define PIC_W 78
 #define PIC_H 39
 
 	if (satellitePosition != 0 && satellitePositions.size() ) 
@@ -396,10 +396,9 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 			 g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h);
 			 
 			 // paint logo
-			 g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, logo_w, logo_h >PIC_H?PIC_H:logo_h);
+			 g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, logo_w > PIC_W? PIC_W : logo_w, logo_h > PIC_H?PIC_H:logo_h);
 		
 			// ChannelName
-			if(1) // if show logo and channal name
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 20, ChanNameY + time_height, BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 		}
 		else
