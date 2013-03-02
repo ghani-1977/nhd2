@@ -1,7 +1,5 @@
 /*
-	WebTV menue
-
-	Copyright (C) 2012 martii
+	WebTV 
 
 	License: GPL
 
@@ -27,6 +25,10 @@
 #include <string.h>
 #include <vector>
 
+#include <sys/stat.h>
+
+#include <driver/file.h>
+
 #include <xmlinterface.h>
 
 
@@ -38,7 +40,7 @@ typedef struct webtv_channels {
 	char * locked;		// for parentallock
 } WebTVChannels;
 
-class CWebTV : public CMenuTarget
+class CWebTV /*: public CMenuTarget*/
 {
 	private:
 		xmlDocPtr parser;
@@ -66,8 +68,6 @@ class CWebTV : public CMenuTarget
 		
 		int info_height;
 		
-		CZapProtection * 	zapProtection;
-		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
 		void paintItem2DetailsLine (int pos, int ch_index);
@@ -79,7 +79,11 @@ class CWebTV : public CMenuTarget
 	public:
 		CWebTV();
 		~CWebTV();
-		int exec(CMenuTarget * parent, const std::string & actionKey);
+		int exec();
+		//bool readXml();
 		int Show();
+		
+		CFileList filelist;
+		CFile * getSelectedFile();
 };
 #endif

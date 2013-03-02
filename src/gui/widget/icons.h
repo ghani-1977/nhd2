@@ -168,6 +168,4 @@
 #define NEUTRINO_ICON_BUTTON_RED_WIDTH		16
 #define NEUTRINO_ICON_BUTTON_YELLOW_WIDTH	16
 
-#define NEUTRINO_ICON_VARPATH			"/var/tuxbox/icons/"  //alternatively path for user-defined icons 
-
 #endif /* __gui_widget_icons_h__ */

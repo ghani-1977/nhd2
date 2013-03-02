@@ -1,7 +1,7 @@
 #ifndef __locals_intern__
 #define __locals_intern__
 
-const char *locale_real_names[] = {
+const char * locale_real_names[] = {
 	"INTERNAL ERROR - PLEASE REPORT",
 	"AUDIOSelectMenue.head",
 	"EPGMenu.epgplus",

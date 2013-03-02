@@ -395,7 +395,7 @@ CFileBrowser::~CFileBrowser()
 {
 }
 
-CFile *CFileBrowser::getSelectedFile()
+CFile * CFileBrowser::getSelectedFile()
 {
 	if ((!(filelist.empty())) && (!(filelist[selected].Name.empty())))
 		return &filelist[selected];
@@ -1072,7 +1072,8 @@ bool CFileBrowser::exec(const char * const dirname)
 						{
 							ChangeDir("..",selections.back());
 							selections.pop_back();
-						} else
+						} 
+						else
 						{
 							std::string::size_type pos = Path.substr(0,Path.length()-1).rfind('/');
 							if (pos != std::string::npos) {

@@ -143,9 +143,8 @@ CEpgData::CEpgData()
 void CEpgData::start()
 {
 	// dimension
-	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	ox  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
-	oy = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	ox  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	oy = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	
 	sx = (((g_settings.screen_EndX - g_settings.screen_StartX) -ox) / 2) + g_settings.screen_StartX;
 

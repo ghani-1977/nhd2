@@ -153,15 +153,8 @@ void CBEChannelSelectWidget::onOkKeyPressed()
 
 int CBEChannelSelectWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 {
-        //width  = w_max (500, 0);
-        //height = h_max (440, 50);
-	//int fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	//int fh = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	//width  = w_max (64 * fw, 20);
-	//height = h_max (20 * fh, 50);
-	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
-	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	
 	listmaxshow = (height-theight-0)/fheight;
 	height = theight+0+listmaxshow*fheight; // recalc height
@@ -171,11 +164,14 @@ int CBEChannelSelectWidget::exec(CMenuTarget* parent, const std::string & action
 	bouquetChannels = mode == CZapitClient::MODE_TV ? &(g_bouquetManager->Bouquets[bouquet]->tvChannels) : &(g_bouquetManager->Bouquets[bouquet]->radioChannels);
 
 	Channels.clear();
-	if (mode == CZapitClient::MODE_RADIO) {
+	if (mode == CZapitClient::MODE_RADIO) 
+	{
 		for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++)
 			if (it->second.getServiceType() == ST_DIGITAL_RADIO_SOUND_SERVICE)
 				Channels.push_back(&(it->second));
-	} else {
+	} 
+	else 
+	{
 		for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++)
 			if (it->second.getServiceType() != ST_DIGITAL_RADIO_SOUND_SERVICE)
 				Channels.push_back(&(it->second));

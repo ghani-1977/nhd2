@@ -296,6 +296,8 @@ void CMoviePlayerGui::Init(void)
 	playback = new cPlayback();
 	
 	moviebrowser = new CMovieBrowser();
+	
+	webtv = new CWebTV();
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -985,7 +987,6 @@ void CMoviePlayerGui::PlayFile(void)
 	playstate = CMoviePlayerGui::STOPPED;
 	bool is_file_player = false;
 	std::string stream_url;
-	//bool isVlc = false;
 	bool aborted = false;
 	char mrl[200];
 	CFileList _filelist;
@@ -1002,7 +1003,6 @@ void CMoviePlayerGui::PlayFile(void)
 		stream_url += g_settings.streaming_server_port;
 		stream_url += "/dboxstream";
 		filename = stream_url.c_str();
-		//isVlc = true;
 		open_filebrowser = isVlc;
 			
 		if(streamtype == STREAMTYPE_DVD)
@@ -1050,13 +1050,13 @@ void CMoviePlayerGui::PlayFile(void)
 		else
 			sel_filename = "WebTV";
 		
-		open_filebrowser = false;
+		open_filebrowser = isWebTV;
 		
 		update_lcd = true;
 		start_play = true;
 		
-		g_file_epg = std::string(rindex(filename, '/') + 1);
-		g_file_epg1 = std::string(rindex(filename, '/') + 1);
+		//g_file_epg = std::string(rindex(filename, '/') + 1);
+		//g_file_epg1 = std::string(rindex(filename, '/') + 1);
 		
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 		
@@ -1134,10 +1134,9 @@ void CMoviePlayerGui::PlayFile(void)
 
 		// exit
 		if (exit) 
-		{
-//#if ENABLE_GSTREAMER		  
+		{	  
 			playback->Stop();
-//#endif			
+			
 			exit = false;
 			cdDvd = false;
 			printf("[movieplayer] stop\n");			
@@ -1178,7 +1177,7 @@ void CMoviePlayerGui::PlayFile(void)
 			FileTime.show( (position / 1000));
 		}
 
-		// moviebrowser
+		// movie infos (moviebrowser)
 		if (isMovieBrowser == true) 
 		{
 			// do all moviebrowser stuff here ( like commercial jump etc.)
@@ -1319,6 +1318,7 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			g_numpida = 0; g_currentapid = 0;
 
+			// moviebrowser
 			if (isMovieBrowser == true) 
 			{
 				// start the moviebrowser instead of the filebrowser
@@ -1417,14 +1417,14 @@ void CMoviePlayerGui::PlayFile(void)
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
 #endif				
 			} 
-			else if(isVlc && !cdDvd)
+			else if(isVlc && !cdDvd) // vlc (file not dvd)
 			{
 				filename = NULL;
 				filebrowser->Filter = &vlcfilefilter;
 				
 				if(filebrowser->exec(Path_vlc.c_str()))
 				{
-					Path_vlc = filebrowser->getCurrentDir ();
+					Path_vlc = filebrowser->getCurrentDir();
 
 					CFile * file = filebrowser->getSelectedFile();
 					_filelist.clear();
@@ -1434,7 +1434,9 @@ void CMoviePlayerGui::PlayFile(void)
 					{
 						filename = _filelist[0].Name.c_str();
 						sel_filename = _filelist[0].getFileName();
+						
 						//printf ("[movieplayer.cpp] sel_filename: %s\n", filename);
+						
 						int namepos = _filelist[0].Name.rfind("vlc://");
 						std::string mrl_str = "";
 						
@@ -1444,8 +1446,9 @@ void CMoviePlayerGui::PlayFile(void)
 							if (filename[namepos + 6] != '/')
 								mrl_str += "/";
 						}
+						
 						mrl_str += _filelist[0].Name.substr(namepos + 6);
-						char *tmp = curl_escape (mrl_str.c_str (), 0);
+						char * tmp = curl_escape(mrl_str.c_str (), 0);
 						strncpy (mrl, tmp, sizeof (mrl) - 1);
 						curl_free (tmp);
 						printf ("[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
@@ -1463,14 +1466,36 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 
 			}
-			else 
+			else if (isWebTV)
+			{
+				if( webtv->exec())
+				{
+					CFile * file;
+
+					if ((file = webtv->getSelectedFile()) != NULL) 
+					{
+						filename = file->Name.c_str();
+						sel_filename = file->getFileName();
+						
+						update_lcd = true;
+						start_play = true;
+						was_file = true;
+					}
+				}
+				else if (playstate == CMoviePlayerGui::STOPPED) 
+				{
+					was_file = false;
+					break;
+				}
+			}
+			else  // filebrowser
 			{
 				filebrowser->Filter = &tsfilefilter;
 
 				if (filebrowser->exec(Path_local.c_str()) == true) 
 				{
 					Path_local = filebrowser->getCurrentDir();
-					CFile *file;
+					CFile * file;
 
 					if ((file = filebrowser->getSelectedFile()) != NULL) 
 					{
@@ -2478,6 +2503,10 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
+		}
+		else if(msg == CRCInput::RC_ok)
+		{
+			open_filebrowser = true;
 		}
 		else if (msg == CRCInput::RC_timeout) 
 		{

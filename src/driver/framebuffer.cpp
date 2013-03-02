@@ -58,6 +58,12 @@
 #define ICON_CACHE_SIZE 1024*1024*2 // 2mb
 
 
+// png/jpg/bmp/gif/crw
+CFormathandler * fh_root;
+void init_handlers(void);
+void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
+
+
 static uint32_t * virtual_fb = NULL;
 
 inline unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
@@ -152,7 +158,7 @@ void CFrameBuffer::init(const char * const fbDevice)
 	if(!fd) 
 		fd = open(fbDevice, O_RDWR);
 
-	if (fd<0) 
+	if (fd < 0) 
 	{
 		perror(fbDevice);
 		goto nolfb;
@@ -454,7 +460,7 @@ int CFrameBuffer::setMode()
 #endif	
 
 	setBlendMode(0); //non-premultiplied alpha
-	
+
 	// clear frameBuffer
 	paintBackground();
 	
@@ -1040,15 +1046,16 @@ bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const in
 	it = icon_cache.find(filename);
 	if(it == icon_cache.end()) 
 	{
-		data = getIcon(filename, &width, &height);
+		std::string newname = iconBasePath + filename.c_str() + ".png";
+		
+		data = getIcon(newname, &width, &height);
 
 		if(data) 
 		{
-found_icon:
 			// cache it
 			dsize = width*height*sizeof(fb_pixel_t);
 			
-			if(cache_size+dsize < ICON_CACHE_SIZE) 
+			if(cache_size + dsize < ICON_CACHE_SIZE) 
 			{
 				cache_size += dsize;
 				tmpIcon.width = width;
@@ -1059,20 +1066,6 @@ found_icon:
 			
 			// display icon
 			goto _display;
-		}
-		else
-		{
-			std::string newname = iconBasePath + filename.c_str() + ".png";
-			
-			data = getIcon(newname, &width, &height);
-			
-			if(data)
-				goto found_icon;
-			else
-			{
-				dprintf(DEBUG_NORMAL, "paintIcon: error while loading icon: %s\n", newname.c_str());
-				return false;
-			}
 		}
 	} 
 	else 
@@ -1518,10 +1511,10 @@ void CFrameBuffer::ClearFrameBuffer()
 	paintBackground();
 }
 
-void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, int m_transparent, bool alpha)
+void * CFrameBuffer::convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp, int m_transparent, bool alpha)
 {
 	unsigned long i;
-	unsigned int *fbbuff;
+	unsigned int * fbbuff;
 	unsigned long count = x*y;
 
 	fbbuff = (unsigned int *) malloc(count * sizeof(unsigned int));
@@ -1553,12 +1546,12 @@ void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsi
 					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
 				}
 				break;
-				
+					
 			case CFrameBuffer::TM_INI:
 				for(i = 0; i < count ; i++)
 					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
 				break;
-				
+					
 			case CFrameBuffer::TM_NONE:
 			default:
 				for(i = 0; i < count ; i++)
@@ -1571,29 +1564,26 @@ void * CFrameBuffer::convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsi
 }
 
 // blit2fb
-void CFrameBuffer::blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp, uint32_t yp, bool transp )
+void CFrameBuffer::blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp, uint32_t yp, bool transp )
 { 
 	int xc = (width > xRes) ? xRes : width;
 	int yc = (height > yRes) ? yRes : height;
 
-	fb_pixel_t*  data = (fb_pixel_t *) fbbuff;
+	fb_pixel_t * data = (fb_pixel_t *) fbbuff;
 
 	uint8_t * d = ((uint8_t *)getFrameBufferPointer()) + xoff * sizeof(fb_pixel_t) + stride * yoff;
-	
 	fb_pixel_t * d2;
 
 	for (int count = 0; count < yc; count++ ) 
 	{
-		fb_pixel_t *pixpos = &data[(count + yp) * width];
+		fb_pixel_t * pixpos = &data[(count + yp) * width];
 		d2 = (fb_pixel_t *) d;
 		for (int count2 = 0; count2 < xc; count2++ ) 
 		{
 			fb_pixel_t pix = *(pixpos + xp);
 			
 			if (!transp || (pix != 0)) 
-			{
 				*d2 = pix;
-			}
 			
 			d2++;
 			pixpos++;
@@ -1605,7 +1595,7 @@ void CFrameBuffer::blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32
 // display RGB (used by pictureviewer)
 void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb, int transp)
 {
-        void *fbbuff = NULL;
+        void * fbbuff = NULL;
 
         if(rgbbuff == NULL)
                 return;
@@ -1622,13 +1612,12 @@ void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, i
         if(y_offs + y_size > (int)yRes) 
 		y_offs = 0;
 
-        /* convertrgb */
+        /* convert */
         fbbuff = convertRGB2FB(rgbbuff, x_size, y_size, transp);
         if(fbbuff == NULL)
                 return;
 
         /* ClearFB if image is smaller */
-        /* if(x_size < (int)xRes || y_size < (int)yRes) */
         if(clearfb)
                 ClearFrameBuffer();
 
@@ -1639,13 +1628,13 @@ void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, i
 }
 
 // resize.cpp
-unsigned char * CFrameBuffer::Resize(unsigned char *origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst)
+unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst, bool alpha)
 {
 	unsigned char * cr;
 	
 	if(dst == NULL) 
 	{
-		cr = (unsigned char*) malloc(dx*dy*3);
+		cr = (unsigned char*) malloc(dx*dy*(alpha? 4 : 3));
 
 		if(cr == NULL)
 		{
@@ -1658,55 +1647,87 @@ unsigned char * CFrameBuffer::Resize(unsigned char *origin, int ox, int oy, int 
 
 	if(type == SIMPLE) 
 	{
-		unsigned char *p,*l;
-		int i,j,k,ip;
+		unsigned char *p, *l;
+		int i, j, k, ip;
 		l = cr;
 
-		for(j=0; j<dy; j++, l += dx*3)
+		for(j = 0; j < dy; j++, l += dx*3)
 		{
 			p = origin + (j*oy/dy*ox*3);
-			for(i=0, k=0; i<dx; i++, k+=3)
+			for(i = 0, k = 0; i < dx; i++, k += 3)
 			{
-				ip=i*ox/dx*3;
+				ip = i*ox/dx*3;
 				memmove(l+k, p+ip, 3);
 			}
 		}
 	} 
 	else 
 	{
-		unsigned char *p,*q;
-		int i,j,k,l,ya,yb;
-		int sq,r,g,b;
+		unsigned char *p, *q;
+		int i, j, k, l, ya, yb;
+		int sq, r, g, b, a;
 
-		p=cr;
+		p = cr;
 
 		int xa_v[dx];
-		for(i=0;i<dx;i++)
+		for(i = 0; i < dx; i++)
 			xa_v[i] = i*ox/dx;
 		int xb_v[dx+1];
 		
-		for(i=0;i<dx;i++)
+		for(i = 0; i < dx; i++)
 		{
-			xb_v[i]= (i+1)*ox/dx;
-			if(xb_v[i]>=ox)
-				xb_v[i]=ox-1;
+			xb_v[i] = (i+1)*ox/dx;
+			if(xb_v[i] >= ox)
+				xb_v[i] = ox - 1;
 		}
 		
-		for(j=0;j<dy;j++)
+		//
+		if (alpha)
 		{
-			ya= j*oy/dy;
-			yb= (j+1)*oy/dy; if(yb>=oy) yb=oy-1;
-			for(i=0;i<dx;i++,p+=3)
+			for(j = 0;j < dy; j++)
 			{
-				for(l=ya,r=0,g=0,b=0,sq=0;l<=yb;l++)
+				ya = j*oy/dy;
+				yb = (j + 1)*oy/dy; 
+				if(yb >= oy) 
+					yb = oy - 1;
+				
+				for(i = 0; i < dx; i++, p += 4)
 				{
-					q=origin+((l*ox+xa_v[i])*3);
-					for(k=xa_v[i];k<=xb_v[i];k++,q+=3,sq++)
+					for(l = ya, r = 0, g = 0, b = 0, a = 0, sq = 0; l <= yb; l++)
 					{
-						r+=q[0]; g+=q[1]; b+=q[2];
+						q = origin + ((l*ox+xa_v[i])*4);
+						
+						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 4, sq++)
+						{
+							r += q[0]; g += q[1]; b += q[2]; a += q[3];
+						}
 					}
+					p[0] = r/sq; p[1] =g/sq; p[2] = b/sq; p[3] = a/sq;
 				}
-				p[0]=r/sq; p[1]=g/sq; p[2]=b/sq;
+			}
+		}
+		else
+		{
+			for(j = 0; j < dy; j++)
+			{
+				ya = j*oy/dy;
+				yb = (j + 1)*oy/dy; 
+				if(yb >= oy) 
+					yb = oy - 1;
+				
+				for(i = 0; i < dx; i++, p += 3)
+				{
+					for(l = ya, r = 0, g = 0, b = 0, sq = 0; l <= yb; l++)
+					{
+						q = origin + ((l*ox+xa_v[i])*3);
+						
+						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 3, sq++)
+						{
+							r += q[0]; g += q[1]; b += q[2];
+						}
+					}
+					p[0] = r/sq; p[1] = g/sq; p[2] = b/sq;
+				}
 			}
 		}
 	}
@@ -1717,9 +1738,10 @@ unsigned char * CFrameBuffer::Resize(unsigned char *origin, int ox, int oy, int 
 }
 
 // PNG
-extern int fh_png_getsize(const char *name,int *x,int *y, int wanted_width, int wanted_height);
-extern int fh_png_load(const char *name,unsigned char **buffer,int* xp,int* yp);
+extern int fh_png_getsize(const char *name, int *x, int *y, int wanted_width, int wanted_height);
+extern int fh_png_load(const char *name, unsigned char **buffer, int* xp, int* yp);
 extern int fh_png_id(const char *name);
+extern int png_load_ext (const char * name, unsigned char ** buffer, int * xp, int * yp, int * bpp);
 
 // JPG
 extern int fh_jpeg_getsize (const char *, int *, int *, int, int);
@@ -1741,10 +1763,10 @@ extern int fh_crw_getsize (const char *, int *, int *, int, int);
 extern int fh_crw_load (const char *, unsigned char **, int *, int *);
 extern int fh_crw_id (const char *);
 
-void CFrameBuffer::add_format (int (*picsize) (const char *, int *, int *, int, int), int (*picread) (const char *, unsigned char **, int *, int *), int (*id) (const char *))
+void add_format (int (*picsize) (const char *, int *, int *, int, int), int (*picread) (const char *, unsigned char **, int *, int *), int (*id) (const char *))
 {
-	CFormathandler *fhn;
-	fhn = (CFormathandler *) malloc (sizeof (CFormathandler));
+	CFormathandler * fhn;
+	fhn = (CFormathandler *) malloc(sizeof (CFormathandler));
 	fhn->get_size = picsize;
 	fhn->get_pic = picread;
 	fhn->id_pic = id;
@@ -1752,12 +1774,12 @@ void CFrameBuffer::add_format (int (*picsize) (const char *, int *, int *, int, 
 	fh_root = fhn;
 }
 
-void CFrameBuffer::init_handlers (void)
+void init_handlers (void)
 {
-	/* add png format */
+	// add png format
   	add_format (fh_png_getsize, fh_png_load, fh_png_id);
 	
-	/* add jpg format */
+	// add jpg format
 	add_format (fh_jpeg_getsize, fh_jpeg_load, fh_jpeg_id);
 	
 	// add gif
@@ -1770,9 +1792,10 @@ void CFrameBuffer::init_handlers (void)
 	add_format (fh_crw_getsize, fh_crw_load, fh_crw_id);
 }
 
-CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize(const char *name, int *x, int *y, int width_wanted, int height_wanted)
+CFormathandler * fh_getsize(const char *name, int *x, int *y, int width_wanted, int height_wanted)
 {
-	CFormathandler *fh;
+	CFormathandler * fh;
+	
 	for (fh = fh_root; fh != NULL; fh = fh->next) 
 	{
 		if (fh->id_pic (name))
@@ -1786,36 +1809,43 @@ CFrameBuffer::CFormathandler * CFrameBuffer::fh_getsize(const char *name, int *x
 fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int height)
 {
 	int x, y;
-	CFormathandler *fh;
+	CFormathandler * fh;
 	unsigned char * buffer;
 	fb_pixel_t * ret = NULL;
+	int load_ret;
 
   	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
   	if (fh) 
 	{
-		buffer = (unsigned char *) malloc (x * y * 4);
+		buffer = (unsigned char *) malloc (x*y*3);
 		
 		if (buffer == NULL) 
 		{
 		  	printf ("CFrameBuffer::getImage: Error: malloc\n");
 		  	return false;
 		}
+		
+		load_ret = fh->get_pic(name.c_str (), &buffer, &x, &y);
 
-		if (fh->get_pic(name.c_str (), &buffer, &x, &y) == FH_ERROR_OK) 
+		if (load_ret == FH_ERROR_OK) 
 		{
-			//printf("CFrameBuffer::getImage: %s, %d x %d \n", name.c_str (), x, y);
-			
 			// resize
 			if(x != width || y != height)
 			{
 				buffer = Resize(buffer, x, y, width, height, COLOR);
-				x = width;
+				
+				x = width ;
 				y = height;
 			} 
 			
 			// convert RGB2FB
-			ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha) );
+			if( name.find(".png") == (name.length() - 4) )
+			{
+				ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
+			}
+			else
+				ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha), TM_NONE);
 			
 			free(buffer);
 		} 
@@ -1832,7 +1862,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 	return ret;
 }
 
-fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *height)
+fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * height)
 {
 	int x, y;
 	CFormathandler * fh;
@@ -1845,7 +1875,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 		return NULL;
 	}
 	
-	rgbbuff = (unsigned char *) malloc (x * y * 4);
+	rgbbuff = (unsigned char *) malloc (x*y*3);
 	
 	if (rgbbuff == NULL) 
 	{
@@ -1853,7 +1883,11 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int *width, int *he
 		return NULL;
 	}
 	
-	if (fh->get_pic(name.c_str (), &rgbbuff, &x, &y) == FH_ERROR_OK) 
+	int load_ret;
+	
+	load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
+	
+	if(load_ret == FH_ERROR_OK)
 	{
 		// convert RGB2FB
 		fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));

@@ -41,6 +41,8 @@
 #include "gui/widget/menue.h"
 #include "gui/moviebrowser.h"
 #include "gui/movieinfo.h"
+
+#include "gui/webtv.h"
           	
 #include <stdio.h>
 
@@ -81,7 +83,9 @@ class CMoviePlayerGui : public CMenuTarget
 		std::string Path_vlc_settings;		
 
 		CFileBrowser * filebrowser;
-		CMovieBrowser* moviebrowser;
+		CMovieBrowser * moviebrowser;
+		
+		CWebTV	* webtv;
 
 		void PlayFile();
 		void cutNeutrino();

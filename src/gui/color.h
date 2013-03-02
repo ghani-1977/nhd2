@@ -34,7 +34,24 @@
 #define __color__
 
 
-// common 32 bits color
+// common
+#define COL_DARK_RED0	 		0x02
+#define COL_DARK_GREEN0	 		0x03
+#define COL_OLIVE0	 		0x04
+#define COL_DARK_BLUE0	 		0x05
+#define COL_PURPLE0	 		0x06
+#define COL_TEAL0	 		0x07
+#define COL_LIGHT_GRAY0	 		0x08
+#define COL_DARK_GRAY0	 		0x09
+#define COL_RED0	 		0x0A
+#define COL_GREEN0	 		0x0B
+#define COL_YELLOW0	 		0x0C
+#define COL_BLUE0	 		0x0D
+#define COL_PURP0	 		0x0E
+#define COL_LIGHT_BLUE0	 		0x0F
+#define COL_WHITE0	 		0x10
+#define COL_BLACK0	 		0x11
+
 #define COL_DARK_RED			(CFrameBuffer::getInstance()->realcolor[0x02])
 #define COL_DARK_GREEN			(CFrameBuffer::getInstance()->realcolor[0x03])
 #define COL_OLIVE			(CFrameBuffer::getInstance()->realcolor[0x04])
@@ -59,17 +76,17 @@
 #define COL_MENUFOOT			254-8*9
 #define COL_COLORED_EVENTS_INFOBAR	254-8*8
 
-#define COL_MENUFOOT_PLUS_0		(CFrameBuffer::getInstance()->realcolor[(COL_MENUFOOT + 0)])
-
 #define COL_INFOBAR_SHADOW		254-8*7
 #define COL_INFOBAR			254-8*6
 
 #define COL_MENUHEAD			254-8*5
+
 #define COL_MENUCONTENT			254-8*4
 #define COL_MENUCONTENTDARK		254-8*3
 #define COL_MENUCONTENTSELECTED		254-8*2
 #define COL_MENUCONTENTINACTIVE		254-8*1
 
+// 32 bits
 #define COL_INFOBAR_SHADOW_PLUS_0       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 0)])
 #define COL_INFOBAR_SHADOW_PLUS_1       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 1)])
 #define COL_INFOBAR_PLUS_0              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 0)])
@@ -97,6 +114,8 @@
 #define COL_MENUCONTENTINACTIVE_PLUS_0  (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTINACTIVE + 0)])
 
 #define COL_BACKGROUND_PLUS_0           (CFrameBuffer::getInstance()->realcolor[(COL_BACKGROUND + 0)])
+
+#define COL_MENUFOOT_PLUS_0		(CFrameBuffer::getInstance()->realcolor[(COL_MENUFOOT + 0)])
 
 
 int convertSetupColor2RGB(unsigned char r, unsigned char g, unsigned char b);

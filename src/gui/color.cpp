@@ -39,9 +39,12 @@
 
 int convertSetupColor2RGB(const unsigned char r, const unsigned char g, const unsigned char b)
 {
-	unsigned char red =  	int( float(255./100.)*float(r) );
-	unsigned char green =  	int( float(255./100.)*float(g) );
-	unsigned char blue =  	int( float(255./100.)*float(b) );
+	//unsigned char red =  	int( float(255./100.)*float(r) );
+	//unsigned char green =  int( float(255./100.)*float(g) );
+	//unsigned char blue =  int( float(255./100.)*float(b) );
+	unsigned char red =	(int)r * 255 / 100;
+	unsigned char green =	(int)g * 255 / 100;
+	unsigned char blue =	(int)b * 255 / 100;
 
 	return (red << 16) | (green << 8) | blue;
 }
@@ -53,8 +56,10 @@ int convertSetupAlpha2Alpha(unsigned char alpha)
 	else if(alpha >= 100) 
 		return 0;
 	
-	unsigned char a = 100 - alpha;
-	int ret = int( float(0xFF/100.)*float(a) );
+	//unsigned char a = 100 - alpha;
+	//int ret = int( float(0xFF/100.)*float(a) );
+	int a = 100 - alpha;
+	int ret = a * 0xFF / 100;
 	
 	return ret;
 }
@@ -62,16 +67,16 @@ int convertSetupAlpha2Alpha(unsigned char alpha)
 void recalcColor(unsigned char &orginal, int fade)
 {
 	if(fade == 100)
-	{
 		return;
-	}
 	
-	int color =  int( float( float(orginal) * float( float(fade) / 100.0)) );
-	if(color>255)
-		color=255;
+	//int color =  int( float( float(orginal) * float( float(fade) / 100.0)) );
+	int color =  orginal * fade / 100;
 	
-	if(color<0)
-		color=0;
+	if(color > 255)
+		color = 255;
+	
+	if(color < 0)
+		color = 0;
 	
 	orginal = color;
 }
@@ -81,11 +86,11 @@ void protectColor( unsigned char &r, unsigned char &g, unsigned char &b, bool pr
 	if (!protect)
 		return;
 	
-	if ((r==0) && (g==0) && (b==0))
+	if ((r == 0) && (g == 0) && (b == 0))
 	{
-		r=1;
-		g=1;
-		b=1;
+		r = 1;
+		g = 1;
+		b = 1;
 	}
 }
 
@@ -94,5 +99,5 @@ void fadeColor(unsigned char &r, unsigned char &g, unsigned char &b, int fade, b
 	recalcColor(r, fade);
 	recalcColor(g, fade);
 	recalcColor(b, fade);
-	protectColor(r,g,b, protect);
+	protectColor(r, g, b, protect);
 }

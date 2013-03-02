@@ -1,9 +1,6 @@
 /*
 	WebTV
 
-	(c) 2012 by martii
-
-
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify
@@ -30,6 +27,7 @@
 #include <driver/screen_max.h>
 #include "movieplayer.h"
 #include "webtv.h"
+#include <gui/widget/buttons.h>
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
@@ -44,8 +42,6 @@ CWebTV::CWebTV()
 	liststart = 0;
 	
 	parser = NULL;
-	
-	zapProtection = NULL;
 }
 
 CWebTV::~CWebTV()
@@ -57,21 +53,26 @@ CWebTV::~CWebTV()
 	}
 }
 
-int CWebTV::exec(CMenuTarget * parent, const std::string & actionKey)
+int CWebTV::exec()
 {
-	if (parent)
-		parent->hide();
-	
 	readXml();
 	
-	Show();
-	
-	return menu_return::RETURN_REPAINT;
+	return Show();
+}
+
+CFile * CWebTV::getSelectedFile()
+{
+	if ((!(filelist.empty())) && (!(filelist[selected].Name.empty())))
+		return &filelist[selected];
+	else
+		return NULL;
 }
 
 // readxml file
 bool CWebTV::readXml()
 {
+	//CFileList flist;
+	CFile file;
 	WebTVChannels Channels_list;
 	 
 	channels.clear();
@@ -116,6 +117,9 @@ bool CWebTV::readXml()
 			
 				if(!ChLocked)
 					channels.push_back(Channels_list);
+				
+				file.Name = url;
+				filelist.push_back(file);
 
 				l1 = l1->xmlNextNode;
 			}
@@ -131,15 +135,14 @@ bool CWebTV::readXml()
 
 int CWebTV::Show()
 {
-	int res = -1;
+	bool res = false;
 	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 	
 	// windows size
-	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
-	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	if (channels.empty()) 
 		return -1;
@@ -181,20 +184,11 @@ int CWebTV::Show()
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
-		if ( ( msg == CRCInput::RC_home ) || ( msg == CRCInput::RC_timeout ) )
+		if ( msg == CRCInput::RC_timeout )
 		{
 			selected = oldselected;
 			
-			//loop = false;
-			hide();
-			return menu_return::RETURN_REPAINT;
-			//res = -1;
-		}
-		else if ( msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
-		{
-			g_RCInput->postMsg (msg, 0);
 			loop = false;
-			res = -1;
 		}
 		else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup )
                 {
@@ -240,23 +234,24 @@ int CWebTV::Show()
                         else
                                 paintItem(selected - liststart);
                 }
-                else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
+                else if ( msg == CRCInput::RC_red || msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{	  
 			g_settings.webtv_url = channels[selected].url;
 			g_settings.webtv_name = channels[selected].title;
 			
-			hide();
+			filelist[selected].Name = channels[selected].url;
 			
-			moviePlayerGui->exec(NULL, "webtv");
+			res = true;
+		
 			loop = false;
 		}
-		else 
+		else if ( msg == CRCInput::RC_green || msg == CRCInput::RC_home ) 
 		{
-			if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
-			{
-				loop = false;
-				res = - 1;
-			}
+			loop = false;
+		}
+		else if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
+		{
+			loop = false;
 		}
 			
 #if !defined USE_OPENGL
@@ -266,9 +261,7 @@ int CWebTV::Show()
 	
 	hide();
 			
-	//return (res);
-	return res;
-	//
+	return (res);
 }
 
 void CWebTV::hide()
@@ -325,6 +318,13 @@ void CWebTV::paintItem(int pos)
 	}
 }
 
+#define NUM_LIST_BUTTONS 2
+struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
+{
+	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_AUDIOPLAYER_PLAY},
+	{ NEUTRINO_ICON_BUTTON_GREEN, LOCALE_MENU_EXIT},
+};
+
 // paint head
 void CWebTV::paintHead()
 {
@@ -332,9 +332,13 @@ void CWebTV::paintHead()
 	// head
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
 	
+	int ButtonWidth = (width - 20) / 4;
+	
 	// foot
 	//int ButtonWidth = (width - 20) / 4;
 	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 	
 	// head icon
 	int icon_w, icon_h;
@@ -400,31 +404,28 @@ void CWebTV::paintItem2DetailsLine(int pos, int ch_index)
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 
 	{ 
-  		if(1) // FIXME why -> ? (!g_settings.channellist_extended)
-		{
-			int fh = fheight > 10 ? fheight - 10 : 5;
+		int fh = fheight > 10 ? fheight - 10 : 5;
 			
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
 
-			frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 4, info_height - 14, col1);
-			frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 1, info_height - 14, col2);			
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 4, info_height - 14, col1);
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 1, info_height - 14, col2);			
 
-			// vertical line
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 4, ypos2a - ypos1a, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 1, ypos2a - ypos1a + 4, col2);		
+		// vertical line
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 4, ypos2a - ypos1a, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 1, ypos2a - ypos1a + 4, col2);		
 
-			// Hline Oben
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos1a, 12,4, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 12,1, col2);
+		// Hline Oben
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos1a, 12,4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 12,1, col2);
 		
-			// Hline Unten
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos2a, 12, 4, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
+		// Hline Unten
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos2a, 12, 4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
 
-			// untere info box lines
-			frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
-		}
+		// untere info box lines
+		frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
 	}
 }
 

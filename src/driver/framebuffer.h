@@ -61,20 +61,23 @@ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 #define DEFAULT_BPP		32	// 32 bit
 
 
+// png/jpg/bmp/gif/crw
+struct cformathandler 
+{
+	struct cformathandler * next;
+	int (*get_size)(const char *,int *,int*, int, int);
+	int (*get_pic)(const char *,unsigned char **,int* ,int*);
+	int (*id_pic)(const char *);
+};
+	
+typedef struct cformathandler CFormathandler;
+
+// png/jpg/bmp/gif/crw
+CFormathandler * fh_getsize(const char * name, int * x, int * y, int width_wanted, int height_wanted);
+
 // Ausf�hrung als Singleton
 class CFrameBuffer
 {
-	// png/jpg/bmp/gif/crw
-	struct cformathandler 
-	{
-		struct cformathandler * next;
-		int (*get_size)(const char *,int *,int*, int, int);
-		int (*get_pic)(const char *,unsigned char **,int* ,int*);
-		int (*id_pic)(const char *);
-	};
-	
-	typedef struct cformathandler CFormathandler;
-	
 	private:
 		CFrameBuffer();
 
@@ -129,12 +132,6 @@ class CFrameBuffer
 		int m_number_of_pages;
 		int m_manual_blit;
 		
-		// png/jpg/bmp/gif/crw
-		CFormathandler * fh_root;
-		CFormathandler * fh_getsize(const char *name,int *x,int *y, int width_wanted, int height_wanted);
-		void init_handlers(void);
-		void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
-		
 #ifdef USE_OPENGL
 		GLThreadObj *mpGLThreadObj; /* the thread object */
 #endif		
@@ -145,7 +142,7 @@ class CFrameBuffer
 
 		~CFrameBuffer();
 
-		static CFrameBuffer* getInstance();
+		static CFrameBuffer * getInstance();
 
 #if !defined USE_OPENGL
 		void enableManualBlit();
@@ -183,7 +180,7 @@ class CFrameBuffer
 		void paletteGenFade(int in, __u32 rgb1, __u32 rgb2, int num, int tr=0);
 		
 		void paletteSetColor(int i, __u32 rgb, int tr);
-		void paletteSet(struct fb_cmap *map = NULL);
+		void paletteSet(struct fb_cmap * map = NULL);
 
 		/* paint functions */
 		inline void paintPixel(fb_pixel_t * const dest, const uint8_t color) const
@@ -208,13 +205,9 @@ class CFrameBuffer
 		void paintHLineRel(int x, int dx, int y, const fb_pixel_t col);
 
 		void setIconBasePath(const std::string & iconPath);
-		
 		void getIconSize(const char * const filename, int* width, int *height);
-		
 		bool paintIcon8(const std::string & filename, const int x, const int y, const unsigned char offset = 0);
-
 		bool paintIconRaw(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
-		
 		/* h is the height of the target "window", if != 0 the icon gets centered in that window */
 		bool paintIcon(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
 		
@@ -249,9 +242,9 @@ class CFrameBuffer
 		enum 
 		{
 			TM_EMPTY  = 0,
-			TM_NONE   = 1,	// No 'pseudo' transparency
-			TM_BLACK  = 2,	// Transparency when black content ('pseudo' transparency)
-			TM_INI    = 3	// Transparency depends on g_settings.infobar_alpha ???
+			TM_NONE   = 1,
+			TM_BLACK  = 2,
+			TM_INI    = 3
 		};
 		
 		void * convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF, int m_transparent = TM_BLACK, bool alpha = false);
@@ -265,9 +258,9 @@ class CFrameBuffer
 			COLOR = 2
 		};
 		
-		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL);
+		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
-		fb_pixel_t * getIcon (const std::string & name, int *width, int *height);
+		fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
 };
 
 #define FH_ERROR_OK 0

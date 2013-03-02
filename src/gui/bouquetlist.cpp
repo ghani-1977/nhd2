@@ -93,7 +93,7 @@ CBouquet * CBouquetList::addBouquet(const char * const name, int BouquetKey, boo
 	if ( BouquetKey == -1 )
 		BouquetKey = Bouquets.size();
 
-	CBouquet* tmp = new CBouquet( BouquetKey, name, locked );
+	CBouquet * tmp = new CBouquet( BouquetKey, name, locked );
 	Bouquets.push_back(tmp);
 	
 	return(tmp);
@@ -317,18 +317,13 @@ int CBouquetList::show(bool bShowChannelList)
 	//if(Bouquets.size() == 0)
 	//	return res;
 	
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-//#else
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "");
-//#endif	
+	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "");	
 	
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	
-	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
-	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -341,7 +336,7 @@ int CBouquetList::show(bool bShowChannelList)
 	int maxpos= 1;
 	int i= Bouquets.size();
 	
-	while ((i = i/10)!=0)
+	while ((i = i/10) != 0)
 		maxpos++;
 
 	paintHead();
@@ -574,11 +569,8 @@ void CBouquetList::paintItem(int pos)
 
 		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 		
-		//if(g_settings.menutitle_vfd)
-		{
-			if(npos < (int) Bouquets.size())
-				CVFD::getInstance()->showMenuText(0, name, -1, true);		
-		}
+		if(npos < (int) Bouquets.size())
+			CVFD::getInstance()->showMenuText(0, name, -1, true);		
 	} 
 	else 
 	{

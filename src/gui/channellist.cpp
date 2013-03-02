@@ -500,9 +500,8 @@ int CChannelList::show()
 	new_mode_active = 0;
 	
 	// windows size
-	int  fw = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getWidth();
-	width  = w_max (((g_settings.channellist_extended)?(frameBuffer->getScreenWidth() / 20 * (fw+6)):(frameBuffer->getScreenWidth() / 20 * (fw+5))), 100);
-	height = h_max ((frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20 * 2));
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	if (chanlist.empty()) 
 	{
@@ -1647,32 +1646,28 @@ void CChannelList::paintItem2DetailsLine(int pos, int ch_index)
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 
 	{ 
-		//pos >= 0 &&  chanlist[ch_index]->currentEvent.description != "") {
-  		if(1) // FIXME why -> ? (!g_settings.channellist_extended)
-		{
-			int fh = fheight > 10 ? fheight - 10: 5;
+		int fh = fheight > 10 ? fheight - 10: 5;
 			
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
 
-			frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 4, info_height - 14, col1);
-			frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 1, info_height - 14, col2);			
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 4, info_height - 14, col1);
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 1, info_height - 14, col2);			
 
-			// vertical line
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 4, ypos2a - ypos1a, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 1, ypos2a - ypos1a + 4, col2);		
+		// vertical line
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 4, ypos2a - ypos1a, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 1, ypos2a - ypos1a + 4, col2);		
 
-			// Hline Oben
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos1a, 12,4, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 12,1, col2);
+		// Hline Oben
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos1a, 12,4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 12,1, col2);
 		
-			// Hline Unten
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos2a, 12, 4, col1);
-			frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
+		// Hline Unten
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos2a, 12, 4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
 
-			// untere info box lines
-			frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
-		}
+		// untere info box lines
+		frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
 	}
 }
 
@@ -1743,11 +1738,9 @@ void CChannelList::paintItem(int pos)
 		uint8_t tcolor=(liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
 		int xtheight=fheight-2;
 		
-		if(g_settings.channellist_extended)
-		{
-			prg_offset = 42;
-			title_offset = 6;
-		}
+		// due to extended info
+		prg_offset = 42;
+		title_offset = 6;
 
 		sprintf((char*) tmp, "%d", this->historyMode ? pos : chan->number);
 
@@ -1794,36 +1787,35 @@ void CChannelList::paintItem(int pos)
 			if (ch_desc_len< 0)
 				ch_desc_len = 0;
 			
-			if(g_settings.channellist_extended)
+			// extended info
+			if(displayNext)
 			{
-				if(displayNext)
-				{
-					struct tm *pStartZeit = localtime(&p_event->startTime);
+				struct tm *pStartZeit = localtime(&p_event->startTime);
 			
-					sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
-					//g_Font[SNeutrinoSettings::FONT_TYPE_IMAGEINFO_SMALL]->RenderString(x+ 5+ numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -poffs, tmp, COL_MENUCONTENT, 0, true);
-					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x+ 5+ numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -prg_offset, tmp, tcolor, 0, true);
+				sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
+				//g_Font[SNeutrinoSettings::FONT_TYPE_IMAGEINFO_SMALL]->RenderString(x+ 5+ numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -poffs, tmp, COL_MENUCONTENT, 0, true);
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -prg_offset, tmp, tcolor, 0, true);
+			}
+			else
+			{
+				time_t jetzt=time(NULL);
+				int runningPercent = 0;
+					
+				if (((jetzt - p_event->startTime + 30) / 60) < 0 )
+				{
+					runningPercent= 0;
 				}
 				else
 				{
-					time_t jetzt=time(NULL);
-					int runningPercent = 0;
-					
-					if (((jetzt - p_event->startTime + 30) / 60) < 0 )
-					{
-						runningPercent= 0;
-					}
-					else
-					{
-						runningPercent=(jetzt-p_event->startTime) * 30 / p_event->duration;
-						if (runningPercent > 30)	// this would lead to negative value in paintBoxRel
-							runningPercent = 30;	// later on which can be fatal...
-					}
-					frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset, ypos+fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-					frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
-				
-					frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+					runningPercent=(jetzt-p_event->startTime) * 30 / p_event->duration;
+					if (runningPercent > 30)	// this would lead to negative value in paintBoxRel
+						runningPercent = 30;	// later on which can be fatal...
 				}
+				
+				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset, ypos+fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+				
+				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 			}
 
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true);
@@ -1841,16 +1833,15 @@ void CChannelList::paintItem(int pos)
 		}
 		else 
 		{
-			if(g_settings.channellist_extended)
-			{
-				short runningPercent=0;
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset, ypos+fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+			// extended info
+			short runningPercent=0;
+			frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset, ypos+fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+			frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+			frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 				
-				frameBuffer->paintLine(x+ 5+ numwidth+ title_offset, ypos+fheight/4+1,x+ 5+ numwidth+ title_offset+ 32, ypos+fheight/4+fheight/2-3, COL_MENUCONTENT_PLUS_3);
-			}
+			frameBuffer->paintLine(x+ 5+ numwidth+ title_offset, ypos+fheight/4+1,x+ 5+ numwidth+ title_offset+ 32, ypos+fheight/4+fheight/2-3, COL_MENUCONTENT_PLUS_3);
+			
 			//name
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true); // UTF-8
 		}

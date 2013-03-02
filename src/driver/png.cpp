@@ -1,19 +1,19 @@
-//#include "pv_config.h"
-#include "framebuffer.h"
+/*
+*/
 
-//#ifdef FBV_SUPPORT_PNG
-	#include <png.h>
-	#include <sys/types.h>
-	#include <sys/stat.h>
+#include <png.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 
-	//#include "pictureviewer.h"
+#include "framebuffer.h"
 
-	#define PNG_BYTES_TO_CHECK 4
-	#define min(x,y) ((x) < (y) ? (x) : (y))
 
-int fh_png_id(const char *name)
+#define PNG_BYTES_TO_CHECK 4
+#define min(x,y) ((x) < (y) ? (x) : (y))
+
+int fh_png_id(const char * name)
 {
 	int fd;
 	char id[4];
@@ -179,4 +179,5 @@ int fh_png_getsize(const char *name,int *x,int *y, int /*wanted_width*/, int /*w
 	fclose(fh);
 	return(FH_ERROR_OK);
 }
-//#endif
+
+

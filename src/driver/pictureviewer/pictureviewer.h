@@ -35,40 +35,7 @@
 
 class CPictureViewer
 {
-	struct cformathandler 
-	{
-		struct cformathandler *next;
-		int (*get_size)(const char *,int *,int*, int, int);
-		int (*get_pic)(const char *,unsigned char **,int* ,int*);
-		int (*id_pic)(const char *);
-	};
-	typedef  struct cformathandler CFormathandler;
-
-	public:
-		CPictureViewer();
-		~CPictureViewer(){Cleanup();};
-		bool ShowImage(const std::string & filename, bool unscaled=false);
-		bool DecodeImage(const std::string & name, bool showBusySign=false, bool unscaled=false);
-		bool DisplayNextImage();
-		void SetScaling( CFrameBuffer::ScalingMode s){m_scaling = s;}
-		void SetAspectRatio(float aspect_ratio) {m_aspect=aspect_ratio;}
-		void showBusy(int sx, int sy, int width, char r, char g, char b);
-		void hideBusy();
-		void Zoom(float factor);
-		void Move(int dx, int dy);
-		void Cleanup();
-		void SetVisible(int startx, int endx, int starty, int endy);
-		static double m_aspect_ratio_correction;
-		
-		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true), bool alpha = false );
-		bool DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale = true);
-		void getSize(const char* name, int* width, int *height);
-		bool checkLogo(uint64_t channel_id);
-		void getLogoSize(uint64_t channel_id, int * width, int * height);
-
-	private:
-		CFormathandler * fh_root;
-		
+		private:
 		CFrameBuffer::ScalingMode m_scaling;
 		float m_aspect;
 		std::string m_NextPic_Name;
@@ -88,7 +55,7 @@ class CPictureViewer
 		int m_CurrentPic_XPan;
 		int m_CurrentPic_YPan;
 		
-		unsigned char* m_busy_buffer;
+		unsigned char * m_busy_buffer;
 		int m_busy_x;
 		int m_busy_y;
 		int m_busy_width;
@@ -99,17 +66,27 @@ class CPictureViewer
 		int m_endx;
 		int m_endy;
 		
-		CFormathandler * fh_getsize(const char *name,int *x,int *y, int width_wanted, int height_wanted);
-		void init_handlers(void);
-		void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
+	public:
+		CPictureViewer();
+		~CPictureViewer(){Cleanup();};
+		bool ShowImage(const std::string & filename, bool unscaled=false);
+		bool DecodeImage(const std::string & name, bool showBusySign=false, bool unscaled=false);
+		bool DisplayNextImage();
+		void SetScaling( CFrameBuffer::ScalingMode s){m_scaling = s;}
+		void SetAspectRatio(float aspect_ratio) {m_aspect=aspect_ratio;}
+		void showBusy(int sx, int sy, int width, char r, char g, char b);
+		void hideBusy();
+		void Zoom(float factor);
+		void Move(int dx, int dy);
+		void Cleanup();
+		void SetVisible(int startx, int endx, int starty, int endy);
+		static double m_aspect_ratio_correction;
+		
+		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true), bool transp = false);
+		bool DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale = true);
+		void getSize(const char* name, int* width, int *height);
+		bool checkLogo(uint64_t channel_id);
+		void getLogoSize(uint64_t channel_id, int * width, int * height);
 };
 
-
-#define FH_ERROR_OK 0
-#define FH_ERROR_FILE 1		/* read/access error */
-#define FH_ERROR_FORMAT 2	/* file format error */
-#define FH_ERROR_MALLOC 3	/* error during malloc */
-
-#define dbout(fmt, args...) {struct timeval tv; gettimeofday(&tv,NULL); \
-        printf( "PV[%ld|%02ld] " fmt, (long)tv.tv_sec, (long)tv.tv_usec/10000, ## args);}
 #endif

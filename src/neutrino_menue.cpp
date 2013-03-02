@@ -1214,9 +1214,6 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// txt pos
 	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_CHANNELLIST_EPGTEXT_ALIGN, &g_settings.channellist_epgtext_align_right, CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS, CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++), "", true ));
-
-	// extended channel list
-	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_EXTENDED, &g_settings.channellist_extended, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
 	
 	// HD list
 	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_MAKE_HDLIST, &g_settings.make_hd_list, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
@@ -2552,7 +2549,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 	GLCD_Menu * glcdMenu 					= NULL;
 #endif
 	COPKGManager * tmpOPKGManager				= NULL;
-	CWebTV	* webtv						= NULL;
+	//CWebTV	* webtv						= NULL;
 
         std::string txt = g_settings.usermenu_text[button];
 
@@ -2779,10 +2776,11 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_WEBTV;
                                
-				webtv = new CWebTV();
+				//webtv = new CWebTV();
 				
                                 keyhelper.get(&key, &icon);
-                                menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, webtv, "-1", key, icon);
+                                //menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, webtv, "-1", key, icon);
+				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
 
@@ -2832,8 +2830,8 @@ bool CNeutrinoApp::showUserMenu(int button)
 	if(tmpOPKGManager)
 		delete tmpOPKGManager;
 	
-	if(webtv)
-		delete webtv;
+	//if(webtv)
+	//	delete webtv;
 
         if(menu)
 		delete menu;

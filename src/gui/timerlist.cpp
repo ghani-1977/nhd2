@@ -402,14 +402,16 @@ void CTimerList::updateEvents(void)
 	}
 	sort(timerlist.begin(), timerlist.end());
 
-	width = w_max(g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getWidth()*56, 20);
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 
-	height = frameBuffer->getScreenHeight() - (info_height + 50);
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	listmaxshow = (height-theight-0)/(fheight*2);
 	height = theight+0+listmaxshow*fheight*2;	// recalc height
+	
 	if(timerlist.size() < listmaxshow)
 	{
 		listmaxshow=timerlist.size();

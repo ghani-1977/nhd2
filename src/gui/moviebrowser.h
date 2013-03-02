@@ -272,7 +272,7 @@ class CMovieBrowser : public CMenuTarget
 		bool m_showMovieInfo;
 		bool m_showFilter;
 
-		MI_MOVIE_INFO* m_movieSelectionHandler;
+		MI_MOVIE_INFO * m_movieSelectionHandler;
 		int m_currentStartPos;
 		std::string m_selectedDir;
 		MB_FOCUS m_windowFocus;
@@ -304,7 +304,7 @@ class CMovieBrowser : public CMenuTarget
 		int exec(const char* path); //P1 
         	int exec(CMenuTarget* parent, const std::string & actionKey);
 		std::string getCurrentDir(void); //P1 for FileBrowser compatibility
-		CFile* getSelectedFile(void); //P1 for FileBrowser compatibility
+		CFile * getSelectedFile(void); //P1 for FileBrowser compatibility
 		MI_MOVIE_BOOKMARKS* getCurrentMovieBookmark(void){if(m_movieSelectionHandler == NULL) return NULL; return(&(m_movieSelectionHandler->bookmarks));};
 		int getCurrentStartPos(void){return(m_currentStartPos);}; //P1 return start position in [s]
 		MI_MOVIE_INFO* getCurrentMovieInfo(void){return(m_movieSelectionHandler);}; //P1 return start position in [s]

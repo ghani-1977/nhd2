@@ -866,7 +866,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
 
 	g_settings.channellist_epgtext_align_right	= configfile.getBool("channellist_epgtext_align_right", false);
-	g_settings.channellist_extended		= configfile.getBool("channellist_extended", true);
 	g_settings.make_hd_list = configfile.getInt32("make_hd_list", 0);
 	
 	//crypticon on channellist
@@ -1274,7 +1273,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32("channellist_ca", g_settings.channellist_ca);
 
 	configfile.setBool("channellist_epgtext_align_right", g_settings.channellist_epgtext_align_right);
-	configfile.setBool("channellist_extended", g_settings.channellist_extended);
 	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
 
 	configfile.setString("timezone", g_settings.timezone);
@@ -2111,12 +2109,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CVFD::getInstance()->Clear();
 
 	// show msg in vfd
-//#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
-	if (CVFD::getInstance()->is4digits)
-		CVFD::getInstance()->ShowText( (char *)"NHD2");
-	else
-		CVFD::getInstance()->ShowText((char *)"NEUTRINOHD2");
-//#endif	
+	CVFD::getInstance()->ShowText( (char *)"NHD2");	
 	
 	// zapit	
 	//zapit start parameters
@@ -3788,12 +3781,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 		CVFD::getInstance()->setMode(CVFD::MODE_SHUTDOWN);
 		
 		// show good bye in VFD
-//#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO_250HD)
-		if (CVFD::getInstance()->is4digits)
-			CVFD::getInstance()->ShowText((char *) "BYE");
-		else
-			CVFD::getInstance()->ShowText((char *) "Good Bye");
-//#endif		
+		CVFD::getInstance()->ShowText((char *) "BYE");
 
 		dprintf(DEBUG_INFO, "ExitRun (retcode:%d)\n", retcode);
 

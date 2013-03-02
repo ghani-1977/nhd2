@@ -14,81 +14,7 @@
 #include <system/debug.h>
 
 
-
-// GIF
-extern int fh_gif_getsize (const char *, int *, int *, int, int);
-extern int fh_gif_load (const char *, unsigned char **, int *, int *);
-extern int fh_gif_id (const char *);
-//#endif
-
-// JPEG
-extern int fh_jpeg_getsize (const char *, int *, int *, int, int);
-extern int fh_jpeg_load (const char *, unsigned char **, int *, int *);
-extern int fh_jpeg_id (const char *);
-//#endif
-
-// PNG
-extern int fh_png_getsize (const char *, int *, int *, int, int);
-extern int fh_png_load (const char *, unsigned char **, int *, int *);
-extern int fh_png_id (const char *);
-//#endif
-
-// BMP
-extern int fh_bmp_getsize (const char *, int *, int *, int, int);
-extern int fh_bmp_load (const char *, unsigned char **, int *, int *);
-extern int fh_bmp_id (const char *);
-//#endif
-
-// CRW
-extern int fh_crw_getsize (const char *, int *, int *, int, int);
-extern int fh_crw_load (const char *, unsigned char **, int *, int *);
-extern int fh_crw_id (const char *);
-//#endif
-
 double CPictureViewer::m_aspect_ratio_correction;
-
-void CPictureViewer::add_format (int (*picsize) (const char *, int *, int *, int, int), int (*picread) (const char *, unsigned char **, int *, int *), int (*id) (const char *))
-{
-	CFormathandler *fhn;
-	fhn = (CFormathandler *) malloc (sizeof (CFormathandler));
-	fhn->get_size = picsize;
-	fhn->get_pic = picread;
-	fhn->id_pic = id;
-	fhn->next = fh_root;
-	fh_root = fhn;
-}
-
-// FIXME: dont do this twice (this soon doon in framebuffer)
-void CPictureViewer::init_handlers (void)
-{
-	// GIF
-	add_format (fh_gif_getsize, fh_gif_load, fh_gif_id);
-
-	//JPEG
-	add_format (fh_jpeg_getsize, fh_jpeg_load, fh_jpeg_id);
-
-	//PNG
-	add_format (fh_png_getsize, fh_png_load, fh_png_id);
-
-	//BMP
-	add_format (fh_bmp_getsize, fh_bmp_load, fh_bmp_id);
-
-	//CRW
-	add_format (fh_crw_getsize, fh_crw_load, fh_crw_id);
-}
-
-CPictureViewer::CFormathandler * CPictureViewer::fh_getsize(const char *name, int *x, int *y, int width_wanted, int height_wanted)
-{
-	CFormathandler *fh;
-	for (fh = fh_root; fh != NULL; fh = fh->next) 
-	{
-		if (fh->id_pic (name))
-			if (fh->get_size (name, x, y, width_wanted, height_wanted) == FH_ERROR_OK)
-				return (fh);
-	}
-
-	return (NULL);
-}
 
 bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bool unscaled)
 {
@@ -111,7 +37,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 		showBusy(m_startx + 3, m_starty + 3, 10, 0xff, 00, 00);
 	}
 	
-	CFormathandler *fh;
+	CFormathandler * fh;
 
 	if (unscaled)
 		fh = fh_getsize(name.c_str (), &x, &y, INT_MAX, INT_MAX);
@@ -125,7 +51,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 			free (m_NextPic_Buffer);
 		}
 		
-		m_NextPic_Buffer = (unsigned char *) malloc (x * y * 3);
+		m_NextPic_Buffer = (unsigned char *) malloc (x*y*3);
 
 		if (m_NextPic_Buffer == NULL) 
 		{
@@ -135,7 +61,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 		
 		dprintf(DEBUG_INFO, "CPictureViewer::DecodeImage: --->Decoding Start(%d/%d)\n", x, y);
 
-		if (fh->get_pic(name.c_str (), &m_NextPic_Buffer, &x, &y) == FH_ERROR_OK) 
+		if (fh->get_pic(name.c_str(), &m_NextPic_Buffer, &x, &y) == FH_ERROR_OK) 
 		{
 			dprintf(DEBUG_INFO, "CPictureViewer::DecodeImage: <---Decoding Done\n");
 			
@@ -184,7 +110,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 		} 
 		else 
 		{
-			printf ("CPictureViewer::DecodeImage: Unable to read file !\n");
+			printf("CPictureViewer::DecodeImage: Unable to read file !\n");
 			free (m_NextPic_Buffer);
 			m_NextPic_Buffer = (unsigned char *) malloc (3);
 
@@ -205,6 +131,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 	else 
 	{
 		printf ("CPictureViewer::DecodeImage: Unable to read file or format not recognized!\n");
+		
 		if (m_NextPic_Buffer != NULL) 
 		{
 			free (m_NextPic_Buffer);
@@ -254,8 +181,6 @@ bool CPictureViewer::ShowImage(const std::string & filename, bool unscaled)
 	
 	// display next image
   	DisplayNextImage();
-	
-	//printf("CPictureViewer::Show Image\n");
 	
   	return true;
 }
@@ -369,18 +294,12 @@ void CPictureViewer::Move(int dx, int dy)
 	else
 		m_CurrentPic_YPos = m_starty;
 	
-	//dbout("Display x(%d) y(%d) xpan(%d) ypan(%d) xpos(%d) ypos(%d)\n",m_CurrentPic_X, m_CurrentPic_Y, m_CurrentPic_XPan, m_CurrentPic_YPan, m_CurrentPic_XPos, m_CurrentPic_YPos);
-	
 	CFrameBuffer::getInstance()->displayRGB(m_CurrentPic_Buffer, m_CurrentPic_X, m_CurrentPic_Y, m_CurrentPic_XPan, m_CurrentPic_YPan, m_CurrentPic_XPos, m_CurrentPic_YPos);
 }
 
 CPictureViewer::CPictureViewer ()
 {
-	fh_root = NULL;
-	
 	m_scaling = CFrameBuffer::COLOR;
-	//m_aspect = 4.0 / 3;
-	m_aspect = 16.0 / 9;
 	m_CurrentPic_Name = "";
 	m_CurrentPic_Buffer = NULL;
 	m_CurrentPic_X = 0;
@@ -402,6 +321,8 @@ CPictureViewer::CPictureViewer ()
 	xs = CFrameBuffer::getInstance()->getScreenWidth(true);
 	ys = CFrameBuffer::getInstance()->getScreenHeight(true);
 	
+	m_aspect = xs/ys;
+	
 	m_startx = 0;
 	m_endx = xs - 1;
 	m_starty = 0;
@@ -409,8 +330,6 @@ CPictureViewer::CPictureViewer ()
 	m_aspect_ratio_correction = m_aspect / ((double) xs / ys);
 	
 	m_busy_buffer = NULL;
-	
-	init_handlers();
 }
 
 void CPictureViewer::showBusy(int sx, int sy, int width, char r, char g, char b)
@@ -426,7 +345,7 @@ void CPictureViewer::showBusy(int sx, int sy, int width, char r, char g, char b)
 	rgb_buffer[1] = g;
 	rgb_buffer[2] = b;
 	
-	fb_buffer = (unsigned char *) CFrameBuffer::getInstance()->convertRGB2FB (rgb_buffer, 1, 1);
+	fb_buffer = (unsigned char *) CFrameBuffer::getInstance()->convertRGB2FB(rgb_buffer, 1, 1);
 	
 	if (fb_buffer == NULL) 
 	{
@@ -524,17 +443,15 @@ void CPictureViewer::Cleanup()
 
 // channels logos
 // display image
-bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height, bool alpha)
+bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height, bool transp)
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::DisplayImage\n");
 	
-	fb_pixel_t * data;
-	
-	data = CFrameBuffer::getInstance()->getImage(name, width, height);
+	fb_pixel_t * data = CFrameBuffer::getInstance()->getImage(name, width, height);
 
 	if(data) 
 	{
-		CFrameBuffer::getInstance()->blit2FB( data, width, height, posx, posy, 0, 0, alpha? true:false);
+		CFrameBuffer::getInstance()->blit2FB(data, width, height, posx, posy, 0, 0, transp? true : false);
 		free(data);
 		return true;
 	}
@@ -543,7 +460,7 @@ bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, 
 }
 
 // get size
-void CPictureViewer::getSize(const char* name, int* width, int *height)
+void CPictureViewer::getSize(const char * name, int * width, int * height)
 {
 	CFormathandler * fh;
 
@@ -619,7 +536,6 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 	int logo_w, logo_h;
 	
 	// first png, then jpg, then gif
-	//logo_ok = checkLogo(channel_id);
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
 	
 	// check for logo
@@ -637,7 +553,7 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 	{
 		std::string logo_name = fname; // UTF-8
 	
-		// scale
+		// scale only PNG logos
 		if( logo_name.find(".png") == (logo_name.length() - 4) )
 		{
 			// scale logo
@@ -666,14 +582,14 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 				logo_h = height;
 			}
 			
-			ret = DisplayImage(fname, posx, posy /*+ (height - logo_h)/2*/, logo_w, logo_h, true); 	// with alpha channal
+			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h, true);
 		}
 		else
 		{
 			logo_w = width;
 			logo_h = height;
 			
-			ret = DisplayImage(fname, posx, posy /*+ (height - logo_h)/2*/, logo_w, logo_h);
+			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h);
 		}
         }
         //
