@@ -146,10 +146,6 @@ struct SNeutrinoSettings
 	int streaming_transcode_video_codec;
 	int streaming_resolution;
 	int streaming_vlc10;
-	
-	// webtv
-	std::string webtv_url;
-	std::string webtv_name;
 	// END MOVIEPLAYER
 
 	// OSD

@@ -1043,20 +1043,12 @@ void CMoviePlayerGui::PlayFile(void)
 	// webtv
 	if(isWebTV)
 	{
-		filename = g_settings.webtv_url.c_str();
-		
-		if(!g_settings.webtv_name.empty())
-			sel_filename = g_settings.webtv_name.c_str();
-		else
-			sel_filename = "WebTV";
+		sel_filename = "WebTV";
 		
 		open_filebrowser = isWebTV;
 		
 		update_lcd = true;
 		start_play = true;
-		
-		//g_file_epg = std::string(rindex(filename, '/') + 1);
-		//g_file_epg1 = std::string(rindex(filename, '/') + 1);
 		
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 		
@@ -1474,12 +1466,19 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = webtv->getSelectedFile()) != NULL) 
 					{
-						filename = file->Name.c_str();
-						sel_filename = file->getFileName();
+						//filename = file->Name.c_str();
+						filename = file->Url.c_str();
+						//sel_filename = file->getFileName();
+						sel_filename = file->Name.c_str();
 						
 						update_lcd = true;
 						start_play = true;
 						was_file = true;
+						
+						//
+						g_file_epg = sel_filename;
+						g_file_epg1 = file->Description.c_str();
+						//
 					}
 				}
 				else if (playstate == CMoviePlayerGui::STOPPED) 

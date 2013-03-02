@@ -118,7 +118,10 @@ bool CWebTV::readXml()
 				if(!ChLocked)
 					channels.push_back(Channels_list);
 				
-				file.Name = url;
+				file.Url = url;
+				file.Name = title;
+				file.Description = description;
+				
 				filelist.push_back(file);
 
 				l1 = l1->xmlNextNode;
@@ -236,10 +239,9 @@ int CWebTV::Show()
                 }
                 else if ( msg == CRCInput::RC_red || msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{	  
-			g_settings.webtv_url = channels[selected].url;
-			g_settings.webtv_name = channels[selected].title;
-			
-			filelist[selected].Name = channels[selected].url;
+			filelist[selected].Url = channels[selected].url;
+			filelist[selected].Name = channels[selected].title;
+			filelist[selected].Description = channels[selected].description;
 			
 			res = true;
 		

@@ -79,6 +79,7 @@ class CFile
 		off_t Size;
 		std::string Name;
 		std::string Url;
+		std::string Description;
 		mode_t Mode;
 		bool Marked;
 		time_t Time;
