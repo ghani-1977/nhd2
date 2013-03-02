@@ -317,7 +317,7 @@ void CWebTV::paintItem(int pos)
 		int l = 0;
 		
 		sprintf((char*) tmp, "%d", curr + 1);
-		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s ", channels[curr].title);
+		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr].title);
 		
 		// nummer
 		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
@@ -327,7 +327,7 @@ void CWebTV::paintItem(int pos)
 		std::string Descr = channels[curr].description;
 		if(!(Descr.empty()))
 		{
-			snprintf(nameAndDescription + l, sizeof(nameAndDescription) -l, " - ");
+			snprintf(nameAndDescription + l, sizeof(nameAndDescription) -l, "  -  ");
 			
 			unsigned int ch_name_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(nameAndDescription, true);
 			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(channels[curr].description, true);
