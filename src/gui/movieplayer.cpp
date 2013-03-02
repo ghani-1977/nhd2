@@ -2144,7 +2144,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
 			}
-		} 
+		}
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_time )
 		{
 			if(!timeshift)
