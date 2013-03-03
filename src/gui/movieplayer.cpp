@@ -88,12 +88,14 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
  
-
+// vlc
 static int streamtype;
 
 #define STREAMTYPE_DVD	1
 #define STREAMTYPE_SVCD	2
 #define STREAMTYPE_FILE	3
+
+static int skt = -1; //dirty hack to close socket when stop playing
 
 #define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
@@ -274,11 +276,13 @@ void CMoviePlayerGui::Init(void)
 
 	frameBuffer = CFrameBuffer::getInstance();
 
+	// local path
 	if (strlen(g_settings.network_nfs_moviedir) != 0)
 		Path_local = g_settings.network_nfs_moviedir;
 	else
 		Path_local = "/";
 	
+	// vlc path
 	Path_vlc  = "vlc://";
 	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
 		Path_vlc += g_settings.streaming_server_startdir;
@@ -291,7 +295,7 @@ void CMoviePlayerGui::Init(void)
 
 	filebrowser->Multi_Select = false;
 	filebrowser->Dirs_Selectable = false;
-	//filebrowser->Hide_records = true;
+	filebrowser->Hide_records = false;
 
 	playback = new cPlayback();
 	
@@ -332,8 +336,8 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("ogg");
 	
 	// webtv
-	tsfilefilter.addFilter("m3u");
-	tsfilefilter.addFilter("pls");
+	//tsfilefilter.addFilter("m3u");
+	//tsfilefilter.addFilter("pls");
 	//
 	
 	// vlcfilefilter
@@ -356,7 +360,7 @@ void CMoviePlayerGui::Init(void)
 
 	vlcfilefilter.addFilter ("wmv");	
 
-	filebrowser->Filter = &tsfilefilter;
+	//filebrowser->Filter = &tsfilefilter;
 }
 
 CMoviePlayerGui::~CMoviePlayerGui()
@@ -366,6 +370,9 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	
 	//if (moviebrowser)
 	//	delete moviebrowser;
+	
+	//if (webtv)
+	//	delete webtv;
 
 	if(playback)
 		delete playback;
@@ -384,8 +391,9 @@ void CMoviePlayerGui::cutNeutrino()
 	// lock playback
 	g_Zapit->lockPlayBack();
 	
-	#if 1 //FIXME: remove this to main control in neutrino.cpp
+	//FIXME: remove this to main control in neutrino.cpp
 	/* hide AC3 Icon */
+	//TODO: check if ac3 is selected???
 	if (g_RemoteControl->has_ac3)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
 
@@ -395,7 +403,6 @@ void CMoviePlayerGui::cutNeutrino()
 		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 	}
-	#endif
 
 	// tell neutrino we are in ts mode
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, NeutrinoMessages::mode_ts);
@@ -424,7 +431,8 @@ void CMoviePlayerGui::restoreNeutrino()
 	// start epg scanning
 	g_Sectionsd->setPauseScanning(false);
 	
-	#if 1 //FIXME: remove this to main control in neutrino.cpp
+	//FIXME: remove this to main control in neutrino.cpp
+	//TODO: check if ac3 is selected???
 	/* show AC3 Icon */
 	if (g_RemoteControl->has_ac3)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true);
@@ -435,7 +443,6 @@ void CMoviePlayerGui::restoreNeutrino()
 		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true);
 	}
-	#endif
 
 	// tell neutrino that we are in the last mode
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, m_LastMode);
@@ -454,6 +461,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	dvbsub_pause();
 	
+	// chek vlc path again
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
 	{
 		Path_vlc  = "vlc://";
@@ -481,6 +489,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	startposition = 0;
 
 	isMovieBrowser = false;
+	isWebTV = false;
+	isVlc = false;
 
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
@@ -492,6 +502,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
+		
 		PlayFile();
 	}
 	else if (actionKey == "moviebrowser") 
@@ -501,13 +512,13 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
+		
 		PlayFile();
 	}
 	else if (actionKey == "fileplayback") 
 	{
 		isMovieBrowser = false;
 		timeshift = 0;
-		//stream
 		isWebTV = false;
 		isVlc = false;
 		
@@ -534,6 +545,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_FILE;
 		isMovieBrowser = false;
 		timeshift = 0;
+		
 		PlayFile();
 	}
 	else if ( actionKey == "dvdplayback" ) 
@@ -543,6 +555,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_DVD;
 		isMovieBrowser = false;
 		timeshift = 0;
+		
 		PlayFile();
 	}
 	else if ( actionKey == "vcdplayback" ) 
@@ -552,6 +565,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_SVCD;
 		isMovieBrowser = false;
 		timeshift = 0;
+		
 		PlayFile();
 	}
 	else if(actionKey == "webtv")
@@ -591,6 +605,7 @@ size_t CurlDummyWrite (void *ptr, size_t size, size_t nmemb, void *data)
 {
 	std::string* pStr = (std::string*) data;
 	*pStr += (char*) ptr;
+	
 	return size * nmemb;
 }
 
@@ -599,7 +614,7 @@ CURLcode sendGetRequest (const std::string & url, std::string & response)
 	CURL * curl;
 	CURLcode httpres;
 
-	curl = curl_easy_init ();
+	curl = curl_easy_init();
 	curl_easy_setopt (curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, CurlDummyWrite);
 	curl_easy_setopt (curl, CURLOPT_FILE, (void *)&response);
@@ -662,10 +677,10 @@ bool VlcRequestStream(char * mrl, int  transcodeVideo, int transcodeAudio)
 	} //switch
 	
 	souturl = "#";
-	if(transcodeVideo!=TRANSCODE_VIDEO_OFF || transcodeAudio!=0)
+	if(transcodeVideo != TRANSCODE_VIDEO_OFF || transcodeAudio != 0)
 	{
 		souturl += "transcode{";
-		if(transcodeVideo!=TRANSCODE_VIDEO_OFF)
+		if(transcodeVideo != TRANSCODE_VIDEO_OFF)
 		{
 			souturl += "vcodec=";
 			souturl += (transcodeVideo == TRANSCODE_VIDEO_MPEG1) ? "mpgv" : "mp2v";
@@ -688,7 +703,8 @@ bool VlcRequestStream(char * mrl, int  transcodeVideo, int transcodeAudio)
 			}
 			souturl += ",fps=25";
 		}
-		if(transcodeAudio!=0)
+		
+		if(transcodeAudio != 0)
 		{
 			if(transcodeVideo!=TRANSCODE_VIDEO_OFF)
 				souturl += ",";
@@ -794,10 +810,9 @@ int VlcGetStreamLength()
 		return -1;
 }
 
-void * VlcReceiveStreamStart (void *mrl)
+bool VlcReceiveStreamStart(void * mrl)
 {
-	printf ("[movieplayer.cpp] ReceiveStreamThread started\n");
-	int skt;
+	printf ("[movieplayer.cpp] ReceiveStream started\n");
 
 	// Get Server and Port from Config
 	std::string response;
@@ -813,13 +828,13 @@ void * VlcReceiveStreamStart (void *mrl)
 	{
 		DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEPLAYER_NOSTREAMINGSERVER));	// UTF-8
 		playstate = CMoviePlayerGui::STOPPED;
-		return NULL;
+		return false;
 		// Assume safely that all succeeding HTTP requests are successful
 	}
 
 
 	int transcodeVideo, transcodeAudio;
-	std::string sMRL=(char*)mrl;
+	std::string sMRL = (char*)mrl;
 	//Menu Option Force Transcode: Transcode all Files, including mpegs.
 	if((!memcmp((char*)mrl, "vcd:", 4) ||
 		 !strcasecmp(sMRL.substr(sMRL.length()-3).c_str(), "mpg") ||
@@ -846,15 +861,9 @@ void * VlcReceiveStreamStart (void *mrl)
 	
 	VlcRequestStream((char*)mrl, transcodeVideo, transcodeAudio);
 
-// TODO: Better way to detect if http://<server>:8080/dboxstream is already alive. For example repetitive checking for HTTP 404.
-// Unfortunately HTTP HEAD requests are not supported by VLC :(
-// vlc 0.6.3 and up may support HTTP HEAD requests.
-
-// Open HTTP connection to VLC
-
-	const char *server = g_settings.streaming_server_ip.c_str ();
+	const char * server = g_settings.streaming_server_ip.c_str();
 	int port;
-	sscanf (g_settings.streaming_server_port, "%d", &port);
+	sscanf(g_settings.streaming_server_port, "%d", &port);
 
 	struct sockaddr_in servAddr;
 	servAddr.sin_family = AF_INET;
@@ -868,16 +877,21 @@ void * VlcReceiveStreamStart (void *mrl)
 	while(true)
 	{
 		//printf ("[movieplayer.cpp] Trying to call socket\n");
-		skt = socket (AF_INET, SOCK_STREAM, 0);
-
-		printf ("[movieplayer.cpp] Trying to connect socket\n");
-		if(connect(skt, (struct sockaddr *) &servAddr, sizeof (servAddr)) < 0)
+		
+		if(skt < 0)
 		{
-			perror ("SOCKET");
-			playstate = CMoviePlayerGui::STOPPED;
-			return NULL;
+			skt = socket (AF_INET, SOCK_STREAM, 0);
+
+			printf ("[movieplayer.cpp] Trying to connect socket\n");
+			if(connect(skt, (struct sockaddr *) &servAddr, sizeof (servAddr)) < 0)
+			{
+				perror ("SOCKET");
+				playstate = CMoviePlayerGui::STOPPED;
+				return false;
+			}
+			fcntl (skt, O_NONBLOCK);
 		}
-		fcntl (skt, O_NONBLOCK);
+		
 		printf ("[movieplayer.cpp] Socket OK\n");
        
 		// Skip HTTP header
@@ -887,10 +901,13 @@ void * VlcReceiveStreamStart (void *mrl)
 		{
 			perror ("send()");
 			playstate = CMoviePlayerGui::STOPPED;
-			return NULL;
+			
+			return false;
 		}
 
 		printf ("[movieplayer.cpp] GET Sent\n");
+		
+		usleep(1000);
 
 		// Skip HTTP Header
 		int found = 0;
@@ -898,18 +915,28 @@ void * VlcReceiveStreamStart (void *mrl)
 		char line[200];
 		buf[0] = buf[1] = '\0';
 		strcpy (line, "");
+		
 		while(true)
 		{
-			len = recv (skt, buf, 1, 0);
+			len = recv(skt, buf, 1, 0);
 			strncat (line, buf, 1);
+			
 			if(strcmp (line, "HTTP/1.0 404") == 0)
 			{
-				printf ("[movieplayer.cpp] VLC still does not send. Retrying...\n");
-				close (skt);
-				break;
+				printf ("[movieplayer.cpp] VLC still does not send. Exiting...\n");
+				
+				if(skt > 0)
+				{
+					close(skt);
+					skt = -1;
+				}
+		
+				//break;
+				// only once
+				return false;
 			}
-			if((((found & (~2)) == 0) && (buf[0] == '\r')) || /* found == 0 || found == 2 */
-				(((found & (~2)) == 1) && (buf[0] == '\n')))  /*   found == 1 || found == 3 */
+			
+			if((((found & (~2)) == 0) && (buf[0] == '\r')) || (((found & (~2)) == 1) && (buf[0] == '\n')))  	// found == 0 || found == 2 *//*   found == 1 || found == 3
 			{
 				if(found == 3)
 					goto vlc_is_sending;
@@ -921,15 +948,22 @@ void * VlcReceiveStreamStart (void *mrl)
 				found = 0;
 			}
 		}
+		
 		if(playstate == CMoviePlayerGui::STOPPED)
 		{
-			close(skt);
-			return NULL;
+			if(skt > 0 )
+			{
+				close(skt);
+				skt = -1;
+			}
+			return false;
 		}
 	}
-	vlc_is_sending:
+	
+vlc_is_sending:
 	printf ("[movieplayer.cpp] Now VLC is sending. Read sockets created\n");
-	return NULL;
+	
+	return true;
 }
 
 void updateLcd(const std::string & sel_filename)
@@ -968,9 +1002,7 @@ void updateLcd(const std::string & sel_filename)
 			break;
 	}
 	
-//#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_XTREND)
-	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);
-//#endif	
+	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);	
 }
 
 void CMoviePlayerGui::PlayFile(void)
@@ -1084,7 +1116,6 @@ void CMoviePlayerGui::PlayFile(void)
 	new_bookmark.length = 0;
 
 	// very dirty usage of the menue, but it works and I already spent to much time with it, feel free to make it better ;-)
-//#define BOOKMARK_START_MENU_MAX_ITEMS 6
 #define BOOKMARK_START_MENU_MAX_ITEMS 5
 	CSelectedMenu cSelectedMenuBookStart[BOOKMARK_START_MENU_MAX_ITEMS];
 
@@ -1098,7 +1129,7 @@ void CMoviePlayerGui::PlayFile(void)
 
  go_repeat:
 	do {
-		// generate mrl
+		// vlc (generate mrl)
 		if (playstate == CMoviePlayerGui::STOPPED && isVlc && !cdDvd) 
 		{
 			if(selected + 1 < _filelist.size() && !aborted) 
@@ -1109,7 +1140,7 @@ void CMoviePlayerGui::PlayFile(void)
 				//printf ("[movieplayer.cpp] sel_filename: %s\n", filename);
 				int namepos = _filelist[selected].Name.rfind("vlc://");
 				std::string mrl_str = _filelist[selected].Name.substr(namepos + 6);
-				char *tmp = curl_escape (mrl_str.c_str (), 0);
+				char * tmp = curl_escape (mrl_str.c_str (), 0);
 				strncpy (mrl, tmp, sizeof (mrl) - 1);
 				curl_free (tmp);
 				printf ("[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
@@ -1131,6 +1162,11 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			exit = false;
 			cdDvd = false;
+			if(skt > 0)
+			{
+				close(skt);
+				skt = -1;
+			}
 			printf("[movieplayer] stop\n");			
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
@@ -1377,8 +1413,8 @@ void CMoviePlayerGui::PlayFile(void)
 						else
 							g_file_epg = sel_filename;
 						
-						if(!p_movie_info->epgInfo1.empty())
-							g_file_epg1 = p_movie_info->epgInfo1;
+						if(!p_movie_info->epgInfo2.empty())
+							g_file_epg1 = p_movie_info->epgInfo2;
 						else
 							g_file_epg1 = sel_filename;
 						//
@@ -1466,9 +1502,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = webtv->getSelectedFile()) != NULL) 
 					{
-						//filename = file->Name.c_str();
 						filename = file->Url.c_str();
-						//sel_filename = file->getFileName();
 						sel_filename = file->Name.c_str();
 						
 						update_lcd = true;
@@ -1554,7 +1588,7 @@ void CMoviePlayerGui::PlayFile(void)
 				// intros
 				//APIDSelector.addItem(GenericMenuSeparator);
 				
-				CAPIDSelectExec *APIDChanger = new CAPIDSelectExec;
+				CAPIDSelectExec * APIDChanger = new CAPIDSelectExec;
 				bool enabled;
 				bool defpid;
 
@@ -1715,18 +1749,27 @@ void CMoviePlayerGui::PlayFile(void)
 			if (isVlc)
 			{
 				playstate = CMoviePlayerGui::SOFTRESET;
-				VlcReceiveStreamStart(mrl);
-
-				stream_url = "http://";
-				stream_url += g_settings.streaming_server_ip;
-				stream_url += ':';
-				stream_url += g_settings.streaming_server_port;
-				stream_url += "/dboxstream";
-				filename = stream_url.c_str();
+				
+				if( VlcReceiveStreamStart(mrl) )
+				{
+					stream_url = "http://";
+					stream_url += g_settings.streaming_server_ip;
+					stream_url += ':';
+					stream_url += g_settings.streaming_server_port;
+					stream_url += "/dboxstream";
+					filename = stream_url.c_str();
+				}
 			}			
 
 			if (playstate >= CMoviePlayerGui::PLAY) 
 			{
+				// vlc socket
+				if(skt > 0)
+				{
+					close(skt);
+					skt = -1;
+				}
+				
 				playstate = CMoviePlayerGui::STOPPED;
 				
 				playback->Close();

@@ -18,11 +18,15 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define __USE_FILE_OFFSET64 1
-#include "filebrowser.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+//#include "filebrowser.h"
 #include <stdio.h>
+
 #include <global.h>
-#include <libgen.h>
+//#include <libgen.h>
 #include <neutrino.h>
 #include <driver/screen_max.h>
 #include "movieplayer.h"
@@ -31,8 +35,6 @@
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
-
-extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 
 CWebTV::CWebTV()
 {
@@ -51,6 +53,12 @@ CWebTV::~CWebTV()
 		xmlFreeDoc(parser);
 		parser = NULL;
 	}
+	
+	for(unsigned int count = 0;count < channels.size();count++)
+	{
+		delete channels[count];
+	}
+	channels.clear();
 }
 
 int CWebTV::exec()
@@ -71,11 +79,15 @@ CFile * CWebTV::getSelectedFile()
 // readxml file
 bool CWebTV::readXml()
 {
-	//CFileList flist;
 	CFile file;
-	WebTVChannels Channels_list;
-	 
+	
+	for(unsigned int count = 0; count < channels.size(); count++)
+	{
+		delete channels[count];
+	}
 	channels.clear();
+	
+	webtv_channels * Channels_list = new webtv_channels();
 	
 	if (parser)
 	{
@@ -97,7 +109,6 @@ bool CWebTV::readXml()
 			while ((xmlGetNextOccurence(l1, "webtv"))) 
 			{
 				char * title = xmlGetAttribute(l1, (char *)"title");
-				//char * urlkey = xmlGetAttribute(l1, (char *)"urlkey");
 				char * url = xmlGetAttribute(l1, (char *)"url");
 				char * description = xmlGetAttribute(l1, (char *)"description");
 				char * locked = xmlGetAttribute(l1, (char *)"locked");
@@ -105,11 +116,12 @@ bool CWebTV::readXml()
 				bool ChLocked = locked ? (strcmp(locked, "1") == 0) : false;
 				
 				// fill
-				Channels_list.title = title;
-				//Channels_list.urlkey = urlkey;
-				Channels_list.url = url;
-				Channels_list.description = description;
-				Channels_list.locked = locked;
+				Channels_list = new webtv_channels();
+				
+				Channels_list->title = title;
+				Channels_list->url = url;
+				Channels_list->description = description;
+				Channels_list->locked = locked;
 				
 				// parentallock
 				if ((g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_ONSIGNAL) && (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_CHANGETOLOCKED))
@@ -147,8 +159,8 @@ int CWebTV::Show()
 	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
-	if (channels.empty()) 
-		return -1;
+	//if (channels.empty()) 
+	//	return -1;
 
 	// display channame in vfd	
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );
@@ -239,9 +251,9 @@ int CWebTV::Show()
                 }
                 else if ( msg == CRCInput::RC_red || msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{	  
-			filelist[selected].Url = channels[selected].url;
-			filelist[selected].Name = channels[selected].title;
-			filelist[selected].Description = channels[selected].description;
+			filelist[selected].Url = channels[selected]->url;
+			filelist[selected].Name = channels[selected]->title;
+			filelist[selected].Description = channels[selected]->description;
 			
 			res = true;
 		
@@ -317,24 +329,24 @@ void CWebTV::paintItem(int pos)
 		int l = 0;
 		
 		sprintf((char*) tmp, "%d", curr + 1);
-		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr].title);
+		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr]->title);
 		
 		// nummer
 		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + fheight, numwidth + 5, tmp, color, fheight);
 		
 		// description
-		std::string Descr = channels[curr].description;
+		std::string Descr = channels[curr]->description;
 		if(!(Descr.empty()))
 		{
 			snprintf(nameAndDescription + l, sizeof(nameAndDescription) -l, "  -  ");
 			
 			unsigned int ch_name_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(nameAndDescription, true);
-			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(channels[curr].description, true);
+			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(channels[curr]->description, true);
 			
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, nameAndDescription, color, 0, true);
 			
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len, ypos + fheight, ch_desc_len, channels[curr].description, (curr == selected)?COL_MENUCONTENTSELECTED : COL_COLORED_EVENTS_CHANNELLIST, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len, ypos + fheight, ch_desc_len, channels[curr]->description, (curr == selected)?COL_MENUCONTENTSELECTED : COL_COLORED_EVENTS_CHANNELLIST, 0, true);
 		}
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, nameAndDescription, color, 0, true);
@@ -396,8 +408,8 @@ void CWebTV::paintDetails(int index)
 	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
 	
 	// name/description
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30, channels[index].title, COL_MENUCONTENTDARK, 0, true);
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* fheight- 2, width - 30, channels[index].description, COL_MENUCONTENTDARK, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30, channels[index]->title, COL_MENUCONTENTDARK, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* fheight- 2, width - 30, channels[index]->description, COL_MENUCONTENTDARK, 0, true); // UTF-8
 }
 
 void CWebTV::clearItem2DetailsLine ()

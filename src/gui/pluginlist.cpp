@@ -58,9 +58,8 @@
 /*zapit includes*/
 #include <client/zapittools.h>
 
-#include <daemonc/remotecontrol.h>
+
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
-extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 
 CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 {
@@ -71,7 +70,7 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 	
 	selected = 0;
 	width = MENU_WIDTH;
-	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
+	if(width>(g_settings.screen_EndX - g_settings.screen_StartX))
 		width=(g_settings.screen_EndX - g_settings.screen_StartX);
 	
 	height = 526;
@@ -92,14 +91,14 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 
 CPluginList::~CPluginList()
 {
-	for(unsigned int count=0;count<pluginlist.size();count++)
+	for(unsigned int count = 0;count < pluginlist.size();count++)
 	{
 		delete pluginlist[count];
 	}
 	pluginlist.clear();
 }
 
-int CPluginList::exec(CMenuTarget* parent, const std::string & /*actionKey*/)
+int CPluginList::exec(CMenuTarget * parent, const std::string & /*actionKey*/)
 {
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -107,12 +106,10 @@ int CPluginList::exec(CMenuTarget* parent, const std::string & /*actionKey*/)
 	int res = menu_return::RETURN_REPAINT;
 
 	if (parent)
-	{
 		parent->hide();
-	}
 
 	//scan4plugins here!
-	for(unsigned int count=0; count<pluginlist.size(); count++)
+	for(unsigned int count = 0; count < pluginlist.size(); count++)
 	{
 		delete pluginlist[count];
 	}

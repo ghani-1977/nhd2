@@ -40,6 +40,7 @@
 #include <string>
 #include <vector>
 
+
 class CPluginList : public CMenuTarget
 {
 
@@ -51,9 +52,6 @@ class CPluginList : public CMenuTarget
 		} result;
 
 	private:
-
-		CFrameBuffer	*frameBuffer;
-
 		struct pluginitem
 		{
 			int         number;
@@ -62,13 +60,15 @@ class CPluginList : public CMenuTarget
 			
 			std::string icon;	// icon
 		};
-
-		unsigned int	    liststart;
-		unsigned int	    listmaxshow;
+		
 		int		    key;
 		neutrino_locale_t   name;
 		uint pluginlisttype;
 
+		CFrameBuffer * frameBuffer;
+		
+		unsigned int	    liststart;
+		unsigned int	    listmaxshow;
 		int		fheight; // Fonthoehe Channellist-Inhalt
 		int		theight; // Fonthoehe Channellist-Titel
 
@@ -103,13 +103,13 @@ class CPluginList : public CMenuTarget
 class CPluginChooser : public CPluginList
 {
 	private:
-	char* selected_plugin;
+		char* selected_plugin;
+		
 	protected:
-	
-	CPluginList::result_ pluginSelected();
+		CPluginList::result_ pluginSelected();
 
 	public:
-	CPluginChooser(const neutrino_locale_t Name, const uint listtype, char* pluginname);
+		CPluginChooser(const neutrino_locale_t Name, const uint listtype, char* pluginname);
 };
 
 #endif

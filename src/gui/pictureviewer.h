@@ -57,14 +57,14 @@ class CPictureViewerGui : public CMenuTarget
 	public:
 		enum State
 		{
-			VIEW=0,
+			VIEW = 0,
 			MENU,
 			SLIDESHOW
 		};
 		
 		enum SortOrder
 		{
-			DATE=0,
+			DATE = 0,
 			FILENAME,
 			NAME
 		};
@@ -75,30 +75,30 @@ class CPictureViewerGui : public CMenuTarget
 		};
 		
 	private:
-		CFrameBuffer		*frameBuffer;
-		CPictureViewer		*m_viewer;
+		CFrameBuffer		* frameBuffer;
+		CPictureViewer		* m_viewer;
 		unsigned int		selected;
 		unsigned int		liststart;
 		unsigned int		listmaxshow;
-		int					fheight; // Fonthoehe Playlist-Inhalt
-		int					theight; // Fonthoehe Playlist-Titel
-		int					sheight; // Fonthoehe MP Info
-		int					buttonHeight;
-		bool				visible;			
-		State          m_state;
-		SortOrder      m_sort;
+		int			fheight; // Fonthoehe Playlist-Inhalt
+		int			theight; // Fonthoehe Playlist-Titel
+		int			sheight; // Fonthoehe MP Info
+		int			buttonHeight;
+		bool			visible;			
+		State          		m_state;
+		SortOrder      		m_sort;
 
-		CViewList			playlist;
-		std::string			Path;
+		CViewList		playlist;
+		std::string		Path;
 
 		int 			width;
 		int 			height;
 		int 			x;
 		int 			y;
-		int         m_title_w;
-		long        m_time;
+		int         		m_title_w;
+		long        		m_time;
 
-		int         m_LastMode;
+		int         		m_LastMode;
 
 		void paintItem(int pos);
 		void paint();
@@ -109,7 +109,7 @@ class CPictureViewerGui : public CMenuTarget
 		void hide();
 
 		CFileFilter picture_filter;
-		void view(unsigned int nr, bool unscaled=false);
+		void view(unsigned int nr, bool unscaled = false);
 		void endView();
 		int  show();
 
@@ -118,9 +118,8 @@ class CPictureViewerGui : public CMenuTarget
 	public:
 		CPictureViewerGui();
 		~CPictureViewerGui();
-		int  exec(CMenuTarget* parent, const std::string & actionKey);
+		int  exec(CMenuTarget * parent, const std::string & actionKey);
 };
-
 
 #endif
 

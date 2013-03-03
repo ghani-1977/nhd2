@@ -383,7 +383,7 @@ int CPictureViewerGui::show()
 							CPicture pic;
 							pic.Filename = files->Name;
 							std::string tmp   = files->Name.substr(files->Name.rfind('/')+1);
-							pic.Name     = tmp.substr(0,tmp.rfind('.'));
+							pic.Name     = tmp.substr(0, tmp.rfind('.'));
 							pic.Type     = tmp.substr(tmp.rfind('.')+1);
 							struct stat statbuf;
 							if(stat(pic.Filename.c_str(),&statbuf) != 0)
@@ -399,7 +399,7 @@ int CPictureViewerGui::show()
 					else if (m_sort == DATE)
 						std::sort(playlist.begin(), playlist.end(), comparePictureByDate);
 				}
-				update=true;
+				update = true;
 			}
 		}
 		else if(msg==CRCInput::RC_yellow)

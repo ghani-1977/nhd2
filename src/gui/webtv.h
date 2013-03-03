@@ -32,21 +32,23 @@
 #include <xmlinterface.h>
 
 
-typedef struct webtv_channels {
-	char * title;
-	//char * urlkey;
-	char * url;
-	char * description;
-	char * locked;		// for parentallock
-} WebTVChannels;
-
 class CWebTV /*: public CMenuTarget*/
 {
 	private:
+		struct webtv_channels {
+			char * title;
+			char * url;
+			char * description;
+			char * locked;		// for parentallock
+		} ;
+
 		xmlDocPtr parser;
 		bool readXml();
 		
-		std::vector<WebTVChannels> channels;
+		std::vector<webtv_channels *> channels;
+		
+		/* gui */
+		CFrameBuffer * frameBuffer;
 		
 		int            	width;
 		int            	height;
@@ -61,12 +63,10 @@ class CWebTV /*: public CMenuTarget*/
 		int		buttonHeight;
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
-		
-		CFrameBuffer * frameBuffer;
-		
-		int            m_LastMode;
-		
 		int info_height;
+
+		
+		//int            m_LastMode;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
@@ -80,7 +80,7 @@ class CWebTV /*: public CMenuTarget*/
 		CWebTV();
 		~CWebTV();
 		int exec();
-		//bool readXml();
+		
 		int Show();
 		
 		CFileList filelist;

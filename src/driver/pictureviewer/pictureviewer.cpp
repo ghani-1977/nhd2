@@ -321,7 +321,7 @@ CPictureViewer::CPictureViewer ()
 	xs = CFrameBuffer::getInstance()->getScreenWidth(true);
 	ys = CFrameBuffer::getInstance()->getScreenHeight(true);
 	
-	m_aspect = xs/ys;
+	m_aspect = 16.0/9;
 	
 	m_startx = 0;
 	m_endx = xs - 1;

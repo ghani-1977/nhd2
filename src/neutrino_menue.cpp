@@ -246,8 +246,9 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, "", moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
 	
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, "", moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VCDPLAYBACK, true, "", moviePlayerGui, "vcdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
+	//NOTE: buggy
+	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, "", moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
+	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VCDPLAYBACK, true, "", moviePlayerGui, "vcdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
 
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 

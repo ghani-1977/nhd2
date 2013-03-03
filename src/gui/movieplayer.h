@@ -35,7 +35,6 @@
 #include <config.h>
 #include <configfile.h>
 
-#if HAVE_DVB_API_VERSION >= 1
 #include "driver/framebuffer.h"
 #include "gui/filebrowser.h"
 #include "gui/widget/menue.h"
@@ -56,18 +55,11 @@ class CMoviePlayerGui : public CMenuTarget
 		enum state
 		{
 			STOPPED     =  0,
-			PREPARING   =  1,
-			STREAMERROR =  2,
-			PLAY        =  3,
-			PAUSE       =  4,
-			FF          =  5,
-			REW         =  6,
-			RESYNC      =  7,
-			JPOS        =  8, // jump to absolute position
-			SLOW        =  9,
-			JB          = 10,
-			SKIP        = 11,
-			AUDIOSELECT = 12,
+			PLAY        =  1,
+			PAUSE       =  2,
+			FF          =  3,
+			REW         =  4,
+			SLOW        =  5,
 			SOFTRESET   = 99
 		};
 
@@ -75,7 +67,7 @@ class CMoviePlayerGui : public CMenuTarget
 		void Init(void);
 		CFrameBuffer * frameBuffer;
 		int            m_LastMode;	
-		const char     *filename;
+		const char     * filename;
 		bool		stopped;
 
 		std::string Path_local;
@@ -108,6 +100,5 @@ class CAPIDSelectExec : public CMenuTarget
 	public:
 		int exec(CMenuTarget * parent, const std::string & actionKey);
 };
-#endif
 
 #endif
