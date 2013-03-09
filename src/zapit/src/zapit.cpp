@@ -2449,7 +2449,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			stopPlayBack();
 			standby = false;
 			
-#if !defined (PLATFORM_COOLSTREAM)			
+#if defined (ENABLE_LIBEPLAYER3)			
 			if(audioDecoder)
 				audioDecoder->Close();
 			
@@ -2463,7 +2463,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
 			
-#if !defined (PLATFORM_COOLSTREAM)			
+#if defined (ENABLE_LIBEPLAYER3)			
 			if(videoDecoder)
 				videoDecoder->Open();
 	

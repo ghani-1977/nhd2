@@ -277,6 +277,35 @@ void CMoviePlayerGui::Init(void)
 	frameBuffer = CFrameBuffer::getInstance();
 
 	playback = new cPlayback();
+	
+	// local path
+	if (strlen(g_settings.network_nfs_moviedir) != 0)
+		Path_local = g_settings.network_nfs_moviedir;
+	else
+		Path_local = "/";
+	
+	// vlc path
+	Path_vlc  = "vlc://";
+	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
+		Path_vlc += g_settings.streaming_server_startdir;
+	
+	Path_vlc_settings = g_settings.streaming_server_startdir;
+
+	// filebrowser
+	if (g_settings.filebrowser_denydirectoryleave)
+		filebrowser = new CFileBrowser(Path_local.c_str());
+	else
+		filebrowser = new CFileBrowser();
+
+	filebrowser->Multi_Select = false;
+	filebrowser->Dirs_Selectable = false;
+	filebrowser->Hide_records = false;
+	
+	// moviebrowser
+	moviebrowser = new CMovieBrowser();
+	
+	// webtv
+	webtv = new CWebTV();
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -420,6 +449,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	dvbsub_pause();
 	
+	#if 0
 	// local path
 	if (strlen(g_settings.network_nfs_moviedir) != 0)
 		Path_local = g_settings.network_nfs_moviedir;
@@ -448,6 +478,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	// webtv
 	webtv = new CWebTV();
+	#endif
 	
 	// chek vlc path again
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
@@ -587,6 +618,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	
 	//
+	#if 0
 	if(filebrowser)
 		delete filebrowser;
 	
@@ -595,6 +627,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	if (webtv)
 		delete webtv;
+	#endif
 	//
 
 	return menu_return::RETURN_REPAINT;
