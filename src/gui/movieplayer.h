@@ -76,8 +76,7 @@ class CMoviePlayerGui : public CMenuTarget
 
 		CFileBrowser * filebrowser;
 		CMovieBrowser * moviebrowser;
-		
-		CWebTV	* webtv;
+		CWebTV * webtv;
 
 		void PlayFile();
 		void cutNeutrino();

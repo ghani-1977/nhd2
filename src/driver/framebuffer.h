@@ -170,10 +170,6 @@ class CFrameBuffer
 
 		void setBlendMode(uint8_t mode);
 		void setBlendLevel(int blev);
-		void setColorGain( int value);
-		void setBrightness( int value);
-		void setSaturation( int value);
-		void setContrast( int value);
 
 		/* Palette stuff */
 		void paletteFade(int i, __u32 rgb1, __u32 rgb2, int level);
@@ -247,7 +243,7 @@ class CFrameBuffer
 			TM_INI    = 3
 		};
 		
-		void * convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF, int m_transparent = TM_BLACK, bool alpha = false);
+		void * convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF, int m_transparent = TM_BLACK);
 		void blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp = 0, uint32_t yp = 0, bool transp = false);
 		void displayRGB(unsigned char * rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb = true, int transp = 0xFF);
 		
@@ -258,7 +254,7 @@ class CFrameBuffer
 			COLOR = 2
 		};
 		
-		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
+		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
 		fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
 };

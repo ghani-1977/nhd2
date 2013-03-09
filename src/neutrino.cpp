@@ -150,7 +150,7 @@
 // dvbsubs selct menu
 #include <gui/dvbsub_select.h>
 
-/*zapit includes*/
+/* zapit includes */
 #include <channel.h>
 #include <bouquets.h>
 
@@ -870,6 +870,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	//crypticon on channellist
 	g_settings.channellist_ca = configfile.getInt32("channellist_ca", 1);
+	
+	g_settings.mini_tv = configfile.getBool("mini_tv", false);
+	//
 
 	//Filebrowser
 	g_settings.filesystem_is_utf8 = configfile.getBool("filesystem_is_utf8", true );
@@ -1274,6 +1277,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 
 	configfile.setBool("channellist_epgtext_align_right", g_settings.channellist_epgtext_align_right);
 	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
+	configfile.setBool("mini_tv", g_settings.mini_tv);
+	//
 
 	configfile.setString("timezone", g_settings.timezone);
 
@@ -4706,7 +4711,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 		
 		if (b.exec(g_settings.network_nfs_audioplayerdir))
 			strncpy(g_settings.network_nfs_audioplayerdir, b.getSelectedFile()->Name.c_str(), sizeof(g_settings.network_nfs_audioplayerdir)-1);
@@ -4718,7 +4723,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 		
 		if (b.exec(g_settings.network_nfs_picturedir))
 			strncpy(g_settings.network_nfs_picturedir, b.getSelectedFile()->Name.c_str(), sizeof(g_settings.network_nfs_picturedir)-1);

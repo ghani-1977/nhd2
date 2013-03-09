@@ -134,11 +134,13 @@ int LinuxDvbOpen(Context_t  *context, char * type)
 			}
 		}
 
+		/*
 		if (ioctl( videofd, VIDEO_CLEAR_BUFFER, NULL) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
 			linuxdvb_err("VIDEO_CLEAR_BUFFER: %s\n", strerror(errno));
 		}
+		*/
 
 		if (ioctl( videofd, VIDEO_SELECT_SOURCE, (void*)VIDEO_SOURCE_MEMORY) == -1)
 		{
@@ -183,11 +185,13 @@ int LinuxDvbOpen(Context_t  *context, char * type)
 			return cERR_LINUXDVB_ERROR;
 		}
 
+		/*
 		if (ioctl( audiofd, AUDIO_CLEAR_BUFFER, NULL) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
 			linuxdvb_err("AUDIO_CLEAR_BUFFER: %s\n", strerror(errno));
 		}
+		*/
 
 		if (ioctl( audiofd, AUDIO_SELECT_SOURCE, (void*)AUDIO_SOURCE_MEMORY) == -1)
 		{
@@ -362,11 +366,13 @@ int LinuxDvbStop(Context_t  *context, char * type)
 
 	if (video && videofd != -1) 
 	{
+		/*
 		if (ioctl(videofd, VIDEO_CLEAR_BUFFER, NULL) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
 			linuxdvb_err("VIDEO_CLEAR_BUFFER: %s\n", strerror(errno));
 		}
+		*/
 
 		/* set back to normal speed (end trickmodes) */
 #ifdef __sh__		
@@ -387,11 +393,13 @@ int LinuxDvbStop(Context_t  *context, char * type)
 	
 	if (audio && audiofd != -1) 
 	{
+		/*
 		if (ioctl(audiofd, AUDIO_CLEAR_BUFFER, NULL) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
 			linuxdvb_err("AUDIO_CLEAR_BUFFER: %s\n", strerror(errno));
 		}
+		*/
 
 		/* set back to normal speed (end trickmodes) */
 #ifdef __sh__		

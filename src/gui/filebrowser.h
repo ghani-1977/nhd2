@@ -191,7 +191,6 @@ class CFileBrowser
 			ModeSC,
 		} tFileBrowserMode;
 		
-		//test
 		//shoutcast
 		std::string sc_init_dir;
 
@@ -207,7 +206,7 @@ class CFileBrowser
 		bool			Dir_Mode;
 		bool                    Hide_records;
 		
-		CFileFilter *	Filter;
+		CFileFilter * Filter;
 
 		CFileBrowser();
 		CFileBrowser(const char * const _base, const tFileBrowserMode mode = ModeFile);

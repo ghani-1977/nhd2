@@ -244,6 +244,7 @@ const char * locale_real_names[] = {
 	"channellist.current_tp",
 	"channellist.make_hdlist",
 	"channellist.ca",
+	"channellist.minitv",
 	"colorchooser.alpha",
 	"colorchooser.blue",
 	"colorchooser.green",

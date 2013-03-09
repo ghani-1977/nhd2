@@ -276,32 +276,7 @@ void CMoviePlayerGui::Init(void)
 
 	frameBuffer = CFrameBuffer::getInstance();
 
-	// local path
-	if (strlen(g_settings.network_nfs_moviedir) != 0)
-		Path_local = g_settings.network_nfs_moviedir;
-	else
-		Path_local = "/";
-	
-	// vlc path
-	Path_vlc  = "vlc://";
-	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
-		Path_vlc += g_settings.streaming_server_startdir;
-	Path_vlc_settings = g_settings.streaming_server_startdir;	
-
-	if (g_settings.filebrowser_denydirectoryleave)
-		filebrowser = new CFileBrowser(Path_local.c_str());
-	else
-		filebrowser = new CFileBrowser();
-
-	filebrowser->Multi_Select = false;
-	filebrowser->Dirs_Selectable = false;
-	filebrowser->Hide_records = false;
-
 	playback = new cPlayback();
-	
-	moviebrowser = new CMovieBrowser();
-	
-	webtv = new CWebTV();
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -335,11 +310,6 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("wma");
 	tsfilefilter.addFilter("ogg");
 	
-	// webtv
-	//tsfilefilter.addFilter("m3u");
-	//tsfilefilter.addFilter("pls");
-	//
-	
 	// vlcfilefilter
 	vlcfilefilter.addFilter ("ts");
 	vlcfilefilter.addFilter ("mpg");
@@ -359,21 +329,10 @@ void CMoviePlayerGui::Init(void)
 	vlcfilefilter.addFilter ("m2v");
 
 	vlcfilefilter.addFilter ("wmv");	
-
-	//filebrowser->Filter = &tsfilefilter;
 }
 
 CMoviePlayerGui::~CMoviePlayerGui()
 {
-	//if(filebrowser)
-	//	delete filebrowser;
-	
-	//if (moviebrowser)
-	//	delete moviebrowser;
-	
-	//if (webtv)
-	//	delete webtv;
-
 	if(playback)
 		delete playback;
 }
@@ -460,6 +419,35 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	printf("[movieplayer] actionKey=%s\n", actionKey.c_str());
 
 	dvbsub_pause();
+	
+	// local path
+	if (strlen(g_settings.network_nfs_moviedir) != 0)
+		Path_local = g_settings.network_nfs_moviedir;
+	else
+		Path_local = "/";
+	
+	// vlc path
+	Path_vlc  = "vlc://";
+	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
+		Path_vlc += g_settings.streaming_server_startdir;
+	
+	Path_vlc_settings = g_settings.streaming_server_startdir;
+
+	// filebrowser
+	if (g_settings.filebrowser_denydirectoryleave)
+		filebrowser = new CFileBrowser(Path_local.c_str());
+	else
+		filebrowser = new CFileBrowser();
+
+	filebrowser->Multi_Select = false;
+	filebrowser->Dirs_Selectable = false;
+	filebrowser->Hide_records = false;
+	
+	// moviebrowser
+	moviebrowser = new CMovieBrowser();
+	
+	// webtv
+	webtv = new CWebTV();
 	
 	// chek vlc path again
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
@@ -597,6 +585,17 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		return menu_return::RETURN_EXIT_ALL;
 	}
+	
+	//
+	if(filebrowser)
+		delete filebrowser;
+	
+	if (moviebrowser)
+		delete moviebrowser;
+	
+	if (webtv)
+		delete webtv;
+	//
 
 	return menu_return::RETURN_REPAINT;
 }
@@ -849,7 +848,7 @@ bool VlcReceiveStreamStart(void * mrl)
 	}
 	else
 	{
-		transcodeVideo=g_settings.streaming_transcode_video_codec+1;
+		transcodeVideo = g_settings.streaming_transcode_video_codec + 1;
 		if((!memcmp((char*)mrl, "dvd", 3) && !g_settings.streaming_transcode_audio) ||
 			(!strcasecmp(sMRL.substr(sMRL.length()-3).c_str(), "vob") && !g_settings.streaming_transcode_audio) ||
 			(!strcasecmp(sMRL.substr(sMRL.length()-3).c_str(), "ac3") && !g_settings.streaming_transcode_audio) ||
@@ -1348,7 +1347,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 			// moviebrowser
 			if (isMovieBrowser == true) 
-			{
+			{	
 				// start the moviebrowser instead of the filebrowser
 				if (moviebrowser->exec(Path_local.c_str())) 
 				{
@@ -1845,26 +1844,29 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(!isVlc)
 			{
+				if(!isWebTV)
+				{
 #if defined (PLATFORM_COOLSTREAM)
-				if( playback->GetPosition(position, duration) )
-				{
+					if( playback->GetPosition(position, duration) )
+					{
 #else			  
-				if(playback->GetPosition(position)) 
-				{
-					playback->GetDuration(duration);
+					if(playback->GetPosition(position)) 
+					{
+						playback->GetDuration(duration);
 #endif					
 					
-					if(duration > 100)
-						file_prozent = (unsigned char) (position / (duration / 100));
+						if(duration > 100)
+							file_prozent = (unsigned char) (position / (duration / 100));
 
-					playback->GetSpeed(speed);
-					
-					dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
-				}
-				else
-				{
-					sleep(3);
-					exit = true;
+						playback->GetSpeed(speed);
+						
+						dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
+					}
+					else
+					{
+						sleep(3);
+						exit = true;
+					}
 				}
 			}
 			else

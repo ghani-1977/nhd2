@@ -126,6 +126,7 @@ channellist.provs Providers
 channellist.sats Satellites
 channellist.since since %02d:%02d
 channellist.start starts %02d:%02d
+channellist.minitv MiniTV
 colorchooser.alpha alpha
 colorchooser.blue blue
 colorchooser.green green

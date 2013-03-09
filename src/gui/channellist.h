@@ -95,10 +95,10 @@ class CChannelList
 		void addChannel(CZapitChannel* chan, int num = 0);
 		void putChannel(CZapitChannel* chan);
 		
-		CZapitChannel* getChannel(int number);
-		CZapitChannel* getChannel(t_channel_id channel_id);
-		CZapitChannel* getChannelFromIndex( uint32_t index) { if (chanlist.size() > index) return chanlist[index]; else return NULL;};
-		CZapitChannel* operator[]( uint32_t index) { if (chanlist.size() > index) return chanlist[index]; else return NULL;};
+		CZapitChannel * getChannel(int number);
+		CZapitChannel * getChannel(t_channel_id channel_id);
+		CZapitChannel * getChannelFromIndex( uint32_t index) { if (chanlist.size() > index) return chanlist[index]; else return NULL;};
+		CZapitChannel * operator[]( uint32_t index) { if (chanlist.size() > index) return chanlist[index]; else return NULL;};
 		int getKey(int);
 
 		const char * const   getName                   (void) const { return name.c_str(); };
@@ -113,9 +113,9 @@ class CChannelList
 		bool adjustToChannelID(const t_channel_id channel_id, bool bToo = true);
 		bool showInfo(int pos, int epgpos = 0);
 		void updateEvents(void);
-		int 	numericZap(int key);
-		int  	show();
-		int	exec();
+		int numericZap(int key);
+		int show();
+		int exec();
 		void quickZap(int key, bool cycle = false);
 		int  hasChannel(int nChannelNr);
 		int  hasChannelID(t_channel_id channel_id);
@@ -133,6 +133,8 @@ class CChannelList
 		void ClearList(void);
 		
 		bool canZap(CZapitChannel * channel = NULL);
+		
+		void paintMiniTV();
 };
 
 #endif

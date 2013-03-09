@@ -1231,6 +1231,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	// channellist ca
 	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_SHOWCA, &g_settings.channellist_ca, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
 	
+	// mini tv
+	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_MINITV, &g_settings.mini_tv, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
+	
 	//
 	getZapitConfig(&zapitCfg);
 	

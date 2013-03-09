@@ -459,8 +459,6 @@ int CFrameBuffer::setMode()
 	setFrameBufferMode(DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 #endif	
 
-	setBlendMode(0); //non-premultiplied alpha
-
 	// clear frameBuffer
 	paintBackground();
 	
@@ -471,11 +469,12 @@ int CFrameBuffer::setMode()
 	return 0;
 }
 
-// blend mode: 1=premultiplied alpha/ 0=non-premultiplied alpha
+// blend mode: 0=non-premultiplied alpha | 1=premultiplied alpha
 void CFrameBuffer::setBlendMode(uint8_t mode)
 {
 #ifdef __sh__	
 	struct stmfbio_var_screeninfo_ex varEx = {0};
+	memset(&varEx, 0, sizeof(varEx));
 
 	varEx.layerid  = 0;
 	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
@@ -488,82 +487,16 @@ void CFrameBuffer::setBlendMode(uint8_t mode)
 }
 
 // blendlevel (e.g transparency)
-void CFrameBuffer::setBlendLevel(int blev)
+void CFrameBuffer::setBlendLevel(int level)
 {
-#ifdef __sh__	
+#ifdef __sh__
 	struct stmfbio_var_screeninfo_ex varEx = {0};
+	memset(&varEx, 0, sizeof(varEx));
 
 	varEx.layerid  = 0;
 	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
 	varEx.caps = STMFBIO_VAR_CAPS_OPACITY;
-	varEx.opacity = blev;
-
-
-	if(ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &varEx) < 0)
-		perror("STMFBIO_SET_VAR_SCREENINFO_EX");
-#endif	
-}
-
-void CFrameBuffer::setColorGain( int value )
-{
-#ifdef __sh__	
-	struct stmfbio_var_screeninfo_ex varEx = {0};
-
-	varEx.layerid  = 0;
-	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
-	varEx.caps = STMFBIO_VAR_CAPS_GAIN;
-	varEx.gain = value;
-
-
-	if(ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &varEx) < 0)
-		perror("STMFBIO_SET_VAR_SCREENINFO_EX");
-#endif	
-}
-
-// brightness
-void CFrameBuffer::setBrightness( int value )
-{
-#ifdef __sh__	
-	struct stmfbio_var_screeninfo_ex varEx = {0};
-
-	varEx.layerid  = 0;
-	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
-	varEx.caps = STMFBIO_VAR_CAPS_BRIGHTNESS;
-	varEx.brightness = value;
-
-
-	if(ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &varEx) < 0)
-		perror("STMFBIO_SET_VAR_SCREENINFO_EX");
-#endif	
-}
-
-// saturation
-void CFrameBuffer::setSaturation( int value )
-{
-#ifdef __sh__	
-	struct stmfbio_var_screeninfo_ex varEx = {0};
-
-	varEx.layerid  = 0;
-	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
-	varEx.caps = STMFBIO_VAR_CAPS_SATURATION;
-	varEx.saturation = value;
-
-
-	if(ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &varEx) < 0)
-		perror("STMFBIO_SET_VAR_SCREENINFO_EX");
-#endif	
-}
-
-// contrast
-void CFrameBuffer::setContrast( int value )
-{
-#ifdef __sh__	
-	struct stmfbio_var_screeninfo_ex varEx = {0};
-
-	varEx.layerid  = 0;
-	varEx.activate = STMFBIO_ACTIVATE_IMMEDIATE;
-	varEx.caps = STMFBIO_VAR_CAPS_CONTRAST;
-	varEx.contrast = value;
+	varEx.opacity = level;
 
 
 	if(ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &varEx) < 0)
@@ -1018,7 +951,7 @@ bool CFrameBuffer::paintIconRaw(const std::string & filename, const int x, const
 	if (h != 0)
 		yy += (h - height) / 2;	
 
-	blit2FB(data, width, height, x, yy, 0, 0, true );
+	blit2FB(data, width, height, x, yy);
 
 	return true;
 }
@@ -1511,7 +1444,7 @@ void CFrameBuffer::ClearFrameBuffer()
 	paintBackground();
 }
 
-void * CFrameBuffer::convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp, int m_transparent, bool alpha)
+void * CFrameBuffer::convertRGB2FB(unsigned char * rgbbuff, unsigned long x, unsigned long y, int transp, int m_transparent)
 {
 	unsigned long i;
 	unsigned int * fbbuff;
@@ -1525,39 +1458,28 @@ void * CFrameBuffer::convertRGB2FB(unsigned char * rgbbuff, unsigned long x, uns
 		return NULL;
 	}
 	
-	if(alpha) // 24 bits
+	switch (m_transparent) 
 	{
-		for(i = 0; i < count ; i++)
-			fbbuff[i] = ((rgbbuff[i*4+3] << 24) & 0xFF000000) | 
-			            ((rgbbuff[i*4]   << 16) & 0x00FF0000) | 
-		        	    ((rgbbuff[i*4+1] <<  8) & 0x0000FF00) | 
-			            ((rgbbuff[i*4+2])       & 0x000000FF);
-	}
-	else	//32 bits
-	{
-		switch (m_transparent) 
-		{
-			case CFrameBuffer::TM_BLACK:
-				for(i = 0; i < count ; i++) 
-				{
-					transp = 0;
-					if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
-						transp = 0xFF;
-					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-				}
-				break;
-					
-			case CFrameBuffer::TM_INI:
-				for(i = 0; i < count ; i++)
-					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-				break;
-					
-			case CFrameBuffer::TM_NONE:
-			default:
-				for(i = 0; i < count ; i++)
-					fbbuff[i] = 0xFF000000 | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-				break;
-		}
+		case CFrameBuffer::TM_BLACK:
+			for(i = 0; i < count ; i++) 
+			{
+				transp = 0;
+				if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
+					transp = 0xFF;
+				fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+			}
+			break;
+						
+		case CFrameBuffer::TM_INI:
+			for(i = 0; i < count ; i++)
+				fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+			break;
+						
+		case CFrameBuffer::TM_NONE:
+		default:
+			for(i = 0; i < count ; i++)
+				fbbuff[i] = 0xFF000000 | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+			break;
 	}
 
 	return (void *) fbbuff;
@@ -1628,13 +1550,13 @@ void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, i
 }
 
 // resize.cpp
-unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst, bool alpha)
+unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst)
 {
 	unsigned char * cr;
 	
 	if(dst == NULL) 
 	{
-		cr = (unsigned char*) malloc(dx*dy*(alpha? 4 : 3));
+		cr = (unsigned char*) malloc(dx*dy*3);
 
 		if(cr == NULL)
 		{
@@ -1681,53 +1603,25 @@ unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int
 				xb_v[i] = ox - 1;
 		}
 		
-		//
-		if (alpha)
+		for(j = 0; j < dy; j++)
 		{
-			for(j = 0;j < dy; j++)
-			{
-				ya = j*oy/dy;
-				yb = (j + 1)*oy/dy; 
-				if(yb >= oy) 
-					yb = oy - 1;
+			ya = j*oy/dy;
+			yb = (j + 1)*oy/dy; 
+			if(yb >= oy) 
+				yb = oy - 1;
 				
-				for(i = 0; i < dx; i++, p += 4)
-				{
-					for(l = ya, r = 0, g = 0, b = 0, a = 0, sq = 0; l <= yb; l++)
-					{
-						q = origin + ((l*ox+xa_v[i])*4);
-						
-						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 4, sq++)
-						{
-							r += q[0]; g += q[1]; b += q[2]; a += q[3];
-						}
-					}
-					p[0] = r/sq; p[1] =g/sq; p[2] = b/sq; p[3] = a/sq;
-				}
-			}
-		}
-		else
-		{
-			for(j = 0; j < dy; j++)
+			for(i = 0; i < dx; i++, p += 3)
 			{
-				ya = j*oy/dy;
-				yb = (j + 1)*oy/dy; 
-				if(yb >= oy) 
-					yb = oy - 1;
-				
-				for(i = 0; i < dx; i++, p += 3)
+				for(l = ya, r = 0, g = 0, b = 0, sq = 0; l <= yb; l++)
 				{
-					for(l = ya, r = 0, g = 0, b = 0, sq = 0; l <= yb; l++)
-					{
-						q = origin + ((l*ox+xa_v[i])*3);
+					q = origin + ((l*ox+xa_v[i])*3);
 						
-						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 3, sq++)
-						{
-							r += q[0]; g += q[1]; b += q[2];
-						}
+					for(k = xa_v[i]; k <= xb_v[i]; k++, q += 3, sq++)
+					{
+						r += q[0]; g += q[1]; b += q[2];
 					}
-					p[0] = r/sq; p[1] = g/sq; p[2] = b/sq;
 				}
+				p[0] = r/sq; p[1] = g/sq; p[2] = b/sq;
 			}
 		}
 	}
@@ -1883,9 +1777,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 		return NULL;
 	}
 	
-	int load_ret;
-	
-	load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
+	int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
 	
 	if(load_ret == FH_ERROR_OK)
 	{
@@ -1952,6 +1844,7 @@ void CFrameBuffer::blit()
 	memset(&bltData, 0, sizeof(STMFBIO_BLT_DATA)); 
 
 	bltData.operation  = BLT_OP_COPY;
+	bltData.ulFlags |= BLT_OP_FLAGS_BLEND_SRC_ALPHA | BLT_OP_FLAGS_BLEND_DST_COLOR;
 
 	// src
 	bltData.srcOffset  = 1920 *1080 * 4;
@@ -1963,7 +1856,7 @@ void CFrameBuffer::blit()
 	bltData.src_bottom = yRes;
 
 		
-	bltData.srcFormat = SURF_BGRA8888;
+	bltData.srcFormat = SURF_ARGB8888;
 	bltData.srcMemBase = STMFBGP_FRAMEBUFFER;
 	
 	// get variable screeninfo
@@ -1981,7 +1874,7 @@ void CFrameBuffer::blit()
 	bltData.dst_right  = screeninfo.xres; 
 	bltData.dst_bottom = screeninfo.yres;
 
-	bltData.dstFormat = SURF_BGRA8888;		
+	bltData.dstFormat = SURF_ARGB8888;		
 	bltData.dstMemBase = STMFBGP_FRAMEBUFFER;
 
 	if ( (bltData.dst_right > screeninfo.xres) || (bltData.dst_bottom > screeninfo.yres) )

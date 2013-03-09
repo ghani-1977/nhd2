@@ -131,7 +131,7 @@ int CStreamInfo2::exec (CMenuTarget * parent, const std::string &)
 	if (parent)
 		parent->hide ();
 
-	paint (paint_mode);
+	paint(paint_mode);
 
 	doSignalStrengthLoop ();
 	
@@ -244,7 +244,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 					//g_Font[font_info]->RenderString (dx1+offset_tmp+((sw)*i), yypos+(dheight*4), offset, tmp_str, COL_MENUCONTENTDARK, 0, true);
 					
 					sprintf(currate, "%5llu.%03llu", tmp_rate / 1000ULL, tmp_rate % 1000ULL);
-					frameBuffer->paintBoxRel (dx1+offset+5+((sw+mm)*i), yypos+(dheight*3), sw, dheight, COL_MENUHEAD_PLUS_0);
+					frameBuffer->paintBoxRel (dx1+offset+5+((sw+mm)*i), yypos+(dheight*3), sw, dheight, /*COL_MENUHEAD_PLUS_0*/ COL_MENUCONTENTDARK_PLUS_0);
 					
 					/* bitrate values max/min */
 					//g_Font[font_info]->RenderString (dx1+offset+10+((sw+mm)*i), yypos+(dheight*4), sw - 10, currate, COL_MENUCONTENTDARK);
@@ -300,7 +300,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 				snrscale->reset();
 			
 			paint_mode = ++paint_mode % 2;
-			paint (paint_mode);
+			paint(paint_mode);
 			continue;
 		}
 		// -- any key --> abort
@@ -504,14 +504,14 @@ void CStreamInfo2::SignalRenderStr(unsigned int value, int _x, int _y)
 {
 	char str[30];
 
-	frameBuffer->paintBoxRel(_x, _y - sheight + 5, 60, sheight - 1, COL_MENUHEAD_PLUS_0);
+	frameBuffer->paintBoxRel(_x, _y - sheight + 5, 60, sheight - 1, /*COL_MENUHEAD_PLUS_0*/ COL_MENUCONTENTDARK_PLUS_0);
 	sprintf(str,"%6u",value);
 	g_Font[font_small]->RenderString(_x, _y + 5, 60, str, COL_MENUCONTENTDARK, 0, true);
 }
 
-void CStreamInfo2::paint (int mode)
+void CStreamInfo2::paint(int mode)
 {
-	const char *head_string;
+	const char * head_string;
 
 	width =  frameBuffer->getScreenWidth();
 	height = frameBuffer->getScreenHeight();
@@ -528,7 +528,7 @@ void CStreamInfo2::paint (int mode)
 		CVFD::getInstance ()->setMode (CVFD::MODE_MENU_UTF8, head_string);
 
 		// paint backround, title pig, etc
-		frameBuffer->paintBoxRel (0, 0, max_width, max_height, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel(0, 0, max_width, max_height, /*COL_MENUHEAD_PLUS_0*/COL_MENUCONTENTDARK_PLUS_0);
 
 		g_Font[font_head]->RenderString (xpos, ypos + hheight + 1, width, head_string, COL_MENUHEAD, 0, true);	// UTF-8
 		ypos += hheight;
@@ -545,7 +545,7 @@ void CStreamInfo2::paint (int mode)
 	{
 		// --  small PIG, small signal graph
 		// -- paint backround, title pig, etc.
-		frameBuffer->paintBoxRel (0, 0, max_width, max_height, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel (0, 0, max_width, max_height, /*COL_MENUHEAD_PLUS_0*/COL_MENUCONTENTDARK_PLUS_0);
 
 		// -- paint large signal graph
 		paint_signal_fe_box (x, y, width, height-100);
@@ -781,11 +781,9 @@ int CStreamInfo2Handler::exec(CMenuTarget* parent, const std::string &actionkey)
 	int res = menu_return::RETURN_EXIT_ALL;
 	
 	if (parent)
-	{
 		parent->hide();
-	}
 	
-	CStreamInfo2 *e = new CStreamInfo2;
+	CStreamInfo2 * e = new CStreamInfo2;
 	e->exec();
 	delete e;
 	return res;
@@ -936,7 +934,7 @@ void CStreamInfo2::showSNR ()
 		sigscale->paint(posx - 1, posy, sig);
 
 		posx = posx + barwidth + 3;
-		frameBuffer->paintBoxRel(posx, posy -1, sw, mheight-8, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel(posx, posy -1, sw, mheight-8, /*COL_MENUHEAD_PLUS_0*/COL_MENUCONTENTDARK_PLUS_0);
 		g_Font[font_info]->RenderString (posx+2, posy + mheight-5, sw, percent, COL_MENUCONTENTDARK);
 	}
 
@@ -949,7 +947,7 @@ void CStreamInfo2::showSNR ()
 		snrscale->paint(posx - 1, posy+2, snr);
 
 		posx = posx + barwidth + 3;
-		frameBuffer->paintBoxRel(posx, posy - 1, sw, mheight-8, COL_MENUHEAD_PLUS_0, 0, true);
+		frameBuffer->paintBoxRel(posx, posy - 1, sw, mheight-8, /*COL_MENUHEAD_PLUS_0*/COL_MENUCONTENTDARK_PLUS_0, 0, true);
 		g_Font[font_info]->RenderString (posx + 2, posy + mheight-5, sw, percent, COL_MENUCONTENTDARK, 0, true);
 	}
 }

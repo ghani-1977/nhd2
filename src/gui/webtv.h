@@ -85,5 +85,7 @@ class CWebTV /*: public CMenuTarget*/
 		
 		CFileList filelist;
 		CFile * getSelectedFile();
+		
+		void paintMiniTV();
 };
 #endif

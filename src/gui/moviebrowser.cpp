@@ -420,7 +420,7 @@ void CMovieBrowser::fileInfoStale(void)
 	 // Also release memory buffers, since we have to reload this stuff next time anyhow 
 	m_dirNames.clear();
 	
-	for(unsigned int i=0; i < m_vMovieInfo.size(); i++)
+	for(unsigned int i = 0; i < m_vMovieInfo.size(); i++)
 	{
 		m_vMovieInfo[i].audioPids.clear();
 	}
@@ -1080,11 +1080,15 @@ int CMovieBrowser::exec(const char * path)
 	saveSettings(&m_settings);	// might be better done in ~CMovieBrowser, but for any reason this does not work if MB is killed by neutrino shutdown	
 
 	// make stale if we should reload the next time, but not if movie has to be played
+	//FIXME: terminate called after throwing an instance of 'std::bad_alloc' what():  St9bad_alloc
+
+	/*
 	if(m_settings.reload == true && res == false)
 	{
 		TRACE("[mb] force reload next time\r\n");
 		fileInfoStale();
 	}
+	*/
 
 	//CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	

@@ -424,7 +424,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 
 	int lastindex=0; // 0 == missing glyph (never has kerning values)
 	FT_Vector kerning;
-	int pen1=-1; // "pen" positions for kerning, pen2 is "x"
+	int pen1 = -1; // "pen" positions for kerning, pen2 is "x"
 
 	static fb_pixel_t oldbgcolor = 0, oldfgcolor = 0;
 	static fb_pixel_t colors[256];// = {0};
@@ -461,10 +461,6 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				 (((fgg + deltag * i / 255) & ((1 << gl) - 1)) << go) |
 				 (((fgb + deltab * i / 255) & ((1 << bl) - 1)) << bo) |
 				 (((fgt + deltat * i / 255) & ((1 << tl) - 1)) << to));
-				 
-			// font bg blending
-			//if( 1 && (255 - i) > 128 )
-			//	colors[255 - i] |=  0xFF << to;
 		}
 	}
 	
