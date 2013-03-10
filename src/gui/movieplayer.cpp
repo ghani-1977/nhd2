@@ -259,7 +259,7 @@ int CAPIDSelectExec::exec(CMenuTarget * parent, const std::string & actionKey)
 		g_currentapid = g_apids[sel - 1];
 		g_currentac3 = g_ac3flags[sel - 1];
 		apidchanged = 1;
-		printf("[movieplayer] apid changed to %d\n", g_apids[sel - 1]);
+		dprintf(DEBUG_NORMAL, "[movieplayer] apid changed to %d\n", g_apids[sel - 1]);
 	}
 
 	return menu_return::RETURN_EXIT;
@@ -445,7 +445,7 @@ void CMoviePlayerGui::restoreNeutrino()
 
 int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 {
-	printf("[movieplayer] actionKey=%s\n", actionKey.c_str());
+	dprintf(DEBUG_NORMAL, "[movieplayer] actionKey=%s\n", actionKey.c_str());
 
 	dvbsub_pause();
 	
@@ -800,7 +800,7 @@ int VlcGetStreamLength()
 
 bool VlcReceiveStreamStart(void * mrl)
 {
-	printf ("[movieplayer.cpp] ReceiveStream started\n");
+	dprintf(DEBUG_NORMAL, "[movieplayer.cpp] ReceiveStream started\n");
 
 	// Get Server and Port from Config
 	std::string response;
@@ -858,8 +858,8 @@ bool VlcReceiveStreamStart(void * mrl)
 	servAddr.sin_port = htons (port);
 	servAddr.sin_addr.s_addr = inet_addr (server);
 
-	printf ("[movieplayer.cpp] Server: %s\n", server);
-	printf ("[movieplayer.cpp] Port: %d\n", port);
+	dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Server: %s\n", server);
+	dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Port: %d\n", port);
 	int len;
 
 	while(true)
@@ -870,7 +870,8 @@ bool VlcReceiveStreamStart(void * mrl)
 		{
 			skt = socket (AF_INET, SOCK_STREAM, 0);
 
-			printf ("[movieplayer.cpp] Trying to connect socket\n");
+			dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Trying to connect socket\n");
+			
 			if(connect(skt, (struct sockaddr *) &servAddr, sizeof (servAddr)) < 0)
 			{
 				perror ("SOCKET");
@@ -880,7 +881,7 @@ bool VlcReceiveStreamStart(void * mrl)
 			fcntl (skt, O_NONBLOCK);
 		}
 		
-		printf ("[movieplayer.cpp] Socket OK\n");
+		dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Socket OK\n");
        
 		// Skip HTTP header
 		const char * msg = "GET /dboxstream HTTP/1.0\r\n\r\n";
@@ -893,7 +894,7 @@ bool VlcReceiveStreamStart(void * mrl)
 			return false;
 		}
 
-		printf ("[movieplayer.cpp] GET Sent\n");
+		dprintf(DEBUG_NORMAL, "[movieplayer.cpp] GET Sent\n");
 		
 		usleep(1000);
 
@@ -911,7 +912,7 @@ bool VlcReceiveStreamStart(void * mrl)
 			
 			if(strcmp (line, "HTTP/1.0 404") == 0)
 			{
-				printf ("[movieplayer.cpp] VLC still does not send. Exiting...\n");
+				dprintf(DEBUG_NORMAL, "[movieplayer.cpp] VLC still does not send. Exiting...\n");
 				
 				if(skt > 0)
 				{
@@ -949,7 +950,7 @@ bool VlcReceiveStreamStart(void * mrl)
 	}
 	
 vlc_is_sending:
-	printf ("[movieplayer.cpp] Now VLC is sending. Read sockets created\n");
+	dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Now VLC is sending. Read sockets created\n");
 	
 	return true;
 }
@@ -1030,7 +1031,7 @@ void CMoviePlayerGui::PlayFile(void)
 			strcpy (mrl, "dvd://");
 			strcat (mrl, g_settings.streaming_server_cddrive);
 			strcat (mrl, "@1");
-			printf ("[movieplayer.cpp] Generated MRL: %s\n", mrl);
+			dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated MRL: %s\n", mrl);
 			title = "DVD";
 			open_filebrowser = false;
 			cdDvd = true;
@@ -1039,7 +1040,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			strcpy (mrl, "vcd://");
 			strcat (mrl, g_settings.streaming_server_cddrive);
-			printf ("[movieplayer.cpp] Generated MRL: %s\n", mrl);
+			dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated MRL: %s\n", mrl);
 			title = "(S)VCD";
 			open_filebrowser = false;
 			cdDvd = true;
@@ -1131,7 +1132,7 @@ void CMoviePlayerGui::PlayFile(void)
 				char * tmp = curl_escape (mrl_str.c_str (), 0);
 				strncpy (mrl, tmp, sizeof (mrl) - 1);
 				curl_free (tmp);
-				printf ("[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
+				dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
  
 				update_lcd = true;
 				start_play = true;
@@ -1146,8 +1147,6 @@ void CMoviePlayerGui::PlayFile(void)
 		// exit
 		if (exit) 
 		{	  
-			playback->Stop();
-			
 			exit = false;
 			cdDvd = false;
 			if(skt > 0)
@@ -1155,7 +1154,7 @@ void CMoviePlayerGui::PlayFile(void)
 				close(skt);
 				skt = -1;
 			}
-			printf("[movieplayer] stop\n");			
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");			
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
 		}
@@ -1180,7 +1179,7 @@ void CMoviePlayerGui::PlayFile(void)
 			sprintf(fname, "%s.ts", rec_filename);
 			filename = fname;
 			sel_filename = std::string(rindex(filename, '/') + 1);
-			printf("[MoviePlayer] Timeshift: %s\n", sel_filename.c_str());
+			dprintf(DEBUG_NORMAL, "[MoviePlayer] Timeshift: %s\n", sel_filename.c_str());
 
 			update_lcd = true;
 			start_play = true;
@@ -1407,8 +1406,8 @@ void CMoviePlayerGui::PlayFile(void)
 							g_file_epg1 = sel_filename;
 						//
 						
-						printf("CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
-						printf("CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
+						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
+						dprintf(DEBUG_NORMAL, "CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
 						
 						// get the start position for the movie
 						startposition = 1000 * moviebrowser->getCurrentStartPos();
@@ -1467,7 +1466,7 @@ void CMoviePlayerGui::PlayFile(void)
 						char * tmp = curl_escape(mrl_str.c_str (), 0);
 						strncpy (mrl, tmp, sizeof (mrl) - 1);
 						curl_free (tmp);
-						printf ("[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
+						dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
 
 						update_lcd = true;
 						start_play = true;
@@ -1730,7 +1729,7 @@ void CMoviePlayerGui::PlayFile(void)
 		// start playing
 		if (start_play) 
 		{
-			printf("%s::%s Startplay at %d seconds\n", FILENAME, __FUNCTION__, startposition/1000);
+			dprintf(DEBUG_NORMAL, "%s::%s Startplay at %d seconds\n", FILENAME, __FUNCTION__, startposition/1000);
 
 			start_play = false;
 			
@@ -1783,7 +1782,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(!playback->Start((char *)filename)) 
 #endif
 			{
-				printf("%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
+				dprintf(DEBUG_NORMAL, "%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();
 				restoreNeutrino();
 			} 
@@ -1802,7 +1801,7 @@ void CMoviePlayerGui::PlayFile(void)
 					//wait
 					usleep(TIMESHIFT_SECONDS*1000);
 
-					printf("[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
+					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
 
 				// set position 
@@ -2568,8 +2567,8 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		if (exit) 
-		{	  
-			playback->Stop();			
+		{
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");	
 
 			if (isMovieBrowser == true) 
 			{
@@ -2589,6 +2588,8 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 		}
 	} while (playstate >= CMoviePlayerGui::PLAY);
+	
+	dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");	
 
 	if(FileTime.IsVisible())
 		FileTime.hide();
