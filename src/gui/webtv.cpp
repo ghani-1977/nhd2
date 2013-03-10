@@ -172,17 +172,11 @@ int CWebTV::Show()
 	{
 		width  = 755;
 		height = 600;
-		
-		x = frameBuffer->getScreenX() + 10;
-		y = frameBuffer->getScreenY() + 10;
 	}
 	else
 	{
 		width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 		height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
-		
-		x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
-		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 	}
 	  
 
@@ -199,6 +193,17 @@ int CWebTV::Show()
 	listmaxshow = (height - theight - buttonHeight)/fheight;
 	height = theight + buttonHeight + listmaxshow * fheight;
 	info_height = fheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	
+	if(g_settings.mini_tv)
+	{
+		x = frameBuffer->getScreenX() + 10;
+		y = frameBuffer->getScreenY() + 10;
+	}
+	else
+	{
+		x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
+		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
+	}
 	
 	// head
 	paintHead();
