@@ -430,7 +430,8 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
 			continue;
 
-		if( !fe->locked )
+		// FIXME: skip not locked tuner (single tuner ???
+		if( !fe->locked && femap.size() > 1)
 			fe->Close();
 	}
 	//
@@ -3857,9 +3858,9 @@ void * sdt_thread(void * arg)
 	return 0;
 }
 
-#if !defined (PLATFORM_GENERIC)
-#define CHECK_FOR_LOCK
-#endif
+//#if !defined (PLATFORM_GENERIC)
+//#define CHECK_FOR_LOCK
+//#endif
 int zapit_main_thread(void *data)
 {
 	Z_start_arg *ZapStart_arg = (Z_start_arg *) data;
