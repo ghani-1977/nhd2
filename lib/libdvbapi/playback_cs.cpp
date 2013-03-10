@@ -52,7 +52,6 @@ GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
-//GstTagList * m_stream_tags = 0;
 static int end_eof = 0;
 #elif defined ENABLE_LIBEPLAYER3
 #include <common.h>
@@ -137,40 +136,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			g_error_free(inf);
 			break;
 		}
-
-		#if 0
-		case GST_MESSAGE_TAG:
-		{
-			GstTagList *tags, *result;
-			gst_message_parse_tag(msg, &tags);
-	
-			result = gst_tag_list_merge(m_stream_tags, tags, GST_TAG_MERGE_REPLACE);
-			if (result)
-			{
-				if (m_stream_tags)
-					gst_tag_list_free(m_stream_tags);
-				m_stream_tags = result;
-			}
-	
-			const GValue *gv_image = gst_tag_list_get_value_index(tags, GST_TAG_IMAGE, 0);
-			if ( gv_image )
-			{
-				GstBuffer *buf_image;
-				buf_image = gst_value_get_buffer (gv_image);
-				int fd = open("/tmp/.id3coverart", O_CREAT|O_WRONLY|O_TRUNC, 0644);
-				if(fd >= 0)
-				{
-					int ret = write(fd, GST_BUFFER_DATA(buf_image), GST_BUFFER_SIZE(buf_image));
-					close(fd);
-					printf("cPlayback::state /tmp/.id3coverart %d bytes written\n", ret);
-				}
-				//FIXME: how shall playback handle this event???
-			}
-			gst_tag_list_free(tags);
-			printf("update info tags\n"); //FIXME: how shall playback handle this event???
-			break;
-		}
-		#endif
 		
 		case GST_MESSAGE_STATE_CHANGED:
 		{
@@ -194,7 +159,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				}	break;
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
-					#if 0
 					GstIterator *children;
 					if (audioSink)
 					{
@@ -211,7 +175,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
-					#endif
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
@@ -221,7 +184,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				}	break;
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
-					#if 0
 					if (audioSink)
 					{
 						gst_object_unref(GST_OBJECT(audioSink));
@@ -232,7 +194,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 						gst_object_unref(GST_OBJECT(videoSink));
 						videoSink = NULL;
 					}
-					#endif
 				}	break;
 				case GST_STATE_CHANGE_READY_TO_NULL:
 				{
@@ -250,7 +211,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 
 cPlayback::cPlayback(int num)
 { 
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 
 	/* init gstreamer */
 #if ENABLE_GSTREAMER
@@ -260,14 +221,14 @@ cPlayback::cPlayback(int num)
 
 cPlayback::~cPlayback()
 {  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 	//FIXME: all deleting stuff is done in Close()	
 }
 
 //Used by Fileplay
 bool cPlayback::Open()
 {
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__ );
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__ );
 	
 	mAudioStream = 0;
 	mSpeed = 0;
@@ -313,55 +274,27 @@ bool cPlayback::Open()
 // used by movieplay
 void cPlayback::Close(void)
 {  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 	
 #if ENABLE_GSTREAMER
 	// disconnect bus handler
 	if (m_gst_playbin)
 	{
 		// disconnect sync handler callback
-		//GstBus * bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		//gst_bus_set_sync_handler(bus, NULL, NULL);
-		//gst_object_unref(bus);
 		gst_bus_set_sync_handler(gst_pipeline_get_bus (GST_PIPELINE (m_gst_playbin)), NULL, NULL);
 		
-		printf("GST bus handler closed\n");
+		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
 	
-//#if defined (PLATFORM_GENERIC)	
-	//if(playing)
-	//	Stop();
-//#endif
-	
-	//if (m_stream_tags)
-	//	gst_tag_list_free(m_stream_tags);
+	if(playing)
+		Stop();
 
 	// close gst
 	if (m_gst_playbin)
 	{
-		#if 0
-		if (audioSink)
-		{
-			gst_object_unref(GST_OBJECT(audioSink));
-			audioSink = NULL;
-			
-			printf("GST audio Sink closed\n");
-		}
-		
-		if (videoSink)
-		{
-			gst_object_unref(GST_OBJECT(videoSink));
-			videoSink = NULL;
-			
-			printf("GST video Sink closed\n");
-		}
-		#endif
-		
 		// unref m_gst_playbin
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
-		printf("GST playbin closed\n");
-		
-		//m_gst_playbin = NULL;
+		dprintf(DEBUG_NORMAL, "GST playbin closed\n");
 	}
 #elif defined ENABLE_LIBEPLAYER3
 	if(playing)
@@ -390,7 +323,7 @@ void cPlayback::Close(void)
 // start
 bool cPlayback::Start(char * filename)
 {
-	printf("%s:%s - filename=%s\n", FILENAME, __FUNCTION__, filename);
+	dprintf(DEBUG_NORMAL, "%s:%s - filename=%s\n", FILENAME, __FUNCTION__, filename);
 
 	// default first audio pid
 	mAudioStream = 0;
@@ -443,9 +376,6 @@ bool cPlayback::Start(char * filename)
 		g_free(uri);
 	
 		//gstbus handler
-		//bus = gst_pipeline_get_bus( GST_PIPELINE(m_gst_playbin) );
-		//gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
-		//gst_object_unref(bus); 
 		gst_bus_set_sync_handler(gst_pipeline_get_bus (GST_PIPELINE (m_gst_playbin)), Gst_bus_call, this);
 		
 		// state playing
@@ -506,7 +436,7 @@ bool cPlayback::Start(char * filename)
 
 bool cPlayback::Play(void)
 {
-	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_NORMAL, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == true) 
 		return true;
@@ -540,7 +470,7 @@ bool cPlayback::Stop(void)
 	if(playing == false) 
 		return false;
 	
-	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);
+	dprintf(DEBUG_NORMAL, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);
 
 #if defined (ENABLE_GSTREAMER)
 	// stop
@@ -565,7 +495,7 @@ bool cPlayback::Stop(void)
 
 bool cPlayback::SetAPid(unsigned short pid)
 {
-	dprintf(DEBUG_INFO, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
+	dprintf(DEBUG_NORMAL, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
 	
 #if ENABLE_GSTREAMER
 	int current_audio;
@@ -620,7 +550,7 @@ void cPlayback::trickSeek(int ratio)
 
 bool cPlayback::SetSpeed(int speed)
 {  
-	dprintf(DEBUG_INFO, "%s:%s speed %d\n", FILENAME, __FUNCTION__, speed);	
+	dprintf(DEBUG_NORMAL, "%s:%s speed %d\n", FILENAME, __FUNCTION__, speed);	
 
 	if(playing == false) 
 		return false;
@@ -721,7 +651,7 @@ bool cPlayback::SetSpeed(int speed)
 
 bool cPlayback::SetSlow(int slow)
 {  
-	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_NORMAL, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == false) 
 		return false;
@@ -814,7 +744,7 @@ bool cPlayback::GetPosition(int &position)
 #elif defined ENABLE_LIBEPLAYER3
 	if (player && player->playback && !player->playback->isPlaying) 
 	{	  
-		dprintf(DEBUG_INFO, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);	
+		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);	
 	
 		return false;
 	} 
@@ -863,7 +793,7 @@ bool cPlayback::SetPosition(int position)
 
 void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t *numpida, std::string * language)
 { 
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 
 #if defined (ENABLE_GSTREAMER)
 	if(m_gst_playbin)
@@ -1032,7 +962,7 @@ void cPlayback::getMeta()
 
 bool cPlayback::SyncAV(void)
 {
-	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_NORMAL, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	if(playing == false ) 
 		return false;

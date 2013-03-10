@@ -78,6 +78,8 @@
 #include <gui/pictureviewer.h>
 #include <audio_cs.h>
 
+#include <system/debug.h>
+
 
 extern CPictureViewer * g_PicViewer;
 
@@ -405,7 +407,7 @@ int CAudioPlayerGui::show()
 					sprintf(fname, "%s/mp3-%d.jpg", DATADIR "/neutrino/icons", pic_index);
 
 					int ret = access(fname, F_OK);
-					printf("CAudioPlayerGui::show: new pic %s: %s\n", fname, ret ? "not found" : "found");
+					dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret ? "not found" : "found");
 					
 					if(ret == 0) 
 					{
@@ -1022,7 +1024,8 @@ void CAudioPlayerGui::processPlaylistUrl(const char *url, const char *name, cons
 	CURL *curl_handle;
 	struct MemoryStruct chunk;
 
-	printf("CAudioPlayerGui::processPlaylistUrl (%s, %s)\n", url, name);
+	dprintf(DEBUG_NORMAL, "CAudioPlayerGui::processPlaylistUrl (%s, %s)\n", url, name);
+	
 	chunk.memory=NULL; /* we expect realloc(NULL, size) to work */
 	chunk.size = 0;    /* no data at this point */
 
@@ -1171,7 +1174,7 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 		
 		if (element == NULL) 
 		{
-			printf("[openFilebrowser] No valid XML File.\n");
+			dprintf(DEBUG_NORMAL, "[openFilebrowser] No valid XML File.\n");
 		} 
 		else 
 		{
@@ -1343,7 +1346,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 
 					if (len && (strstr(buf, ".m3u") || strstr(buf, ".pls")))
 					{
-						printf("m3u/pls Playlist found: %s\n", buf);
+						dprintf(DEBUG_INFO, "m3u/pls Playlist found: %s\n", buf);
 						filename = buf;
 						processPlaylistUrl(buf);
 					}
@@ -1416,10 +1419,10 @@ bool CAudioPlayerGui::openFilebrowser(void)
 									{
 										CAudiofileExt audioFile(filename,fileType);
 										addToPlaylist(audioFile);
-									} else
+									} 
+									else
 									{
-										printf("Audioplayer: file type (%d) is *not* supported in playlists\n(%s)\n",
-												fileType, filename.c_str());
+										printf("Audioplayer: file type (%d) is *not* supported in playlists\n(%s)\n", fileType, filename.c_str());
 									}
 								}
 							}
@@ -2112,6 +2115,7 @@ void CAudioPlayerGui::rev(unsigned int seconds)
 void CAudioPlayerGui::play(unsigned int pos)
 {
 	//printf("AudioPlaylist: play %d/%d\n",pos,playlist.size());
+	
 	unsigned int old_current = m_current;
 	unsigned int old_selected = m_selected;
 
@@ -2262,6 +2266,7 @@ void CAudioPlayerGui::updateMetaData()
 	}
 	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
+	
 #if !defined (PLATFORM_GIGABLUE)	
 	if(updateLcd)
 		paintLCD();
@@ -2683,13 +2688,14 @@ void CAudioPlayerGui::printSearchTree()
 	for (CTitle2Pos::iterator it=m_title2Pos.begin();
 	it!=m_title2Pos.end();it++)
 	{
-		printf("key: %c\n",it->first);
+		dprintf(DEBUG_NORMAL, "key: %c\n",it->first);
+		
 		long pos=-1;
 		for (CPosList::iterator it2=it->second.begin();
 		it2!=it->second.end();it2++)
 		{
 			pos++;
-			printf(" val: %ld ",*it2);
+			dprintf(DEBUG_NORMAL, " val: %ld ",*it2);
 			if (pos % 5 == 4)
 				printf("\n");
 		}
