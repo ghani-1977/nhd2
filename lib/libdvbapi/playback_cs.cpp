@@ -382,7 +382,7 @@ bool cPlayback::Start(char * filename)
 	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
 
 	if(m_gst_playbin)
-	{
+	{		
 		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 		
