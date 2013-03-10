@@ -36,9 +36,11 @@ int tuxtxt_init()
 
 	tuxtxt_clear_cache();
 	tuxtxt_cache.receiving = 0;
+	
 	tuxtxt_cache.thread_starting = 0;
-	tuxtxt_cache.vtxtpid = -1;
 	tuxtxt_cache.thread_id = 0;
+	
+	tuxtxt_cache.vtxtpid = -1;
 	tuxtxt_cache.dmx = -1;
 	
 	return 1;//tuxtxt_init_demuxer();
@@ -66,6 +68,7 @@ void tuxtxt_start(int tpid, int source)
 		tuxtxt_clear_cache();
 		tuxtxt_cache.page = 0x100;
 		tuxtxt_cache.vtxtpid = tpid;
+		
 		tuxtxt_start_thread(source);
 	}
 	else if (!tuxtxt_cache.thread_starting && !tuxtxt_cache.receiving)

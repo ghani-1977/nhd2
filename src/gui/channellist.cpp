@@ -1651,12 +1651,12 @@ void CChannelList::paintDetails(int index)
 				text2 = text2.substr( 1 );
 
 			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y+ height+ 5+ 2* fheight, width- xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + 2* fheight, width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
 		}
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10- seit_len, y+ height + 5 + fheight   , seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10- noch_len, y+ height + 5 + 2* fheight- 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10 - seit_len, y+ height + 5 + fheight   , seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10 - noch_len, y+ height + 5 + 2*fheight - 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
 	}
 }
 
@@ -2049,25 +2049,25 @@ void CChannelList::paintMiniTV()
 	// paint selected channel name (only when channellist exists)
 	int channelname_len = 0;
 	std::string liveChanName = g_Zapit->getChannelName(live_channel_id);
-	channelname_len = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(liveChanName.c_str(), true); // UTF-8
+	channelname_len = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth((char *)liveChanName.c_str(), true); // UTF-8
 	
 	// pig body
 	frameBuffer->paintBoxRel(830, y + theight, 400, 225 + theight/2, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
 	//info head
-	frameBuffer->paintBoxRel(830, y + theight + 255 + theight/2 + 5, 400, theight, /*COL_MENUHEAD_PLUS_0*/ COL_MENUCONTENTDARK_PLUS_0);
+	frameBuffer->paintBoxRel(830, y + theight + 255 + theight/2 + 5, 400, theight, COL_MENUCONTENTDARK_PLUS_0);
 	
 	// info body
 	frameBuffer->paintBoxRel(830, y + theight + 255 + theight/2 + 5 + theight, 400, 660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height, COL_MENUCONTENT_PLUS_0);
 	
 	// live channel name
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 10, y + theight, 400 - channelname_len, liveChanName.c_str(), COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 10, y + theight, (channelname_len > 390? 390 : channelname_len), liveChanName.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 		
 	// FIXME: paint logo only when we have enough place ???
-	if( 400 - (channelname_len + 10) >= PIC_W)
+	if( 390 - channelname_len >= PIC_W)
 		g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 + channelname_len + 5, y, PIC_W, theight);
 		
-	#if 1
+	// event description
 	CChannelEvent * p_event = NULL;
 	if(p_event == NULL)
 		p_event = &live_channel->currentEvent;;
@@ -2091,48 +2091,119 @@ void CChannelList::paintMiniTV()
 
 		std::string text1 = p_event->description;
 		std::string text2 = p_event->text;
-
-		int xstart = 5;
-		if (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > (390 - 30 - seit_len) )
-		{
-			// zu breit, Umbruch versuchen...
-			int pos;
-			do 
-			{
-				pos = text1.find_last_of("[ -.]+");
-				if ( pos!=-1 )
-					text1 = text1.substr( 0, pos );
-			} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > (390 - 30 - seit_len) ) );
-
-			std::string text3 = p_event->description.substr(text1.length()+ 1);
-
-			if (!(text2.empty()))
-				text3 = text3+ " - ";
-
-			xstart += g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text3, true);
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 +theight + 3*fheight, 390 - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
-		}
-
-		if (!(text2.empty())) 
-		{
-			while ( text2.find_first_of("[ -.+*#?=!$%&/]+") == 0 )
-				text2 = text2.substr( 1 );
-
-			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(830 + xstart, y + theight + 255 + theight/2 + 5 +theight + 3* fheight, 390 - xstart - 20 - noch_len, text2, COL_MENUCONTENTDARK, 0, true);
-		}
+		
+		int descr_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth((char *)text1.c_str(), true); // UTF-8
 
 		// description
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight/*+ fheight*/, /*390 - 30 - seit_len*/ 400 - strlen(text1.c_str()), text1, COL_MENUCONTENTDARK, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight, (descr_len > 390? 390 : descr_len), text1, COL_MENUCONTENTDARK, 0, true);
 			
 		// since
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5/*+ 390 - 10 - seit_len*/, y + theight + 255 + theight/2 + 5 + theight + fheight, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + fheight, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
 			
 		// rest/duration
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + fheight, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		
+		// text
+		epgText.clear();
+		emptyLineCount = 0;
+				
+		if (!(text2.empty())) 
+		{
+			processTextToArray(text2);
+					
+			// recalculate
+			medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			medlinecount = (660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height -fheight)/medlineheight;
+
+			int textCount = epgText.size();
+			int ypos = y + theight + 255 + theight/2 + 5 +theight + 2*fheight;
+
+			for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
+			{
+				if ( i < epgText.size() )
+					g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
+				else
+					g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
+			}
+		}
 	}
-	#endif
-	//
+}
+
+void CChannelList::addTextToArray(const std::string & text) // UTF-8
+{
+	//printf("line: >%s<\n", text.c_str() );
+	
+	if (text==" ")
+	{
+		emptyLineCount ++;
+		
+		if(emptyLineCount < 2)
+		{
+			epgText.push_back(text);
+		}
+	}
+	else
+	{
+		emptyLineCount = 0;
+		epgText.push_back(text);
+	}
+}
+
+void CChannelList::processTextToArray(std::string text) // UTF-8
+{
+	std::string	aktLine = "";
+	std::string	aktWord = "";
+	int	aktWidth = 0;
+	text += ' ';
+	char * text_= (char *) text.c_str();
+
+	while(*text_!=0)
+	{
+		if ( (*text_==' ') || (*text_=='\n') || (*text_=='-') || (*text_=='.') )
+		{
+			// Houdini: if there is a newline (especially in the Premiere Portal EPGs) do not forget to add aktWord to aktLine 
+			// after width check, if width check failes do newline, add aktWord to next line 
+			// and "reinsert" i.e. reloop for the \n
+			if(*text_!='\n')
+				aktWord += *text_;
+
+			// check the wordwidth - add to this line if size ok
+			int aktWordWidth = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->getRenderWidth(aktWord, true);
+			if((aktWordWidth+aktWidth) < (390))
+			{
+				//space ok, add
+				aktWidth += aktWordWidth;
+				aktLine += aktWord;
+			
+				if(*text_=='\n')
+				{	//enter-handler
+					addTextToArray( aktLine );
+					aktLine = "";
+					aktWidth= 0;
+				}	
+				aktWord = "";
+			}
+			else
+			{
+				//new line needed
+				addTextToArray( aktLine );
+				aktLine = aktWord;
+				aktWidth = aktWordWidth;
+				aktWord = "";
+				// Houdini: in this case where we skipped \n and space is too low, exec newline and rescan \n 
+				// otherwise next word comes direct after aktLine
+				if(*text_=='\n')
+					continue;
+			}
+		}
+		else
+		{
+			aktWord += *text_;
+		}
+		text_++;
+	}
+	//add the rest
+	addTextToArray( aktLine + aktWord );
 }
 
 

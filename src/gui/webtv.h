@@ -64,9 +64,6 @@ class CWebTV /*: public CMenuTarget*/
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
 		int info_height;
-
-		
-		//int            m_LastMode;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
@@ -75,6 +72,14 @@ class CWebTV /*: public CMenuTarget*/
 		void paint();
 		void paintHead();
 		void hide();
+		
+		int medlineheight;
+		int medlinecount;
+		
+		std::vector<std::string> epgText;
+		int emptyLineCount;
+		void addTextToArray( const std::string & text );
+		void processTextToArray(std::string text);
 		
 	public:
 		CWebTV();

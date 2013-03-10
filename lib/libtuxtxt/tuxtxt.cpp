@@ -195,7 +195,7 @@ unsigned short key_vfdok;
 		
 bool loadKeyMap(const char * const fileName)
 {
-	printf("CRCInput::loadKeymap:\n");
+	dprintf(DEBUG_NORMAL, "CRCInput::loadKeymap:\n");
 	
 	/* if keymap.conf not exists load default */
 	if(!configfile.loadConfig(fileName))
@@ -516,9 +516,9 @@ void gethotlist()
 	hotlistchanged = 0;
 	maxhotlist = -1;
 	sprintf(line, CONFIGDIR "/tuxtxt/hotlist%d.conf", tuxtxt_cache.vtxtpid);
-#if TUXTXT_DEBUG
-	printf("TuxTxt <gethotlist %s", line);
-#endif
+	
+	dprintf(DEBUG_INFO, "TuxTxt <gethotlist %s", line);
+
 	if ((hl = fopen(line, "rb")) != 0)
 	{
 		do {
@@ -530,7 +530,7 @@ void gethotlist()
 				if (hotlist[maxhotlist+1] >= 0x100 && hotlist[maxhotlist+1] <= 0x899)
 				{
 #if TUXTXT_DEBUG
-					printf(" %03x", hotlist[maxhotlist+1]);
+					dprintf(" %03x", hotlist[maxhotlist+1]);
 #endif
 					maxhotlist++;
 					continue;
@@ -562,6 +562,7 @@ void savehotlist()
 
 	hotlistchanged = 0;
 	sprintf(line, CONFIGDIR "/tuxtxt/hotlist%d.conf", tuxtxt_cache.vtxtpid);
+	
 #if TUXTXT_DEBUG
 	printf("TuxTxt <savehotlist %s", line);
 #endif
@@ -919,6 +920,7 @@ int eval_triplet(int iOData, tstCachedPage *pstCachedPage,
 		if (iMode != 0x06)
 			*pAPx = iAddress;	/* new Active Column */
 		offset = (*pAPy0 + *pAPy) * 40 + *pAPx0 + *pAPx;	/* offset to page_char and page_atrb */
+		
 #if TUXTXT_DEBUG
 		if (dumpl25)
 			printf("  M%02xC%02xD%02x %d r:%d ch:%02x", iMode, iAddress, iData, *endcol,*pAPy0 + *pAPy,page_char[offset]);
@@ -1833,7 +1835,8 @@ void eval_l25()
 */
 static void * reader_thread(void * /*arg*/)
 {
-	printf("TuxTxt subtitle thread started\n");
+	dprintf(DEBUG_NORMAL, "TuxTxt subtitle thread started\n");
+	
 	reader_running = 1;
 	
 	//ttx_paused = 0;
@@ -1858,15 +1861,19 @@ static void * reader_thread(void * /*arg*/)
 		CleanUp();
 
 	tuxtxt_close();
-	printf("TuxTxt subtitle thread stopped\n");
+	
+	dprintf(DEBUG_NORMAL, "TuxTxt subtitle thread stopped\n");
+	
 	pthread_exit(NULL);
 }
 
 int tuxtx_main(int _rc, int pid, int page, int source);
 void tuxtx_pause_subtitle(bool pause, int source)
 {
-	if(!pause) {
-		printf("TuxTxt subtitle unpause, running %d pid %d page %d\n", reader_running, sub_pid, sub_page);
+	if(!pause) 
+	{
+		dprintf(DEBUG_NORMAL, "TuxTxt subtitle unpause, running %d pid %d page %d\n", reader_running, sub_pid, sub_page);
+		
 		ttx_paused = 0;
 		if(!reader_running && sub_pid && sub_page)
 			tuxtx_main(0, sub_pid, sub_page, source);
@@ -1876,20 +1883,24 @@ void tuxtx_pause_subtitle(bool pause, int source)
 		if(!reader_running)
 			return;
 		
-		printf("TuxTxt subtitle asking to pause...\n");
+		dprintf(DEBUG_NORMAL, "TuxTxt subtitle asking to pause...\n");
 		ttx_req_pause = 1;
 		while(!ttx_paused)
 			usleep(10);
-		printf("TuxTxt subtitle paused\n");
+		
+		dprintf(DEBUG_NORMAL, "TuxTxt subtitle paused\n");
 	}
 }
 
 void tuxtx_stop_subtitle()
 {
-	printf("TuxTxt stopping subtitle thread ...\n");
+	dprintf(DEBUG_NORMAL, "TuxTxt stopping subtitle thread ...\n");
+	
 	reader_running = 0;
+	
 	if(ttx_sub_thread)
 		pthread_join(ttx_sub_thread, NULL);
+	
 	ttx_sub_thread = 0;
 	sub_pid = sub_page = 0;
 	ttx_paused = 0;
@@ -1904,7 +1915,9 @@ void tuxtx_set_pid(int pid, int page, const char * cc)
 	sub_page = page;
 
 	cfg_national_subset = GetNationalSubset(cc);
-	printf("TuxTxt subtitle set pid %d page %d lang %s (%d)\n", sub_pid, sub_page, cc, cfg_national_subset);
+	
+	dprintf(DEBUG_NORMAL, "TuxTxt subtitle set pid %d page %d lang %s (%d)\n", sub_pid, sub_page, cc, cfg_national_subset);
+	
 #if 0
 	ttx_paused = 1;
 	if(sub_pid && sub_page)
@@ -1963,8 +1976,8 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 
 	// show versioninfo
 	sscanf(cvs_revision, "%*s %s", versioninfo);
-	printf("TuxTxt %s\n", versioninfo);
-	printf("for 32bpp framebuffer\n");
+	
+	dprintf(DEBUG_NORMAL, "TuxTxt %s for 32bpp framebuffer\n", versioninfo);
 
 	//rcinput
 	rc = _rc;
@@ -2003,7 +2016,7 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	ey = s_y + s_h;
 	
 
-	fprintf(stderr, "stride=%d sx=%d ex=%d sy=%d ey=%d\n", CFrameBuffer::getInstance()->getStride(), sx, ex, sy, ey);
+	dprintf(DEBUG_DEBUG, "stride=%d sx=%d ex=%d sy=%d ey=%d\n", CFrameBuffer::getInstance()->getStride(), sx, ex, sy, ey);
 
 	//initialisations
 	transpmode = 0;
@@ -2179,17 +2192,10 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	//exit
 	CleanUp();
 
-#if 0
-	close(rc);
-	close(lcd);
-#endif
-
-#if 1
 	if ( initialized )
 		tuxtxt_close();
-#endif
 
- 	printf("Tuxtxt: plugin ended\n");
+ 	dprintf(DEBUG_NORMAL, "Tuxtxt: ended\n");
 
 	return 1;
 }
@@ -2294,7 +2300,7 @@ int Init( int source )
 	// load config
 	if ((conf = fopen(TUXTXTCONF, "rt")) == 0)
 	{ 
-	        printf("failed to open %s\n", TUXTXTCONF);
+	        dprintf(DEBUG_NORMAL, "failed to open %s\n", TUXTXTCONF);
 		perror("TuxTxt <fopen tuxtxt.conf>");
 	}
 	else
@@ -2370,14 +2376,14 @@ int Init( int source )
 	// init fontlibrary
 	if ((error = FT_Init_FreeType(&library)))
 	{
-		printf("TuxTxt <FT_Init_FreeType: 0x%.2X>", error);
+		dprintf(DEBUG_NORMAL, "TuxTxt <FT_Init_FreeType: 0x%.2X>", error);
 		return 0;
 	}
 
 	if ((error = FTC_Manager_New(library, 7, 2, 0, &MyFaceRequester, NULL, &manager)))
 	{
 		FT_Done_FreeType(library);
-		printf("TuxTxt <FTC_Manager_New: 0x%.2X>\n", error);
+		dprintf(DEBUG_NORMAL, "TuxTxt <FTC_Manager_New: 0x%.2X>\n", error);
 		return 0;
 	}
 
@@ -2385,7 +2391,7 @@ int Init( int source )
 	{
 		FTC_Manager_Done(manager);
 		FT_Done_FreeType(library);
-		printf("TuxTxt <FTC_SBitCache_New: 0x%.2X>\n", error);
+		dprintf(DEBUG_NORMAL, "TuxTxt <FTC_SBitCache_New: 0x%.2X>\n", error);
 		return 0;
 	}
 
@@ -2437,11 +2443,11 @@ int Init( int source )
 		else 
 			typettf.face_id = (FTC_FaceID) TUXTXTOTB;
 
-		printf("font %s\n", (char*) typettf.face_id);
+		dprintf(DEBUG_NORMAL, "font %s\n", (char*) typettf.face_id);
 
 		if ((error = FTC_Manager_LookupFace(manager, typettf.face_id, &face)))
 		{
-			printf("TuxTxt <FTC_Manager_LookupFace failed with Errorcode 0x%.2X>\n", error);
+			dprintf(DEBUG_NORMAL, "TuxTxt <FTC_Manager_LookupFace failed with Errorcode 0x%.2X>\n", error);
 			FTC_Manager_Done(manager);
 			FT_Done_FreeType(library);
 			return 0;
@@ -2506,7 +2512,8 @@ int Init( int source )
 
 		if(auto_national && cfg_national_subset)
 			national_subset = cfg_national_subset;
-		printf("Tuxtxt: national_subset %d (cfg %d)\n", national_subset, cfg_national_subset);
+		
+		dprintf(DEBUG_NORMAL, "Tuxtxt: national_subset %d (cfg %d)\n", national_subset, cfg_national_subset);
 	}
 
 #if TUXTXT_CFG_STANDALONE
@@ -2526,7 +2533,7 @@ int Init( int source )
 	
 	prevscreenmode = screenmode;
 	
-	printf("TuxTxt: init ok\n");
+	dprintf(DEBUG_NORMAL, "TuxTxt: init ok\n");
 
 	/* init successfull */
 	return 1;
@@ -2549,8 +2556,10 @@ void CleanUp()
 #if TUXTXT_CFG_STANDALONE
 	tuxtxt_stop_thread();
 	tuxtxt_clear_cache();
+	
 	if (tuxtxt_cache.dmx != -1)
 		close(tuxtxt_cache.dmx);
+	
 	tuxtxt_cache.dmx = -1;
 #else
 	//tuxtxt_stop();
@@ -2579,7 +2588,8 @@ void CleanUp()
 		}
 		else
 		{
-			printf("TuxTxt <saving config>\n");
+			dprintf(DEBUG_NORMAL, "TuxTxt <saving config>\n");
+			
 			fprintf(conf, "ScreenMode16x9Normal %d\n", screen_mode1);
 			fprintf(conf, "ScreenMode16x9Divided %d\n", screen_mode2);
 			fprintf(conf, "Brightness %d\n", color_mode);
@@ -2649,7 +2659,7 @@ int GetTeletextPIDs(int source)
 	res = dmx->Read(bufPAT, sizeof(bufPAT));
 	dmx->Stop();
 	if(res <= 0) {
-		printf("TuxTxt <read PAT> failed");
+		dprintf(DEBUG_NORMAL, "TuxTxt <read PAT> failed");
 		delete dmx;
 		return 0;
 	}
@@ -2732,7 +2742,7 @@ skip_pid:
 	/* check for teletext */
 	if (pids_found == 0)
 	{
-		printf("TuxTxt <no Teletext on TS found>\n");
+		dprintf(DEBUG_NORMAL, "TuxTxt <no Teletext on TS found>\n");
 
 		RenderMessage(NoServicesFound);
 		sleep(3);
@@ -3124,7 +3134,8 @@ void Menu_Init(char *menu, int current_pid, int menuitem, int hotindex)
 
 void ConfigMenu(int Init, int source)
 {
-	printf("[tuxtxt] Menu\n");
+	dprintf(DEBUG_NORMAL, "[tuxtxt] Menu\n");
+	
 	int val, menuitem = M_Start;
 	int current_pid = 0;
 	int hotindex;
@@ -3159,6 +3170,7 @@ void ConfigMenu(int Init, int source)
 	}
 
 	oldscreenmode = screenmode;
+	
 	if (screenmode)
 		SwitchScreenMode(0); /* turn off divided screen */
 
@@ -3590,62 +3602,64 @@ void ConfigMenu(int Init, int source)
 					}
 					else if (pids_found > 1)
 					{
-							if (hotlistchanged)
-								savehotlist();
+						if (hotlistchanged)
+							savehotlist();
 
 						if (Init || tuxtxt_cache.vtxtpid != pid_table[current_pid].vtxt_pid)
-							{
+						{
 #if TUXTXT_CFG_STANDALONE
-								tuxtxt_stop_thread();
-								tuxtxt_clear_cache();
+							tuxtxt_stop_thread();
+							tuxtxt_clear_cache();
 #else
-								tuxtxt_stop();
+							tuxtxt_stop();
 							if (Init)
 								tuxtxt_cache.vtxtpid = 0; // force clear cache
 #endif
-								/* reset data */
+							/* reset data */
 
 
-								//page_atrb[32] = transp<<4 | transp;
-								inputcounter = 2;
+							//page_atrb[32] = transp<<4 | transp;
+							inputcounter = 2;
 
 
-								tuxtxt_cache.page     = 0x100;
-								lastpage = 0x100;
-								prev_100 = 0x100;
-								prev_10  = 0x100;
-								next_100 = 0x100;
-								next_10  = 0x100;
-								tuxtxt_cache.subpage  = 0;
+							tuxtxt_cache.page     = 0x100;
+							lastpage = 0x100;
+							prev_100 = 0x100;
+							prev_10  = 0x100;
+							next_100 = 0x100;
+							next_10  = 0x100;
+							tuxtxt_cache.subpage  = 0;
 
-								tuxtxt_cache.pageupdate = 0;
-								tuxtxt_cache.zap_subpage_manual = 0;
-								hintmode = 0;
-								memset(page_char,' ',40 * 25);
+							tuxtxt_cache.pageupdate = 0;
+							tuxtxt_cache.zap_subpage_manual = 0;
+							hintmode = 0;
+							memset(page_char,' ',40 * 25);
 
-								for (i = 0; i < 40*25; i++)
-								{
-									page_atrb[i].fg = transp;
-									page_atrb[i].bg = transp;
-								}
-								ClearFB(transp);
+							for (i = 0; i < 40*25; i++)
+							{
+								page_atrb[i].fg = transp;
+								page_atrb[i].bg = transp;
+							}
+							
+							ClearFB(transp);
 
 
-								/* start demuxer with new vtxtpid */
-								if (auto_national)
-									national_subset = pid_table[current_pid].national_subset;
+							/* start demuxer with new vtxtpid */
+							if (auto_national)
+								national_subset = pid_table[current_pid].national_subset;
 
 #if TUXTXT_CFG_STANDALONE
-								tuxtxt_cache.vtxtpid = pid_table[current_pid].vtxt_pid;
-								tuxtxt_start_thread(source); //FIXME: source???
+							tuxtxt_cache.vtxtpid = pid_table[current_pid].vtxt_pid;
+							tuxtxt_start_thread(source); //FIXME: source???
 #else
-								tuxtxt_start(pid_table[current_pid].vtxt_pid, source); //FIXME: source
+							tuxtxt_start(pid_table[current_pid].vtxt_pid, source); //FIXME: source
 #endif
-							}
-//							tuxtxt_cache.pageupdate = 1;
+						}
+						
+//						tuxtxt_cache.pageupdate = 1;
 
-							ClearBB(black);
-							gethotlist();
+						ClearBB(black);
+						gethotlist();
 
 						/* show new teletext */
 						current_service = current_pid;
@@ -3653,10 +3667,11 @@ void ConfigMenu(int Init, int source)
 
 						fcntl(rc, F_SETFL, O_NONBLOCK);
 						RCCode = -1;
+						
 						if (oldscreenmode)
 							SwitchScreenMode(oldscreenmode); /* restore divided screen */
 
-						printf("[tuxtxt] Menu return from M_PID\n");
+						dprintf(DEBUG_NORMAL, "[tuxtxt] Menu return from M_PID\n");
 						transpmode = oldtrans;
 						return;
 					}
@@ -3685,6 +3700,7 @@ void ConfigMenu(int Init, int source)
 					saveconfig = 1;
 					auto_national++;
 					auto_national &= 1;
+					
 					if (auto_national)
 					{
 					 	if (getpidsdone)
@@ -3701,6 +3717,7 @@ void ConfigMenu(int Init, int source)
 					}
 					Menu_Init(menu, current_pid, menuitem, hotindex);
 					break;
+					
 				case M_HOT: /* show selected page */
 				{
 					if (hotindex >= 0) /* not found: ignore */
@@ -3714,9 +3731,10 @@ void ConfigMenu(int Init, int source)
 					}
 				}
 				break;
+				
 				} /* RC_OK */
 				break;
-			}
+			}/*switch*/
 		}
 		UpdateLCD(); /* update number of cached pages */
 			
@@ -3729,11 +3747,13 @@ void ConfigMenu(int Init, int source)
 	fcntl(rc, F_SETFL, O_NONBLOCK);
 	tuxtxt_cache.pageupdate = 1;
 	RCCode = -1;
+	
 	if (oldscreenmode)
 		SwitchScreenMode(oldscreenmode); /* restore divided screen */
 
 	transpmode = oldtrans;
-	printf("[tuxtxt] Menu return\n");
+	
+	dprintf(DEBUG_NORMAL, "[tuxtxt] Menu return\n");
 }
 
 /*
@@ -4261,7 +4281,7 @@ void getCurrentPIGSettings(int* left, int* top, int* width, int* height)
 	fclose(fd);
 #endif	
 
-	fprintf(stderr, "%s: top %d, left %d, width %d, height %d\n", __func__, *left, *top, *width, *height);
+	dprintf(DEBUG_NORMAL, "%s: top %d, left %d, width %d, height %d\n", __func__, *left, *top, *width, *height);
 }
 
 void getCurrentPOLICYSettings()
@@ -4314,7 +4334,7 @@ void setCurrentPIGSettings(int left, int top, int width, int height)
 	//
 	FILE* fd;
 	
-	fprintf(stderr, "%s: top %d, left %d, width %d, height %d\n", __func__, left, top, width, height);
+	dprintf(DEBUG_NORMAL, "%s: top %d, left %d, width %d, height %d\n", __func__, left, top, width, height);
 
 	fd = fopen("/proc/stb/vmpeg/0/dst_left", "w");
 	fprintf(fd, "%x", _x/*left*/);
@@ -4441,18 +4461,18 @@ void SwitchScreenMode(int newscreenmode)
 	if(use_gui)
 		ClearBB(clearbbcolor);
 
-	fprintf(stderr, "screenmode %d\n", screenmode); 
+	dprintf(DEBUG_NORMAL, "screenmode %d\n", screenmode); 
 
 	// set mode
 	if (screenmode)								 // split
 	{
-		fprintf(stderr, "[TuxTxt] Slit Mode (1.)\n");
+		dprintf(DEBUG_NORMAL, "[TuxTxt] Slit Mode (1.)\n");
 		
 		ClearFB(clearbbcolor);
 
 		int fw, fh, tx, ty, tw, th;
 
-		fprintf(stderr, "Settup video picture\n");
+		dprintf(DEBUG_NORMAL, "Settup video picture\n");
 		
 		// ugly hack
 		// dont calcultae rate when we have HD until to fix this
@@ -4511,7 +4531,7 @@ void SwitchScreenMode(int newscreenmode)
 	}
 	else // not split
 	{
-		fprintf(stderr, "[TuxTxt] Full txt Screen (2).\n"); 
+		dprintf(DEBUG_NORMAL, "[TuxTxt] Full txt Screen (2).\n"); 
 
 		// set pig
 		setCurrentPIGSettings(-1, -1, -1, -1);		
@@ -5242,7 +5262,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	if (!(glyph = FT_Get_Char_Index(face, Char)))
 	{
-		fprintf(stderr, "TuxTxt <FT_Get_Char_Index for Char %d %x \"%c\" failed\n", Char, Char, Char & 0xFF );
+		dprintf(DEBUG_NORMAL, "TuxTxt <FT_Get_Char_Index for Char %d %x \"%c\" failed\n", Char, Char, Char & 0xFF );
 
 		FillRect(PosX, PosY + yoffset, curfontwidth, factor*fontheight, bgcolor);
 		PosX += curfontwidth;
@@ -5251,8 +5271,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	if ((error = FTC_SBitCache_Lookup(cache, &typettf, glyph, &sbit, NULL)) != 0)
 	{
-		fprintf(stderr, "TuxTxt <FTC_SBitCache_Lookup: 0x%x> c%x a%x g%x w%d h%d x%d y%d\n",
-				 error, Char, Attribute, glyph, curfontwidth, fontheight, PosX, PosY);
+		dprintf(DEBUG_NORMAL, "TuxTxt <FTC_SBitCache_Lookup: 0x%x> c%x a%x g%x w%d h%d x%d y%d\n", error, Char, Attribute, glyph, curfontwidth, fontheight, PosX, PosY);
 
 		FillRect(PosX, PosY + yoffset, curfontwidth, fontheight, bgcolor);
 		PosX += curfontwidth;
@@ -6309,8 +6328,10 @@ void DecodePage()
 	{
 		if (pageinfo->function == FUNC_MOT) /* magazine organization table */
 		{
-			printf("TuxTxt <decoding MOT %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			dprintf(DEBUG_NORMAL, "TuxTxt <decoding MOT %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			
 			ClearBB(black);
+			
 			for (col = 0; col < 24*40; col++)
 				page_atrb[col] = atrtable[ATR_WB];
 			for (col = 40; col < 24*40; col++)
@@ -6320,8 +6341,10 @@ void DecodePage()
 		}
 		else if (pageinfo->function == FUNC_GPOP || pageinfo->function == FUNC_POP) /* object definitions */
 		{
-			printf("TuxTxt <decoding *POP %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			dprintf(DEBUG_NORMAL, "TuxTxt <decoding *POP %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			
 			ClearBB(black);
+			
 			for (col = 0; col < 24*40; col++)
 				page_atrb[col] = atrtable[ATR_WB];
 			p = page_char + 40;
@@ -6382,8 +6405,11 @@ void DecodePage()
 				DRCSZOOMY * 9,
 				DRCSZOOMY * 10
 			};
-			printf("TuxTxt <decoding *DRCS %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			
+			dprintf(DEBUG_NORMAL, "TuxTxt <decoding *DRCS %03x/%02x %d>\n", tuxtxt_cache.page, tuxtxt_cache.subpage, pageinfo->function);
+			
 			ClearBB(black);
+			
 			for (col = 0; col < 24*40; col++)
 				page_atrb[col] = atrtable[ATR_WB];
 
@@ -6398,7 +6424,8 @@ void DecodePage()
 		}
 		else
 		{
-			printf("z\n");
+			dprintf(DEBUG_NORMAL, "z\n");
+			
 			int i;
 			int h, parityerror = 0;
 

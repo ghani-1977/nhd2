@@ -142,7 +142,7 @@ class CFileFilter
 class CFileBrowser
 {
 	private:
-		CFrameBuffer		* frameBuffer;
+		CFrameBuffer * frameBuffer;
 
 		CFileList		selected_filelist;
 		bool			readDir(const std::string & dirname, CFileList* flist);
@@ -183,7 +183,7 @@ class CFileBrowser
 		void commonInit();
 
 	public:
-		CFileList		filelist;
+		CFileList filelist;
 
 		typedef enum {
 			ModeFile,

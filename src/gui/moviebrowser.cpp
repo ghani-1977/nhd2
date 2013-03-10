@@ -2623,57 +2623,54 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				}
 				else
 				{
-				// dirty way to use filter ;-8
-				//int test = -1;
-				int ext_pos = 0;
-				ext_pos = flist[i].getFileName().rfind('.');
-				
-				if( ext_pos > 0)
-				{
-					std::string extension;
-					extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
+					// dirty way to use filter ;-8
+					int ext_pos = 0;
+					ext_pos = flist[i].getFileName().rfind('.');
 					
-					if( 
-					    //(strcasecmp("ts", extension.c_str()) == 0) ||
-					    (strcasecmp("mpg", extension.c_str()) == 0) ||
-					    (strcasecmp("mpeg", extension.c_str()) == 0) ||
-					    (strcasecmp("divx", extension.c_str()) == 0) ||	    
-					    (strcasecmp("avi", extension.c_str()) == 0) ||
-					    (strcasecmp("mkv", extension.c_str()) == 0) ||
-					    (strcasecmp("asf", extension.c_str()) == 0) ||
-					    (strcasecmp("aiff", extension.c_str()) == 0) ||
-					    (strcasecmp("m2p", extension.c_str()) == 0) ||
-					    (strcasecmp("mpv", extension.c_str()) == 0) ||
-					    (strcasecmp("m2ts", extension.c_str()) == 0) ||
-					    (strcasecmp("m2ts", extension.c_str()) == 0) ||
-					    (strcasecmp("vob", extension.c_str()) == 0) ||
-					    (strcasecmp("mp4", extension.c_str()) == 0) ||
-					    (strcasecmp("mov", extension.c_str()) == 0) ||
+					if( ext_pos > 0)
+					{
+						std::string extension;
+						extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
+						
+						if( 
+						    //(strcasecmp("ts", extension.c_str()) == 0) ||
+						    (strcasecmp("mpg", extension.c_str()) == 0) ||
+						    (strcasecmp("mpeg", extension.c_str()) == 0) ||
+						    (strcasecmp("divx", extension.c_str()) == 0) ||	    
+						    (strcasecmp("avi", extension.c_str()) == 0) ||
+						    (strcasecmp("mkv", extension.c_str()) == 0) ||
+						    (strcasecmp("asf", extension.c_str()) == 0) ||
+						    (strcasecmp("aiff", extension.c_str()) == 0) ||
+						    (strcasecmp("m2p", extension.c_str()) == 0) ||
+						    (strcasecmp("mpv", extension.c_str()) == 0) ||
+						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
+						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
+						    (strcasecmp("vob", extension.c_str()) == 0) ||
+						    (strcasecmp("mp4", extension.c_str()) == 0) ||
+						    (strcasecmp("mov", extension.c_str()) == 0) ||
 #if !ENABLE_GSTREAMER					    
-					    (strcasecmp("flv", extension.c_str()) == 0) ||
+						    (strcasecmp("flv", extension.c_str()) == 0) ||
 #endif					    
-					    (strcasecmp("dat", extension.c_str()) == 0) ||
-					    (strcasecmp("trp", extension.c_str()) == 0) ||
-					    (strcasecmp("vdr", extension.c_str()) == 0) ||
-					    (strcasecmp("mts", extension.c_str()) == 0) //||
-					    
-					    //(strcasecmp("wav", extension.c_str()) == 0) ||
-					    //(strcasecmp("flac", extension.c_str()) == 0) ||
-					    //(strcasecmp("mp3", extension.c_str()) == 0) ||
-					    //(strcasecmp("wmv", extension.c_str()) == 0) ||
-					    //(strcasecmp("wma", extension.c_str()) == 0) ||
-					    //(strcasecmp("ogg", extension.c_str()) == 0)
-					    )
-					  
-							//return true;
-						test = 0;
-				}
+						    (strcasecmp("dat", extension.c_str()) == 0) ||
+						    (strcasecmp("trp", extension.c_str()) == 0) ||
+						    (strcasecmp("vdr", extension.c_str()) == 0) ||
+						    (strcasecmp("mts", extension.c_str()) == 0) //||
+						    
+						    //(strcasecmp("wav", extension.c_str()) == 0) ||
+						    //(strcasecmp("flac", extension.c_str()) == 0) ||
+						    //(strcasecmp("mp3", extension.c_str()) == 0) ||
+						    //(strcasecmp("wmv", extension.c_str()) == 0) ||
+						    //(strcasecmp("wma", extension.c_str()) == 0) ||
+						    //(strcasecmp("ogg", extension.c_str()) == 0)
+						    )
+							  test = 0;
+					}
 				}
 				//
 				
 				if( test == -1)
 				{
-					dprintf(DEBUG_INFO, "[mb] other file: '%s'\r\n",movieInfo.file.Name.c_str());
+					dprintf(DEBUG_INFO, "[mb] other file: '%s'\r\n", movieInfo.file.Name.c_str());
 				}
 				else
 				{

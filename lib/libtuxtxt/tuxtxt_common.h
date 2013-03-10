@@ -20,6 +20,7 @@ extern CFrontend * live_fe;
 
 tuxtxt_cache_struct tuxtxt_cache;
 static pthread_mutex_t tuxtxt_cache_lock = PTHREAD_MUTEX_INITIALIZER;
+
 int tuxtxt_get_zipsize(int p,int sp)
 {
 	tstCachedPage* pg = tuxtxt_cache.astCachetable[p][sp];
@@ -555,9 +556,8 @@ void tuxtxt_allocate_cache(int magazine)
 /******************************************************************************
  * CacheThread                                                                *
  ******************************************************************************/
-//#define TUXTXT_DEBUG 1 //FIXME
 static int stop_cache = 0;
-void *tuxtxt_CacheThread(void *arg)
+void * tuxtxt_CacheThread(void * arg)
 {
 	printf("tuxtxt_CacheThread: starting... tid %ld\n", syscall(__NR_gettid));
 	
@@ -1078,6 +1078,7 @@ int tuxtxt_start_thread( int source )
 #endif
 	tuxtxt_cache.receiving = 1;
 	tuxtxt_cache.thread_starting = 0;
+	
 	return 1;
 }
 
@@ -1089,14 +1090,8 @@ int tuxtxt_stop_thread()
 	/* stop decode-thread */
 	if (tuxtxt_cache.thread_id != 0)
 	{
-#if 0
-		if (pthread_cancel(tuxtxt_cache.thread_id) != 0)
-		{
-			perror("TuxTxt <pthread_cancel>");
-			return 0;
-		}
-#endif
 		stop_cache = 1;
+		
 		if (pthread_join(tuxtxt_cache.thread_id, &tuxtxt_cache.thread_result) != 0)
 		{
 			perror("TuxTxt <pthread_join>");
@@ -1111,16 +1106,6 @@ int tuxtxt_stop_thread()
 		delete dmx;
 		dmx = NULL;
 	}
-	
-#if 0
-	if (tuxtxt_cache.dmx != -1)
-	{
-		//ioctl(tuxtxt_cache.dmx, DMX_STOP);
-
-//        	close(tuxtxt_cache.dmx);
-  	}
-//	tuxtxt_cache.dmx = -1;
-#endif
 
 #if 1//TUXTXT_DEBUG
 	printf("TuxTxt stopped service %x\n", tuxtxt_cache.vtxtpid);

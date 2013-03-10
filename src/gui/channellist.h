@@ -87,6 +87,14 @@ class CChannelList
 		void paint();
 		void paintHead();
 		void hide();
+		
+		int medlineheight;
+		int medlinecount;
+		
+		std::vector<std::string> epgText;
+		int emptyLineCount;
+		void addTextToArray( const std::string & text );
+		void processTextToArray(std::string text);
 
 	public:
 		CChannelList(const char * const Name, bool historyMode = false, bool _vlist = false );

@@ -175,10 +175,10 @@ void CEpgData::addTextToArray(const std::string & text) // UTF-8
 {
 	//printf("line: >%s<\n", text.c_str() );
 	
-	if (text==" ")
+	if (text == " ")
 	{
 		emptyLineCount ++;
-		if(emptyLineCount<2)
+		if(emptyLineCount < 2)
 		{
 			epgText.push_back(text);
 		}
@@ -509,7 +509,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 	static time_t startzeit;
 	 
 	if(a_startzeit)
-		startzeit=*a_startzeit;
+		startzeit = *a_startzeit;
+	
 	id = a_id;
 
 	int height;
@@ -531,7 +532,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		sectionsd_getEventsServiceKey(channel_id&0xFFFFFFFFFFFFULL, evtlist);
 		
 		// Houdini added for Private Premiere EPG start sorted by start date/time 2005-08-15
-  		sort(evtlist.begin(),evtlist.end(),sortByDateTime);
+  		sort(evtlist.begin(), evtlist.end(), sortByDateTime);
 		
 		frameBuffer->paintBackgroundBoxRel(g_settings.screen_StartX, g_settings.screen_StartY, 50, height + 5);
 
@@ -1018,7 +1019,7 @@ void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, 
 		long int uiEndTime((epgData.epg_times).startzeit+ (epgData.epg_times).dauer);
 		struct tm *pEndeZeit = localtime((time_t*)&uiEndTime);
 		strftime( temp, sizeof(temp), "%H:%M", pEndeZeit);
-		epg_end= temp;
+		epg_end = temp;
 
 		epg_done= -1;
 		if (( time(NULL)- (epgData.epg_times).startzeit )>= 0 )
