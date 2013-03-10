@@ -123,11 +123,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 
 		case GST_MESSAGE_INFO:
 		{
-			gchar *debug;
-			GError *inf;
+			gchar * debug;
+			GError * inf;
 	
 			gst_message_parse_info (msg, &inf, &debug);
-			g_free (debug);
+			g_free(debug);
 			if ( inf->domain == GST_STREAM_ERROR && inf->code == GST_STREAM_ERROR_DECODE )
 			{
 				if ( g_strrstr(sourceName, "videosink") )
@@ -156,7 +156,9 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			{
 				case GST_STATE_CHANGE_NULL_TO_READY:
 				{
-				}	break;
+				}
+				break;
+				
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
 					GstIterator *children;
@@ -175,13 +177,19 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
-				}	break;
+				}
+				break;
+				
 				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
 				{
-				}	break;
+				}
+				break;
+				
 				case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
 				{
-				}	break;
+				}	
+				break;
+				
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
 					if (audioSink)
@@ -194,10 +202,13 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 						gst_object_unref(GST_OBJECT(videoSink));
 						videoSink = NULL;
 					}
-				}	break;
+				}	
+				break;
+				
 				case GST_STATE_CHANGE_READY_TO_NULL:
 				{
-				}	break;
+				}	
+				break;
 			}
 			break;
 		}
@@ -397,8 +408,6 @@ bool cPlayback::Start(char * filename)
 		
 		return false;
 	}
-	
-	//g_free(uri);
 	
 	// set buffer size
 	int m_buffer_size = 5*1024*1024;

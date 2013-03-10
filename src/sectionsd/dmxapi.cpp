@@ -150,8 +150,8 @@ bool getUTC(UTC_t * const UTC, const bool TDT)
 	
 	if (r < size) 
 	{
-		if (TDT) /* not having TOT is common, no need to log */
-			perror("[sectionsd] getUTC: read");
+		//if (TDT) /* not having TOT is common, no need to log */
+		//	perror("[sectionsd] getUTC: read");
 		
 		dmxUTC->Stop();
 		return false;
