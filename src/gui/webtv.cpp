@@ -594,10 +594,10 @@ void CWebTV::paintMiniTV()
 			if(!liveChanName.empty())
 				channelname_len = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(liveChanName.c_str(), true); // UTF-8
 			
-			// FIXME: paint logo ???
+			// FIXME: paint logo ??? channelname else channel logo
 			bool logo_ok = false;
 			if( 400 - (channelname_len + 10) >= PIC_W)
-				logo_ok = g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 + channelname_len + 5, y, PIC_W, theight);
+				logo_ok = g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 /*+ channelname_len + 5*/, y, PIC_W, theight);
 			
 			if(!logo_ok)
 				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 5, y + theight, 400 - channelname_len, liveChanName.c_str(), COL_MENUHEAD, 0, true); // UTF-8

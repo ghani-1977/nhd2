@@ -2693,12 +2693,13 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					//dprintf(DEBUG_NORMAL, " N:%s,s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size>>20);
 					//dprintf(DEBUG_NORMAL, " s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
 					//dprintf(DEBUG_NORMAL, " s:%llu\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
+					
 					if(file_found_in_dir == false)
 					{
 						// first file in directory found, add directory to list 
 						m_dirNames.push_back(dirname);
 						file_found_in_dir = true;
-						dprintf(DEBUG_INFO, "[mb] new dir: :%s\r\n",dirname);
+						//dprintf(DEBUG_INFO, "[mb] new dir: :%s\r\n",dirname);
 					}
 					movieInfo.dirItNr = m_dirNames.size()-1;
 					m_vMovieInfo.push_back(movieInfo);
