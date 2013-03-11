@@ -602,9 +602,6 @@ void CWebTV::paintMiniTV()
 			if( 390 - channelname_len >= PIC_W)
 				logo_ok = g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 + channelname_len + 5, y, PIC_W, theight);
 			
-			//if(!logo_ok)
-			//g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 5, y + theight, 400 - channelname_len, liveChanName.c_str(), COL_MENUHEAD, 0, true); // UTF-8
-			
 			CChannelEvent * p_event = NULL;
 			p_event = &live_channel->currentEvent;;
 			
@@ -629,32 +626,50 @@ void CWebTV::paintMiniTV()
 				std::string text2 = p_event->text;
 
 				// description
-				//g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight/*+ fheight*/, /*390 - 30 - seit_len*/ 400 - strlen(text1.c_str()), text1, COL_MENUCONTENTDARK, 0, true);
 				int descr_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth((char *)text1.c_str(), true); // UTF-8
 
 				// description
+				std::string text3 = "";
+				
+				if (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390)
+				{
+					// zu breit, Umbruch versuchen...
+					int pos;
+					do 
+					{
+						pos = text1.find_last_of("[ -.]+");
+					
+						if ( pos != -1 )
+							text1 = text1.substr( 0, pos );
+					} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390) );
+
+					text3 = p_event->description.substr(text1.length() + 1);
+
+					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 +theight + /*2**/fheight, 390, text3, COL_MENUCONTENTDARK, 0, true);
+				}
+				
 				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight, (descr_len > 390? 390 : descr_len), text1, COL_MENUCONTENTDARK, 0, true);
-				
+					
 				// since
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5/*+ 390 - 10 - seit_len*/, y + theight + 255 + theight/2 + 5 + theight + fheight, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-				
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+					
 				// rest/duration
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + fheight, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
 				
 				// text
 				epgText.clear();
 				emptyLineCount = 0;
-				
+						
 				if (!(text2.empty())) 
 				{
 					processTextToArray(text2);
-					
+							
 					// recalculate
 					medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 					medlinecount = (660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height -fheight)/medlineheight;
 
 					int textCount = epgText.size();
-					int ypos = y + theight + 255 + theight/2 + 5 +theight + 2*fheight;
+					int ypos = y + theight + 255 + theight/2 + 5 +theight + (text3.empty()? 2*fheight : 3*fheight);
 
 					for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
 					{

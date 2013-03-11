@@ -2095,13 +2095,32 @@ void CChannelList::paintMiniTV()
 		int descr_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth((char *)text1.c_str(), true); // UTF-8
 
 		// description
+		std::string text3 = "";
+		
+		if (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390)
+		{
+			// zu breit, Umbruch versuchen...
+			int pos;
+			do 
+			{
+				pos = text1.find_last_of("[ -.]+");
+			
+				if ( pos != -1 )
+					text1 = text1.substr( 0, pos );
+			} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390) );
+
+			text3 = p_event->description.substr(text1.length() + 1);
+
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 +theight + /*2**/fheight, 390, text3, COL_MENUCONTENTDARK, 0, true);
+		}
+		
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight, (descr_len > 390? 390 : descr_len), text1, COL_MENUCONTENTDARK, 0, true);
 			
 		// since
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + fheight, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
 			
 		// rest/duration
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + fheight, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
 		
 		// text
 		epgText.clear();
@@ -2116,7 +2135,7 @@ void CChannelList::paintMiniTV()
 			medlinecount = (660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height -fheight)/medlineheight;
 
 			int textCount = epgText.size();
-			int ypos = y + theight + 255 + theight/2 + 5 +theight + 2*fheight;
+			int ypos = y + theight + 255 + theight/2 + 5 +theight + (text3.empty()? 2*fheight : 3*fheight);
 
 			for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
 			{
@@ -2157,9 +2176,9 @@ void CChannelList::processTextToArray(std::string text) // UTF-8
 	text += ' ';
 	char * text_= (char *) text.c_str();
 
-	while(*text_!=0)
+	while(*text_ != 0)
 	{
-		if ( (*text_==' ') || (*text_=='\n') || (*text_=='-') || (*text_=='.') )
+		if ( (*text_ == ' ') || (*text_ == '\n') || (*text_ == '-') || (*text_== '.') )
 		{
 			// Houdini: if there is a newline (especially in the Premiere Portal EPGs) do not forget to add aktWord to aktLine 
 			// after width check, if width check failes do newline, add aktWord to next line 
