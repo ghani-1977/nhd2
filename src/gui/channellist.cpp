@@ -613,7 +613,12 @@ int CChannelList::show()
 			CEPGplusHandler eplus;
 			eplus.exec(NULL, "");
 			
-			loop = false;
+			//loop = false;
+			paintHead(); 		// update button bar
+			updateEvents();
+			if(g_settings.mini_tv)
+				paintMiniTV();
+			paint();
 		}
 		else if ( msg == CRCInput::RC_sat || msg == CRCInput::RC_favorites)
 		{
@@ -644,7 +649,7 @@ int CChannelList::show()
 		}
 		else if (msg == (neutrino_msg_t) g_settings.key_list_start) 
 		{
-			selected=0;
+			selected = 0;
 			liststart = (selected/listmaxshow)*listmaxshow;
 			paint();
 			
@@ -783,7 +788,7 @@ int CChannelList::show()
 		{	  
 			zapOnExit = true;
 			
-			loop=false;
+			loop = false;
 		}
 		else if ( msg == CRCInput::RC_spkr ) 
 		{

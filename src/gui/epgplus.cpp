@@ -1316,7 +1316,7 @@ void EpgPlus::paint ()
 
 int CEPGplusHandler::exec (CMenuTarget * parent, const std::string & actionKey)
 {
-	int res = menu_return::RETURN_EXIT_ALL;
+	int res = menu_return::RETURN_REPAINT /*EXIT_ALL*/;
 	EpgPlus *e;
 	CChannelList *channelList;
 	
