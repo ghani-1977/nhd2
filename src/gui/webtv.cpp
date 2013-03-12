@@ -602,28 +602,34 @@ void CWebTV::paintMiniTV()
 			if( 390 - channelname_len >= PIC_W)
 				logo_ok = g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 + channelname_len + 5, y, PIC_W, theight);
 			
-			CChannelEvent * p_event = NULL;
-			p_event = &live_channel->currentEvent;;
+			//CChannelEvent * p_event = NULL;
+			//p_event = &live_channel->currentEvent;
 			
-			if (!p_event->description.empty()) 
+			//if (!p_event->description.empty()) 
+			if (!live_channel->currentEvent.description.empty()) 
 			{
 				char cNoch[50]; // UTF-8
 				char cSeit[50]; // UTF-8
 
-				struct tm * pStartZeit = localtime(&p_event->startTime);
-				unsigned seit = ( time(NULL) - p_event->startTime ) / 60;
+				//struct tm * pStartZeit = localtime(&p_event->startTime);
+				struct tm * pStartZeit = localtime(&live_channel->currentEvent.startTime);
+				//unsigned seit = ( time(NULL) - p_event->startTime ) / 60;
+				unsigned seit = ( time(NULL) - live_channel->currentEvent.startTime ) / 60;
 
 				sprintf(cSeit, g_Locale->getText(LOCALE_CHANNELLIST_SINCE), pStartZeit->tm_hour, pStartZeit->tm_min);
-				int noch = (p_event->startTime + p_event->duration - time(NULL)) / 60;
+				//int noch = (p_event->startTime + p_event->duration - time(NULL)) / 60;
+				int noch = (live_channel->currentEvent.startTime + live_channel->currentEvent.duration - time(NULL)) / 60;
 				if ((noch < 0) || (noch >= 10000))
-					noch= 0;
+					noch = 0;
 				sprintf(cNoch, "(%d / %d min)", seit, noch);
 				
 				int seit_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(cSeit, true); // UTF-8
 				int noch_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(cNoch, true); // UTF-8
 
-				std::string text1 = p_event->description;
-				std::string text2 = p_event->text;
+				//std::string text1 = p_event->description;
+				//std::string text2 = p_event->text;
+				std::string text1 = live_channel->currentEvent.description;
+				std::string text2 = live_channel->currentEvent.text;
 
 				// description
 				int descr_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth((char *)text1.c_str(), true); // UTF-8
@@ -643,7 +649,8 @@ void CWebTV::paintMiniTV()
 							text1 = text1.substr( 0, pos );
 					} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390) );
 
-					text3 = p_event->description.substr(text1.length() + 1);
+					//text3 = p_event->description.substr(text1.length() + 1);
+					text3 = live_channel->currentEvent.description.substr(text1.length() + 1);
 
 					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 +theight + /*2**/fheight, 390, text3, COL_MENUCONTENTDARK, 0, true);
 				}

@@ -743,12 +743,13 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.menu_left_exit = configfile.getInt32( "menu_left_exit", 0 );
 
 	// media keys
-	g_settings.key_video = configfile.getInt32( "key_video", CRCInput::RC_video );
-	g_settings.key_music = configfile.getInt32( "key_music", CRCInput::RC_music );
-	g_settings.key_picture = configfile.getInt32( "key_picture", CRCInput::RC_picture );
-	g_settings.key_timelist = configfile.getInt32( "key_timelist", CRCInput::RC_bookmark );
-	g_settings.key_net = configfile.getInt32( "key_net", CRCInput::RC_net );
-	g_settings.key_video_player = configfile.getInt32( "key_video_player", CRCInput::RC_nokey );
+	g_settings.key_recordsbrowser = configfile.getInt32( "key_recordsbrowser", CRCInput::RC_nokey );
+	g_settings.key_audioplayer = configfile.getInt32( "key_audioplayer", CRCInput::RC_nokey );
+	g_settings.key_pictureviewer = configfile.getInt32( "key_pictureviewer", CRCInput::RC_nokey );
+	g_settings.key_timerlist = configfile.getInt32( "key_timerlist", CRCInput::RC_nokey );
+	g_settings.key_inetradio = configfile.getInt32( "key_inetraio", CRCInput::RC_nokey );
+	g_settings.key_moviebrowser = configfile.getInt32( "key_moviebrowser", CRCInput::RC_nokey );
+	g_settings.key_filebrowser = configfile.getInt32( "key_filebrowser", CRCInput::RC_nokey );
 	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
@@ -1209,12 +1210,15 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_unlock", g_settings.key_unlock );
 	
 	// media keys
-	configfile.setInt32( "key_video", g_settings.key_video );
-	configfile.setInt32( "key_music", g_settings.key_music );
-	configfile.setInt32( "key_picture", g_settings.key_picture );
-	configfile.setInt32( "key_timelist", g_settings.key_timelist );
-	configfile.setInt32( "key_net", g_settings.key_net );
-	configfile.setInt32( "key_video_player", g_settings.key_video_player );
+	configfile.setInt32( "key_recordsbrowser", g_settings.key_recordsbrowser );
+	configfile.setInt32( "key_audioplayer", g_settings.key_audioplayer );
+	configfile.setInt32( "key_pictureviewer", g_settings.key_pictureviewer );
+	configfile.setInt32( "key_timerlist", g_settings.key_timerlist );
+	configfile.setInt32( "key_inetradio", g_settings.key_inetradio );
+	configfile.setInt32( "key_moviebrowser", g_settings.key_moviebrowser );
+	configfile.setInt32( "key_filebrowser", g_settings.key_filebrowser );
+	configfile.setInt32( "key_webtv", g_settings.key_webtv );
+	
 
         // USERMENU
         char txt1[81];
@@ -2592,7 +2596,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}			
-			else if( msg == (neutrino_msg_t)g_settings.key_timelist ) 
+			else if( msg == (neutrino_msg_t)g_settings.key_timerlist ) //timerlist
 			{
 				StopSubtitles();
 				
@@ -2823,7 +2827,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 #endif			
 			//music player
-			else if( msg == (neutrino_msg_t)g_settings.key_music ) 
+			else if( msg == (neutrino_msg_t)g_settings.key_audioplayer ) 
 			{
 				StopSubtitles();
 
@@ -2848,16 +2852,24 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}			
-			else if( msg == (neutrino_msg_t)g_settings.key_net ) 	// internet radio
+			else if( msg == (neutrino_msg_t)g_settings.key_inetradio ) 	// internet radio
 			{
+#ifdef ENABLE_GRAPHLCD
+				std::string c = "Internet Radio";
+				nGLCD::lockChannel(c);
+#endif				  
 				StopSubtitles();
 
 				CAudioPlayerGui tmpAudioPlayerGui(true);
 				tmpAudioPlayerGui.exec(NULL, "");
 
 				StartSubtitles();
+				
+#if ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+#endif				
 			}			
-			else if( msg == (neutrino_msg_t)g_settings.key_video )	// movie browser (recorded files)
+			else if( msg == (neutrino_msg_t)g_settings.key_recordsbrowser )	// recordsbrowser
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "MoviePlayer";
@@ -2883,7 +2895,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				nGLCD::unlockChannel();
 #endif				
 			}
-			else if( msg == (neutrino_msg_t)g_settings.key_video_player )	// fileplayer
+			else if( msg == (neutrino_msg_t)g_settings.key_moviebrowser )	// moviebrowser
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "MoviePlayer";
@@ -2908,8 +2920,60 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 #if ENABLE_GRAPHLCD
 				nGLCD::unlockChannel();
 #endif				
+			}
+			else if( msg == (neutrino_msg_t)g_settings.key_filebrowser )	// filebrowser player
+			{
+#ifdef ENABLE_GRAPHLCD
+				std::string c = "MoviePlayer";
+				nGLCD::lockChannel(c);
+#endif			  
+			  
+				StopSubtitles();
+
+				moviePlayerGui->exec(NULL, "fileplayback");
+
+				if( mode == mode_radio )
+				{
+					frameBuffer->loadBackgroundPic("radiomode.jpg");
+						
+#if !defined USE_OPENGL
+					frameBuffer->blit();
+#endif						
+				}
+					
+				StartSubtitles();
+				
+#if ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+#endif				
+			}
+			else if( msg == (neutrino_msg_t)g_settings.key_webtv )	// webtv
+			{
+#ifdef ENABLE_GRAPHLCD
+				std::string c = "WebTV";
+				nGLCD::lockChannel(c);
+#endif			  
+			  
+				StopSubtitles();
+
+				moviePlayerGui->exec(NULL, "webtv");
+
+				if( mode == mode_radio )
+				{
+					frameBuffer->loadBackgroundPic("radiomode.jpg");
+						
+#if !defined USE_OPENGL
+					frameBuffer->blit();
+#endif						
+				}
+					
+				StartSubtitles();
+				
+#if ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+#endif				
 			}	
-			else if( msg == (neutrino_msg_t)g_settings.key_picture ) 	// picture viewer
+			else if( msg == (neutrino_msg_t)g_settings.key_pictureviewer ) 	// picture viewer
 			{
 				StopSubtitles();
 				

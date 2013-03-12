@@ -316,12 +316,14 @@ struct SNeutrinoSettings
 	int key_timeshift;
 	int key_unlock;
 	
-	int key_video;
-	int key_music;
-	int key_picture;
-	int key_timelist;
-	int key_net;
-	int key_video_player;
+	int key_recordsbrowser;
+	int key_audioplayer;
+	int key_pictureviewer;
+	int key_timerlist;
+	int key_inetradio;
+	int key_moviebrowser;
+	int key_filebrowser;
+	int key_webtv;
 	// END KEYBINDING
 
 	// USERMENU

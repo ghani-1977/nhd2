@@ -127,12 +127,14 @@ CChannelList::CChannelList(const char * const Name, bool historyMode, bool _vlis
 CChannelList::~CChannelList()
 {
 	//printf("DELETE LIST %s : %x\n", name.c_str(), this);fflush(stdout);
+	
 	chanlist.clear();
 }
 
 void CChannelList::ClearList(void)
 {
 	//printf("CLEAR LIST %s : %x\n", name.c_str(), this);fflush(stdout);
+	
 	chanlist.clear();
 	chanlist.resize(1);
 }
@@ -140,7 +142,6 @@ void CChannelList::ClearList(void)
 void CChannelList::setSize(int newsize)
 {
 	chanlist.reserve(newsize);
-	//chanlist.resize(newsize);
 }
 
 void CChannelList::addChannel(CZapitChannel * channel, int num)
@@ -1651,7 +1652,7 @@ void CChannelList::paintDetails(int index)
 				text2 = text2.substr( 1 );
 
 			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + 2* fheight, width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + 2*fheight, width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
 		}
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
@@ -1834,32 +1835,32 @@ void CChannelList::paintItem(int pos)
 				struct tm *pStartZeit = localtime(&p_event->startTime);
 			
 				sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
-				//g_Font[SNeutrinoSettings::FONT_TYPE_IMAGEINFO_SMALL]->RenderString(x+ 5+ numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -poffs, tmp, COL_MENUCONTENT, 0, true);
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos+ xtheight, width- numwidth- 20- 15 -prg_offset, tmp, tcolor, 0, true);
+				
+				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos + xtheight, width - numwidth - 20 - 15 - prg_offset, tmp, tcolor, 0, true);
 			}
 			else
 			{
-				time_t jetzt=time(NULL);
+				time_t jetzt = time(NULL);
 				int runningPercent = 0;
 					
 				if (((jetzt - p_event->startTime + 30) / 60) < 0 )
 				{
-					runningPercent= 0;
+					runningPercent = 0;
 				}
 				else
 				{
-					runningPercent=(jetzt-p_event->startTime) * 30 / p_event->duration;
+					runningPercent = (jetzt-p_event->startTime) * 30 / p_event->duration;
 					if (runningPercent > 30)	// this would lead to negative value in paintBoxRel
 						runningPercent = 30;	// later on which can be fatal...
 				}
 				
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset, ypos+fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 				
-				frameBuffer->paintBoxRel(x+ 5+ numwidth+ title_offset+2, ypos+2+fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 			}
 
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10 + prg_offset, ypos + fheight, width - numwidth - 40 - 15 - prg_offset, nameAndDescription, color, 0, true);
 
 			if (g_settings.channellist_epgtext_align_right)
 			{
@@ -1877,11 +1878,11 @@ void CChannelList::paintItem(int pos)
 			// extended info
 			short runningPercent = 0;
 			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2-4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 
-			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2-4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 				
-			frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos+fheight/4 + 1,x + 5 + numwidth + title_offset + 32, ypos+fheight/4+fheight/2-3, COL_MENUCONTENT_PLUS_3);
+			frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos + fheight/4 + 1, x + 5 + numwidth + title_offset + 32, ypos + fheight/4 + fheight/2 - 3, COL_MENUCONTENT_PLUS_3);
 			
 			//name
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true); // UTF-8
@@ -1980,7 +1981,7 @@ void CChannelList::paintHead()
 	char timestr[18];
 	
 	time_t now = time(NULL);
-	struct tm *tm = localtime(&now);
+	struct tm * tm = localtime(&now);
 	
 	bool gotTime = g_Sectionsd->getIsTimeSet();
 
@@ -2083,7 +2084,7 @@ void CChannelList::paintMiniTV()
 		sprintf(cSeit, g_Locale->getText(LOCALE_CHANNELLIST_SINCE), pStartZeit->tm_hour, pStartZeit->tm_min);
 		int noch = (p_event->startTime + p_event->duration - time(NULL)) / 60;
 		if ((noch < 0) || (noch >= 10000))
-			noch= 0;
+			noch = 0;
 		sprintf(cNoch, "(%d / %d min)", seit, noch);
 			
 		int seit_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(cSeit, true); // UTF-8

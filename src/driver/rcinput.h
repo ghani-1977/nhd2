@@ -172,7 +172,6 @@ class CRCInput
 
 		int 		fd_pipe_high_priority[2];
 		int 		fd_pipe_low_priority[2];
-		//int         	fd_gamerc;
 
 #define NUMBER_OF_EVENT_DEVICES 4
 

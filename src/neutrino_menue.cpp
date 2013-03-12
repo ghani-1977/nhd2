@@ -2081,18 +2081,20 @@ enum keynames {
 	KEY_TIMESHIFT,
 	
 	// media
-	KEY_EXTRAS_VIDEO,
-	KEY_EXTRAS_MUSIC,
-	KEY_EXTRAS_PICTURE,
-	KEY_EXTRAS_TIMELIST,
-	KEY_EXTRAS_NET,
-	KEY_EXTRAS_VIDEO_PLAYER,
+	KEY_EXTRAS_RECORDSBROWSER,
+	KEY_EXTRAS_AUDIOPLAYER,
+	KEY_EXTRAS_PICTUREVIEWER,
+	KEY_EXTRAS_TIMERLIST,
+	KEY_EXTRAS_INETRADIO,
+	KEY_EXTRAS_MOVIEBROWSER,
+	KEY_EXTRAS_FILEBROWSER,
+	KEY_EXTRAS_WEBTV,
 	
 	// misc
 	KEY_UNLOCK,
 };
 
-#define KEYBINDS_COUNT 33
+#define KEYBINDS_COUNT 35
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2126,12 +2128,14 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_EXTRA_KEY_TIMESHIFT,
 
 	// media
-	LOCALE_KEYBINDINGMENU_VIDEO,
-	LOCALE_KEYBINDINGMENU_MUSIC,
-	LOCALE_KEYBINDINGMENU_PICTURE,
-	LOCALE_KEYBINDINGMENU_TIMELIST,
-	LOCALE_KEYBINDINGMENU_NET,
-	LOCALE_KEYBINDINGMENU_VIDEO_PLAYER,
+	LOCALE_KEYBINDINGMENU_RECORDSBROWSER,
+	LOCALE_KEYBINDINGMENU_AUDIOPLAYER,
+	LOCALE_KEYBINDINGMENU_PICTUREVIEWER,
+	LOCALE_KEYBINDINGMENU_TIMERLIST,
+	LOCALE_KEYBINDINGMENU_INETRADIO,
+	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
+	LOCALE_KEYBINDINGMENU_FILEBROWSER,
+	LOCALE_KEYBINDINGMENU_WEBTV,
 	
 	// misc
 	LOCALE_EXTRA_KEY_UNLOCK,
@@ -2170,12 +2174,14 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_EXTRA_KEY_TIMESHIFT,
 	
 	// media
-	LOCALE_KEYBINDINGMENU_VIDEO,
-	LOCALE_KEYBINDINGMENU_MUSIC,
-	LOCALE_KEYBINDINGMENU_PICTURE,
-	LOCALE_KEYBINDINGMENU_TIMELIST,
-	LOCALE_KEYBINDINGMENU_NET,
-	LOCALE_KEYBINDINGMENU_VIDEO_PLAYER,
+	LOCALE_KEYBINDINGMENU_RECORDSBROWSER,
+	LOCALE_KEYBINDINGMENU_AUDIOPLAYER,
+	LOCALE_KEYBINDINGMENU_PICTUREVIEWER,
+	LOCALE_KEYBINDINGMENU_TIMERLIST,
+	LOCALE_KEYBINDINGMENU_INETRADIO,
+	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
+	LOCALE_KEYBINDINGMENU_FILEBROWSER,
+	LOCALE_KEYBINDINGMENU_WEBTV,
 	
 	// misc
 	LOCALE_EXTRA_KEY_UNLOCK,
@@ -2249,12 +2255,14 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_timeshift,
 		
 		// media
-		&g_settings.key_video,
-		&g_settings.key_music,
-		&g_settings.key_picture,
-		&g_settings.key_timelist,
-		&g_settings.key_net,
-		&g_settings.key_video_player,
+		&g_settings.key_recordsbrowser,
+		&g_settings.key_audioplayer,
+		&g_settings.key_pictureviewer,
+		&g_settings.key_timerlist,
+		&g_settings.key_inetradio,
+		&g_settings.key_moviebrowser,
+		&g_settings.key_filebrowser,
+		&g_settings.key_webtv,
 		
 		// misc
 		&g_settings.key_unlock,
@@ -2292,9 +2300,10 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	
 	// media
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINMENU_MEDIAPLAYER));
-	for (int i = KEY_EXTRAS_VIDEO; i <= KEY_EXTRAS_VIDEO_PLAYER; i++)
+	for (int i = KEY_EXTRAS_RECORDSBROWSER; i <= KEY_EXTRAS_WEBTV; i++)
 		bindSettings.addItem(new CMenuForwarder(keydescription[i], true, NULL, keychooser[i]));
 
+	// misc
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINSETTINGS_MISC));
 	
 	bindSettings.addItem(new CMenuForwarder(keydescription[KEY_UNLOCK], true, NULL, keychooser[KEY_UNLOCK]));

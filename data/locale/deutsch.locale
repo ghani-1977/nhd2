@@ -1573,12 +1573,14 @@ miscsettings.restorewarn Alle Settings werden ersetzt?
 
 opkgmanager.head OPKG Manager
 
-keybinding.key_video Aufnahmen Browser
-keybinding.key_music Audioplayer
-keybinding.key_picture PictureViewer
-keybinding.key_timelist Timerlist
-keybinding.key_net Internet Radio
-keybinding.key_video_player Movies Browser
+keybinding.key_recordsbrowser Aufnahmen Browser
+keybinding.key_audioplayer Audioplayer
+keybinding.key_pictureviewer PictureViewer
+keybinding.key_timerlist Timerlist
+keybinding.key_inetradio Internet Radio
+keybinding.key_moviebrowser Movies Browser
+keybinding.key_filebrowser Datei Browser
+keybinding.key_webtv WebTV
 
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 

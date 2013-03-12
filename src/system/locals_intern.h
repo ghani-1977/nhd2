@@ -1584,12 +1584,14 @@ const char * locale_real_names[] = {
 	
 	"opkgmanager.head",
 	
-	"keybinding.key_video",
-	"keybinding.key_music",
-	"keybinding.key_picture",
-	"keybinding.key_timelist",
-	"keybinding.key_net",
-	"keybinding.key_video_player",
+	"keybinding.key_recordsbrowser",
+	"keybinding.key_audioplayer",
+	"keybinding.key_pictureviewer",
+	"keybinding.key_timerlist",
+	"keybinding.key_inetradio",
+	"keybinding.key_moviebrowser",
+	"keybinding.key_filebrowser",
+	"keybinding.key_webtv",
 	
 	"audiomenu.volumebar_audiosteps",
 	
