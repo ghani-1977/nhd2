@@ -1107,7 +1107,7 @@ ping.unreachable ist nicht erreichbar (unreachable)
 pinprotection.head PIN-Abfrage
 pinprotection.wrongcode Geben Sie den Code nocheinmal ein!
 plugins.result Pluginausgabe
-rclock.lockmsg Die Fernbedienung der CubeRevo wird gesperrt.\n Um die Sperre aufzuheben, bitte\n <ROT> und <MENU> auf der Fernbedienung\n druecken.
+rclock.lockmsg Die Fernbedienung wird gesperrt.\n Um die Sperre aufzuheben, bitte\n <ROT> und <MENU> auf der Fernbedienung\n druecken.
 rclock.menueadd FB sperren
 rclock.title Fernbedienung sperren
 rclock.unlockmsg Fernbedienung reaktiviert...
@@ -1581,6 +1581,8 @@ keybinding.key_inetradio Internet Radio
 keybinding.key_moviebrowser Movies Browser
 keybinding.key_filebrowser Datei Browser
 keybinding.key_webtv WebTV
+keybinding.savekeymap Keymap speichern
+keybinding.savekeymap_hint keymap wird gespeichert, bitte warten...
 
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 

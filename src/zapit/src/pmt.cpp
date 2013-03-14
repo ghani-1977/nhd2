@@ -50,10 +50,6 @@
 extern int currentMode;
 extern short scan_runs;
 
-//#if !defined (PLATFORM_COOLSTREAM)
-//extern cDvbCi * ci;
-//#endif
-
 
 /*
  * Stream types
@@ -240,7 +236,8 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			case 0xC2: /* User Private descriptor - Canal+ */
 #if 0
 				printf("0xC2 dump:");
-				for (i = 0; i < descriptor_length; i++) {
+				for (i = 0; i < descriptor_length; i++) 
+				{
 					printf("%c", buffer[pos + 2 + i]);
 					if (((i+1) % 8) == 0)
 						printf("\n");
@@ -263,9 +260,9 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			default:
-				//dprintf(DEBUG_DEBUG, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
-#if 1
-				printf("0x%2X dump:", descriptor_tag);
+				dprintf(DEBUG_INFO, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
+#if 0
+				printf("0x%2X dump:\n", descriptor_tag);
 				for (i = 0; i < descriptor_length; i++) 
 				{
 					printf("%c", buffer[pos + 2 + i]);

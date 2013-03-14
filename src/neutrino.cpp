@@ -750,6 +750,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_inetradio = configfile.getInt32( "key_inetraio", CRCInput::RC_nokey );
 	g_settings.key_moviebrowser = configfile.getInt32( "key_moviebrowser", CRCInput::RC_nokey );
 	g_settings.key_filebrowser = configfile.getInt32( "key_filebrowser", CRCInput::RC_nokey );
+	g_settings.key_webtv = configfile.getInt32( "key_webtv", CRCInput::RC_nokey );
 	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
@@ -4892,6 +4893,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 		return menu_return::RETURN_REPAINT;
 	}
+	#if 0
 	else if(actionKey == "loadkeys") 
 	{
 		parent->hide();
@@ -4929,6 +4931,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		return menu_return::RETURN_REPAINT;
 	}
+	#endif
 	else if(actionKey == "clearSectionsd")
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"clear EPG Cache..." );
@@ -4978,6 +4981,21 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		CVFD::getInstance()->setFPTime();
 #endif
 #endif
+		
+		sleep(2);
+		
+		hintBox->hide();
+		delete hintBox;
+
+		return menu_return::RETURN_REPAINT;	
+	}
+	else if(actionKey == "savekeymap")
+	{
+		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_KEYBINDINGMENU_SAVEKEYMAP_HINT)); // UTF-8
+		hintBox->paint();
+		
+		g_RCInput->configfile.setModifiedFlag(true);
+		g_RCInput->saveKeyMap(NEUTRINO_KEYMAP_FILE);
 		
 		sleep(2);
 		
@@ -5068,106 +5086,6 @@ void stop_daemons()
 	cs_deregister_messenger();
 	cs_api_exit();
 #endif
-}
-
-// load keys
-void CNeutrinoApp::loadKeys(const char * fname)
-{
-	bool res;
-	CConfigFile tconfig(',', true);
-	
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::loadKeys: %s\n", fname);
-
-	res = tconfig.loadConfig(fname);
-	if(!res) 
-		return;
-
-	//rc-key configuration
-	g_settings.key_tvradio_mode = tconfig.getInt32( "key_tvradio_mode", CRCInput::RC_mode );
-
-	g_settings.key_channelList_pageup = tconfig.getInt32( "key_channelList_pageup",  CRCInput::RC_minus );
-	g_settings.key_channelList_pagedown = tconfig.getInt32( "key_channelList_pagedown", CRCInput::RC_plus );
-	g_settings.key_channelList_cancel = tconfig.getInt32( "key_channelList_cancel",  CRCInput::RC_home );
-	//g_settings.key_channelList_sort = tconfig.getInt32( "key_channelList_sort",  CRCInput::RC_blue );
-	g_settings.key_channelList_reload = tconfig.getInt32( "key_channelList_reload",  CRCInput::RC_blue );
-	g_settings.key_channelList_addrecord = tconfig.getInt32( "key_channelList_addrecord",  CRCInput::RC_red );
-	g_settings.key_channelList_addremind = tconfig.getInt32( "key_channelList_addremind",  CRCInput::RC_yellow );
-
-	g_settings.key_list_start = tconfig.getInt32( "key_list_start", CRCInput::RC_nokey );
-	g_settings.key_list_end = tconfig.getInt32( "key_list_end", CRCInput::RC_nokey );
-	g_settings.menu_left_exit = tconfig.getInt32( "menu_left_exit", 0 );
-
-	g_settings.mpkey_rewind = tconfig.getInt32( "mpkey.rewind", CRCInput::RC_left );
-	g_settings.mpkey_forward = tconfig.getInt32( "mpkey.forward", CRCInput::RC_right );
-	g_settings.mpkey_pause = tconfig.getInt32( "mpkey.pause", CRCInput::RC_yellow );
-	g_settings.mpkey_stop = tconfig.getInt32( "mpkey.stop", CRCInput::RC_home );
-	g_settings.mpkey_play = tconfig.getInt32( "mpkey.play", CRCInput::RC_ok );
-	g_settings.mpkey_audio = tconfig.getInt32( "mpkey.audio", CRCInput::RC_green );
-	g_settings.mpkey_time = tconfig.getInt32( "mpkey.time", CRCInput::RC_setup );
-	g_settings.mpkey_bookmark = tconfig.getInt32( "mpkey.bookmark", CRCInput::RC_blue );
-	g_settings.key_timeshift = configfile.getInt32( "key_timeshift", CRCInput::RC_nokey );
-
-	g_settings.key_quickzap_up = tconfig.getInt32( "key_quickzap_up",  CRCInput::RC_up );
-	g_settings.key_quickzap_down = tconfig.getInt32( "key_quickzap_down",  CRCInput::RC_down );
-	g_settings.key_subchannel_up = tconfig.getInt32( "key_subchannel_up",  CRCInput::RC_right );
-	g_settings.key_subchannel_down = tconfig.getInt32( "key_subchannel_down",  CRCInput::RC_left );
-	g_settings.key_zaphistory = tconfig.getInt32( "key_zaphistory",  CRCInput::RC_home );
-	g_settings.key_lastchannel = tconfig.getInt32( "key_lastchannel",  CRCInput::RC_0 );
-
-	g_settings.key_bouquet_up = tconfig.getInt32( "key_bouquet_up",  CRCInput::RC_right);
-	g_settings.key_bouquet_down = tconfig.getInt32( "key_bouquet_down",  CRCInput::RC_left);
-	strcpy(g_settings.repeat_blocker, tconfig.getString("repeat_blocker", "300").c_str());
-	strcpy(g_settings.repeat_genericblocker, tconfig.getString("repeat_genericblocker", "100").c_str());
-}
-
-// save keys
-void CNeutrinoApp::saveKeys(const char * fname)
-{
-	CConfigFile tconfig(',', true);
-	
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::saveKeys: %s\n", fname);
-	
-	//rc-key configuration
-	tconfig.setInt32( "key_tvradio_mode", g_settings.key_tvradio_mode );
-
-	tconfig.setInt32( "key_channelList_pageup", g_settings.key_channelList_pageup );
-	tconfig.setInt32( "key_channelList_pagedown", g_settings.key_channelList_pagedown );
-	tconfig.setInt32( "key_channelList_cancel", g_settings.key_channelList_cancel );
-	//tconfig.setInt32( "key_channelList_sort", g_settings.key_channelList_sort );
-	tconfig.setInt32( "key_channelList_reload", g_settings.key_channelList_reload );
-	tconfig.setInt32( "key_channelList_addrecord", g_settings.key_channelList_addrecord );
-	tconfig.setInt32( "key_channelList_addremind", g_settings.key_channelList_addremind );
-
-	tconfig.setInt32( "key_quickzap_up", g_settings.key_quickzap_up );
-	tconfig.setInt32( "key_quickzap_down", g_settings.key_quickzap_down );
-	tconfig.setInt32( "key_bouquet_up", g_settings.key_bouquet_up );
-	tconfig.setInt32( "key_bouquet_down", g_settings.key_bouquet_down );
-	tconfig.setInt32( "key_subchannel_up", g_settings.key_subchannel_up );
-	tconfig.setInt32( "key_subchannel_down", g_settings.key_subchannel_down );
-	tconfig.setInt32( "key_zaphistory", g_settings.key_zaphistory );
-	tconfig.setInt32( "key_lastchannel", g_settings.key_lastchannel );
-
-	tconfig.setInt32( "key_list_start", g_settings.key_list_start );
-	tconfig.setInt32( "key_list_end", g_settings.key_list_end );
-	
-	tconfig.setInt32( "menu_left_exit", g_settings.menu_left_exit );
-
-	tconfig.setInt32( "mpkey.rewind", g_settings.mpkey_rewind );
-	tconfig.setInt32( "mpkey.forward", g_settings.mpkey_forward );
-	tconfig.setInt32( "mpkey.pause", g_settings.mpkey_pause );
-	tconfig.setInt32( "mpkey.stop", g_settings.mpkey_stop );
-	tconfig.setInt32( "mpkey.play", g_settings.mpkey_play );
-	tconfig.setInt32( "mpkey.audio", g_settings.mpkey_audio );
-	tconfig.setInt32( "mpkey.time", g_settings.mpkey_time );
-	tconfig.setInt32( "mpkey.bookmark", g_settings.mpkey_bookmark );
-	tconfig.setInt32( "key_timeshift", g_settings.key_timeshift );
-
-	tconfig.setInt32( "key_unlock", g_settings.key_unlock );
-
-	tconfig.setString( "repeat_blocker", g_settings.repeat_blocker );
-	tconfig.setString( "repeat_genericblocker", g_settings.repeat_genericblocker );
-
-	tconfig.saveConfig(fname);
 }
 
 // stop subtitle

@@ -1592,6 +1592,8 @@ const char * locale_real_names[] = {
 	"keybinding.key_moviebrowser",
 	"keybinding.key_filebrowser",
 	"keybinding.key_webtv",
+	"keybinding.savekeymap",
+	"keybinding.savekeymap_hint",
 	
 	"audiomenu.volumebar_audiosteps",
 	
