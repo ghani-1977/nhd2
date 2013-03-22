@@ -121,7 +121,7 @@ class CZapitClient : public CBasicClient
 			t_service_id          service_id;
 			t_transport_stream_id transport_stream_id;
 		};
-
+		typedef std::vector<commandAddSubServices> subServiceList;
 
 		struct commandSetScanSatelliteList
 		{
@@ -139,8 +139,6 @@ class CZapitClient : public CBasicClient
 		};
 		typedef std::vector<commandSetScanMotorPosList> ScanMotorPosList;
 
-		typedef std::vector<commandAddSubServices> subServiceList;
-
 		struct responseGetLastChannel
 		{
 			unsigned int	channelNumber;
@@ -154,7 +152,6 @@ class CZapitClient : public CBasicClient
 			bool	 locked;
 			bool	 hidden;
 		};
-
 		typedef std::vector<responseGetBouquets> BouquetList;
 
 		struct responseChannels
@@ -178,7 +175,6 @@ class CZapitClient : public CBasicClient
 
 		struct responseGetBouquetNChannels : public responseNChannels
 		{};
-
 		typedef std::vector<responseGetBouquetNChannels> BouquetNChannelList;
 
 		struct responseGetAPIDs
@@ -189,7 +185,6 @@ class CZapitClient : public CBasicClient
 			int     is_aac;
 			int     component_tag;
 		};
-
 		typedef std::vector<responseGetAPIDs> APIDList;
 		
 		struct responseGetSubPIDs
@@ -200,7 +195,6 @@ class CZapitClient : public CBasicClient
 			uint	ancillary_page;
 			bool	hearingImpaired;
 		};
-
 		typedef std::vector<responseGetSubPIDs> SubPIDList;
 
 		struct responseGetOtherPIDs
@@ -232,37 +226,8 @@ class CZapitClient : public CBasicClient
 				uint32_t	rate;
 				fe_code_rate	fec;
 		};
-		
-		//TEST
-		class CRecordServiceInfo
-		{
-			public:
-				t_original_network_id onid;
-				t_service_id           sid;
-				t_transport_stream_id tsid;
-				unsigned short	vpid;
-				unsigned short  vtype;
-				unsigned short	apid;
-				unsigned short	pcrpid;
-				unsigned short	vtxtpid;
-				unsigned int	tsfrequency;
-				unsigned char	polarisation;
-				unsigned char	diseqc;
-				unsigned short  pmtpid;
-				unsigned short  pmt_version;
-				uint32_t	rate;
-				fe_code_rate	fec;
-		};
-		//
 
 		struct responseGetPIDs
-		{
-			responseGetOtherPIDs	PIDs;
-			APIDList		APIDs;
-			SubPIDList  		SubPIDs;
-		};
-		
-		struct responseGetRecordPIDs
 		{
 			responseGetOtherPIDs	PIDs;
 			APIDList		APIDs;
@@ -304,7 +269,8 @@ class CZapitClient : public CBasicClient
 
 		/* zaps to channel, returns the "zap-status" */
 		unsigned int zapTo_serviceID(const t_channel_id channel_id);
-		//TEST
+		
+		/* zap to record channel */
 		unsigned int zapTo_record(const t_channel_id channel_id);
 
 		/* zaps to subservice, returns the "zap-status" */
@@ -319,7 +285,6 @@ class CZapitClient : public CBasicClient
 		/* return the current (tuned) ServiceID */
 		t_channel_id getCurrentServiceID();
 		
-		//TEST
 		/* return the record (tuned) ServiceID */
 		t_channel_id getRecordServiceID();
 
@@ -375,15 +340,13 @@ class CZapitClient : public CBasicClient
 		void getPIDS( responseGetPIDs& pids );
 		
 		/* get record channel APID-List */
-		void getRecordPIDS( responseGetRecordPIDs& pids );
+		void getRecordPIDS( /*responseGetRecordPIDs*/responseGetPIDs& pids );
 
-		/* get info about the current serivice */
+		/* get info about the current service */
 		CZapitClient::CCurrentServiceInfo getCurrentServiceInfo();
 		
-		//TEST
-		/* get info about the current serivice */
-		CZapitClient::CRecordServiceInfo getRecordServiceInfo();
-		//
+		/* get info about the record service */
+		CZapitClient::CCurrentServiceInfo getRecordServiceInfo();
 
 		/* transfer SubService-List to zapit */
 		void setSubServices( subServiceList& subServices );
@@ -394,19 +357,14 @@ class CZapitClient : public CBasicClient
 		/* set Mode */
 		int getMode();
 
-		/* set RecordMode*/
+		/* set RecordMode */
 		void setRecordMode(const bool activate);
 		
-		/* get RecordMode*/
+		/* get RecordMode */
 		bool isRecordModeActive();
-		
-		/* pip mode */
-		void setPipMode(const bool activate);
-		bool isPipModeActive();
 
 		/* mute audio */
 		void muteAudio(const bool mute);
-		//test
 		bool getMuteStatus();
 
 		/* set audio volume */
@@ -465,9 +423,6 @@ class CZapitClient : public CBasicClient
 		
 		/* set fe mode */
 		void setFEMode(const fe_mode_t mode, int feindex = 0);
-
-		/* get FrontEnd Signal Params */ 
-		//void getFESignal (struct responseFESignal& f);
 
 		/****************************************/
 		/*					*/

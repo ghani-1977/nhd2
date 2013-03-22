@@ -172,9 +172,9 @@ void CInfoViewer::Init()
 	virtual_zap_mode = false;
 	chanready = 1;
 	
-	sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
+	//sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	//snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	//timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
 }
 
 void CInfoViewer::start()
@@ -271,6 +271,20 @@ void CInfoViewer::showTitle (const int ChanNum, const std::string & Channel, con
 	is_visible = true;
 	
 	newfreq = true;
+	
+	//
+	BoxStartX = g_settings.screen_StartX + 10;
+	BoxEndX = g_settings.screen_EndX - 10;
+	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxStartY = BoxEndY - BoxHeight;
+	BoxWidth = BoxEndX - BoxStartX;
+	//
+	
+	//
+	sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
+	timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
+	//
 	
 	sigscale->reset(); 
 	snrscale->reset(); 
@@ -1910,7 +1924,24 @@ void CInfoViewer::killTitle()
 			g_Radiotext->S_RtOsd = g_Radiotext->haveRadiotext() ? 1 : 0;
 			killRadiotext();
 		}
-#endif		
+#endif
+		if(sigscale)
+		{
+			delete sigscale;
+			sigscale = 0;
+		}
+		
+		if(snrscale)
+		{
+			delete snrscale;
+			snrscale = 0;
+		}
+		
+		if(timescale)
+		{
+			delete timescale;
+			timescale = 0;
+		}
   	}
 }
 
@@ -1996,13 +2027,11 @@ void CInfoViewer::showEpgInfo()   //message on event change
 int CInfoViewerHandler::exec(CMenuTarget * parent, const std::string & actionkey)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
-	CChannelList *channelList;
-	CInfoViewer *i;
+	CChannelList * channelList;
+	CInfoViewer * i;
 	
 	if (parent) 
-	{
 		parent->hide ();
-	}
 	
 	i = new CInfoViewer;
 	

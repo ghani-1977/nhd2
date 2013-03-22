@@ -1747,16 +1747,16 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		
 		case CZapitMessages::CMD_GET_RECORD_SERVICEID: 
 		{
-			CZapitMessages::responseGetRecordServiceID msgRecordSID;
-			msgRecordSID.record_channel_id = (rec_channel != 0) ? rec_channel->getChannelID() : 0;
+			CZapitMessages::responseGetCurrentServiceID msgRecordSID;
+			msgRecordSID.channel_id = (rec_channel != 0) ? rec_channel->getChannelID() : 0;
 			CBasicServer::send_data(connfd, &msgRecordSID, sizeof(msgRecordSID));
 			break;
 		}
 		
 		case CZapitMessages::CMD_GET_RECORD_SERVICEINFO: 
 		{
-			CZapitClient::CRecordServiceInfo msgRecordServiceInfo;
-			memset(&msgRecordServiceInfo, 0, sizeof(CZapitClient::CRecordServiceInfo));
+			CZapitClient::CCurrentServiceInfo msgRecordServiceInfo;
+			memset(&msgRecordServiceInfo, 0, sizeof(CZapitClient::CCurrentServiceInfo));
 			
 			if(rec_channel) 
 			{

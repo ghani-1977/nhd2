@@ -135,7 +135,7 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
                 apids = g_settings.recording_audio_pids_default;
 
         apid_list.clear();
-        CZapitClient::responseGetRecordPIDs allpids;
+        CZapitClient::responseGetPIDs allpids;
 	
         g_Zapit->getRecordPIDS(allpids);
 
@@ -422,9 +422,9 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 		"\">\n"
 		"\t\t<channelname>";
 	
-	CZapitClient::responseGetRecordPIDs pids;
+	CZapitClient::responseGetPIDs pids;
 	g_Zapit->getRecordPIDS (pids);
-	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo ();
+	CZapitClient::CCurrentServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
         APIDList apid_list;
         getAPIDs(apids,apid_list);
@@ -560,8 +560,7 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 	unsigned int numpids;
 	unsigned int pos;
 
-	//CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
-	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
+	CZapitClient::CCurrentServiceInfo si = g_Zapit->getRecordServiceInfo();
 	numpids = 0;
 
 	// vpid
@@ -578,11 +577,7 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 		transfer_pids(it->apid, EN_TYPE_AUDIO, it->ac3 ? 1 : 0);
         }
         
-#if 0 // FIXME : why this needed ?
-        if(!apid_list.empty())
-                g_Zapit->setAudioChannel(apid_list.begin()->index);
-#endif
-        CZapitClient::responseGetRecordPIDs allpids;
+        CZapitClient::responseGetPIDs allpids;
         g_Zapit->getRecordPIDS(allpids);
 
 	//record file name format
@@ -882,12 +877,9 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 
 	g_cMovieInfo->clearMovieInfo(g_movieInfo);
 
-	//CZapitClient::responseGetRecordPIDs pids;
 	g_Zapit->getRecordPIDS(pids);
-	CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
-	//CZapitClient::responseGetPIDs pids;
-	//g_Zapit->getPIDS(pids);
-	//CZapitClient::CRecordServiceInfo si = g_Zapit->getRecordServiceInfo();
+	CZapitClient::CCurrentServiceInfo si = g_Zapit->getRecordServiceInfo();
+	
 
 	std::string tmpstring = g_Zapit->getChannelName(channel_id);
 	if (tmpstring.empty())

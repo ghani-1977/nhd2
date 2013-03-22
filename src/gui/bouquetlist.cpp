@@ -334,7 +334,7 @@ int CBouquetList::show(bool bShowChannelList)
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
 
 	int maxpos= 1;
-	int i= Bouquets.size();
+	int i = Bouquets.size();
 	
 	while ((i = i/10) != 0)
 		maxpos++;
@@ -347,11 +347,11 @@ int CBouquetList::show(bool bShowChannelList)
 #endif	
 
 	int oldselected = selected;
-	int firstselected = selected+ 1;
+	int firstselected = selected + 1;
 	int zapOnExit = false;
 
-	unsigned int chn= 0;
-	int pos= maxpos;
+	unsigned int chn = 0;
+	int pos = maxpos;
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
@@ -410,13 +410,13 @@ int CBouquetList::show(bool bShowChannelList)
 		}
 		else if ( msg == (neutrino_msg_t) g_settings.key_list_start ) 
 		{
-			selected=0;
+			selected = 0;
 			liststart = (selected/listmaxshow)*listmaxshow;
 			paint();
 		}
 		else if ( msg == (neutrino_msg_t) g_settings.key_list_end ) 
 		{
-			selected=Bouquets.size()-1;
+			selected = Bouquets.size()-1;
 			liststart = (selected/listmaxshow)*listmaxshow;
 			paint();
 		}
@@ -609,7 +609,7 @@ void CBouquetList::paintHead()
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// head title
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, name, COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, name, COL_MENUHEAD, 0, true); // UTF-8
 }
 
 void CBouquetList::paint()

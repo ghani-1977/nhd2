@@ -61,7 +61,7 @@
 #define ALPHA_SETUP_ICON_ALPHA1_SELECTED "volumeslider2red"
 
 
-CAlphaSetup::CAlphaSetup(const neutrino_locale_t Name, unsigned char* Alpha, CChangeObserver* Observer)
+CAlphaSetup::CAlphaSetup(const neutrino_locale_t Name, unsigned char * Alpha, CChangeObserver * Observer)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	observer = Observer;
@@ -72,7 +72,7 @@ CAlphaSetup::CAlphaSetup(const neutrino_locale_t Name, unsigned char* Alpha, CCh
 	frameBuffer->setBlendLevel(*alpha);
 }
 
-int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
+int CAlphaSetup::exec(CMenuTarget * parent, const std::string &)
 {
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -82,17 +82,16 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 
-	height = hheight+ mheight*2;
+	height = hheight + mheight*2;
 
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth()-width) >> 1);
 	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight()-height) >> 1);
 
 	int res = menu_return::RETURN_REPAINT;
 	if (parent)
-	{
 		parent->hide();
-	}
-	unsigned char alpha_alt= *alpha;
+
+	unsigned char alpha_alt = *alpha;
 
 	frameBuffer->setBlendLevel(*alpha);
 	
@@ -118,9 +117,8 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 		switch ( msg )
 		{
 			case CRCInput::RC_down:
-			case CRCInput::RC_vfddown:
 				{
-					if(selected<max)
+					if(selected < max)
 					{
 						paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_DESELECTED, false);
 						
@@ -133,7 +131,6 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 				}
 				
 			case CRCInput::RC_up:
-			case CRCInput::RC_vfdup:
 				{
 					if (selected > 0)
 					{
@@ -148,7 +145,6 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 				}
 
 			case CRCInput::RC_right:
-			case CRCInput::RC_vfdright:
 				{
 					if(selected == 0)
 					{
@@ -168,7 +164,6 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 				}
 				
 			case CRCInput::RC_left:
-			case CRCInput::RC_vfdleft:
 				{
 					if(selected == 0)
 					{
@@ -187,7 +182,6 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 				}
 					
 			case CRCInput::RC_home:
-			case CRCInput::RC_vfdexit:
 				if ( *alpha != alpha_alt)
 				{
 					if (ShowLocalizedMessage(name, LOCALE_MESSAGEBOX_DISCARD, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbCancel) == CMessageBox::mbrCancel)
@@ -201,7 +195,6 @@ int CAlphaSetup::exec(CMenuTarget* parent, const std::string &)
 
 			case CRCInput::RC_timeout:
 			case CRCInput::RC_ok:
-			case CRCInput::RC_vfdok:
 				loop = false;
 				break;
 
@@ -241,10 +234,10 @@ void CAlphaSetup::paint()
 	frameBuffer->paintBoxRel(x, y, width,hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// head
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+hheight, width, g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10,y + hheight, width, g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
 	
 	// bottom
-	frameBuffer->paintBoxRel(x, y + hheight, width, height -hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	frameBuffer->paintBoxRel(x, y + hheight, width, height - hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 
 	// slider
 	paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );

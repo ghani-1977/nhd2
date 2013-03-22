@@ -771,7 +771,6 @@ static int PlaybackFastBackward(Context_t  *context,int* speed)
 }
 #endif
 
-
 static int PlaybackSlowMotion(Context_t  *context,int* speed) 
 {
     int ret = cERR_PLAYBACK_NO_ERROR;

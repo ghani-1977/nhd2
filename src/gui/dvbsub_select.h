@@ -33,7 +33,6 @@
 #include "widget/menue.h"
 
 
-
 using namespace std;
 
 class CDVBSubSelectMenuHandler : public CMenuTarget

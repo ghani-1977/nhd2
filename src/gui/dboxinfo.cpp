@@ -127,7 +127,7 @@ void CDBoxInfoWidget::hide()
 
 void CDBoxInfoWidget::paint()
 {
-	int ypos=y;
+	int ypos = y;
 	int i = 0;
 	
 	// paint shadow
@@ -153,7 +153,7 @@ void CDBoxInfoWidget::paint()
 	//cpu
 	FILE* fd = fopen("/proc/cpuinfo", "rt");
 
-	if (fd==NULL) 
+	if (fd == NULL) 
 	{
 		printf("error while opening proc-cpuinfo\n" );
 	} 
@@ -164,25 +164,25 @@ void CDBoxInfoWidget::paint()
 		ssize_t read;
 		while ((read = getline(&buffer, &len, fd)) != -1) 
 		{
-			if (!(strncmp(const_cast<char *>("Hardware"),buffer, 8))) 
+			if (!(strncmp(const_cast<char *>("Hardware"), buffer, 8))) 
 			{
-				char *t=rindex(buffer,'\n');
+				char *t = rindex(buffer, '\n');
 				if (t)
-					*t='\0';
+					*t = '\0';
 
 				std::string hw;
-				char *p=rindex(buffer,':');
+				char *p = rindex(buffer, ':');
 				if (p)
-					hw=++p;
-				hw+=" Info";
-				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10, y + hheight+1, width - 10, hw.c_str(), COL_MENUHEAD, 0, true); // UTF-8
+					hw = ++p;
+				hw += " Info";
+				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + hheight + 1, width - 10, hw.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 				break;
 			}
 			i++;
 			if (i > 4)
 				continue;
 
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width - 10, buffer, COL_MENUCONTENT, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width - 10, buffer, COL_MENUCONTENT, true);
 			ypos+= mheight;
 		}
 		fclose(fd);
@@ -231,7 +231,7 @@ void CDBoxInfoWidget::paint()
 
 	strcat(sbuf, ubuf);
 	ypos += mheight/2;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, sbuf, COL_MENUCONTENT, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width, sbuf, COL_MENUCONTENT, true);
 	
 	// mem
 	ypos += mheight;

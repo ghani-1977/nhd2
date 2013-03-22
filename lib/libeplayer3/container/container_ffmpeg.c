@@ -1360,7 +1360,8 @@ static int container_ffmpeg_stop(Context_t *context) {
     return ret;
 }
 
-static int container_ffmpeg_seek_bytes(off_t pos) {
+static int container_ffmpeg_seek_bytes(off_t pos) 
+{
     int flag = AVSEEK_FLAG_BYTE;
 #if LIBAVCODEC_VERSION_MAJOR < 54
     off_t current_pos = url_ftell(avContext->pb);
@@ -1373,13 +1374,13 @@ static int container_ffmpeg_seek_bytes(off_t pos) {
     if (current_pos > pos)
         flag |= AVSEEK_FLAG_BACKWARD;
 
-#if LIBAVCODEC_VERSION_MAJOR > 54
+//#if LIBAVCODEC_VERSION_MAJOR > 54
     if (avformat_seek_file(avContext, -1, INT64_MIN, pos, INT64_MAX, flag) < 0)
     {
         ffmpeg_err( "Error seeking\n");
         return cERR_CONTAINER_FFMPEG_ERR;
     }
-#endif    
+//#endif    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
     ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
@@ -1539,7 +1540,8 @@ static int container_ffmpeg_seek_rel(Context_t *context, off_t pos, long long in
     return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
-static int container_ffmpeg_seek(Context_t *context, float sec) {
+static int container_ffmpeg_seek(Context_t *context, float sec) 
+{
     Track_t * videoTrack = NULL;
     Track_t * audioTrack = NULL;
     Track_t * current = NULL;
@@ -1562,6 +1564,7 @@ static int container_ffmpeg_seek(Context_t *context, float sec) {
         return cERR_CONTAINER_FFMPEG_ERR;
     }
 #endif
+
     context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
     context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
 
@@ -1628,14 +1631,16 @@ static int container_ffmpeg_seek(Context_t *context, float sec) {
             return cERR_CONTAINER_FFMPEG_ERR;
         }
 
-    } else
+    } 
+    else
     {
 #if !defined(VDR1722)
         sec += ((float) current->pts / 90000.0f);
 #endif
         ffmpeg_printf(10, "2. seeking to position %f sec ->time base %f %d\n", sec, av_q2d(((AVStream*) current->stream)->time_base), AV_TIME_BASE);
 
-        if (av_seek_frame(avContext, -1 /* or streamindex */, sec * AV_TIME_BASE, flag) < 0) {
+        if (av_seek_frame(avContext, -1 /* or streamindex */, sec * AV_TIME_BASE, flag) < 0) 
+	{
             ffmpeg_err( "Error seeking\n");
             releaseMutex(FILENAME, __FUNCTION__,__LINE__);
             return cERR_CONTAINER_FFMPEG_ERR;

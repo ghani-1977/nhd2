@@ -249,9 +249,6 @@ void CTimeOSD::GetDimensions()
 
 void CTimeOSD::update(time_t time_show)
 {
-	//if(isWebTV)
-	//	return;
-	
 	time_t tDisplayTime;
 	static time_t oldDisplayTime = 0;
 	char cDisplayTime[8 + 1];
@@ -318,8 +315,8 @@ void CTimeOSD::update(time_t time_show)
 
 void CTimeOSD::updatePos(short runningPercent)
 {
-	if(!timeshift || !isWebTV)
-		return;
+	//if(!timeshift || !isWebTV)
+	//	return;
 	
 	timescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 }

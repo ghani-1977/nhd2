@@ -71,19 +71,19 @@ void CCAMMenuHandler::init(void)
 	ci = cDvbCi::getInstance();
 }
 
-int CCAMMenuHandler::exec(CMenuTarget * parent, const std::string &actionkey)
+int CCAMMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 {
-	printf("CCAMMenuHandler::exec: actionkey %s\n", actionkey.c_str());
+	printf("CCAMMenuHandler::exec: actionkey %s\n", actionKey.c_str());
 
         if (parent)
                 parent->hide();
 
-	if(actionkey == "cam1") 
+	if(actionKey == "cam1") 
 	{
 		return doMenu(0);
 	}
 #if !defined (PLATFORM_GIGABLUE)	
-	else if(actionkey == "cam2") 
+	else if(actionKey == "cam2") 
 	{
 		return doMenu(1);
 	}

@@ -143,7 +143,7 @@
 #include <driver/nglcd.h>
 #endif
 
-//libcoolstream
+// libdvbapi
 #include <video_cs.h>
 #include <audio_cs.h>
 
@@ -154,20 +154,21 @@
 #include <channel.h>
 #include <bouquets.h>
 
+// libcoolstream
 #if defined (PLATFORM_COOLSTREAM)
 #include <cs_api.h>
 #endif
 
 
-extern tallchans allchans;
-extern CBouquetManager * g_bouquetManager;
+extern tallchans allchans;				// defined in zapit.cpp
+extern CBouquetManager * g_bouquetManager;		// defined in zapit.cpp
 
 int old_b_id = -1;
 
 // hintbox
 CHintBox * reloadhintBox = 0;
 
-extern bool has_hdd;
+extern bool has_hdd;					// defined in gui/hdd_menu.cpp
 
 // record and timeshift
 bool autoshift = false;
@@ -208,7 +209,7 @@ static pthread_t timer_thread;
 void * timerd_main_thread(void *data);
 
 // streamts thread
-extern int streamts_stop;
+extern int streamts_stop;				// defined in streamts.cpp
 void * streamts_main_thread(void *data);
 static pthread_t stream_thread ;
 
@@ -220,7 +221,7 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 Zapit_config zapitCfg;
 void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
-extern CZapitChannel * live_channel;			// zapit.cpp
+extern CZapitChannel * live_channel;			// defined in zapit.cpp
 extern CFrontend * live_fe;
 extern CScanSettings * scanSettings;
 
@@ -229,7 +230,7 @@ void * nhttpd_main_thread(void *data);
 static pthread_t nhttpd_thread ;
 
 // sectionsd thread
-extern int sectionsd_stop;
+extern int sectionsd_stop;				// defined in sectionsd.cpp
 static pthread_t sections_thread;
 void * sectionsd_main_thread(void *data);
 extern bool timeset;
@@ -390,7 +391,7 @@ font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
         {LOCALE_FONTSIZE_FILEBROWSER_ITEM   ,  16, FONT_STYLE_BOLD   , 1}
 };
 
-/* signal font */
+// signal font
 const font_sizes_struct signal_font = {LOCALE_FONTSIZE_INFOBAR_SMALL,  14, FONT_STYLE_REGULAR, 1};
 
 // LCD settings
@@ -478,6 +479,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.wss_mode = configfile.getInt32("wss_mode", WSS_AUTO);
 #endif	
 	
+	// psu
 	g_settings.contrast = configfile.getInt32( "contrast", 130);
 	g_settings.saturation = configfile.getInt32( "saturation", 130);
 	g_settings.brightness = configfile.getInt32( "brightness", 130);
@@ -587,8 +589,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.recording_audio_pids_default    = configfile.getInt32("recording_audio_pids_default", TIMERD_APIDS_STD | TIMERD_APIDS_AC3);
 	g_settings.recording_epg_for_filename      = configfile.getBool("recording_epg_for_filename", false);
 	g_settings.recording_save_in_channeldir      = configfile.getBool("recording_save_in_channeldir", false);
-	
-	g_settings.recording_zap_on_announce       = configfile.getBool("recording_zap_on_announce", false);
 	// end recording
 
 	// movieplayer
@@ -1060,8 +1060,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32 ("recording_audio_pids_default"       , g_settings.recording_audio_pids_default);
 	configfile.setBool  ("recording_epg_for_filename"         , g_settings.recording_epg_for_filename);
 	configfile.setBool  ("recording_save_in_channeldir"       , g_settings.recording_save_in_channeldir);
-	
-	configfile.setBool  ("recording_zap_on_announce"          , g_settings.recording_zap_on_announce );
 	// END RECORDING
 
 	// MOVIEPLAYER
@@ -3584,16 +3582,6 @@ _repeat:
 		{
 			stopAutoRecord();
 			recordingstatus = 0;
-		}
-
-		if( g_settings.recording_zap_on_announce ) 
-		{
-			if(recordingstatus==0) 
-			{
-				//dvbsub_stop(); //FIXME if same channel ?
-				t_channel_id channel_id = ((CTimerd::RecordingInfo*)data)->channel_id;
-				g_Zapit->zapTo_serviceID_NOWAIT(channel_id); 
-			}
 		}
 
 		delete[] (unsigned char*) data;

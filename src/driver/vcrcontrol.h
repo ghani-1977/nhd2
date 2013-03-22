@@ -32,7 +32,6 @@
 #define __vcrcontrol__
 
 #include <string>
-//#include <map>
 #include <list>
 
 #include <sectionsdclient/sectionsdclient.h>
@@ -79,12 +78,14 @@ class CVCRControl
 				virtual bool IsAvailable() = 0;
 				CDevice() { deviceState = CMD_VCR_STOP; };
 				virtual ~CDevice(){};
+				
 				typedef struct {
 					unsigned short apid;
 					unsigned int index;
 					bool ac3;
 				} APIDDesc;
 				typedef std::list<APIDDesc> APIDList;
+				
 				virtual void getAPIDs(const unsigned char apids, APIDList & apid_list);
 		};
 
@@ -132,7 +133,7 @@ class CVCRControl
 				
 				unsigned long long            record_EPGid;
 				unsigned long long            record_next_EPGid;
-				CZapitClient::responseGetRecordPIDs pids;
+				CZapitClient::responseGetPIDs pids;
 				void processAPIDnames();
 		};
 

@@ -126,8 +126,6 @@ struct SNeutrinoSettings
 
 	int recording_epg_for_filename;
 	int recording_save_in_channeldir;
-	
-	int  recording_zap_on_announce;
 	// END RECORDING
 
 	// MOVIEPLAYER

@@ -178,12 +178,12 @@ class CZapitMessages
 			bool activate;
 		};
 		
-		//test
+		/*
 		struct commandSetPipMode
 		{
 			bool activate;
 		};
-		//
+		*/
 
 		struct commandZapto
 		{
@@ -199,7 +199,6 @@ class CZapitMessages
 		struct commandZaptoServiceID
 		{
 			t_channel_id channel_id;
-			//TEST
 			bool record;
 		};
 
@@ -221,7 +220,7 @@ class CZapitMessages
 
 		struct commandGetBouquetChannels
 		{
-			unsigned int               bouquet;
+			unsigned int bouquet;
 			CZapitClient::channelsMode mode;
 		};
 
@@ -300,12 +299,12 @@ class CZapitMessages
 			bool activated;
 		};
 		
-		//test
+		/*
 		struct responseGetPipModeState
 		{
 			bool activated;
 		};
-		//
+		*/
 
 		struct responseGetMode
 		{
@@ -321,13 +320,6 @@ class CZapitMessages
 		{
 			t_channel_id channel_id;
 		};
-		
-		//TEST
-		struct responseGetRecordServiceID
-		{
-			t_channel_id record_channel_id;
-		};
-		//
 
 		struct responseZapComplete
 		{
@@ -401,6 +393,5 @@ class CZapitMessages
 			int feindex;
 		};
 };
-
 
 #endif /* __msgtypes_h__ */

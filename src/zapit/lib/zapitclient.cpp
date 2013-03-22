@@ -107,33 +107,31 @@ CZapitClient::CCurrentServiceInfo CZapitClient::getCurrentServiceInfo()
 	return response;
 }
 
-//TEST
 /* get record SID */
 t_channel_id CZapitClient::getRecordServiceID()
 {
 	send(CZapitMessages::CMD_GET_RECORD_SERVICEID);
 
-	CZapitMessages::responseGetRecordServiceID response;
+	CZapitMessages::responseGetCurrentServiceID response;
 	CBasicClient::receive_data((char* )&response, sizeof(response));
 
 	close_connection();
 
-	return response.record_channel_id;
+	return response.channel_id;
 }
 
 /* get record Service Infos */
-CZapitClient::CRecordServiceInfo CZapitClient::getRecordServiceInfo()
+CZapitClient::CCurrentServiceInfo CZapitClient::getRecordServiceInfo()
 {
 	send(CZapitMessages::CMD_GET_RECORD_SERVICEINFO);
 
-	CZapitClient::CRecordServiceInfo response;
+	CZapitClient::CCurrentServiceInfo response;
 	CBasicClient::receive_data((char* )&response, sizeof(response));
 
 	close_connection();
 	
 	return response;
 }
-//
 
 /* get lastchannel */
 void CZapitClient::getLastChannel(unsigned int &channumber, char &mode)
@@ -326,7 +324,7 @@ void CZapitClient::getPIDS(responseGetPIDs& pids)
 }
 
 //TEST
-void CZapitClient::getRecordPIDS(responseGetRecordPIDs& pids)
+void CZapitClient::getRecordPIDS(responseGetPIDs& pids)
 {
 	CZapitMessages::responseGeneralInteger responseInteger;
 	responseGetAPIDs                       responseAPID;
@@ -363,7 +361,6 @@ void CZapitClient::getRecordPIDS(responseGetRecordPIDs& pids)
 
 	close_connection();
 }
-//
 
 // zapto Nvod subservice
 void CZapitClient::zaptoNvodSubService(const int num)
@@ -722,7 +719,6 @@ bool CZapitClient::stopScan()
 /* set zapit config */
 bool CZapitClient::setConfig(Zapit_config Cfg)
 {
-        //bool reply = send(CZapitMessages::CMD_LOADCONFIG);
 	bool reply = send(CZapitMessages::CMD_SETCONFIG, (char*)&Cfg, sizeof(Cfg));
         close_connection();
         return reply;
