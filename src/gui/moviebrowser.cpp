@@ -936,9 +936,6 @@ int CMovieBrowser::exec(const char * path)
 	neutrino_msg_data_t data;
 
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));
-
-	// might be removed, for development it is good to reload the settings at any startup for testing
-	//loadSettings(&m_settings);
 	
 	loadSettings(&m_settings);
 	initFrames();
@@ -2686,10 +2683,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					//movieInfo.file.Size = flist[i].Size;
 					movieInfo.file.Size = get_full_len((char *)flist[i].Name.c_str());
 					movieInfo.file.Time = flist[i].Time;
-					//dprintf(DEBUG_NORMAL, " N:%s,s:%d,t:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size,movieInfo.file.Time);
-					//dprintf(DEBUG_NORMAL, " N:%s,s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size>>20);
-					//dprintf(DEBUG_NORMAL, " s:%d\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
-					//dprintf(DEBUG_NORMAL, " s:%llu\r\n",movieInfo.file.getFileName().c_str(),movieInfo.file.Size);
 					
 					if(file_found_in_dir == false)
 					{
@@ -2987,8 +2980,8 @@ void CMovieBrowser::loadMovies(void)
 
 	loadAllTsFileNamesFromStorage(); // P1
 
-	m_file_info_stale = false;
-	m_seriename_stale = true; // we reloded the movie info, so make sure the other list are  updated later on as well
+	//m_file_info_stale = false;	//FIXME:???
+	m_seriename_stale = true; // we reloaded the movie info, so make sure the other list are  updated later on as well
         updateSerienames();
 	
         if(m_settings.serie_auto_create == 1)

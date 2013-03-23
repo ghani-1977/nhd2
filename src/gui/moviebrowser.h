@@ -226,14 +226,13 @@ class CMovieBrowser : public CMenuTarget
 		bool Hide_records;
 		
 	private: // Variables
-		//CFBWindow* m_pcWindow;
 		CFrameBuffer * m_pcWindow;
 
-		CListFrame* m_pcBrowser;
-		CListFrame* m_pcLastPlay;
-		CListFrame* m_pcLastRecord;
-		CTextBox* m_pcInfo;
-		CListFrame* m_pcFilter;  
+		CListFrame * m_pcBrowser;
+		CListFrame * m_pcLastPlay;
+		CListFrame * m_pcLastRecord;
+		CTextBox * m_pcInfo;
+		CListFrame * m_pcFilter;  
 	
 		CBox m_cBoxFrame;
 		CBox m_cBoxFrameLastPlayList;
@@ -280,8 +279,8 @@ class CMovieBrowser : public CMenuTarget
 		bool m_file_info_stale; // if this bit is set, MovieBrowser shall reload all movie infos from HD
 		bool m_seriename_stale;
 
-		Font* m_pcFontFoot;
-		Font* m_pcFontTitle;
+		Font * m_pcFontFoot;
+		Font * m_pcFontTitle;
 		std::string m_textTitle;
 		
 		MB_PARENTAL_LOCK m_parentalLock;
@@ -295,10 +294,10 @@ class CMovieBrowser : public CMenuTarget
 		int movieInfoUpdateAll[MB_INFO_MAX_NUMBER];
 		int movieInfoUpdateAllIfDestEmptyOnly;
 
-        //bool restart_mb_timeout;
+		//bool restart_mb_timeout;
 
 	public:  // Functions //////////////////////////////////////////////////////////7
-		CMovieBrowser(const char* path); //P1 
+		CMovieBrowser(const char * path); //P1 
 		CMovieBrowser(); //P1 
 		~CMovieBrowser(); //P1 
 		int exec(const char* path); //P1 
@@ -452,11 +451,11 @@ class CMenuWidgetSelection : public CMenuWidget
 class CFileChooser : public CMenuWidget
 {
 	private:
-	std::string* dirPath;
+		std::string* dirPath;
 
 	public:
-	CFileChooser(std::string* path){dirPath= path;};
-	int exec(CMenuTarget* parent, const std::string & actionKey);
+		CFileChooser(std::string* path){dirPath= path;};
+		int exec(CMenuTarget* parent, const std::string & actionKey);
  };
 
 typedef enum
@@ -472,19 +471,19 @@ typedef enum
 class CDirMenu : public CMenuWidget
 {
 	private:
-	std::vector<MB_DIR>* dirList;
-	DIR_STATE dirState[MAX_DIR];
-	std::string dirOptionText[MAX_DIR];
-	int dirNfsMountNr[MAX_DIR];
-	bool changed;
+		std::vector<MB_DIR>* dirList;
+		DIR_STATE dirState[MAX_DIR];
+		std::string dirOptionText[MAX_DIR];
+		int dirNfsMountNr[MAX_DIR];
+		bool changed;
 
-	void updateDirState(void);
+		void updateDirState(void);
 
 	public:
-	CDirMenu(std::vector<MB_DIR>* dir_list);
-	int exec(CMenuTarget* parent, const std::string & actionKey);
-	void show(void);
-	bool isChanged(){return changed;};
+		CDirMenu(std::vector<MB_DIR>* dir_list);
+		int exec(CMenuTarget* parent, const std::string & actionKey);
+		void show(void);
+		bool isChanged(){return changed;};
  };
 
 
@@ -709,7 +708,6 @@ const CMenuOptionChooser::keyval genre_major[GENRE_MAJOR_COUNT] =
 	{ 9, LOCALE_GENRE_DOCUS_MAGAZINES_0},
 	{ 10, LOCALE_GENRE_TRAVEL_HOBBIES_0}
 };
-
 
 #endif /*MOVIEBROWSER_H_*/
 

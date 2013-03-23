@@ -161,6 +161,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
+					/*
 					GstIterator *children;
 					if (audioSink)
 					{
@@ -177,6 +178,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
+					*/
 				}
 				break;
 				
@@ -192,6 +194,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
+					/*
 					if (audioSink)
 					{
 						gst_object_unref(GST_OBJECT(audioSink));
@@ -202,6 +205,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 						gst_object_unref(GST_OBJECT(videoSink));
 						videoSink = NULL;
 					}
+					*/
 				}	
 				break;
 				
