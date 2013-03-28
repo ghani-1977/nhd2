@@ -37,12 +37,10 @@
 class CZapitSetup : public CMenuTarget, CChangeObserver
 {
 	private:
-		CMenuOptionChooser *zapit1;
-		CMenuForwarder *zapit2, *zapit3;
+		CMenuOptionChooser * zapit1;
+		CMenuForwarder * zapit2, * zapit3;
 
 		int selected;
-		//CFrameBuffer *frameBuffer;
-		int /*x, y,*/ width/*, height, menue_width, hheight, mheight*/;
 
 		void showMenu();
 
@@ -56,8 +54,6 @@ class CZapitSetup : public CMenuTarget, CChangeObserver
 class CSelectChannelWidget : public CMenuWidget
 {
 	private:
-		//CFrameBuffer *frameBuffer;
-		int /*x, y,*/ width/*, height, menue_width, hheight, mheight*/;
 		void InitZapitChannelHelper(CZapitClient::channelsMode mode);
 
 	public:

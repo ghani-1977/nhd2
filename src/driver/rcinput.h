@@ -408,7 +408,9 @@ class CRCInput
 		{
 			for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
 			{
-				return fd_rc[i];
+				//return fd_rc[i];
+				if (fd_rc[i] != -1) 
+					return fd_rc[i];
 			}
 		}
 		

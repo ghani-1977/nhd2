@@ -158,16 +158,14 @@ void CEpgData::start()
 	
 	//epg text fenster
 	medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
-	//medlinecount  = (oy - botboxheight)/medlineheight;
 	medlinecount  = (oy - topboxheight - botboxheight)/medlineheight;
 	
-	//sb = oy - topboxheight - botboxheight;
 	/* this is the text box height - and the height of the scroll bar */
 	sb = medlinecount * medlineheight;
 
 	oy = botboxheight + medlinecount*medlineheight; // recalculate //FIXME
 	
-	sy = (((g_settings.screen_EndY-g_settings.screen_StartY)-(oy- topboxheight) ) / 2) + g_settings.screen_StartY;
+	sy = (((g_settings.screen_EndY - g_settings.screen_StartY) - (oy - topboxheight + 30) ) / 2) + g_settings.screen_StartY; //30:buttonbar
 	toph = topboxheight;
 }
 
@@ -258,19 +256,19 @@ void CEpgData::showText( int startPos, int ypos )
 
 	frameBuffer->paintBoxRel(sx, y, ox - 15, sb, COL_MENUCONTENT_PLUS_0);
 
-	for(int i=startPos; i<textCount && i<startPos+medlinecount; i++,y+=medlineheight)
+	for(int i = startPos; i < textCount && i < startPos+medlinecount; i++, y += medlineheight)
 	{
 		if ( i< info1_lines )
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(sx+10, y+medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(sx + 10, y + medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
 		else
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(sx+10, y+medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(sx + 10, y + medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
 	}
 
-	frameBuffer->paintBoxRel(sx + ox- 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(sx + ox - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
 	int sbc= ((textCount- 1)/ medlinecount)+ 1;
-	float sbh= (sb- 4)/ sbc;
-	int sbs= (startPos+ 1)/ medlinecount;
+	float sbh= (sb - 4)/ sbc;
+	int sbs= (startPos + 1)/ medlinecount;
 
 	frameBuffer->paintBoxRel(sx + ox - 13, ypos + 2 + int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 }
@@ -288,6 +286,7 @@ const neutrino_locale_t genre_movie[GENRE_MOVIE_COUNT] =
 	LOCALE_GENRE_MOVIE_7,
 	LOCALE_GENRE_MOVIE_8
 };
+
 #define GENRE_NEWS_COUNT 5
 const neutrino_locale_t genre_news[GENRE_NEWS_COUNT] =
 {
@@ -297,6 +296,7 @@ const neutrino_locale_t genre_news[GENRE_NEWS_COUNT] =
 	LOCALE_GENRE_NEWS_3,
 	LOCALE_GENRE_NEWS_4
 };
+
 #define GENRE_SHOW_COUNT 4
 const neutrino_locale_t genre_show[GENRE_SHOW_COUNT] =
 {
@@ -305,6 +305,7 @@ const neutrino_locale_t genre_show[GENRE_SHOW_COUNT] =
 	LOCALE_GENRE_SHOW_2,
 	LOCALE_GENRE_SHOW_3
 };
+
 #define GENRE_SPORTS_COUNT 12
 const neutrino_locale_t genre_sports[GENRE_SPORTS_COUNT] =
 {
@@ -321,6 +322,7 @@ const neutrino_locale_t genre_sports[GENRE_SPORTS_COUNT] =
 	LOCALE_GENRE_SPORTS_10,
 	LOCALE_GENRE_SPORTS_11
 };
+
 #define GENRE_CHILDRENS_PROGRAMMES_COUNT 6
 const neutrino_locale_t genre_childrens_programmes[GENRE_CHILDRENS_PROGRAMMES_COUNT] =
 {
@@ -331,6 +333,7 @@ const neutrino_locale_t genre_childrens_programmes[GENRE_CHILDRENS_PROGRAMMES_CO
 	LOCALE_GENRE_CHILDRENS_PROGRAMMES_4,
 	LOCALE_GENRE_CHILDRENS_PROGRAMMES_5
 };
+
 #define GENRE_MUSIC_DANCE_COUNT 7
 const neutrino_locale_t genre_music_dance[GENRE_MUSIC_DANCE_COUNT] =
 {
@@ -342,6 +345,7 @@ const neutrino_locale_t genre_music_dance[GENRE_MUSIC_DANCE_COUNT] =
 	LOCALE_GENRE_MUSIC_DANCE_5,
 	LOCALE_GENRE_MUSIC_DANCE_6
 };
+
 #define GENRE_ARTS_COUNT 12
 const neutrino_locale_t genre_arts_dance[GENRE_ARTS_COUNT] =
 {
@@ -358,6 +362,7 @@ const neutrino_locale_t genre_arts_dance[GENRE_ARTS_COUNT] =
 	LOCALE_GENRE_ARTS_10,
 	LOCALE_GENRE_ARTS_11
 };
+
 #define GENRE_SOCIAL_POLITICAL_COUNT 4
 const neutrino_locale_t genre_social_political[GENRE_SOCIAL_POLITICAL_COUNT] =
 {
@@ -366,6 +371,7 @@ const neutrino_locale_t genre_social_political[GENRE_SOCIAL_POLITICAL_COUNT] =
 	LOCALE_GENRE_SOCIAL_POLITICAL_2,
 	LOCALE_GENRE_SOCIAL_POLITICAL_3
 };
+
 #define GENRE_DOCUS_MAGAZINES_COUNT 8
 const neutrino_locale_t genre_docus_magazines[GENRE_DOCUS_MAGAZINES_COUNT] =
 {
@@ -378,6 +384,7 @@ const neutrino_locale_t genre_docus_magazines[GENRE_DOCUS_MAGAZINES_COUNT] =
 	LOCALE_GENRE_DOCUS_MAGAZINES_6,
 	LOCALE_GENRE_DOCUS_MAGAZINES_7
 };
+
 #define GENRE_TRAVEL_HOBBIES_COUNT 8
 const neutrino_locale_t genre_travel_hobbies[GENRE_TRAVEL_HOBBIES_COUNT] =
 {
@@ -390,6 +397,7 @@ const neutrino_locale_t genre_travel_hobbies[GENRE_TRAVEL_HOBBIES_COUNT] =
 	LOCALE_GENRE_TRAVEL_HOBBIES_6,
 	LOCALE_GENRE_TRAVEL_HOBBIES_7
 };
+
 const unsigned char genre_sub_classes[10] =
 {
 	GENRE_MOVIE_COUNT,
@@ -403,6 +411,7 @@ const unsigned char genre_sub_classes[10] =
 	GENRE_DOCUS_MAGAZINES_COUNT,
 	GENRE_TRAVEL_HOBBIES_COUNT
 };
+
 const neutrino_locale_t * genre_sub_classes_list[10] =
 {
 	genre_movie,
@@ -452,7 +461,7 @@ const char * GetGenre(const unsigned char contentClassification) // UTF-8
 
 static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
 {
-	return a.startTime< b.startTime;
+	return a.startTime < b.startTime;
 }
 
 extern char recDir[255];// defined in neutrino.cpp
@@ -481,7 +490,7 @@ void CEpgData::showHead(const t_channel_id channel_id)
 
 	if (oldtoph > toph)
 	{
-		frameBuffer->paintBackgroundBox (sx, sy - oldtoph- 1, sx + ox, sy );
+		frameBuffer->paintBackgroundBox (sx, sy - oldtoph - 1, sx + ox, sy );
 
 #if !defined USE_OPENGL
 		frameBuffer->blit();
@@ -495,10 +504,10 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	bool logo_ok = false;
 	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx+15 +(logo_ok? PIC_W+10: 0), sy- toph+ topheight+ 3, ox - 15 - (logo_ok ? PIC_W + 5: 0), text1, COL_MENUHEAD, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 +(logo_ok? PIC_W + 10 : 0), sy - toph + topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5 : 0), text1, COL_MENUHEAD, 0, true);
 	
 	if (!(text2.empty()))
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W+10: 0), sy - toph + 2* topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5: 0), text2, COL_MENUHEAD, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W + 10 : 0), sy - toph + 2*topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5 : 0), text2, COL_MENUHEAD, 0, true);
 
 }
 
@@ -786,16 +795,16 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					break;
 
 				case CRCInput::RC_down:
-					if(showPos+scrollCount<textCount)
+					if(showPos + scrollCount < textCount)
 					{
 						showPos += scrollCount;
-						showText(showPos,textypos);
+						showText(showPos, textypos);
 					}
 					break;
 
 				case CRCInput::RC_up:
 					showPos -= scrollCount;
-					if(showPos<0)
+					if(showPos < 0)
 						showPos = 0;
 					else
 						showText(showPos,textypos);
@@ -924,7 +933,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					}
 					
 					show(channel_id, id, &startzeit, false);
-					showPos=0;
+					showPos = 0;
 					break;
 
 				case CRCInput::RC_ok:
@@ -972,7 +981,7 @@ void CEpgData::hide()
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->setSize((int)(g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->getSize() / BIG_FONT_FAKTOR));
 	}
 
-	frameBuffer->paintBackgroundBox (sx, sy- toph, sx + ox, sy + oy); 	// 30: button bar height
+	frameBuffer->paintBackgroundBox (sx, sy - toph, sx + ox, sy + oy); 	// 30: button bar height
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -1050,6 +1059,7 @@ void CEpgData::GetPrevNextEPGData( unsigned long long id, time_t* startzeit )
                                 prev_id= evtlist[i- 1].eventID;
                                 prev_zeit= evtlist[i- 1].startTime;
                         }
+                        
                         if ( i < ( evtlist.size()- 1 ) )
                         {
                                 next_id= evtlist[i+ 1].eventID;
@@ -1058,12 +1068,14 @@ void CEpgData::GetPrevNextEPGData( unsigned long long id, time_t* startzeit )
                         break;
                 }
         }
+        
         /* Houdini: dirty RTL double event workaround, if prev/next event has same starttime as actual event skip it */
         if ((prev_zeit == *startzeit) && ((i-1) > 0))
         {
                 prev_id   = evtlist[i- 2].eventID;
                 prev_zeit = evtlist[i- 2].startTime;
         }
+        
         if ((next_zeit == *startzeit) && ((i+1) < (evtlist.size()- 1)))
         {
                 next_id   = evtlist[i+ 2].eventID;
@@ -1081,15 +1093,13 @@ void CEpgData::GetPrevNextEPGData( unsigned long long id, time_t* startzeit )
 //
 
 int CEpgData::FollowScreenings (const t_channel_id channel_id, const std::string & title)
-
 {
-  CChannelEventList::iterator e;
-  time_t			curtime;
-  struct  tm		*tmStartZeit;
-  std::string		screening_dates,screening_nodual;
-  int				count;
-  char			tmpstr[256];
-
+	CChannelEventList::iterator e;
+	time_t			curtime;
+	struct  tm		*tmStartZeit;
+	std::string		screening_dates,screening_nodual;
+	int				count;
+	char			tmpstr[256];
 
   	count = 0;
 	screening_dates = screening_nodual = "";
@@ -1126,11 +1136,12 @@ int CEpgData::FollowScreenings (const t_channel_id channel_id, const std::string
 			}
 		}
 	}
+	
 	if (count == 0)
 		processTextToArray("---\n"); // UTF-8
+		
 	return count;
 }
-
 
 //
 // -- Just display or hide TimerEventbar
@@ -1164,35 +1175,42 @@ void CEpgData::showTimerEventBar (bool show)
 
 	frameBuffer->paintBoxRel(x, y, w, h, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);//round
 
-	// Button: Timer Record & Channelswitch
+	// Button Red: Timer Record & Channelswitch
 	if (recDir != NULL)
 	{
 		pos = 0;
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, x + 8 + cellwidth*pos, y + h_offset );
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x+29+cellwidth*pos, y+h-h_offset, w-30, g_Locale->getText(LOCALE_TIMERBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 29 + cellwidth*pos, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
 	}
 	
-	// Button: Timer Channelswitch
+	// --Button Green: empty
+	pos = 1;
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x + 8 + cellwidth*pos, y + h_offset );
+	
+	// Button Yellow: Timer Channelswitch
 	pos = 2;
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x+8+cellwidth*pos, y+h_offset );
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x+29+cellwidth*pos, y+h-h_offset, w-30, g_Locale->getText(LOCALE_TIMERBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x + 8 + cellwidth*pos, y + h_offset );
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 29 + cellwidth*pos, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
+	
+	
+	// --Button Blue: empty
+	pos = 3;
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, x + 8 + cellwidth*pos, y + h_offset );
 }
 
 //  -- EPG Data Viewer Menu Handler Class
 //  -- to be used for calls from Menue
 //  -- (2004-03-06 rasc)
 
-int CEPGDataHandler::exec(CMenuTarget* parent, const std::string &actionkey)
+int CEPGDataHandler::exec(CMenuTarget* parent, const std::string &actionKey)
 {
-	int           res = menu_return::RETURN_EXIT_ALL;
+	int           res = menu_return::RETURN_REPAINT;
 	CChannelList  *channelList;
 	CEpgData      *e;
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
 	e = new CEpgData;
 

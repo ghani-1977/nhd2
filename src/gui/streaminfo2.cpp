@@ -79,9 +79,6 @@ CStreamInfo2::CStreamInfo2 ()
 	x = frameBuffer->getScreenX();
 	y = frameBuffer->getScreenY();
 
-	//x = (((g_settings.screen_EndX - g_settings.screen_StartX) - width) / 2) + g_settings.screen_StartX;
-	//y = (((g_settings.screen_EndY - g_settings.screen_StartY) - height) / 2) + g_settings.screen_StartY;
-
 	sigBox_pos = 0;
 	paint_mode = 0;
 
@@ -127,7 +124,6 @@ int CStreamInfo2::exec()
 
 int CStreamInfo2::exec (CMenuTarget * parent, const std::string &)
 {
-
 	if (parent)
 		parent->hide ();
 
@@ -141,7 +137,7 @@ int CStreamInfo2::exec (CMenuTarget * parent, const std::string &)
 
 	hide ();
 	
-	return menu_return::RETURN_EXIT_ALL;
+	return menu_return::RETURN_REPAINT;
 }
 
 int CStreamInfo2::doSignalStrengthLoop()

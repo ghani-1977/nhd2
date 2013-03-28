@@ -279,8 +279,10 @@ struct SNeutrinoSettings
 	int key_channelList_pagedown;
 	int key_channelList_cancel;
 	int key_channelList_reload;
+	int key_channelList_sort;
 	int key_channelList_addrecord;
 	int key_channelList_addremind;
+	int key_channelList_search;
 
 	int key_quickzap_up;
 	int key_quickzap_down;

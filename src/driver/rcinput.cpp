@@ -450,9 +450,6 @@ void CRCInput::open()
 	new_termio.c_cc[VTIME] = 0;
 
 	::ioctl(STDIN_FILENO, TCSETA, &new_termio);
-
-#else
-	//fcntl(fd_keyb, F_SETFL, O_NONBLOCK );
 #endif /* KEYBOARD_INSTEAD_OF_REMOTE_CONTROL */
 	
 	calculateMaxFd();

@@ -605,16 +605,18 @@ int CChannelList::show()
 		{ 
 			//FIXME: show bqt list
 			bShowBouquetList = true;
-			loop=false;
+			loop = false;
 		}
 		else if( msg == CRCInput::RC_blue ) //epgplus
 		{
 			hide();
+			
 			CEPGplusHandler eplus;
 			eplus.exec(NULL, "");
 			
+			//FIXME: think about this ???
 			//loop = false;
-			paintHead(); 		// update button bar
+			paintHead();
 			updateEvents();
 			if(g_settings.mini_tv)
 				paintMiniTV();
@@ -734,7 +736,7 @@ int CChannelList::show()
 				if(bouquetList->Bouquets[nNext]->channelList->getSize() <= 0) 
 				{
 					found = false;
-					nNext = nNext < bouquetList->Bouquets.size()-1 ? nNext+1 : 0;
+					nNext = nNext < bouquetList->Bouquets.size() - 1 ? nNext + 1 : 0;
 					for(uint32_t i = nNext; i < bouquetList->Bouquets.size(); i++) 
 					{
 						if(bouquetList->Bouquets[i]->channelList->getSize() > 0) 
@@ -910,10 +912,7 @@ int CChannelList::show()
 	
 	// bouquets mode
 	if (bShowBouquetList) 
-	{
 		res = bouquetList->exec(true);
-		printf("CChannelList:: bouquetList->exec res %d\n", res);
-	}
 	
 	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	
@@ -950,7 +949,7 @@ void CChannelList::hide()
 
 bool CChannelList::showInfo(int pos, int epgpos)
 {
-	if((pos >= (signed int) chanlist.size()) || (pos<0))
+	if((pos >= (signed int) chanlist.size()) || (pos < 0))
 		return false;
 
 	CZapitChannel * chan = chanlist[pos];
@@ -1263,7 +1262,6 @@ int CChannelList::numericZap(int key)
 #if !defined USE_OPENGL
 				this->frameBuffer->blit();
 #endif
-				//int newChannel = channelList->exec();
 				res = channelList->exec();
 			}
 			delete channelList;
@@ -1287,7 +1285,6 @@ int CChannelList::numericZap(int key)
 			}
 		}
 			
-		//TEST
 		pip_selected = true;
 
 		if (channelList->getSize() != 0) 
@@ -1408,7 +1405,6 @@ int CChannelList::numericZap(int key)
 		else if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
 		{
 			doZap = false;
-			//res = menu_return::RETURN_EXIT_ALL;
 			break;
 		}
 	}
@@ -1426,15 +1422,19 @@ int CChannelList::numericZap(int key)
 	
 	if ( doZap ) 
 	{
+		// kill infobar
 		if(g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] == 0)
 			g_InfoViewer->killTitle();
 		
+		// zapto selected channel
 		zapTo( chn );
 	} 
 	else 
 	{
-		//test
+		// show infobar
 		showInfo(tuned);
+		
+		// kill infobar
 		g_InfoViewer->killTitle();
 
 		if ( showEPG )
@@ -1471,8 +1471,8 @@ void CChannelList::virtual_zap_mode(bool up)
         {
                 if (lastchan != chn || (epgpos != 0))
                 {
-                        showInfo(chn- 1, epgpos);
-                        lastchan= chn;
+                        showInfo(chn - 1, epgpos);
+                        lastchan = chn;
                 }
 		epgpos = 0;
                 g_RCInput->getMsg( &msg, &data, 15*10 ); // 15 seconds, not user changable

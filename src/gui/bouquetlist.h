@@ -74,7 +74,6 @@ class CBouquet
 		}
 };
 
-
 class CBouquetList
 {
 	private:

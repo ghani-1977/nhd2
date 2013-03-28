@@ -648,7 +648,8 @@ keybindingmenu.quickzap Schnellumschaltung
 keybindingmenu.RC Fernbedienung
 keybindingmenu.repeatblock Wiederholungsverzögerung
 keybindingmenu.repeatblockgeneric Anfangsverzögerung
-keybindingmenu.sort Sortierreihenfolge ändern
+keybindingmenu.sort EPG Sortierreihenfolge ändern
+keybindingmenu.search EPG Suche
 keybindingmenu.subchanneldown Unterkanal zurück
 keybindingmenu.subchannelup Unterkanal weiter
 keybindingmenu.tvradiomode Fernseh-/Radio-Modus

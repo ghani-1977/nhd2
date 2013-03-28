@@ -52,7 +52,7 @@
 class CEpgData
 {
 	private:
-		CFrameBuffer		*frameBuffer;
+		CFrameBuffer		* frameBuffer;
 		CChannelEventList	evtlist;
 		CEPGData		epgData;
 
@@ -60,6 +60,7 @@ class CEpgData
 		std::string 		epg_start;
 		std::string 		epg_end;
 		int			epg_done;
+		
 		bool			bigFonts;
 
 		unsigned long long	prev_id;
@@ -89,14 +90,14 @@ class CEpgData
 
 		CEpgData();
 		void start( );
-		int show(const t_channel_id channel_id, unsigned long long id = 0, time_t* startzeit = NULL, bool doLoop = true );
+		int show(const t_channel_id channel_id, unsigned long long id = 0, time_t * startzeit = NULL, bool doLoop = true );
 		void hide();
 };
 
 class CEPGDataHandler : public CMenuTarget
 {
 	public:
-		int  exec( CMenuTarget* parent,  const std::string &actionkey);
+		int  exec( CMenuTarget* parent,  const std::string &actionKey);
 
 };
 

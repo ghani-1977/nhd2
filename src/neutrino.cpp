@@ -707,8 +707,10 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_channelList_pageup = configfile.getInt32( "key_channelList_pageup",  CRCInput::RC_page_up );
 	g_settings.key_channelList_pagedown = configfile.getInt32( "key_channelList_pagedown", CRCInput::RC_page_down );
 	g_settings.key_channelList_cancel = configfile.getInt32( "key_channelList_cancel",  CRCInput::RC_home );
-	g_settings.key_channelList_reload = configfile.getInt32( "key_channelList_reload",  CRCInput::RC_blue );
+	g_settings.key_channelList_reload = configfile.getInt32( "key_channelList_reload",  CRCInput::RC_setup );
+	g_settings.key_channelList_sort = configfile.getInt32( "key_channelList_sort",  CRCInput::RC_blue );
 	g_settings.key_channelList_addrecord = configfile.getInt32( "key_channelList_addrecord", CRCInput::RC_red );
+	g_settings.key_channelList_search = configfile.getInt32( "key_channelList_search", CRCInput::RC_green );
 	g_settings.key_channelList_addremind = configfile.getInt32( "key_channelList_addremind", CRCInput::RC_yellow );
 	g_settings.key_list_start = configfile.getInt32( "key_list_start", CRCInput::RC_nokey );
 	g_settings.key_list_end = configfile.getInt32( "key_list_end", CRCInput::RC_nokey );
@@ -1178,8 +1180,10 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_channelList_pagedown", g_settings.key_channelList_pagedown );
 	configfile.setInt32( "key_channelList_cancel", g_settings.key_channelList_cancel );
 	configfile.setInt32( "key_channelList_reload", g_settings.key_channelList_reload );
+	configfile.setInt32( "key_channelList_sort", g_settings.key_channelList_sort );
 	configfile.setInt32( "key_channelList_addrecord", g_settings.key_channelList_addrecord );
 	configfile.setInt32( "key_channelList_addremind", g_settings.key_channelList_addremind );
+	configfile.setInt32( "key_channelList_search", g_settings.key_channelList_search );
 
 	configfile.setInt32( "key_quickzap_up", g_settings.key_quickzap_up );
 	configfile.setInt32( "key_quickzap_down", g_settings.key_quickzap_down );

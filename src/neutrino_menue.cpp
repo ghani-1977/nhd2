@@ -2053,6 +2053,8 @@ enum keynames {
 	KEY_LIST_END,
 	KEY_CANCEL_ACTION,
 	KEY_SORT,
+	KEY_RELOAD,
+	VKEY_SEARCH,
 	KEY_ADD_RECORD,
 	KEY_ADD_REMIND,
 	KEY_BOUQUET_UP,
@@ -2089,7 +2091,7 @@ enum keynames {
 	KEY_UNLOCK,
 };
 
-#define KEYBINDS_COUNT 35
+#define KEYBINDS_COUNT 37
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2099,7 +2101,9 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_EXTRA_KEY_LIST_START,
 	LOCALE_EXTRA_KEY_LIST_END,
 	LOCALE_KEYBINDINGMENU_CANCEL,
+	LOCALE_KEYBINDINGMENU_SORT,
 	LOCALE_KEYBINDINGMENU_RELOAD,
+	LOCALE_KEYBINDINGMENU_SEARCH,
 	LOCALE_KEYBINDINGMENU_ADDRECORD,
 	LOCALE_KEYBINDINGMENU_ADDREMIND,
 	LOCALE_KEYBINDINGMENU_BOUQUETUP,
@@ -2145,7 +2149,9 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_EXTRA_KEY_LIST_START,
 	LOCALE_EXTRA_KEY_LIST_END,
 	LOCALE_KEYBINDINGMENU_CANCEL,
+	LOCALE_KEYBINDINGMENU_SORT,
 	LOCALE_KEYBINDINGMENU_RELOAD,
+	LOCALE_KEYBINDINGMENU_SEARCH,
 	LOCALE_KEYBINDINGMENU_ADDRECORD,
 	LOCALE_KEYBINDINGMENU_ADDREMIND,
 	LOCALE_KEYBINDINGMENU_BOUQUETUP,
@@ -2223,6 +2229,8 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_list_end,
 		&g_settings.key_channelList_cancel,
 		&g_settings.key_channelList_reload,
+		&g_settings.key_channelList_sort,
+		&g_settings.key_channelList_search,
 		&g_settings.key_channelList_addrecord,
 		&g_settings.key_channelList_addremind,
 		&g_settings.key_bouquet_up,

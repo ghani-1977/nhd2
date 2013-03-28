@@ -199,8 +199,6 @@ int CBouquetList::exec( bool bShowChannelList)
 {
 	/* select bouquet to show */
 	int res = show(bShowChannelList);
-	
-	//printf("Bouquet-exec: res %d bShowChannelList %d\n", res, bShowChannelList); fflush(stdout);
 
 	if(!bShowChannelList)
 		return res;
@@ -235,6 +233,8 @@ int CBouquetList::doMenu()
 		return 0;
 
 	CMenuWidget * menu = new CMenuWidget(LOCALE_CHANNELLIST_EDIT, NEUTRINO_ICON_SETTINGS);
+	menu->enableSaveScreen(true);
+	
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 
 	sprintf(cnt, "%d", i);
@@ -333,7 +333,7 @@ int CBouquetList::show(bool bShowChannelList)
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
 
-	int maxpos= 1;
+	int maxpos = 1;
 	int i = Bouquets.size();
 	
 	while ((i = i/10) != 0)
@@ -356,7 +356,7 @@ int CBouquetList::show(bool bShowChannelList)
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
 	// control-loop
-	bool loop=true;
+	bool loop = true;
 	while (loop) 
 	{
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
@@ -498,7 +498,7 @@ int CBouquetList::show(bool bShowChannelList)
 				pos = maxpos;
 			}
 
-			int prevselected=selected;
+			int prevselected = selected;
 			selected = (chn - 1) % Bouquets.size(); // is % necessary (i.e. can firstselected be > Bouquets.size()) ?
 			paintItem(prevselected - liststart);
 			unsigned int oldliststart = liststart;
@@ -516,7 +516,8 @@ int CBouquetList::show(bool bShowChannelList)
 		} 
 		else 
 		{
-			if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) {
+			if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
+			{
 				loop = false;
 				res = -2;
 			}
@@ -532,13 +533,9 @@ int CBouquetList::show(bool bShowChannelList)
 	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	
 	if(zapOnExit) 
-	{
 		return (selected);
-	} 
 	else 
-	{
 		return (res);
-	}
 }
 
 void CBouquetList::hide()
@@ -580,13 +577,13 @@ void CBouquetList::paintItem(int pos)
                 color = iscurrent ? COL_MENUCONTENT : COL_MENUCONTENTINACTIVE;
                 bgcolor = iscurrent ? COL_MENUCONTENT_PLUS_0 : COL_MENUCONTENTINACTIVE_PLUS_0;
 		
-		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 	}
 
 	if(npos < (int) Bouquets.size()) 
 	{
 		char tmp[10];
-		sprintf((char*) tmp, "%d", npos+ 1);
+		sprintf((char*) tmp, "%d", npos + 1);
 
 		int numpos = x + 5 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + fheight, numwidth + 5, tmp, color, fheight);
@@ -638,7 +635,7 @@ void CBouquetList::paint()
 
 	if(Bouquets.size()) 
 	{
-		for(unsigned int count=0;count<listmaxshow;count++) 
+		for(unsigned int count = 0; count < listmaxshow; count++) 
 		{
 			paintItem(count);
 		}

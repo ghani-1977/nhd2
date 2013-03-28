@@ -95,11 +95,6 @@ int CZapitSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 	if(actionKey == "save_action") 
 	{
 		CNeutrinoApp::getInstance()->exec(NULL, "savesettings");
-		
-		//zapitCfg.saveLastChannel = g_settings.uselastchannel;
-		//setZapitConfig(&zapitCfg);
-		//g_Zapit->reinitChannels();
-		
 		showMenu();
 		return menu_return::RETURN_EXIT;
 	}
@@ -127,21 +122,14 @@ void CZapitSetup::showMenu()
 	zapit->addItem(GenericMenuSeparatorLine);
 	
 	int shortcut = 1;
+	
+	int mode = CNeutrinoApp::getInstance()->getMode();
 
 	//zapit
 	zapit->addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_ZAPIT, &g_settings.uselastchannel, OPTIONS_OFF1_ON0_OPTIONS, OPTIONS_OFF1_ON0_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcut++) ));
 	zapit->addItem(zapit1 = new CMenuOptionChooser(LOCALE_ZAPITSETUP_LAST_MODE, &g_settings.lastChannelMode, OPTIONS_LASTMODE_OPTIONS, OPTIONS_LASTMODE_OPTION_COUNT, !g_settings.uselastchannel, this, CRCInput::convertDigitToKey(shortcut++) ));
-	zapit->addItem(zapit2 = new CMenuForwarder(LOCALE_ZAPITSETUP_LAST_TV, !g_settings.uselastchannel, g_settings.StartChannelTV, new CSelectChannelWidget(), "tv", CRCInput::convertDigitToKey(shortcut++) ));
-	zapit->addItem(zapit3 = new CMenuForwarder(LOCALE_ZAPITSETUP_LAST_RADIO, !g_settings.uselastchannel, g_settings.StartChannelRadio, new CSelectChannelWidget(), "radio", CRCInput::convertDigitToKey(shortcut++) ));
-	
-	//
-	//getZapitConfig(&zapitCfg);
-	
-	//zapit->addItem(GenericMenuSeparatorLine);
-	//zapit->addItem(new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_MAKE_BOUQUET, (int *)&zapitCfg.makeRemainingChannelsBouquet, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++) ));
-	//zapit->addItem(new CMenuOptionChooser(LOCALE_EXTRA_ZAPIT_SAVE_LAST, (int *)&zapitCfg.saveLastChannel, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
-
-	//zapit->addItem( new CMenuOptionChooser(LOCALE_ZAPIT_SCANSDT, (int *)&zapitCfg.scanSDT, SECTIONSD_SCAN_OPTIONS, SECTIONSD_SCAN_OPTIONS_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcut++)) );
+	zapit->addItem(zapit2 = new CMenuForwarder(LOCALE_ZAPITSETUP_LAST_TV, !g_settings.uselastchannel && (mode == NeutrinoMessages::mode_tv), g_settings.StartChannelTV, new CSelectChannelWidget(), "tv", CRCInput::convertDigitToKey(shortcut++) ));
+	zapit->addItem(zapit3 = new CMenuForwarder(LOCALE_ZAPITSETUP_LAST_RADIO, !g_settings.uselastchannel && (mode == NeutrinoMessages::mode_radio), g_settings.StartChannelRadio, new CSelectChannelWidget(), "radio", CRCInput::convertDigitToKey(shortcut++) ));
 
 	zapit->exec(NULL, "");
 	zapit->hide();
@@ -173,14 +161,12 @@ CSelectChannelWidget::~CSelectChannelWidget()
 
 }
 
-int CSelectChannelWidget::exec(CMenuTarget* parent, const std::string& actionKey)
+int CSelectChannelWidget::exec(CMenuTarget * parent, const std::string& actionKey)
 {
 	int   res = menu_return::RETURN_REPAINT;
 
 	if (parent)
-	{
 		parent->hide();
-	}
 
 	if(actionKey == "tv")
 	{
@@ -192,69 +178,33 @@ int CSelectChannelWidget::exec(CMenuTarget* parent, const std::string& actionKey
 		InitZapitChannelHelper(CZapitClient::MODE_RADIO);
 		return res;
 	}
-	else if (strncmp(actionKey.c_str(), "ZCT:", 4) == 0 || strncmp(actionKey.c_str(), "ZCR:", 4) == 0)
-	{
-		unsigned int cnr = 0;
-		t_channel_id channel_id = 0;
-		sscanf(&(actionKey[4]),"%u|%llx", &cnr, &channel_id);
-
-		if (strncmp(actionKey.c_str(), "ZCT:", 4) == 0)//...tv
-		{
-			g_settings.StartChannelTV = actionKey.substr(actionKey.find_first_of("#")+1);
-			g_settings.startchanneltv_id = channel_id;
-			g_settings.startchanneltv_nr = cnr-1;
-		}
-		else if (strncmp(actionKey.c_str(), "ZCR:", 4) == 0)//...radio
-		{
-			g_settings.StartChannelRadio = actionKey.substr(actionKey.find_first_of("#")+1);
-			g_settings.startchannelradio_id= channel_id;
-			g_settings.startchannelradio_nr = cnr-1;
-		}
-
-		// ...leave bouquet/channel menu and show a refreshed zapit menu with current start channel(s)
-		g_RCInput->postMsg(CRCInput::RC_timeout, 0);
-		return menu_return::RETURN_EXIT;
-	}
 
 	return res;
 }
 
-extern CBouquetManager *g_bouquetManager;
 void CSelectChannelWidget::InitZapitChannelHelper(CZapitClient::channelsMode mode)
 {
-	std::vector<CMenuWidget *> toDelete;
-	CMenuWidget mctv(LOCALE_TIMERLIST_BOUQUETSELECT, NEUTRINO_ICON_SETTINGS);
-	//mctv.addIntroItems();
-
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+	int nNewChannel;
+	int nNewBouquet;
+	
+	nNewBouquet = bouquetList->show();
+			
+	if (nNewBouquet > -1)
 	{
-		CMenuWidget* mwtv = new CMenuWidget(LOCALE_TIMERLIST_CHANNELSELECT, NEUTRINO_ICON_SETTINGS);
-		toDelete.push_back(mwtv);
-		
-		ZapitChannelList channels = (mode == CZapitClient::MODE_RADIO) ? g_bouquetManager->Bouquets[i]->radioChannels : g_bouquetManager->Bouquets[i]->tvChannels;
-		
-		for(int j = 0; j < (int) channels.size(); j++) 
+		nNewChannel = bouquetList->Bouquets[nNewBouquet]->channelList->show();
+		//printf("nNewChannel %d\n",nNewChannel);
+		if (nNewChannel > -1)
 		{
-			CZapitChannel * channel = channels[j];
-			char cChannelId[60] = {0};
-			snprintf(cChannelId, sizeof(cChannelId),"ZC%c:%d|%llx#",(mode==CZapitClient::MODE_TV)?'T':'R',channel->number, channel->channel_id);
-
-			CMenuForwarderNonLocalized * chan_item = new CMenuForwarderNonLocalized(channel->getName().c_str(), true, NULL, this, (std::string(cChannelId) + channel->getName()).c_str(), CRCInput::RC_nokey, channel->scrambled ?NEUTRINO_ICON_SCRAMBLED:NULL );
-			mwtv->addItem(chan_item);
-		}
-		
-		if(!channels.empty() && (!g_bouquetManager->Bouquets[i]->bHidden ))
-		{
-			mctv.addItem(new CMenuForwarderNonLocalized(g_bouquetManager->Bouquets[i]->Name.c_str(), true, NULL, mwtv));
+			if(mode == CZapitClient::MODE_TV)
+			{
+				g_settings.startchanneltv_id = bouquetList->Bouquets[nNewBouquet]->channelList->getActiveChannel_ChannelID();
+				g_settings.StartChannelTV = g_Zapit->getChannelName(g_settings.startchanneltv_id);
+			}
+			else if (mode == CZapitClient::MODE_RADIO)
+			{
+				g_settings.startchannelradio_id = bouquetList->Bouquets[nNewBouquet]->channelList->getActiveChannel_ChannelID();
+				g_settings.StartChannelRadio = g_Zapit->getChannelName(g_settings.startchannelradio_id);
+			}
 		}
 	}
-	mctv.exec (NULL, "");
-	mctv.hide ();
-
-	// delete dynamic created objects
-	for(unsigned int count = 0; count < toDelete.size(); count++)
-	{
-		delete toDelete[count];
-	}
-	toDelete.clear();
 }

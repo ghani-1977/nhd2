@@ -488,6 +488,7 @@ const char * locale_real_names[] = {
 	"keybindingmenu.repeatblock",
 	"keybindingmenu.repeatblockgeneric",
 	"keybindingmenu.sort",
+	"keybindingmenu.search",
 	"keybindingmenu.subchanneldown",
 	"keybindingmenu.subchannelup",
 	"keybindingmenu.tvradiomode",

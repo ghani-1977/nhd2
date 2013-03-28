@@ -51,7 +51,7 @@
 
 class EventList
 {
-    // Eventfinder start
+	// Eventfinder start
         public:
                 typedef enum
                 {
@@ -84,8 +84,8 @@ class EventList
 		// Eventfinder end
 
 	private:
-		CFrameBuffer	*frameBuffer;
-        	CChannelEventList	evtlist;
+		CFrameBuffer	* frameBuffer;
+        	CChannelEventList evtlist;
 		CTimerd::TimerList timerlist;
 		void readEvents(const t_channel_id channel_id);
 		unsigned int	selected;
@@ -94,8 +94,8 @@ class EventList
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
 		int		fheight; // Fonthoehe Channellist-Inhalt
-		int		fheight1,fheight2;
-		int		fwidth1,fwidth2;
+		int		fheight1, fheight2;
+		int		fwidth1, fwidth2;
 		int		theight; // Fonthoehe Channellist-Titel
 		int		iheight; // Height info bar
 
@@ -124,29 +124,25 @@ class EventList
 class CEventListHandler : public CMenuTarget
 {
 	public:
-		int  exec( CMenuTarget* parent,  const std::string &actionkey);
+		int  exec( CMenuTarget* parent,  const std::string &actionKey);
 
 };
 
 class CEventFinderMenu : public CMenuTarget
 {
         private:
-                int*                    m_event;
-                int*                    m_search_epg_item;
-                std::string*    m_search_keyword;
-                int*                    m_search_list;
-                std::string     m_search_channelname;
-                t_channel_id*   m_search_channel_id;
-                t_bouquet_id*   m_search_bouquet_id;
-        int showMenu(void);
+                int * m_event;
+                int * m_search_epg_item;
+                std::string * m_search_keyword;
+                int * m_search_list;
+                std::string m_search_channelname;
+                t_channel_id * m_search_channel_id;
+                t_bouquet_id * m_search_bouquet_id;
+		int showMenu(void);
         public:
-                CEventFinderMenu(       int*                    event,
-                                                        int*                    search_epg_item,
-                                                        std::string*    search_keyword,
-                                                        int*                    search_list,
-                                                                        t_channel_id* search_channel_id,
-                                                                        t_bouquet_id* search_bouquet_id);
-                int  exec( CMenuTarget* parent,  const std::string &actionkey);
+                CEventFinderMenu(int * event, int * search_epg_item, std::string * search_keyword, int * search_list, t_channel_id * search_channel_id, t_bouquet_id * search_bouquet_id);
+                int  exec( CMenuTarget* parent,  const std::string &actionKey);
 
 };
+
 #endif
