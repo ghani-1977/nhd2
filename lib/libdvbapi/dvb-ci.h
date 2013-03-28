@@ -98,7 +98,7 @@ typedef struct
         eStatus     status;  
 
         int          receivedLen;
-	unsigned char* receivedData;
+	unsigned char * receivedData;
 	
 	void*        pClass;
         
@@ -126,9 +126,7 @@ typedef struct
 	int source;
 } tSlot;
 
-
 eData sendData(tSlot *slot, unsigned char* data, int len);
-
 
 typedef void (*SEND_MSG_HOOK) (unsigned int msg, unsigned int data);
 
@@ -137,13 +135,12 @@ class cDvbCi {
 		int slots;
 
 	        std::list<tSlot*> slot_data;
-                pthread_t     slot_thread;
+                pthread_t slot_thread;
 	public:
                 bool SendCaPMT(CCaPmt *caPmt, int source = TUNER_A);
 
-		//bool SendDateTime(void);
                 void slot_pollthread(void *c);
-                void setSource(/*tSlot**/int slot, int source);
+                void setSource(int slot, int source);
  
 		//
 		cDvbCi(int Slots);
