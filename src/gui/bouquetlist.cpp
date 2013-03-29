@@ -605,6 +605,14 @@ void CBouquetList::paintHead()
 	// head box
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
+	// setup icon
+	if(CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_FAV || CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_PROV)
+	{
+		int icon_w, icon_h;
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x + width - 10 - icon_w, y + 5); // setup icon
+	}
+	
 	// head title
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, name, COL_MENUHEAD, 0, true); // UTF-8
 }
