@@ -100,4 +100,29 @@ class CAPIDSelectExec : public CMenuTarget
 		int exec(CMenuTarget * parent, const std::string & actionKey);
 };
 
+// MovieInfoViewer class
+class CMovieInfoViewer
+{
+	private:
+		CFrameBuffer * frameBuffer;
+		
+		bool visible;
+		int m_xstart, m_xend, m_y, m_height, m_width, twidth;
+
+		void GetDimensions();
+		
+		int BoxStartX, BoxStartY, BoxEndY, BoxEndX;
+		int BoxWidth, BoxHeight;
+		
+		//CProgressBar * timescale;
+
+	public:
+		CMovieInfoViewer();
+		~CMovieInfoViewer();
+		void show(int Position);
+		void updatePos(short runningPercent);
+		void hide();
+		bool IsVisible() {return visible;}
+};
+
 #endif

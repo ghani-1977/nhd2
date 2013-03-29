@@ -148,7 +148,6 @@ struct CmpBouquetByChName: public binary_function <const CZapitBouquet * const, 
 	bool operator() (const CZapitBouquet * const c1, const CZapitBouquet * const c2)
 	{
 		return std::lexicographical_compare(c1->Name.begin(), c1->Name.end(), c2->Name.begin(), c2->Name.end(), comparetolower);
-		//return strcasecmp(c1->Name.c_str(), c2->Name.c_str());
 	};
 };
 
