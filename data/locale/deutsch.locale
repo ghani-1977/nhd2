@@ -259,7 +259,7 @@ eventfinder.start_search Suche beginnen
 eventlistbar.channelswitch Umschalten
 eventlistbar.eventsort Sortieren
 eventlistbar.recordevent Aufnehmen
-extra.add_to_bouquet zur Favoriten hinzufuegen
+extra.add_to_bouquet zur den Bouquets hinzufuegen
 extra.audio_run_player Audio Taste startet Player
 extra.auto_delete Automatische Löschung
 extra.auto_timeshift Permanet timeshift, Sek. (0 = deakt.)

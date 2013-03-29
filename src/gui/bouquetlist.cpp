@@ -307,6 +307,7 @@ int CBouquetList::doMenu()
 	return 0;
 }
 
+#define SHADOW_OFFSET	5
 /* bShowChannelList default to true, returns new bouquet or -1/-2 */
 int CBouquetList::show(bool bShowChannelList)
 {
@@ -322,8 +323,8 @@ int CBouquetList::show(bool bShowChannelList)
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	
-	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
-	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 16), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 15), (frameBuffer->getScreenHeight() / 20));
 
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -338,6 +339,9 @@ int CBouquetList::show(bool bShowChannelList)
 	
 	while ((i = i/10) != 0)
 		maxpos++;
+	
+	// paint shadow
+	frameBuffer->paintBoxRel(x + SHADOW_OFFSET, y + SHADOW_OFFSET, width, height, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH);
 
 	paintHead();
 	paint();
@@ -540,7 +544,7 @@ int CBouquetList::show(bool bShowChannelList)
 
 void CBouquetList::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
+	frameBuffer->paintBackgroundBoxRel(x, y, width + SHADOW_OFFSET, height + SHADOW_OFFSET);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
