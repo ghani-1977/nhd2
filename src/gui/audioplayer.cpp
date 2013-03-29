@@ -1706,6 +1706,7 @@ void CAudioPlayerGui::paintHead()
 #endif
 }
 
+#if 1
 const struct button_label AudioPlayerButtons[][4] =
 {
 	{
@@ -1720,7 +1721,7 @@ const struct button_label AudioPlayerButtons[][4] =
 		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_DELETEALL                   },
 		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_SHUFFLE                     },
 	},
-	{
+	{		
 		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_JUMP_BACKWARDS              },
 		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_JUMP_FORWARDS               },
 	},
@@ -1751,25 +1752,88 @@ const struct button_label AudioPlayerButtons[][4] =
 		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_INETRADIO_NAME                          },
 	},
 };
+#else
+const struct button_label AudioPlayerButtons[][4] =
+{
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_AUDIOPLAYER_STOP                        },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_REWIND                      },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_PAUSE                       },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_FASTFORWARD                 },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_AUDIOPLAYER_DELETE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_ADD                         },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_DELETEALL                   },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_SHUFFLE                     },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_JUMP_BACKWARDS              },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_JUMP_FORWARDS               },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_JUMP_BACKWARDS              },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_AUDIOPLAYER_JUMP_FORWARDS               },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_SAVE_PLAYLIST               },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_BUTTON_SELECT_TITLE_BY_ID   },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_USERMENU_ITEM_NONE		      },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_SAVE_PLAYLIST               },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_BUTTON_SELECT_TITLE_BY_NAME },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_USERMENU_ITEM_NONE		      },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_AUDIOPLAYER_STOP                        },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_USERMENU_ITEM_NONE	              },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_PAUSE                       },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_USERMENU_ITEM_NONE		      },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_ADD                         },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_INETRADIO_NAME                          },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_AUDIOPLAYER_DELETE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_ADD                         },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_DELETEALL                   },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_INETRADIO_NAME                          },
+	},
+	{
+		{ NEUTRINO_ICON_BUTTON_RED   , LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_GREEN , LOCALE_AUDIOPLAYER_ADD                         },
+		{ NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_USERMENU_ITEM_NONE                      },
+		{ NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_USERMENU_ITEM_NONE                      },
+	},
+};
+#endif
 
 void CAudioPlayerGui::paintFoot()
 {
-	//printf("paintFoot{\n");
-	
 	int top;
 
 	if (m_show_playlist)
-		top = m_y + (m_height - m_info_height - 2 * m_buttonHeight);
+		top = m_y + (m_height - m_info_height - 2*m_buttonHeight);
 	else
-		top = m_y + (m_height - 2 * m_buttonHeight);
+		top = m_y + (m_height - 2*m_buttonHeight);
 
 	int ButtonWidth = (m_width - 20) / 4;
 	int ButtonWidth2 = (m_width - 50) / 2;
 	
 	if(m_show_playlist)
-		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2 * m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
+		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
 	else
-		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2 * m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1);
+		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1);
 	
 	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);
@@ -1777,11 +1841,11 @@ void CAudioPlayerGui::paintFoot()
 	if (!m_playlist.empty())
 	{
 		// play
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 1 * ButtonWidth2 + 25, top + m_buttonHeight - 3);
+		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 1*ButtonWidth2 + 25, top + m_buttonHeight - 3);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 1 * ButtonWidth2 + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
 		
 		// keylevel switch
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, m_x + 0 * ButtonWidth + 25, top + m_buttonHeight - 3);
+		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, m_x + 0*ButtonWidth + 25, top + m_buttonHeight - 3);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 0 * ButtonWidth + 53 , top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_KEYLEVEL), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
 	}
 
@@ -1790,15 +1854,17 @@ void CAudioPlayerGui::paintFoot()
 		if (m_playlist.empty()) 
 		{
 			if (m_inetmode)
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 2, AudioPlayerButtons[7]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10 + ButtonWidth, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[7]);
 			else
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 1, &(AudioPlayerButtons[7][0]));
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10 + ButtonWidth, top + 4, ButtonWidth, 1, &(AudioPlayerButtons[7][0]));
 		} 
 		else
+		{
 			if (m_inetmode)
 				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[8]);
 			else
 				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 4, AudioPlayerButtons[1]);
+		}
 	}
 	else if (m_key_level == 1)
 	{
@@ -1833,7 +1899,7 @@ void CAudioPlayerGui::paintFoot()
 			} 
 			else 
 			{
-				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth*2, 2, AudioPlayerButtons[2]);
+				::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth *2, 2, AudioPlayerButtons[2]);
 			}
 		}
 	}	
@@ -2190,6 +2256,7 @@ int CAudioPlayerGui::getNext()
 	int ret= m_current + 1;
 	if(m_playlist.empty())
 		return -1;
+	
 	if((unsigned)ret >= m_playlist.size()) 
 	{
 		if (g_settings.audioplayer_repeat_on == 1)
