@@ -49,22 +49,16 @@ extern CAudioSetupNotifier * audioSetupNotifier;	/* defined neutrino.cpp */
 
 // volume conf
 extern CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
-extern cAudio * audioDecoder;
+//extern cAudio * audioDecoder;
 //
 
 // dvbsub
 extern int dvbsub_getpid();				// defined in libdvbsub
-//extern int dvbsub_getpid(int * pid, int * running);				// defined in libdvbsub
+//extern int dvbsub_getpid(int * pid, int * running);	// defined in libdvbsub
 
 // tuxtxt
 extern int tuxtx_subtitle_running(int * pid, int * page, int * running);
 
-
-//
-//  -- AUDIO Selector Menue Handler Class
-//  -- to be used for calls from Menue
-//  -- (2005-08-31 rasc)
-// 
 
 // -- this is a copy from neutrino.cpp!!
 /* option off0_on1 */
