@@ -1103,7 +1103,9 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	g_Zapit->setVolumePercent(current_volume_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
 	
 	// set volume for selected pid
-	audioDecoder->setVolume(current_volume_percent, current_volume_percent);
+	//audioDecoder->setVolume(current_volume_percent, current_volume_percent);
+	
+	*(int *) data = current_volume_percent;
 	#else
 	int percent = *(int *) data;
 	unsigned int vol = 0;
