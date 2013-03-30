@@ -82,7 +82,7 @@ void DText::init()
 	m_height = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();	
 }
 
-void DText::draw(CFBWindow *window, int x, int y, int width)
+void DText::draw(CFBWindow * window, int x, int y, int width)
 {
 	window->RenderString(g_Font[SNeutrinoSettings::FONT_TYPE_MENU], x, y + m_height/2, width, m_text.c_str(), (CFBWindow::color_t)COL_MENUCONTENT, 0, true); // UTF-8	
 }

@@ -44,10 +44,10 @@
 #include <string>
 #include <vector>
 
+
 class CHintBoxExt
 {
 	protected:
-
 		CFBWindow *              m_window;
 
 		unsigned int             m_currentPage;
@@ -65,11 +65,10 @@ class CHintBoxExt
 		ContentLines             m_lines;
 		std::string              m_iconfile;
 		
-		void refresh(bool toround = 1);
+		void refresh(bool paintBg = false);
 
 	public:
 		CHintBoxExt(const neutrino_locale_t Caption, const char * const Text, const int Width, const char * const Icon);
-
 		CHintBoxExt(const neutrino_locale_t Caption, ContentLines& lines, const int Width = MENU_WIDTH - 50, const char * const Icon = NEUTRINO_ICON_INFO);
 
 		~CHintBoxExt(void);
@@ -80,7 +79,7 @@ class CHintBoxExt
 		void scroll_up(void);
 		void scroll_down(void);
 
-		void paint(bool toround = 1);
+		void paint(void);
 		void hide(void);
 };
 

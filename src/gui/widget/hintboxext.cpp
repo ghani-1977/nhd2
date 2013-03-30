@@ -63,6 +63,7 @@ CHintBoxExt::CHintBoxExt(const neutrino_locale_t Caption, const char * const Tex
 		m_lines.push_back(oneLine);
 		begin = strtok(NULL, "\n");
 	}
+	
 	init(Caption, Width, Icon);
 }
 
@@ -112,7 +113,7 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 
 	int page = 0;
 	int line = 0;
-	int maxWidth = 0;
+	int maxWidth = MENU_WIDTH - 50;
 	int maxOverallHeight = 0;
 	m_startEntryOfPage.push_back(0);
 	
@@ -121,6 +122,8 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 		bool pagebreak = false;
 		int maxHeight = 0;
 		int lineWidth = 0;
+		int count = 0;
+		
 		for (std::vector<Drawable*>::iterator item = it->begin(); item != it->end(); item++) 
 		{
 			if ((*item)->getHeight() > maxHeight)
@@ -128,7 +131,12 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 			lineWidth += (*item)->getWidth();
 			if ((*item)->getType() == Drawable::DTYPE_PAGEBREAK)
 				pagebreak = true;
+			
+			count++;
 		}
+		
+		// 10 pixels left and right of every item. determined empirically :-(
+		lineWidth += count * 20;
 		
                 if (lineWidth > maxWidth)
 			maxWidth = lineWidth;
@@ -138,34 +146,41 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 		{
 			if (m_height-maxHeight > maxOverallHeight)
 				maxOverallHeight = m_height - maxHeight;
+			
 			m_height = m_theight + m_fheight + maxHeight;
+			
 			if (pagebreak)
-				m_startEntryOfPage.push_back(line+1);
+				m_startEntryOfPage.push_back(line + 1);
 			else 
 				m_startEntryOfPage.push_back(line);
+			
 			page++;
-			if (m_maxEntriesPerPage < (m_startEntryOfPage[page] - m_startEntryOfPage[page-1]))
+			
+			if (m_maxEntriesPerPage < (m_startEntryOfPage[page] - m_startEntryOfPage[page -1]))
 			{
-				m_maxEntriesPerPage = m_startEntryOfPage[page] - m_startEntryOfPage[page-1];
+				m_maxEntriesPerPage = m_startEntryOfPage[page] - m_startEntryOfPage[page -1];
 			}
 		}
 		line++;
 	}
 
+	//FIXME:???
+	m_width = w_max(maxWidth, borderwidth); 
 	// if there is only one page m_height is already correct 
 	//but m_maxEntries has not been set
 	if (m_startEntryOfPage.size() > 1)
 	{
 		m_height = maxOverallHeight;
+		m_width += 15; // scroll bar
 	} 
 	else 
 	{
 		m_maxEntriesPerPage = line;
 	}
 
-	m_startEntryOfPage.push_back(line+1); // needed to calculate amount of items on last page
+	m_startEntryOfPage.push_back(line + 1); // needed to calculate amount of items on last page
 
-	m_width = w_max(maxWidth,borderwidth); 
+	//m_width = w_max(maxWidth, borderwidth); 
 	m_currentPage = 0;
 	m_pages = page + 1;
 	unsigned int additional_width;
@@ -191,7 +206,7 @@ void CHintBoxExt::init(const neutrino_locale_t Caption, const int Width, const c
 	m_window = NULL;
 }
 
-void CHintBoxExt::paint(bool toround)
+void CHintBoxExt::paint(void)
 {
 	if (m_window != NULL)
 	{
@@ -210,19 +225,19 @@ void CHintBoxExt::paint(bool toround)
                                m_width + borderwidth,
                                m_height + borderwidth);
 
-	refresh(toround);
+	refresh(true);
 }
 
-void CHintBoxExt::refresh(bool toround)
+void CHintBoxExt::refresh(bool paintBg)
 {
 	if (m_window == NULL)
 	{
 		return;
 	}
 	
-	// paint shadow (buttom , right)
-	m_window->paintBoxRel(m_width-20, borderwidth, borderwidth+20, m_height - borderwidth, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);//round
-	m_window->paintBoxRel(borderwidth, m_height-20, m_width, borderwidth+20, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTTOM);//round
+	// paint shadow
+	if(paintBg)
+		m_window->paintBoxRel(borderwidth, borderwidth, m_width, m_height, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH);
 	
 	// title
 	m_window->paintBoxRel(0, 0, m_width, m_theight, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
@@ -240,20 +255,20 @@ void CHintBoxExt::refresh(bool toround)
 	m_window->RenderString( g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE], stringstartposX, m_theight, m_width - (stringstartposX) , g_Locale->getText(m_caption), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 
 	// menu text panel
-	m_window->paintBoxRel(0, m_theight, m_width, (m_maxEntriesPerPage + 1) * m_fheight, (CFBWindow::color_t)COL_MENUCONTENT_PLUS_0, toround ? RADIUS_MID : 0, CORNER_BOTTOM);//round
+	m_window->paintBoxRel(0, m_theight, m_width, ((m_maxEntriesPerPage + 1)*m_fheight), (CFBWindow::color_t)COL_MENUCONTENT_PLUS_0);
 
 	int yPos  = m_theight + (m_fheight >> 1);
 
-	for (ContentLines::iterator it = m_lines.begin() + m_startEntryOfPage[m_currentPage];
-		 it != m_lines.begin() + m_startEntryOfPage[m_currentPage+1]
-			 && it != m_lines.end(); it++)
+	for (ContentLines::iterator it = m_lines.begin() + m_startEntryOfPage[m_currentPage]; it != m_lines.begin() + m_startEntryOfPage[m_currentPage + 1] && it != m_lines.end(); it++)
 	{
 		int xPos = 10;
 		int maxHeight = 0;
-		for (std::vector<Drawable*>::iterator d = it->begin();d!=it->end();d++)
+		
+		for (std::vector<Drawable*>::iterator d = it->begin(); d!=it->end(); d++)
 		{
-  			(*d)->draw(m_window,xPos,yPos,m_width-20);
+  			(*d)->draw(m_window, xPos, yPos, m_width - 20);
 			xPos += (*d)->getWidth() + 20;
+			
 			if ((*d)->getHeight() > maxHeight)
 				maxHeight = (*d)->getHeight();
 		}
@@ -264,8 +279,9 @@ void CHintBoxExt::refresh(bool toround)
 	if (has_scrollbar()) 
 	{
 		yPos = m_theight;
-		m_window->paintBoxRel(m_width - 15, yPos, 15, m_maxEntriesPerPage * m_fheight, COL_MENUCONTENT_PLUS_1);
-		unsigned int marker_size = (m_maxEntriesPerPage * m_fheight) / m_pages;
+		m_window->paintBoxRel(m_width - 15, yPos, 15, m_maxEntriesPerPage*m_fheight + 16, COL_MENUCONTENT_PLUS_1);
+		
+		unsigned int marker_size = (m_maxEntriesPerPage*m_fheight + 16) / m_pages;
 		m_window->paintBoxRel(m_width - 13, yPos + m_currentPage * marker_size, 11, marker_size, COL_MENUCONTENT_PLUS_3);
 	}
 }
@@ -286,7 +302,7 @@ void CHintBoxExt::scroll_up(void)
 
 void CHintBoxExt::scroll_down(void)
 {
-	if (m_currentPage +1 < m_startEntryOfPage.size()-1)
+	if (m_currentPage + 1 < m_startEntryOfPage.size() - 1)
 	{
 		m_currentPage++;
 		refresh();

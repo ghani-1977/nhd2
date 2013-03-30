@@ -443,7 +443,7 @@ class CMenuSelector : public CMenuItem
 class CMenuWidgetSelection : public CMenuWidget
 {
 	public:
-	CMenuWidgetSelection(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = 550, const int mheight = 576) : CMenuWidget( Name, Icon, mwidth, mheight){;};
+	CMenuWidgetSelection(const neutrino_locale_t Name, const std::string & Icon = "", const int mwidth = /*550*/MENU_WIDTH, const int mheight = /*576*/MENU_HEIGHT) : CMenuWidget( Name, Icon, mwidth, mheight){;};
 	int getSelectedLine(void){return exit_pressed ? -1 : selected;};
 };
 

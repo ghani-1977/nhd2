@@ -331,7 +331,7 @@ void CMovieInfoViewer::show(int Position)
 	// red
 	// movie info
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - 18);
-	if( isMovieBrowser || isVlc )
+	//if( isMovieBrowser || isVlc )
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 2 + 16 + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
@@ -2708,6 +2708,8 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if(isVlc)
 				showFileInfoVLC();
+			else if(isWebTV)
+				showFileInfoWebTV();
 			else if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);
 		}
@@ -2849,12 +2851,14 @@ void CMoviePlayerGui::showFileInfoVLC()
 				}
 				element = element->xmlNextNode;
 			}
+			
 			while (element)
 			{
 				char *data = xmlGetAttribute(element, "name");
 				if (data)
 					helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, data);
 				xmlNodePtr element1 = element->xmlChildrenNode;
+				
 				while (element1)
 				{
 					char tmp[50] = "-- ";
@@ -2877,6 +2881,17 @@ void CMoviePlayerGui::showFileInfoVLC()
 			helpbox.show(LOCALE_MESSAGEBOX_INFO);
 		}
 	}
+}
+
+void CMoviePlayerGui::showFileInfoWebTV()
+{
+	Helpbox helpbox;
+	
+	helpbox.addLine(g_file_epg.c_str());
+	helpbox.addLine(g_file_epg1.c_str());
+	
+	hide();
+	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 }
 
 

@@ -44,7 +44,6 @@
 class Helpbox
 {
 	public:
-		
 		Helpbox();
 		~Helpbox();
 

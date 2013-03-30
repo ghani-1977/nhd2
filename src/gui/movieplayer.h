@@ -87,6 +87,7 @@ class CMoviePlayerGui : public CMenuTarget
 
 		void showHelpTS(void);
 		void showFileInfoVLC(void);
+		void showFileInfoWebTV();
 		
 	public:
 		CMoviePlayerGui();

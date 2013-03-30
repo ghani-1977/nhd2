@@ -425,7 +425,7 @@ void CRCInput::open()
 			fcntl(fd_rc[i], F_SETFL, O_NONBLOCK);
 		}
 				
-		dprintf(DEBUG_DEBUG, "CRCInput::open: %s fd %d\n", RC_EVENT_DEVICE[i], fd_rc[i]);		
+		dprintf(DEBUG_INFO, "CRCInput::open: %s fd %d\n", RC_EVENT_DEVICE[i], fd_rc[i]);		
 	}
 
 #ifdef KEYBOARD_INSTEAD_OF_REMOTE_CONTROL

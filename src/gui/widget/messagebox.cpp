@@ -199,7 +199,7 @@ int CMessageBox::exec(int timeout)
 
 	int res = menu_return::RETURN_REPAINT;
 
-	CHintBoxExt::paint(0);
+	CHintBoxExt::paint();
 
 	if (m_window == NULL)
 	{
@@ -217,7 +217,7 @@ int CMessageBox::exec(int timeout)
 	CFrameBuffer::getInstance()->blit();
 #endif
 
-	bool loop=true;
+	bool loop = true;
 	while (loop)
 	{
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
