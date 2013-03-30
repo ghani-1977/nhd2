@@ -91,8 +91,8 @@ int def_audio_mode = 0;
 
 /* volume percent conf */
 #define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
-#define VOLUME_DEFAULT_PCM 75
-#define VOLUME_DEFAULT_AC3 100
+#define VOLUME_DEFAULT_PCM 25
+#define VOLUME_DEFAULT_AC3 50
 typedef std::pair<int, int> pid_pair_t;
 typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
 typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
@@ -1282,10 +1282,11 @@ int SetVolumePercent(int percent)
 {
 	int ret = volume_percent;
 
-	if (volume_percent != percent) 
+	//if (volume_percent != percent) 
 	{
 		volume_percent = percent;
-		SetVolume(audio_map[live_channel_id].volume);
+		//SetVolume(audio_map[live_channel_id].volume);
+		audioDecoder->setVolume((audio_map[live_channel_id].volume*volume_percent) / 100, (audio_map[live_channel_id].volume*volume_percent) / 100);
 	}
 	
 	return ret;
