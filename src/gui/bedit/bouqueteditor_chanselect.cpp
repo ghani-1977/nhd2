@@ -46,6 +46,9 @@
 #include <client/zapitclient.h>
 #include <channel.h>
 #include <bouquets.h>
+#include <client/zapittools.h>
+#include <satconfig.h>
+#include <getservices.h>
 
 
 extern tallchans allchans;
@@ -65,7 +68,7 @@ CBEChannelSelectWidget::CBEChannelSelectWidget(const std::string & Caption, unsi
 	liststart = 0;
 }
 
-uint	CBEChannelSelectWidget::getItemCount()
+uint CBEChannelSelectWidget::getItemCount()
 {
 	return Channels.size();
 }
@@ -87,7 +90,7 @@ bool CBEChannelSelectWidget::hasChanged()
 
 void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool selected)
 {
-	int ypos = y+ theight + paintNr*fheight;
+	int ypos = y + theight + paintNr*fheight;
 
 	uint8_t    color;
 	fb_pixel_t bgcolor;
@@ -97,14 +100,23 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 		color   = COL_MENUCONTENTSELECTED;
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
 		
-		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, COL_MENUCONTENT_PLUS_0);
-		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, COL_MENUCONTENT_PLUS_0);
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
+		
+		//
+		// itemlines	
+		paintItem2DetailsLine(paintNr, itemNr);		
+		
+		// details
+		paintDetails(itemNr);
+		//
 	}
 	else
 	{
 		color   = COL_MENUCONTENT;
 		bgcolor = COL_MENUCONTENT_PLUS_0;
-		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
+		
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 	}
 
 
@@ -114,11 +126,11 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 
 		if( isChannelInBouquet(itemNr))
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MARK, x+8, ypos+4);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MARK, x + 8, ypos + 4);
 		}
 		else
 		{
-			frameBuffer->paintBoxRel(x+8, ypos+4, NEUTRINO_ICON_BUTTON_GREEN_WIDTH, fheight-4, bgcolor);
+			frameBuffer->paintBoxRel(x + 8, ypos + 4, NEUTRINO_ICON_BUTTON_GREEN_WIDTH, fheight - 4, bgcolor);
 		}
 		
 		//FIXME???
@@ -127,7 +139,7 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 		{
 			// hd icon
 			if( Channels[itemNr]->isHD() ) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 -30, ypos + (fheight - 16)/2 );
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 - 30, ypos + (fheight - 16)/2 );
 					
 			// scrambled icon
 			if( Channels[itemNr]->scrambled) 
@@ -151,19 +163,24 @@ void CBEChannelSelectWidget::onOkKeyPressed()
 	g_RCInput->postMsg( CRCInput::RC_down, 0 );
 }
 
-int CBEChannelSelectWidget::exec(CMenuTarget* parent, const std::string & actionKey)
+int CBEChannelSelectWidget::exec(CMenuTarget * parent, const std::string & actionKey)
 {
+	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	info_height = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	
 	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	
-	listmaxshow = (height-theight-0)/fheight;
-	height = theight+0+listmaxshow*fheight; // recalc height
+	listmaxshow = (height - theight)/fheight;
+	height = theight + listmaxshow*fheight; // recalc height
+	
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
-	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
+	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height - ButtonHeight - 2 - info_height) / 2;
 
 	bouquetChannels = mode == CZapitClient::MODE_TV ? &(g_bouquetManager->Bouquets[bouquet]->tvChannels) : &(g_bouquetManager->Bouquets[bouquet]->radioChannels);
 
 	Channels.clear();
+	
 	if (mode == CZapitClient::MODE_RADIO) 
 	{
 		for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++)
@@ -193,3 +210,102 @@ void CBEChannelSelectWidget::paintFoot()
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HOME, x+width - ButtonWidth+ 8, y+height+1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x+width - ButtonWidth+ 38, y+height+24 - 2, width, g_Locale->getText(LOCALE_BOUQUETEDITOR_RETURN), COL_INFOBAR, 0, true); // UTF-8	
 }
+
+//
+void CBEChannelSelectWidget::paintDetails(int index)
+{
+	if(Channels.empty())
+		return;
+	
+	char buf[128];
+	transponder_id_t ct = Channels[index]->getTransponderId();
+	transponder_list_t::iterator tpI = transponders.find(ct);
+	int len = snprintf(buf, sizeof(buf), "%d ", Channels[index]->getFreqId());
+
+	#if 0
+	if(tpI != transponders.end()) 
+	{
+		char * f, *s, *m;
+		switch(frontend->getInfo()->type) 
+		{
+			case FE_QPSK:
+				frontend->getDelSys(tpI->second.feparams.u.qpsk.fec_inner, dvbs_get_modulation(tpI->second.feparams.u.qpsk.fec_inner),  f, s, m);
+				len += snprintf(&buf[len], sizeof(buf) - len, "%c %d %s %s %s ", tpI->second.polarization ? 'V' : 'H', tpI->second.feparams.u.qpsk.symbol_rate/1000, f, s, m);
+				break;
+			case FE_QAM:
+				frontend->getDelSys(tpI->second.feparams.u.qam.fec_inner, tpI->second.feparams.u.qam.modulation, f, s, m);
+				len += snprintf(&buf[len], sizeof(buf) - len, "%d %s %s %s ", tpI->second.feparams.u.qam.symbol_rate/1000, f, s, m);
+				break;
+			case FE_OFDM:
+			case FE_ATSC:
+				break;
+		}
+	}
+	#endif
+	
+	// infobox refresh
+	frameBuffer->paintBoxRel(x + 2, y + height + ButtonHeight + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
+
+	// satname
+	sat_iterator_t sit = satellitePositions.find(Channels[index]->getSatellitePosition());
+		
+	if(sit != satellitePositions.end()) 
+	{
+		int satNameWidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth (sit->second.name);
+		snprintf(&buf[len], sizeof(buf) - len, "(%s)\n", sit->second.name.c_str());
+	}
+	
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + ButtonHeight + 5 + fheight, width - 30, buf, COL_MENUCONTENTDARK, 0, true);
+}
+
+void CBEChannelSelectWidget::paintItem2DetailsLine(int pos, int ch_index)
+{
+#define ConnectLineBox_Width	16
+
+	int xpos  = x - ConnectLineBox_Width;
+	int ypos1 = y + theight + pos*fheight;
+	int ypos2 = y + height + ButtonHeight;
+	int ypos1a = ypos1 + (fheight/2) - 2;
+	int ypos2a = ypos2 + (info_height/2) - 2;
+	fb_pixel_t col1 = COL_MENUCONTENT_PLUS_6;
+	fb_pixel_t col2 = COL_MENUCONTENT_PLUS_1;
+
+	// Clear
+	frameBuffer->paintBackgroundBoxRel(xpos, y, ConnectLineBox_Width, height + info_height);
+
+#if !defined USE_OPENGL
+	frameBuffer->blit();
+#endif
+
+	// paint Line if detail info (and not valid list pos)
+	if (pos >= 0) 
+	{ 
+		int fh = fheight > 10 ? fheight - 10 : 5;
+			
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
+
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 4, info_height - 14, col1);
+		frameBuffer->paintBoxRel(xpos+ConnectLineBox_Width - 4, ypos2 + 7, 1, info_height - 14, col2);			
+
+		// vertical line
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 4, ypos2a - ypos1a, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 1, ypos2a - ypos1a + 4, col2);		
+
+		// Hline Oben
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos1a, 12,4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 16, ypos1a, 12,1, col2);
+		
+		// Hline Unten
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 15, ypos2a, 12, 4, col1);
+		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
+
+		// untere info box lines
+		frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
+		
+		// FIXME: bad hack just to overload the color
+		frameBuffer->paintBoxRel(x + 2, ypos2 + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
+	}
+}
+//
+

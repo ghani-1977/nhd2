@@ -57,17 +57,20 @@ class CBEChannelSelectWidget : public CListBox
 		void paintItem(uint32_t itemNr, int paintNr, bool selected);
 		void paintFoot();
 		void onOkKeyPressed();
+		
+		int fheight;
+		int info_height;
+		
+		void paintDetails(int index);
+		void paintItem2DetailsLine(int pos, int ch_index);
 
 	public:
-		//CZapitClient::BouquetChannelList	Channels;        // list of all channels
-		//CZapitClient::BouquetChannelList	bouquetChannels; // list of chans that are currently selected
 		ZapitChannelList Channels;
 		ZapitChannelList * bouquetChannels;
 
 		CBEChannelSelectWidget(const std::string & Caption, unsigned int Bouquet, CZapitClient::channelsMode Mode);
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 		bool hasChanged();
-
 };
 
 #endif

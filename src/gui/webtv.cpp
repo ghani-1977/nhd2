@@ -178,10 +178,6 @@ int CWebTV::Show()
 		width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 		height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	}
-	  
-
-	//if (channels.empty()) 
-	//	return -1;
 
 	// display channame in vfd	
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );
@@ -333,9 +329,6 @@ void CWebTV::hide()
 
 void CWebTV::paintItem(int pos)
 {
-	if (!channels.size())
-		return;
-
 	int ypos = y + theight + pos*fheight;
 	uint8_t    color;
 	fb_pixel_t bgcolor;
@@ -352,15 +345,15 @@ void CWebTV::paintItem(int pos)
 		// details
 		paintDetails(curr);
 
-		// infobox
-		frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
+		// itembox
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 	} 
 	else 
 	{
 		color = COL_MENUCONTENT;
 		bgcolor = COL_MENUCONTENT_PLUS_0;
 		
-		// infobox
+		// itembox
 		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 	}
 
@@ -406,20 +399,13 @@ struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 // paint head
 void CWebTV::paintHead()
 {
-
 	// head
-	if(g_settings.mini_tv)
-		frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0); 
-	else
-		frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
 	
 	// foot
 	int ButtonWidth = (width - 20) / 4;
 	
-	if(g_settings.mini_tv)
-		frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0);
-	else
-		frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
 	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 	
@@ -452,7 +438,7 @@ void CWebTV::paintHead()
 // infos
 void CWebTV::paintDetails(int index)
 {
-	// itembox refresh
+	// infobox refresh
 	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
 	
 	// name/description
@@ -460,7 +446,7 @@ void CWebTV::paintDetails(int index)
 	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* fheight- 2, width - 30, channels[index]->description, COL_MENUCONTENTDARK, 0, true); // UTF-8
 }
 
-void CWebTV::clearItem2DetailsLine ()
+void CWebTV::clearItem2DetailsLine()
 {  
 	  paintItem2DetailsLine(-1, 0);  
 }
@@ -470,7 +456,7 @@ void CWebTV::paintItem2DetailsLine(int pos, int ch_index)
 #define ConnectLineBox_Width	16
 
 	int xpos  = x - ConnectLineBox_Width;
-	int ypos1 = y + theight + 0 + pos*fheight;
+	int ypos1 = y + theight + pos*fheight;
 	int ypos2 = y + height;
 	int ypos1a = ypos1 + (fheight/2) - 2;
 	int ypos2a = ypos2 + (info_height/2) - 2;

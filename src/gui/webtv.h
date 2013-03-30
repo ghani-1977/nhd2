@@ -55,8 +55,8 @@ class CWebTV /*: public CMenuTarget*/
 		int            	x;
 		int            	y;
 		
-		int            	theight; 	// title height
-		int            	fheight; 	// foot height (buttons???)
+		int            	theight; 	// title font height
+		int            	fheight; 	// foot font height (buttons???)
 		
 		unsigned int   	selected;
 		unsigned int   	liststart;
