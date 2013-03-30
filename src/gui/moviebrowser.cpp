@@ -824,7 +824,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS* settings)
 
 int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 {
-	int returnval = menu_return::RETURN_REPAINT;
+	int returnval = menu_return::RETURN_NONE;
 
 	if(actionKey == "loaddefault")
 	{
@@ -842,8 +842,8 @@ int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "show_movie_info_menu")
 	{
-		if(parent) 
-			parent->hide ();
+		//if(parent) 
+		//	parent->hide ();
 		
 		if(m_movieSelectionHandler != NULL)
 			showMovieInfoMenu(m_movieSelectionHandler);
@@ -895,7 +895,7 @@ int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		loadMovies();
 		updateMovieSelection();
-		//refresh();
+		refresh();
 	}
 	else if(actionKey == "run")
 	{
@@ -912,7 +912,7 @@ int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 			m_movieSelectionHandler->bookmarks.end =0;
 			m_movieSelectionHandler->bookmarks.lastPlayStop =0;
 			
-			for(int i=0; i<MI_MOVIE_BOOK_USER_MAX;i++)
+			for(int i = 0; i < MI_MOVIE_BOOK_USER_MAX; i++)
 			{
 				m_movieSelectionHandler->bookmarks.user[i].name.empty();
 				m_movieSelectionHandler->bookmarks.user[i].length =0;
@@ -1601,26 +1601,26 @@ void CMovieBrowser::refreshTitle(void)
 	dprintf(DEBUG_INFO, "[mb]->refreshTitle : %s\r\n",m_textTitle.c_str());
 	
 	// head box
-	m_pcWindow->paintBoxRel(m_cBoxFrame.iX+m_cBoxFrameTitleRel.iX, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR, RADIUS_MID, CORNER_TOP);
+	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX, m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR, RADIUS_MID, CORNER_TOP);
 	
 	// icon
 	int icon_w, icon_h;
 	m_pcWindow->getIconSize(NEUTRINO_ICON_MOVIE, &icon_w, &icon_h);
-	m_pcWindow->paintIcon(NEUTRINO_ICON_MOVIE, m_cBoxFrame.iX+m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + 10);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_MOVIE, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + 10);
 	
 	// head title
 	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), m_textTitle.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
 
 	// icon
-	int width = m_cBoxFrameTitleRel.iWidth;
-	int xpos1 = width - 20;
-	int ypos = m_cBoxFrameTitleRel.iHeight + 10;
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);
+	int xpos1 = m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + m_cBoxFrameTitleRel.iWidth - 10;
+	int ypos = m_cBoxFrame.iY +	m_cBoxFrameTitleRel.iY + (m_cBoxFrameTitleRel.iHeight - icon_w)/2;
 
 	// setup icon
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1, ypos);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1 - icon_w, ypos);
 
 	// help icon
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - 30, ypos);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - icon_w - 2 - icon_w, ypos);
 }
 
 #define ADD_FOOT_HEIGHT 4
@@ -3033,12 +3033,12 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	// MovieInfo menu
 
 	// bookmark
-	CStringInputSMS *       pBookNameInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
-	CIntInput *          pBookPosIntInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
-	CIntInput *          pBookTypeIntInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
+	CStringInputSMS * pBookNameInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
+	CIntInput * pBookPosIntInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
+	CIntInput * pBookTypeIntInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
 	
 	//
-	CMenuWidget *        pBookItemMenu[MAX_NUMBER_OF_BOOKMARK_ITEMS];
+	CMenuWidget * pBookItemMenu[MAX_NUMBER_OF_BOOKMARK_ITEMS];
 
 	CIntInput bookStartIntInput (LOCALE_MOVIEBROWSER_EDIT_BOOK, (int&)movie_info->bookmarks.start,        5, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO1, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO2);
 	CIntInput bookLastIntInput (LOCALE_MOVIEBROWSER_EDIT_BOOK,  (int&)movie_info->bookmarks.lastPlayStop, 5, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO1, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO2);
@@ -3263,7 +3263,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO * movie_info)
 
 	// options
 	CMenuWidget optionsMenu(LOCALE_EPGPLUS_OPTIONS , NEUTRINO_ICON_STREAMING);
-	optionsMenu.enableSaveScreen(true);
+	//optionsMenu.enableSaveScreen(true);
 
 	// intros
 	//optionsMenu.addItem(GenericMenuSeparator);
@@ -3292,7 +3292,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO * movie_info)
 	CNFSSmallMenu * nfs = new CNFSSmallMenu();
 
 	CMenuWidget mainMenu(LOCALE_MOVIEBROWSER_MENU_MAIN_HEAD, NEUTRINO_ICON_STREAMING);
-	mainMenu.enableSaveScreen(true);
+	//mainMenu.enableSaveScreen(true);
 	
 	// intros
 	//mainMenu.addItem(GenericMenuSeparator);
@@ -3301,7 +3301,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO * movie_info)
 	mainMenu.addItem( new CMenuForwarder(LOCALE_EPGPLUS_OPTIONS,                    true, NULL, &optionsMenu,NULL,                                  CRCInput::RC_green,  NEUTRINO_ICON_BUTTON_GREEN));
 	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD, true, NULL, &dirMenu,    NULL,                                  CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
 	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES,       true, NULL, this,        "reload_movie_info",                   CRCInput::RC_blue,   NEUTRINO_ICON_BUTTON_BLUE));
-	//mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_NFS_HEAD,       true, NULL, nfs,         NULL,                                  CRCInput::RC_setup,  NEUTRINO_ICON_BUTTON_DBOX_SMALL));
+	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_NFS_HEAD,       true, NULL, nfs,         NULL,                                  CRCInput::RC_setup,  NEUTRINO_ICON_BUTTON_DBOX_SMALL));
 	mainMenu.addItem(GenericMenuSeparatorLine);
 	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_HELP_HEAD,        true, NULL, movieHelp,   NULL,                                  CRCInput::RC_info,   NEUTRINO_ICON_BUTTON_HELP_SMALL));
 	//mainMenu.addItem(GenericMenuSeparator);

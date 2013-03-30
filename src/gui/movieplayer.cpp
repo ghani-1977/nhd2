@@ -2730,7 +2730,10 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			// nothing
 			if (MovieInfoViewer.IsVisible()) 
+			{
+				sleep(1);
 				MovieInfoViewer.hide();
+			}
 		}
 		else if ((msg == NeutrinoMessages::ANNOUNCE_RECORD) || msg == NeutrinoMessages::RECORD_START || msg == NeutrinoMessages::ZAPTO || msg == NeutrinoMessages::STANDBY_ON || msg == NeutrinoMessages::SHUTDOWN || msg == NeutrinoMessages::SLEEPTIMER) 
 		{	

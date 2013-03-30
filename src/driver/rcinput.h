@@ -408,9 +408,11 @@ class CRCInput
 		{
 			for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
 			{
-				//return fd_rc[i];
-				if (fd_rc[i] != -1) 
-					return fd_rc[i];
+#if defined (PLATFORM_VIP)
+				return fd_rc[1];
+#else
+				return fd_rc[0];
+#endif				
 			}
 		}
 		
