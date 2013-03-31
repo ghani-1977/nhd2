@@ -66,15 +66,17 @@
 
 #include <fstream>
 
+#include <system/debug.h>
 
-#define gTmpPath "/var/tmp/"
-#define gUserAgent "neutrino/softupdater 1.0"
 
-#define LIST_OF_UPDATES_LOCAL_FILENAME "update.list"
-#define RELEASE_CYCLE                  "2.0"
-#define FILEBROWSER_UPDATE_FILTER      "img"
+#define gTmpPath 				"/var/tmp/"
+#define gUserAgent 				"neutrino/softupdater 1.0"
 
-#define MTD_OF_WHOLE_IMAGE             0
+#define LIST_OF_UPDATES_LOCAL_FILENAME 		"update.list"
+#define RELEASE_CYCLE                  		"2.0"
+#define FILEBROWSER_UPDATE_FILTER      		"img"
+
+#define MTD_OF_WHOLE_IMAGE             		0
 
 //FIXME: add the right mtd part (meaned is roofs, on some boxes this contains also kernel) for your boxtype bevor u use this
 //NOTE: be carefull with this
@@ -87,9 +89,11 @@
 #endif
 
 
-CFlashUpdate::CFlashUpdate()
+CFlashUpdate::CFlashUpdate(int uMode)
 	:CProgressWindow()
 {
+	updateMode = uMode;
+	
 	setTitle(LOCALE_FLASHUPDATE_HEAD);
 }
 
@@ -142,7 +146,7 @@ bool CFlashUpdate::selectHttpImage(void)
 	httpTool.setStatusViewer(this);
 	showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_GETINFOFILE)); // UTF-8
 
-	CMenuWidget SelectionWidget(LOCALE_FLASHUPDATE_SELECTIMAGE, NEUTRINO_ICON_UPDATE, CFrameBuffer::getInstance()->getScreenWidth(true) );
+	CMenuWidget SelectionWidget(LOCALE_FLASHUPDATE_SELECTIMAGE, NEUTRINO_ICON_UPDATE , MENU_WIDTH + 50);
 	
 	// intros
 	//SelectionWidget.addItem(GenericMenuSeparator);
@@ -150,14 +154,14 @@ bool CFlashUpdate::selectHttpImage(void)
 
 	std::ifstream urlFile(g_settings.softupdate_url_file);
 
-	printf("[update] file %s\n", g_settings.softupdate_url_file);
+	dprintf(DEBUG_NORMAL, "[update] file %s\n", g_settings.softupdate_url_file);
 
 	unsigned int i = 0;
 	while (urlFile >> url)
 	{
 		std::string::size_type startpos, endpos;
 
-		printf("[update] url %s\n", url.c_str());
+		dprintf(DEBUG_NORMAL, "[update] url %s\n", url.c_str());
 
 		/* extract domain name */
 		startpos = url.find("//");
@@ -192,7 +196,7 @@ bool CFlashUpdate::selectHttpImage(void)
 				//std::getline(in, md5);
 				md5s.push_back(md5);
 
-				printf("[update] url %s version %s md5 %s name %s\n", url.c_str(), version.c_str(), md5.c_str(), name.c_str());
+				dprintf(DEBUG_NORMAL, "[update] url %s version %s md5 %s name %s\n", url.c_str(), version.c_str(), md5.c_str(), name.c_str());
 
 				CFlashVersionInfo versionInfo(versions[i]);
 
@@ -229,7 +233,7 @@ bool CFlashUpdate::selectHttpImage(void)
 	file_md5 = md5s[selected];
 	fileType = fileTypes[selected];
 
-	printf("[update] filename %s type %c newVersion %s md5 %s\n", filename.c_str(), fileType, newVersion.c_str(), file_md5.c_str());
+	dprintf(DEBUG_NORMAL, "[update] filename %s type %c newVersion %s md5 %s\n", filename.c_str(), fileType, newVersion.c_str(), file_md5.c_str());
 
 	return true;
 }
@@ -247,7 +251,8 @@ bool CFlashUpdate::getUpdateImage(const std::string & version)
 	sprintf(dest_name, "%s/%s", g_settings.update_dir, fname);
 	showStatusMessageUTF(std::string(g_Locale->getText(LOCALE_FLASHUPDATE_GETUPDATEFILE)) + ' ' + version); // UTF-8
 
-	printf("get update (url): %s - %s\n", filename.c_str(), dest_name);
+	dprintf(DEBUG_NORMAL, "get update (url): %s - %s\n", filename.c_str(), dest_name);
+	
 	return httpTool.downloadFile(filename, dest_name, 40 );
 }
 
@@ -257,9 +262,9 @@ bool CFlashUpdate::checkVersion4Update()
 	CFlashVersionInfo * versionInfo;
 	neutrino_locale_t msg_body;
 
-	printf("[update] mode is %d\n", g_settings.softupdate_mode);
+	dprintf(DEBUG_NORMAL, "[update] mode is %d\n", updateMode);
 
-	if(g_settings.softupdate_mode == 1) //internet-update
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
 	{
 		if(!selectHttpImage())
 			return false;
@@ -268,7 +273,7 @@ bool CFlashUpdate::checkVersion4Update()
 		showGlobalStatus(20);
 		showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_VERSIONCHECK) ); // UTF-8
 
-		printf("internet version: %s\n", newVersion.c_str());
+		dprintf(DEBUG_NORMAL, "internet version: %s\n", newVersion.c_str());
 
 		showLocalStatus(100);
 		showGlobalStatus(20);
@@ -302,7 +307,7 @@ bool CFlashUpdate::checkVersion4Update()
 		delete versionInfo;
 #endif
 	}
-	else // manual update (ftp)
+	else if(updateMode == UPDATEMODE_MANUAL)// manual update (ftp)
 	{
 		CFileBrowser UpdatesBrowser;
 
@@ -332,7 +337,9 @@ bool CFlashUpdate::checkVersion4Update()
 		else 
 		{
 			hide();
-			printf("flash-file not found: %s\n", filename.c_str());
+			
+			dprintf(DEBUG_NORMAL, "flash-file not found: %s\n", filename.c_str());
+			
 			ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_CANTOPENFILE)); // UTF-8
 			return false;
 		}
@@ -349,7 +356,7 @@ bool CFlashUpdate::checkVersion4Update()
 			else 
 				fileType = 0;
 
-			printf("[update] manual file type: %s %c\n", ptr, fileType);
+			dprintf(DEBUG_NORMAL, "[update] manual file type: %s %c\n", ptr, fileType);
 		}
 
 		strcpy(msg, g_Locale->getText( (fileType < '3')? LOCALE_FLASHUPDATE_SQUASHFS_NOVERSION : LOCALE_FLASHUPDATE_NOVERSION ));
@@ -359,7 +366,7 @@ bool CFlashUpdate::checkVersion4Update()
 	return (ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, msg, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) == CMessageBox::mbrYes); // UTF-8
 }
 
-int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
+int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 {
 	if(parent)
 		parent->hide();
@@ -381,7 +388,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 	paint();
 	showGlobalStatus(20);
 
-	if(g_settings.softupdate_mode == 1) //internet-update
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
 	{
 		char * fname = rindex(const_cast<char *>(filename.c_str()), '/') +1;
 		char fullname[255];
@@ -410,7 +417,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 	// MD5summ check
 	showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_MD5CHECK)); // UTF-8
 	
-	if((g_settings.softupdate_mode == 1) && !ft.check_md5(filename, file_md5)) 
+	if((updateMode == UPDATEMODE_INTERNET) && !ft.check_md5(filename, file_md5)) 
 	{
 		// remove flash/package
 		remove(filename.c_str());
@@ -420,7 +427,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 	}
 	
 	// download or not???
-	if(g_settings.softupdate_mode == 1) 
+	if(updateMode == UPDATEMODE_INTERNET) 
 	{ 
 		//internet-update
 		if ( ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, g_Locale->getText( (fileType < '3') ? LOCALE_FLASHUPDATE_DOWNLOADEDIMAGE : LOCALE_FLASHUPDATE_INSTALLPACKAGE ), CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) != CMessageBox::mbrYes) // UTF-8
@@ -435,7 +442,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 	showGlobalStatus(60);
 
 	// flash/install
-	printf("[update] filename %s type %c\n", filename.c_str(), fileType);
+	dprintf(DEBUG_NORMAL, "[update] filename %s type %c\n", filename.c_str(), fileType);
 
 	// flash image
 	if(fileType < '3') 
@@ -474,7 +481,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 		
 		// extract
 		sprintf(cmd, "tar zxvf %s -C %s", filename.c_str(), g_settings.update_dir);
-		printf("[update] calling %s\n", cmd);		
+		
 		if( system(cmd) )
 		{
 			// remove package
@@ -486,7 +493,7 @@ int CFlashUpdate::exec(CMenuTarget* parent, const std::string &)
 		
 		// install
 		sprintf(cmd, ".%s/install.sh", g_settings.update_dir);
-		printf("[update] calling %s\n", cmd);
+
 		if( system(cmd) )
 		{
 			hide();
@@ -599,8 +606,6 @@ void CFlashExpert::writemtd(const std::string & filename, int mtdNumber)
 
 void CFlashExpert::showMTDSelector(const std::string & actionkey)
 {
-	printf("CFlashExpert::showMTDSelector: actionkey: %s\n", actionkey.c_str());
-	
 	//mtd-selector erzeugen
 	CMenuWidget * mtdselector = new CMenuWidget(LOCALE_FLASHUPDATE_MTDSELECTOR, NEUTRINO_ICON_UPDATE);
 	
@@ -678,7 +683,7 @@ void CFlashExpert::showFileSelector(const std::string & actionkey)
 	}
 	else
 	{
-		for(int count=0;count<n;count++)
+		for(int count = 0; count < n; count++)
 		{
 			std::string filen = namelist[count]->d_name;
 			int pos = filen.find(".img");
@@ -722,12 +727,13 @@ int CFlashExpert::exec(CMenuTarget* parent, const std::string & actionKey)
 		int iWritemtd = -1;
 		sscanf(actionKey.c_str(), "readmtd%d", &iReadmtd);
 		sscanf(actionKey.c_str(), "writemtd%d", &iWritemtd);
-		if(iReadmtd!=-1) {
+		
+		if(iReadmtd != -1) 
+		{
 			readmtd(iReadmtd);
 		}
-		else if(iWritemtd!=-1) 
+		else if(iWritemtd != -1) 
 		{
-			printf("mtd-write\n\n");
 			selectedMTD = iWritemtd;
 			showFileSelector("");
 		} 

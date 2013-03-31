@@ -2189,6 +2189,9 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.show(position / 1000);
 					//FileTime.updatePos(file_prozent);
 				}
+				
+				if(!MovieInfoViewer.IsVisible())
+					MovieInfoViewer.show(position/1000);
 			}
 		} 
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_pause) 
@@ -2239,6 +2242,9 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.show(position / 1000);
 					//FileTime.updatePos(file_prozent);
 				}
+				
+				if(!MovieInfoViewer.IsVisible())
+					MovieInfoViewer.show(position/1000);
 			}
 		} 
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_bookmark) 
@@ -2428,11 +2434,12 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
+			
+			if(!MovieInfoViewer.IsVisible())
+				MovieInfoViewer.show(position/1000);
 		}
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_forward) 
 		{	// fast-forward
@@ -2462,11 +2469,12 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
+			
+			if(!MovieInfoViewer.IsVisible())
+				MovieInfoViewer.show(position/1000);
 		} 
 		else if (msg == CRCInput::RC_1) 
 		{	// Jump Backwards 1 minute
@@ -2481,8 +2489,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2500,8 +2506,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2518,8 +2522,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2536,8 +2538,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2554,8 +2554,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2572,8 +2570,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2590,8 +2586,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2609,8 +2603,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2628,8 +2620,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2646,8 +2636,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}
@@ -2665,8 +2653,6 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
 					
-					//if(!timeshift)
-					//	FileTime.updatePos(file_prozent);
 					time_forced = true;
 				}
 			}

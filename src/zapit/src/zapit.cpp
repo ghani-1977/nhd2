@@ -1089,7 +1089,7 @@ tune_again:
 #ifdef RETUNE_PAT_FAILED	
 	if(failed && !retry)
 	{
-		usleep(2000);  /* give some 2000us for demuxer: borrowed from e2*/
+		usleep(2500);  /* give some 2500us for demuxer: borrowed from e2*/
 		retry = true;
 		dprintf(DEBUG_NORMAL, "[zapit] trying again\n");
 		goto tune_again;

@@ -447,8 +447,8 @@ flashupdate.squashfs.noversion manual flash update version checks are currently 
 flashupdate.titlereadflash Reading Flash
 flashupdate.titlewriteflash Writing Flash
 flashupdate.updatemode Updatemode
-flashupdate.updatemode_internet internet
-flashupdate.updatemode_manual manual (ftp)
+flashupdate.updatemode_internet Online Software Manager
+flashupdate.updatemode_manual Manuell(ftp) Software Manager
 flashupdate.url_file Software update URL
 flashupdate.versioncheck checking version
 flashupdate.writeflash Write whole image

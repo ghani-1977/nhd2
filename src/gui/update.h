@@ -41,13 +41,22 @@
 
 #include <string>
 
+
 // CFlashUpdate
 class CFlashUpdate : public CProgressWindow
 {
+	public:
+		enum {
+			UPDATEMODE_MANUAL,
+			UPDATEMODE_INTERNET,
+		};
+	
+		int updateMode;
+	  
 	private:
 		std::string filename;
 		std::string file_md5;
-		char	fileType;
+		char fileType;
 		
 		std::string installedVersion;
 		std::string newVersion;
@@ -57,7 +66,7 @@ class CFlashUpdate : public CProgressWindow
 		bool checkVersion4Update();
 		
 	public:
-		CFlashUpdate();
+		CFlashUpdate(int uMode);
 		int exec( CMenuTarget* parent, const std::string & actionKey );
 
 };
@@ -77,7 +86,6 @@ class CFlashExpert : public CProgressWindow
 	public:
 		CFlashExpert();
 		int exec(CMenuTarget* parent, const std::string & actionKey);
-
 };
 
 #endif

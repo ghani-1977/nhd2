@@ -457,7 +457,6 @@ struct SNeutrinoSettings
 
 	// UPDATE
 	char	update_dir[100];
-	int softupdate_mode;
 	char softupdate_url_file[31];
 	char softupdate_proxyserver[31];
 	char softupdate_proxyusername[31];

@@ -315,7 +315,7 @@ bool CFlashTool::check_cramfs( const std::string & filename )
 {
 	int retVal =  0; //cramfs_crc( (char*) filename.c_str() );
 	printf("flashcheck returned: %d\n", retVal);
-	return retVal==1; 
+	return retVal == 1; 
 }
 
 #define FROMHEX(c) ((c)>='a' ? (c)-'a'+10 : ((c)>='A' ? (c)-'A'+10 : (c)-'0'))
@@ -353,7 +353,8 @@ CFlashVersionInfo::CFlashVersionInfo(const std::string & versionString)
 {
 
 	for(int i = 0; i < 20; i++)
-	releaseCycle[i] = versionString[i];
+		releaseCycle[i] = versionString[i];
+	
 	//SBBBYYYYMMTTHHMM -- formatsting
 
 	// recover type
@@ -526,7 +527,7 @@ int CMTDInfo::getMTDEraseSize(const int pos)
 
 int CMTDInfo::findMTDNumber(const std::string & filename)
 {
-	for(int x=0;x<getMTDCount();x++)
+	for(int x = 0; x < getMTDCount(); x++)
 	{
 		if(filename == getMTDFileName(x))
 		{
