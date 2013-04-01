@@ -130,16 +130,6 @@ if test "$enable_freesatepg" = "yes"; then
 AC_DEFINE(ENABLE_FREESATEPG,1,[include freesatepg support])
 fi
 
-# software update
-AC_ARG_ENABLE(software-update,
-	AS_HELP_STRING(--enable-software-update,include flash software update support),
-	,[enable_software_update=no])
-AM_CONDITIONAL(ENABLE_SOFTWARE_UPDATE,test "$enable_software_update" = "yes")
-
-if test "$enable_software_update" = "yes"; then
-AC_DEFINE(ENABLE_SOFTWARE_UPDATE,1,[include flash software update support])
-fi
-
 AC_OUTPUT([
 Makefile
 lib/Makefile
@@ -186,6 +176,7 @@ data/lcd/icons/Makefile
 data/lcd/clock/Makefile
 data/themes/Makefile
 data/webtv/Makefile
+data/scripts/Makefile
 src/sectionsd/Makefile
 src/timerd/Makefile
 src/zapit/Makefile
