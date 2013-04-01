@@ -59,7 +59,7 @@
 #include <client/zapittools.h>
 
 
-extern CPlugins       * g_PluginList;    /* neutrino.cpp */
+extern CPlugins * g_PluginList;    /* neutrino.cpp */
 
 CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 {
@@ -70,11 +70,11 @@ CPluginList::CPluginList(const neutrino_locale_t Name, const uint32_t listtype)
 	
 	selected = 0;
 	width = MENU_WIDTH;
-	if(width>(g_settings.screen_EndX - g_settings.screen_StartX))
+	if(width > (g_settings.screen_EndX - g_settings.screen_StartX))
 		width=(g_settings.screen_EndX - g_settings.screen_StartX);
 	
 	height = 526;
-	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
+	if((height + 50) > (g_settings.screen_EndY-g_settings.screen_StartY))
 		height=(g_settings.screen_EndY-g_settings.screen_StartY) - 50; // 2*25 pixel frei
 	theight  = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	//
@@ -98,7 +98,7 @@ CPluginList::~CPluginList()
 	pluginlist.clear();
 }
 
-int CPluginList::exec(CMenuTarget * parent, const std::string & /*actionKey*/)
+int CPluginList::exec(CMenuTarget * parent, const std::string &)
 {
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -119,7 +119,7 @@ int CPluginList::exec(CMenuTarget * parent, const std::string & /*actionKey*/)
 	tmp->name = g_Locale->getText(LOCALE_MENU_BACK);
 	pluginlist.push_back(tmp);
 
-	for(unsigned int count=0; count < (unsigned int)g_PluginList->getNumberOfPlugins(); count++)
+	for(unsigned int count = 0; count < (unsigned int)g_PluginList->getNumberOfPlugins(); count++)
 	{
 		if ((g_PluginList->getType(count) & pluginlisttype) && !g_PluginList->isHidden(count))
 		{
@@ -140,7 +140,7 @@ int CPluginList::exec(CMenuTarget * parent, const std::string & /*actionKey*/)
 
 	uint64_t timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
-	bool loop=true;
+	bool loop = true;
 	while (loop)
 	{
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
@@ -379,7 +379,7 @@ void CPluginList::paintItems()
 		frameBuffer->paintBoxRel(x+ width +2, y+theight+2+(currPage-1)*(height-theight-4)/nrOfPages, 11, (height-theight-4)/nrOfPages, COL_MENUCONTENT_PLUS_3 );
 	}
 	
-	for(unsigned int count=0;count<listmaxshow;count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 	{
 		paintItem(count);
 	}

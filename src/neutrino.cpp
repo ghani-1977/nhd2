@@ -896,7 +896,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// END HDD
 
 	// SOFT UPDATE
-	strcpy(g_settings.softupdate_url_file, configfile.getString("softupdate_url_file", "/var/etc/update.urls").c_str());
 	strcpy(g_settings.softupdate_proxyserver, configfile.getString("softupdate_proxyserver", "" ).c_str());
 	strcpy(g_settings.softupdate_proxyusername, configfile.getString("softupdate_proxyusername", "" ).c_str());
 	strcpy(g_settings.softupdate_proxypassword, configfile.getString("softupdate_proxypassword", "" ).c_str());
@@ -1336,7 +1335,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 
 	// SOFT UPDATE
 	configfile.setString("update_dir", g_settings.update_dir);
-	configfile.setString("softupdate_url_file", g_settings.softupdate_url_file );
 	configfile.setString("softupdate_proxyserver", g_settings.softupdate_proxyserver );
 	configfile.setString("softupdate_proxyusername", g_settings.softupdate_proxyusername );
 	configfile.setString("softupdate_proxypassword", g_settings.softupdate_proxypassword );

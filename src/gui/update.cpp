@@ -52,8 +52,6 @@
 #include <system/flashtool.h>
 #include <system/httptool.h>
 
-#define SQUASHFS
-
 #include <curl/curl.h>
 //#include <curl/types.h>
 #include <curl/easy.h>
@@ -68,6 +66,7 @@
 
 #include <system/debug.h>
 
+#define SOFTWARE_UPDATE_URLS			"/var/etc/update.urls"
 
 #define gTmpPath 				"/var/tmp/"
 #define gUserAgent 				"neutrino/softupdater 1.0"
@@ -146,15 +145,16 @@ bool CFlashUpdate::selectHttpImage(void)
 	httpTool.setStatusViewer(this);
 	showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_GETINFOFILE)); // UTF-8
 
+	// NOTE: remember me : i dont like this menu GUI :-(
 	CMenuWidget SelectionWidget(LOCALE_FLASHUPDATE_SELECTIMAGE, NEUTRINO_ICON_UPDATE , MENU_WIDTH + 50);
 	
 	// intros
 	//SelectionWidget.addItem(GenericMenuSeparator);
 	SelectionWidget.addItem(GenericMenuBack);
 
-	std::ifstream urlFile(g_settings.softupdate_url_file);
+	std::ifstream urlFile(SOFTWARE_UPDATE_URLS);
 
-	dprintf(DEBUG_NORMAL, "[update] file %s\n", g_settings.softupdate_url_file);
+	dprintf(DEBUG_NORMAL, "[update] file %s\n", SOFTWARE_UPDATE_URLS);
 
 	unsigned int i = 0;
 	while (urlFile >> url)
@@ -245,8 +245,10 @@ bool CFlashUpdate::getUpdateImage(const std::string & version)
 	httpTool.setStatusViewer(this);
 
 	fname = rindex(const_cast<char *>(filename.c_str()), '/');
-	if(fname != NULL) fname++;
-	else return false;
+	if(fname != NULL) 
+		fname++;
+	else 
+		return false;
 
 	sprintf(dest_name, "%s/%s", g_settings.update_dir, fname);
 	showStatusMessageUTF(std::string(g_Locale->getText(LOCALE_FLASHUPDATE_GETUPDATEFILE)) + ' ' + version); // UTF-8
@@ -266,6 +268,7 @@ bool CFlashUpdate::checkVersion4Update()
 
 	if(updateMode == UPDATEMODE_INTERNET) //internet-update
 	{
+		// get image/package
 		if(!selectHttpImage())
 			return false;
 
@@ -281,8 +284,7 @@ bool CFlashUpdate::checkVersion4Update()
 		
 		msg_body = (fileType < '3')? LOCALE_FLASHUPDATE_FLASHMSGBOX : LOCALE_FLASHUPDATE_PACKAGEMSGBOX;
 		
-#ifdef SQUASHFS
-		versionInfo = new CFlashVersionInfo(newVersion);//Memory leak: versionInfo
+		versionInfo = new CFlashVersionInfo(newVersion);	//NOTE: Memory leak: versionInfo
 		sprintf(msg, g_Locale->getText(msg_body), filename.c_str(), versionInfo->getDate(), versionInfo->getTime(), versionInfo->getReleaseCycle(), versionInfo->getType());
 
 		// flash
@@ -296,6 +298,7 @@ bool CFlashUpdate::checkVersion4Update()
 				return false;
 			}
 
+			// check if not release ask to install (beta + snapshot)
 			if ((strcmp("Release", versionInfo->getType()) != 0) &&
 		    	    (ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_FLASHUPDATE_EXPERIMENTALIMAGE, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) != CMessageBox::mbrYes))
 			{
@@ -305,12 +308,10 @@ bool CFlashUpdate::checkVersion4Update()
 		}
 
 		delete versionInfo;
-#endif
 	}
 	else if(updateMode == UPDATEMODE_MANUAL)// manual update (ftp)
 	{
 		CFileBrowser UpdatesBrowser;
-
 		CFileFilter UpdatesFilter; 
 		
 		UpdatesFilter.addFilter(FILEBROWSER_UPDATE_FILTER);
@@ -346,6 +347,7 @@ bool CFlashUpdate::checkVersion4Update()
 		
 		hide();
 		
+		// just only for correct msg
 		char * ptr = rindex(const_cast<char *>(filename.c_str()), '.');
 		if(ptr) 
 		{
@@ -360,7 +362,6 @@ bool CFlashUpdate::checkVersion4Update()
 		}
 
 		strcpy(msg, g_Locale->getText( (fileType < '3')? LOCALE_FLASHUPDATE_SQUASHFS_NOVERSION : LOCALE_FLASHUPDATE_NOVERSION ));
-		msg_body = (fileType < '3')? LOCALE_FLASHUPDATE_FLASHMSGBOX : LOCALE_FLASHUPDATE_PACKAGEMSGBOX;
 	}
 	
 	return (ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, msg, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) == CMessageBox::mbrYes); // UTF-8
@@ -379,6 +380,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		return menu_return::RETURN_REPAINT;
 	}
 
+	// install
 #ifdef VFD_UPDATE
 	CVFD::getInstance()->showProgressBar2(0, "checking", 0, "Update Neutrino");
 	CVFD::getInstance()->setMode(CLCD::MODE_PROGRESSBAR2);	
@@ -388,6 +390,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	paint();
 	showGlobalStatus(20);
 
+	// check image version
 	if(updateMode == UPDATEMODE_INTERNET) //internet-update
 	{
 		char * fname = rindex(const_cast<char *>(filename.c_str()), '/') +1;
@@ -399,6 +402,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 			ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_GETUPDATEFILEERROR)); // UTF-8
 			return menu_return::RETURN_REPAINT;
 		}
+		
 		sprintf(fullname, "%s/%s", g_settings.update_dir, fname);
 		filename = std::string(fullname);
 	}
@@ -491,6 +495,30 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 			return menu_return::RETURN_REPAINT;
 		}
 		
+		//FIXME:check if "install.sh" script was included in packge (this will help us also to install cst addons)
+		char buf[100];
+		sprintf(buf, "%s/install.sh", g_settings.update_dir);
+		
+		FILE* fd = fopen(buf, "r");
+		if(fd)
+			fclose(fd);
+		else // fallback to cst install script
+		{
+			FILE* fd = fopen("/bin/install.sh", "r");
+			if(fd)
+				fclose(fd);
+			else
+			{
+				hide();
+				
+				dprintf(DEBUG_NORMAL, "install script not found: %s\n", buf);
+				
+				hide();
+				ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_INSTALLFAILED)); // UTF-8
+				return menu_return::RETURN_REPAINT;
+			}
+		}
+		
 		// install
 		sprintf(cmd, ".%s/install.sh", g_settings.update_dir);
 
@@ -505,8 +533,6 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		remove(filename.c_str());
 		
 		// remove install script
-		char buf[100];
-		sprintf(buf, "%s/install.sh", g_settings.update_dir);
 		remove(buf);
 
 		// 100% status

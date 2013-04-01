@@ -426,12 +426,20 @@ const char * const CFlashVersionInfo::getType(void) const
 			return "Beta";
 		case 'A':
 			return "Addon";
+		case 'B':
+			return "Bootlogos";
+		case 'C':
+			return "picons";
+		case 'F':
+			return "Fonts";
+		case 'G':
+			return "Games";
+		case 'K':
+			return "Keymap";
 		case 'S':
 			return "Settings";
 		case 'P':
 			return "Plugins";
-		case 'G':
-			return "Games";
 		default:
 			return "Unknown";
 	}

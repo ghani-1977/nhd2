@@ -1637,7 +1637,7 @@ void CMovieBrowser::refreshFoot(void)
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
 	// draw the background first
-	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight+ 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0/*, RADIUS_MID, CORNER_BOTTOM*/ );
+	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight+ 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM );
 
 	int width = m_cBoxFrameFootRel.iWidth>>2;
 	

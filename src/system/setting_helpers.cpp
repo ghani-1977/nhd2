@@ -939,16 +939,9 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 
 			if(ret == 0 && s.f_type != 0x72b6L/*jffs2*/ && s.f_type != 0x5941ff53L /*yaffs2*/)
 			{ 
-				char datestr[15];
-				time_t d_time;
-				struct tm * now;
-						
-				time(&d_time);
-				now = localtime(&d_time);
-					
-				strftime(datestr, sizeof(datestr), "%d_%m_%Y", now);
-				
-				sprintf(fname, "tar -cf %s/settings_%s.tar %s", fileBrowser.getSelectedFile()->Name.c_str(), datestr, CONFIGDIR);
+				const char backup_sh[] = "/bin/backup.sh";
+
+				sprintf(fname, "%s %s", backup_sh, fileBrowser.getSelectedFile()->Name.c_str());
 				printf("CDataResetNotifier::exec: executing %s\n", fname);
 				system(fname);
 			} 
@@ -967,13 +960,11 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 			{
 				char  fname[256];
 				
-				sprintf(fname, "tar xf %s", fileBrowser.getSelectedFile()->Name.c_str());
+				const char restore_sh[] = "/bin/restore.sh";
 				
-				
-				printf("restore: executing %s\n", fname);
+				sprintf(fname, "%s %s", restore_sh, fileBrowser.getSelectedFile()->Name.c_str());
+				printf("CDataResetNotifier::exec: executing %s\n", fname);
 				system(fname);
-				
-				CNeutrinoApp::getInstance()->exec(NULL, "restart");
 			}
 			
 			
@@ -1095,7 +1086,8 @@ void CScanSetupNotifier::addItem(int list, CMenuItem* item)
 // volume conf
 bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionName __attribute__((unused)), void *data)
 {
-	#if 0
+//FIXME: brocken ???
+#if 1
 	// audio_select.cpp, set channel specific volume
 	int current_volume_percent = *((int *) (data));
 
@@ -1103,10 +1095,10 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	g_Zapit->setVolumePercent(current_volume_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
 	
 	// set volume for selected pid
-	//audioDecoder->setVolume(current_volume_percent, current_volume_percent);
+	audioDecoder->setVolume(current_volume_percent, current_volume_percent);
 	
 	*(int *) data = current_volume_percent;
-	#else
+#else
 	int percent = *(int *) data;
 	unsigned int vol = 0;
 	
@@ -1116,13 +1108,10 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	if (vol * percent > 11500)
 		percent = 11500 / vol;
 
-	//printf("CVolume::changeNotify: percent %d\n", percent);
-	
-	//CZapit::getInstance()->SetPidVolume(channel_id, apid, percent);
 	g_Zapit->setVolumePercent(percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
-	//CZapit::getInstance()->SetVolumePercent(percent);
+
 	*(int *) data = percent;
-	#endif
+#endif
 	
 	return true;
 }

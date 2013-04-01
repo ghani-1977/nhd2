@@ -37,12 +37,13 @@
 
 #include <string>
 
+
 class CHTTPTool
 {
 	private:
 		std::string userAgent;
-		int	iGlobalProgressEnd;
-		int	iGlobalProgressBegin;
+		int iGlobalProgressEnd;
+		int iGlobalProgressBegin;
 
 		CProgress_StatusViewer*	statusViewer;
 		static int show_progress( void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
@@ -50,9 +51,7 @@ class CHTTPTool
 	public:
 		CHTTPTool();
 		void setStatusViewer( CProgress_StatusViewer* statusview );
-
-		bool downloadFile( const std::string & URL, const char * const downloadTarget, int globalProgressEnd=-1 );
-
+		bool downloadFile( const std::string & URL, const char * const downloadTarget, int globalProgressEnd = -1 );
 };
 
 
