@@ -1086,32 +1086,19 @@ void CScanSetupNotifier::addItem(int list, CMenuItem* item)
 // volume conf
 bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionName __attribute__((unused)), void *data)
 {
-//FIXME: brocken ???
-#if 1
-	// audio_select.cpp, set channel specific volume
-	int current_volume_percent = *((int *) (data));
-
-	// save volume percent
-	g_Zapit->setVolumePercent(current_volume_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
+	int current_percent = *(int *) data;
 	
-	// set volume for selected pid
-	audioDecoder->setVolume(current_volume_percent, current_volume_percent);
+	//unsigned int vol = 0;
 	
-	*(int *) data = current_volume_percent;
-#else
-	int percent = *(int *) data;
-	unsigned int vol = 0;
-	
-	g_Zapit->getVolume(&vol, &vol);
+	//g_Zapit->getVolume(&vol, &vol);
 	
 	/* keep resulting volume = (vol * percent)/100 not more than 115 */
-	if (vol * percent > 11500)
-		percent = 11500 / vol;
+	//if (vol * percent > 11500)
+	//	percent = 11500 / vol;
 
-	g_Zapit->setVolumePercent(percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
+	g_Zapit->setVolumePercent(current_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
 
-	*(int *) data = percent;
-#endif
+	//*(int *) data = percent;
 	
 	return true;
 }
