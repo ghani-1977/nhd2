@@ -91,15 +91,15 @@ int def_audio_mode = 0;
 
 /* volume percent conf */
 #define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
-#define VOLUME_DEFAULT_PCM 25
-#define VOLUME_DEFAULT_AC3 50
+#define VOLUME_DEFAULT_PCM 50
+#define VOLUME_DEFAULT_AC3 75
 typedef std::pair<int, int> pid_pair_t;
 typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
 typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
 volume_map_t vol_map;
 typedef volume_map_t::iterator volume_map_iterator_t;
 typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_t;
-unsigned int volume_percent;
+unsigned int volume_percent = 1;
 
 int getPidVolume(t_channel_id channel_id, int pid, bool ac3);
 void setVolume(int vol);
@@ -1003,9 +1003,9 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	}
 
 	// set saved volume pro pid
-	int newpercent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
+	volume_percent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
 	
-	setVolumePercent(newpercent);
+	setVolumePercent(volume_percent);
 }
 
 // return 0, -1 fails
@@ -1190,7 +1190,7 @@ void setPidVolume(t_channel_id channel_id, int pid, int percent)
 	if (!pid && (channel_id == live_channel_id) && live_channel)
 		pid = live_channel->getAudioPid();
 
-	dprintf(DEBUG_INFO, "channel %llx pid %x %d percent %d\n", channel_id, pid, percent);
+	dprintf(DEBUG_INFO, "channel %llx pid %x percent %d\n", channel_id, pid, percent);
 	
 	volume_map_range_t pids = vol_map.equal_range(channel_id);
 	for (volume_map_iterator_t it = pids.first; it != pids.second; ++it) 
@@ -1242,7 +1242,7 @@ int getPidVolume(t_channel_id channel_id, int pid, bool ac3)
 		}
 	}
 	
-	dprintf(DEBUG_INFO, "channel %llx pid %x map size %d percent %d\n", channel_id, pid, (int)vol_map.size(), percent);
+	dprintf(DEBUG_INFO, "channel %llx pid %x percent %d\n", channel_id, pid, percent);
 	
 	return percent;
 }
@@ -1359,9 +1359,9 @@ int change_audio_pid(uint8_t index)
 		return -1;
 	
 	// set saved volume pro pid
-	int newpercent = getPidVolume(live_channel_id, live_channel->getAudioPid(), currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3);
+	volume_percent = getPidVolume(live_channel_id, live_channel->getAudioPid(), currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3);
 	
-	setVolumePercent(newpercent);
+	setVolumePercent(volume_percent);
 			
 	//start audio playback
 	if (audioDecoder && (audioDecoder->Start() < 0))
