@@ -49,22 +49,21 @@ CProxySetup::CProxySetup(const neutrino_locale_t title, const char * const IconN
 	menue_title = title;
 	menue_icon = IconName;
 
-	width = w_max (MENU_WIDTH, 10);
+	//width = w_max (MENU_WIDTH, 10);
 }
 
 CProxySetup::~CProxySetup()
 {
 }
 
-int CProxySetup::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
+int CProxySetup::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
 	dprintf(DEBUG_DEBUG, "init proxy menu\n");
+	
 	int   res = menu_return::RETURN_REPAINT;
 
 	if (parent)
-	{
 		parent->hide();
-	}
 
 	res = showProxySetup();
 	

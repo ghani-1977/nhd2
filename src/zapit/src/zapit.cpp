@@ -85,7 +85,7 @@ cDvbCi * ci; //FIXME: boxes without ci cam
 #define AUDIO_CONFIG_FILE CONFIGDIR "/zapit/audio.conf"
 map<t_channel_id, audio_map_set_t> audio_map;
 map<t_channel_id, audio_map_set_t>::iterator audio_map_it;
-unsigned int volume_left = 0, volume_right = 0;
+unsigned int volume_left = 100, volume_right = 100;
 int audio_mode = 0;
 int def_audio_mode = 0;
 

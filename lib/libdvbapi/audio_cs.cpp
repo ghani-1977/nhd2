@@ -178,7 +178,6 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 		vol = 100;
 	
 	vol = 63 - vol * 0.63;
-	//
 	
 	char sVolume[4];
 	

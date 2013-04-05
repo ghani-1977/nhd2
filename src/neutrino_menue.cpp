@@ -216,8 +216,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	//MediaPlayer e.g internet radio/audioplayer/movieplayer/picplayer/upnp
 	// Media player main menu
-	//mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_MEDIAPLAYER, true, "", &MediaPlayer, NULL, /*CRCInput::convertDigitToKey(shortcut++), NULL*/CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "mediaplayer", LOCALE_HELPTEXT_MEDIAPLAYER ));
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_MEDIAPLAYER, true, "", &MediaPlayer, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "mediaplayer", LOCALE_HELPTEXT_MEDIAPLAYER ));
 	
 	int shortcutMediaPlayer = 1;
 	
@@ -934,8 +933,8 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_CURRENTVERSIONSNAPSHOT, false, versionInfo.getType()));
 	
 	//proxyserver submenu
-	updateSettings->addItem(GenericMenuSeparatorLine);
-	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
+	//updateSettings->addItem(GenericMenuSeparatorLine);
+	//updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
 
 	// check update
 	//FIXME: allow update only when the rootfs is jffs2/squashfs
@@ -1053,13 +1052,6 @@ const CMenuOptionChooser::keyval  INFOBAR_SUBCHAN_DISP_POS_OPTIONS[INFOBAR_SUBCH
 	{ 1 , LOCALE_SETTINGS_POS_TOP_LEFT },
 	{ 2 , LOCALE_SETTINGS_POS_BOTTOM_LEFT },
 	{ 3 , LOCALE_SETTINGS_POS_BOTTOM_RIGHT }
-};
-
-#define CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS_COUNT 2
-const CMenuOptionChooser::keyval  CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS[CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS_COUNT]=
-{
-	{ 0 , LOCALE_CHANNELLIST_EPGTEXT_ALIGN_LEFT },
-	{ 1 , LOCALE_CHANNELLIST_EPGTEXT_ALIGN_RIGHT }
 };
 
 #define SECTIONSD_SCAN_OPTIONS_COUNT 3
@@ -1192,9 +1184,6 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	// save settings
 	miscSettingsChannelList.addItem(new CMenuForwarder(LOCALE_MAINSETTINGS_SAVESETTINGSNOW, true, NULL, this, "savesettings", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
 	miscSettingsChannelList.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
-	
-	// txt pos
-	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_CHANNELLIST_EPGTEXT_ALIGN, &g_settings.channellist_epgtext_align_right, CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS, CHANNELLIST_EPGTEXT_ALIGN_RIGHT_OPTIONS_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++), "", true ));
 	
 	// HD list
 	miscSettingsChannelList.addItem(new CMenuOptionChooser(LOCALE_CHANNELLIST_MAKE_HDLIST, &g_settings.make_hd_list, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutMiscChannel++) ));
@@ -1500,7 +1489,7 @@ void CNeutrinoApp::InitNetworkSettings(CMenuWidget &networkSettings)
 	
 	//proxyserver submenu
 	networkSettings.addItem(GenericMenuSeparatorLine);
-	networkSettings.addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
+	networkSettings.addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_FLASHUPDATE_PROXYSERVER_SEP), NULL, CRCInput::RC_nokey, NULL));
 
 	networkSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_NETWORKMENU_MOUNT));
 	networkSettings.addItem(new CMenuForwarder(LOCALE_NFS_MOUNT , true, NULL, new CNFSMountGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));

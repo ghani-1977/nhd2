@@ -48,6 +48,8 @@
 #include <driver/encoding.h>
 #include <global.h>
 
+#include "debug.h"
+
 
 CFlashTool::CFlashTool()
 {
@@ -68,7 +70,7 @@ const std::string & CFlashTool::getErrorMessage(void) const
 void CFlashTool::setMTDDevice( const std::string & mtddevice )
 {
 	mtdDevice = mtddevice;
-	printf("flashtool.cpp: set mtd device to %s\n", mtddevice.c_str());
+	dprintf(DEBUG_NORMAL, "flashtool.cpp: set mtd device to %s\n", mtddevice.c_str());
 }
 
 void CFlashTool::setStatusViewer( CProgress_StatusViewer* statusview )
@@ -126,8 +128,7 @@ bool CFlashTool::readFromMTD( const std::string & filename, int globalProgressEn
 		fsize -= block;
 		char prog = char(100-(100./filesize*fsize));
 
-		printf( "\rReading %s to %s %2u %% complete.\n",
-		                 mtdDevice.c_str(), filename.c_str(), prog );
+		dprintf(DEBUG_NORMAL, "\rReading %s to %s %2u %% complete.\n", mtdDevice.c_str(), filename.c_str(), prog );
 		
 		if(statusViewer)
 		{
@@ -231,7 +232,7 @@ bool CFlashTool::program( const std::string & filename, int globalProgressEndEra
 		fsize -= block;
 		char prog = char(100-(100./filesize*fsize));
 
-		printf( "\rFlashing %s to %s %2u %% complete.\n", filename.c_str(), mtdDevice.c_str(), prog );
+		dprintf(DEBUG_NORMAL, "\rFlashing %s to %s %2u %% complete.\n", filename.c_str(), mtdDevice.c_str(), prog );
 
 		if(statusViewer)
 		{
@@ -282,12 +283,9 @@ bool CFlashTool::erase(int globalProgressEnd)
 	erase.length = meminfo.erasesize;
 	for (erase.start = 0; erase.start < meminfo.size;erase.start += meminfo.erasesize)
 	{
-		printf( "Erasing %s erase size %x start %x size %x\n",
-		                 mtdDevice.c_str(), meminfo.erasesize, erase.start,
-		                 meminfo.size );
-		printf( "\rErasing %u Kbyte @ %x -- %2u %% complete.",
-		                 meminfo.erasesize/1024, erase.start,
-		                 erase.start*100/meminfo.size );
+		dprintf(DEBUG_NORMAL, "Erasing %s erase size %x start %x size %x\n", mtdDevice.c_str(), meminfo.erasesize, erase.start, meminfo.size );
+		dprintf(DEBUG_NORMAL, "\rErasing %u Kbyte @ %x -- %2u %% complete.", meminfo.erasesize/1024, erase.start, erase.start*100/meminfo.size );
+		
 		if(statusViewer)
 		{
 			int prog = int(erase.start*100./meminfo.size);
@@ -311,13 +309,6 @@ bool CFlashTool::erase(int globalProgressEnd)
 	return true;
 }
 
-bool CFlashTool::check_cramfs( const std::string & filename )
-{
-	int retVal =  0; //cramfs_crc( (char*) filename.c_str() );
-	printf("flashcheck returned: %d\n", retVal);
-	return retVal == 1; 
-}
-
 #define FROMHEX(c) ((c)>='a' ? (c)-'a'+10 : ((c)>='A' ? (c)-'A'+10 : (c)-'0'))
 bool CFlashTool::check_md5( const std::string & filename, const std::string & smd5)
 {
@@ -329,7 +320,7 @@ bool CFlashTool::check_md5( const std::string & filename, const std::string & sm
 	if(strlen(ptr) < 32)
 		return false;
 	
-	printf("CFlashTool::check_md5: check file %s md5 %s\n", filename.c_str(), ptr);
+	dprintf(DEBUG_NORMAL, "CFlashTool::check_md5: check file %s md5 %s\n", filename.c_str(), ptr);
 
 	for(int i = 0; i < 16; i++)
 		omd5[i] = FROMHEX(ptr[i*2])*16 + FROMHEX(ptr[i*2+1]);
@@ -426,20 +417,8 @@ const char * const CFlashVersionInfo::getType(void) const
 			return "Beta";
 		case 'A':
 			return "Addon";
-		case 'B':
-			return "Bootlogos";
-		case 'C':
-			return "picons";
-		case 'F':
-			return "Fonts";
-		case 'G':
-			return "Games";
-		case 'K':
-			return "Keymap";
-		case 'S':
-			return "Settings";
-		case 'P':
-			return "Plugins";
+		case 'T':
+			return "Text";
 		default:
 			return "Unknown";
 	}
@@ -453,7 +432,7 @@ CMTDInfo::CMTDInfo()
 
 CMTDInfo::~CMTDInfo()
 {
-	for(int x=0;x<getMTDCount();x++)
+	for(int x = 0; x < getMTDCount(); x++)
 	{
 		delete mtdData[x];
 	}
@@ -559,3 +538,19 @@ int CMTDInfo::getMTDEraseSize( const std::string & filename )
 {
 	return getMTDEraseSize( findMTDNumber(filename) );
 }
+
+
+std::string CMTDInfo::findMTDsystem(const std::string & filename)
+{
+	for(int i = 0; i < getMTDCount(); i++) 
+	{
+		if(getMTDName(i) == filename) 
+		{
+			return getMTDFileName(i);
+		}
+	}
+	
+	return "";
+}
+
+

@@ -40,7 +40,7 @@
 class CProxySetup : public CMenuTarget
 {
 	private:
-		int width;
+		//int width;
 
 		neutrino_locale_t menue_title;
 		std::string menue_icon;
@@ -50,8 +50,7 @@ class CProxySetup : public CMenuTarget
 	public:	
 		CProxySetup(const neutrino_locale_t title = LOCALE_FLASHUPDATE_PROXYSERVER_SEP, const char * const IconName = NEUTRINO_ICON_SETTINGS);
 		~CProxySetup();
-		int exec(CMenuTarget* parent, const std::string & actionKey);
+		int exec(CMenuTarget * parent, const std::string & actionKey);
 };
-
 
 #endif

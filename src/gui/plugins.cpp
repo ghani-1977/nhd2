@@ -91,7 +91,7 @@ bool CPlugins::pluginfile_exists(const std::string & filename)
 	}
 }
 
-void CPlugins::scanDir(const char *dir)
+void CPlugins::scanDir(const char * dir)
 {
 	struct dirent **namelist;
 	std::string fname;
@@ -354,7 +354,21 @@ void CPlugins::startPlugin(int number,int param)
 
 	g_RCInput->clearRCMsg();
 	
-#if 0	
+#if defined (ENABLE_STANDALONEPLUGINS)
+	g_RCInput->stopInput();
+	
+	printf("Starting %s\n", plugin_list[number].pluginfile.c_str());
+	
+	safe_system((char *) plugin_list[number].pluginfile.c_str());
+	
+	frameBuffer->paintBackground();
+#if !defined USE_OPENGL
+	frameBuffer->blit();
+#endif	
+	
+	g_RCInput->restartInput();
+	g_RCInput->clearRCMsg();
+#else
 	// fb
 	if (plugin_list[number].fb)
 	{
@@ -517,20 +531,6 @@ void CPlugins::startPlugin(int number,int param)
 		par = par->next;
 		delete tmp;
 	}
-#else
-	g_RCInput->stopInput();
-	
-	printf("Starting %s\n", plugin_list[number].pluginfile.c_str());
-	
-	safe_system((char *) plugin_list[number].pluginfile.c_str());
-	
-	frameBuffer->paintBackground();
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
-	
-	g_RCInput->restartInput();
-	g_RCInput->clearRCMsg();
 #endif
 }
 

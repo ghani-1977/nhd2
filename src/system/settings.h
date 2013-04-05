@@ -410,7 +410,6 @@ struct SNeutrinoSettings
 	std::string logos_dir;
 
 	// channellist
-	int channellist_epgtext_align_right;
 	int zap_cycle;
 	int sms_channel;
 	int virtual_zap_mode;

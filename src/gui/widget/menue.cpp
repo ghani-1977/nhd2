@@ -49,8 +49,11 @@
 #include <cctype>
 
 
-#define ITEM_ICON_W	128
-#define ITEM_ICON_H	128
+#define ITEM_ICON_W	128	// min=100, max = 128
+#define ITEM_ICON_H	128	// min=100, max = 128
+
+#define ICON_OFFSET	5	// offset from left border
+#define LOCAL_OFFSET	8	// offset from painted icon at left border
 
 static int HEIGHT;
 
@@ -204,6 +207,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 		
 		int handled= false;
 
+		// colored/numeric direct key
 		for (unsigned int i = 0; i < items.size(); i++) 
 		{
 			CMenuItem * titem = items[i];
@@ -213,8 +217,8 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 				if (titem->isSelectable()) 
 				{
 					items[selected]->paint( false );
-					selected= i;
-					msg= CRCInput::RC_ok;
+					selected = i;
+					msg = CRCInput::RC_ok;
 				} 
 				else 
 				{
@@ -246,7 +250,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 							pos = (int) page_start[current_page] - 1;
 							for (unsigned int count=pos ; count > 0; count--) 
 							{
-								CMenuItem* item = items[pos];
+								CMenuItem * item = items[pos];
 								if ( item->isSelectable() ) 
 								{
 									if ((pos < (int)page_start[current_page + 1]) && (pos >= (int)page_start[current_page])) 
@@ -268,9 +272,9 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 						else 
 						{
 							pos = 0;
-							for (unsigned int count=0; count < items.size(); count++) 
+							for (unsigned int count = 0; count < items.size(); count++) 
 							{
-								CMenuItem* item = items[pos];
+								CMenuItem * item = items[pos];
 								if ( item->isSelectable() ) 
 								{
 									if ((pos < (int)page_start[current_page + 1]) && (pos >= (int)page_start[current_page])) 
@@ -281,7 +285,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 									} 
 									else 
 									{
-										selected=pos;
+										selected = pos;
 										paintItems();
 									}
 									break;
@@ -295,9 +299,9 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 						pos = (int) page_start[current_page + 1];// - 1;
 						if(pos >= (int) items.size()) 
 							pos = items.size()-1;
-						for (unsigned int count=pos ; count < items.size(); count++) 
+						for (unsigned int count = pos ; count < items.size(); count++) 
 						{
-							CMenuItem* item = items[pos];
+							CMenuItem * item = items[pos];
 							if ( item->isSelectable() ) 
 							{
 								if ((pos < (int)page_start[current_page + 1]) && (pos >= (int)page_start[current_page])) 
@@ -308,7 +312,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 								} 
 								else 
 								{
-									selected=pos;
+									selected = pos;
 									paintItems();
 								}
 								break;
@@ -322,7 +326,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 				case (CRCInput::RC_down) :
 					{
 						//search next / prev selectable item
-						for (unsigned int count=1; count< items.size(); count++) 
+						for (unsigned int count = 1; count < items.size(); count++) 
 						{
 							if ( msg == CRCInput::RC_up ) 
 							{
@@ -332,10 +336,10 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 							}
 							else if( msg == CRCInput::RC_down ) 
 							{
-								pos = (selected+ count)%items.size();
+								pos = (selected + count)%items.size();
 							}
 
-							CMenuItem* item = items[pos];
+							CMenuItem * item = items[pos];
 
 							if ( item->isSelectable() ) 
 							{
@@ -350,7 +354,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 								} 
 								else 
 								{
-									selected=pos;
+									selected = pos;
 									paintItems();
 								}
 								break;
@@ -372,7 +376,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 						if(hasItem()) 
 						{
 							//exec this item...
-							CMenuItem* item = items[selected];
+							CMenuItem * item = items[selected];
 							item->msg = msg;
 							
 							int rv = item->exec( this );
@@ -442,6 +446,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 	if(!parent)
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
+	// init items
 	for (unsigned int count = 0; count < items.size(); count++) 
 	{
 		CMenuItem * item = items[count];
@@ -507,7 +512,6 @@ void CMenuWidget::paint()
 		itemHeightTotal += item_height;
 		heightCurrPage += item_height;
 
-		//if(heightCurrPage > (height - hheight)) 
 		if(heightCurrPage > (height - hheight - 2*sp_height - fheight)) 
 		{
 			page_start.push_back(i);
@@ -550,9 +554,7 @@ void CMenuWidget::paint()
 	
 	//
 	if(savescreen) 
-	{
 		saveScreen();
-	}
 
 	// paint head
 	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -655,9 +657,7 @@ void CMenuWidget::saveScreen()
 	background = new fb_pixel_t[full_width*full_height];
 	
 	if(background)
-	{
 		frameBuffer->SaveScreen(x, y, full_width, full_height, background);
-	}
 }
 
 void CMenuWidget::restoreScreen()
@@ -763,7 +763,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 		l_option = g_Locale->getText(localized_value_name);
 
 	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_option, true); // UTF-8
-	int stringstartposName = x + BORDER_LEFT + 5;
+	int stringstartposName = x + BORDER_LEFT + LOCAL_OFFSET;
 	int stringstartposOption = x + dx - stringwidth - BORDER_RIGHT - 5; //+ offx
 
 	const char * l_optionName = (optionString != NULL) ? optionString : g_Locale->getText(optionName);
@@ -960,14 +960,15 @@ int CMenuOptionChooser::paint( bool selected )
 	{
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
+	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
-		/* define icon name depends of numeric value */
-		char i_name[6]; /* X +'\0' */
+		// define icon name depends of numeric value
+		char i_name[6]; // X +'\0'
 		snprintf(i_name, 6, "%d", CRCInput::getNumericValue(directKey));
-		i_name[5] = '\0'; /* even if snprintf truncated the string, ensure termination */
+		i_name[5] = '\0'; // even if snprintf truncated the string, ensure termination
 		iconName = i_name;
 		
 		if (!iconName.empty())
@@ -979,10 +980,11 @@ int CMenuOptionChooser::paint( bool selected )
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y+ height, height, CRCInput::getKeyName(directKey), color, height);
         }
+        */
 
 	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_option, true); // UTF-8
-	int stringstartposName = x + BORDER_LEFT + 5 + (icon_w? icon_w + 5 : 0);
-	int stringstartposOption = x + dx - stringwidth - BORDER_RIGHT  - 5; //+ offx
+	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
+	int stringstartposOption = x + dx - stringwidth - BORDER_RIGHT  - ICON_OFFSET; //+ offx
 
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y + height, dx - (stringstartposName - x), optionNameString.c_str(), color, 0, true); // UTF-8
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x), l_option, color, 0, true); // UTF-8
@@ -1125,14 +1127,15 @@ int CMenuOptionStringChooser::paint( bool selected )
 	{
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y + ((height - icon_h)/2) );	
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );	
 	}
+	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
-		/* define icon name depends of numeric value */
-		char i_name[6]; /* X +'\0' */
+		// define icon name depends of numeric value
+		char i_name[6]; // X +'\0'
 		snprintf(i_name, 6, "%d", CRCInput::getNumericValue(directKey));
-		i_name[5] = '\0'; /* even if snprintf truncated the string, ensure termination */
+		i_name[5] = '\0'; // even if snprintf truncated the string, ensure termination
 		iconName = i_name;
 		
 		if (!iconName.empty())
@@ -1144,13 +1147,14 @@ int CMenuOptionStringChooser::paint( bool selected )
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT  + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
         }
+        */
         
         const char * l_optionName = g_Locale->getText(optionName);
 	int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
 	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(optionValue, true);
 	
         // stringstartposName
-	int stringstartposName = x + BORDER_LEFT + 5 + (icon_w? icon_w + 5 : 0);
+	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
 
 	// stringstartposOption
 	int stringstartposOption = stringstartposName + optionwidth + 10;
@@ -1249,17 +1253,15 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 	{
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
 
-	int stringstartposOption = x + BORDER_LEFT + 5 + (icon_w? icon_w + 5: 0);
+	int stringstartposOption = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET: 0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height,dx- (stringstartposOption - x), optionValue, color);
 
 	// menutitle on VFD
 	if (selected)
-	{
 		CVFD::getInstance()->showMenuText(1, optionValue);
-	}
 
 	return y + height;
 }
@@ -1392,14 +1394,15 @@ int CMenuForwarder::paint(bool selected)
 		//get icon size
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y + ((height - icon_h)/2) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );
 	}
+	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		//define icon name depends of numeric value
-		char i_name[6]; /* X +'\0' */
+		char i_name[6]; // X +'\0'
 		snprintf(i_name, 6, "%d", CRCInput::getNumericValue(directKey));
-		i_name[5] = '\0'; /* even if snprintf truncated the string, ensure termination */
+		i_name[5] = '\0'; // even if snprintf truncated the string, ensure termination
 		iconName = i_name;
 		
 		if (!iconName.empty())
@@ -1412,8 +1415,9 @@ int CMenuForwarder::paint(bool selected)
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
 	}
+	*/
 	
-	stringstartposX = x + BORDER_LEFT + 5 + (icon_w?icon_w + 5 : 0);
+	stringstartposX = x + BORDER_LEFT + ICON_OFFSET + (icon_w?icon_w + LOCAL_OFFSET : 0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, dx - BORDER_LEFT - 5 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
 
 	//option-text
@@ -1482,13 +1486,9 @@ int CMenuForwarderItemMenuIcon::getWidth(void) const
 int CMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
 {
 	if(jumpTarget)
-	{
 		return jumpTarget->exec(parent, actionKey);
-	}
 	else
-	{
 		return menu_return::RETURN_EXIT;
-	}
 }
 
 const char * CMenuForwarderItemMenuIcon::getOption(void)
@@ -1550,7 +1550,12 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 			frameBuffer->paintBoxRel(x + BORDER_LEFT + (dx/3)*2 + (((dx - (dx/3)*2 - BORDER_RIGHT)/2) - ITEM_ICON_W/2), ( frameBuffer->getScreenHeight(true) - ITEM_ICON_H)/2, ITEM_ICON_W, ITEM_ICON_H, COL_MENUCONTENTDARK_PLUS_0 ); // 25 foot height
 		
 			// paint item icon
-			if(icon_w >= 100 || icon_h >= 100)
+			int hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+			int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+			int sp_height = 5;
+	
+			//if(icon_w >= 100 || icon_h >= 100)
+			if( (HEIGHT - hheight -fheight - 2*sp_height) >= 100 && (icon_w >= 100 || icon_h >= 100) )
 				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - ITEM_ICON_W/2), ( frameBuffer->getScreenHeight(true) - ITEM_ICON_H)/2);  //25:foot height
 		}
 		
@@ -1574,11 +1579,8 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 			
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
-	}
 	
-	// menutitle on VFD
-	if (selected)
-	{
+		// menutitle on VFD
 		char str[256];
 
 		if (option_text != NULL) 
@@ -1604,8 +1606,9 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	{
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y+ ((height - icon_h)/2) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
+	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		// define icon name depends of numeric value
@@ -1623,10 +1626,11 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
 	}
+	*/
 	
 	//
 	//local-text
-	stringstartposX = x + BORDER_LEFT + 5 + (icon_w? icon_w + 5 : 0);
+	stringstartposX = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, (dx/3)*2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
 	
 	//option-text

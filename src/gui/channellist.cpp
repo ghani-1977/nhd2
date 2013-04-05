@@ -1576,7 +1576,7 @@ void CChannelList::quickZap(int key, bool cycle)
                 selected = (selected+1)%chanlist.size();
         }
 
-	printf("[neutrino] quick zap selected = %d bouquetList %x getActiveBouquetNumber %d orgChannelList %x\n", selected, bouquetList, bouquetList->getActiveBouquetNumber(), bouquetList->orgChannelList);
+	printf("[neutrino] quick zap selected = %d getActiveBouquetNumber %d\n", selected, bouquetList->getActiveBouquetNumber());
 
 	if(cycle)
 		bouquetList->orgChannelList->zapTo(bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->getKey(selected)-1);
@@ -1803,15 +1803,27 @@ void CChannelList::paintItem(int pos)
 		}
 
 		// hd/scrambled icons
+		// setup icon
+		int icon_hd_w = 0;
+		int icon_hd_h = 0;
+		int icon_ca_w = 0;
+		int icon_ca_h = 0;
+		
 		if (g_settings.channellist_ca)
 		{
-			// hd icon
-			if(chan->isHD() ) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 -30, ypos + (fheight - 16)/2);
-			
 			// scrambled icon
 			if(chan->scrambled) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - 15 - 28, ypos + (fheight - 16)/2);
+			{
+				frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_ca_w, &icon_ca_h);
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - icon_ca_w, ypos + (fheight - 16)/2);
+			}
+			
+			// hd icon
+			if(chan->isHD() ) 
+			{
+				frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_hd_w, &icon_hd_h);
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - icon_ca_w - 2 - icon_hd_w, ypos + (fheight - 16)/2);
+			}
 		}
 
 		int numpos = x + 5 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
@@ -1829,12 +1841,12 @@ void CChannelList::paintItem(int pos)
 			unsigned int ch_name_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(nameAndDescription, true);
 			unsigned int ch_desc_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(p_event->description, true);
 
-			if ( (width- numwidth - 60 - 15- prg_offset - ch_name_len)< ch_desc_len )
-				ch_desc_len = (width- numwidth- 60 - 15 - 30 - ch_name_len - prg_offset); //30: hd icon width
-			if (ch_desc_len< 0)
+			if ( (width - numwidth - 60 - SCROLLBAR_WIDTH - prg_offset - ch_name_len - icon_ca_w - icon_hd_w - 4) < ch_desc_len ) //60:???
+				ch_desc_len = (width - numwidth - 60 - SCROLLBAR_WIDTH - icon_ca_w - icon_hd_w - 4 - ch_name_len - prg_offset); //30: hd icon width
+			if (ch_desc_len < 0)
 				ch_desc_len = 0;
 			
-			// extended info
+			// next infos
 			if(displayNext)
 			{
 				struct tm *pStartZeit = localtime(&p_event->startTime);
@@ -1865,18 +1877,11 @@ void CChannelList::paintItem(int pos)
 				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 			}
 
+			// name and description
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10 + prg_offset, ypos + fheight, width - numwidth - 40 - 15 - prg_offset, nameAndDescription, color, 0, true);
 
-			if (g_settings.channellist_epgtext_align_right)
-			{
-				// align right
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + width - 20 - ch_desc_len - 28, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
-			}
-			else
-			{
-				// align left
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len + 5 + prg_offset, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
-			}
+			// epg-txt (left)
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len + 5 + prg_offset, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
 		}
 		else 
 		{

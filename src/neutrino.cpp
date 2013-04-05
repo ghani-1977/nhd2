@@ -859,7 +859,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
 
-	g_settings.channellist_epgtext_align_right	= configfile.getBool("channellist_epgtext_align_right", false);
 	g_settings.make_hd_list = configfile.getInt32("make_hd_list", 0);
 	
 	//crypticon on channellist
@@ -1270,7 +1269,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	//crypticon channellist
 	configfile.setInt32("channellist_ca", g_settings.channellist_ca);
 
-	configfile.setBool("channellist_epgtext_align_right", g_settings.channellist_epgtext_align_right);
 	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
 	configfile.setBool("mini_tv", g_settings.mini_tv);
 	//
