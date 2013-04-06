@@ -595,7 +595,7 @@ hdd_init_warn Möchten Sie wirklich initialisieren ?
 hdd_init_failed HDD initialisieren fehlgeschlagen !
 hdd_browser HDD Browser
 hdd_reiser Reiserfs
-hdd_settings HDD Einstellungen
+hdd_settings Festplatte Einstellungen
 hdd_sleep HDD-Standby
 hdd_slow Langsam
 hdd_umount_warn HDD unmount fehlgeschlagen !
@@ -716,7 +716,7 @@ mainmenu.sleeptimer Ausschalt Timer
 mainmenu.tvmode TV-Modus
 mainsettings.audio Audio Einstellungen
 mainsettings.head Einstellugen
-mainsettings.keybinding Tasten Einstellungen
+mainsettings.keybinding Fernbedienung Einstellungen
 mainsettings.language Sprache
 mainsettings.lcd VFD-Display
 mainsettings.misc Diverse Einstellungen
@@ -760,6 +760,7 @@ miscsettings.epg_old_events EPG verwerfen nach (Std.)
 miscsettings.epg_old_events_hint1 Wie lange abgelaufene EPG-Daten aufheben?
 miscsettings.epg_old_events_hint2 Angabe in Stunden
 miscsettings.epg_save EPG zwischenspeichern?
+miscsettings.epgplus_show_logos Kanal Logo(EPGPlus)
 miscsettings.fb_destination EXPERTE! Boot-Konsole
 miscsettings.general Allgemein
 servicemenu.tuner Tuner Einstellungen
@@ -939,9 +940,9 @@ movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.records Aufnahmen Browser
-movieplayer.movies Movies Browser
-movieplayer.fileplayback Datei Browser
+movieplayer.records Aufnahmen Player
+movieplayer.movies Movies Player
+movieplayer.fileplayback Datei Player
 movieplayer.showtshelp Hilfe
 movieplayer.goto Springe zu ...
 movieplayer.goto.h1 = -> absoluter Sprung

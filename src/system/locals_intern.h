@@ -622,6 +622,7 @@ const char * locale_real_names[] = {
 	"miscsettings.epg_old_events_hint1",
 	"miscsettings.epg_old_events_hint2",
 	"miscsettings.epg_save",
+	"miscsettings.epgplus_show_logos",
 	"motorcontrol.head",
 	"motorcontrol.user_menu",
 	"motorcontrol.install_menu",

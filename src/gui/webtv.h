@@ -32,7 +32,12 @@
 #include <xmlinterface.h>
 
 
-class CWebTV /*: public CMenuTarget*/
+enum {
+	WEBTV,
+	IPTV,
+};
+
+class CWebTV
 {
 	private:
 		struct webtv_channels {
@@ -41,11 +46,15 @@ class CWebTV /*: public CMenuTarget*/
 			char * description;
 			char * locked;		// for parentallock
 		} ;
+		
+		int mode;
 
 		xmlDocPtr parser;
 		bool readXml();
+		bool readIPTVlist();
 		
 		std::vector<webtv_channels *> channels;
+		std::vector<webtv_channels *> IPTVChannels;
 		
 		/* gui */
 		CFrameBuffer * frameBuffer;
@@ -63,7 +72,7 @@ class CWebTV /*: public CMenuTarget*/
 		int		buttonHeight;
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
-		int info_height;
+		int 		info_height;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
@@ -76,13 +85,14 @@ class CWebTV /*: public CMenuTarget*/
 		int medlineheight;
 		int medlinecount;
 		
+		// live channel
 		std::vector<std::string> epgText;
 		int emptyLineCount;
 		void addTextToArray( const std::string & text );
 		void processTextToArray(std::string text);
 		
 	public:
-		CWebTV();
+		CWebTV(int Mode = WEBTV);
 		~CWebTV();
 		int exec();
 		

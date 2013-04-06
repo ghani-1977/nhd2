@@ -406,14 +406,11 @@ class CRCInput
 
 		inline int getFileHandle(void) /* used for tuxtxt and plugins */
 		{
-			for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
-			{
-#if defined (PLATFORM_VIP)
+#if defined (PLATFORM_VIP) || defined (PLATFORM_XTREND)
 				return fd_rc[1];
 #else
 				return fd_rc[0];
 #endif				
-			}
 		}
 		
 		void stopInput();

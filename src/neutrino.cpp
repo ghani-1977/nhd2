@@ -729,9 +729,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.mpkey_time = configfile.getInt32( "mpkey.time", CRCInput::RC_setup );
 	g_settings.mpkey_bookmark = configfile.getInt32( "mpkey.bookmark", CRCInput::RC_blue );
 	g_settings.key_timeshift = configfile.getInt32( "key_timeshift", CRCInput::RC_pause );	
-	
-	// misc keys
-	g_settings.key_unlock = configfile.getInt32( "key_unlock", CRCInput::RC_setup );
 
 	// media keys
 	g_settings.key_recordsbrowser = configfile.getInt32( "key_recordsbrowser", CRCInput::RC_nokey );
@@ -881,6 +878,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// logos_dir
 	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/icons/logos");
+	
+	// epgplus logos
+	g_settings.epgplus_show_logo = configfile.getBool("epgplus_show_logo", false);
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
@@ -1194,9 +1194,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "mpkey.bookmark", g_settings.mpkey_bookmark );
 	configfile.setInt32( "key_timeshift", g_settings.key_timeshift );
 	
-	// misc keys
-	configfile.setInt32( "key_unlock", g_settings.key_unlock );
-	
 	// media keys
 	configfile.setInt32( "key_recordsbrowser", g_settings.key_recordsbrowser );
 	configfile.setInt32( "key_audioplayer", g_settings.key_audioplayer );
@@ -1317,6 +1314,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	// logos_dir
 	configfile.setString("logos_dir", g_settings.logos_dir);
+	
+	// epgplus logos
+	configfile.setBool("epgplus_show_logo", g_settings.epgplus_show_logo);
 	
 	// vol
 	configfile.setInt32( "volume_pos", g_settings.volume_pos);

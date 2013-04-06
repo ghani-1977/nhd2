@@ -312,7 +312,6 @@ struct SNeutrinoSettings
 	int mpkey_bookmark;
 
 	int key_timeshift;
-	int key_unlock;
 	
 	int key_recordsbrowser;
 	int key_audioplayer;
@@ -406,6 +405,7 @@ struct SNeutrinoSettings
 	int radiotext_enable;
 	
 	std::string logos_dir;
+	int epgplus_show_logo;
 
 	// channellist
 	int zap_cycle;

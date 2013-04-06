@@ -56,7 +56,7 @@ int CRCLock::exec(CMenuTarget* parent, const std::string &actionKey)
 	// -- Lockup Box	
 	lockBox();
 
-	ShowLocalizedMessage(LOCALE_RCLOCK_TITLE, LOCALE_RCLOCK_UNLOCKMSG, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO,450, no_input ? 5 : -1);
+	ShowLocalizedMessage(LOCALE_RCLOCK_TITLE, LOCALE_RCLOCK_UNLOCKMSG, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO, 450, no_input ? 5 : -1);
 	return  menu_return::RETURN_EXIT_ALL;
 }
 
@@ -82,12 +82,12 @@ void CRCLock::lockBox()
 			timeoutEnd = CRCInput::calcTimeoutEnd(5);
 			g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
 
-			//if (msg == CRCInput::RC_setup)  break;
-			if (msg == (neutrino_msg_t) g_settings.key_unlock)  
+			if (msg == CRCInput::RC_setup)
 				break;
 		}
 
-		if (msg == CRCInput::RC_timeout) continue;
+		if (msg == CRCInput::RC_timeout) 
+			continue;
 
 		// -- Zwen told me: Eating only RC events would be nice
 		// -- so be it...

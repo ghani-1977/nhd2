@@ -582,14 +582,14 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 				logo_h = height;
 			}
 			
-			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h, true);
+			ret = DisplayImage(fname, posx + (width - logo_w)/2, posy + (height - logo_h)/2, logo_w, logo_h, true);
 		}
 		else
 		{
 			logo_w = width;
 			logo_h = height;
 			
-			ret = DisplayImage(fname, posx, posy + (height - logo_h)/2, logo_w, logo_h);
+			ret = DisplayImage(fname, posx + (width - logo_w)/2, posy + (height - logo_h)/2, logo_w, logo_h);
 		}
         }
         //

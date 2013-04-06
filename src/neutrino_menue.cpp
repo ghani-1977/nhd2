@@ -1126,6 +1126,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// logos dir
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_LOGOSDIR, true, g_settings.logos_dir , this, "logos_dir" ) );
+	
+	// epgplus logos
+	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_EPGPLUS_SHOW_LOGOS, &g_settings.epgplus_show_logo, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
 
 	// subchan pos
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_INFOVIEWER_SUBCHAN_DISP_POS, &g_settings.infobar_subchan_disp_pos, INFOBAR_SUBCHAN_DISP_POS_OPTIONS, INFOBAR_SUBCHAN_DISP_POS_OPTIONS_COUNT, true, NULL, CRCInput::RC_nokey, "", true));
@@ -2062,12 +2065,9 @@ enum keynames {
 	KEY_EXTRAS_MOVIEBROWSER,
 	KEY_EXTRAS_FILEBROWSER,
 	KEY_EXTRAS_WEBTV,
-	
-	// misc
-	KEY_UNLOCK,
 };
 
-#define KEYBINDS_COUNT 37
+#define KEYBINDS_COUNT 36
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2111,9 +2111,6 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
-	
-	// misc
-	LOCALE_EXTRA_KEY_UNLOCK,
 };
 
 const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
@@ -2159,9 +2156,6 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
-	
-	// misc
-	LOCALE_EXTRA_KEY_UNLOCK,
 };
 
 void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSettings)
@@ -2238,10 +2232,6 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_moviebrowser,
 		&g_settings.key_filebrowser,
 		&g_settings.key_webtv,
-		
-		// misc
-		&g_settings.key_unlock,
-		
 	};
 
 	CKeyChooser * keychooser[KEYBINDS_COUNT];
@@ -2280,9 +2270,6 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 
 	// misc
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINSETTINGS_MISC));
-	
-	// unlock key
-	bindSettings.addItem(new CMenuForwarder(keydescription[KEY_UNLOCK], true, NULL, keychooser[KEY_UNLOCK]));
 	
 	// save keymap
 	bindSettings.addItem(new CMenuForwarder(LOCALE_KEYBINDINGMENU_SAVEKEYMAP, true, NULL, this, "savekeymap" ) );
@@ -2532,7 +2519,7 @@ bool CNeutrinoApp::showUserMenu(int button)
         CPauseSectionsdNotifier * tmpPauseSectionsdNotifier     = NULL;
         CAudioSelectMenuHandler * tmpAudioSelectMenuHandler     = NULL;
         CMenuWidget * tmpNVODSelector                           = NULL;
-        CStreamInfo2Handler *    tmpStreamInfo2Handler          = NULL;
+        CStreamInfo2Handler * tmpStreamInfo2Handler          = NULL;
         CEventListHandler * tmpEventListHandler                 = NULL;
         CEPGplusHandler * tmpEPGplusHandler                     = NULL;
         CEPGDataHandler * tmpEPGDataHandler                     = NULL;
@@ -2657,14 +2644,16 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 
                         case SNeutrinoSettings::ITEM_EPG_MISC:
+				// on/off read epg
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_EPG_MISC;
                                 dummy = g_Sectionsd->getIsScanningActive();
-				//dummy = sectionsd_scanning;
                                 tmpPauseSectionsdNotifier = new CPauseSectionsdNotifier;
                                 keyhelper.get(&key, &icon);
                                 menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_PAUSESECTIONSD, &dummy, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, tmpPauseSectionsdNotifier , key, icon );
                                 menu->addItem(menu_item, false);
+				
+				// clear epg cache
                                 menu_items++;
                                 keyhelper.get(&key, &icon);
                                 menu_item = new CMenuForwarder(LOCALE_MAINMENU_CLEARSECTIONSD, true, NULL, this, "clearSectionsd", key,icon);

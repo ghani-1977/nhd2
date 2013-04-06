@@ -53,504 +53,486 @@ struct button_label;
 
 class EpgPlus
 {
-//// types, inner classes
-public:
-  enum FontSettingID
-  {
-    EPGPlus_header_font = 0,                         
-    EPGPlus_timeline_fonttime,                   
-    EPGPlus_timeline_fontdate,                   
-    EPGPlus_channelentry_font,                   
-    EPGPlus_channelevententry_font,              
-    EPGPlus_footer_fontbouquetchannelname,       
-    EPGPlus_footer_fonteventdescription,         
-    EPGPlus_footer_fonteventshortdescription,    
-    EPGPlus_footer_fontbuttons,                  
-    NumberOfFontSettings
-  };
+	//// types, inner classes
+	public:
+		enum FontSettingID
+		{
+			EPGPlus_header_font = 0,                         
+			EPGPlus_timeline_fonttime,                   
+			EPGPlus_timeline_fontdate,                   
+			EPGPlus_channelentry_font,                   
+			EPGPlus_channelevententry_font,              
+			EPGPlus_footer_fontbouquetchannelname,       
+			EPGPlus_footer_fonteventdescription,         
+			EPGPlus_footer_fonteventshortdescription,    
+			EPGPlus_footer_fontbuttons,                  
+			NumberOfFontSettings
+		};
 
-  enum SizeSettingID
-  {                                                 
-    EPGPlus_channelentry_width = 0,                    
-    EPGPlus_channelentry_separationlineheight,     
-    EPGPlus_slider_width,                          
-    EPGPlus_horgap1_height,                        
-    EPGPlus_horgap2_height,                        
-    EPGPlus_vergap1_width,                         
-    EPGPlus_vergap2_width,                         
-	 NumberOfSizeSettings
-  };
+		enum SizeSettingID
+		{                                                 
+			EPGPlus_channelentry_width = 0,                    
+			EPGPlus_channelentry_separationlineheight,     
+			EPGPlus_slider_width,                          
+			EPGPlus_horgap1_height,                        
+			EPGPlus_horgap2_height,                        
+			EPGPlus_vergap1_width,                         
+			EPGPlus_vergap2_width,                         
+			NumberOfSizeSettings
+		};
 
-	struct FontSetting
-	{
-		FontSettingID     settingID;
-		char*             style;
-		int               size;
-	};
+		struct FontSetting
+		{
+			FontSettingID     settingID;
+			char*             style;
+			int               size;
+		};
 
-	struct SizeSetting
-	{
-		SizeSettingID     settingID;
-		int               size;           
-	};
+		struct SizeSetting
+		{
+			SizeSettingID     settingID;
+			int               size;           
+		};
 
 
-  enum TViewMode
-  {
-    ViewMode_Stretch,
-    ViewMode_Scroll,
-  };
+		enum TViewMode
+		{
+			ViewMode_Stretch,
+			ViewMode_Scroll,
+		};
 
-  enum TSwapMode  
-  {
-    SwapMode_ByPage,
-    SwapMode_ByBouquet,
-  };
+		enum TSwapMode  
+		{
+			SwapMode_ByPage,
+			SwapMode_ByBouquet,
+		};
 
-  class Footer;
+		class Footer;
 
-  class Header
-  {
-  //// construction / destruction
-  public:
-    Header ( CFrameBuffer* frameBuffer , int x , int y , int width);
+		class Header
+		{
+			//// construction / destruction
+			public:
+				Header ( CFrameBuffer* frameBuffer , int x , int y , int width);
 
-    ~Header();
+				~Header();
 
-  //// methods
-  public:
-    static void init();
+			//// methods
+			public:
+				static void init();
+				void paint();
+				static int getUsedHeight();
 
-    void paint();
+			//// attributes
+			public:
+				CFrameBuffer* frameBuffer;
 
-    static int getUsedHeight();
+				int x;
+				int y;
+				int width;
+				
+				static Font* font;
+		};
 
-  //// attributes
-  public:
-    CFrameBuffer* frameBuffer;
-
-    int x;
-    int y;
-    int width;
+		class TimeLine
+		{
+			//// construction / destruction
+			public:
+				TimeLine ( CFrameBuffer* frameBuffer , int x , int y , int width , int startX , int durationX);
     
-    static Font* font;
-  };
+				~TimeLine();
 
+			//// methods
+			public:
+				static void init();
+				void paint ( time_t startTime , int    duration);
+				void paintMark ( time_t startTime , int    duration , int    x , int    width);
+				void paintGrid();
+				void clearMark();
+				static int getUsedHeight();
 
-  class TimeLine
-  {
-  //// construction / destruction
-  public:
-    TimeLine ( CFrameBuffer* frameBuffer , int x , int y , int width , int startX , int durationX);
-    
-    ~TimeLine();
+			//// attributes
+			public:
+				CFrameBuffer* frameBuffer;
 
-  //// methods
-  public:
-    static void init();
+				int currentDuration;
 
-    void paint ( time_t startTime , int    duration);
+				int x;
+				int y;
+				int width;
+			      
+				static Font* fontTime;
+				static Font* fontDate;
 
-    void paintMark ( time_t startTime , int    duration , int    x , int    width);
+				int startX;
+				int durationX;
+		};
 
-    void paintGrid();
+		class ChannelEventEntry
+		{
+			//// construction / destruction
+			public:
+				ChannelEventEntry( const CChannelEvent* channelEvent, CFrameBuffer* frameBuffer, TimeLine* timeLine, Footer* footer, int x, int y, int width);
+				~ChannelEventEntry();
 
-    void clearMark();
+			//// methods
+			public:
+				static void init();
 
-    static int getUsedHeight();
+				bool isSelected
+				  ( time_t selectedTime
+				  ) const;
 
-  //// attributes
-  public:
-    CFrameBuffer* frameBuffer;
+				void paint
+				  ( bool isSelected
+				  , bool toggleColor
+				  );
 
-    int currentDuration;
+				static int getUsedHeight();
 
-    int x;
-    int y;
-    int width;
-  
-    static Font* fontTime;
-    static Font* fontDate;
+			//// attributes
+			public:
+				CChannelEvent channelEvent;
 
-    int startX;
-    int durationX;
-  };
+				CFrameBuffer* frameBuffer;
+				TimeLine* timeLine;
+				Footer* footer;
 
-  class ChannelEventEntry
-  {
-  //// construction / destruction
-  public:
-    ChannelEventEntry
-      ( const CChannelEvent* channelEvent
-      , CFrameBuffer* frameBuffer
-      , TimeLine* timeLine
-      , Footer* footer
-      , int x
-      , int y
-      , int width
-      );
+				int x;
+				int y;
+				int width;
+				static int separationLineHeight;
 
-  ~ChannelEventEntry();
+				static Font* font;
+		};
 
-  //// methods
-  public:
-    static void init();
+		typedef std::vector<ChannelEventEntry*> TCChannelEventEntries;
 
-    bool isSelected
-      ( time_t selectedTime
-      ) const;
+		class ChannelEntry
+		{
+			//// construction / destruction
+			public:
+				ChannelEntry
+				  ( const CZapitChannel* channel
+				  , int index
+				  , CFrameBuffer* frameBuffer
+				  , Footer* footer
+				  , CBouquetList* bouquetList
+				  , int x
+				  , int y
+				  , int width
+				  );
 
-    void paint
-      ( bool isSelected
-      , bool toggleColor
-      );
+				~ChannelEntry();
 
-    static int getUsedHeight();
+			//// methods
+			public:
+				static void init();
 
-  //// attributes
-  public:
-    CChannelEvent channelEvent;
+				void paint
+				  ( bool   isSelected
+				  , time_t selectedTime
+				  );
 
-    CFrameBuffer* frameBuffer;
-    TimeLine* timeLine;
-    Footer* footer;
+				static int getUsedHeight();
 
-    int x;
-    int y;
-    int width;
-    static int separationLineHeight;
+			//// attributes
+			public:
+				const CZapitChannel * channel;
+				std::string displayName;
+				int index;
 
-    static Font* font;
-  };
+				CFrameBuffer* frameBuffer;
+				Footer* footer;
+				CBouquetList* bouquetList;
 
-  typedef std::vector<ChannelEventEntry*> TCChannelEventEntries;
+				int x;
+				int y;
+				int width;
+				static int separationLineHeight;
 
-  class ChannelEntry
-  {
-  //// construction / destruction
-  public:
-    ChannelEntry
-      ( const CZapitChannel* channel
-      , int index
-      , CFrameBuffer* frameBuffer
-      , Footer* footer
-      , CBouquetList* bouquetList
-      , int x
-      , int y
-      , int width
-      );
+				static Font* font;
 
-    ~ChannelEntry();
+				TCChannelEventEntries      channelEventEntries;
+		};
 
-  //// methods
-  public:
-    static void init();
+		typedef std::vector<ChannelEntry*> TChannelEntries;
 
-    void paint
-      ( bool   isSelected
-      , time_t selectedTime
-      );
+		class Footer
+		{
+			//// construction / destruction
+			public:
+				Footer
+				  ( CFrameBuffer* frameBuffer
+				  , int x
+				  , int y
+				  , int width
+				  );
 
-    static int getUsedHeight();
+				~Footer();
 
-  //// attributes
-  public:
-    const CZapitChannel * channel;
-    std::string displayName;
-    int index;
+			//// methods
+			public:
+				static void init();
 
-    CFrameBuffer* frameBuffer;
-    Footer* footer;
-    CBouquetList* bouquetList;
+				void setBouquetChannelName
+				  ( const std::string& newBouquetName
+				  , const std::string& newChannelName
+				  );
 
-    int x;
-    int y;
-    int width;
-    static int separationLineHeight;
+				void paintEventDetails
+				  ( const std::string& description
+				  , const std::string& shortDescription
+				  );
 
-    static Font* font;
+				void paintButtons
+				  ( button_label* buttonLabels
+				  , int numberOfButtons
+				  );
 
-    TCChannelEventEntries      channelEventEntries;
-  };
+				static int getUsedHeight();
+	  
+			//// attributes
+			public:
+				CFrameBuffer* frameBuffer;
 
-  typedef std::vector<ChannelEntry*> TChannelEntries;
+				int x;
+				int y;
+				int width;
 
-  class Footer
-  {
-  //// construction / destruction
-  public:
-    Footer
-      ( CFrameBuffer* frameBuffer
-      , int x
-      , int y
-      , int width
-      );
+				static Font*  fontBouquetChannelName;
+				static Font*  fontEventDescription;     
+				static Font*  fontEventShortDescription;
+				static Font*  fontButtons;
 
-    ~Footer();
+				static int color;
 
-  //// methods
-  public:
-    static void init();
-
-    void setBouquetChannelName
-      ( const std::string& newBouquetName
-      , const std::string& newChannelName
-      );
-
-    void paintEventDetails
-      ( const std::string& description
-      , const std::string& shortDescription
-      );
-
-    void paintButtons
-      ( button_label* buttonLabels
-      , int numberOfButtons
-      );
-
-    static int getUsedHeight();
-  
-  //// attributes
-  public:
-    CFrameBuffer* frameBuffer;
-
-    int x;
-    int y;
-    int width;
-
-    static Font*  fontBouquetChannelName;
-    static Font*  fontEventDescription;     
-    static Font*  fontEventShortDescription;
-    static Font*  fontButtons;
-
-    static int color;
-
-    std::string currentBouquetName;
-    std::string currentChannelName;
-  };
+				std::string currentBouquetName;
+				std::string currentChannelName;
+		};
 
 	
-  class MenuTargetAddReminder : public CMenuTarget
-	{
-		public:
-			MenuTargetAddReminder ( EpgPlus* epgPlus);
+		class MenuTargetAddReminder : public CMenuTarget
+		{
+			public:
+				MenuTargetAddReminder ( EpgPlus* epgPlus);
 
-		public:
-			int exec ( CMenuTarget* parent , const std::string& actionKey);
+			public:
+				int exec ( CMenuTarget* parent , const std::string& actionKey);
 
-		private:
-			EpgPlus* epgPlus;
+			private:
+				EpgPlus * epgPlus;
 
-	};
+		};
 
-	class MenuTargetAddRecordTimer : public CMenuTarget
-	{
-		public:
-			MenuTargetAddRecordTimer ( EpgPlus* epgPlus);
+		class MenuTargetAddRecordTimer : public CMenuTarget
+		{
+			public:
+				MenuTargetAddRecordTimer ( EpgPlus* epgPlus);
 
-		public:
-			int exec ( CMenuTarget* parent , const std::string& actionKey);
+			public:
+				int exec ( CMenuTarget* parent , const std::string& actionKey);
 
-		private:
-			EpgPlus* epgPlus;
+			private:
+				EpgPlus * epgPlus;
 
-	};
+		};
 
-	class MenuTargetRefreshEpg : public CMenuTarget
-	{
-		public:
-			MenuTargetRefreshEpg ( EpgPlus* epgPlus);
+		class MenuTargetRefreshEpg : public CMenuTarget
+		{
+			public:
+				MenuTargetRefreshEpg ( EpgPlus* epgPlus);
 
-		public:
-			int exec ( CMenuTarget* parent , const std::string& actionKey);
+			public:
+				int exec ( CMenuTarget* parent , const std::string& actionKey);
 
-		private:
-			EpgPlus* epgPlus;
+			private:
+				EpgPlus * epgPlus;
 
-	};
+		};
 
-  class MenuOptionChooserSwitchSwapMode : public CMenuOptionChooser
-	{
-		public:
-			MenuOptionChooserSwitchSwapMode ( EpgPlus* epgPlus);
+		class MenuOptionChooserSwitchSwapMode : public CMenuOptionChooser
+		{
+			public:
+				MenuOptionChooserSwitchSwapMode ( EpgPlus* epgPlus);
 
-			virtual ~MenuOptionChooserSwitchSwapMode();
+				virtual ~MenuOptionChooserSwitchSwapMode();
 
-		public:
-      int exec
-			( CMenuTarget* parent);
+			public:
+				int exec(CMenuTarget* parent);
 
-		private:
-      int oldTimingMenuSettings;
-      TSwapMode oldSwapMode;
-			EpgPlus* epgPlus;
-  };
+			private:
+				int oldTimingMenuSettings;
+				TSwapMode oldSwapMode;
+				EpgPlus * epgPlus;
+		};
 
-  class MenuOptionChooserSwitchViewMode : public CMenuOptionChooser
-	{
-		public:
-			MenuOptionChooserSwitchViewMode ( EpgPlus* epgPlus);
+		class MenuOptionChooserSwitchViewMode : public CMenuOptionChooser
+		{
+			public:
+				MenuOptionChooserSwitchViewMode ( EpgPlus* epgPlus);
 
-			virtual ~MenuOptionChooserSwitchViewMode();
+				virtual ~MenuOptionChooserSwitchViewMode();
 
-		public:
-      int exec ( CMenuTarget* parent); 
+			public:
+				int exec ( CMenuTarget* parent); 
 
-		private:
-      int oldTimingMenuSettings;
-  };
+			private:
+				int oldTimingMenuSettings;
+		};
 
-	class MenuTargetSettings : public CMenuTarget
-	{
-		public:
-			MenuTargetSettings ( EpgPlus* epgPlus);
+		class MenuTargetSettings : public CMenuTarget
+		{
+			public:
+				MenuTargetSettings ( EpgPlus * epgPlus);
 
-		public:
-			int exec ( CMenuTarget* parent , const std::string& actionKey);
+			public:
+				int exec ( CMenuTarget * parent , const std::string& actionKey);
 
-		private:
-			EpgPlus* epgPlus;
-	};
+			private:
+				EpgPlus * epgPlus;
+		};
 
-	typedef time_t DurationSetting;
+		typedef time_t DurationSetting;
 
-/*
-	struct Settings
-	{
-		Settings ( bool doInit = true);
+		/*
+		struct Settings
+		{
+			Settings ( bool doInit = true);
 
-		virtual ~Settings();
+			virtual ~Settings();
 
-		FontSetting*    fontSettings;
-		SizeSetting*    sizeSettings;
-		DurationSetting durationSetting;
-	};
-  typedef std::map<int, Font*> Fonts;
-  typedef std::map<int, int>   Sizes;
-  static Font * fonts[NumberOfFontSettings];
-  static int  sizes[NumberOfSizeSettings];
-*/
+			FontSetting*    fontSettings;
+			SizeSetting*    sizeSettings;
+			DurationSetting durationSetting;
+		};
+		typedef std::map<int, Font*> Fonts;
+		typedef std::map<int, int>   Sizes;
+		static Font * fonts[NumberOfFontSettings];
+		static int  sizes[NumberOfSizeSettings];
+		*/
 
-  friend class EpgPlus::MenuOptionChooserSwitchSwapMode;
-  friend class EpgPlus::MenuOptionChooserSwitchViewMode;
-  friend class EpgPlus::ChannelEntry;
-  friend class EpgPlus::ChannelEventEntry;
+		friend class EpgPlus::MenuOptionChooserSwitchSwapMode;
+		friend class EpgPlus::MenuOptionChooserSwitchViewMode;
+		friend class EpgPlus::ChannelEntry;
+		friend class EpgPlus::ChannelEventEntry;
 
-//// construction / destruction
-public:
-  EpgPlus();
-  ~EpgPlus();
+	//// construction / destruction
+	public:
+		EpgPlus();
+		~EpgPlus();
 
-//// methods
-public:
-  void init();
-  void free();
+	//// methods
+	public:
+		void init();
+		void free();
 
-  int exec ( CChannelList* channelList , int selectedChannelIndex , CBouquetList* bouquetList); 
+		int exec ( CChannelList* channelList , int selectedChannelIndex , CBouquetList* bouquetList); 
 
-private:
-  static std::string getTimeString ( const time_t& time , const std::string& format);
+	private:
+		static std::string getTimeString ( const time_t& time , const std::string& format);
 
-  TCChannelEventEntries::const_iterator getSelectedEvent() const;
+		TCChannelEventEntries::const_iterator getSelectedEvent() const;
 
-  void createChannelEntries ( int selectedChannelEntryIndex);
-  void paint();
-  void paintChannelEntry ( int position);
-  void hide();
+		void createChannelEntries ( int selectedChannelEntryIndex);
+		void paint();
+		void paintChannelEntry ( int position);
+		void hide();
 
-//// properties
-private:
-  CFrameBuffer*   frameBuffer;
+	//// properties
+	private:
+		CFrameBuffer*   frameBuffer;
 
-  TChannelEntries displayedChannelEntries;
+		TChannelEntries displayedChannelEntries;
 
-  Header*         header;
-  TimeLine*       timeLine;
+		Header*         header;
+		TimeLine*       timeLine;
 
-  CChannelList*   channelList;
-  CBouquetList*   bouquetList;
+		CChannelList*   channelList;
+		CBouquetList*   bouquetList;
 
-  Footer*         footer;
+		Footer*         footer;
 
-  ChannelEntry*   selectedChannelEntry;
-  time_t          selectedTime;
+		ChannelEntry*   selectedChannelEntry;
+		time_t          selectedTime;
 
-  int             channelListStartIndex;
-  int             maxNumberOfDisplayableEntries; // maximal number of displayable entrys
+		int             channelListStartIndex;
+		int             maxNumberOfDisplayableEntries; // maximal number of displayable entrys
 
-  time_t          startTime;
-  time_t          firstStartTime;
-  static time_t   duration;
+		time_t          startTime;
+		time_t          firstStartTime;
+		static time_t   duration;
 
-  int             entryHeight;
+		int             entryHeight;
 
-  TViewMode       currentViewMode;
-  TSwapMode       currentSwapMode;
+		TViewMode       currentViewMode;
+		TSwapMode       currentSwapMode;
 
-  int             headerX;
-  int             headerY;
-  int             headerWidth;
+		int             headerX;
+		int             headerY;
+		int             headerWidth;
 
-  int             usableScreenWidth;
-  int             usableScreenHeight;
-  int             usableScreenX;
-  int             usableScreenY;
+		int             usableScreenWidth;
+		int             usableScreenHeight;
+		int             usableScreenX;
+		int             usableScreenY;
 
-  int             timeLineX;
-  int             timeLineY;
-  int             timeLineWidth;
+		int             timeLineX;
+		int             timeLineY;
+		int             timeLineWidth;
 
-  int             channelsTableX;
-  int             channelsTableY;
-  static int      channelsTableWidth;
-  int             channelsTableHeight;
+		int             channelsTableX;
+		int             channelsTableY;
+		static int      channelsTableWidth;
+		int             channelsTableHeight;
 
-  int             eventsTableX;
-  int             eventsTableY;
-  int             eventsTableWidth;
-  int             eventsTableHeight;
+		int             eventsTableX;
+		int             eventsTableY;
+		int             eventsTableWidth;
+		int             eventsTableHeight;
 
-  int             sliderX;
-  int             sliderY;
-  static int      sliderWidth;
-  int             sliderHeight;
-  static int      sliderBackColor;
-  static int      sliderKnobColor;
+		int             sliderX;
+		int             sliderY;
+		static int      sliderWidth;
+		int             sliderHeight;
+		static int      sliderBackColor;
+		static int      sliderKnobColor;
 
-  int             footerX;
-  int             footerY;
-  int             footerWidth;
+		int             footerX;
+		int             footerY;
+		int             footerWidth;
 
-  int             horGap1X;
-  int             horGap1Y;
-  int             horGap1Width;
-  int             horGap2X;
-  int             horGap2Y;
-  int             horGap2Width;
-  int             verGap1X;
-  int             verGap1Y;
-  int             verGap1Height;
-  int             verGap2X;
-  int             verGap2Y;
-  int             verGap2Height;
+		int             horGap1X;
+		int             horGap1Y;
+		int             horGap1Width;
+		int             horGap2X;
+		int             horGap2Y;
+		int             horGap2Width;
+		int             verGap1X;
+		int             verGap1Y;
+		int             verGap1Height;
+		int             verGap2X;
+		int             verGap2Y;
+		int             verGap2Height;
 
-  static int      horGap1Height;
-  static int      horGap2Height;
-  static int      verGap1Width;
-  static int      verGap2Width;
+		static int      horGap1Height;
+		static int      horGap2Height;
+		static int      verGap1Width;
+		static int      verGap2Width;
 
-  static int      horGap1Color;
-  static int      horGap2Color;
-  static int      verGap1Color;
-  static int      verGap2Color;
+		static int      horGap1Color;
+		static int      horGap2Color;
+		static int      verGap1Color;
+		static int      verGap2Color;
 
-  bool            refreshAll;
-  bool            refreshFooterButtons;
+		bool            refreshAll;
+		bool            refreshFooterButtons;
 };
 
 class CEPGplusHandler : public CMenuTarget
 {
 	public:
-		int exec( CMenuTarget* parent,  const std::string &actionKey);
+		int exec( CMenuTarget * parent,  const std::string &actionKey);
 };
 
 #endif

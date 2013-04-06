@@ -14,7 +14,7 @@ audiomenu.clockrec Record Time
 audiomenu.dolbydigital Dolby Digital
 audiomenu.hdmi_dd Dolby Digital
 audiomenu.hdmi_dd_source HDMI DD Source
-audiomenu.head Audio Settings
+audiomenu.head Audio settings
 audiomenu.lirc lirc
 audiomenu.monoleft mono left
 audiomenu.monoright mono right
@@ -715,18 +715,18 @@ mainmenu.sleeptimer SleepTimer
 mainmenu.tvmode TV-Mode
 mainsettings.audio Audio Setup
 mainsettings.head Settings
-mainsettings.keybinding Key Setup
+mainsettings.keybinding Remote-Control settings
 mainsettings.language Language
 mainsettings.lcd VFD-Display
 mainsettings.misc Misc settings
-mainsettings.network Network
+mainsettings.network Network settings
 mainsettings.osd OSD settings
-mainsettings.recording Recording
+mainsettings.recording Recording settings
 mainsettings.savesettingsnow save settings now
 mainsettings.savesettingsnow_hint Saving settings,\nplease wait...
-mainsettings.streaming Movieplayer
+mainsettings.streaming Movieplayer settings
 mainsettings.timezone Timezone
-mainsettings.video Video Setup
+mainsettings.video Video settings
 menu.back back
 menu.navi Navi
 menu.enter Enter
@@ -759,6 +759,7 @@ miscsettings.epg_old_events EPG remove after (std.)
 miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after they timed out?
 miscsettings.epg_old_events_hint2 Set in hours
 miscsettings.epg_save Save/Restore epg on reboot
+miscsettings.epgplus_show_logos Channel Logo(EPGPlus)
 miscsettings.fb_destination Expert! Boot-Console
 miscsettings.general General
 servicemenu.tuner Tuner Setup
@@ -938,9 +939,9 @@ movieplayer.defdir start dir.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
 movieplayer.dvdplayback DVD
-movieplayer.records Records Browser
-movieplayer.movies Movies Browser
-movieplayer.fileplayback Files Browser
+movieplayer.records Records Player
+movieplayer.movies Movies Player
+movieplayer.fileplayback File Player
 movieplayer.showtshelp Help
 movieplayer.goto Jump to ...
 movieplayer.goto.h1 = -> absolute jump

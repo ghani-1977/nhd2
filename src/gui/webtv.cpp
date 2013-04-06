@@ -39,6 +39,7 @@
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
+#define DEFAULT_IPTV_FILE		CONFIGDIR "iptv.tv"
 
 extern cVideo * videoDecoder;
 extern t_channel_id live_channel_id;		// zapit.cpp
@@ -48,7 +49,7 @@ extern CZapitChannel * live_channel;		// zapit.cpp
 
 extern CPictureViewer * g_PicViewer;
 
-CWebTV::CWebTV()
+CWebTV::CWebTV(int Mode)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	
@@ -56,6 +57,8 @@ CWebTV::CWebTV()
 	liststart = 0;
 	
 	parser = NULL;
+	
+	mode = Mode;
 }
 
 CWebTV::~CWebTV()
@@ -66,7 +69,7 @@ CWebTV::~CWebTV()
 		parser = NULL;
 	}
 	
-	for(unsigned int count = 0;count < channels.size();count++)
+	for(unsigned int count = 0; count < channels.size(); count++)
 	{
 		delete channels[count];
 	}
@@ -75,7 +78,10 @@ CWebTV::~CWebTV()
 
 int CWebTV::exec()
 {
-	readXml();
+	if(mode == WEBTV)
+		readXml();
+	else if(mode = IPTV)
+		readIPTVlist();
 	
 	return Show();
 }
@@ -127,7 +133,7 @@ bool CWebTV::readXml()
 				
 				bool ChLocked = locked ? (strcmp(locked, "1") == 0) : false;
 				
-				// fill
+				// fill webtv list
 				Channels_list = new webtv_channels();
 				
 				Channels_list->title = title;
@@ -156,6 +162,60 @@ bool CWebTV::readXml()
 	}
 	
 	xmlFreeDoc(parser);
+	
+	return false;
+}
+
+//TODO:
+bool CWebTV::readIPTVlist()
+{
+	/* set our iptv list */
+	CFile file;
+	
+	for(unsigned int count = 0; count < IPTVChannels.size(); count++)
+	{
+		delete IPTVChannels[count];
+	}
+	IPTVChannels.clear();
+	
+	webtv_channels * IPTVChannels_list = new webtv_channels();
+	
+	std::string name, service, description;
+	
+	FILE * f = fopen(DEFAULT_IPTV_FILE, "r");
+	if (!f)
+	{
+		return false;
+	}
+	
+	while (1)
+	{
+		char line[1024];
+		if (!fgets(line, 1024, f))
+			break;
+		
+		size_t len = strlen(line);
+		
+		// skip lines with less than one char
+		if (len < 2)
+			continue;
+		
+		/* strip newline */
+		line[--len] = 0;
+		
+		/* strip carriage return (when found) */
+		if (line[len - 1] == '\r') 
+			line[--len] = 0;
+		
+		if (!strncmp(line, "#NAME ", 6))
+			name = line + 6;
+		else if (strncmp(line, "#SERVICE ", 9) == 0)
+			service = line + 9;
+		else if (strncmp(line, "#DESCRIPTION ", 13) == 0)
+			description = line + 12;
+	}
+	
+	fclose(f);
 	
 	return false;
 }
