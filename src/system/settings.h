@@ -302,8 +302,6 @@ struct SNeutrinoSettings
 	int key_pip;
 	int key_pip_subchannel;
 
-	int menu_left_exit;
-
 	int mpkey_rewind;
 	int mpkey_forward;
 	int mpkey_pause;

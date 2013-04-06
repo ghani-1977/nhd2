@@ -612,7 +612,7 @@ inetradio.name Internetradio
 infoviewer.epgnotload EPG not loaded....
 infoviewer.epgwait waiting for EPG...
 infoviewer.eventlist Event-List
-infoviewer.languages Audio
+infoviewer.languages Audio/Subtitle
 infoviewer.motor_moving Antenna positioning
 infoviewer.next next
 infoviewer.nocurrent No info for current program available
@@ -1460,7 +1460,7 @@ hddmenu.hddmounted HDD Mounted
 hddmenu.hddmountfailed HDD Mount Failed
 hddmenu.hddumount HDD Umount
 hddmenu.hddumounted HDD Umounted
-mainmenu.mediaplayer Media Player
+mainmenu.mediaplayer Media Center
 osd.timezone Time Zone
 osd.corners OSD Corners
 osd.roundedcornersoff angular
@@ -1522,7 +1522,9 @@ helptext.miscsettingschannellist Here you can set up channel lists.
 helptext.miscsettingsepg Here you can set up EPG.
 helptext.miscsettingsfilebrowser Here you can set up the filebrowser.
 helptext.miscsettingszapitsetup Here you can set up the start-program and mode.
-helptext.miscsettingspsisetup Here you can set up video contrast
+helptext.miscsettingspsisetup Here you can set up video contrast.
+helptext.timerlist Here you can manage your timerlist.
+helptext.features Here you can start features.
 
 miscsettings.logosdir Sender logos Dir
 

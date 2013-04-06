@@ -613,7 +613,7 @@ inetradio.name Internetradio
 infoviewer.epgnotload Informationen noch nicht geladen...
 infoviewer.epgwait Warte auf EPG-Informationen...
 infoviewer.eventlist EPG/Vorschau
-infoviewer.languages Tonwahl
+infoviewer.languages Tonwahl/Untertitel
 infoviewer.motor_moving Antennenpositionierung
 infoviewer.next später
 infoviewer.nocurrent Keine Info zu laufendem Programm
@@ -621,7 +621,7 @@ infoviewer.noepg Keine EPG-Information verfügbar
 infoviewer.notavailable Kanal (zur Zeit) nicht verfügbar.
 infoviewer.now jetzt
 infoviewer.selecttime Startzeiten
-infoviewer.features Features
+infoviewer.features Erweiterungen
 infoviewer.subchan_disp_pos Unterkanalanzeige
 infoviewer.subservice Bildregie
 infoviewer.waittime Warte auf Uhrzeit...
@@ -712,10 +712,10 @@ mainmenu.scripts Skripte
 mainmenu.service Service
 mainmenu.settings Einstellungen
 mainmenu.shutdown Ausschalten
-mainmenu.sleeptimer SleepTimer
+mainmenu.sleeptimer Ausschalt Timer
 mainmenu.tvmode TV-Modus
 mainsettings.audio Audio Einstellungen
-mainsettings.head Einstellungen
+mainsettings.head Einstellugen
 mainsettings.keybinding Tasten Einstellungen
 mainsettings.language Sprache
 mainsettings.lcd VFD-Display
@@ -1462,7 +1462,7 @@ hddmenu.hddmounted HDD Mounted
 hddmenu.hddmountfailed HDD Mount Failed
 hddmenu.hddumount HDD Umount
 hddmenu.hddumounted HDD Umounted
-mainmenu.mediaplayer Media Player
+mainmenu.mediaplayer Media Center
 osd.timezone Time Zone
 osd.corners OSD Corners
 osd.roundedcornersoff eckig
@@ -1525,6 +1525,8 @@ helptext.miscsettingsepg Hier können Sie EPG einstellen.
 helptext.miscsettingsfilebrowser Hier können Sie die Filebrowser einstellen
 helptext.miscsettingszapitsetup Hier können Sie das Start Program und mode fest einstellen.
 helptext.miscsettingspsisetup Hier können Sie Video Kontrast einstellen.
+helptext.timerlist Hier können Sie Ihre Timerliste verwalten.
+helptext.features Hier können Sie die Erweiterungen starten.
 
 miscsettings.logosdir Sender logos Dir
 

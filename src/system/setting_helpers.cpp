@@ -56,6 +56,8 @@
 #include <daemonc/remotecontrol.h>
 #include <xmlinterface.h>
 
+#include "debug.h"
+
 #include <audio_cs.h>
 #include <video_cs.h>
 #include <dmx_cs.h>
@@ -276,7 +278,7 @@ bool CLcdNotifier::changeNotify(const neutrino_locale_t, void * Data)
 {
 	int state = *(int *)Data;
 
-	printf("ClcdNotifier: state: %d\n", state);
+	dprintf(DEBUG_NORMAL, "ClcdNotifier: state: %d\n", state);
 	
 	CVFD::getInstance()->setPower(state);
 	
@@ -513,7 +515,7 @@ bool CIPChangeNotifier::changeNotify(const neutrino_locale_t locale, void * Data
 #endif
 		CNeutrinoApp::getInstance()->networkConfig.readConfig(g_settings.ifname);
 		//readNetworkSettings(); //???
-		printf("CNetworkSetup::changeNotify: using %s, static %d\n", g_settings.ifname, CNeutrinoApp::getInstance()->networkConfig.inet_static);
+		dprintf(DEBUG_NORMAL, "CNetworkSetup::changeNotify: using %s, static %d\n", g_settings.ifname, CNeutrinoApp::getInstance()->networkConfig.inet_static);
 
 		changeNotify(LOCALE_NETWORKMENU_DHCP, &CNeutrinoApp::getInstance()->networkConfig.inet_static);
 
@@ -563,7 +565,7 @@ bool CRecAPIDSettingsNotifier::changeNotify(const neutrino_locale_t, void *)
 // apid changer exec
 int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 {
-	//printf("CAPIDChangeExec exec: %s\n", actionKey.c_str());
+	dprintf(DEBUG_INFO, "CAPIDChangeExec exec: %s\n", actionKey.c_str());
 
 	unsigned int sel = atoi(actionKey.c_str());
 	
@@ -578,7 +580,7 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 // txt/dvb sub change exec
 int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 {
-	printf("CSubtitleChangeExec::exec: action %s\n", actionKey.c_str());
+	dprintf(DEBUG_INFO, "CSubtitleChangeExec::exec: action %s\n", actionKey.c_str());
 	
 	if(actionKey == "off") 
 	{
@@ -613,7 +615,8 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		int page = strtol(ptr, NULL, 16);
 		ptr = strchr(ptr, ':');
 		ptr++;
-		printf("CSubtitleChangeExec::exec: TTX, pid %x page %x lang %s\n", pid, page, ptr);
+		
+		dprintf(DEBUG_NORMAL, "CSubtitleChangeExec::exec: TTX, pid %x page %x lang %s\n", pid, page, ptr);
 		
 		dvbsub_stop();
 		//dvbsub_close();
@@ -632,7 +635,7 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 // nvod change exec
 int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 {
-	//printf("CNVODChangeExec exec: %s\n", actionKey.c_str());
+	dprintf(DEBUG_INFO, "CNVODChangeExec exec: %s\n", actionKey.c_str());
 	
 	unsigned sel= atoi(actionKey.c_str());
 	g_RemoteControl->setSubChannel(sel);
@@ -646,7 +649,8 @@ int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 // stream features changge exec (teletext/plugins)
 int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 {
-	//printf("CStreamFeaturesChangeExec exec: %s\n", actionKey.c_str());
+	dprintf(DEBUG_INFO, "CStreamFeaturesChangeExec exec: %s\n", actionKey.c_str());
+	
 	int sel= atoi(actionKey.c_str());
 
 	if(parent != NULL)
@@ -701,11 +705,11 @@ void testNetworkSettings(const char* ip, const char* netmask, const char* broadc
 		netGetNameserver(our_nameserver);
 	}
 
-	printf("testNw IP       : %s\n", our_ip);
-	printf("testNw Netmask  : %s\n", our_mask);
-	printf("testNw Broadcast: %s\n", our_broadcast);
-	printf("testNw Gateway: %s\n", our_gateway);
-	printf("testNw Nameserver: %s\n", our_nameserver);
+	dprintf(DEBUG_NORMAL, "testNw IP       : %s\n", our_ip);
+	dprintf(DEBUG_NORMAL, "testNw Netmask  : %s\n", our_mask);
+	dprintf(DEBUG_NORMAL, "testNw Broadcast: %s\n", our_broadcast);
+	dprintf(DEBUG_NORMAL, "testNw Gateway: %s\n", our_gateway);
+	dprintf(DEBUG_NORMAL, "testNw Nameserver: %s\n", our_nameserver);
 
 	text = our_ip;
 	text += ": ";
@@ -842,7 +846,8 @@ bool CTZChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
 {
 	bool found = false;
 	std::string name, zone;
-	printf("CTZChangeNotifier::changeNotify: %s\n", (char *) Data);
+	
+	dprintf(DEBUG_NORMAL, "CTZChangeNotifier::changeNotify: %s\n", (char *) Data);
 
         xmlDocPtr parser = parseXmlFile("/etc/timezone.xml");
         if (parser != NULL) 
@@ -868,9 +873,12 @@ bool CTZChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
 
 	if(found) 
 	{
-		printf("CTZChangeNotifier::changeNotify: Timezone: %s -> %s\n", name.c_str(), zone.c_str());
+		dprintf(DEBUG_NORMAL, "CTZChangeNotifier::changeNotify: Timezone: %s -> %s\n", name.c_str(), zone.c_str());
+		
 		std::string cmd = "cp /usr/share/zoneinfo/" + zone + " /etc/localtime";
-		printf("exec %s\n", cmd.c_str());
+		
+		dprintf(DEBUG_NORMAL, "exec %s\n", cmd.c_str());
+		
 		system(cmd.c_str());
 		cmd = ":" + zone;
 		setenv("TZ", cmd.c_str(), 1);
@@ -939,10 +947,12 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 
 			if(ret == 0 && s.f_type != 0x72b6L/*jffs2*/ && s.f_type != 0x5941ff53L /*yaffs2*/)
 			{ 
-				const char backup_sh[] = "/bin/backup.sh";
+				const char backup_sh[] = "backup.sh";
 
 				sprintf(fname, "%s %s", backup_sh, fileBrowser.getSelectedFile()->Name.c_str());
-				printf("CDataResetNotifier::exec: executing %s\n", fname);
+				
+				dprintf(DEBUG_NORMAL, "CDataResetNotifier::exec: executing %s\n", fname);
+				
 				system(fname);
 			} 
 			else
@@ -960,10 +970,12 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 			{
 				char  fname[256];
 				
-				const char restore_sh[] = "/bin/restore.sh";
+				const char restore_sh[] = "restore.sh";
 				
 				sprintf(fname, "%s %s", restore_sh, fileBrowser.getSelectedFile()->Name.c_str());
-				printf("CDataResetNotifier::exec: executing %s\n", fname);
+				
+				dprintf(DEBUG_NORMAL, "CDataResetNotifier::exec: executing %s\n", fname);
+				
 				system(fname);
 			}
 			
@@ -996,7 +1008,7 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 	{
 		if(strlen(g_settings.pref_lang[i])) 
 		{
-			printf("setLanguages: %d: %s\n", i, g_settings.pref_lang[i]);
+			dprintf(DEBUG_NORMAL, "setLanguages: %d: %s\n", i, g_settings.pref_lang[i]);
 			
 			std::string temp(g_settings.pref_lang[i]);
 			for(it = iso639.begin(); it != iso639.end(); it++) 
@@ -1004,7 +1016,9 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 				if(temp == it->second) 
 				{
 					v_languages.push_back(it->first);
-					printf("setLanguages: adding %s\n", it->first.c_str());
+					
+					dprintf(DEBUG_NORMAL, "setLanguages: adding %s\n", it->first.c_str());
+					
 					found = true;
 				}
 			}
@@ -1029,7 +1043,7 @@ bool CScanSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	std::vector<CMenuItem*>::iterator it;
 	int FeMode = *((int*) Data);
 	
-	printf("CScanSetupNotifier::changeNotify: Femode:%d\n", FeMode);
+	dprintf(DEBUG_NORMAL, "CScanSetupNotifier::changeNotify: Femode:%d\n", FeMode);
 
 	if ( (FeMode == FE_NOTCONNECTED) || (FeMode == FE_LOOP) ) 
 	{
@@ -1086,19 +1100,32 @@ void CScanSetupNotifier::addItem(int list, CMenuItem* item)
 // volume conf
 bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionName __attribute__((unused)), void *data)
 {
-	int current_percent = *(int *) data;
+#if 1 
+	int percent = *(int *) data;
+
+	g_Zapit->setVolumePercent(percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
+
+	*(int *) data = percent;
+#else
+	int percent = *(int *) data;
 	
-	//unsigned int vol = 0;
+	unsigned int vol = audioDecoder->getVolume();
 	
-	//g_Zapit->getVolume(&vol, &vol);
+	g_Zapit->getVolume(&vol, &vol);
 	
 	/* keep resulting volume = (vol * percent)/100 not more than 115 */
-	//if (vol * percent > 11500)
-	//	percent = 11500 / vol;
+	if (vol * percent > 11500)
+		percent = 11500 / vol;
 
-	g_Zapit->setVolumePercent(current_percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
-
-	//*(int *) data = percent;
+	//printf("CVolume::changeNotify: percent %d\n", percent);
+	
+	//g_Zapit->SetPidVolume(live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid, percent);
+	//g_Zapit->SetVolumePercent(percent);
+	
+	g_Zapit->setVolumePercent(percent, live_channel_id, g_RemoteControl->current_PIDs.PIDs.selected_apid);
+	
+	*(int *) data = percent;
+#endif
 	
 	return true;
 }

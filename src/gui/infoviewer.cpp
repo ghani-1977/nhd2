@@ -1405,8 +1405,8 @@ void CInfoViewer::showButton_SubServices ()
 		
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
 	
-        	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2 + asize + 2, BoxEndY- ICON_Y_1 );
-        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_YELLOW_WIDTH*/icon_w + 2, 
+        	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2, BoxEndY- ICON_Y_1 );
+        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, 
 		BoxEndY+2, asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 }
@@ -1677,7 +1677,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 		
 				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, BoxEndY - ICON_Y_1 );
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	  		}
 		}
 
@@ -1804,7 +1804,7 @@ void CInfoViewer::showButton_Audio()
 
   	if (count > 0) 
 	{
-		int sx = ChanInfoX + 2 + /*NEUTRINO_ICON_BUTTON_RED_WIDTH*/icon_w + 2 + asize + 2 + /*NEUTRINO_ICON_BUTTON_GREEN_WIDTH*/icon_w + 2;
+		int sx = ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2;
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}

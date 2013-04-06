@@ -146,7 +146,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 
 		/* neutrino_menue.cpp */
                 bool showUserMenu(int button);
-                bool getNVODMenu(CMenuWidget* menu);
+                bool getNVODMenu(CMenuWidget * menu);
 
 		/* neutrino.cpp */
 		void firstChannel();
@@ -243,7 +243,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		int run(int argc, char **argv);
 
 		//callback stuff only....
-		int exec(CMenuTarget* parent, const std::string & actionKey);
+		int exec(CMenuTarget * parent, const std::string & actionKey);
 
 		//onchange
 		bool changeNotify(const neutrino_locale_t OptionName, void *);
@@ -253,6 +253,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		int getMode() { return mode; }
 		int getLastMode() { return lastMode; }
 		bool isMuted() { return current_muted; }
+		
 		/* recording flag */
 		int recordingstatus;
 		/* timeshift flag */

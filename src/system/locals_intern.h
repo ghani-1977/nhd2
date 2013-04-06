@@ -1536,6 +1536,8 @@ const char * locale_real_names[] = {
 	"helptext.miscsettingsfilebrowser",
 	"helptext.miscsettingszapitsetup",
 	"helptext.miscsettingspsisetup",
+	"helptext.timerlist",
+	"helptext.features",
 	
 	"miscsettings.logosdir",
 	

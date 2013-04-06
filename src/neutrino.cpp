@@ -732,7 +732,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// misc keys
 	g_settings.key_unlock = configfile.getInt32( "key_unlock", CRCInput::RC_setup );
-	g_settings.menu_left_exit = configfile.getInt32( "menu_left_exit", 0 );
 
 	// media keys
 	g_settings.key_recordsbrowser = configfile.getInt32( "key_recordsbrowser", CRCInput::RC_nokey );
@@ -885,7 +884,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
-	g_settings.current_volume = configfile.getInt32("current_volume", 75);
+	g_settings.current_volume = configfile.getInt32("current_volume", 100);
 	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "2" ).c_str() );
 	// END MISC OPTS
 
@@ -1196,7 +1195,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_timeshift", g_settings.key_timeshift );
 	
 	// misc keys
-	configfile.setInt32( "menu_left_exit", g_settings.menu_left_exit );
 	configfile.setInt32( "key_unlock", g_settings.key_unlock );
 	
 	// media keys
@@ -4088,17 +4086,17 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			if ( msg == CRCInput::RC_plus ) 
 			{ 
-				if (g_settings.current_volume /*vol*/ < 100 - a_step )
-					g_settings.current_volume /*vol*/ += a_step;
+				if (g_settings.current_volume < 100 - a_step )
+					g_settings.current_volume += a_step;
 				else
-					g_settings.current_volume /*vol*/ = 100;
+					g_settings.current_volume = 100;
 			}
 			else if ( msg == CRCInput::RC_minus ) 
 			{ 
-				if (g_settings.current_volume /*vol*/ > a_step)
-					g_settings.current_volume /*vol*/ -= a_step;
+				if (g_settings.current_volume > a_step)
+					g_settings.current_volume -= a_step;
 				else
-					g_settings.current_volume /*vol*/ = 0;
+					g_settings.current_volume = 0;
 			}
 			else 
 			{
@@ -4106,7 +4104,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 				break;
 			}
 
-			setvol(g_settings.current_volume /*vol*/);
+			setvol(g_settings.current_volume);
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::ShowVolume(true);
@@ -4130,9 +4128,9 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 		if (bDoPaint) 
 		{
-			if(vol != g_settings.current_volume /*audioDecoder->getVolume()*/) 
+			if(vol != g_settings.current_volume) 
 			{
-				vol = g_settings.current_volume /*audioDecoder->getVolume()*/;
+				vol = g_settings.current_volume;
 
 				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
 
@@ -4154,7 +4152,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		}
 
 #if ENABLE_LCD
-		CVFD::getInstance()->showVolume(g_settings.current_volume /*vol*/);
+		CVFD::getInstance()->showVolume(g_settings.current_volume);
 #endif
 
 		if (msg != CRCInput::RC_timeout) 
@@ -4868,45 +4866,6 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 		return menu_return::RETURN_REPAINT;
 	}
-	#if 0
-	else if(actionKey == "loadkeys") 
-	{
-		parent->hide();
-		
-		CFileBrowser fileBrowser;
-		CFileFilter fileFilter;
-		fileFilter.addFilter("conf");
-		fileBrowser.Filter = &fileFilter;
-		
-		if (fileBrowser.exec("/var/tuxbox/config") == true) 
-		{
-			loadKeys(fileBrowser.getSelectedFile()->Name.c_str());
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: new keys: %s\n", fileBrowser.getSelectedFile()->Name.c_str());
-		}
-		
-		return menu_return::RETURN_REPAINT;
-	}
-	else if(actionKey == "savekeys") 
-	{
-		parent->hide();
-		
-		CFileBrowser fileBrowser;
-		fileBrowser.Dir_Mode = true;
-		
-		if (fileBrowser.exec("/var/tuxbox") == true) 
-		{
-			char  fname[256] = "keys.conf", sname[256];
-			CStringInputSMS * sms = new CStringInputSMS(LOCALE_EXTRA_SAVEKEYS, fname, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789. ");
-			sms->exec(NULL, "");
-			sprintf(sname, "%s/%s", fileBrowser.getSelectedFile()->Name.c_str(), fname);
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: save keys: %s\n", sname);
-			saveKeys(sname);
-			delete sms;
-		}
-		
-		return menu_return::RETURN_REPAINT;
-	}
-	#endif
 	else if(actionKey == "clearSectionsd")
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"clear EPG Cache..." );
@@ -4977,6 +4936,16 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 
+		return menu_return::RETURN_REPAINT;	
+	}
+	else if(actionKey == "features")
+	{
+		parent->hide();
+		
+		StopSubtitles();
+		showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
+		StartSubtitles();
+				
 		return menu_return::RETURN_REPAINT;	
 	}
 

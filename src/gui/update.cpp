@@ -62,6 +62,9 @@
 #include <sys/ioctl.h>
 #include <dirent.h>
 
+#include <sys/stat.h>
+#include <sys/vfs.h>
+
 #include <fstream>
 
 #include <system/debug.h>
@@ -77,16 +80,6 @@
 
 #define MTD_OF_WHOLE_IMAGE             		0
 
-//FIXME: add the right mtd part (meaned is roofs, on some boxes this contains also kernel) for your boxtype bevor u use this
-//NOTE: be carefull with this
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
-#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd5"
-#elif defined (PLATFORM_GIGABLUE_800SE)
-#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd0"
-#else
-#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd5"
-#endif
-
 
 CFlashUpdate::CFlashUpdate(int uMode)
 	:CProgressWindow()
@@ -94,6 +87,30 @@ CFlashUpdate::CFlashUpdate(int uMode)
 	updateMode = uMode;
 	
 	setTitle(LOCALE_FLASHUPDATE_HEAD);
+	
+#if defined (PLATFORM_CUBEREVO_MINI2)	
+	sysfs = CMTDInfo::getInstance()->findMTDsystem("nor.kernel_root");
+#elif defined (PLATFORM_GIGABLUE)
+	sysfs = CMTDInfo::getInstance()->findMTDsystem("rootfs");
+#else
+	sysfs = CMTDInfo::getInstance()->findMTDsystem("");
+#endif
+
+	dprintf(DEBUG_NORMAL, "Mtd partition to update: %s\n", sysfs.c_str());
+	
+	// check rootfs, allow flashing only when rootfs is jffs2/yaffs2/squashfs
+	struct statfs s;
+	
+	if (::statfs("/", &s) == 0) 
+	{
+		if (s.f_type == 0xEF53L || s.f_type == 0x6969L)
+			allow_flash = false;
+		else if (s.f_type == 0x72b6L/*jffs2*/ || s.f_type == 0x5941ff53L /*yaffs2*/ || s.f_type == 0x73717368L /*squashfs*/ || s.f_type == 0x24051905L/*ubifs*/)
+			allow_flash = true;
+	}
+	else
+		//printf("cant check rootfs\n");
+		allow_flash = false;
 }
 
 class CUpdateMenuTarget : public CMenuTarget
@@ -186,6 +203,8 @@ bool CFlashUpdate::selectHttpImage(void)
 		if (httpTool.downloadFile(url, gTmpPath LIST_OF_UPDATES_LOCAL_FILENAME, 20))
 		{
 			std::ifstream in(gTmpPath LIST_OF_UPDATES_LOCAL_FILENAME);
+			
+			bool enabled = true; 
 
 			while (in >> url >> version >> md5 >> std::ws)
 			{
@@ -208,8 +227,12 @@ bool CFlashUpdate::selectHttpImage(void)
 				description += versionInfo.getTime();
 				
 				descriptions.push_back(description); /* workaround since CMenuForwarder does not store the Option String itself */
+				
+				//if( versionInfo.getType() < '3' && !allow_flash)
+				if(!allow_flash && (versionInfo.snapshot < '3'))
+					enabled = false;
 
-				SelectionWidget.addItem(new CMenuForwarderNonLocalized(names[i].c_str(), true, descriptions[i].c_str(), new CUpdateMenuTarget(i, &selected), NULL, NULL, NEUTRINO_ICON_UPDATE_SMALL ));
+				SelectionWidget.addItem(new CMenuForwarderNonLocalized(names[i].c_str(), enabled, descriptions[i].c_str(), new CUpdateMenuTarget(i, &selected), NULL, NULL, NEUTRINO_ICON_UPDATE_SMALL ));
 				i++;
 			}
 		}
@@ -314,14 +337,17 @@ bool CFlashUpdate::checkVersion4Update()
 		CFileBrowser UpdatesBrowser;
 		CFileFilter UpdatesFilter; 
 		
-		UpdatesFilter.addFilter(FILEBROWSER_UPDATE_FILTER);
+		if(allow_flash) 
+			UpdatesFilter.addFilter(FILEBROWSER_UPDATE_FILTER);
 		UpdatesFilter.addFilter("bin");
 		UpdatesFilter.addFilter("tar");
 		UpdatesFilter.addFilter("gz");
+		UpdatesFilter.addFilter("txt");
 
 		UpdatesBrowser.Filter = &UpdatesFilter;
 
 		CFile * CFileSelected = NULL;
+		
 		if (!(UpdatesBrowser.exec(g_settings.update_dir)))
 			return false;
 
@@ -355,6 +381,10 @@ bool CFlashUpdate::checkVersion4Update()
 
 			if( (!strcmp(ptr, "bin")) || (!strcmp(ptr, "tar")) || (!strcmp(ptr, "gz"))) 
 				fileType = 'A';
+			else if(!strcmp(ptr, "txt")) 
+				fileType = 'T';
+			else if(!allow_flash) 
+				return false;
 			else 
 				fileType = 0;
 
@@ -362,9 +392,10 @@ bool CFlashUpdate::checkVersion4Update()
 		}
 
 		strcpy(msg, g_Locale->getText( (fileType < '3')? LOCALE_FLASHUPDATE_SQUASHFS_NOVERSION : LOCALE_FLASHUPDATE_NOVERSION ));
+		msg_body = (fileType < '3')? LOCALE_FLASHUPDATE_FLASHMSGBOX : LOCALE_FLASHUPDATE_PACKAGEMSGBOX;
 	}
 	
-	return (ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, msg, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) == CMessageBox::mbrYes); // UTF-8
+	return ( (fileType == 'T')? true : ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, msg, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NEUTRINO_ICON_UPDATE) == CMessageBox::mbrYes); // UTF-8
 }
 
 int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
@@ -372,7 +403,16 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	if(parent)
 		parent->hide();
 
-	paint();
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
+		paint();
+	
+	// get mtd part to update
+	if(sysfs.size() < 8) 
+	{
+		ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_CANTOPENMTD));
+		hide();
+		return menu_return::RETURN_REPAINT;
+	}
 
 	if(!checkVersion4Update()) 
 	{
@@ -386,9 +426,12 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	CVFD::getInstance()->setMode(CLCD::MODE_PROGRESSBAR2);	
 #endif // VFD_UPDATE
 
-	showGlobalStatus(19);
-	paint();
-	showGlobalStatus(20);
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
+	{
+		showGlobalStatus(19);
+		paint();
+		showGlobalStatus(20);
+	}
 
 	// check image version
 	if(updateMode == UPDATEMODE_INTERNET) //internet-update
@@ -407,19 +450,22 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		filename = std::string(fullname);
 	}
 
-	showGlobalStatus(40);
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
+		showGlobalStatus(40);
 
 	CFlashTool ft;
 	
 	// flash image
 	if(fileType < '3') 
 	{
-		ft.setMTDDevice(MTD_DEVICE_OF_UPDATE_PART);
+		//ft.setMTDDevice(MTD_DEVICE_OF_UPDATE_PART);
+		ft.setMTDDevice(sysfs);
 		ft.setStatusViewer(this);
 	}
 
-	// MD5summ check
-	showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_MD5CHECK)); // UTF-8
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
+		// MD5summ check
+		showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_MD5CHECK)); // UTF-8
 	
 	if((updateMode == UPDATEMODE_INTERNET) && !ft.check_md5(filename, file_md5)) 
 	{
@@ -443,7 +489,8 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		}
 	}
 
-	showGlobalStatus(60);
+	if(updateMode == UPDATEMODE_INTERNET) //internet-update
+		showGlobalStatus(60);
 
 	// flash/install
 	dprintf(DEBUG_NORMAL, "[update] filename %s type %c\n", filename.c_str(), fileType);
@@ -479,48 +526,28 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		ft.reboot();
 		sleep(20000);
 	}
+	else if(fileType == 'T') // display file contents
+	{
+		FILE* fd = fopen(filename.c_str(), "r");
+		if(fd) 
+		{
+			char * buffer;
+			off_t filesize = lseek(fileno(fd), 0, SEEK_END);
+			lseek(fileno(fd), 0, SEEK_SET);
+			buffer =(char *) malloc(filesize+1);
+			fread(buffer, filesize, 1, fd);
+			fclose(fd);
+			buffer[filesize] = 0;
+			ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, buffer, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
+			free(buffer);
+		}
+	}
 	else // package 
 	{
 		char cmd[100];
+		const char install_sh[] = "install.sh";
 		
-		// extract
-		sprintf(cmd, "tar zxvf %s -C %s", filename.c_str(), g_settings.update_dir);
-		
-		if( system(cmd) )
-		{
-			// remove package
-			remove(filename.c_str());
-			hide();
-			ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_INSTALLFAILED)); // UTF-8
-			return menu_return::RETURN_REPAINT;
-		}
-		
-		//FIXME:check if "install.sh" script was included in packge (this will help us also to install cst addons)
-		char buf[100];
-		sprintf(buf, "%s/install.sh", g_settings.update_dir);
-		
-		FILE* fd = fopen(buf, "r");
-		if(fd)
-			fclose(fd);
-		else // fallback to cst install script
-		{
-			FILE* fd = fopen("/bin/install.sh", "r");
-			if(fd)
-				fclose(fd);
-			else
-			{
-				hide();
-				
-				dprintf(DEBUG_NORMAL, "install script not found: %s\n", buf);
-				
-				hide();
-				ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_INSTALLFAILED)); // UTF-8
-				return menu_return::RETURN_REPAINT;
-			}
-		}
-		
-		// install
-		sprintf(cmd, ".%s/install.sh", g_settings.update_dir);
+		sprintf(cmd, "%s %s %s", install_sh, g_settings.update_dir, filename.c_str());
 
 		if( system(cmd) )
 		{
@@ -529,12 +556,6 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 			return menu_return::RETURN_REPAINT;
 		}
 		
-		// remove package
-		remove(filename.c_str());
-		
-		// remove install script
-		remove(buf);
-
 		// 100% status
 		showGlobalStatus(100);
 		
@@ -642,7 +663,7 @@ void CFlashExpert::showMTDSelector(const std::string & actionkey)
 	
 	CMTDInfo* mtdInfo =CMTDInfo::getInstance();
 
-	for(int x=0; x<mtdInfo->getMTDCount(); x++) 
+	for(int x = 0; x < mtdInfo->getMTDCount(); x++) 
 	{
 		char sActionKey[20];
 		sprintf(sActionKey, "%s%d", actionkey.c_str(), x);
@@ -677,7 +698,7 @@ void CFlashExpert::showMTDSelector(const std::string & actionkey)
 		if(actionkey == "writemtd")
 		{
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-			if ( x != 0 && x != 1 && x != 2 && x != 3 && x != 4 && x != 8)
+			if ( /*x != 0 && x != 1 && x != 2 && x != 3 && x != 4*/x > 4 && x != 8)
 #endif			  
 			{
 				mtdselector->addItem(new CMenuForwarderNonLocalized(mtdInfo->getMTDName(x).c_str(), true, NULL, this, sActionKey));
@@ -765,7 +786,7 @@ int CFlashExpert::exec(CMenuTarget* parent, const std::string & actionKey)
 		} 
 		else 
 		{
-			if(selectedMTD==-1) 
+			if(selectedMTD == -1) 
 			{
 				writemtd(actionKey, MTD_OF_WHOLE_IMAGE);
 			} 
