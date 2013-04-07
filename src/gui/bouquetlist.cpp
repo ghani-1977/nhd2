@@ -318,7 +318,7 @@ int CBouquetList::show(bool bShowChannelList)
 	//if(Bouquets.size() == 0)
 	//	return res;
 	
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, "");	
+	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);	
 	
 	// windows size
 	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();

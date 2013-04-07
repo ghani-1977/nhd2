@@ -93,15 +93,15 @@ CVFD::CVFD()
 
 	// 4digits
 #if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBREVO_250HD) || defined (PLATFORM_SPARK)
-	is4digits = true;
+	is4digits = 1;
 #else
-	is4digits = false;
+	is4digits = 0;
 #endif
 	// has led
 #if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_SPARK)
-	has_led = true;
+	has_led = 1;
 #else	
-	has_led = false;
+	has_led = 0;
 #endif
 
 #if defined (PLATFORM_COOLSTREAM)
@@ -302,7 +302,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	else
 	#endif
 	{
-		ShowText(name.c_str() );
+		ShowText((char *)name.c_str() );
 	}
 
 	wake_up();
@@ -365,7 +365,7 @@ void CVFD::showMenuText(const int position, const char * text, const int highlig
 	if (mode != MODE_MENU_UTF8)
 		return;
 
-	ShowText(text);
+	ShowText((char *)text);
 	wake_up();
 }
 
@@ -379,7 +379,7 @@ void CVFD::showAudioTrack(const std::string & artist, const std::string & title,
 
 	dprintf(DEBUG_DEBUG, "CVFD::showAudioTrack: %s\n", title.c_str());
 	
-	ShowText(title.c_str());
+	ShowText((char *)title.c_str());
 	wake_up();
 }
 
@@ -417,12 +417,13 @@ void CVFD::showAudioPlayMode(AUDIOMODES m)
 
 void CVFD::setMode(const MODES m, const char * const title)
 {
-	if(!has_lcd || is4digits) 
+	if(!has_lcd) 
 		return;
 
 	// sow title
-	if(strlen(title))
-		ShowText(title);
+	if(!is4digits) 
+		if(strlen(title))
+			ShowText((char *)title);
 
 	mode = m;
 
@@ -590,19 +591,19 @@ void CVFD::setMuted(bool mu)
 
 void CVFD::resume()
 {
-	if(!has_lcd) 
+	if(!has_lcd || is4digits) 
 		return;
 }
 
 void CVFD::pause()
 {
-	if(!has_lcd) 
+	if(!has_lcd || is4digits) 
 		return;
 }
 
 void CVFD::Lock()
 {
-	if(!has_lcd) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	creat("/tmp/vfd.locked", 0);
@@ -610,7 +611,7 @@ void CVFD::Lock()
 
 void CVFD::Unlock()
 {
-	if(!has_lcd) 
+	if(!has_lcd || is4digits) 
 		return;
 
 	unlink("/tmp/vfd.locked");
@@ -779,7 +780,10 @@ void CVFD::ShowScrollText(char *str)
 
 void CVFD::ShowText(const char * str)
 {
-	dprintf(DEBUG_DEBUG, "CVFD::ShowText: [%s]\n", str);
+	if(!has_lcd) 
+		return;
+	
+	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
 
 	int len = strlen(str);
 	
@@ -787,22 +791,26 @@ void CVFD::ShowText(const char * str)
 	if(len == 0)
 		return;
 	
-	int i = 0;
-	
-	if (len > 0)
+	//FIXME: ??? dont trim any things if we have 4digits
+	if(!is4digits)
 	{
-		for(i = len - 1; i > 0; i--) 
-		{
-			if (str[i - 1] != ' ')
-				break;
-		}
-	}
+		int i = 0;
 	
-	if (((int)strlen(text) == i && !strncmp(str, text, i)) || len > 255)
-		return;
+		if (len > 0)
+		{
+			for(i = len - 1; i > 0; i--) 
+			{
+				if (str[i - 1] != ' ')
+					break;
+			}
+		}
+		
+		if (((int)strlen(text) == i && !strncmp(str, text, i)) || len > 255)
+			return;
 
-	strncpy(text, str, i);
-	text[i] = '\0';
+		strncpy(text, str, i);
+		text[i] = '\0';
+	}
 	 
 #if defined (__sh__)	 
 	openDevice();
@@ -841,11 +849,11 @@ void CVFD::setFan(bool enable)
 void CVFD::vfd_led(const char * led)
 {
 #if defined (PLATFORM_GIGABLUE)  
-	FILE *f;
-	if((f = fopen("/proc/stb/fp/led0_pattern","w")) == NULL) 
+	FILE * f;
+	if((f = fopen("/proc/stb/fp/led0_pattern", "w")) == NULL) 
 		return;
 	
-	fprintf(f,"%s", led);
+	fprintf(f, "%s", led);
 	fclose(f);
 #endif	
 }

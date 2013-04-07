@@ -149,6 +149,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// warte auf keine Meldung vom ZAPIT -> jemand anderer hat das zappen ausgel�st...
 			if ((*(t_channel_id *)data) != current_channel_id) 
 			{
+				// get channel name/number
 				t_channel_id new_id = *(t_channel_id *)data;
 				tallchans_iterator cit = allchans.find(new_id);
 				
@@ -161,16 +162,16 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				// don't show service name in standby mode
 				if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 				{
-					if (CVFD::getInstance()->is4digits)
+					if (CVFD::getInstance()->is4digits)					
 					{
 						char tmp[5];
 						
 						sprintf(tmp, "%04d", current_channel_number );
 						
 						CVFD::getInstance()->ShowText(tmp); // UTF-8
-					}
+					}					
 					else
-						CVFD::getInstance()->showServicename(current_channel_name); // UTF-8
+						CVFD::getInstance()->showServicename(current_channel_name); // UTF-8						
 				}
 				
 				current_channel_id = new_id;
@@ -307,25 +308,26 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
+				// get channel number
 				t_channel_id new_id = *(t_channel_id *)data;
 				tallchans_iterator cit = allchans.find(new_id);
 					
 				if ( cit != allchans.end() )
 				{
-					current_channel_name = cit->second.getName();
+					//current_channel_name = cit->second.getName();
 					current_channel_number = cit->second.number;
 				}
 					
-				if (CVFD::getInstance()->is4digits)
+				if (CVFD::getInstance()->is4digits)					
 				{
 					char tmp[5];
 						
 					sprintf(tmp, "%04d", current_channel_number);
 						
 					CVFD::getInstance()->ShowText(tmp); // UTF-8
-				}
+				}				
 				else
-					CVFD::getInstance()->showServicename(current_channel_name); // UTF-8	
+					CVFD::getInstance()->showServicename(current_channel_name); // UTF-8						
 			}
 			
 			// get pids
@@ -364,16 +366,17 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
+				// get channel number
 				t_channel_id new_id = *(t_channel_id *)data;
 				tallchans_iterator cit = allchans.find(new_id);
 					
 				if ( cit != allchans.end() )
 				{
-					current_channel_name = cit->second.getName();
+					//current_channel_name = cit->second.getName();
 					current_channel_number = cit->second.number;
 				}
 					
-				if (CVFD::getInstance()->is4digits)
+				if (CVFD::getInstance()->is4digits)			
 				{
 					char tmp[5];
 						
@@ -381,8 +384,8 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 						
 					CVFD::getInstance()->ShowText(tmp); // UTF-8
 				}
-				else
-					CVFD::getInstance()->showServicename(std::string("<") + current_channel_name + '>'); // UTF-8
+				else				
+					CVFD::getInstance()->showServicename(std::string("<") + current_channel_name + '>'); // UTF-8					
 			}
 				
 			if ( current_EPGid != 0)
@@ -504,7 +507,7 @@ void CRemoteControl::processAPIDnames()
 	int pref_idx = -1;
 	int pref_ac3_idx = -1;
 	int ac3_found = -1;
-	const char *desc;
+	const char * desc;
 	char lang[4];
 
 	if(g_settings.auto_lang) 
