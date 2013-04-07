@@ -627,7 +627,7 @@ void CZapitClient::setVolumePercent(unsigned int percent, t_channel_id channel_i
 }
 
 /* get volume percent */
-void CZapitClient::getVolumePercent(unsigned int *percent, t_channel_id channel_id, const unsigned int apid, const bool is_ac3)
+void CZapitClient::getVolumePercent(unsigned int * percent, t_channel_id channel_id, const unsigned int apid, const bool is_ac3)
 {
 	CZapitMessages::commandVolumePercent msg;
 

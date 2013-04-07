@@ -467,7 +467,7 @@ static int cfg_national_subset;
 
 void FillRect(int x, int y, int w, int h, int color)
 {
-	unsigned char *p = lfb + x*4 + y * CFrameBuffer::getInstance()->getStride();
+	unsigned char *p = lfb + x*4 + y*CFrameBuffer::getInstance()->getStride();
 
 	unsigned int col = bgra[color][3] << 24 | bgra[color][2] << 16 | bgra[color][1] << 8 | bgra[color][0];
 
@@ -730,9 +730,9 @@ void setcolors(unsigned short *pcolormap, int offset, int number)
 	int i,trans_tmp;
 	int j = offset; /* index in global color table */
 
-	trans_tmp=25-trans_mode;
+	trans_tmp = 25 - trans_mode;
 
-	bgra[transp2][3]=((trans_tmp+7)<<11 | 0x7FF)>>8;
+	bgra[transp2][3] = ((trans_tmp+7)<<11 | 0x7FF)>>8;
 
 	for (i = 0; i < number; i++)
 	{
@@ -751,7 +751,6 @@ void setcolors(unsigned short *pcolormap, int offset, int number)
 		j++;
 	}
 }
-
 
 /* hexdump of page contents to stdout for debugging */
 void dump_page()
@@ -4651,13 +4650,13 @@ void RenderDRCS( //FIXME
 
 				}
 				
-				d += (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
+				d += CFrameBuffer::getInstance()->getStride();
 			}
 			
-			d -= h *(CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
+			d -= h*CFrameBuffer::getInstance()->getStride();
 		}
 		
-		d += h * (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
+		d += h*CFrameBuffer::getInstance()->getStride();
 	}
 }
 
@@ -4695,7 +4694,7 @@ void FillRectMosaicSeparated(int x, int y, int w, int h, int fgcolor, int bgcolo
 
 void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
 {
-	unsigned char *p = lfb + x0*4 + y0 * (CFrameBuffer::getInstance()->getScreenWidth(true) *4);
+	unsigned char *p = lfb + x0*4 + y0*CFrameBuffer::getInstance()->getStride();
 	
 	int xoffset, l;
 	int yoffset;
@@ -4709,12 +4708,11 @@ void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
 		{
 			for (ltmp=0; ltmp < l; ltmp++)
 			{
-				//setPixel(xoffset + ltmp + x0, yoffset + y0, color);
 				memcpy(p + xoffset * 4 + ltmp * 4, bgra[color], 4);
 			}
 		}
 
-		p += (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
+		p += CFrameBuffer::getInstance()->getStride();
 	}
 }
 
@@ -4722,7 +4720,7 @@ void FlipHorz(int x, int y, int w, int h)
 {
 	unsigned char buf[w*4];
 	
-	unsigned char *p = lfb + x*4 + y * (CFrameBuffer::getInstance()->getScreenWidth(true)*4);
+	unsigned char *p = lfb + x*4 + y*CFrameBuffer::getInstance()->getStride();
 
 	int w1,h1;
 
@@ -4736,7 +4734,7 @@ void FlipHorz(int x, int y, int w, int h)
 			memcpy(p+w1*4,buf+((w-w1)*4)-4,4);
 		}
 		
-		p += (CFrameBuffer::getInstance()->getScreenWidth(true) * 4);
+		p += CFrameBuffer::getInstance()->getStride();
 
 		if (h1 + y > CFrameBuffer::getInstance()->getScreenHeight(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y %d\n", __func__, w1 + y);
@@ -4748,14 +4746,14 @@ void FlipVert(int x, int y, int w, int h)
 {
 	unsigned char buf[w*4];
 	
-	unsigned char *p = lfb + x*4 + y * (CFrameBuffer::getInstance()->getScreenWidth(true) *4), *p1, *p2;
+	unsigned char *p = lfb + x*4 + y*CFrameBuffer::getInstance()->getStride(), *p1, *p2;
 	int h1;
 
 	for (h1 = 0 ; h1 < h/2 ; h1++)
 	{
-		p1 = (p+(h1*(CFrameBuffer::getInstance()->getScreenWidth(true)*4)));
+		p1 = (p+(h1*CFrameBuffer::getInstance()->getStride()));
 	
-		p2 = (p+(h-(h1+1))*(CFrameBuffer::getInstance()->getScreenWidth(true)*4));
+		p2 = (p+(h-(h1+1))*CFrameBuffer::getInstance()->getStride());
 
 		if (w + x > CFrameBuffer::getInstance()->getScreenWidth(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds x %d\n", __func__, w + x);
@@ -5043,7 +5041,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 			{
 				int x,y,f,c;
 				
-				unsigned char* p = lfb + PosX*4 + (PosY+yoffset)* (CFrameBuffer::getInstance()->getScreenWidth(true)*4);
+				unsigned char* p = lfb + PosX*4 + (PosY+yoffset)*CFrameBuffer::getInstance()->getStride();
 				
 				for (y=0; y<fontheight;y++)
 				{
@@ -5056,7 +5054,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 							memcpy((p+x*4),bgra[(c ? fgcolor : bgcolor)],4);
 						}
 						
-						p += (CFrameBuffer::getInstance()->getScreenWidth(true)*4);
+						p += CFrameBuffer::getInstance()->getStride();
 					}
 				}
 				PosX += curfontwidth;
@@ -5092,7 +5090,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 			
 			axdrcs[12] = curfontwidth; /* adjust last x-offset according to position, FIXME: double width */
 			
-			RenderDRCS(p, lfb + PosX*4 + (yoffset + PosY) * (CFrameBuffer::getInstance()->getScreenWidth(true)*4), axdrcs, fgcolor, bgcolor);
+			RenderDRCS(p, lfb + PosX*4 + (yoffset + PosY)*CFrameBuffer::getInstance()->getStride(), axdrcs, fgcolor, bgcolor);
 		}
 		else
 		{
@@ -5285,7 +5283,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	// add diacritical marks
 	if (Attribute->diacrit)
 	{
-		FTC_SBit        sbit_diacrit;
+		FTC_SBit sbit_diacrit;
 
 		if ((national_subset_local == NAT_SC) || (national_subset_local == NAT_RB) || (national_subset_local == NAT_UA))
                         Char = G2table[1][0x20+ Attribute->diacrit];
@@ -5326,7 +5324,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	//fprintf(stderr, "PosX = %d, yoffset = %d, PosY %d, Row %d\n", PosX, yoffset, PosY, Row);
 
-	p = lfb + PosX*4 + (yoffset + PosY + Row) * (CFrameBuffer::getInstance()->getScreenWidth(true) *4); /* running pointer into framebuffer */
+	p = lfb + PosX*4 + (yoffset + PosY + Row) * CFrameBuffer::getInstance()->getStride(); /* running pointer into framebuffer */
 
 	int saveRow = Row;
 	for (Row = sbit->height; Row; Row--) /* row counts up, but down may be a little faster :) */
@@ -5361,7 +5359,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 					color = bgcolor;
 
 				for (f = factor-1; f >= 0; f--)
-					memcpy((p + f * CFrameBuffer::getInstance()->getStride() ),bgra[color],4);
+					memcpy((p + f * CFrameBuffer::getInstance()->getStride() ), bgra[color],4);
 				p+=4;
 				x+=1;
 				if (xfactor > 1) /* double width */
@@ -5386,7 +5384,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 			x+=1;
 		}
 
-		p = pstart + factor*(CFrameBuffer::getInstance()->getScreenWidth(true) *4);
+		p = pstart + factor*CFrameBuffer::getInstance()->getStride();
 	}
 
 	Row = ascender - sbit->top + sbit->height + TTFShiftY;
@@ -6416,7 +6414,7 @@ void DecodePage()
 
 			for (row = 0; row < DRCSROWS; row++)
 				for (col = 0; col < DRCSCOLS; col++)
-					RenderDRCS(page_char + 20 * (DRCSCOLS * row + col + 2), lfb + (StartY + fontheight + DRCSYSPC * row + CFrameBuffer::getInstance()->getScreenHeight(true) ) * (CFrameBuffer::getInstance()->getScreenWidth(true) *4) + (StartX + DRCSXSPC * col)*4, ax, white, black);
+					RenderDRCS(page_char + 20 * (DRCSCOLS * row + col + 2), lfb + (StartY + fontheight + DRCSYSPC * row + CFrameBuffer::getInstance()->getScreenHeight(true) )*CFrameBuffer::getInstance()->getStride() + (StartX + DRCSXSPC * col)*4, ax, white, black);
 
 			memset(page_char + 40, 0xff, 24*40); /* don't render any char below row 0 */
 			boxed = 0;

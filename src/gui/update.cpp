@@ -103,7 +103,7 @@ CFlashUpdate::CFlashUpdate(int uMode)
 	
 	if (::statfs("/", &s) == 0) 
 	{
-		if (s.f_type == 0xEF53L || s.f_type == 0x6969L)
+		if (s.f_type == 0xEF53L /*ext2*/|| s.f_type == 0x6969L/*nfs*/)
 			allow_flash = false;
 		else if (s.f_type == 0x72b6L/*jffs2*/ || s.f_type == 0x5941ff53L /*yaffs2*/ || s.f_type == 0x73717368L /*squashfs*/ || s.f_type == 0x24051905L/*ubifs*/)
 			allow_flash = true;

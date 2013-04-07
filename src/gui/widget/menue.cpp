@@ -962,7 +962,6 @@ int CMenuOptionChooser::paint( bool selected )
 		
 		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
-	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		// define icon name depends of numeric value
@@ -980,7 +979,6 @@ int CMenuOptionChooser::paint( bool selected )
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y+ height, height, CRCInput::getKeyName(directKey), color, height);
         }
-        */
 
 	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_option, true); // UTF-8
 	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
@@ -1129,7 +1127,6 @@ int CMenuOptionStringChooser::paint( bool selected )
 		
 		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );	
 	}
-	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		// define icon name depends of numeric value
@@ -1147,7 +1144,6 @@ int CMenuOptionStringChooser::paint( bool selected )
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT  + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
         }
-        */
         
         const char * l_optionName = g_Locale->getText(optionName);
 	int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
@@ -1396,7 +1392,6 @@ int CMenuForwarder::paint(bool selected)
 		
 		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );
 	}
-	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		//define icon name depends of numeric value
@@ -1415,7 +1410,6 @@ int CMenuForwarder::paint(bool selected)
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
 	}
-	*/
 	
 	stringstartposX = x + BORDER_LEFT + ICON_OFFSET + (icon_w?icon_w + LOCAL_OFFSET : 0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, dx - BORDER_LEFT - 5 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
@@ -1608,7 +1602,6 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		
 		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
-	/*
 	else if (CRCInput::isNumeric(directKey))
 	{
 		// define icon name depends of numeric value
@@ -1626,7 +1619,6 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
 	}
-	*/
 	
 	//
 	//local-text

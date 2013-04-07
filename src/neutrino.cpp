@@ -2116,6 +2116,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	ZapStart_arg.uselastchannel = g_settings.uselastchannel;
 	
 	ZapStart_arg.video_mode = g_settings.video_Mode;
+	
+	ZapStart_arg.current_volume = g_settings.current_volume;
 
 	pthread_create (&zapit_thread, NULL, zapit_main_thread, (void *) &ZapStart_arg);	
 

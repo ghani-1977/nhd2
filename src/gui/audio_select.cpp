@@ -195,10 +195,7 @@ int CAudioSelectMenuHandler::doMenu()
 	//FIXME: brocken
 	AudioSelector.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_VOLUME_ADJUST));
 
-	// setting volume percent to zapit with channel_id/apid = 0 means current channel and pid
 	int percent[g_RemoteControl->current_PIDs.APIDs.size()];
-	//audioSetupNotifierVolPercent->setChannelId(0);
-	//audioSetupNotifierVolPercent->setAPid(0);
 	
 	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
@@ -210,9 +207,6 @@ int CAudioSelectMenuHandler::doMenu()
 			is_active,
 			0, 100, audioSetupNotifierVolPercent, 0, 0, NONEXISTANT_LOCALE,
 			g_RemoteControl->current_PIDs.APIDs[count].desc));
-			
-		//if (is_active)
-		//	g_settings.current_volume_percent = percent[count];
 	}
 
 	return AudioSelector.exec(NULL, "");

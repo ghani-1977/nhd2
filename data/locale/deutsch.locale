@@ -24,7 +24,7 @@ audiomenu.spdif_dd DD über SPDIF
 audiomenu.stereo Stereo
 audiomenu.ac3_delay AC3 Delay
 audiomenu.pcm_delay PCM Delay
-audiomenu.volume_adjust Lautstärke ändern, in %
+audiomenu.volume_adjust Audio Spur Volume
 
 audiomenu.auto_lang Tonwahl automatisch
 audiomenu.auto_subs Untertitel automatisch

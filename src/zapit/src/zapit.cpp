@@ -105,6 +105,7 @@ int current_volume = 100;
 int getPidVolume(t_channel_id channel_id, int pid, bool ac3);
 void setVolume(int vol);
 void setVolumePercent(int percent);
+void setPidVolume(t_channel_id channel_id, int pid, int percent);
 
 /* live/record channel id */
 t_channel_id live_channel_id;
@@ -654,7 +655,9 @@ void loadVolumeMap()
 	int apid = 0;
 	int volume = 0;
 	char s[1000];
-	while (fgets(s, 1000, volume_config_file)) {
+	
+	while (fgets(s, 1000, volume_config_file)) 
+	{
 		if (sscanf(s, "%llx %d %d", &chan, &apid, &volume) == 3)
 			vol_map.insert(volume_pair_t(chan, pid_pair_t(apid, volume)));
 	}
@@ -663,8 +666,9 @@ void loadVolumeMap()
 
 void saveVolumeMap()
 {
-	FILE *volume_config_file = fopen(VOLUME_CONFIG_FILE, "w");
-	if (!volume_config_file) {
+	FILE * volume_config_file = fopen(VOLUME_CONFIG_FILE, "w");
+	if (!volume_config_file) 
+	{
 		perror(VOLUME_CONFIG_FILE);
 		return;
 	}
@@ -827,6 +831,9 @@ static void save_channel_pids(CZapitChannel * thischannel)
 	audio_map[thischannel->getChannelID()].volume = audioDecoder->getVolume();
 	audio_map[thischannel->getChannelID()].subpid = dvbsub_getpid();
 	tuxtx_subtitle_running(&audio_map[thischannel->getChannelID()].ttxpid, &audio_map[thischannel->getChannelID()].ttxpage, NULL);
+	
+	// save pid volume
+	setPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), volume_percent);
 }
 
 static CZapitChannel * find_channel_tozap(const t_channel_id channel_id, bool in_nvod)
@@ -1004,12 +1011,10 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 
 	// set saved volume pro pid
 	volume_percent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
-	
 	setVolumePercent(volume_percent);
 }
 
 // return 0, -1 fails
-#define RETUNE_PAT_FAILED
 int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 {
 	bool transponder_change = false;
@@ -1069,25 +1074,20 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 		current_is_nvod = true;
 		return 0;
 	}
-	
-#ifdef RETUNE_PAT_FAILED	
+		
 	int retry = false;
 	
 tune_again:
-#endif	
-
 	// parse pat pmt
 	failed = !parse_channel_pat_pmt(live_channel, live_fe);
-	
-#ifdef RETUNE_PAT_FAILED	
+		
 	if(failed && !retry)
 	{
 		usleep(2500);  /* give some 2500us for demuxer: borrowed from e2*/
 		retry = true;
 		dprintf(DEBUG_NORMAL, "[zapit] trying again\n");
 		goto tune_again;
-	}
-#endif	
+	}	
 
 	if ((!failed) && (live_channel->getAudioPid() == 0) && (live_channel->getVideoPid() == 0)) 
 	{
@@ -1181,7 +1181,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	return 0;
 }
 
-/* set channel/pid volume percent, using current channel_id and pid, if those params is 0 */
+/* set channel/pid volume percent, using current channel_id and pid */
 void setPidVolume(t_channel_id channel_id, int pid, int percent)
 {
 	if (!channel_id)
@@ -1205,7 +1205,7 @@ void setPidVolume(t_channel_id channel_id, int pid, int percent)
 	vol_map.insert(volume_pair_t(channel_id, pid_pair_t(pid, percent)));
 }
 
-/* return channel/pid volume percent, using current channel_id and pid, if those params is 0 */
+/* return channel/pid volume percent, using current channel_id and pid */
 int getPidVolume(t_channel_id channel_id, int pid, bool ac3)
 {
 	int percent = -1;
@@ -1249,28 +1249,21 @@ int getPidVolume(t_channel_id channel_id, int pid, bool ac3)
 
 void setVolume(int vol)
 {
-	current_volume = vol;
-	if (current_volume < 0)
-		current_volume = 0;
-	if (current_volume > 100)
-		current_volume = 100;
+	int value = (vol*volume_percent) / 100;
 	
-	int value = (current_volume*volume_percent) / 100;
-	
-	dprintf(DEBUG_INFO, "[zapit] current_volume %d volume %d percent %d -> %d\n", current_volume, vol, volume_percent, value);
+	dprintf(DEBUG_INFO, "[zapit] volume %d percent %d\n", vol, volume_percent);
 	
 	audioDecoder->setVolume(value, value);
 }
 
 void setVolumePercent(int percent)
 {
-	dprintf(DEBUG_INFO, "[zapit] setVolumePercent: volume_percent %d percent %d\n", volume_percent, percent);
+	dprintf(DEBUG_INFO, "[zapit] setVolumePercent: current_volume %d volume_percent %d percent %d\n", current_volume, volume_percent, percent);
 	
 	if (volume_percent != percent) 
-	{
 		volume_percent = percent;
-		setVolume(current_volume);
-	}
+		
+	setVolume(current_volume);
 }
 
 int change_audio_pid(uint8_t index)
@@ -2577,7 +2570,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandVolume msgVolume;
 			
-			msgVolume.left = msgVolume.right = current_volume = audioDecoder->getVolume();
+			msgVolume.left = msgVolume.right = audioDecoder->getVolume();
 
 			CBasicServer::send_data(connfd, &msgVolume, sizeof(msgVolume));
 			break;
@@ -2594,10 +2587,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if (!msgVolumePercent.apid)
 				msgVolumePercent.apid = live_channel->getAudioPid();
 			
-			//volume_percent = msgVolumePercent.percent;
-			
 			// set pid volume
-			setPidVolume(live_channel_id, live_channel->getAudioPid(), msgVolumePercent.percent);
+			setPidVolume(msgVolumePercent.channel_id, msgVolumePercent.apid, msgVolumePercent.percent);
 			
 			// set volume percent
 			setVolumePercent(msgVolumePercent.percent);
@@ -3369,9 +3360,6 @@ int stopPlayBack( bool sendPmt)
 	{
 		dvbsub_stop();
 	}
-	
-	/* set initial volume with 100% */
-	setVolumePercent(100);
 
 	return 0;
 }
@@ -3862,8 +3850,8 @@ int zapit_main_thread(void *data)
 	audioDecoder = new cAudio();
 #endif	
 
-	/* set initial volume with 100% */
-	setVolumePercent(100);
+	// saved current volume
+	current_volume = ZapStart_arg->current_volume;
 	
 #if defined (__sh__)
 	if(FrontendCount > 1)

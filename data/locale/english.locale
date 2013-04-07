@@ -24,7 +24,7 @@ audiomenu.spdif_dd DD on SPDIF
 audiomenu.stereo stereo
 audiomenu.ac3_delay AC3 Delay
 audiomenu.pcm_delay PCM Delay
-audiomenu.volume_adjust Volume adjustment, in %
+audiomenu.volume_adjust Audio Pid Volume
 
 audiomenu.auto_lang Auto select audio
 audiomenu.auto_subs Auto select subtitles

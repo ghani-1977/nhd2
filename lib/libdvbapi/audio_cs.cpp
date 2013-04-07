@@ -159,7 +159,6 @@ int cAudio::SetMute(int enable)
 }
 
 /* volume, min = 0, max = 100 */
-/* e2 sets 0 to 63 */
 int cAudio::setVolume(unsigned int left, unsigned int right)
 { 
 	dprintf(DEBUG_INFO, "%s:%s volume: %d\n", FILENAME, __FUNCTION__, left);
@@ -188,8 +187,8 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	close(fd);
 #else
 	// convert to -1dB steps
-	left = 63 - left * 63 / 100;
-	right = 63 - right * 63 / 100;
+	left = 63 - left * 0.63;
+	right = 63 - right * 0.63;
 	//now range is 63..0, where 0 is loudest
 	
 	audio_mixer_t mixer;

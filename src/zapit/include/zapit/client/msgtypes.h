@@ -177,13 +177,6 @@ class CZapitMessages
 		{
 			bool activate;
 		};
-		
-		/*
-		struct commandSetPipMode
-		{
-			bool activate;
-		};
-		*/
 
 		struct commandZapto
 		{
@@ -298,13 +291,6 @@ class CZapitMessages
 		{
 			bool activated;
 		};
-		
-		/*
-		struct responseGetPipModeState
-		{
-			bool activated;
-		};
-		*/
 
 		struct responseGetMode
 		{
