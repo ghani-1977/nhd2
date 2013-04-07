@@ -80,6 +80,16 @@
 
 #define MTD_OF_WHOLE_IMAGE             		0
 
+//FIXME: add the right mtd part (meaned is roofs, on some boxes this contains also kernel) for your boxtype bevor u use this
+//NOTE: be carefull with this
+#if defined (PLATFORM_DGS)	
+#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd5"
+#elif defined (PLATFORM_GIGABLUE_800SE)
+#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd0"
+#else
+#define MTD_DEVICE_OF_UPDATE_PART      "/dev/mtd5"
+#endif
+
 
 CFlashUpdate::CFlashUpdate(int uMode)
 	:CProgressWindow()
@@ -87,16 +97,6 @@ CFlashUpdate::CFlashUpdate(int uMode)
 	updateMode = uMode;
 	
 	setTitle(LOCALE_FLASHUPDATE_HEAD);
-	
-#if defined (PLATFORM_CUBEREVO_MINI2)	
-	sysfs = CMTDInfo::getInstance()->findMTDsystem("nor.kernel_root");
-#elif defined (PLATFORM_GIGABLUE)
-	sysfs = CMTDInfo::getInstance()->findMTDsystem("rootfs");
-#else
-	sysfs = CMTDInfo::getInstance()->findMTDsystem("");
-#endif
-
-	dprintf(DEBUG_NORMAL, "Mtd partition to update: %s\n", sysfs.c_str());
 	
 	// check rootfs, allow flashing only when rootfs is jffs2/yaffs2/squashfs
 	struct statfs s;
@@ -405,14 +405,6 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 
 	if(updateMode == UPDATEMODE_INTERNET) //internet-update
 		paint();
-	
-	// get mtd part to update
-	if(sysfs.size() < 8) 
-	{
-		ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_CANTOPENMTD));
-		hide();
-		return menu_return::RETURN_REPAINT;
-	}
 
 	if(!checkVersion4Update()) 
 	{
@@ -458,8 +450,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	// flash image
 	if(fileType < '3') 
 	{
-		//ft.setMTDDevice(MTD_DEVICE_OF_UPDATE_PART);
-		ft.setMTDDevice(sysfs);
+		ft.setMTDDevice(MTD_DEVICE_OF_UPDATE_PART);
 		ft.setStatusViewer(this);
 	}
 

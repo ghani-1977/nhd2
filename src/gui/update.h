@@ -55,7 +55,6 @@ class CFlashUpdate : public CProgressWindow
 	  
 	private:
 		bool allow_flash;
-		std::string sysfs;
 
 		std::string filename;
 		std::string file_md5;

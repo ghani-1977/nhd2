@@ -32,7 +32,10 @@
 	
 #include <configfile.h>
 #include <frontend_c.h>
+#include <video_cs.h>
 
+
+extern cVideo * videoDecoder;
 extern CFrontend * live_fe;
 
 /* this values are token from cuberevo3000hd */
@@ -443,18 +446,18 @@ unsigned short translate(int code)
 
 #define NEUTRINO_KEYMAP_FILE		CONFIGDIR "/keymap.conf"	
 
-void getCurrentPIGSettings(int* left, int* top, int* width, int* height);
-void getCurrentASPECTSettings();
-void setCurrentPIGSettings(int left, int top, int width, int height);
-void setCurrentASPECTSettings(int reset);
-void getCurrentPOLICYSettings();
-void setCurrentPOLICYSettings(int reset);
+//void getCurrentPIGSettings(int* left, int* top, int* width, int* height);
+//void setCurrentPIGSettings(int left, int top, int width, int height);
 
-/*  BLITTING  */
-/* current pig settings */
-int left, top, width, height;
-char aspect[16];
-char policy[16];
+// aspect
+//char aspect[16];
+//void getCurrentASPECTSettings();
+//void setCurrentASPECTSettings(int reset);
+
+// policy
+//char policy[16];
+//void getCurrentPOLICYSettings();
+//void setCurrentPOLICYSettings(int reset);
 
 // subs
 static pthread_t ttx_sub_thread;
@@ -517,7 +520,7 @@ void gethotlist()
 	maxhotlist = -1;
 	sprintf(line, CONFIGDIR "/tuxtxt/hotlist%d.conf", tuxtxt_cache.vtxtpid);
 	
-	dprintf(DEBUG_INFO, "TuxTxt <gethotlist %s", line);
+	dprintf(DEBUG_INFO, "TuxTxt <gethotlist %s\n", line);
 
 	if ((hl = fopen(line, "rb")) != 0)
 	{
@@ -1948,15 +1951,6 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	use_gui = 1;
 	boxed = 0;
 
-	// get pig/aspect/policy settings
-	getCurrentPIGSettings(&left, &top, &width, &height);
-        getCurrentASPECTSettings();
-        getCurrentPOLICYSettings();
-	
-	// set aspect/policy settings
-        setCurrentASPECTSettings(0);
-	setCurrentPOLICYSettings(0);	
-
 #if !TUXTXT_CFG_STANDALONE
 	int initialized = tuxtxt_init();
 	if ( initialized )
@@ -2454,6 +2448,7 @@ int Init( int source )
 	}
 	
 	ascender = (usettf ? fontheight * face->ascender / face->units_per_EM : 16);
+	
 #if TUXTXT_DEBUG
 	printf("TuxTxt <fh%d fw%d fs%d tm%d ts%d ym%d %d %d sx%d sy%d a%d>\n",
 			 fontheight, fontwidth, fontwidth_small, fontwidth_topmenumain, fontwidth_topmenusmall,
@@ -2548,9 +2543,6 @@ void CleanUp()
 	/* hide and close pig */
 	if (screenmode)
 		SwitchScreenMode(0); /* turn off divided screen */
-			
-	setCurrentASPECTSettings(1);
-	setCurrentPOLICYSettings(1);
 
 #if TUXTXT_CFG_STANDALONE
 	tuxtxt_stop_thread();
@@ -2608,12 +2600,7 @@ void CleanUp()
 			fprintf(conf, "ShowLevel2p5 %d\n", showl25);
 			fprintf(conf, "DumpLevel2p5 %d\n", dumpl25);
 			fprintf(conf, "UseTTF %d\n", usettf);
-#if 0
-			fprintf(conf, "StartX %d\n", sx);
-			fprintf(conf, "EndX %d\n", ex);
-			fprintf(conf, "StartY %d\n", sy);
-			fprintf(conf, "EndY %d\n", ey);
-#endif
+
 			fclose(conf);
 		}
 	}
@@ -3093,7 +3080,7 @@ void Menu_Init(char *menu, int current_pid, int menuitem, int hotindex)
 	menu[MenuLine[M_COL]*Menu_Width + 28] = (color_mode == 24 ? ' ' : '�');
 	memset(&menu[Menu_Width*MenuLine[M_COL] + 3             ], 0x7f,color_mode);
 	memset(&menu[Menu_Width*MenuLine[M_COL] + 3+color_mode  ], 0x20,24-color_mode);
-//	memcpy(&menu[Menu_Width*MenuLine[M_COL] + Menu_Width - 5], &configonoff[menulanguage][color_mode    ? 3 : 0], 3);
+	//memcpy(&menu[Menu_Width*MenuLine[M_COL] + Menu_Width - 5], &configonoff[menulanguage][color_mode    ? 3 : 0], 3);
 	menu[MenuLine[M_TRA]*Menu_Width +  1] = (trans_mode == 1  ? ' ' : '�');
 	menu[MenuLine[M_TRA]*Menu_Width + 28] = (trans_mode == 24 ? ' ' : '�');
 	memset(&menu[Menu_Width*MenuLine[M_TRA] + 3             ], 0x7f,trans_mode);
@@ -3257,6 +3244,7 @@ void ConfigMenu(int Init, int source)
 					{
 						GetTeletextPIDs(source); //FIXME source???
 						ClearFB(transp);
+						
 						/* set current vtxt */
 						if (tuxtxt_cache.vtxtpid == 0)
 							tuxtxt_cache.vtxtpid = pid_table[0].vtxt_pid;
@@ -3378,6 +3366,7 @@ void ConfigMenu(int Init, int source)
 					{
 						GetTeletextPIDs(source); //FIXME: set source also
 						ClearFB(transp);
+						
 						/* set current vtxt */
 						if (tuxtxt_cache.vtxtpid == 0)
 							tuxtxt_cache.vtxtpid = pid_table[0].vtxt_pid;
@@ -3591,6 +3580,7 @@ void ConfigMenu(int Init, int source)
 					{
 						GetTeletextPIDs(source); //FIXME: source???
 						ClearFB(transp);
+						
 						/* set current vtxt */
 						if (tuxtxt_cache.vtxtpid == 0)
 							tuxtxt_cache.vtxtpid = pid_table[0].vtxt_pid;
@@ -3655,14 +3645,14 @@ void ConfigMenu(int Init, int source)
 #endif
 						}
 						
-//						tuxtxt_cache.pageupdate = 1;
+						//tuxtxt_cache.pageupdate = 1;
 
 						ClearBB(black);
 						gethotlist();
 
 						/* show new teletext */
 						current_service = current_pid;
-//						RenderMessage(ShowServiceName);
+						//RenderMessage(ShowServiceName);
 
 						fcntl(rc, F_SETFL, O_NONBLOCK);
 						RCCode = -1;
@@ -3850,7 +3840,7 @@ void PageInput(int Number)
 		else
 		{
 			tuxtxt_cache.subpage = 0;
-//			RenderMessage(PageNotFound);
+			//RenderMessage(PageNotFound);
 #if TUXTXT_DEBUG
 			printf("TuxTxt <DirectInput: %.3X not found>\n", tuxtxt_cache.page);
 #endif
@@ -4255,181 +4245,8 @@ void SwitchZoomMode()
 	}
 }
 
-/*
- * SwitchScreenMode
-*/
-void getCurrentPIGSettings(int* left, int* top, int* width, int* height)
-{
-#if !defined (PLATFORM_GENERIC)  
-	FILE* fd;
-	
-	fd = fopen("/proc/stb/vmpeg/0/dst_left", "r");
-	fscanf(fd, "%x", left);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_top", "r");
-	fscanf(fd, "%x", top);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_width", "r");
-	fscanf(fd, "%x", width);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_height", "r");
-	fscanf(fd, "%x", height);
-	fclose(fd);
-#endif	
-
-	dprintf(DEBUG_NORMAL, "%s: top %d, left %d, width %d, height %d\n", __func__, *left, *top, *width, *height);
-}
-
-void getCurrentPOLICYSettings()
-{
-#if !defined (PLATFORM_GENERIC)  
-	FILE* fd;
-	fd = fopen("/proc/stb/video/policy", "r");
-	fscanf(fd, "%s", policy);
-	fclose(fd);
-#endif	
-}
-
-void getCurrentASPECTSettings()
-{
-#if !defined (PLATFORM_GENERIC)  
-	FILE* fd;
-	
-	fd = fopen("/proc/stb/video/aspect", "r");
-	fscanf(fd, "%s", aspect);
-	fclose(fd);
-#endif	
-}
-
-void setCurrentPIGSettings(int left, int top, int width, int height)
-{
-	int _x, _y, _w, _h;
-	int osd_w = CFrameBuffer::getInstance()->getScreenWidth(true);
-	int osd_h = CFrameBuffer::getInstance()->getScreenHeight(true);
-	/* the target "coordinates" seem to be in a PAL sized plane
-	 * TODO: check this in the driver sources */
-	int xres = 720; /* proc_get_hex("/proc/stb/vmpeg/0/xres") */
-	int yres = 576; /* proc_get_hex("/proc/stb/vmpeg/0/yres") */
-	
-	if (left == -1 && top == -1 && width == -1 && height == -1)
-	{
-		_w = xres;
-		_h = yres;
-		_x = 0;
-		_y = 0;
-	}
-	else
-	{
-		_x = left * xres / osd_w;
-		_w = width * xres / osd_w;
-		_y = top * yres / osd_h;
-		_h = height * yres / osd_h;
-	}
-	
-#if !defined (PLATFORM_GENERIC)	
-	//
-	FILE* fd;
-	
-	dprintf(DEBUG_NORMAL, "%s: top %d, left %d, width %d, height %d\n", __func__, left, top, width, height);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_left", "w");
-	fprintf(fd, "%x", _x/*left*/);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_top", "w");
-	fprintf(fd, "%x", _y/*top*/);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_width", "w");
-	fprintf(fd, "%x", _w/*width*/);
-	fclose(fd);
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_height", "w");
-	fprintf(fd, "%x", _h/*height*/);
-	fclose(fd);
-#endif	
-}
-
-// new
-void getCurrentPictureInfo(int &width, int &height, int &rate)
-{
-#if !defined (PLATFORM_GENERIC)  
-  	unsigned char buffer[10];
-	int n, fd;	
-
-	// framerate
-	rate = 0;
-	fd = open("/proc/stb/vmpeg/0/framerate", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
-	{
-#ifdef __sh__	  
-		sscanf((const char*) buffer, "%X", &rate);
-#else
-		sscanf((const char*) buffer, "%d", &rate);
-#endif		
-		rate = rate/1000;
-	}
-
-	// width (xres)
-	width = 0;
-	fd = open("/proc/stb/vmpeg/0/xres", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
-	{
-		sscanf((const char*) buffer, "%X", &width);
-	}
-
-	// height  (yres)
-	height = 0;
-	fd = open("/proc/stb/vmpeg/0/yres", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
-	{
-		sscanf((const char*) buffer, "%X", &height);
-	}
-#endif	
-}
-
-void setCurrentPOLICYSettings(int reset)
-{
-#if !defined (PLATFORM_GENERIC)  
-	FILE* fd;
-	fd = fopen("/proc/stb/video/policy", "w");
-	if (reset == 1)
-	    fprintf(fd, "%s", policy);
-	fclose(fd);
-#endif	
-}
-
-void setCurrentASPECTSettings(int reset)
-{
-#if !defined (PLATFORM_GENERIC)  
-	FILE* fd;
-	
-	fd = fopen("/proc/stb/video/aspect", "w");
-	if (reset == 1)
-	   fprintf(fd, "%s", aspect);
-	else
-	   fprintf(fd, "4:3");
-	fclose(fd);
-#endif	
-}
-
 void SwitchScreenMode(int newscreenmode)
 {
-
-	//struct v4l2_format format;
-
 	// reset transparency mode
 	if (transpmode)
 		transpmode = 0;
@@ -4438,7 +4255,7 @@ void SwitchScreenMode(int newscreenmode)
 		screenmode++;
 	else // set directly
 		screenmode = newscreenmode;
-	//if ((screenmode > (screen_mode2 ? 2 : 1)) || (screenmode < 0))
+
 	if ((screenmode > 2) || (screenmode < 0))
 		screenmode = 0;
 
@@ -4449,11 +4266,6 @@ void SwitchScreenMode(int newscreenmode)
 	// update page
 	tuxtxt_cache.pageupdate = 1;
 
-	// clear back buffer
-	//clearbbcolor = screenmode ? transp : FullScrColor;
-
-	//ClearBB(clearbbcolor);
-	//TEST
 	/* clear back buffer */
 	clearbbcolor = screenmode?transp:static_cast<int>(FullScrColor);
 
@@ -4474,10 +4286,10 @@ void SwitchScreenMode(int newscreenmode)
 		dprintf(DEBUG_NORMAL, "Settup video picture\n");
 		
 		// ugly hack
-		// dont calcultae rate when we have HD until to fix this
+		// dont calculate rate when we have HD until to fix this
 		int xres, yres, framerate;
 
-		if (screenmode==1) // split with topmenu
+		if (screenmode == 1) // split with topmenu
 		{
 			fw = fontwidth_topmenumain;
 			fh = fontheight;
@@ -4485,23 +4297,10 @@ void SwitchScreenMode(int newscreenmode)
 			tw = TV43WIDTH;
 			displaywidth = (TV43STARTX - sx);
 			StartX = sx;
-			//test
-			//StartX = sx + (((ex-sx) - (40*fw+2+tw)) / 2); 
 
 			tx = TV43STARTX;
 			ty = TV43STARTY;
 			th = TV43HEIGHT;
-
-			// ugly hack
-			// dont calcultae rate when we have HD until to fix this
-			//int xres, yres, framerate;
-#if 0			
-			getCurrentPictureInfo(xres, yres, framerate);
-	
-			if(xres < 1280)
-#endif			  
-				// set pig
-				setCurrentPIGSettings(tx, ty, tw, th);
 		}
 		else  // 2: split with full height tv picture
 		{
@@ -4514,16 +4313,10 @@ void SwitchScreenMode(int newscreenmode)
 			th = TV169FULLHEIGHT;
 
 			displaywidth= (TV169FULLSTARTX - sx);
-			//displaywidth = (sx +(ex - tw));
-
-#if 0			
-			getCurrentPictureInfo(xres, yres, framerate);
-	
-			if(xres < 1280)
-#endif			  
-			// set pig	
-			setCurrentPIGSettings(tx, ty, tw, th);
 		}
+		
+		// set pig	
+		videoDecoder->Pig(tx, ty, tw, th);
 
 		setfontwidth(fw);
 
@@ -4532,8 +4325,8 @@ void SwitchScreenMode(int newscreenmode)
 	{
 		dprintf(DEBUG_NORMAL, "[TuxTxt] Full txt Screen (2).\n"); 
 
-		// set pig
-		setCurrentPIGSettings(-1, -1, -1, -1);		
+		// set pig	
+		videoDecoder->Pig(-1, -1, -1, -1);
 
 		setfontwidth(fontwidth_normal);
 		displaywidth= (ex - sx);
