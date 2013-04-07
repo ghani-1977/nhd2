@@ -117,7 +117,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_home = configfile.getInt32("key_home", KEY_HOME);
 #endif			
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DGS)
 	key_setup = configfile.getInt32("key_setup", 0x8B);
 #else
 	key_setup = configfile.getInt32("key_setup", KEY_MENU);
@@ -133,7 +133,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_yellow = configfile.getInt32("key_yellow", KEY_YELLOW);
 	key_blue	= configfile.getInt32("key_blue", KEY_BLUE);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DGS)
 	key_audio = configfile.getInt32("key_audio", /*0x3D*/0x188);
 	key_video = configfile.getInt32("key_video", /*0x90*/0xE2);		
 	key_text = configfile.getInt32("key_text", /*0x173*/0x184);
@@ -143,8 +143,10 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_text = configfile.getInt32("key_text", KEY_TEXT);
 #endif
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DGS)
 	key_info = configfile.getInt32("key_info", 0x166);
+#elif defined (PLATFORM_UFC960)
+	key_info = configfile.getInt32("key_info", 0x8A);	
 #else
 	key_info = configfile.getInt32("key_info", KEY_INFO);
 #endif			
@@ -155,7 +157,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_epg = configfile.getInt32("key_epg", KEY_EPG);
 #endif			
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DGS)
 	key_recall = configfile.getInt32("key_recall", 0x19C);
 #else
 	key_recall = configfile.getInt32("key_recall", KEY_BACK);
@@ -174,7 +176,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 			
 #if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE)
 	key_mode = configfile.getInt32("key_mode", 0x181);
-#elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#elif defined (PLATFORM_DGS)
 	key_mode = configfile.getInt32("key_mode", 0x181);
 #else			
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);
@@ -206,7 +208,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 			
 	key_bookmark = configfile.getInt32("key_bookmark", /*KEY_BOOKMARK*/0x9C);
 
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_DGS)
 	key_multifeed = configfile.getInt32("key_multifeed", /*KEY_MULTIFEED*/0x42);
 #else
 	key_multifeed = configfile.getInt32("key_multifeed", 0x165);

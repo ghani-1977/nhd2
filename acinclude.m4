@@ -435,7 +435,7 @@ AC_ARG_WITH(boxmodel,
 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
 				valid for xtrend: et4x00,et5x00,et6x00,et9x00
 				valid for fulan: spark, spark7162
-				valid for kathrein: ufs910, ufs922, ufs912, ufs913
+				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
 				valid for ipbox: ipbox55, ipbox99, ipbox9900
 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo
@@ -711,6 +711,8 @@ elif test "$BOXMODEL" = "ufs913"; then
 	AC_DEFINE(PLATFORM_UFS913, 1, [building for ufs913])
 elif test "$BOXMODEL" = "ufs922"; then
 	AC_DEFINE(PLATFORM_UFS922, 1, [building for ufs922])
+elif test "$BOXMODEL" = "ufc960"; then
+	AC_DEFINE(PLATFORM_UFC960, 1, [building for ufc960])
 
 elif test "$BOXMODEL" = "ipbox55"; then
 	AC_DEFINE(PLATFORM_IPBOX55, 1, [building for ipbox55])

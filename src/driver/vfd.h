@@ -120,7 +120,7 @@ typedef enum
 
 #endif //spark7162
 
-#if defined(PLATFORM_UFS910) || defined(PLATFORM_UFS913)
+#if defined(PLATFORM_KATHREIN)
 
 typedef enum
 {
@@ -167,7 +167,7 @@ typedef enum
 
 #endif //ufs910, ufs913
 
-#if !defined(PLATFORM_UFS910) && !defined(PLATFORM_SPARK7162) && !defined(PLATFORM_UFS913) && !defined (PLATFORM_COOLSTREAM)
+#if !defined(PLATFORM_KATHREIN) && !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
 // duckbox
 // token from micom
 enum {

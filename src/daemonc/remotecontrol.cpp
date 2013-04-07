@@ -307,17 +307,17 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
+				t_channel_id new_id = *(t_channel_id *)data;
+				tallchans_iterator cit = allchans.find(new_id);
+					
+				if ( cit != allchans.end() )
+				{
+					current_channel_name = cit->second.getName();
+					current_channel_number = cit->second.number;
+				}
+					
 				if (CVFD::getInstance()->is4digits)
 				{
-					t_channel_id new_id = *(t_channel_id *)data;
-					tallchans_iterator cit = allchans.find(new_id);
-					
-					if ( cit != allchans.end() )
-					{
-						//current_channel_name = cit->second.getName();
-						current_channel_number = cit->second.number;
-					}
-					
 					char tmp[5];
 						
 					sprintf(tmp, "%04d", current_channel_number);
@@ -364,17 +364,17 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 			{
+				t_channel_id new_id = *(t_channel_id *)data;
+				tallchans_iterator cit = allchans.find(new_id);
+					
+				if ( cit != allchans.end() )
+				{
+					current_channel_name = cit->second.getName();
+					current_channel_number = cit->second.number;
+				}
+					
 				if (CVFD::getInstance()->is4digits)
 				{
-					t_channel_id new_id = *(t_channel_id *)data;
-					tallchans_iterator cit = allchans.find(new_id);
-					
-					if ( cit != allchans.end() )
-					{
-						//current_channel_name = cit->second.getName();
-						current_channel_number = cit->second.number;
-					}
-					
 					char tmp[5];
 						
 					sprintf(tmp, "%04d", current_channel_number);
