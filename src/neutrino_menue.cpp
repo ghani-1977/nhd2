@@ -938,10 +938,6 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	// type
 	/* versionInfo.getType() returns const char * which is never deallocated */
 	updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_CURRENTVERSIONSNAPSHOT, false, versionInfo.getType()));
-	
-	//proxyserver submenu
-	//updateSettings->addItem(GenericMenuSeparatorLine);
-	//updateSettings->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_PROXYSERVER_SEP, true, NULL, new CProxySetup(LOCALE_MAINSETTINGS_NETWORK), NULL, CRCInput::RC_nokey, NULL));
 
 	// check update
 	//FIXME: allow update only when the rootfs is jffs2/squashfs
