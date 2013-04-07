@@ -675,13 +675,11 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h)
 	//ugly we just resize the video display
 	dprintf(DEBUG_INFO, "%s:%s - x=%d y=%d w=%d h=%d\n", FILENAME, __FUNCTION__, x, y, w, h);
 	
-	// eifes
-	//char buffer[16];
 	int _x, _y, _w, _h;
 	/* the target "coordinates" seem to be in a PAL sized plane
 	 * TODO: check this in the driver sources */
-	int xres = 720; /* proc_get_hex("/proc/stb/vmpeg/0/xres") */
-	int yres = 576; /* proc_get_hex("/proc/stb/vmpeg/0/yres") */
+	int xres = 720;
+	int yres = 576;
 	
 	if (x == -1 && y == -1 && w == -1 && h == -1)
 	{

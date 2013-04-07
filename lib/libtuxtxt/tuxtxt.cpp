@@ -446,19 +446,6 @@ unsigned short translate(int code)
 
 #define NEUTRINO_KEYMAP_FILE		CONFIGDIR "/keymap.conf"	
 
-//void getCurrentPIGSettings(int* left, int* top, int* width, int* height);
-//void setCurrentPIGSettings(int left, int top, int width, int height);
-
-// aspect
-//char aspect[16];
-//void getCurrentASPECTSettings();
-//void setCurrentASPECTSettings(int reset);
-
-// policy
-//char policy[16];
-//void getCurrentPOLICYSettings();
-//void setCurrentPOLICYSettings(int reset);
-
 // subs
 static pthread_t ttx_sub_thread;
 static int reader_running;
@@ -4327,6 +4314,8 @@ void SwitchScreenMode(int newscreenmode)
 
 		// set pig	
 		videoDecoder->Pig(-1, -1, -1, -1);
+		
+		fontwidth_normal = (ex - sx) / 40;
 
 		setfontwidth(fontwidth_normal);
 		displaywidth= (ex - sx);
@@ -5521,7 +5510,7 @@ void RenderPage()
 			}
 		}
 		
-		fontwidth_normal = (ex-sx) / (40-nofirst);
+		fontwidth_normal = (ex - sx) / (40 - nofirst);
 		setfontwidth(fontwidth_normal);
 		fontwidth_topmenumain = (TV43STARTX-sx) / (40-nofirst);
 		fontwidth_topmenusmall = (ex- TOPMENUSTARTX) / TOPMENUCHARS;
