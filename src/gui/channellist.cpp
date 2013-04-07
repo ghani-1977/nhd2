@@ -1903,20 +1903,15 @@ void CChannelList::paintItem(int pos)
 		{
 			if (!(chan->currentEvent.description.empty())) 
 			{
-				if (CVFD::getInstance()->is4digits)
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-				else
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());				
+				snprintf(nameAndDescription, sizeof(nameAndDescription), "%s - %s", chan->name.c_str(), p_event->description.c_str());				
 			} 
 			else
 			{				
-				if (CVFD::getInstance()->is4digits)
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%04d", chan->number);
-				else
-					snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
+				snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", chan->name.c_str() );
 			}
 			
-			CVFD::getInstance()->ShowText(nameAndDescription); // UTF-8
+			if (!CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->ShowText(nameAndDescription); // UTF-8
 		}
 	}
 }
