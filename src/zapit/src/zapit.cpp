@@ -2414,28 +2414,24 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			standby = true;
 			stopPlayBack();
 			standby = false;
-			
-#if defined (ENABLE_LIBEPLAYER3)			
+						
 			if(audioDecoder)
 				audioDecoder->Close();
 			
 			if(videoDecoder)
-				videoDecoder->Close();
-#endif			
+				videoDecoder->Close();			
 			
 			playbackStopForced = true;
 			break;
 	
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
-			
-#if defined (ENABLE_LIBEPLAYER3)			
+						
 			if(videoDecoder)
 				videoDecoder->Open();
 	
 			if(audioDecoder)
-				audioDecoder->Open();	
-#endif			
+				audioDecoder->Open();			
 	
 			startPlayBack(live_channel);
 			
