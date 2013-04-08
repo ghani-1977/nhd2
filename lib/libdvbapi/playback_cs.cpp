@@ -301,7 +301,7 @@ void cPlayback::Close(void)
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
 	
-#if defined (PLATFORM_GENERIC) || defined (PLATFORM_XTREND)	
+#if defined (PLATFORM_GENERIC) || defined (BOXMODEL_ET9X00) || defined (BOXMODEL_DM800SE)
 	if(playing)
 		Stop();
 #endif	
