@@ -161,7 +161,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				
 				case GST_STATE_CHANGE_READY_TO_PAUSED:
 				{
-					/*
 					GstIterator *children;
 					if (audioSink)
 					{
@@ -178,7 +177,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					gst_iterator_free(children);
-					*/
 				}
 				break;
 				
@@ -194,7 +192,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				
 				case GST_STATE_CHANGE_PAUSED_TO_READY:
 				{
-					/*
 					if (audioSink)
 					{
 						gst_object_unref(GST_OBJECT(audioSink));
@@ -205,7 +202,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 						gst_object_unref(GST_OBJECT(videoSink));
 						videoSink = NULL;
 					}
-					*/
 				}	
 				break;
 				
@@ -309,8 +305,27 @@ void cPlayback::Close(void)
 	// close gst
 	if (m_gst_playbin)
 	{
+		if (audioSink)
+		{
+			gst_object_unref(GST_OBJECT(audioSink));
+			audioSink = NULL;
+			
+			dprintf(DEBUG_NORMAL, "audioSink closed\n");
+		}
+					
+		if (videoSink)
+		{
+			gst_object_unref(GST_OBJECT(videoSink));
+			videoSink = NULL;
+			
+			dprintf(DEBUG_NORMAL, "videoSink closed\n");
+		}
+		
+		
 		// unref m_gst_playbin
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
+		m_gst_playbin = NULL;
+		
 		dprintf(DEBUG_NORMAL, "GST playbin closed\n");
 	}
 #elif defined ENABLE_LIBEPLAYER3
