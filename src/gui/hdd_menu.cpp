@@ -149,15 +149,12 @@ static int check_if_mounted(char * dev)
 		{
 			if(strstr(buffer, dev)) 
 			{
-				//printf("HDD: mountd\n");
 				fclose(f);
 				return 1;
 			}
 		}
 		fclose(f);
 	}
-
-	//printf("HDD: not mountd\n");
 
 	return 0;
 }
@@ -192,7 +189,6 @@ int CHDDMenuHandler::hddMenu()
 	hddmenu->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 	
 	// activate settings
-	//hddmenu->addItem(new CMenuForwarder(LOCALE_HDD_ACTIVATE, true, "", new CHDDDestExec() ));
 	hddmenu->addItem(new CMenuForwarder(LOCALE_HDD_ACTIVATE, true, NULL, this, "activateNow", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
 
 	// sleep time
@@ -270,9 +266,7 @@ int CHDDMenuHandler::hddMenu()
 		fscanf(f, "%d", &removable);
 		fclose(f);
 
-		sprintf(str, "%s %s (%s-%s %lld %s)", g_Locale->getText(LOCALE_HDD_MANAGE), namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
-
-		printf("[neutrino] HDD: %s\n", str);
+		sprintf(str, "%s (%s-%s %lld %s)", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
 
 		/* hdd menu */
 		tempMenu[i] = new CMenuWidget(str, NEUTRINO_ICON_SETTINGS);
@@ -405,10 +399,7 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& key)
 	progress->showStatusMessageUTF("Executing fdisk");
 	progress->showGlobalStatus(0);
 	
-	//sprintf(cmd, "/sbin/init_hdd.sh /dev/%s", key.c_str());
-	//printf("CHDDInit: executing %s\n", cmd);
-	
-	sprintf(cmd, "/sbin/init_hdd.sh /dev/%s", key.c_str());
+	sprintf(cmd, "init_hdd.sh /dev/%s", key.c_str());
 	printf("CHDDInit: executing %s\n", cmd);
 	
 	f=popen(cmd, "r");

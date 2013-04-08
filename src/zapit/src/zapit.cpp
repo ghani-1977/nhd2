@@ -2414,12 +2414,12 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			standby = true;
 			stopPlayBack();
 			standby = false;
-						
-			if(audioDecoder)
-				audioDecoder->Close();
 			
 			if(videoDecoder)
-				videoDecoder->Close();			
+				videoDecoder->Close();
+			
+			if(audioDecoder)
+				audioDecoder->Close();
 			
 			playbackStopForced = true;
 			break;

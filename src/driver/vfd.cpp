@@ -791,31 +791,37 @@ void CVFD::ShowText(const char * str)
 	if(len == 0)
 		return;
 	
-	//FIXME: ??? dont trim any things if we have 4digits
-	if(!is4digits)
-	{
-		int i = 0;
+	// token from seifes repo
+	std::string text = str;
 	
-		if (len > 0)
-		{
-			for(i = len - 1; i > 0; i--) 
-			{
-				if (str[i - 1] != ' ')
-					break;
-			}
-		}
+	if(!is4digits)
+	{	
+		/* this is crude, it just replaces ÄÖÜ with AOU since the display can't show them anyway */
+		/*                       Ä           ä           Ö           ö           Ü           ü   	ß  	*/
+		char tofind[][3] = { "\xc3\x84", "\xc3\xa4", "\xc3\x96", "\xc3\xb6", "\xc3\x9c", "\xc3\xbc", "\xc3\x9f" };
+		char toreplace[] = { "AaOoUus" };
+		char repl[2];
+		repl[1] = '\0';
+		int i = 0;
+		size_t pos;
 		
-		if (((int)strlen(text) == i && !strncmp(str, text, i)) || len > 255)
-			return;
-
-		strncpy(text, str, i);
-		text[i] = '\0';
+		while (toreplace[i] != 0x0) 
+		{
+			pos = text.find(tofind[i]);
+			if (pos == std::string::npos) 
+			{
+				i++;
+				continue;
+			}
+			repl[0] = toreplace[i];
+			text.replace(pos, 2, std::string(repl));
+		}
 	}
 	 
 #if defined (__sh__)	 
 	openDevice();
 	
-	if( write(fd , str, len > 16? 16 : len ) < 0)
+	if( write(fd , text.c_str(), len > 16? 16 : len ) < 0)
 		perror("write to vfd failed");
 	
 	closeDevice();
