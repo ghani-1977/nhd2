@@ -68,7 +68,7 @@ class CHDDuMountMSGExec : public CMenuTarget
 class CHDDInit : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget * parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string& actionKey);
 };
 
 // explore
@@ -82,7 +82,7 @@ class CHDDBrowser : public CMenuTarget
 class CHDDMenuHandler : public CMenuTarget
 {	
 	public:
-		int  exec( CMenuTarget* parent,  const std::string &actionKey);
+		int  exec( CMenuTarget * parent,  const std::string &actionKey);
 		int  hddMenu();
 };
 
