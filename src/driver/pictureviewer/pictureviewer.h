@@ -73,7 +73,7 @@ class CPictureViewer
 		bool DecodeImage(const std::string & name, bool showBusySign=false, bool unscaled=false);
 		bool DisplayNextImage();
 		void SetScaling( CFrameBuffer::ScalingMode s){m_scaling = s;}
-		void SetAspectRatio(float aspect_ratio) {m_aspect=aspect_ratio;}
+		void SetAspectRatio(float aspect_ratio) {m_aspect = aspect_ratio;}
 		void showBusy(int sx, int sy, int width, char r, char g, char b);
 		void hideBusy();
 		void Zoom(float factor);
