@@ -25,7 +25,6 @@ audiomenu.stereo Stereo
 audiomenu.ac3_delay AC3 Delay
 audiomenu.pcm_delay PCM Delay
 audiomenu.volume_adjust Audio Spur Volume
-
 audiomenu.auto_lang Tonwahl automatisch
 audiomenu.auto_subs Untertitel automatisch
 audiomenu.pref_lang Sprache
@@ -33,7 +32,6 @@ audiomenu.pref_lang_head Bevorzugte EPG/Ton Sprachen
 audiomenu.pref_languages Bevorzugte Sprachen
 audiomenu.pref_subs Sprache
 audiomenu.pref_subs_head Untertitelwahl
-
 audioplayer.add Hinzufügen
 audioplayer.add_ic Icecast
 audioplayer.add_loc Lokale Radioliste
