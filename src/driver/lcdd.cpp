@@ -55,7 +55,7 @@ static bool isUTF8(const std::string &string)
 {
 	unsigned int len=string.size();
 
-	for (unsigned int i=0; i < len; ++i)
+	for (unsigned int i = 0; i < len; ++i)
 	{
 		if (!(string[i]&0x80)) // normal ASCII
 			continue;
@@ -293,7 +293,7 @@ void CLCD::displayUpdate()
 
 void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const int inverse, const int bias)
 {
-#if defined (PLATFORM_DREAMBOX) //@scp kannst di dies checken ob es geht ?
+#if defined (PLATFORM_DREAMBOX) //@scp kannst dies checken ob es geht ?
 	if (!display.isAvailable())
 		return;
 	int fd;
@@ -510,6 +510,7 @@ void CLCD::showServicename(const std::string name, const bool perform_wakeup)
 		return;
 
 	showTextScreen(servicename, epg_title, showmode, perform_wakeup, true);
+	
 	return;
 }
 

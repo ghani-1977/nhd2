@@ -403,8 +403,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	if(parent)
 		parent->hide();
 
-	if(updateMode == UPDATEMODE_INTERNET) //internet-update
-		paint();
+	paint();
 
 	if(!checkVersion4Update()) 
 	{
@@ -418,12 +417,9 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 	CVFD::getInstance()->setMode(CLCD::MODE_PROGRESSBAR2);	
 #endif // VFD_UPDATE
 
-	if(updateMode == UPDATEMODE_INTERNET) //internet-update
-	{
-		showGlobalStatus(19);
-		paint();
-		showGlobalStatus(20);
-	}
+	showGlobalStatus(19);
+	paint();
+	showGlobalStatus(20);
 
 	// check image version
 	if(updateMode == UPDATEMODE_INTERNET) //internet-update
@@ -442,8 +438,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		filename = std::string(fullname);
 	}
 
-	if(updateMode == UPDATEMODE_INTERNET) //internet-update
-		showGlobalStatus(40);
+	showGlobalStatus(40);
 
 	CFlashTool ft;
 	
@@ -454,9 +449,8 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		ft.setStatusViewer(this);
 	}
 
-	if(updateMode == UPDATEMODE_INTERNET) //internet-update
-		// MD5summ check
-		showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_MD5CHECK)); // UTF-8
+	// MD5summ check
+	showStatusMessageUTF(g_Locale->getText(LOCALE_FLASHUPDATE_MD5CHECK)); // UTF-8
 	
 	if((updateMode == UPDATEMODE_INTERNET) && !ft.check_md5(filename, file_md5)) 
 	{
@@ -480,8 +474,7 @@ int CFlashUpdate::exec(CMenuTarget * parent, const std::string &)
 		}
 	}
 
-	if(updateMode == UPDATEMODE_INTERNET) //internet-update
-		showGlobalStatus(60);
+	showGlobalStatus(60);
 
 	// flash/install
 	dprintf(DEBUG_NORMAL, "[update] filename %s type %c\n", filename.c_str(), fileType);
