@@ -115,6 +115,7 @@ char old_timestr[10];
 static event_id_t last_curr_id = 0, last_next_id = 0;
 
 extern int FrontendCount;
+extern int timeshift;
 
 extern CZapitClient::SatelliteList satList;
 static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
@@ -230,7 +231,7 @@ void CInfoViewer::paintTime (bool show_dot, bool firstPaint)
 
 void CInfoViewer::showRecordIcon(const bool show)
 {
-	recordModeActive = CNeutrinoApp::getInstance ()->recordingstatus || shift_timer;
+	recordModeActive = CNeutrinoApp::getInstance()->recordingstatus || shift_timer;
 
 	if (recordModeActive) 
 	{
@@ -447,13 +448,17 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	showSNR();
 
 	// blue button
-	int icon_w;
-	int icon_h;
+	// features
+	if(!timeshift)
+	{
+		int icon_w;
+		int icon_h;
+			
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
 		
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
-	
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, ChanInfoX + 16*3 + asize * 3 + 2*7, BoxEndY - ICON_Y_1);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 16*4 + asize * 3 + 2*8, BoxEndY+2 - 16 + icon_w, ButtonWidth - (2 + /*NEUTRINO_ICON_BUTTON_BLUE_WIDTH*/icon_w + 2 + 2), g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, ChanInfoX + 16*3 + asize * 3 + 2*7, BoxEndY - ICON_Y_1);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 16*4 + asize * 3 + 2*8, BoxEndY+2 - 16 + icon_w, ButtonWidth - (2 + icon_w + 2 + 2), g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+	}
 
 	if( showButtonBar )
 	{
@@ -463,7 +468,19 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		showButton_Audio();
 			
 		// yellow
-		showButton_SubServices ();
+		// sub services/help for timeshift
+		if(timeshift)
+		{
+			int icon_w;
+			int icon_h;
+		
+			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+	
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2, BoxEndY- ICON_Y_1 );
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, BoxEndY+2, asize, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		}
+		else
+			showButton_SubServices();
 			
 		showIcon_CA_Status(0);
 		showIcon_16_9();
@@ -1270,7 +1287,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == channel_id) 
 		{
 	  		if ( is_visible && showButtonBar )
-				showButton_SubServices ();
+				showButton_SubServices();
 		}
 		return messages_return::handled;
   	} 
@@ -1396,18 +1413,17 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	return messages_return::unhandled;
 }
 
-void CInfoViewer::showButton_SubServices ()
+void CInfoViewer::showButton_SubServices()
 {
   	if (!(g_RemoteControl->subChannels.empty ())) 
 	{
 		int icon_w;
 		int icon_h;
 		
-		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	
         	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2, BoxEndY- ICON_Y_1 );
-        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, 
-		BoxEndY+2, asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, BoxEndY+2, asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 }
 
@@ -1677,6 +1693,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 		
 				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, BoxEndY - ICON_Y_1 );
+				
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	  		}
 		}

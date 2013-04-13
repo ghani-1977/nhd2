@@ -109,6 +109,7 @@ cPlayback * playback = NULL;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
+extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 
 #define MOVIE_HINT_BOX_TIMER 5				// time to show bookmark hints in seconds
 
@@ -2135,6 +2136,7 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				g_Timerd->stopTimerEvent(CNeutrinoApp::getInstance()->recording_id); // this stop immediatly timeshift
 				CNeutrinoApp::getInstance()->recording_id = 0;
+				CNeutrinoApp::getInstance()->recordingstatus = 0;
 			}
 
 			if (!was_file)
@@ -2702,6 +2704,8 @@ void CMoviePlayerGui::PlayFile(void)
 				showFileInfoWebTV();
 			else if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);
+			else if(timeshift)
+				g_EpgData->show(live_channel_id);
 		}
 		else if(msg == CRCInput::RC_home)
 		{
