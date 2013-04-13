@@ -2139,6 +2139,8 @@ void CMoviePlayerGui::PlayFile(void)
 				CNeutrinoApp::getInstance()->recording_id = 0;
 				CNeutrinoApp::getInstance()->recordingstatus = 0;
 				CNeutrinoApp::getInstance()->timeshiftstatus = 0;
+				
+				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 			}
 			else
 				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift

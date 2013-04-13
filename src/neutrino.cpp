@@ -1846,9 +1846,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 	{
 		// stop auto record
 		if(autoshift) 
-		{
 			stopAutoRecord();
-		}
 
 		//
 		if(recordingstatus == 1) 
@@ -1867,7 +1865,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 				eventinfo.epgID = epgData.eventID;
 				eventinfo.epg_starttime = epgData.epg_times.startzeit;
 				strncpy(eventinfo.epgTitle, epgData.title.c_str(), EPG_TITLE_MAXLEN-1);
-				eventinfo.epgTitle[EPG_TITLE_MAXLEN-1]=0;
+				eventinfo.epgTitle[EPG_TITLE_MAXLEN - 1] = 0;
 			}
 			else 
 			{
@@ -1884,6 +1882,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			strcpy(recDir, (preselectedDir != NULL) ? preselectedDir : g_settings.network_nfs_recordingdir);
 				
 			(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = recDir;
+			
 			dprintf(DEBUG_NORMAL, "CNeutrinoApp::doGuiRecord: start record to dir %s\n", recDir);
 
 			// start to record baby
@@ -3013,7 +3012,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 						     CVCRControl::getInstance()->getDeviceState() == CVCRControl::CMD_VCR_PAUSE))
 						{
 							CVCRControl::getInstance()->Stop();
-							recordingstatus=0;
+							recordingstatus = 0;
 							startNextRecording();
 						}
 					}
