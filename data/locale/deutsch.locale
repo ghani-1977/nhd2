@@ -610,7 +610,7 @@ imageinfo.type Type:
 inetradio.name Internetradio
 infoviewer.epgnotload Informationen noch nicht geladen...
 infoviewer.epgwait Warte auf EPG-Informationen...
-infoviewer.eventlist EPG/EPG-Plus
+infoviewer.eventlist Event-list
 infoviewer.languages Tonwahl/Untertitel
 infoviewer.motor_moving Antennenpositionierung
 infoviewer.next später

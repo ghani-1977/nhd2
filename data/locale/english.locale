@@ -611,7 +611,7 @@ imageinfo.type Type:
 inetradio.name Internetradio
 infoviewer.epgnotload EPG not loaded....
 infoviewer.epgwait waiting for EPG...
-infoviewer.eventlist EPG/EPG-Plus
+infoviewer.eventlist Event-List
 infoviewer.languages Audio/Subtitle
 infoviewer.motor_moving Antenna positioning
 infoviewer.next next

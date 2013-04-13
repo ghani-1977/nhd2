@@ -3149,6 +3149,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		{
 			StopSubtitles();
 
+			// pre-selected channel-num/bouquet-num/channel-mode
 			int nNewChannel = -1;
 			int old_num = 0;
 			int old_b = bouquetList->getActiveBouquetNumber();

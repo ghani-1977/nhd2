@@ -67,16 +67,6 @@ const CMenuOptionChooser::keyval OPTIONS_LASTMODE_OPTIONS[OPTIONS_LASTMODE_OPTIO
         { 1, NONEXISTANT_LOCALE, "TV"  }
 };
 
-/*
-#define SECTIONSD_SCAN_OPTIONS_COUNT 3
-const CMenuOptionChooser::keyval SECTIONSD_SCAN_OPTIONS[SECTIONSD_SCAN_OPTIONS_COUNT] =
-{
-	{ 0, LOCALE_OPTIONS_OFF },
-	{ 1, LOCALE_OPTIONS_ON  },
-	{ 2, LOCALE_OPTIONS_ON_WITHOUT_MESSAGES  }
-};
-*/
-
 CZapitSetup::CZapitSetup()
 {
 	selected = -1;
@@ -143,8 +133,8 @@ bool CZapitSetup::changeNotify(const neutrino_locale_t OptionName, void *)
 	if (ARE_LOCALES_EQUAL(OptionName, LOCALE_MISCSETTINGS_ZAPIT))
 	{
 		zapit1->setActive(!g_settings.uselastchannel);
-		zapit2->setActive(!g_settings.uselastchannel);
-		zapit3->setActive(!g_settings.uselastchannel);
+		zapit2->setActive(!g_settings.uselastchannel && !(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio) );
+		zapit3->setActive(!g_settings.uselastchannel && !(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv) );
 	}
 
 	return true;
@@ -192,7 +182,9 @@ void CSelectChannelWidget::InitZapitChannelHelper(CZapitClient::channelsMode mod
 	if (nNewBouquet > -1)
 	{
 		nNewChannel = bouquetList->Bouquets[nNewBouquet]->channelList->show();
+		
 		//printf("nNewChannel %d\n",nNewChannel);
+		
 		if (nNewChannel > -1)
 		{
 			if(mode == CZapitClient::MODE_TV)
