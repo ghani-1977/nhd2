@@ -117,6 +117,7 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 #define MP_TS_SIZE 262072				// ~0.5 sec
 
 extern char rec_filename[512];				// defined in stream2file.cpp
+extern bool autoshift;
 
 CMoviePlayerGui::state playstate;
 bool isMovieBrowser = false;
@@ -2130,14 +2131,17 @@ void CMoviePlayerGui::PlayFile(void)
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
 			}
 			
-			if(timeshift == 2)
-				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
-			else if (timeshift == 1)
+			if(timeshift < 2)
 			{
+				CVCRControl::getInstance()->Stop();
+				
 				g_Timerd->stopTimerEvent(CNeutrinoApp::getInstance()->recording_id); // this stop immediatly timeshift
 				CNeutrinoApp::getInstance()->recording_id = 0;
 				CNeutrinoApp::getInstance()->recordingstatus = 0;
+				CNeutrinoApp::getInstance()->timeshiftstatus = 0;
 			}
+			else
+				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
 
 			if (!was_file)
 				exit = true;

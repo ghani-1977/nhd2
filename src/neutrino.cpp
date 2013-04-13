@@ -569,23 +569,15 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	// recording
 	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
-	g_settings.temp_timeshift = configfile.getInt32( "temp_timeshift", 0 );
+
+	// permanent timeshift
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
-	g_settings.auto_delete = configfile.getInt32( "auto_delete", 0);
 
 	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
 	safe_mkdir(timeshiftDir);
 	
 	dprintf(DEBUG_INFO, "CNeutrinoApp::loadSetup: rec dir %s timeshift dir %s\n", g_settings.network_nfs_recordingdir, timeshiftDir);
-
-	if(g_settings.auto_delete) 
-	{
-		char buf[512];
-		//sprintf(buf, "rm -f %s/*_temp.ts %s/*_temp.xml &", timeshiftDir, timeshiftDir);
-		sprintf(buf, "rm -f %s/*.ts %s/*.xml %s/*.jpg &", timeshiftDir, timeshiftDir, timeshiftDir);
-		system(buf);
-	}
 
 	g_settings.record_hours = configfile.getInt32( "record_hours", 4 );
 	g_settings.recording_audio_pids_default    = configfile.getInt32("recording_audio_pids_default", TIMERD_APIDS_STD | TIMERD_APIDS_AC3);
@@ -1043,9 +1035,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 
 	// RECORDING
 	configfile.setString( "network_nfs_recordingdir", g_settings.network_nfs_recordingdir);
-	configfile.setInt32( "temp_timeshift", g_settings.temp_timeshift );
 	configfile.setInt32( "auto_timeshift", g_settings.auto_timeshift );
-	configfile.setInt32( "auto_delete", g_settings.auto_delete );
 	configfile.setInt32( "record_hours", g_settings.record_hours );
 	configfile.setInt32 ("recording_audio_pids_default"       , g_settings.recording_audio_pids_default);
 	configfile.setBool  ("recording_epg_for_filename"         , g_settings.recording_epg_for_filename);
@@ -1801,7 +1791,7 @@ int startAutoRecord(bool addTimer)
 
 	autoshift = 1;
 	CNeutrinoApp::getInstance()->recordingstatus = 1;
-	CNeutrinoApp::getInstance()->timeshiftstatus = 1;
+	//CNeutrinoApp::getInstance()->timeshiftstatus = 1;
 
 	if( CVCRControl::getInstance()->Record(&eventinfo) == false ) 
 	{
@@ -1839,7 +1829,7 @@ void stopAutoRecord()
 	} 
 	else if(shift_timer)  
 	{
-		g_RCInput->killTimer (shift_timer);
+		g_RCInput->killTimer(shift_timer);
 		shift_timer = 0;
 	}
 	
@@ -1909,7 +1899,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			else if (addTimer) // add timer
 			{
 				time_t now = time(NULL);
-				recording_id = g_Timerd->addImmediateRecordTimerEvent(eventinfo.channel_id, now, now+g_settings.record_hours*60*60, eventinfo.epgID, eventinfo.epg_starttime, eventinfo.apids);
+				recording_id = g_Timerd->addImmediateRecordTimerEvent(eventinfo.channel_id, now, now + g_settings.record_hours*60*60, eventinfo.epgID, eventinfo.epg_starttime, eventinfo.apids);
 			}
 		} 
 		else 
@@ -2680,12 +2670,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			{
 				if (recDir != NULL)
 				{
-					dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: timeshift try, timeshiftstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
-					
-					if(recordingstatus && msg == (neutrino_msg_t) g_settings.key_timeshift)
-						tmode = "ptimeshift"; 	// already recording, pause
+					if(recordingstatus)
+						tmode = "ptimeshift"; 	// already recording, pause(timeshift)
 					else
-						tmode = "timeshift"; 	// record just started
+						tmode = "timeshift";
 
 					if(g_RemoteControl->is_video_started) 
 					{		
@@ -2700,22 +2688,12 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 						} 
 						else
 						{
-							//temp timeshift
-							if(g_settings.temp_timeshift) 
-							{
-								startAutoRecord(true);
-							} 
-							else // timeshift
-							{
-								recordingstatus = 1;
+							// timeshift
+							recordingstatus = 1;
 								
-								timeshiftstatus = recordingstatus;
+							timeshiftstatus = recordingstatus;
 
-								if(strcmp(tmode.c_str(), "timeshift") == 0)
-									doGuiRecord(timeshiftDir, true);
-								else
-									doGuiRecord(g_settings.network_nfs_recordingdir, true);
-							}
+							doGuiRecord(timeshiftDir, true);
 							
 							// jump in movieplayer mode
 							if(timeshiftstatus) 
@@ -2730,15 +2708,9 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( (msg == (neutrino_msg_t)g_settings.mpkey_play) && timeshiftstatus) // play timeshift
 			{
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: timeshift play, timeshiftstatus %d, rec dir %s, timeshift dir %s temp timeshift %d ...\n", recordingstatus, g_settings.network_nfs_recordingdir, timeshiftDir, g_settings.temp_timeshift);
-				printf("g_RemoteControl->is_video_started:%d\n\n", g_RemoteControl->is_video_started);
-
 				if(g_RemoteControl->is_video_started) 
 				{
-					if(timeshiftstatus) 
-					{
-						moviePlayerGui->exec(NULL, tmode);
-					}
+					moviePlayerGui->exec(NULL, tmode);
 				}
 			}
 			else if( msg == CRCInput::RC_record || msg == CRCInput::RC_stop ) 
@@ -3074,6 +3046,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if(g_settings.audio_AnalogMode < 0 || g_settings.audio_AnalogMode > 2)
 			g_settings.audio_AnalogMode = 0;
 
+		// kill shift timer
 		if(shift_timer) 
 		{
 			g_RCInput->killTimer(shift_timer);
@@ -3092,6 +3065,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		nGLCD::Update();
 #endif		
 
+		// scrambled timer
 		if(scrambled_timer) 
 		{
 			g_RCInput->killTimer(scrambled_timer);
@@ -3421,7 +3395,6 @@ _repeat:
 					recordingstatus = 0;
 					autoshift = 0;
 					
-
 					if(timeshiftstatus)
 					{
 						// set timeshift status to false
@@ -3471,6 +3444,7 @@ _repeat:
 	{
 		CTimerd::EventInfo * eventinfo;
 		eventinfo = (CTimerd::EventInfo *) data;
+		
 		if(recordingstatus == 0) 
 		{
 			bool isTVMode = g_Zapit->isChannelTVChannel(eventinfo->channel_id);
@@ -3485,8 +3459,10 @@ _repeat:
 			{
 				tvMode(false);
 			}
+			
 			channelList->zapTo_ChannelID(eventinfo->channel_id);
 		}
+		
 		delete[] (unsigned char*) data;
 		return messages_return::handled;
 	}

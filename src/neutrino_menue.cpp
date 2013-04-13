@@ -1593,14 +1593,8 @@ void CNeutrinoApp::InitRecordingSettings(CMenuWidget &recordingSettings)
 	// timeshift
 	if (recDir != NULL)
 	{
-		//auto timeshift (permanent timeshift)
-		recordingSettings.addItem(new CMenuOptionNumberChooser(LOCALE_EXTRA_AUTO_TIMESHIFT, &g_settings.auto_timeshift, true, 0, 300, NULL));
-
-		// temp timeshift
-		recordingSettings.addItem(new CMenuOptionChooser(LOCALE_EXTRA_TEMP_TIMESHIFT, &g_settings.temp_timeshift, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
-		
-		// auto delete
-		recordingSettings.addItem(new CMenuOptionChooser(LOCALE_EXTRA_AUTO_DELETE, &g_settings.auto_delete, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
+		// permanent timeshift
+		recordingSettings.addItem(new CMenuOptionChooser(LOCALE_EXTRA_AUTO_TIMESHIFT, &g_settings.auto_timeshift, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true));
 	}
 }
 

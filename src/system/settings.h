@@ -109,13 +109,9 @@ struct SNeutrinoSettings
 	char record_safety_time_before[3];
 	char record_safety_time_after[3];
 
-	//int  recording_type;
-
 	char network_nfs_recordingdir[100];
 
 	int auto_timeshift; 	// permanent timeshift
-	int temp_timeshift;	// temporär timeshift
-	int auto_delete;
 
 	int record_hours;
 

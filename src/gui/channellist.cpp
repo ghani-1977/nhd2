@@ -1815,14 +1815,14 @@ void CChannelList::paintItem(int pos)
 			if(chan->scrambled) 
 			{
 				frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_ca_w, &icon_ca_h);
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - icon_ca_w, ypos + (fheight - 16)/2);
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w, ypos + (fheight - 16)/2);
 			}
 			
 			// hd icon
 			if(chan->isHD() ) 
 			{
 				frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_hd_w, &icon_hd_h);
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - icon_ca_w - 2 - icon_hd_w, ypos + (fheight - 16)/2);
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w - 2 - icon_hd_w, ypos + (fheight - 16)/2);
 			}
 		}
 

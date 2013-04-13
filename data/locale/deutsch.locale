@@ -260,7 +260,7 @@ eventlistbar.recordevent Aufnehmen
 extra.add_to_bouquet zur den Bouquets hinzufuegen
 extra.audio_run_player Audio Taste startet Player
 extra.auto_delete Automatische Löschung
-extra.auto_timeshift Permanet timeshift, Sek. (0 = deakt.)
+extra.auto_timeshift Permanet timeshift
 extra.auto_to_record Timeshift zu den Aufnahmen hinzufügen
 extra.cache_txt Teletext zwischenspeichern
 extra.chadded Der aktuelle Kanal wird dem selektierter Bouquet hinzugefügt....\n

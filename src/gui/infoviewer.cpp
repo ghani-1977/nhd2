@@ -115,7 +115,6 @@ char old_timestr[10];
 static event_id_t last_curr_id = 0, last_next_id = 0;
 
 extern int FrontendCount;
-extern int timeshift;
 
 extern CZapitClient::SatelliteList satList;
 static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
@@ -462,6 +461,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 
 	if( showButtonBar )
 	{
+		// add sec timer
 		sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
 		
 		// green

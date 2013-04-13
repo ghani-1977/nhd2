@@ -261,7 +261,7 @@ eventlistbar.recordevent record
 extra.add_to_bouquet Add to Bouquets
 extra.audio_run_player Audio key start player
 extra.auto_delete Auto-delete
-extra.auto_timeshift Permanent timeshift, sec (0 = disable)
+extra.auto_timeshift Permanent timeshift
 extra.auto_to_record Move timeshift to records
 extra.cache_txt Cache teletext
 extra.chadded The current channel has been added to selected bouquet....\n
