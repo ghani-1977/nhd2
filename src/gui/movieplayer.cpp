@@ -2129,9 +2129,13 @@ void CMoviePlayerGui::PlayFile(void)
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
 			}
 			
-			if(timeshift)
+			if(timeshift == 2)
 				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
-				//g_Timerd->stopTimerEvent(CNeutrinoApp::getInstance()->recording_id/*recordingstatus*/); // this stop immediatly timeshift
+			else if (timeshift == 1)
+			{
+				g_Timerd->stopTimerEvent(CNeutrinoApp::getInstance()->recording_id); // this stop immediatly timeshift
+				CNeutrinoApp::getInstance()->recording_id = 0;
+			}
 
 			if (!was_file)
 				exit = true;

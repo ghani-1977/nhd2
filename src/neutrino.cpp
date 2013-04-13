@@ -573,6 +573,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
 	g_settings.auto_delete = configfile.getInt32( "auto_delete", 0);
 
+	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
 	safe_mkdir(timeshiftDir);
 	
@@ -581,7 +582,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	if(g_settings.auto_delete) 
 	{
 		char buf[512];
-		sprintf(buf, "rm -f %s/*_temp.ts %s/*_temp.xml &", timeshiftDir, timeshiftDir);
+		//sprintf(buf, "rm -f %s/*_temp.ts %s/*_temp.xml &", timeshiftDir, timeshiftDir);
+		sprintf(buf, "rm -f %s/*.ts %s/*.xml %s/*.jpg &", timeshiftDir, timeshiftDir, timeshiftDir);
 		system(buf);
 	}
 
@@ -2709,7 +2711,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 								
 								timeshiftstatus = recordingstatus;
 
-								doGuiRecord(g_settings.network_nfs_recordingdir, true);
+								if(strcmp(tmode.c_str(), "timeshift") == 0)
+									doGuiRecord(timeshiftDir, true);
+								else
+									doGuiRecord(g_settings.network_nfs_recordingdir, true);
 							}
 							
 							// jump in movieplayer mode
