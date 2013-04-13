@@ -1149,8 +1149,10 @@ void CInfoViewer::showRadiotext()
 			}
 #if 0
 			// + RT-Plus or PS-Text = 2 rows
-			if ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2) {
-				if (!RDS_PSShow || !strstr(RTP_Title, "---") || !strstr(RTP_Artist, "---")) {
+			if ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2) 
+			{
+				if (!RDS_PSShow || !strstr(RTP_Title, "---") || !strstr(RTP_Artist, "---")) 
+				{
 					sprintf(stext[1], "> %s  %s", tr("Title  :"), RTP_Title);
 					sprintf(stext[2], "> %s  %s", tr("Artist :"), RTP_Artist);
 					osd->DrawText(4, 6+yoff+fheight*(ii++), stext[1], fcolor, clrTransparent, ftext, Setup.OSDWidth-4, ftext->Height());
@@ -1208,8 +1210,6 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 
  	if ((msg == NeutrinoMessages::EVT_CURRENTNEXT_EPG) || (msg == NeutrinoMessages::EVT_NEXTPROGRAM)) 
 	{
-		//printf("CInfoViewer::handleMsg: NeutrinoMessages::EVT_CURRENTNEXT_EPG data %llx current %llx\n", *(t_channel_id *) data, channel_id & 0xFFFFFFFFFFFFULL);
-
 		if ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL)) 
 		{
 	  		getEPG (*(t_channel_id *) data, info_CurrentNext);
@@ -1227,8 +1227,6 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	{
 		if (data == lcdUpdateTimer) 
 		{
-			//printf("CInfoViewer::handleMsg: lcdUpdateTimer\n");
-			
 			if ( is_visible )
 				show_Data( true );
 
@@ -1247,11 +1245,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_RECORDMODE) 
 	{
-#if !defined (PLATFORM_GENERIC)
 		recordModeActive = data;
 		if(is_visible) 
-			showRecordIcon(true);
-#endif		
+			showRecordIcon(true);		
   	} 
 	else if (msg == NeutrinoMessages::EVT_ZAP_GOTAPIDS) 
 	{

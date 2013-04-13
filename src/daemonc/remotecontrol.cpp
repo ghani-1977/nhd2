@@ -807,7 +807,7 @@ void CRemoteControl::startvideo()
 {
 	if ( !is_video_started )
 	{
-		is_video_started= true;
+		is_video_started = true;
 		g_Zapit->startPlayBack();
 	}
 }

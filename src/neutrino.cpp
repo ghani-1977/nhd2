@@ -1763,7 +1763,7 @@ int startAutoRecord(bool addTimer)
 {
 	CTimerd::RecordingInfo eventinfo;
 
-	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() || (recDir != NULL))
+	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() /*|| (recDir != NULL)*/ )
 		return 0;
 
 	eventinfo.channel_id = live_channel_id;
@@ -1791,11 +1791,13 @@ int startAutoRecord(bool addTimer)
 
 	autoshift = 1;
 	CNeutrinoApp::getInstance()->recordingstatus = 1;
-	//CNeutrinoApp::getInstance()->timeshiftstatus = 1;
+	CNeutrinoApp::getInstance()->timeshiftstatus = 1;
+	tmode = "ptimeshift";
 
 	if( CVCRControl::getInstance()->Record(&eventinfo) == false ) 
 	{
 		CNeutrinoApp::getInstance()->recordingstatus = 0;
+		CNeutrinoApp::getInstance()->timeshiftstatus = 0;
 		autoshift = 0;
 		
 		CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );	
@@ -3034,8 +3036,6 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 {
 	int res = 0;
 
-	//dprintf(DEBUG_DEBUG, "[neutrino] handleMsg %X data %X\n", msg, data); fflush(stdout);
-
 	// handle neutrino msg
 	if(msg == NeutrinoMessages::EVT_ZAP_COMPLETE) 
 	{
@@ -3054,7 +3054,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 
 		// auto timeshift
 		if (!recordingstatus && g_settings.auto_timeshift) 		  
-		{			
+		{
 			int delay = g_settings.auto_timeshift;			
 			shift_timer = g_RCInput->addTimer( delay*1000*1000, true );
 			g_InfoViewer->handleMsg(NeutrinoMessages::EVT_RECORDMODE, 1);
@@ -3091,6 +3091,13 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		else if(data == scrambled_timer) 
 		{
 			scrambled_timer = 0;
+			
+			// what shall neutrino do???
+			//if(videoDecoder->getBlank() && videoDecoder->getPlayState()) 
+			//{
+			//	const char * text = g_Locale->getText(LOCALE_SCRAMBLED_CHANNEL);
+			//	ShowHintUTF (LOCALE_MESSAGEBOX_INFO, text, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth (text, true) + 10, 5);
+			//}
 
 			return messages_return::handled;	
 		}
@@ -3100,8 +3107,6 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	res = res | g_RemoteControl->handleMsg(msg, data);
 	res = res | g_InfoViewer->handleMsg(msg, data);
 	res = res | channelList->handleMsg(msg, data);
-
-	//dprintf(DEBUG_DEBUG, "[neutrino] handleMsg %X unhandled by others\n", msg); fflush(stdout);
 	
 	if( res != messages_return::unhandled ) 
 	{
@@ -3211,8 +3216,6 @@ _repeat:
 			{
 				new_msg = (mode == mode_standby) ? NeutrinoMessages::STANDBY_OFF : NeutrinoMessages::STANDBY_ON;
 				
-				//printf("standby: new msg %X\n", new_msg);
-				
 				if ((g_settings.shutdown_real_rcdelay)) 
 				{
 					neutrino_msg_t      msg;
@@ -3230,14 +3233,10 @@ _repeat:
 						timeout = timeout1;
 
 					timeout += 500;
-					
-					//printf("standby: timeout %d\n", timeout);
 
 					while(true) 
 					{
 						g_RCInput->getMsg_ms(&msg, &data, timeout);
-
-						//printf("standby: input msg %X\n", msg);
 						
 						if (msg == CRCInput::RC_timeout)
 							break;
@@ -3246,8 +3245,6 @@ _repeat:
 						seconds = endtime.tv_sec - standby_pressed_at.tv_sec;
 						if (endtime.tv_usec < standby_pressed_at.tv_usec)
 							seconds--;
-						
-						//printf("standby: input seconds %d\n", seconds);
 						
 						if (seconds >= 1) 
 						{
@@ -4525,7 +4522,7 @@ void CNeutrinoApp::startNextRecording()
 					
 					for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 					{
-						if (strcmp(g_settings.network_nfs_local_dir[i],recDir) == 0) 
+						if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
 						{
 							CFSMounter::MountRes mres =
 								CFSMounter::mount(g_settings.network_nfs_ip[i].c_str(), g_settings.network_nfs_dir[i],
