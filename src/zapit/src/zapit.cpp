@@ -2403,7 +2403,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			break;
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
-			stopPlayBack();
+			stopPlayBack(true);
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
@@ -2412,14 +2412,16 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
 			/* hack. if standby true, dont blank video */
 			standby = true;
-			stopPlayBack();
+			stopPlayBack(true);
 			standby = false;
 			
+#if !defined (PLATFORM_COOLSTREAM)			
 			if(videoDecoder)
 				videoDecoder->Close();
 			
 			if(audioDecoder)
 				audioDecoder->Close();
+#endif			
 			
 			playbackStopForced = true;
 			break;
@@ -2623,8 +2625,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SET_STANDBY: 
 		{
 			CZapitMessages::commandBoolean msgBoolean;
-			// striper
-			CZapitMessages::responseCmd response;
 			CBasicServer::receive_data(connfd, &msgBoolean, sizeof(msgBoolean));
 			
 			if (msgBoolean.truefalse) 
@@ -2637,6 +2637,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			}
 			
 			// striper
+			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			
@@ -3341,8 +3342,8 @@ int stopPlayBack( bool sendPmt)
 	audioDecoder->Stop();
 	
 	// video decoder stop
-	//videoDecoder->Stop(standby ? false : true);
-	videoDecoder->Stop();	
+	videoDecoder->Stop(standby ? false : true);
+	//videoDecoder->Stop();	
 
 	playing = false;
 	
@@ -4020,7 +4021,7 @@ int zapit_main_thread(void *data)
 		save_channel_pids(live_channel);
 	
 	saveZapitSettings(true, true);
-	stopPlayBack(true);
+	stopPlayBack();
 	
 	pthread_cancel(tsdt);
 	

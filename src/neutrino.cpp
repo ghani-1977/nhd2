@@ -1667,7 +1667,7 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 		else 
 		{
 			dprintf(DEBUG_NORMAL, "Usage: neutrino [-v | --verbose 0..2]\n");
-			exit(1);
+			//exit(1);
 		}
 	}
 }

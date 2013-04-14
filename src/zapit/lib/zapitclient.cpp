@@ -465,7 +465,7 @@ bool CZapitClient::receive_nchannel_list(BouquetNChannelList& channels)
 /* bouquets are numbered starting at 0 */
 bool CZapitClient::getBouquetChannels(const unsigned int bouquet, BouquetChannelList& channels, channelsMode mode, const bool utf_encoded)
 {
-	bool                                      return_value;
+	bool return_value;
 	CZapitMessages::commandGetBouquetChannels msg;
 
 	msg.bouquet = bouquet;
@@ -495,7 +495,7 @@ bool CZapitClient::getBouquetNChannels(const unsigned int bouquet, BouquetNChann
 /* gets all channels */
 bool CZapitClient::getChannels( BouquetChannelList& channels, channelsMode mode, channelsOrder order, const bool utf_encoded)
 {
-	bool                               return_value;
+	bool return_value;
 	CZapitMessages::commandGetChannels msg;
 
 	msg.mode = mode;
@@ -659,7 +659,7 @@ delivery_system_t CZapitClient::getDeliverySystem(void)
 }
 
 // get current TP
-bool CZapitClient::get_current_TP(TP_params* TP)
+bool CZapitClient::get_current_TP(TP_params * TP)
 {
 	TP_params TP_temp;
 	send(CZapitMessages::CMD_GET_CURRENT_TP);
@@ -1103,8 +1103,10 @@ void CZapitClient::startPlayBack()
 void CZapitClient::stopPlayBack()
 {
 	send(CZapitMessages::CMD_SB_STOP_PLAYBACK);
+	
 	CZapitMessages::responseCmd response;
 	CBasicClient::receive_data((char* )&response, sizeof(response));
+	
 	close_connection();
 }
 

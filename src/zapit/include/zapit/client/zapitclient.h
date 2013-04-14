@@ -501,12 +501,12 @@ class CZapitClient : public CBasicClient
 		bool tune_TP(TP_params TP, int feindex = 0);
 		
 		bool isPlayBackActive();
-		//void setDisplayFormat(const video_display_format_t mode);
+		
 		void setAudioMode(int mode);
 		void getAudioMode(int * mode);
 		void setVideoSystem(int video_system);
 		
-		void addFrontend();
+		//void addFrontend();
 
 		/****************************************/
 		/*					*/

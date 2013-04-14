@@ -1722,7 +1722,7 @@ bool CChannelList::canZap(CZapitChannel * channel)
 {
 	bool iscurrent = true;
 
-	if(CNeutrinoApp::getInstance()->recordingstatus) 
+	if(!autoshift && CNeutrinoApp::getInstance()->recordingstatus) 
 	{
 		if(channel == NULL)
 			channel = chanlist[selected];
