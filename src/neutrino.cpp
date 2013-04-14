@@ -2717,6 +2717,13 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else if( msg == CRCInput::RC_record || msg == CRCInput::RC_stop ) 
 			{
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun\n");
+				
+				if(autoshift) 
+				{
+					stopAutoRecord();
+					recordingstatus = 0;
+					timeshiftstatus = 0;
+				}
 
 				// stop record if recording
 				if( recordingstatus ) 
@@ -2724,7 +2731,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					if(ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)
 					{
 						g_Timerd->stopTimerEvent(recording_id);
-						
 						CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 					}
 				} 
@@ -2732,7 +2738,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				else if(msg != CRCInput::RC_stop )
 				{
 					recordingstatus = 1;
-
 					doGuiRecord( g_settings.network_nfs_recordingdir, true );
 				}
 			}
@@ -3361,6 +3366,7 @@ _repeat:
 		{
 			stopAutoRecord();
 			recordingstatus = 0;
+			timeshiftstatus = 0;
 		}
 
 		puts("CNeutrinoApp::handleMsg: executing " NEUTRINO_RECORDING_START_SCRIPT ".");
@@ -3547,6 +3553,7 @@ _repeat:
 		{
 			stopAutoRecord();
 			recordingstatus = 0;
+			timeshiftstatus = 0;
 		}
 
 		delete[] (unsigned char*) data;
@@ -4213,6 +4220,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 		
 		stopAutoRecord();
 		recordingstatus = 0;
+		timeshiftstatus = 0;
 	}
 
 	frameBuffer->useBackground(false);
@@ -4293,6 +4301,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 			stopAutoRecord();
 			wasshift = true;
 			recordingstatus = 0;
+			timeshiftstatus = 0;
 		}
 		
 		if( mode == mode_scart ) 
@@ -4476,6 +4485,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::radioMode: standby on: autoshift ! stopping ...\n");
 		stopAutoRecord();
 		recordingstatus = 0;
+		timeshiftstatus = 0;
 	}
 
 	g_RemoteControl->radioMode();
