@@ -2131,7 +2131,7 @@ void CMoviePlayerGui::PlayFile(void)
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
 			}
 			
-			if(timeshift < 2)
+			if(timeshift == 1) //timeshift
 			{
 				CVCRControl::getInstance()->Stop();
 				
@@ -2142,7 +2142,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 			}
-			else
+			else if(timeshift == 2) //ptimeshift
 				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
 
 			if (!was_file)
