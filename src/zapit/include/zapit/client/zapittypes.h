@@ -176,7 +176,6 @@ typedef struct ZAPIT_start_arg
 	int uselastchannel;
 	
 	int video_mode;
-	int current_volume;
 } Z_start_arg;
 //
 

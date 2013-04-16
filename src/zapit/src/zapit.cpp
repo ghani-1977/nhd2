@@ -91,21 +91,22 @@ int def_audio_mode = 0;
 
 /* volume percent conf */
 #define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
-#define VOLUME_DEFAULT_PCM 50
-#define VOLUME_DEFAULT_AC3 75
+#define VOLUME_DEFAULT_PCM 0
+#define VOLUME_DEFAULT_AC3 25
 typedef std::pair<int, int> pid_pair_t;
 typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
 typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
 volume_map_t vol_map;
 typedef volume_map_t::iterator volume_map_iterator_t;
 typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_t;
-unsigned int volume_percent = 0;
-int current_volume = 100;
+
+int volume_percent;
+extern int current_volume;
 
 int getPidVolume(t_channel_id channel_id, int pid, bool ac3);
-void setVolume(int vol);
-void setVolumePercent(int percent);
 void setPidVolume(t_channel_id channel_id, int pid, int percent);
+
+void setVolumePercent(int percent);
 
 /* live/record channel id */
 t_channel_id live_channel_id;
@@ -164,7 +165,6 @@ scan_list_t scanProviders;
 enum {
 	TV_MODE = 0x01,
 	RADIO_MODE = 0x02,
-	//0x03 ???
 	RECORD_MODE = 0x04,
 };
 
@@ -751,7 +751,7 @@ void loadZapitSettings()
 	//load audio map
 	loadAudioMap();
 	
-	// laod volume map
+	// load volume map
 	loadVolumeMap();
 }
 
@@ -980,6 +980,7 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 
 		volume_left = volume_right = audio_map_it->second.volume;
 		audio_mode = audio_map_it->second.mode;
+		//FIXME: what shall neutrino do with saved volume (volume_left/volume_right)
 
 		// set dvbsub pid
 		dvbsub_setpid(audio_map_it->second.subpid);
@@ -1006,6 +1007,8 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	{
 		volume_left = volume_right = (thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
 		audio_mode = def_audio_mode;
+		
+		// set default tuxtxt pid
 		tuxtx_set_pid(0, 0, (char *) thischannel->getTeletextLang());
 	}
 
@@ -1247,23 +1250,18 @@ int getPidVolume(t_channel_id channel_id, int pid, bool ac3)
 	return percent;
 }
 
-void setVolume(int vol)
-{
-	int value = (vol*volume_percent) / 100;
-	
-	dprintf(DEBUG_INFO, "[zapit] volume %d percent %d\n", vol, volume_percent);
-	
-	audioDecoder->setVolume(value, value);
-}
-
 void setVolumePercent(int percent)
 {
-	dprintf(DEBUG_INFO, "[zapit] setVolumePercent: current_volume %d volume_percent %d percent %d\n", current_volume, volume_percent, percent);
-	
+	dprintf(DEBUG_NORMAL, "[zapit] setVolumePercent: current_volume %d volume_percent %d percent %d\n", current_volume, volume_percent, percent);
+		
 	if (volume_percent != percent) 
 		volume_percent = percent;
 		
-	setVolume(current_volume);
+	int vol = current_volume + (current_volume*volume_percent)/100;
+		
+	dprintf(DEBUG_NORMAL, "vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
+		
+	audioDecoder->setVolume(vol, vol);
 }
 
 int change_audio_pid(uint8_t index)
@@ -1283,7 +1281,7 @@ int change_audio_pid(uint8_t index)
 	live_channel->setAudioChannel(index);
 
 	//set bypass mode
-	CZapitAudioChannel *currentAudioChannel = live_channel->getAudioChannel();
+	CZapitAudioChannel * currentAudioChannel = live_channel->getAudioChannel();
 
 	if (!currentAudioChannel) 
 	{
@@ -1358,7 +1356,6 @@ int change_audio_pid(uint8_t index)
 	
 	// set saved volume pro pid
 	volume_percent = getPidVolume(live_channel_id, live_channel->getAudioPid(), currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3);
-	
 	setVolumePercent(volume_percent);
 			
 	//start audio playback
@@ -1641,6 +1638,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandSetAudioChannel msgSetAudioChannel;
 			CBasicServer::receive_data(connfd, &msgSetAudioChannel, sizeof(msgSetAudioChannel));
+			
 			change_audio_pid(msgSetAudioChannel.channel);
 			break;
 		}
@@ -3846,9 +3844,6 @@ int zapit_main_thread(void *data)
 	// audio decoder
 	audioDecoder = new cAudio();
 #endif	
-
-	// saved current volume
-	current_volume = ZapStart_arg->current_volume;
 	
 #if defined (__sh__)
 	if(FrontendCount > 1)

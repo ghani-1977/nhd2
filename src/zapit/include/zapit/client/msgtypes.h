@@ -329,6 +329,7 @@ class CZapitMessages
 		struct responseDeliverySystem
 		{
 			delivery_system_t system;
+			int feindex;
 		};
 
 		struct commandMotor

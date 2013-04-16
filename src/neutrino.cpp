@@ -203,7 +203,6 @@ extern int dvbsub_terminate();
 // volume bar
 static CProgressBar 		* g_volscale;
 
-
 // timerd thread
 static pthread_t timer_thread;
 void * timerd_main_thread(void *data);
@@ -249,6 +248,8 @@ CAudioSetupNotifier	* audioSetupNotifier;
 
 // volume conf
 CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
+
+int current_volume;
 
 /* bouquets lists */
 CBouquetList   		* bouquetList; 				//current bqt list
@@ -878,8 +879,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
-	g_settings.current_volume = configfile.getInt32("current_volume", 100);
-	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "2" ).c_str() );
+	g_settings.current_volume = configfile.getInt32("current_volume", 25);
+	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "5" ).c_str() );
 	// END MISC OPTS
 
 	// HDD
@@ -2110,7 +2111,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	
 	ZapStart_arg.video_mode = g_settings.video_Mode;
 	
-	ZapStart_arg.current_volume = g_settings.current_volume;
+	current_volume = g_settings.current_volume;
 
 	pthread_create (&zapit_thread, NULL, zapit_main_thread, (void *) &ZapStart_arg);	
 
@@ -2125,7 +2126,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 
 	// audio volume (default)
 	if(audioDecoder)
-		// set volume
 		audioDecoder->setVolume(g_settings.current_volume, g_settings.current_volume);
 
 	// Video
@@ -3985,7 +3985,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	int x = frameBuffer->getScreenX() + 10;
 	int y = frameBuffer->getScreenY() + 10;
 
-	int vol = g_settings.current_volume = audioDecoder->getVolume();
+	current_volume = g_settings.current_volume;
 	
 	int sw = frameBuffer->getScreenWidth();
 	int sh = frameBuffer->getScreenHeight();
@@ -4048,11 +4048,11 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		frameBuffer->paintIcon(NEUTRINO_ICON_VOLUME, x+dy/2,y + (dy/4), 0, COL_MENUCONTENT_PLUS_0);
 
 		g_volscale->reset();
-		g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
+		g_volscale->paint(x + dy+ (dy/4), y +(dy/4), current_volume);
 		
 
 		char p1[4]; // 3 digits + '\0'
-		sprintf(p1, "%3d", vol);
+		sprintf(p1, "%3d", current_volume);
 
 		// erase the numbers
 		frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);
@@ -4115,14 +4115,16 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 		if (bDoPaint) 
 		{
-			if(vol != g_settings.current_volume) 
+			if(current_volume != g_settings.current_volume) 
 			{
-				vol = g_settings.current_volume;
+				current_volume = g_settings.current_volume;
+				
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::setVolume: current_volume %d\n", current_volume);
 
-				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), vol);
+				g_volscale->paint(x + dy+ (dy/4), y +(dy/4), current_volume);
 
 				char p[4]; // 3 digits + '\0'
-				sprintf(p, "%3d", vol);
+				sprintf(p, "%3d", current_volume);
 
 				// erase the numbers
 				frameBuffer->paintBoxRel(x + dx - 50, y , 40, dy, COL_MENUCONTENT_PLUS_0);

@@ -573,7 +573,6 @@ void CZapitClient::muteAudio(const bool mute)
 	close_connection();
 }
 
-//test
 /* Get mute status */
 bool CZapitClient::getMuteStatus()
 {
@@ -644,7 +643,7 @@ void CZapitClient::getVolumePercent(unsigned int * percent, t_channel_id channel
 }
 
 /* delivery_system */
-delivery_system_t CZapitClient::getDeliverySystem(void)
+delivery_system_t CZapitClient::getDeliverySystem(int feindex)
 {
 	send(CZapitMessages::CMD_GET_DELIVERY_SYSTEM, 0, 0);
 
@@ -874,8 +873,6 @@ void CZapitClient::setScanType(const scanType mode)
 /* set fe mode */
 void CZapitClient::setFEMode(const fe_mode_t mode, int feindex)
 {
-	//printf("CZapitClient::%s\n", __FUNCTION__);
-	
 	CZapitMessages::commandSetFEMode msg;
 
 	msg.mode = mode;

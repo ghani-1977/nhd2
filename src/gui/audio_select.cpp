@@ -49,7 +49,6 @@ extern CAudioSetupNotifier * audioSetupNotifier;	/* defined neutrino.cpp */
 
 // volume conf
 extern CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
-//extern cAudio * audioDecoder;
 //
 
 // dvbsub
@@ -121,8 +120,7 @@ int CAudioSelectMenuHandler::doMenu()
 	// subs
 	AudioSelector.addItem(GenericMenuSeparatorLine);
 
-	CMenuOptionChooser* oj = new CMenuOptionChooser(LOCALE_AUDIOMENU_ANALOGOUT, &g_settings.audio_AnalogMode, AUDIOMENU_ANALOGOUT_OPTIONS, AUDIOMENU_ANALOGOUT_OPTION_COUNT, true, audioSetupNotifier, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED);
-
+	CMenuOptionChooser * oj = new CMenuOptionChooser(LOCALE_AUDIOMENU_ANALOGOUT, &g_settings.audio_AnalogMode, AUDIOMENU_ANALOGOUT_OPTIONS, AUDIOMENU_ANALOGOUT_OPTION_COUNT, true, audioSetupNotifier, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED);
 	AudioSelector.addItem( oj );
 	
 	// ac3
@@ -192,15 +190,14 @@ int CAudioSelectMenuHandler::doMenu()
 	}
 	
 	// volume conf
-	//FIXME: brocken
 	AudioSelector.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_VOLUME_ADJUST));
-
+	
+	// volume percent
 	int percent[g_RemoteControl->current_PIDs.APIDs.size()];
 	
 	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
 		g_Zapit->getVolumePercent((unsigned int *) &percent[count], 0, g_RemoteControl->current_PIDs.APIDs[count].pid);
-		
 		int is_active = count == g_RemoteControl->current_PIDs.PIDs.selected_apid;
 		
 		AudioSelector.addItem(new CMenuOptionNumberChooser(NONEXISTANT_LOCALE, &percent[count],

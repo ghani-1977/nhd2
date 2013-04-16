@@ -28,6 +28,8 @@
 #include <linux/dvb/stm_ioctls.h>
 #endif
 
+#include <string>
+
 
 // bcm
 /*

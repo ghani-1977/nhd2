@@ -72,6 +72,7 @@ struct SNeutrinoSettings
 	
 	int ac3_delay;
 	int pcm_delay;
+	//
 	
 	// subs
 	int auto_lang;
