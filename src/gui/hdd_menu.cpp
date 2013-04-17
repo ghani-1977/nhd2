@@ -98,9 +98,6 @@ static int my_filter(const struct dirent * dent)
 
 int CHDDMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 {
-	//int   res = menu_return::RETURN_REPAINT;
-	
-	//test
 	if (parent)
 		parent->hide();
 	
@@ -124,17 +121,9 @@ int CHDDMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 		
 		hintBox->hide();
 		delete hintBox;
-		
-		//return res;
 	}
 	
-	//if (parent)
-		//parent->hide();
-	
 	return hddMenu();
-
-	//return doMenu ();
-	//return res;
 }
 
 /* return 1 if mounted and -1 if not mounted */
@@ -166,10 +155,8 @@ int CHDDMenuHandler::hddMenu()
 	struct dirent **namelist;
 	int ret;
 	
-	//
 	struct stat s;
 	int root_dev = -1;
-	//
 	
 	bool hdd_found = 0;
 
@@ -298,6 +285,7 @@ int CHDDMenuHandler::hddMenu()
 
 		/* hdd menu */
 		tempMenu[i] = new CMenuWidget(str, NEUTRINO_ICON_SETTINGS);
+		tempMenu[i]->enableSaveScreen(true);
 		
 		// intros
 		//tempMenu[i]->addItem(GenericMenuSeparator);
@@ -335,6 +323,7 @@ int CHDDMenuHandler::hddMenu()
 			
 			/* part submenu */
 			PartMenu[j] = new CMenuWidget(PART, NEUTRINO_ICON_SETTINGS);
+			PartMenu[j]->enableSaveScreen(true);
 			
 			// intros
 			//PartMenu[j]->addItem(GenericMenuSeparator);
@@ -370,7 +359,7 @@ int CHDDMenuHandler::hddMenu()
 		/* result */
 		hdd_found = 1;
 		
-		//test
+		// free
 		free(namelist[i]);
 	}
 	
@@ -378,7 +367,6 @@ int CHDDMenuHandler::hddMenu()
                 free(namelist);
 	
 	/* no parts found */
-
 	ret = hddmenu->exec(NULL, "");
 	
 	// delet temp menus
@@ -423,7 +411,7 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 	progress = new CProgressWindow();
 	progress->setTitle(LOCALE_HDD_INIT);
 	progress->exec(NULL, "");
-	progress->showStatusMessageUTF("Executing fdisk");
+	progress->showStatusMessageUTF("HDD init");
 	progress->showGlobalStatus(0);
 	
 	sprintf(cmd, "init_hdd.sh /dev/%s", actionKey.c_str());
@@ -475,6 +463,8 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 		fprintf(f, "/sbin/hotplug\n");
 		fclose(f);
 	}
+	
+	// mount
 
 	// create directory
 	sprintf(dst, "/media/%s2", actionKey.c_str());
@@ -580,11 +570,6 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
         for (int i = 0; i < n; i++) 
 	{
                 printf("CHDDDestExec: noise %d sleep %d /dev/%s\n", g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
-		
-                /*
-		* hdparm -M is not included in busybox hdparm!
-                * we need full version of hdparm or should remove -M parameter here
-		*/
 
                 snprintf(cmd, sizeof(cmd), "hdparm -M%d -S%d /dev/%s >/dev/null 2>/dev/null &", g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
 
@@ -594,8 +579,6 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
         }
 
         free(namelist);
-	
-	//has_hdd = 1;
 
         return 1;
 }
@@ -609,6 +592,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	char src[128], dst[128];
 	CProgressWindow * progress;
 	bool idone;
+	std::string mountPoint;
 
 	sprintf(src, "/dev/%s", actionKey.c_str());
 	sprintf(dst, "/media/%s", actionKey.c_str());
@@ -625,35 +609,27 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	/* check if mounted then umount */
 	if(check_if_mounted(src) == 1)
 	{
-		/* umount */
+		/* umount /media/sda%n */
 		res = umount(dst);
 		
 		if(res == -1) 
 		{
-			hintbox = new CHintBox(LOCALE_HDD_FORMAT, g_Locale->getText(LOCALE_HDD_UMOUNT_WARN));
-			hintbox->paint();
-			sleep(2);
-			delete hintbox;
-			goto _return;
-		}
-	}
-	else
-	{
-		// fallback to /hdd
-		/* umount */
-		strcpy(dst, "/media/hdd");
-		res = umount(dst);
-		
-		if(res == -1) 
-		{
-			hintbox = new CHintBox(LOCALE_HDD_FORMAT, g_Locale->getText(LOCALE_HDD_UMOUNT_WARN));
-			hintbox->paint();
-			sleep(2);
-			delete hintbox;
-			goto _return;
+			// not mounted to /media/sda%n, fallback to /hdd
+			strcpy(dst, "/hdd");
+			res = umount(dst);
+			
+			if(res == -1)
+			{
+				hintbox = new CHintBox(LOCALE_HDD_FORMAT, g_Locale->getText(LOCALE_HDD_UMOUNT_WARN));
+				hintbox->paint();
+				sleep(2);
+				delete hintbox;
+				goto _return;
+			}
 		}
 	}
 
+	// check hotplug
 	f = fopen("/proc/sys/kernel/hotplug", "w");
 	if(f) 
 	{
@@ -672,7 +648,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 
 	printf("CHDDFmtExec: executing %s\n", cmd);
 
-	f=popen(cmd, "r");
+	f = popen(cmd, "r");
 	if (!f) 
 	{
 		hintbox = new CHintBox(LOCALE_HDD_FORMAT, g_Locale->getText(LOCALE_HDD_FORMAT_FAILED));
@@ -717,7 +693,7 @@ _remount:
 	progress->hide();
 	delete progress;
 
-	//ext3 fs
+	// mount
 	res = mount(src, dst, "ext3", 0, NULL);
 
 	f = fopen("/proc/sys/kernel/hotplug", "w");
@@ -727,6 +703,7 @@ _remount:
 		fclose(f);
 	}
 
+	// create directories
 	if(!res) 
 	{
 		sprintf(cmd, "%s/record", dst);
@@ -738,6 +715,8 @@ _remount:
 		sprintf(cmd, "%s/epg", dst);
 		safe_mkdir((char *) cmd);
 		sprintf(cmd, "%s/music", dst);
+		safe_mkdir((char *) cmd);
+		sprintf(cmd, "%s/backup", dst);
 		safe_mkdir((char *) cmd);
 		sync();
 	}
@@ -771,12 +750,24 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& key)
 	//res = check_and_umount(src, dst);
 	if(check_if_mounted(src) == 1)
 	{
-		umount(dst);
-	}
-	else
-	{
-		strcpy(dst, "/hdd");
-		umount(dst);
+		// unmout /media/sda%
+		res = umount(dst);
+		
+		// not mounted to /media/sda% fallback to /hhd
+		if(res == -1)
+		{
+			strcpy(dst, "/hdd");
+			res = umount(dst);
+			
+			if(res == -1)
+			{
+				hintbox = new CHintBox(LOCALE_HDD_CHECK, g_Locale->getText(LOCALE_HDD_CHECK_FAILED));
+				hintbox->paint();
+				sleep(2);
+				delete hintbox;
+				goto ret1;
+			}
+		}
 	}
 
 	/* if umounted */
@@ -896,8 +887,8 @@ int CHDDMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 			}
 			else
 			{
-				// if dest dir don't exists mount to /hdd
-				res = mount(src, "/media/hdd", fstype, 0, NULL);
+				// if /media/sda% dir don't exists mount to /hdd
+				res = mount(src, "/hdd", fstype, 0, NULL);
 	
 				printf("CHDDMountExec: mount res %d\n", res);
 				
@@ -947,6 +938,7 @@ int CHDDuMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	/* umount */
 	if(check_if_mounted(src) == 1)
 	{
+		// umount /media/sda%
 		res = umount(dst);
 		printf("CHDDuMountExec: umount res %d\n", res);
 
@@ -961,20 +953,9 @@ int CHDDuMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 		}
 		else
 		{
-			hintbox = new CHintBox(LOCALE_HDD_MOUNT, g_Locale->getText(LOCALE_HDD_UMOUNT_WARN));
-			hintbox->paint();
-			sleep(2);
-			delete hintbox;
-			return menu_return::RETURN_REPAINT;
-		}
-	}
-	else
-	{
-		// perhaps mounted to /hdd
-		strcpy(dst, "/media/hdd");
-		
-		if(check_if_mounted(dst) == 1)
-		{
+			// perhaps mounted to /hdd
+			strcpy(dst, "/media/hdd");
+			
 			res = umount(dst);
 			printf("CHDDuMountExec: umount res %d\n", res);
 
@@ -996,15 +977,13 @@ int CHDDuMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 				return menu_return::RETURN_REPAINT;
 			}
 		}
-		
-		// not mounted
-		printf("not mounted\n");
-		hintbox = new CHintBox(LOCALE_HDD_MOUNT, g_Locale->getText(LOCALE_HDD_UMOUNTED));
-		hintbox->paint();
-		sleep(2);
-		delete hintbox;
-		return menu_return::RETURN_REPAINT;
 	}
+
+	// not mounted
+	hintbox = new CHintBox(LOCALE_HDD_MOUNT, g_Locale->getText(LOCALE_HDD_UMOUNTED));
+	hintbox->paint();
+	sleep(2);
+	delete hintbox;
 	
 	return menu_return::RETURN_REPAINT;
 }
