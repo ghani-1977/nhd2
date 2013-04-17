@@ -33,38 +33,39 @@ using namespace std;
 class CHDDDestExec : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget* parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string&);
 };
 
 // format
 class CHDDFmtExec : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget* parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string&);
 };
 
 // checkfs
 class CHDDChkExec : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget* parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string&);
 };
 
 // mount
 class CHDDMountMSGExec : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget* parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string&);
 };
 
 // umount
 class CHDDuMountMSGExec : public CMenuTarget
 {
 	public:
-		int exec(CMenuTarget* parent, const std::string&);
+		int exec(CMenuTarget * parent, const std::string&);
 };
 
 // init
+/*
 class CHDDInit : public CMenuTarget
 {
 	public:
@@ -77,6 +78,7 @@ class CHDDBrowser : public CMenuTarget
 	public:
 		int exec(CMenuTarget * parent, const std::string& actionKey);
 };
+*/
 
 // HDD menu handler
 class CHDDMenuHandler : public CMenuTarget
