@@ -102,6 +102,7 @@ typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_
 
 int volume_percent;
 extern int current_volume;
+extern int current_muted;
 
 int getPidVolume(t_channel_id channel_id, int pid, bool ac3);
 void setPidVolume(t_channel_id channel_id, int pid, int percent);
@@ -1015,6 +1016,10 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	// set saved volume pro pid
 	volume_percent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
 	setVolumePercent(volume_percent);
+	
+	//FIXME: is is muted
+	if(current_muted)
+		audioDecoder->SetMute(true);
 }
 
 // return 0, -1 fails
@@ -1357,6 +1362,10 @@ int change_audio_pid(uint8_t index)
 	// set saved volume pro pid
 	volume_percent = getPidVolume(live_channel_id, live_channel->getAudioPid(), currentAudioChannel->audioChannelType == CZapitAudioChannel::AC3);
 	setVolumePercent(volume_percent);
+	
+	//FIXME: is is muted
+	if(current_muted)
+		audioDecoder->SetMute(true);
 			
 	//start audio playback
 	if (audioDecoder && (audioDecoder->Start() < 0))
@@ -2588,6 +2597,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 			// set volume percent
 			setVolumePercent(msgVolumePercent.percent);
+			
+			//FIXME: is is muted
+			if(current_muted)
+				audioDecoder->SetMute(true);
+			
 			break;
 		}
 

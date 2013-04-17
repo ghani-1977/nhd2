@@ -129,7 +129,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CZapitClient::responseGetLastChannel    firstchannel;
 		st_rmsg				sendmessage;
 
-		int				current_muted;
+		//int				current_muted;
 
 		bool				skipShutdownTimer;
 
@@ -252,14 +252,15 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 
 		int getMode() { return mode; }
 		int getLastMode() { return lastMode; }
-		bool isMuted() { return current_muted; }
+		//bool isMuted() { return current_muted; }
 		
 		/* recording flag */
 		int recordingstatus;
 		/* timeshift flag */
 		int timeshiftstatus;
-		
+		/* recording_id */
 		int recording_id;
+		
 		void SendSectionsdConfig(void);
 		int GetChannelMode(void) { return g_settings.channel_mode; };
 		void SetChannelMode(int mode);

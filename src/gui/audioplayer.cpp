@@ -82,6 +82,7 @@
 
 
 extern CPictureViewer * g_PicViewer;
+extern int current_muted;
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -1695,7 +1696,7 @@ void CAudioPlayerGui::paintHead()
 		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
 
 #if 1
-	if( CNeutrinoApp::getInstance()->isMuted() )
+	if( /*CNeutrinoApp::getInstance()->isMuted()*/current_muted )
 	{
 		int xpos = m_x + m_width - 75;
 		ypos = m_y + m_title_height;

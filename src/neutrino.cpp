@@ -250,6 +250,7 @@ CAudioSetupNotifier	* audioSetupNotifier;
 CAudioSetupNotifierVolPercent * audioSetupNotifierVolPercent;
 
 int current_volume;
+int current_muted;
 
 /* bouquets lists */
 CBouquetList   		* bouquetList; 				//current bqt list
@@ -3920,7 +3921,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 
 	current_muted = newValue;
 
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::AudioMute: current %d new %d isEvent: %d\n", current_muted, newValue, isEvent);
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::AudioMute: current_muted %d new %d isEvent: %d\n", current_muted, newValue, isEvent);
 	
 	g_Zapit->muteAudio(current_muted);
 
