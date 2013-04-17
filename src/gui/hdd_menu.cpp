@@ -460,7 +460,7 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 	f = fopen("/proc/sys/kernel/hotplug", "w");
 	if(f) 
 	{
-		fprintf(f, "/sbin/hotplug\n");
+		fprintf(f, "hotplug\n");
 		fclose(f);
 	}
 	
@@ -644,7 +644,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	progress->showGlobalStatus(0);
 	
 	//format part ext3
-	sprintf(cmd, "/sbin/mkfs.ext3 -T largefile -m0 %s", src);
+	sprintf(cmd, "mkfs.ext3 -T largefile -m0 %s", src);
 
 	printf("CHDDFmtExec: executing %s\n", cmd);
 
@@ -685,7 +685,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	progress->showGlobalStatus(100);
 	sleep(2);
 
-	sprintf(cmd, "/sbin/tune2fs -r 0 -c 0 -i 0 %s", src);
+	sprintf(cmd, "tune2fs -r 0 -c 0 -i 0 %s", src);
 	printf("CHDDFmtExec: executing %s\n", cmd);
 	system(cmd);
 
@@ -699,7 +699,7 @@ _remount:
 	f = fopen("/proc/sys/kernel/hotplug", "w");
 	if(f) 
 	{
-		fprintf(f, "/sbin/hotplug\n");
+		fprintf(f, "hotplug\n");
 		fclose(f);
 	}
 
@@ -775,7 +775,7 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& key)
 	fstype = blkid_get_tag_value(NULL, "TYPE", src);
 	printf("fstype: %s\n", fstype);
 
-	sprintf(cmd, "/sbin/fsck.%s -C 1 -f -y %s", fstype, src);
+	sprintf(cmd, "fsck.%s -C 1 -f -y %s", fstype, src);
 
 	printf("CHDDChkExec: Executing %s\n", cmd);
 	
