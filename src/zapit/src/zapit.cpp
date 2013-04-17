@@ -2592,7 +2592,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			if (!msgVolumePercent.apid)
 				msgVolumePercent.apid = live_channel->getAudioPid();
 			
-			// set pid volume
+			// set/save pid volume
 			setPidVolume(msgVolumePercent.channel_id, msgVolumePercent.apid, msgVolumePercent.percent);
 			
 			// set volume percent
