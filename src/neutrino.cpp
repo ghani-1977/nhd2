@@ -2483,7 +2483,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	RealRun(mainMenu);
 
 	// exitRun
-	ExitRun();
+	ExitRun(SHUTDOWN);
 
 	// never reached
 	return 0;
@@ -3574,7 +3574,7 @@ _repeat:
 	else if( msg == NeutrinoMessages::SLEEPTIMER) 
 	{
 		if(g_settings.shutdown_real)
-			ExitRun();
+			ExitRun(SHUTDOWN);
 		else
 			standbyMode( true );
 		
@@ -3614,7 +3614,7 @@ _repeat:
 	{
 		if(!skipShutdownTimer) 
 		{
-			ExitRun();
+			ExitRun(SHUTDOWN);
 		}
 		else 
 		{
@@ -3814,8 +3814,6 @@ void CNeutrinoApp::ExitRun(int retcode)
 		// show good bye in VFD
 		CVFD::getInstance()->ShowText((char *) "BYE");
 
-		dprintf(DEBUG_INFO, "ExitRun (retcode:%d)\n", retcode);
-
 		// stop playback
 		g_Zapit->stopPlayBack();
 
@@ -3834,13 +3832,11 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 		// save epg
 		if(g_settings.epg_save ) 
-		{
 			saveEpg();
-		}
 		
 		mode = mode_off;
 		
-		dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: entering off state\n");
+		dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: entering off state (retcode:%d)\n", retcode);
 			
 		stop_daemons();
 			
@@ -4607,14 +4603,14 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	if(actionKey=="shutdown") 
 	{
-		ExitRun();
+		ExitRun(SHUTDOWN);
 	}
 	else if(actionKey=="reboot")
 	{
 		FILE *f = fopen("/tmp/.reboot", "w");
 		fclose(f);
 
-		ExitRun(1);
+		ExitRun(REBOOT);
 
 		unlink("/tmp/.reboot");
 		returnval = menu_return::RETURN_NONE;
@@ -5015,9 +5011,6 @@ void stop_daemons()
 
 	// clear vfd
 	CVFD::getInstance()->Clear();
-
-	// movieplayerGui
-	//delete moviePlayerGui;
 	
 #if defined (PLATFORM_COOLSTREAM)
 	cs_deregister_messenger();

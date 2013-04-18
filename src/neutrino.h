@@ -250,7 +250,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 
 		int getMode() { return mode; }
 		int getLastMode() { return lastMode; }
-		//bool isMuted() { return current_muted; }
 		
 		/* recording flag */
 		int recordingstatus;
@@ -270,7 +269,12 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void StartSubtitles(bool show = true);
 		void SelectSubtitles();
 		
-		void ExitRun(int retcode = 0);
+		enum {
+			REBOOT,
+			SHUTDOWN,
+		};
+		
+		void ExitRun(int retcode = SHUTDOWN);
 };
 
 
