@@ -388,13 +388,14 @@ CMovieBrowser::~CMovieBrowser()
 	
 	//saveSettings(&m_settings);
 	
-	hide();
+	//hide();
+	//printf("hided\n");
 	
 	m_dir.clear();
 
 	m_dirNames.clear();
 	
-	for(unsigned int i=0; i < m_vMovieInfo.size(); i++)
+	for(unsigned int i = 0; i < m_vMovieInfo.size(); i++)
 	{
 		m_vMovieInfo[i].audioPids.clear();
 	}

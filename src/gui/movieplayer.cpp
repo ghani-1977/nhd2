@@ -513,25 +513,9 @@ void CMoviePlayerGui::Init(void)
 	Path_dvd = "/tmp/dvd";
 	
 	Path_blueray = "/tmp/blueray";
-
-	// filebrowser
-	if (g_settings.filebrowser_denydirectoryleave)
-		filebrowser = new CFileBrowser(Path_local.c_str());
-	else
-		filebrowser = new CFileBrowser();
-
-	filebrowser->Multi_Select = false;
-	filebrowser->Dirs_Selectable = false;
-	filebrowser->Hide_records = false;
-
+	
 	// playback
 	playback = new cPlayback();
-	
-	// moviebrowser
-	moviebrowser = new CMovieBrowser();
-	
-	// webtv
-	webtv = new CWebTV();
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -682,7 +666,28 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
 			Path_vlc += g_settings.streaming_server_startdir;
 		Path_vlc_settings = g_settings.streaming_server_startdir;
-	}	
+	}
+	
+	// filebrowser
+	if(!filebrowser)
+	{
+		if (g_settings.filebrowser_denydirectoryleave)
+			filebrowser = new CFileBrowser(Path_local.c_str());
+		else
+			filebrowser = new CFileBrowser();
+	}
+
+	filebrowser->Multi_Select = false;
+	filebrowser->Dirs_Selectable = false;
+	filebrowser->Hide_records = false;
+
+	// moviebrowser
+	if(!moviebrowser)
+		moviebrowser = new CMovieBrowser();
+	
+	// webtv
+	if(!webtv)
+		webtv = new CWebTV();
 
 	if (parent) 
 		parent->hide();
@@ -849,6 +854,24 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		timeshift = 0;
 		return menu_return::RETURN_EXIT_ALL;
+	}
+	
+	if(webtv)
+	{
+		delete webtv;
+		webtv = NULL;
+	}
+	
+	if(moviebrowser)
+	{
+		delete moviebrowser;
+		moviebrowser = NULL;
+	}
+	
+	if(filebrowser)
+	{
+		delete filebrowser;
+		filebrowser = NULL;
 	}
 	
 	// umount /tmp/dvd and /tmp/blueray

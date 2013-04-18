@@ -321,9 +321,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 	}
 	
 	if (parent)
-	{
 		parent->hide();
-	}
 
 	showScanService();
 	
