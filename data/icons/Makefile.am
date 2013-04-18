@@ -64,7 +64,7 @@ install_DATA += \
 	movieplayersettings.png audioplayersettings.png pictureviewersettings.png miscsettings.png hddsettings.png \
 	movieplayer.png internetradio.png upnpbrowser.png pictureviewer.png audioplayer.png \
 	miscsettingsgeneral.png miscsettingschannellist.png miscsettingsepg.png miscsettingsfilebrowser.png imageinfo.png cam.png scart.png \
-	tsmoviebrowser.png fileplayback.png netstream.png vlc.png plugins.png
+	tsmoviebrowser.png fileplayback.png netstream.png vlc.png plugins.png dvd.png
 
 # mb
 install_DATA += \

@@ -72,7 +72,9 @@ class CMoviePlayerGui : public CMenuTarget
 
 		std::string Path_local;
 		std::string Path_vlc;
-		std::string Path_vlc_settings;		
+		std::string Path_vlc_settings;
+		std::string Path_dvd;
+		std::string Path_blueray;
 
 		CFileBrowser * filebrowser;
 		CMovieBrowser * moviebrowser;

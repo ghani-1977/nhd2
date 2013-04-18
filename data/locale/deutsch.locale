@@ -937,7 +937,7 @@ movieplayer.buffering Puffern...
 movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
-movieplayer.dvdplayback DVD
+movieplayer.dvdplayback DVD Player
 movieplayer.records Aufnahmen Player
 movieplayer.movies Movies Player
 movieplayer.fileplayback Datei Player
@@ -964,6 +964,7 @@ movieplayer.tshelp8 ca. 5 Minuten zurück
 movieplayer.tshelp9 ca. 5 Minuten vor
 movieplayer.tsplayback TS Abspielen
 movieplayer.vcdplayback (S)VCD
+movieplayer.bluerayplayback Blueray Player
 movieplayer.vlchelp1 Stop
 movieplayer.vlchelp10 ca. 10 Minuten zurück
 movieplayer.vlchelp11 ca. 10 Minuten vor
@@ -1526,6 +1527,8 @@ helptext.miscsettingszapitsetup Hier können Sie das Start Program und mode fest
 helptext.miscsettingspsisetup Hier können Sie Video Kontrast einstellen.
 helptext.timerlist Hier können Sie Ihre Timerliste verwalten.
 helptext.features Hier können Sie die Erweiterungen starten.
+helptext.dvd hier können sie Ihre DVD Image abspielen
+helptext.blueray hier können sie Ihre Blueray Image abspielen.
 
 miscsettings.logosdir Sender logos Dir
 

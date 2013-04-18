@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/vfs.h>
+#include <sys/mount.h>
 
 #include <gui/movieplayer.h>
 
@@ -164,6 +165,8 @@ bool showaudioselectdialog = false;
 
 bool isVlc = false;
 bool isWebTV = false;
+bool isDVD = false;
+bool isBlueRay = false;
 
 #define TIMESHIFT_SECONDS 3
 
@@ -482,7 +485,6 @@ void CMovieInfoViewer::hide()
 	
 	timescale->reset();
 }
-//
 
 CMoviePlayerGui::CMoviePlayerGui()
 {
@@ -505,7 +507,12 @@ void CMoviePlayerGui::Init(void)
 	Path_vlc  = "vlc://";
 	if ((g_settings.streaming_vlc10 < 2) || (strcmp(g_settings.streaming_server_startdir, "/") != 0))
 		Path_vlc += g_settings.streaming_server_startdir;
-	Path_vlc_settings = g_settings.streaming_server_startdir;	
+	Path_vlc_settings = g_settings.streaming_server_startdir;
+	
+	// dvd path
+	Path_dvd = "/tmp/dvd";
+	
+	Path_blueray = "/tmp/blueray";
 
 	// filebrowser
 	if (g_settings.filebrowser_denydirectoryleave)
@@ -576,7 +583,7 @@ void CMoviePlayerGui::Init(void)
 	vlcfilefilter.addFilter ("flv");
 	vlcfilefilter.addFilter ("m2v");
 
-	vlcfilefilter.addFilter ("wmv");	
+	vlcfilefilter.addFilter ("wmv");
 }
 
 CMoviePlayerGui::~CMoviePlayerGui()
@@ -698,6 +705,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	isMovieBrowser = false;
 	isWebTV = false;
 	isVlc = false;
+	isDVD = false;
+	isBlueRay = false;
 
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
@@ -709,6 +718,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
 		
 		PlayFile();
 	}
@@ -719,6 +730,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
 		
 		PlayFile();
 	}
@@ -728,6 +741,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
 		
 		PlayFile();
 	}
@@ -752,9 +767,12 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_FILE;
 		isMovieBrowser = false;
 		timeshift = 0;
+		isDVD = false;
+		isBlueRay = false;
 		
 		PlayFile();
 	}
+	/*
 	else if ( actionKey == "dvdplayback" ) 
 	{
 		isVlc = true;
@@ -762,6 +780,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_DVD;
 		isMovieBrowser = false;
 		timeshift = 0;
+		isDVD = false;
 		
 		PlayFile();
 	}
@@ -772,15 +791,42 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		streamtype = STREAMTYPE_SVCD;
 		isMovieBrowser = false;
 		timeshift = 0;
+		isDVD = false;
 		
 		PlayFile();
 	}
+	*/
 	else if(actionKey == "webtv")
 	{
 		isVlc = false;
 		isWebTV = true;
 		isMovieBrowser = false;
 		timeshift = 0;
+		isDVD = false;
+		isBlueRay = false;
+		
+		PlayFile();
+	}
+	else if(actionKey == "dvdplayback")
+	{
+		isMovieBrowser = false;
+		timeshift = 0;
+		isWebTV = false;
+		isVlc = false;
+		isBlueRay = false;
+		isDVD = true;
+		
+		PlayFile();
+	}
+	else if(actionKey == "bluerayplayback")
+	{
+		isMovieBrowser = false;
+		timeshift = 0;
+		isWebTV = false;
+		isVlc = false;
+		isDVD = false;
+		isBlueRay = true;
+		
 		PlayFile();
 	}
 	
@@ -804,6 +850,12 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		return menu_return::RETURN_EXIT_ALL;
 	}
+	
+	// umount /tmp/dvd and /tmp/blueray
+	if(isDVD)
+		umount("/tmp/dvd");
+	else if(isBlueRay)
+		umount("/tmp/blueray");
 
 	return menu_return::RETURN_REPAINT;
 }
@@ -1298,6 +1350,23 @@ void CMoviePlayerGui::PlayFile(void)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
 #endif		
 	}
+	
+	// dvd
+	if (isDVD || isBlueRay)
+	{
+		open_filebrowser = true;
+							
+		sel_filename = "DVD/Blue Ray Player";
+		update_lcd = true;
+		start_play = true;
+		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+		
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+		// hide ts icon
+		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
+#endif		
+	}	
 
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info
@@ -1730,6 +1799,101 @@ void CMoviePlayerGui::PlayFile(void)
 					break;
 				}
 			}
+			//
+			else if(isDVD) // vlc (file not dvd)
+			{
+				filename = NULL;
+				filebrowser->Filter = &vlcfilefilter;
+				
+				//
+				// create /tmp/dvd
+				safe_mkdir("/tmp/dvd");
+						
+				// mount selected iso image to /tmp/dvd
+				char cmd[128];
+				sprintf(cmd, "mount -o loop /tmp/mydvd.iso /tmp/dvd");
+				system(cmd);
+				
+				if(filebrowser->exec(Path_dvd.c_str()))
+				{
+					Path_dvd = filebrowser->getCurrentDir();
+
+					CFile * file = filebrowser->getSelectedFile();
+
+					if ((file = filebrowser->getSelectedFile()) != NULL) 
+					{
+						CFile::FileType ftype;
+						ftype = file->getType();
+
+						is_file_player = true;
+
+						filename = file->Name.c_str();
+						update_lcd = true;
+						start_play = true;
+						was_file = true;
+						sel_filename = filebrowser->getSelectedFile()->getFileName();
+						
+						//
+						g_file_epg = sel_filename;
+						g_file_epg1 = sel_filename;
+						//
+					}
+				}
+				else if(playstate == CMoviePlayerGui::STOPPED)
+				{
+					was_file = false;
+					break;
+				}
+
+			}
+			else if(isBlueRay) // vlc (file not dvd)
+			{
+				filename = NULL;
+				filebrowser->Filter = &vlcfilefilter;
+				
+				//
+				// create /tmp/dvd
+				safe_mkdir("/tmp/blueray");
+						
+				// mount selected myblueray to /tmp/dvd
+				char cmd[128];
+
+				sprintf(cmd, "mount -o loop -t udf /tmp/myblueray.iso /tmp/blueray");
+				system(cmd);
+				
+				if(filebrowser->exec(Path_blueray.c_str()))
+				{
+					Path_blueray = filebrowser->getCurrentDir();
+
+					CFile * file = filebrowser->getSelectedFile();
+
+					if ((file = filebrowser->getSelectedFile()) != NULL) 
+					{
+						CFile::FileType ftype;
+						ftype = file->getType();
+
+						is_file_player = true;
+
+						filename = file->Name.c_str();
+						update_lcd = true;
+						start_play = true;
+						was_file = true;
+						sel_filename = filebrowser->getSelectedFile()->getFileName();
+						
+						//
+						g_file_epg = sel_filename;
+						g_file_epg1 = sel_filename;
+						//
+					}
+				}
+				else if(playstate == CMoviePlayerGui::STOPPED)
+				{
+					was_file = false;
+					break;
+				}
+
+			}
+			//
 			else  // filebrowser
 			{
 				filebrowser->Filter = &tsfilefilter;

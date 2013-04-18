@@ -807,6 +807,7 @@ const char * locale_real_names[] = {
 	"movieplayer.tshelp9",
 	"movieplayer.tsplayback",
 	"movieplayer.vcdplayback",
+	"movieplayer.bluerayplayback",
 	"movieplayer.vlchelp1",
 	"movieplayer.vlchelp10",
 	"movieplayer.vlchelp11",
@@ -1539,6 +1540,8 @@ const char * locale_real_names[] = {
 	"helptext.miscsettingspsisetup",
 	"helptext.timerlist",
 	"helptext.features",
+	"helptext.dvd",
+	"helptext.blueray",
 	
 	"miscsettings.logosdir",
 	
