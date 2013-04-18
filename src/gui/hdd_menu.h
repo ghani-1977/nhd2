@@ -65,7 +65,6 @@ class CHDDuMountMSGExec : public CMenuTarget
 };
 
 // init
-/*
 class CHDDInit : public CMenuTarget
 {
 	public:
@@ -78,7 +77,6 @@ class CHDDBrowser : public CMenuTarget
 	public:
 		int exec(CMenuTarget * parent, const std::string& actionKey);
 };
-*/
 
 // HDD menu handler
 class CHDDMenuHandler : public CMenuTarget
@@ -87,7 +85,6 @@ class CHDDMenuHandler : public CMenuTarget
 		int  exec( CMenuTarget * parent,  const std::string &actionKey);
 		int  hddMenu();
 };
-
 
 #endif	//hdd_menu_h
 

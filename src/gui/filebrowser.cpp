@@ -1479,16 +1479,12 @@ void CFileBrowser::paint()
 	liststart = (selected/listmaxshow)*listmaxshow;
 
 	//if (filelist[0].Name.length() != 0)
-	//	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 30, y+ 5 );
+	//	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width- 30, y + 5 );
 
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-//#else
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_FILEBROWSER_HEAD));
-//#endif	
+	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_FILEBROWSER_HEAD));	
 
 	// paint items
-	for(unsigned int count = 0; count<listmaxshow; count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 		paintItem(count);
 
 	int ypos = y+ theight;
@@ -1499,7 +1495,7 @@ void CFileBrowser::paint()
 	int sbs= (selected/listmaxshow);
 
 	// scroll bar
-	frameBuffer->paintBoxRel(x + width- 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb-4)/sbc, COL_MENUCONTENT_PLUS_3 );
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3 );
 }
 
 void CFileBrowser::SMSInput(const neutrino_msg_t msg)
@@ -1535,7 +1531,9 @@ void CFileBrowser::recursiveDelete(const char* file)
 	stat_struct statbuf;
 	dirent_struct **namelist;
 	int n;
+	
 	printf("Delete %s\n", file);
+	
 	if(my_lstat(file,&statbuf) == 0)
 	{
 		if(S_ISDIR(statbuf.st_mode))

@@ -129,8 +129,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CZapitClient::responseGetLastChannel    firstchannel;
 		st_rmsg				sendmessage;
 
-		//int				current_muted;
-
 		bool				skipShutdownTimer;
 
 		CColorSetupNotifier		*colorSetupNotifier;

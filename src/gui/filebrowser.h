@@ -165,7 +165,7 @@ class CFileBrowser
 		std::string		m_baseurl;
 		int 			width;
 		int 			height;
-		bool			use_filter;
+		
 		bool			bCancel;
 
 		int 			x;
@@ -205,6 +205,7 @@ class CFileBrowser
 		bool			Dirs_Selectable;
 		bool			Dir_Mode;
 		bool                    Hide_records;
+		bool			use_filter;
 		
 		CFileFilter * Filter;
 
@@ -212,18 +213,18 @@ class CFileBrowser
 		CFileBrowser(const char * const _base, const tFileBrowserMode mode = ModeFile);
 		~CFileBrowser();
 
-		bool		exec(const char * const dirname);
-		CFile		*getSelectedFile();
+		bool exec(const char * const dirname);
+		CFile * getSelectedFile();
 		
 		inline const CFileList & getSelectedFiles(void) const
-			{
-				return selected_filelist;
-			}
+		{
+			return selected_filelist;
+		}
 
 		inline const std::string & getCurrentDir(void) const
-			{
-				return Path;
-			}
+		{
+			return Path;
+		}
 
 		//size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data);
 	private:
