@@ -1906,15 +1906,14 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
 		}
         } 
-	else if (msg == CRCInput::RC_multifeed) 
+	else if (msg == CRCInput::RC_pause) 
 	{
           	if (m_movieSelectionHandler != NULL) 
 		{
                 	if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_REMOVE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 			{
                         	std::string fname = m_movieSelectionHandler->file.Name;
-				//strReplace(fname, ".ts", ".jpg");
-				///
+				
 				int ext_pos = 0;
 				ext_pos = fname.rfind('.');
 				if( ext_pos > 0)
@@ -1924,13 +1923,13 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 					extension = "." + extension;
 					strReplace(fname, extension.c_str(), ".jpg");
 				}
-				///
+				
                         	unlink(fname.c_str());
 				refresh();
 			}
           	}
 	}
-	else if ( msg == CRCInput::RC_mode ) 
+	else if ( msg == CRCInput::RC_record ) 
 	{
           	if (m_movieSelectionHandler != NULL) 
 		{
@@ -3818,12 +3817,12 @@ int CMovieHelp::exec(CMenuTarget* parent, const std::string & actionKey)
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, "Hauptmenü");
-	helpbox.addLine("+/-  Ansicht wechseln");
-	helpbox.addLine("TV/Radio  Screenshot");
-	helpbox.addLine("Audio Cut Jumps from Movie");
-	helpbox.addLine("teletxt copy Jumps from movie");
-	helpbox.addLine("dvbsub truncate movie");
-	helpbox.addLine("multifeed remove screenshot");
+	helpbox.addLine("'+/-'  Ansicht wechseln");
+	helpbox.addLine("'Rec'  Screenshot");
+	helpbox.addLine("'Audio' Cut Jumps from Movie");
+	helpbox.addLine("'teletxt' copy Jumps from movie");
+	helpbox.addLine("'dvbsub' truncate movie");
+	helpbox.addLine("'Pause' remove screenshot");
 	helpbox.addLine("Während der Filmwiedergabe:");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, " Markierungsmenu ");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausführen");
