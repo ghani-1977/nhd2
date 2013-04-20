@@ -257,53 +257,55 @@ static char* Codec2Encoding(enum CodecID id, int* version)
 
 long long int calcPts(AVStream* stream, AVPacket* packet)
 {
-      long long int pts;
+	long long int pts;
 
-      if ((stream == NULL) || (packet == NULL))
-      {
-	  ffmpeg_err("stream / packet null\n");
-	  return INVALID_PTS_VALUE;
-      }
+	if ((stream == NULL) || (packet == NULL))
+	{
+		ffmpeg_err("stream / packet null\n");
+		return INVALID_PTS_VALUE;
+	}
 
-      if(packet->pts == AV_NOPTS_VALUE)
-	  pts = INVALID_PTS_VALUE;
-      else if (avContext->start_time == AV_NOPTS_VALUE)
-	  pts = 90000.0 * (double)packet->pts * av_q2d(stream->time_base);
-      else
-	  pts = 90000.0 * (((double)(packet->pts) * av_q2d(stream->time_base)) - (avContext->start_time / AV_TIME_BASE));
+	if(packet->pts == AV_NOPTS_VALUE)
+		pts = INVALID_PTS_VALUE;
+	else if (avContext->start_time == AV_NOPTS_VALUE)
+		pts = 90000.0 * (double)packet->pts * av_q2d(stream->time_base);
+	else
+		pts = 90000.0 * (((double)(packet->pts) * av_q2d(stream->time_base)) - (avContext->start_time / AV_TIME_BASE));
 
-      if (pts & 0x8000000000000000ull)
-	  pts = INVALID_PTS_VALUE;
+	if (pts & 0x8000000000000000ull)
+		pts = INVALID_PTS_VALUE;
 
-      return pts;
+	return pts;
 }
 
 /*Hellmaster1024: get the Duration of the subtitle from the SSA line*/
 float getDurationFromSSALine(unsigned char* line){
-    int i,h,m,s,ms;
-    char* Text = strdup((char*) line);
-    char* ptr1;
-    char* ptr[10];
-    long int msec;
+	int i,h,m,s,ms;
+	char* Text = strdup((char*) line);
+	char* ptr1;
+	char* ptr[10];
+	long int msec;
 
-    ptr1 = Text;
-    ptr[0]=Text;
-    for (i=0; i < 3 && *ptr1 != '\0'; ptr1++) {
-        if (*ptr1 == ',') {
-            ptr[++i]=ptr1+1;
-            *ptr1 = '\0';
-        }
-    }
+	ptr1 = Text;
+	ptr[0]=Text;
+	for (i=0; i < 3 && *ptr1 != '\0'; ptr1++) 
+	{
+		if (*ptr1 == ',') 
+		{
+			ptr[++i]=ptr1+1;
+			*ptr1 = '\0';
+		}
+	}
 
-    sscanf(ptr[2],"%d:%d:%d.%d",&h,&m,&s,&ms);
-    msec = (ms*10) + (s*1000) + (m*60*1000) + (h*24*60*1000);
-    sscanf(ptr[1],"%d:%d:%d.%d",&h,&m,&s,&ms);
-    msec -= (ms*10) + (s*1000) + (m*60*1000) + (h*24*60*1000);
+	sscanf(ptr[2],"%d:%d:%d.%d",&h,&m,&s,&ms);
+	msec = (ms*10) + (s*1000) + (m*60*1000) + (h*24*60*1000);
+	sscanf(ptr[1],"%d:%d:%d.%d",&h,&m,&s,&ms);
+	msec -= (ms*10) + (s*1000) + (m*60*1000) + (h*24*60*1000);
 
-    ffmpeg_printf(10, "%s %s %f\n", ptr[2], ptr[1], (float) msec / 1000.0);
+	ffmpeg_printf(10, "%s %s %f\n", ptr[2], ptr[1], (float) msec / 1000.0);
 
-    free(Text);
-    return (float)msec/1000.0;
+	free(Text);
+	return (float)msec/1000.0;
 }
 
 /* search for metatdata in context and stream
@@ -317,32 +319,32 @@ static char* searchMeta(AVDictionary * metadata, char* ourTag)
 #endif
 {
 #if LIBAVCODEC_VERSION_MAJOR < 54
-   AVMetadataTag *tag = NULL;
+	AVMetadataTag *tag = NULL;
 #else
-   AVDictionaryEntry *tag = NULL;
+	AVDictionaryEntry *tag = NULL;
 #endif
-   int i = 0;
+	int i = 0;
 
-   while (metadata_map[i] != NULL)
-   {
-      if (strcmp(ourTag, metadata_map[i]) == 0)
-      {
+	while (metadata_map[i] != NULL)
+	{
+		if (strcmp(ourTag, metadata_map[i]) == 0)
+		{
 #if LIBAVCODEC_VERSION_MAJOR < 54
-          while ((tag = av_metadata_get(metadata, "", tag, AV_METADATA_IGNORE_SUFFIX)))
+			while ((tag = av_metadata_get(metadata, "", tag, AV_METADATA_IGNORE_SUFFIX)))
 #else
-          while ((tag = av_dict_get(metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
+			while ((tag = av_dict_get(metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
 #endif
-          {
-              if (strcmp(tag->key, metadata_map[ i + 1 ]) == 0)
-              {
-                  return tag->value;
-              }
-          }
-      }
-      i++;
-   }
+			{
+				if (strcmp(tag->key, metadata_map[ i + 1 ]) == 0)
+				{
+					return tag->value;
+				}
+			}
+		}
+		i++;
+	}
 
-   return NULL;
+	return NULL;
 }
 
 /* **************************** */
@@ -350,484 +352,487 @@ static char* searchMeta(AVDictionary * metadata, char* ourTag)
 /* **************************** */
 static void FFMPEGThread(Context_t *context) 
 {
-    AVPacket   packet;
-    off_t currentReadPosition = 0; /* last read position */
-    off_t lastReverseSeek = 0;     /* max address to read before seek again in reverse play */
-    off_t lastSeek = -1;
-    long long int lastPts = -1, currentVideoPts = -1, currentAudioPts = -1, showtime = 0, bofcount = 0;
-    int           err = 0, gotlastPts = 0, audioMute = 0;
-    AudioVideoOut_t avOut;
+	AVPacket   packet;
+	off_t currentReadPosition = 0; /* last read position */
+	off_t lastReverseSeek = 0;     /* max address to read before seek again in reverse play */
+	off_t lastSeek = -1;
+	long long int lastPts = -1, currentVideoPts = -1, currentAudioPts = -1, showtime = 0, bofcount = 0;
+	int           err = 0, gotlastPts = 0, audioMute = 0;
+	AudioVideoOut_t avOut;
 
-    /* Softdecoding buffer*/
-    unsigned char *samples = NULL;
+	/* Softdecoding buffer*/
+	unsigned char *samples = NULL;
 
+	ffmpeg_printf(10, "\n");
 
-    ffmpeg_printf(10, "\n");
+	while ( context->playback->isCreationPhase )
+	{
+		ffmpeg_err("Thread waiting for end of init phase...\n");
+		usleep(1000);
+	}
+	ffmpeg_printf(10, "Running!\n");
 
-    while ( context->playback->isCreationPhase )
-    {
-        ffmpeg_err("Thread waiting for end of init phase...\n");
-        usleep(1000);
-    }
-    ffmpeg_printf(10, "Running!\n");
+	while ( context && context->playback && context->playback->isPlaying ) 
+	{
+		//IF MOVIE IS PAUSED, WAIT
+		if (context->playback->isPaused) 
+		{
+			ffmpeg_printf(20, "paused\n");
 
-    while ( context && context->playback && context->playback->isPlaying ) 
-    {
-        //IF MOVIE IS PAUSED, WAIT
-        if (context->playback->isPaused) {
-            ffmpeg_printf(20, "paused\n");
+			usleep(100000);
+			continue;
+		}
 
-            usleep(100000);
-            continue;
-        }
+		if (context->playback->isSeeking) 
+		{
+			ffmpeg_printf(10, "seeking\n");
 
-        if (context->playback->isSeeking) {
-            ffmpeg_printf(10, "seeking\n");
-
-            usleep(100000);
-            continue;
-        }
+			usleep(100000);
+			continue;
+		}
 
 #define reverse_playback_3
 #ifdef reverse_playback_3
-	if (context->playback->BackWard && av_gettime() >= showtime)
-	{
-	      audioMute = 1;
-	      context->output->Command(context, OUTPUT_CLEAR, "v");
+		if (context->playback->BackWard && av_gettime() >= showtime)
+		{
+			audioMute = 1;
+			context->output->Command(context, OUTPUT_CLEAR, "v");
 
-	      if(bofcount == 1)
-	      {
-		  showtime = av_gettime();
-		  usleep(100000);
-		  continue;
-	      }
+			if(bofcount == 1)
+			{
+				showtime = av_gettime();
+				usleep(100000);
+				continue;
+			}
 
-	      if(lastPts == -1)
-	      {
-		  if(currentVideoPts != -1)
-		      lastPts = currentVideoPts;
-		  else
-		      lastPts = currentAudioPts;
-	      }
+			if(lastPts == -1)
+			{
+				if(currentVideoPts != -1)
+					lastPts = currentVideoPts;
+				else
+					lastPts = currentAudioPts;
+			}
 
 
-	      if((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, (float) context->playback->Speed)) < 0)
-	      {
-		  ffmpeg_err( "Error seeking\n");
+			if((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, (float) context->playback->Speed)) < 0)
+			{
+				ffmpeg_err( "Error seeking\n");
 
-		  if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
-		  {
-		      bofcount = 1;
-		  }
-	      }
+				if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
+				{
+					bofcount = 1;
+				}
+			}
 
-	      lastPts = lastPts + (context->playback->Speed * 90000);
-	      showtime = av_gettime() + 300000; //jump back all 300ms
-	}
+			lastPts = lastPts + (context->playback->Speed * 90000);
+			showtime = av_gettime() + 300000; //jump back all 300ms
+		}
 
-	if(!context->playback->BackWard && audioMute)
-	{
-	      lastPts = -1;
-	      bofcount = 0;
-	      showtime = 0;
-	      audioMute = 0;
-	      context->output->Command(context, OUTPUT_AUDIOMUTE, "0");
-	}
+		if(!context->playback->BackWard && audioMute)
+		{
+			lastPts = -1;
+			bofcount = 0;
+			showtime = 0;
+			audioMute = 0;
+			context->output->Command(context, OUTPUT_AUDIOMUTE, "0");
+		}
 #endif
 
 #ifdef reverse_playback_2
-        /* should we seek back again ?
-         * reverse play and currentReadPosition >= end of seek reverse play area ? */
-        if ((context->playback->BackWard) && (currentReadPosition >= lastReverseSeek))
-        {
-            /* fixme: surplus detection */
-            int surplus = 1;
+		/* should we seek back again ?
+		* reverse play and currentReadPosition >= end of seek reverse play area ? */
+		if ((context->playback->BackWard) && (currentReadPosition >= lastReverseSeek))
+		{
+			/* fixme: surplus detection */
+			int surplus = 1;
 
-            ffmpeg_printf(20, "new seek ->c %lld, l %lld, ls %lld, lp %lld\n", currentReadPosition, lastReverseSeek, lastSeek, lastPts);
+			ffmpeg_printf(20, "new seek ->c %lld, l %lld, ls %lld, lp %lld\n", currentReadPosition, lastReverseSeek, lastSeek, lastPts);
 
-            context->output->Command(context, OUTPUT_DISCONTINUITY_REVERSE, &surplus);
+			context->output->Command(context, OUTPUT_DISCONTINUITY_REVERSE, &surplus);
 
-            /* save the maximum read position, if we reach this, we must
-             * seek back again.
-             */
-            if(lastReverseSeek == 0)
-                lastReverseSeek = currentReadPosition;
-            else
-                lastReverseSeek = lastSeek;
+			/* save the maximum read position, if we reach this, we must
+			* seek back again.
+			*/
+			if(lastReverseSeek == 0)
+				lastReverseSeek = currentReadPosition;
+			else
+				lastReverseSeek = lastSeek;
 
 #define use_sec_to_seek
 #if defined(use_sec_to_seek)
-            if ((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, -5)) < 0)
+			if ((err = container_ffmpeg_seek_rel(context, lastSeek, lastPts, -5)) < 0)
 #else
-            if ((err = container_ffmpeg_seek_bytes_rel(lastSeek, /* context->playback->BackWard */ -188 * 200)) < 0)
+			if ((err = container_ffmpeg_seek_bytes_rel(lastSeek, /* context->playback->BackWard */ -188 * 200)) < 0)
 #endif
-            {
-                ffmpeg_err( "Error seeking\n");
+			{
+				ffmpeg_err( "Error seeking\n");
 
-                if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
-                {
-                    break;
-                }
-            }
-            else
-            {
+				if (err == cERR_CONTAINER_FFMPEG_END_OF_FILE)
+				{
+					break;
+				}
+			}
+			else
+			{
 #if LIBAVCODEC_VERSION_MAJOR < 54
-               lastSeek = currentReadPosition = url_ftell(avContext->pb);
+				lastSeek = currentReadPosition = url_ftell(avContext->pb);
 #else
-               lastSeek = currentReadPosition = avio_tell(avContext->pb);
+				lastSeek = currentReadPosition = avio_tell(avContext->pb);
 #endif
-               gotlastPts = 1;
+				gotlastPts = 1;
 
 #ifndef use_sec_to_seek
-               if (err != lastSeek)
-                   ffmpeg_err("upssssssssssssssss seek not doing what I want\n");
+				if (err != lastSeek)
+					ffmpeg_err("upssssssssssssssss seek not doing what I want\n");
 #endif
 
-/*
-               if (currentVideoPts != -1)
-                   lastPts = currentVideoPts;
-               else
-                   lastPts = currentAudioPts;
-*/
-            }
-        } 
-        else if (!context->playback->BackWard)
-        {
-           lastReverseSeek = 0;
-           lastSeek = -1;
-           lastPts = -1;
-           gotlastPts = 0;
-        }
-
+				/*
+				if (currentVideoPts != -1)
+					lastPts = currentVideoPts;
+				else
+					lastPts = currentAudioPts;
+				*/
+			}
+		} 
+		else if (!context->playback->BackWard)
+		{
+			lastReverseSeek = 0;
+			lastSeek = -1;
+			lastPts = -1;
+			gotlastPts = 0;
+		}
 #endif
-        getMutex(FILENAME, __FUNCTION__,__LINE__);
+		getMutex(FILENAME, __FUNCTION__,__LINE__);
 
 #define use_read_frame
 #ifdef use_read_frame
-        if (av_read_frame(avContext, &packet) == 0 )
+		if (av_read_frame(avContext, &packet) == 0 )
 #else
-        if (av_read_packet(avContext, &packet) == 0 )
+		if (av_read_packet(avContext, &packet) == 0 )
 #endif
-        {
-            long long int pts;
-            Track_t * videoTrack = NULL;
-            Track_t * audioTrack = NULL;	    
-            Track_t * subtitleTrack = NULL;    
+		{
+			long long int pts;
+			Track_t * videoTrack = NULL;
+			Track_t * audioTrack = NULL;	    
+			Track_t * subtitleTrack = NULL;    
 
-            int index = packet.stream_index;
+			int index = packet.stream_index;
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-            currentReadPosition = url_ftell(avContext->pb);
+			currentReadPosition = url_ftell(avContext->pb);
 #else
-            currentReadPosition = avio_tell(avContext->pb);
+			currentReadPosition = avio_tell(avContext->pb);
 #endif
 
-            if (context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack) < 0)
-                ffmpeg_err("error getting video track\n");
+			if (context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack) < 0)
+				ffmpeg_err("error getting video track\n");
 
-            if (context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack) < 0)
-                ffmpeg_err("error getting audio track\n");
-            if (context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack) < 0)
-                ffmpeg_err("error getting subtitle track\n");    
+			if (context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack) < 0)
+				ffmpeg_err("error getting audio track\n");
+			
+			if (context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack) < 0)
+				ffmpeg_err("error getting subtitle track\n");    
 
-            ffmpeg_printf(200, "packet.size %d - index %d\n", packet.size, index);
+			ffmpeg_printf(200, "packet.size %d - index %d\n", packet.size, index);
 
-            if (videoTrack != NULL) 
-	    {
-                if (videoTrack->Id == index) 
-		{
-                    currentVideoPts = videoTrack->pts = pts = calcPts(videoTrack->stream, &packet);
+			if (videoTrack != NULL) 
+			{
+				if (videoTrack->Id == index) 
+				{
+					currentVideoPts = videoTrack->pts = pts = calcPts(videoTrack->stream, &packet);
 
-                    if ((currentVideoPts > latestPts) && (currentVideoPts != INVALID_PTS_VALUE))
-                        latestPts = currentVideoPts;
+					if ((currentVideoPts > latestPts) && (currentVideoPts != INVALID_PTS_VALUE))
+						latestPts = currentVideoPts;
 
 #ifdef reverse_playback_2
-                    if (currentVideoPts != INVALID_PTS_VALUE && gotlastPts == 1)
-                    {
-                        lastPts = currentVideoPts;
-                        gotlastPts = 0;
-                    }
+					if (currentVideoPts != INVALID_PTS_VALUE && gotlastPts == 1)
+					{
+						lastPts = currentVideoPts;
+						gotlastPts = 0;
+					}
 #endif
 
-                    ffmpeg_printf(200, "VideoTrack index = %d %lld\n",index, currentVideoPts);
+					ffmpeg_printf(200, "VideoTrack index = %d %lld\n",index, currentVideoPts);
 
-                    avOut.data       = packet.data;
-                    avOut.len        = packet.size;
-                    avOut.pts        = pts;
-                    avOut.extradata  = videoTrack->extraData;
-                    avOut.extralen   = videoTrack->extraSize;
-                    avOut.frameRate  = videoTrack->frame_rate;
-                    avOut.timeScale  = videoTrack->TimeScale;
-                    avOut.width      = videoTrack->width;
-                    avOut.height     = videoTrack->height;
-                    avOut.type       = "video";
+					avOut.data       = packet.data;
+					avOut.len        = packet.size;
+					avOut.pts        = pts;
+					avOut.extradata  = videoTrack->extraData;
+					avOut.extralen   = videoTrack->extraSize;
+					avOut.frameRate  = videoTrack->frame_rate;
+					avOut.timeScale  = videoTrack->TimeScale;
+					avOut.width      = videoTrack->width;
+					avOut.height     = videoTrack->height;
+					avOut.type       = "video";
 
-                    if (context->output->video->Write(context, &avOut) < 0) {
-                        ffmpeg_err("writing data to video device failed\n");
-                    }
-                }
-            }
+					if (context->output->video->Write(context, &avOut) < 0) 
+					{
+						ffmpeg_err("writing data to video device failed\n");
+					}
+				}
+			}
 
-            if (audioTrack != NULL) 
-	    {
-                if (audioTrack->Id == index) 
-		{
-                    currentAudioPts = audioTrack->pts = pts = calcPts(audioTrack->stream, &packet);
+			if (audioTrack != NULL) 
+			{
+				if (audioTrack->Id == index) 
+				{
+					currentAudioPts = audioTrack->pts = pts = calcPts(audioTrack->stream, &packet);
 
-                    if ((currentAudioPts > latestPts) && (!videoTrack))
-                        latestPts = currentAudioPts;
+					if ((currentAudioPts > latestPts) && (!videoTrack))
+						latestPts = currentAudioPts;
 
 #ifdef reverse_playback_2
-                    if (currentAudioPts != INVALID_PTS_VALUE && gotlastPts == 1 && (!videoTrack))
-                    {
-                        lastPts = currentAudioPts;
-                        gotlastPts = 0;
-                    }
+					if (currentAudioPts != INVALID_PTS_VALUE && gotlastPts == 1 && (!videoTrack))
+					{
+						lastPts = currentAudioPts;
+						gotlastPts = 0;
+					}
 #endif
 
-                    ffmpeg_printf(200, "AudioTrack index = %d\n",index);
+					ffmpeg_printf(200, "AudioTrack index = %d\n",index);
 
-                    if (audioTrack->inject_as_pcm == 1)
-                    {
-                        int      bytesDone = 0;
-                        unsigned int samples_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
-                        AVPacket avpkt;
-                        avpkt = packet;
+					if (audioTrack->inject_as_pcm == 1)
+					{
+						int      bytesDone = 0;
+						unsigned int samples_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+						AVPacket avpkt;
+						avpkt = packet;
 
-                        // This way the buffer is only allocated if we really need it
-                        if(samples == NULL)
-                            samples = (unsigned char *)malloc(samples_size);
+						// This way the buffer is only allocated if we really need it
+						if(samples == NULL)
+							samples = (unsigned char *)malloc(samples_size);
 
-                        while(avpkt.size > 0)
-                        {
-                            int decoded_data_size = samples_size;
+						while(avpkt.size > 0)
+						{
+							int decoded_data_size = samples_size;
 
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
-                            bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
+							bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
 #else
-			    bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
+							bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
 #endif
 
-                            if(bytesDone < 0) // Error Happend
-                                break;
+							if(bytesDone < 0) // Error Happend
+							    break;
 
-                            avpkt.data += bytesDone;
-                            avpkt.size -= bytesDone;
+							avpkt.data += bytesDone;
+							avpkt.size -= bytesDone;
 
-                            if(decoded_data_size <= 0)
-                                continue;
+							if(decoded_data_size <= 0)
+							    continue;
 
-                            pcmPrivateData_t extradata;
-                            extradata.uNoOfChannels = ((AVStream*) audioTrack->stream)->codec->channels;
-                            extradata.uSampleRate = ((AVStream*) audioTrack->stream)->codec->sample_rate;
-                            extradata.uBitsPerSample = 16;
-                            extradata.bLittleEndian = 1;
+							pcmPrivateData_t extradata;
+							extradata.uNoOfChannels = ((AVStream*) audioTrack->stream)->codec->channels;
+							extradata.uSampleRate = ((AVStream*) audioTrack->stream)->codec->sample_rate;
+							extradata.uBitsPerSample = 16;
+							extradata.bLittleEndian = 1;
 
-                            avOut.data       = samples;
-                            avOut.len        = decoded_data_size;
+							avOut.data       = samples;
+							avOut.len        = decoded_data_size;
 
-                            avOut.pts        = pts;
-                            avOut.extradata  = &extradata;
-                            avOut.extralen   = sizeof(extradata);
-                            avOut.frameRate  = 0;
-                            avOut.timeScale  = 0;
-                            avOut.width      = 0;
-                            avOut.height     = 0;
-                            avOut.type       = "audio";
+							avOut.pts        = pts;
+							avOut.extradata  = &extradata;
+							avOut.extralen   = sizeof(extradata);
+							avOut.frameRate  = 0;
+							avOut.timeScale  = 0;
+							avOut.width      = 0;
+							avOut.height     = 0;
+							avOut.type       = "audio";
 
 #ifdef reverse_playback_3
-                            if (!context->playback->BackWard)
+							if (!context->playback->BackWard)
 #endif
-                            if (context->output->audio->Write(context, &avOut) < 0)
-                                ffmpeg_err("writing data to audio device failed\n");
-                        }
-                    }
-                    else if (audioTrack->have_aacheader == 1)
-                    {
-                        ffmpeg_printf(200,"write audio aac\n");
+							if (context->output->audio->Write(context, &avOut) < 0)
+								ffmpeg_err("writing data to audio device failed\n");
+						}
+					}
+					else if (audioTrack->have_aacheader == 1)
+					{
+						ffmpeg_printf(200,"write audio aac\n");
 
-                        avOut.data       = packet.data;
-                        avOut.len        = packet.size;
-                        avOut.pts        = pts;
-                        avOut.extradata  = audioTrack->aacbuf;
-                        avOut.extralen   = audioTrack->aacbuflen;
-                        avOut.frameRate  = 0;
-                        avOut.timeScale  = 0;
-                        avOut.width      = 0;
-                        avOut.height     = 0;
-                        avOut.type       = "audio";
+						avOut.data       = packet.data;
+						avOut.len        = packet.size;
+						avOut.pts        = pts;
+						avOut.extradata  = audioTrack->aacbuf;
+						avOut.extralen   = audioTrack->aacbuflen;
+						avOut.frameRate  = 0;
+						avOut.timeScale  = 0;
+						avOut.width      = 0;
+						avOut.height     = 0;
+						avOut.type       = "audio";
 
 #ifdef reverse_playback_3
-                        if (!context->playback->BackWard)
+						if (!context->playback->BackWard)
 #endif
-                        if (context->output->audio->Write(context, &avOut) < 0)
-                        {
-                            ffmpeg_err("(aac) writing data to audio device failed\n");
-                        }
-                    }
-                    else
-                    {
+						if (context->output->audio->Write(context, &avOut) < 0)
+						{
+							ffmpeg_err("(aac) writing data to audio device failed\n");
+						}
+					}
+					else
+					{
 
-                        avOut.data       = packet.data;
-                        avOut.len        = packet.size;
-                        avOut.pts        = pts;
-                        avOut.extradata  = NULL;
-                        avOut.extralen   = 0;
-                        avOut.frameRate  = 0;
-                        avOut.timeScale  = 0;
-                        avOut.width      = 0;
-                        avOut.height     = 0;
-                        avOut.type       = "audio";
+						avOut.data       = packet.data;
+						avOut.len        = packet.size;
+						avOut.pts        = pts;
+						avOut.extradata  = NULL;
+						avOut.extralen   = 0;
+						avOut.frameRate  = 0;
+						avOut.timeScale  = 0;
+						avOut.width      = 0;
+						avOut.height     = 0;
+						avOut.type       = "audio";
 
 #ifdef reverse_playback_3
-                        if (!context->playback->BackWard)
+						if (!context->playback->BackWard)
 #endif
-                        if (context->output->audio->Write(context, &avOut) < 0)
-                        {
-                            ffmpeg_err("writing data to audio device failed\n");
-                        }
-                    }
-                }
-            }
+						if (context->output->audio->Write(context, &avOut) < 0)
+						{
+							ffmpeg_err("writing data to audio device failed\n");
+						}
+					}
+				}
+			}
 
-	    // subtitle
-            if (subtitleTrack != NULL) 
-	    {
-                if (subtitleTrack->Id == index) 
-		{
-                    float duration=3.0;
-                    ffmpeg_printf(100, "subtitleTrack->stream %p \n", subtitleTrack->stream);
+			// subtitle
+			if (subtitleTrack != NULL) 
+			{
+				if (subtitleTrack->Id == index) 
+				{
+					float duration=3.0;
+					ffmpeg_printf(100, "subtitleTrack->stream %p \n", subtitleTrack->stream);
 
-                    pts = calcPts(subtitleTrack->stream, &packet);
+					pts = calcPts(subtitleTrack->stream, &packet);
 
-                    if ((pts > latestPts) && (!videoTrack) && (!audioTrack))
-                        latestPts = pts;
+					if ((pts > latestPts) && (!videoTrack) && (!audioTrack))
+						latestPts = pts;
 
-                    /*Hellmaster1024: in mkv the duration for ID_TEXT is stored in convergence_duration */
-                    ffmpeg_printf(20, "Packet duration %d\n", packet.duration);
-                    ffmpeg_printf(20, "Packet convergence_duration %lld\n", packet.convergence_duration);
+					/*Hellmaster1024: in mkv the duration for ID_TEXT is stored in convergence_duration */
+					ffmpeg_printf(20, "Packet duration %d\n", packet.duration);
+					ffmpeg_printf(20, "Packet convergence_duration %lld\n", packet.convergence_duration);
 
-                    if(packet.duration != 0 && packet.duration != AV_NOPTS_VALUE )
-                        duration=((float)packet.duration)/1000.0;
-                    else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
-                        duration=((float)packet.convergence_duration)/1000.0;		    
-                    else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-                    {
-                        /*Hellmaster1024 if the duration is not stored in packet.duration or
-                          packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
-                          the Text line*/
-                        duration = getDurationFromSSALine(packet.data);
-                    } else {
-                        /* no clue yet */
-                    }
+					if(packet.duration != 0 && packet.duration != AV_NOPTS_VALUE )
+						duration=((float)packet.duration)/1000.0;
+					else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
+						duration=((float)packet.convergence_duration)/1000.0;		    
+					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
+					{
+						/*Hellmaster1024 if the duration is not stored in packet.duration or
+						  packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
+						  the Text line*/
+						duration = getDurationFromSSALine(packet.data);
+					} 
+					else 
+					{
+						/* no clue yet */
+					}
 
-                    /* konfetti: I've found cases where the duration from getDurationFromSSALine
-                     * is zero (start end and are really the same in text). I think it make's
-                     * no sense to pass those.
-                     */
-                    if (duration > 0.0)
-                    {
-                        /* is there a decoder ? */
-                        if (avcodec_find_decoder(((AVStream*) subtitleTrack->stream)->codec->codec_id) != NULL)
-                        {
-                           AVSubtitle sub;
-                           int got_sub_ptr;
+					/* konfetti: I've found cases where the duration from getDurationFromSSALine
+					* is zero (start end and are really the same in text). I think it make's
+					* no sense to pass those.
+					*/
+					if (duration > 0.0)
+					{
+						/* is there a decoder ? */
+						if (avcodec_find_decoder(((AVStream*) subtitleTrack->stream)->codec->codec_id) != NULL)
+						{
+							AVSubtitle sub;
+							int got_sub_ptr;
 
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)			   
-                           if (avcodec_decode_subtitle2(((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, &packet) < 0)
+							if (avcodec_decode_subtitle2(((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, &packet) < 0)
 #else
-			   if (avcodec_decode_subtitle( ((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, packet.data, packet.size ) < 0)
+							if (avcodec_decode_subtitle( ((AVStream*) subtitleTrack->stream)->codec, &sub, &got_sub_ptr, packet.data, packet.size ) < 0)
 #endif
-                           {
-                               ffmpeg_err("error decoding subtitle\n");
-                           } else
-                           {
-                               int i;
+							{
+							    ffmpeg_err("error decoding subtitle\n");
+							} 
+							else
+							{
+								int i;
 
-                               ffmpeg_printf(0, "format %d\n", sub.format);
-                               ffmpeg_printf(0, "start_display_time %d\n", sub.start_display_time);
-                               ffmpeg_printf(0, "end_display_time %d\n", sub.end_display_time);
-                               ffmpeg_printf(0, "num_rects %d\n", sub.num_rects);
-                               //ffmpeg_printf(0, "pts %lld\n", sub.pts);
+								ffmpeg_printf(0, "format %d\n", sub.format);
+								ffmpeg_printf(0, "start_display_time %d\n", sub.start_display_time);
+								ffmpeg_printf(0, "end_display_time %d\n", sub.end_display_time);
+								ffmpeg_printf(0, "num_rects %d\n", sub.num_rects);
+								//ffmpeg_printf(0, "pts %lld\n", sub.pts);
 
-                               for (i = 0; i < sub.num_rects; i++)
-                               {
+								for (i = 0; i < sub.num_rects; i++)
+								{
 
-                                  ffmpeg_printf(0, "x %d\n", sub.rects[i]->x);
-                                  ffmpeg_printf(0, "y %d\n", sub.rects[i]->y);
-                                  ffmpeg_printf(0, "w %d\n", sub.rects[i]->w);
-                                  ffmpeg_printf(0, "h %d\n", sub.rects[i]->h);
-                                  ffmpeg_printf(0, "nb_colors %d\n", sub.rects[i]->nb_colors);
-                                  ffmpeg_printf(0, "type %d\n", sub.rects[i]->type);
-                                  ffmpeg_printf(0, "text %s\n", sub.rects[i]->text);
-                                  ffmpeg_printf(0, "ass %s\n", sub.rects[i]->ass);
-                               // pict ->AVPicture
+									ffmpeg_printf(0, "x %d\n", sub.rects[i]->x);
+									ffmpeg_printf(0, "y %d\n", sub.rects[i]->y);
+									ffmpeg_printf(0, "w %d\n", sub.rects[i]->w);
+									ffmpeg_printf(0, "h %d\n", sub.rects[i]->h);
+									ffmpeg_printf(0, "nb_colors %d\n", sub.rects[i]->nb_colors);
+									ffmpeg_printf(0, "type %d\n", sub.rects[i]->type);
+									ffmpeg_printf(0, "text %s\n", sub.rects[i]->text);
+									ffmpeg_printf(0, "ass %s\n", sub.rects[i]->ass);
+								    // pict ->AVPicture
+								}
+							}
+						}
+						else
+						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
+						{
+							SubtitleData_t data;
 
-                               }
-                           }
+							ffmpeg_printf(10, "videoPts %lld\n", currentVideoPts);
 
-                        }
-                        else
-                        if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-                        {
-                            SubtitleData_t data;
+							data.data      = packet.data;
+							data.len       = packet.size;
+							data.extradata = subtitleTrack->extraData;
+							data.extralen  = subtitleTrack->extraSize;
+							data.pts       = pts;
+							data.duration  = duration;
 
-                            ffmpeg_printf(10, "videoPts %lld\n", currentVideoPts);
+							context->container->assContainer->Command(context, CONTAINER_DATA, &data);
+						}
+						else
+						{
+							/* hopefully native text ;) */
 
-                            data.data      = packet.data;
-                            data.len       = packet.size;
-                            data.extradata = subtitleTrack->extraData;
-                            data.extralen  = subtitleTrack->extraSize;
-                            data.pts       = pts;
-                            data.duration  = duration;
+							unsigned char* line = text_to_ass((char *)packet.data,pts/90,duration);
+							ffmpeg_printf(50,"text line is %s\n",(char *)packet.data);
+							ffmpeg_printf(50,"Sub line is %s\n",line);
+							ffmpeg_printf(20, "videoPts %lld %f\n", currentVideoPts,currentVideoPts/90000.0);
+							SubtitleData_t data;
+							data.data      = line;
+							data.len       = strlen((char*)line);
+							data.extradata = DEFAULT_ASS_HEAD;
+							data.extralen  = strlen(DEFAULT_ASS_HEAD);
+							data.pts       = pts;
+							data.duration  = duration;
 
-                            context->container->assContainer->Command(context, CONTAINER_DATA, &data);
-                        }
-                        else
-                        {
-                            /* hopefully native text ;) */
+							context->container->assContainer->Command(context, CONTAINER_DATA, &data);
+							free(line);
+						}
+					} /* duration */
+				}
+			}            
 
-                            unsigned char* line = text_to_ass((char *)packet.data,pts/90,duration);
-                            ffmpeg_printf(50,"text line is %s\n",(char *)packet.data);
-                            ffmpeg_printf(50,"Sub line is %s\n",line);
-                            ffmpeg_printf(20, "videoPts %lld %f\n", currentVideoPts,currentVideoPts/90000.0);
-                            SubtitleData_t data;
-                            data.data      = line;
-                            data.len       = strlen((char*)line);
-                            data.extradata = DEFAULT_ASS_HEAD;
-                            data.extralen  = strlen(DEFAULT_ASS_HEAD);
-                            data.pts       = pts;
-                            data.duration  = duration;
+			if (packet.data)
+				av_free_packet(&packet);
+		}
+		else  
+		{
+		    ffmpeg_err("no data ->end of file reached ? \n");
+		    releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+		    break;
+		}
+		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+	} /* while */
 
-                            context->container->assContainer->Command(context, CONTAINER_DATA, &data);
-                            free(line);
-                        }
-                    } /* duration */
-                }
-            }            
+	// Freeing the allocated buffer for softdecoding
+	if (samples != NULL) 
+	{
+		free(samples);
+		samples = NULL;
+	}
 
-            if (packet.data)
-               av_free_packet(&packet);
-        }
-        else  {
-            ffmpeg_err("no data ->end of file reached ? \n");
-            releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-            break;
-        }
+	hasPlayThreadStarted = 0;
 
-        releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-
-    } /* while */
-
-    // Freeing the allocated buffer for softdecoding
-    if (samples != NULL) {
-        free(samples);
-        samples = NULL;
-    }
-
-    hasPlayThreadStarted = 0;
-
-    ffmpeg_printf(10, "terminating\n");
+	ffmpeg_printf(10, "terminating\n");
 }
 
 /* **************************** */
