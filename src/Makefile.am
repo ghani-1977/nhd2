@@ -87,7 +87,7 @@ neutrino_LDADD += $(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a
 endif
 
 if ENABLE_LIBEPLAYER3
-neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a -lass
+neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a
 else
 if ENABLE_GSTREAMER
 neutrino_LDADD += -lgstreamer-0.10

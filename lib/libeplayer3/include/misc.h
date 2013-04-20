@@ -8,12 +8,11 @@
 /* ***************************** */
 /* Types                         */
 /* ***************************** */
-
 typedef struct BitPacker_s
 {
-    unsigned char*      Ptr;                                    /* write pointer */
-    unsigned int        BitBuffer;                              /* bitreader shifter */
-    int                 Remaining;                              /* number of remaining in the shifter */
+	unsigned char*      Ptr;                                    /* write pointer */
+	unsigned int        BitBuffer;                              /* bitreader shifter */
+	int                 Remaining;                              /* number of remaining in the shifter */
 } BitPacker_t;
 
 /* ***************************** */
@@ -49,88 +48,91 @@ void FlushBits(BitPacker_t * ld);
 /* MISC Functions                */
 /* ***************************** */
 
-static inline void getExtension(char * FILENAMEname, char ** extension) {
+static inline void getExtension(char * FILENAMEname, char ** extension) 
+{
+	int i = 0;
+	int stringlength;
 
-    int i = 0;
-    int stringlength;
+	if (extension == NULL)
+		return;
+	  
+	*extension = NULL;
+	
+	if (FILENAMEname == NULL)
+		return;
 
-    if (extension == NULL)
-       return;
-       
-    *extension = NULL;
-    
-    if (FILENAMEname == NULL)
-       return;
+	stringlength = (int) strlen(FILENAMEname);
 
-    stringlength = (int) strlen(FILENAMEname);
-
-    for (i = 0; stringlength - i > 0; i++) {
-        if (FILENAMEname[stringlength - i - 1] == '.') {
-            *extension = strdup(FILENAMEname+(stringlength - i));
-            break;
-        }
-    }
+	for (i = 0; stringlength - i > 0; i++) 
+	{
+		if (FILENAMEname[stringlength - i - 1] == '.') 
+		{
+			*extension = strdup(FILENAMEname+(stringlength - i));
+			break;
+		}
+	}
 }
 
-static inline void getUPNPExtension(char * FILENAMEname, char ** extension) {
-    char* str;
+static inline void getUPNPExtension(char * FILENAMEname, char ** extension) 
+{
+	char* str;
 
-    if (extension == NULL)
-       return;
-       
-    *extension = NULL;
-    
-    if (FILENAMEname == NULL)
-       return;
+	if (extension == NULL)
+		return;
+	  
+	*extension = NULL;
+	
+	if (FILENAMEname == NULL)
+		return;
 
-    str = strstr(FILENAMEname, "ext=");
+	str = strstr(FILENAMEname, "ext=");
 
-    if (str != NULL)
-    {
-        *extension = strdup(str + strlen("ext=") + 1);
-        return;
-    }
-    *extension = NULL;
+	if (str != NULL)
+	{
+		*extension = strdup(str + strlen("ext=") + 1);
+		return;
+	}
+	*extension = NULL;
 }
 
 /* the function returns the base name */
 static inline char * basename(char * name)
 {
-  int i = 0;
-  int pos = 0;
+	int i = 0;
+	int pos = 0;
 
-  while(name[i] != 0)
-  {
-    if(name[i] == '/')
-      pos = i;
-    i++;
-  }
+	while(name[i] != 0)
+	{
+		if(name[i] == '/')
+			pos = i;
+		i++;
+	}
 
-  if(name[pos] == '/')
-    pos++;
+	if(name[pos] == '/')
+		pos++;
 
-  return name + pos;
+	return name + pos;
 }
 
 /* the function returns the directry name */
 static inline char * dirname(char * name)
 {
-  static char path[100];
-  int i = 0;
-  int pos = 0;
+	static char path[100];
+	int i = 0;
+	int pos = 0;
 
-  while((name[i] != 0) && (i < sizeof(path)))
-  {
-    if(name[i] == '/')
-      pos = i;
-    path[i] = name[i];
-    i++;
-  }
+	while((name[i] != 0) && (i < sizeof(path)))
+	{
+		if(name[i] == '/')
+			pos = i;
+		path[i] = name[i];
+		i++;
+	}
 
-  path[i] = 0;
-  path[pos] = 0;
+	path[i] = 0;
+	path[pos] = 0;
 
-  return path;
+	return path;
 }
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+
 typedef enum { 
 	CONTAINER_INIT, 
 	CONTAINER_ADD, 
@@ -21,9 +22,9 @@ typedef enum {
 } ContainerCmd_t;
 
 typedef struct Container_s {
-    char * Name;
-    int (* Command) (/*Context_t*/void  *, ContainerCmd_t, void *);
-    char ** Capabilities;
+	char * Name;
+	int (* Command) (/*Context_t*/void  *, ContainerCmd_t, void *);
+	char ** Capabilities;
 
 } Container_t;
 
@@ -31,18 +32,18 @@ typedef struct Container_s {
 extern Container_t FFMPEGContainer;
 
 static Container_t * AvailableContainer[] = {
-    &FFMPEGContainer,
-    NULL
+	&FFMPEGContainer,
+	NULL
 };
 
 typedef struct ContainerHandler_s {
-    char * Name;
-    Container_t * selectedContainer;    
-    Container_t * textSrtContainer;
-    Container_t * textSsaContainer;
-    Container_t * assContainer;   
+	char * Name;
+	Container_t * selectedContainer;    
+	Container_t * textSrtContainer;
+	Container_t * textSsaContainer;
+	Container_t * assContainer;   
 
-    int (* Command) (/*Context_t*/void  *, ContainerCmd_t, void *);
+	int (* Command) (/*Context_t*/void  *, ContainerCmd_t, void *);
 } ContainerHandler_t;
 
 #endif

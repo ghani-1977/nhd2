@@ -15,7 +15,7 @@ libeplayer3_a_SOURCES =  \
 	output/writer/dts.c output/writer/mpeg2.c output/writer/mp3.c output/writer/misc.c \
 	output/writer/h264.c output/writer/h263.c output/writer/vc1.c \
 	output/writer/vorbis.c output/writer/flac.c output/writer/pcm.c \
-	container/text_srt.c container/text_ssa.c container/container_ass.c \
+	container/text_srt.c container/text_ssa.c \
 	manager/subtitle.c \
 	output/output_subtitle.c output/writer/framebuffer.c
 

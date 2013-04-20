@@ -2684,9 +2684,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 						{
 							timeshiftstatus = recordingstatus;
 							
-							//g_Zapit->lockPlayBack();
 							audioDecoder->Stop();
-							videoDecoder->Stop(false);
+							videoDecoder->Stop(false); // dont blank 
 						} 
 						else
 						{
@@ -2702,7 +2701,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 							{
 								//g_Zapit->lockPlayBack();
 								audioDecoder->Stop();
-								videoDecoder->Stop(false);
+								videoDecoder->Stop(false); // dont blank
 							}
 						}
 					}

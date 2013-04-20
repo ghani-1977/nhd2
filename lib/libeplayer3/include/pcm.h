@@ -22,9 +22,9 @@
 
 typedef struct pcmPrivateData_s
 {
-    int uNoOfChannels;
-    int uSampleRate;
-    int uBitsPerSample;
-    int bLittleEndian;
+	int uNoOfChannels;
+	int uSampleRate;
+	int uBitsPerSample;
+	int bLittleEndian;
 } pcmPrivateData_t;
 #endif

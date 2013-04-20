@@ -52,7 +52,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-//#define FFMPEG_DEBUG
+#define FFMPEG_DEBUG
 
 #ifdef FFMPEG_DEBUG
 
@@ -117,137 +117,165 @@ static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes);
 /* ***************************** */
 
 void getMutex(const char *filename, const char *function, int line) {
-    ffmpeg_printf(100, "::%d requesting mutex\n", line);
+	ffmpeg_printf(100, "::%d requesting mutex\n", line);
 
-    pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 
-    ffmpeg_printf(100, "::%d received mutex\n", line);
+	ffmpeg_printf(100, "::%d received mutex\n", line);
 }
 
 void releaseMutex(const char *filename, const const char *function, int line) {
-    pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&mutex);
 
-    ffmpeg_printf(100, "::%d released mutex\n", line);
+	ffmpeg_printf(100, "::%d released mutex\n", line);
 }
 
 static char* Codec2Encoding(enum CodecID id, int* version)
 {
-    switch (id)
-    {
-    case CODEC_ID_MPEG1VIDEO:
-        return "V_MPEG1";
-    case CODEC_ID_MPEG2VIDEO:
-        return "V_MPEG1";
-    case CODEC_ID_H263:
-    case CODEC_ID_H263P:
-    case CODEC_ID_H263I:
-        return "V_H263";
-    case CODEC_ID_FLV1:
-        return "V_FLV";
-    case CODEC_ID_VP5:
-    case CODEC_ID_VP6:
-    case CODEC_ID_VP6F:
-        return "V_VP6";
-    case CODEC_ID_RV10:
-    case CODEC_ID_RV20:
-        return "V_RMV";
-    case CODEC_ID_MPEG4:
+	switch (id)
+	{
+		case CODEC_ID_MPEG1VIDEO:
+			return "V_MPEG1";
+			
+		case CODEC_ID_MPEG2VIDEO:
+			return "V_MPEG1";
+			
+		case CODEC_ID_H263:
+		case CODEC_ID_H263P:
+		case CODEC_ID_H263I:
+			return "V_H263";
+			
+		case CODEC_ID_FLV1:
+			return "V_FLV";
+			
+		case CODEC_ID_VP5:
+		case CODEC_ID_VP6:
+		case CODEC_ID_VP6F:
+			return "V_VP6";
+			
+		case CODEC_ID_RV10:
+		case CODEC_ID_RV20:
+			return "V_RMV";
+			
+		case CODEC_ID_MPEG4:
 #if LIBAVCODEC_VERSION_MAJOR < 53
-    case CODEC_ID_XVID:
+		case CODEC_ID_XVID:
 #endif
-    case CODEC_ID_MSMPEG4V1:
-    case CODEC_ID_MSMPEG4V2:
-    case CODEC_ID_MSMPEG4V3:
-        return "V_MSCOMP";
-    case CODEC_ID_WMV1:
-        *version = 1;
-        return "V_WMV";
-    case CODEC_ID_WMV2:
-        *version = 2;
-        return "V_WMV";
-    case CODEC_ID_WMV3:
-        *version = 3;
-        return "V_WMV";
-    case CODEC_ID_VC1:
-        return "V_VC1";
-    case CODEC_ID_H264:
+		case CODEC_ID_MSMPEG4V1:
+		case CODEC_ID_MSMPEG4V2:
+		case CODEC_ID_MSMPEG4V3:
+			return "V_MSCOMP";
+			
+		case CODEC_ID_WMV1:
+			*version = 1;
+			return "V_WMV";
+			
+		case CODEC_ID_WMV2:
+			*version = 2;
+			return "V_WMV";
+			
+		case CODEC_ID_WMV3:
+			*version = 3;
+			return "V_WMV";
+			
+		case CODEC_ID_VC1:
+			return "V_VC1";
+			
+		case CODEC_ID_H264:
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    case CODEC_ID_FFH264:
+		case CODEC_ID_FFH264:
 #endif
-        return "V_MPEG4/ISO/AVC";
-    case CODEC_ID_AVS:
-        return "V_AVS";
-    case CODEC_ID_MP2:
-        return "A_MPEG/L3";
-    case CODEC_ID_MP3:
-        return "A_MP3";
-    case CODEC_ID_AAC:
-        return "A_AAC";
-    case CODEC_ID_AC3:
-        return "A_AC3";
-    case CODEC_ID_DTS:
-        return "A_DTS";
-    case CODEC_ID_WMAV1:
-    case CODEC_ID_WMAV2:
-    case 86056: //CODEC_ID_WMAPRO
-        return "A_WMA";
-    case CODEC_ID_MLP:
-        return "A_MLP";
-    case CODEC_ID_RA_144:
-        return "A_RMA";
-    case CODEC_ID_RA_288:
-        return "A_RMA";
-    case CODEC_ID_VORBIS:
-        return "A_IPCM"; //return "A_VORBIS";
-    case CODEC_ID_FLAC: //86030
-        return "A_IPCM"; //return "A_FLAC";
-/* subtitle */
-    case CODEC_ID_SSA:
-        return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
-    case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
-    case CODEC_ID_DVD_SUBTITLE:
-    case CODEC_ID_DVB_SUBTITLE:
-    case CODEC_ID_XSUB:
-    case CODEC_ID_MOV_TEXT:
+			return "V_MPEG4/ISO/AVC";
+		
+		case CODEC_ID_AVS:
+			return "V_AVS";
+			
+		case CODEC_ID_MP2:
+			return "A_MPEG/L3";
+			
+		case CODEC_ID_MP3:
+			return "A_MP3";
+			
+		case CODEC_ID_AAC:
+			return "A_AAC";
+			
+		case CODEC_ID_AC3:
+			return "A_AC3";
+			
+		case CODEC_ID_DTS:
+			return "A_DTS";
+			
+		case CODEC_ID_WMAV1:
+		case CODEC_ID_WMAV2:
+		case 86056: //CODEC_ID_WMAPRO
+			return "A_WMA";
+			
+		case CODEC_ID_MLP:
+			return "A_MLP";
+			
+		case CODEC_ID_RA_144:
+			return "A_RMA";
+			
+		case CODEC_ID_RA_288:
+			return "A_RMA";
+			
+		case CODEC_ID_VORBIS:
+			return "A_IPCM"; //return "A_VORBIS";
+			
+		case CODEC_ID_FLAC: //86030
+			return "A_IPCM"; //return "A_FLAC";
+			
+		/* subtitle */
+		case CODEC_ID_SSA:
+			return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
+			
+		case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
+		case CODEC_ID_DVD_SUBTITLE:
+		case CODEC_ID_DVB_SUBTITLE:
+		case CODEC_ID_XSUB:
+		case CODEC_ID_MOV_TEXT:
 #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(56, 72, 2)      
-    case CODEC_ID_HDMV_PGS_SUBTITLE:
+		case CODEC_ID_HDMV_PGS_SUBTITLE:
 #endif
 
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,38,1)
-    case CODEC_ID_DVB_TELETEXT:
+		case CODEC_ID_DVB_TELETEXT:
 #endif      
-        return "S_TEXT/SRT"; /* fixme */
+			return "S_TEXT/SRT"; /* fixme */
+		
 #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
-    case CODEC_ID_SRT:
-        return "S_TEXT/SRT"; /* fixme */
-#endif        
-    default:
-        ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",id);
-    }
-    return NULL;
+		case CODEC_ID_SRT:
+			return "S_TEXT/SRT"; /* fixme */
+#endif 
+
+		default:
+			ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",id);
+	}
+	
+	return NULL;
 }
 
 long long int calcPts(AVStream* stream, AVPacket* packet)
 {
-    long long int pts;
+      long long int pts;
 
-    if ((stream == NULL) || (packet == NULL))
-    {
-        ffmpeg_err("stream / packet null\n");
-        return INVALID_PTS_VALUE;
-    }
+      if ((stream == NULL) || (packet == NULL))
+      {
+	  ffmpeg_err("stream / packet null\n");
+	  return INVALID_PTS_VALUE;
+      }
 
-    if(packet->pts == AV_NOPTS_VALUE)
-        pts = INVALID_PTS_VALUE;
-    else if (avContext->start_time == AV_NOPTS_VALUE)
-        pts = 90000.0 * (double)packet->pts * av_q2d(stream->time_base);
-    else
-        pts = 90000.0 * (((double)(packet->pts) * av_q2d(stream->time_base)) - (avContext->start_time / AV_TIME_BASE));
+      if(packet->pts == AV_NOPTS_VALUE)
+	  pts = INVALID_PTS_VALUE;
+      else if (avContext->start_time == AV_NOPTS_VALUE)
+	  pts = 90000.0 * (double)packet->pts * av_q2d(stream->time_base);
+      else
+	  pts = 90000.0 * (((double)(packet->pts) * av_q2d(stream->time_base)) - (avContext->start_time / AV_TIME_BASE));
 
-    if (pts & 0x8000000000000000ull)
-        pts = INVALID_PTS_VALUE;
+      if (pts & 0x8000000000000000ull)
+	  pts = INVALID_PTS_VALUE;
 
-    return pts;
+      return pts;
 }
 
 /*Hellmaster1024: get the Duration of the subtitle from the SSA line*/
@@ -320,8 +348,8 @@ static char* searchMeta(AVDictionary * metadata, char* ourTag)
 /* **************************** */
 /* Worker Thread                */
 /* **************************** */
-
-static void FFMPEGThread(Context_t *context) {
+static void FFMPEGThread(Context_t *context) 
+{
     AVPacket   packet;
     off_t currentReadPosition = 0; /* last read position */
     off_t lastReverseSeek = 0;     /* max address to read before seek again in reverse play */
@@ -720,7 +748,7 @@ static void FFMPEGThread(Context_t *context) {
                                ffmpeg_printf(0, "start_display_time %d\n", sub.start_display_time);
                                ffmpeg_printf(0, "end_display_time %d\n", sub.end_display_time);
                                ffmpeg_printf(0, "num_rects %d\n", sub.num_rects);
-                               ffmpeg_printf(0, "pts %lld\n", sub.pts);
+                               //ffmpeg_printf(0, "pts %lld\n", sub.pts);
 
                                for (i = 0; i < sub.num_rects; i++)
                                {
@@ -861,8 +889,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     avContext->flags = AVFMT_FLAG_GENPTS;
     
     //TangoCash
-    if ( strstr(filename, ".ts") )
-	avContext->max_analyze_duration = 1;
+    //if ( strstr(filename, ".ts") )
+	//avContext->max_analyze_duration = 1;
 
     ffmpeg_printf(20, "find_streaminfo\n");
 
@@ -942,7 +970,6 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 track.frame_rate = frame_rate * 1000.0;
 
                 /* fixme: revise this */
-
                 if (track.frame_rate < 23970)
                     track.TimeScale = 1001;
                 else
@@ -984,6 +1011,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 ffmpeg_err("codec type video but codec unknown %d\n", stream->codec->codec_id);
             }
             break;
+	    
+	    // audio codec
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
         case AVMEDIA_TYPE_AUDIO:
 #else
@@ -1022,6 +1051,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
                 }
 
+		// pcm
                 if(!strncmp(encoding, "A_IPCM", 6))
                 {
                     track.inject_as_pcm = 1;
@@ -1035,6 +1065,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                         else
                            printf("AVCODEC__INIT__FAILED\n");
                 }
+                // aac
                 else if(stream->codec->codec_id == CODEC_ID_AAC) {
                     //ffmpeg_printf(10,"Create AAC ExtraData\n");
                     //ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
@@ -1085,7 +1116,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     //Hexdump(track.aacbuf,7);
                     track.have_aacheader = 1;
 
-                } else if(stream->codec->codec_id == CODEC_ID_WMAV1
+                } 
+                // wma
+                else if(stream->codec->codec_id == CODEC_ID_WMAV1
                     || stream->codec->codec_id == CODEC_ID_WMAV2
                     || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
                 {
@@ -1191,13 +1224,15 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 ffmpeg_err("codec type audio but codec unknown %d\n", stream->codec->codec_id);
             }
             break;
+	    
+	// subtitle
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
         case AVMEDIA_TYPE_SUBTITLE:
         {
 #if LIBAVCODEC_VERSION_MAJOR < 54
-	    AVMetadataTag *lang;
+	    AVMetadataTag * lang;
 #else
-	    AVDictionaryEntry *lang;
+	    AVDictionaryEntry * lang;
 #endif
 
             ffmpeg_printf(10, "CODEC_TYPE_SUBTITLE %d\n",stream->codec->codec_type);
@@ -1254,7 +1289,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                 }
 
             break;
-        }        
+        } 
+        
+        // all others
         case AVMEDIA_TYPE_UNKNOWN:
         case AVMEDIA_TYPE_DATA:
         case AVMEDIA_TYPE_ATTACHMENT:
@@ -1840,10 +1877,36 @@ static int Command(void  *_context, ContainerCmd_t command, void * argument)
     return ret;
 }
 
-static char *FFMPEG_Capabilities[] = {"avi", "mkv", "mp4", "ts", "mov", "flv", "flac", "mp3", "mpg", "m2ts", "vob", "wmv","wma", "asf", "mp2", "m4v", "m4a", "divx", "dat", "mpeg", "trp", "mts", "vdr", "ogg",  NULL };
+static char *FFMPEG_Capabilities[] = {
+	"avi", 
+	"mkv", 
+	"mp4", 
+	"ts", 
+	"mov", 
+	"flv", 
+	"flac", 
+	"mp3", 
+	"mpg", 
+	"m2ts", 
+	"vob", 
+	"wmv",
+	"wma", 
+	"asf", 
+	"mp2", 
+	"m4v", 
+	"m4a", 
+	"divx", 
+	"dat", 
+	"mpeg", 
+	"trp", 
+	"mts", 
+	"vdr", 
+	"ogg",  
+	NULL 
+};
 
 Container_t FFMPEGContainer = {
-    "FFMPEG",
-    &Command,
-    FFMPEG_Capabilities
+	"FFMPEG",
+	&Command,
+	FFMPEG_Capabilities
 };

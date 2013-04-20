@@ -24,32 +24,32 @@ typedef enum {
 } PlaybackCmd_t;
 
 typedef struct PlaybackHandler_s {
-    char * Name;
+	char * Name;
 
-    int fd;
+	int fd;
 
-    unsigned char isFile;
-    unsigned char isHttp;
-    unsigned char isUPNP;
+	unsigned char isFile;
+	unsigned char isHttp;
+	unsigned char isUPNP;
 
-    unsigned char isPlaying;
-    unsigned char isPaused;
-    unsigned char isForwarding;
-    unsigned char isSeeking;
-    unsigned char isCreationPhase;
+	unsigned char isPlaying;
+	unsigned char isPaused;
+	unsigned char isForwarding;
+	unsigned char isSeeking;
+	unsigned char isCreationPhase;
 
-    float BackWard;
-    int SlowMotion;
-    int Speed;
-    int AVSync;
+	float BackWard;
+	int SlowMotion;
+	int Speed;
+	int AVSync;
 
-    unsigned char isVideo;
-    unsigned char isAudio;    
-    unsigned char isSubtitle;    
+	unsigned char isVideo;
+	unsigned char isAudio;    
+	unsigned char isSubtitle;    
 
-    int (* Command) (/*Context_t*/void  *, PlaybackCmd_t, void *);
-    char * uri;
-    off_t size;
+	int (* Command) (/*Context_t*/void  *, PlaybackCmd_t, void *);
+	char * uri;
+	off_t size;
 } PlaybackHandler_t;
 
 #endif

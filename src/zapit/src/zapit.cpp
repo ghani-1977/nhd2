@@ -2416,12 +2416,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			break;
 	
-		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:
-			/* hack. if standby true, dont blank video */
-			standby = true;
-			stopPlayBack(true);
-			standby = false;
-			
+		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:		
+			stopPlayBack(true);									
 #if !defined (PLATFORM_COOLSTREAM)			
 			if(videoDecoder)
 				videoDecoder->Close();
@@ -2437,10 +2433,20 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			playbackStopForced = false;
 						
 			if(videoDecoder)
+			{
 				videoDecoder->Open();
+				
+				//HACK:
+				/* dirty hack to unblank video, it seems like gst after stop playing stop video with not blanking */
+				/* i'm not sure if this works with all mipsel cores */
+#if defined (ENABLE_GSTREAMER)			
+				videoDecoder->Resume();
+				videoDecoder->Stop();
+#endif				
+			}
 	
 			if(audioDecoder)
-				audioDecoder->Open();			
+				audioDecoder->Open();
 	
 			startPlayBack(live_channel);
 			
@@ -3139,9 +3145,6 @@ int startPlayBack(CZapitChannel * thisChannel)
 	// select audio output and start audio
 	if (have_audio) 
 	{
-		//if(audioDecoder->setChannel(audio_mode) < 0 )
-		//	return -1;
-		
 		// set source
 #if !defined (PLATFORM_COOLSTREAM)		
 		if(audioDecoder)
@@ -3354,8 +3357,7 @@ int stopPlayBack( bool sendPmt)
 	audioDecoder->Stop();
 	
 	// video decoder stop
-	videoDecoder->Stop(standby ? false : true);
-	//videoDecoder->Stop();	
+	videoDecoder->Stop();	
 
 	playing = false;
 	

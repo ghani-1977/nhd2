@@ -516,6 +516,24 @@ void CMoviePlayerGui::Init(void)
 	
 	// playback
 	playback = new cPlayback();
+	
+	#if 1
+	// filebrowser
+	if (g_settings.filebrowser_denydirectoryleave)
+		filebrowser = new CFileBrowser(Path_local.c_str());
+	else
+		filebrowser = new CFileBrowser();
+
+	filebrowser->Multi_Select = false;
+	filebrowser->Dirs_Selectable = false;
+	filebrowser->Hide_records = false;
+
+	// moviebrowser
+	moviebrowser = new CMovieBrowser();
+	
+	// webtv
+	webtv = new CWebTV();
+	#endif
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -656,8 +674,6 @@ void CMoviePlayerGui::restoreNeutrino()
 int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 {
 	dprintf(DEBUG_NORMAL, "[movieplayer] actionKey=%s\n", actionKey.c_str());
-
-	dvbsub_pause();
 	
 	// chek vlc path again
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
@@ -668,6 +684,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		Path_vlc_settings = g_settings.streaming_server_startdir;
 	}
 	
+	#if 0
 	// filebrowser
 	if(!filebrowser)
 	{
@@ -688,6 +705,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	// webtv
 	if(!webtv)
 		webtv = new CWebTV();
+	#endif
 
 	if (parent) 
 		parent->hide();
@@ -777,30 +795,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		PlayFile();
 	}
-	/*
-	else if ( actionKey == "dvdplayback" ) 
-	{
-		isVlc = true;
-		isWebTV = false;
-		streamtype = STREAMTYPE_DVD;
-		isMovieBrowser = false;
-		timeshift = 0;
-		isDVD = false;
-		
-		PlayFile();
-	}
-	else if ( actionKey == "vcdplayback" ) 
-	{
-		isVlc = true;
-		isWebTV = false;
-		streamtype = STREAMTYPE_SVCD;
-		isMovieBrowser = false;
-		timeshift = 0;
-		isDVD = false;
-		
-		PlayFile();
-	}
-	*/
 	else if(actionKey == "webtv")
 	{
 		isVlc = false;
@@ -856,6 +850,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		return menu_return::RETURN_EXIT_ALL;
 	}
 	
+	#if 0
 	if(webtv)
 	{
 		delete webtv;
@@ -873,6 +868,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		delete filebrowser;
 		filebrowser = NULL;
 	}
+	#endif
 	
 	// umount /tmp/dvd and /tmp/blueray
 	if(isDVD)
@@ -1830,7 +1826,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				//
 				// create /tmp/dvd
-				safe_mkdir("/tmp/dvd");
+				safe_mkdir((char *)"/tmp/dvd");
 						
 				// mount selected iso image to /tmp/dvd
 				char cmd[128];
@@ -1876,7 +1872,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				//
 				// create /tmp/dvd
-				safe_mkdir("/tmp/blueray");
+				safe_mkdir((char *)"/tmp/blueray");
 						
 				// mount selected myblueray to /tmp/dvd
 				char cmd[128];

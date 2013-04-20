@@ -21,7 +21,6 @@
 
 #include <string>
 #include <stdint.h>
-#include <vector>
 
 #include <config.h>
 
@@ -35,8 +34,6 @@ class cPlayback
 		int mAudioStream;
 
 	public:
-		//playstate_t playstate;
-		
 		bool Open();
 		void Close(void);
 		bool Start(char * filename);

@@ -288,7 +288,7 @@ int cVideo::Stop(bool blank)
 		
 	playstate = blank ? VIDEO_STOPPED : VIDEO_FREEZED;
 	
-	if( ioctl(video_fd, VIDEO_STOP, blank ? 1 : 0) < 0 )
+	if( ioctl(video_fd, VIDEO_STOP, blank ? 1 : 0) < 0 )  
 		perror("VIDEO_STOP");	
 	
 	return true;

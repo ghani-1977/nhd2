@@ -184,7 +184,7 @@ static unsigned long iso6937[96]={
 // Two Char Mapping ( many polish services and UPC Direct/HBO services)
 // get from http://mitglied.lycos.de/buran/charsets/videotex-suppl.html
 //static inline unsigned int doVideoTexSuppl(int c1, int c2)
-static inline unsigned int doVideoTexSuppl(char c1, char c2)
+static inline unsigned int doVideoTexSuppl(unsigned char c1, unsigned char c2)
 {
 	switch (c1)
 	{
