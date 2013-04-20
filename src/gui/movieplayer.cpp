@@ -510,9 +510,9 @@ void CMoviePlayerGui::Init(void)
 	Path_vlc_settings = g_settings.streaming_server_startdir;
 	
 	// dvd path
-	Path_dvd = "/tmp/dvd";
+	Path_dvd = "/mnt/dvd";
 	
-	Path_blueray = "/tmp/blueray";
+	Path_blueray = "/mnt/blueray";
 	
 	// playback
 	playback = new cPlayback();
@@ -1822,15 +1822,15 @@ void CMoviePlayerGui::PlayFile(void)
 			else if(isDVD) // vlc (file not dvd)
 			{
 				filename = NULL;
-				filebrowser->Filter = &vlcfilefilter;
+				filebrowser->Filter = &tsfilefilter;
 				
 				//
 				// create /tmp/dvd
-				safe_mkdir((char *)"/tmp/dvd");
+				safe_mkdir((char *)Path_dvd.c_str());
 						
 				// mount selected iso image to /tmp/dvd
 				char cmd[128];
-				sprintf(cmd, "mount -o loop /tmp/mydvd.iso /tmp/dvd");
+				sprintf(cmd, "mount -o loop /tmp/mydvd.iso %s", (char *)Path_dvd.c_str());
 				system(cmd);
 				
 				if(filebrowser->exec(Path_dvd.c_str()))
@@ -1868,16 +1868,16 @@ void CMoviePlayerGui::PlayFile(void)
 			else if(isBlueRay) // vlc (file not dvd)
 			{
 				filename = NULL;
-				filebrowser->Filter = &vlcfilefilter;
+				filebrowser->Filter = &tsfilefilter;
 				
 				//
 				// create /tmp/dvd
-				safe_mkdir((char *)"/tmp/blueray");
+				safe_mkdir((char *)Path_blueray.c_str());
 						
 				// mount selected myblueray to /tmp/dvd
 				char cmd[128];
 
-				sprintf(cmd, "mount -o loop -t udf /tmp/myblueray.iso /tmp/blueray");
+				sprintf(cmd, "mount -o loop -t udf /tmp/myblueray.iso %s", (char *)Path_blueray.c_str());
 				system(cmd);
 				
 				if(filebrowser->exec(Path_blueray.c_str()))

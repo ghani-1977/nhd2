@@ -469,13 +469,11 @@ bool cPlayback::Start(char * filename)
 	//FIXME: add sample ts player
 	dprintf(DEBUG_NORMAL, "[playback_cs.cpp]: no player found, sorry we can not play\n");
 	playing = false;
-	
-	return playing;
 #endif
 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 
-	return true;
+	return playing;
 }
 
 bool cPlayback::Play(void)

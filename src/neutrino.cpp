@@ -590,7 +590,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// movieplayer
 	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda1/movie" ).c_str() );
 	
-	// not in GUI
 	//streaming (server)
 	g_settings.streaming_type = configfile.getInt32( "streaming_type", 0 );
 	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "192.168.1.234");
@@ -4870,6 +4869,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		CFileFilter fileFilter;
 		fileFilter.addFilter("ttf");
 		fileBrowser.Filter = &fileFilter;
+		
 		if (fileBrowser.exec(FONTDIR) == true)
 		{
 			strcpy(g_settings.font_file, fileBrowser.getSelectedFile()->Name.c_str());

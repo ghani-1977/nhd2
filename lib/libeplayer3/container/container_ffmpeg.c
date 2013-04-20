@@ -836,794 +836,812 @@ static void FFMPEGThread(Context_t *context)
 
 int container_ffmpeg_init(Context_t *context, char * filename)
 {
-    int n, err;
+	int n, err;
 
-    ffmpeg_printf(10, ">\n");
+	ffmpeg_printf(10, ">\n");
 
-    if (filename == NULL) {
-        ffmpeg_err("filename NULL\n");
+	if (filename == NULL) 
+	{
+		ffmpeg_err("filename NULL\n");
 
-        return cERR_CONTAINER_FFMPEG_NULL;
-    }
+		return cERR_CONTAINER_FFMPEG_NULL;
+	}
 
-    if (context == NULL) {
-        ffmpeg_err("context NULL\n");
+	if (context == NULL) 
+	{
+		ffmpeg_err("context NULL\n");
 
-        return cERR_CONTAINER_FFMPEG_NULL;
-    }
+		return cERR_CONTAINER_FFMPEG_NULL;
+	}
 
-    ffmpeg_printf(10, "filename %s\n", filename);
+	ffmpeg_printf(10, "filename %s\n", filename);
 
-    getMutex(FILENAME, __FUNCTION__,__LINE__);
+	getMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    if (isContainerRunning) {
-        ffmpeg_err("ups already running?\n");
-        releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-        return cERR_CONTAINER_FFMPEG_RUNNING;
-    }
+	if (isContainerRunning) 
+	{
+		ffmpeg_err("ups already running?\n");
+		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+		return cERR_CONTAINER_FFMPEG_RUNNING;
+	}
 
-    /* initialize ffmpeg */
-    avcodec_register_all();
-    av_register_all();
-
-#if LIBAVCODEC_VERSION_MAJOR < 54
-    if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) 
-#else
-    if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0)
-#endif
-    {
-        char error[512];
+	/* initialize ffmpeg */
+	avcodec_register_all();
+	av_register_all();
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-        ffmpeg_err("av_open_input_file failed %d (%s)\n", err, filename);
+	if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) 
 #else
-        ffmpeg_err("avformat_open_input failed %d (%s)\n", err, filename);
+	if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0)
 #endif
-        //av_strerror(err, error, 512);
-        ffmpeg_err("Cause: %s\n", error);
+	{
+		char error[512];
 
-        releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-        return cERR_CONTAINER_FFMPEG_OPEN;
-    }
+#if LIBAVCODEC_VERSION_MAJOR < 54
+		ffmpeg_err("av_open_input_file failed %d (%s)\n", err, filename);
+#else
+		ffmpeg_err("avformat_open_input failed %d (%s)\n", err, filename);
+#endif
+		//av_strerror(err, error, 512);
+		ffmpeg_err("Cause: %s\n", error);
 
-    avContext->flags = AVFMT_FLAG_GENPTS;
+		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+		return cERR_CONTAINER_FFMPEG_OPEN;
+	}
+
+	avContext->flags = AVFMT_FLAG_GENPTS;
     
-    //TangoCash
-    //if ( strstr(filename, ".ts") )
-	//avContext->max_analyze_duration = 1;
+	//TangoCash
+	//if ( strstr(filename, ".ts") )
+		//avContext->max_analyze_duration = 1;
 
-    ffmpeg_printf(20, "find_streaminfo\n");
+	ffmpeg_printf(20, "find_streaminfo\n");
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    if (av_find_stream_info(avContext) < 0) {
-        ffmpeg_err("Error av_find_stream_info\n");
+	if (av_find_stream_info(avContext) < 0) {
+		ffmpeg_err("Error av_find_stream_info\n");
 #else
-    if (avformat_find_stream_info(avContext, NULL) < 0) {
-        ffmpeg_err("Error avformat_find_stream_info\n");
+	if (avformat_find_stream_info(avContext, NULL) < 0) {
+		ffmpeg_err("Error avformat_find_stream_info\n");
 #endif
 #ifdef this_is_ok
-        /* crow reports that sometimes this returns an error
-         * but the file is played back well. so remove this
-         * until other works are done and we can prove this.
-         */
-        av_close_input_file(avContext);
-        releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-        return cERR_CONTAINER_FFMPEG_STREAM;
+		/* crow reports that sometimes this returns an error
+		* but the file is played back well. so remove this
+		* until other works are done and we can prove this.
+		*/
+		av_close_input_file(avContext);
+		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+		return cERR_CONTAINER_FFMPEG_STREAM;
 #endif
-    }
+	}
 
-    ffmpeg_printf(20, "dump format\n");
+	ffmpeg_printf(20, "dump format\n");
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    dump_format(avContext, 0, filename, 0);
+	dump_format(avContext, 0, filename, 0);
 #else
-    av_dump_format(avContext, 0, filename, 0);
+	av_dump_format(avContext, 0, filename, 0);
 #endif
 
-    ffmpeg_printf(1, "number streams %d\n", avContext->nb_streams);
+	ffmpeg_printf(1, "number streams %d\n", avContext->nb_streams);
 
-    for ( n = 0; n < avContext->nb_streams; n++) 
-    {
-        Track_t track;
-        AVStream * stream = avContext->streams[n];
-        int version = 0;
-
-        char * encoding = Codec2Encoding(stream->codec->codec_id, &version);
-
-        if (encoding != NULL)
-           ffmpeg_printf(1, "%d. encoding = %s - version %d\n", n, encoding, version);
-
-        /* some values in track are unset and therefor copyTrack segfaults.
-         * so set it by default to NULL!
-         */
-        memset(&track, 0, sizeof(track));
-
-        switch (stream->codec->codec_type) 
+	for ( n = 0; n < avContext->nb_streams; n++) 
 	{
+		Track_t track;
+		AVStream * stream = avContext->streams[n];
+		int version = 0;
+
+		char * encoding = Codec2Encoding(stream->codec->codec_id, &version);
+
+		if (encoding != NULL)
+			ffmpeg_printf(1, "%d. encoding = %s - version %d\n", n, encoding, version);
+
+		/* some values in track are unset and therefor copyTrack segfaults.
+		* so set it by default to NULL!
+		*/
+		memset(&track, 0, sizeof(track));
+
+		switch (stream->codec->codec_type) 
+		{
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
-        case AVMEDIA_TYPE_VIDEO:
+			case AVMEDIA_TYPE_VIDEO:
 #else
-	case CODEC_TYPE_VIDEO:
+			case CODEC_TYPE_VIDEO:
 #endif        
-            ffmpeg_printf(10, "CODEC_TYPE_VIDEO %d\n",stream->codec->codec_type);
+			ffmpeg_printf(10, "CODEC_TYPE_VIDEO %d\n",stream->codec->codec_type);
 
-            if (encoding != NULL) 
-	    {
-                track.type           = eTypeES;
-                track.version        = version;
+			if (encoding != NULL) 
+			{
+				track.type           = eTypeES;
+				track.version        = version;
 
-                track.width          = stream->codec->width;
-                track.height         = stream->codec->height;
+				track.width          = stream->codec->width;
+				track.height         = stream->codec->height;
 
-                track.extraData      = stream->codec->extradata;
-                track.extraSize      = stream->codec->extradata_size;
+				track.extraData      = stream->codec->extradata;
+				track.extraSize      = stream->codec->extradata_size;
 
-                track.frame_rate     = stream->r_frame_rate.num;
+				track.frame_rate     = stream->r_frame_rate.num;
 
-                track.aacbuf         = 0;
-                track.have_aacheader = -1;
+				track.aacbuf         = 0;
+				track.have_aacheader = -1;
 
-                double frame_rate = av_q2d(stream->r_frame_rate); /* rational to double */
+				double frame_rate = av_q2d(stream->r_frame_rate); /* rational to double */
 
-                ffmpeg_printf(10, "frame_rate = %f\n", frame_rate);
+				ffmpeg_printf(10, "frame_rate = %f\n", frame_rate);
 
-                track.frame_rate = frame_rate * 1000.0;
+				track.frame_rate = frame_rate * 1000.0;
 
-                /* fixme: revise this */
-                if (track.frame_rate < 23970)
-                    track.TimeScale = 1001;
-                else
-                    track.TimeScale = 1000;
+				/* fixme: revise this */
+				if (track.frame_rate < 23970)
+					track.TimeScale = 1001;
+				else
+					track.TimeScale = 1000;
 
-                ffmpeg_printf(10, "bit_rate = %d\n",stream->codec->bit_rate);
-                ffmpeg_printf(10, "flags = %d\n",stream->codec->flags);
-                ffmpeg_printf(10, "frame_bits = %d\n",stream->codec->frame_bits);
-                ffmpeg_printf(10, "time_base.den %d\n",stream->time_base.den);
-                ffmpeg_printf(10, "time_base.num %d\n",stream->time_base.num);
-                ffmpeg_printf(10, "frame_rate %d\n",stream->r_frame_rate.num);
-                ffmpeg_printf(10, "TimeScale %d\n",stream->r_frame_rate.den);
+				ffmpeg_printf(10, "bit_rate = %d\n",stream->codec->bit_rate);
+				ffmpeg_printf(10, "flags = %d\n",stream->codec->flags);
+				ffmpeg_printf(10, "frame_bits = %d\n",stream->codec->frame_bits);
+				ffmpeg_printf(10, "time_base.den %d\n",stream->time_base.den);
+				ffmpeg_printf(10, "time_base.num %d\n",stream->time_base.num);
+				ffmpeg_printf(10, "frame_rate %d\n",stream->r_frame_rate.num);
+				ffmpeg_printf(10, "TimeScale %d\n",stream->r_frame_rate.den);
 
-                ffmpeg_printf(10, "frame_rate %d\n", track.frame_rate);
-                ffmpeg_printf(10, "TimeScale %d\n", track.TimeScale);
+				ffmpeg_printf(10, "frame_rate %d\n", track.frame_rate);
+				ffmpeg_printf(10, "TimeScale %d\n", track.TimeScale);
 
-                track.Name      = "und";
-                track.Encoding  = encoding;
-                track.Id        = n;
+				track.Name      = "und";
+				track.Encoding  = encoding;
+				track.Id        = n;
 
-                track.stream    = stream;
+				track.stream    = stream;
 
-                if(stream->duration == AV_NOPTS_VALUE) {
-                    ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
-                    track.duration = (double) avContext->duration / 1000.0;
-                }
-                else {
-                    track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
-                }
+				if(stream->duration == AV_NOPTS_VALUE) 
+				{
+					ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
+					track.duration = (double) avContext->duration / 1000.0;
+				}
+				else 
+				{
+					track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
+				}
 
-                if (context->manager->video)
-                    if (context->manager->video->Command(context, MANAGER_ADD, &track) < 0) {
-                        /* konfetti: fixme: is this a reason to return with error? */
-                        ffmpeg_err("failed to add track %d\n", n);
-                    }
+				if (context->manager->video)
+				if (context->manager->video->Command(context, MANAGER_ADD, &track) < 0) 
+				{
+					/* konfetti: fixme: is this a reason to return with error? */
+					ffmpeg_err("failed to add track %d\n", n);
+				}
 
-            }
-            else {
-                ffmpeg_err("codec type video but codec unknown %d\n", stream->codec->codec_id);
-            }
-            break;
+			}
+			else 
+			{
+				ffmpeg_err("codec type video but codec unknown %d\n", stream->codec->codec_id);
+			}
+			break;
 	    
-	    // audio codec
+			// audio codec
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
-        case AVMEDIA_TYPE_AUDIO:
+			case AVMEDIA_TYPE_AUDIO:
 #else
-	case CODEC_TYPE_AUDIO:
+			case CODEC_TYPE_AUDIO:
 #endif        
-            ffmpeg_printf(10, "CODEC_TYPE_AUDIO %d\n",stream->codec->codec_type);
+			ffmpeg_printf(10, "CODEC_TYPE_AUDIO %d\n",stream->codec->codec_type);
 
-            if (encoding != NULL) {
-                //AVDictionaryEntry *lang;
-                track.type           = eTypeES;
+			if (encoding != NULL) 
+			{
+				track.type           = eTypeES;
+				//AVDictionaryEntry *lang;
+				//lang = av_dict_get(stream->metadata, "language", NULL, 0);
 
-                //lang = av_dict_get(stream->metadata, "language", NULL, 0);
+				//if (lang)
+					// track.Name        = strdup(lang->value);
+				//else
+					//track.Name        = strdup("und");
+				track.Name        = strdup("Stream");
 
-                //if (lang)
-                  // track.Name        = strdup(lang->value);
-                //else
-                   //track.Name        = strdup("und");
-		   track.Name        = strdup("Stream");
+				ffmpeg_printf(10, "Language %s\n", track.Name);
 
-                ffmpeg_printf(10, "Language %s\n", track.Name);
+				track.Encoding       = encoding;
+				track.Id             = n;
 
-                track.Encoding       = encoding;
-                track.Id             = n;
+				track.stream         = stream;
+				track.duration       = (double)stream->duration * av_q2d(stream->time_base) * 1000.0;
 
-                track.stream         = stream;
-                track.duration       = (double)stream->duration * av_q2d(stream->time_base) * 1000.0;
+				track.aacbuf         = 0;
+				track.have_aacheader = -1;
 
-                track.aacbuf         = 0;
-                track.have_aacheader = -1;
+				if(stream->duration == AV_NOPTS_VALUE) 
+				{
+					ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
+					track.duration = (double) avContext->duration / 1000.0;
+				}
+				else 
+				{
+					track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
+				}
 
-                if(stream->duration == AV_NOPTS_VALUE) {
-                    ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
-                    track.duration = (double) avContext->duration / 1000.0;
-                }
-                else {
-                    track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
-                }
+				// pcm
+				if(!strncmp(encoding, "A_IPCM", 6))
+				{
+					track.inject_as_pcm = 1;
+					ffmpeg_printf(10, " Handle inject_as_pcm = %d\n", track.inject_as_pcm);
 
-		// pcm
-                if(!strncmp(encoding, "A_IPCM", 6))
-                {
-                    track.inject_as_pcm = 1;
-                    ffmpeg_printf(10, " Handle inject_as_pcm = %d\n", track.inject_as_pcm);
+					AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
 
-                        AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
+					//( (AVStream*) audioTrack->stream)->codec->flags |= CODEC_FLAG_TRUNCATED;
+					if(codec != NULL && !avcodec_open(stream->codec, codec))
+						printf("AVCODEC__INIT__SUCCESS\n");
+					else
+						printf("AVCODEC__INIT__FAILED\n");
+				}
+				// aac
+				else if(stream->codec->codec_id == CODEC_ID_AAC) 
+				{
+					//ffmpeg_printf(10,"Create AAC ExtraData\n");
+					//ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
+					//Hexdump(stream->codec->extradata, stream->codec->extradata_size);
 
-//( (AVStream*) audioTrack->stream)->codec->flags |= CODEC_FLAG_TRUNCATED;
-                        if(codec != NULL && !avcodec_open(stream->codec, codec))
-                           printf("AVCODEC__INIT__SUCCESS\n");
-                        else
-                           printf("AVCODEC__INIT__FAILED\n");
-                }
-                // aac
-                else if(stream->codec->codec_id == CODEC_ID_AAC) {
-                    //ffmpeg_printf(10,"Create AAC ExtraData\n");
-                    //ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
-                    //Hexdump(stream->codec->extradata, stream->codec->extradata_size);
+					  /* extradata
+					13 10 56 e5 9d 48 00 (anderen cops)
+						object_type: 00010 2 = LC
+						sample_rate: 011 0 6 = 24000
+						chan_config: 0010 2 = Stereo
+						000 0
+						1010110 111 = 0x2b7
+						00101 = SBR
+						1
+						0011 = 48000
+						101 01001000 = 0x548
+						ps = 0
+						0000000
+					*/
 
-  /* extradata
-13 10 56 e5 9d 48 00 (anderen cops)
-	object_type: 00010 2 = LC
-	sample_rate: 011 0 6 = 24000
-	chan_config: 0010 2 = Stereo
-	000 0
-	1010110 111 = 0x2b7
-	00101 = SBR
-	1
-	0011 = 48000
-	101 01001000 = 0x548
-	ps = 0
-	0000000
-*/
+					unsigned int object_type = 2; // LC
+					unsigned int sample_index = aac_get_sample_rate_index(stream->codec->sample_rate);
+					unsigned int chan_config = stream->codec->channels;
+					if(stream->codec->extradata_size >= 2) 
+					{
+						object_type = stream->codec->extradata[0] >> 3;
+						sample_index = ((stream->codec->extradata[0] & 0x7) << 1) + (stream->codec->extradata[1] >> 7);
+						chan_config = (stream->codec->extradata[1] >> 3) && 0xf;
+					}
 
-                    unsigned int object_type = 2; // LC
-                    unsigned int sample_index = aac_get_sample_rate_index(stream->codec->sample_rate);
-                    unsigned int chan_config = stream->codec->channels;
-                    if(stream->codec->extradata_size >= 2) {
-                        object_type = stream->codec->extradata[0] >> 3;
-                        sample_index = ((stream->codec->extradata[0] & 0x7) << 1)
-                            + (stream->codec->extradata[1] >> 7);
-                        chan_config = (stream->codec->extradata[1] >> 3) && 0xf;
-                    }
+					ffmpeg_printf(10,"aac object_type %d\n", object_type);
+					ffmpeg_printf(10,"aac sample_index %d\n", sample_index);
+					ffmpeg_printf(10,"aac chan_config %d\n", chan_config);
 
-                    ffmpeg_printf(10,"aac object_type %d\n", object_type);
-                    ffmpeg_printf(10,"aac sample_index %d\n", sample_index);
-                    ffmpeg_printf(10,"aac chan_config %d\n", chan_config);
+					object_type -= 1; // Cause of ADTS
 
-                    object_type -= 1; // Cause of ADTS
+					track.aacbuflen = AAC_HEADER_LENGTH;
+					track.aacbuf = malloc(8);
+					track.aacbuf[0] = 0xFF;
+					track.aacbuf[1] = 0xF1;
+					track.aacbuf[2] = ((object_type & 0x03) << 6)  | (sample_index << 2) | ((chan_config >> 2) & 0x01);
+					track.aacbuf[3] = (chan_config & 0x03) << 6;
+					track.aacbuf[4] = 0x00;
+					track.aacbuf[5] = 0x1F;
+					track.aacbuf[6] = 0xFC;
 
-                    track.aacbuflen = AAC_HEADER_LENGTH;
-                    track.aacbuf = malloc(8);
-                    track.aacbuf[0] = 0xFF;
-                    track.aacbuf[1] = 0xF1;
-                    track.aacbuf[2] = ((object_type & 0x03) << 6)  | (sample_index << 2) | ((chan_config >> 2) & 0x01);
-                    track.aacbuf[3] = (chan_config & 0x03) << 6;
-                    track.aacbuf[4] = 0x00;
-                    track.aacbuf[5] = 0x1F;
-                    track.aacbuf[6] = 0xFC;
+					//printf("AAC_HEADER -> ");
+					//Hexdump(track.aacbuf,7);
+					track.have_aacheader = 1;
+				} 
+				// wma
+				else if(stream->codec->codec_id == CODEC_ID_WMAV1 || stream->codec->codec_id == CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
+				{
+					ffmpeg_printf(10,"Create WMA ExtraData\n");
+					track.aacbuflen = 104 + stream->codec->extradata_size;
+					track.aacbuf = malloc(track.aacbuflen);
+					memset (track.aacbuf, 0, track.aacbuflen);
+					unsigned char ASF_Stream_Properties_Object[16] = {0x91,0x07,0xDC,0xB7,0xB7,0xA9,0xCF,0x11,0x8E,0xE6,0x00,0xC0,0x0C,0x20,0x53,0x65};
+					memcpy(track.aacbuf + 0, ASF_Stream_Properties_Object, 16); // ASF_Stream_Properties_Object
+					memcpy(track.aacbuf + 16, &track.aacbuflen, 4); //FrameDateLength
 
-                    //printf("AAC_HEADER -> ");
-                    //Hexdump(track.aacbuf,7);
-                    track.have_aacheader = 1;
+					unsigned int sizehi = 0;
+					memcpy(track.aacbuf + 20, &sizehi, 4); // sizehi (not used)
 
-                } 
-                // wma
-                else if(stream->codec->codec_id == CODEC_ID_WMAV1
-                    || stream->codec->codec_id == CODEC_ID_WMAV2
-                    || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
-                {
-                    ffmpeg_printf(10,"Create WMA ExtraData\n");
-                    track.aacbuflen = 104 + stream->codec->extradata_size;
-                    track.aacbuf = malloc(track.aacbuflen);
-                    memset (track.aacbuf, 0, track.aacbuflen);
-                    unsigned char ASF_Stream_Properties_Object[16] =
-                        {0x91,0x07,0xDC,0xB7,0xB7,0xA9,0xCF,0x11,0x8E,0xE6,0x00,0xC0,0x0C,0x20,0x53,0x65};
-                    memcpy(track.aacbuf + 0, ASF_Stream_Properties_Object, 16); // ASF_Stream_Properties_Object
-                    memcpy(track.aacbuf + 16, &track.aacbuflen, 4); //FrameDateLength
+					unsigned char ASF_Audio_Media[16] = {0x40,0x9E,0x69,0xF8,0x4D,0x5B,0xCF,0x11,0xA8,0xFD,0x00,0x80,0x5F,0x5C,0x44,0x2B};
+					memcpy(track.aacbuf + 24, ASF_Audio_Media, 16); //ASF_Audio_Media
 
-                    unsigned int sizehi = 0;
-                    memcpy(track.aacbuf + 20, &sizehi, 4); // sizehi (not used)
+					unsigned char ASF_Audio_Spread[16] = {0x50,0xCD,0xC3,0xBF,0x8F,0x61,0xCF,0x11,0x8B,0xB2,0x00,0xAA,0x00,0xB4,0xE2,0x20};
+					memcpy(track.aacbuf + 40, ASF_Audio_Spread, 16); //ASF_Audio_Spread
 
-                    unsigned char ASF_Audio_Media[16] =
-                        {0x40,0x9E,0x69,0xF8,0x4D,0x5B,0xCF,0x11,0xA8,0xFD,0x00,0x80,0x5F,0x5C,0x44,0x2B};
-                    memcpy(track.aacbuf + 24, ASF_Audio_Media, 16); //ASF_Audio_Media
+					memset(track.aacbuf + 56, 0, 4); // time_offset (not used)
+					memset(track.aacbuf + 60, 0, 4); // time_offset_hi (not used)
 
-                    unsigned char ASF_Audio_Spread[16] =
-                        {0x50,0xCD,0xC3,0xBF,0x8F,0x61,0xCF,0x11,0x8B,0xB2,0x00,0xAA,0x00,0xB4,0xE2,0x20};
-                    memcpy(track.aacbuf + 40, ASF_Audio_Spread, 16); //ASF_Audio_Spread
+					unsigned int type_specific_data_length = 18 + stream->codec->extradata_size;
+					memcpy(track.aacbuf + 64, &type_specific_data_length, 4); //type_specific_data_length
 
-                    memset(track.aacbuf + 56, 0, 4); // time_offset (not used)
-                    memset(track.aacbuf + 60, 0, 4); // time_offset_hi (not used)
+					unsigned int error_correction_data_length = 8;
+					memcpy(track.aacbuf + 68, &error_correction_data_length, 4); //error_correction_data_length
 
-                    unsigned int type_specific_data_length = 18 + stream->codec->extradata_size;
-                    memcpy(track.aacbuf + 64, &type_specific_data_length, 4); //type_specific_data_length
+					unsigned short flags = 1; // stream_number
+					memcpy(track.aacbuf + 72, &flags, 2); //flags
 
-                    unsigned int error_correction_data_length = 8;
-                    memcpy(track.aacbuf + 68, &error_correction_data_length, 4); //error_correction_data_length
-
-                    unsigned short flags = 1; // stream_number
-                    memcpy(track.aacbuf + 72, &flags, 2); //flags
-
-                    unsigned int reserved = 0;
-                    memcpy(track.aacbuf + 74, &reserved, 4); // reserved
+					unsigned int reserved = 0;
+					memcpy(track.aacbuf + 74, &reserved, 4); // reserved
 
                     // type_specific_data
 #define WMA_VERSION_1           0x160
 #define WMA_VERSION_2_9         0x161
 #define WMA_VERSION_9_PRO       0x162
 #define WMA_LOSSLESS            0x163
-                    unsigned short codec_id = 0;
-                    switch(stream->codec->codec_id) {
-                        //TODO: What code for lossless ?
-                        case 86056/*CODEC_ID_WMAPRO*/:
-                            codec_id = WMA_VERSION_9_PRO;
-                            break;
-                        case CODEC_ID_WMAV2:
-                            codec_id = WMA_VERSION_2_9 ;
-                            break;
-                        case CODEC_ID_WMAV1:
-                        default:
-                            codec_id = WMA_VERSION_1;
-                            break;
-                    }
-                    memcpy(track.aacbuf + 78, &codec_id, 2); //codec_id
+					unsigned short codec_id = 0;
+					switch(stream->codec->codec_id) 
+					{
+						//TODO: What code for lossless ?
+						case 86056/*CODEC_ID_WMAPRO*/:
+							codec_id = WMA_VERSION_9_PRO;
+							break;
+						case CODEC_ID_WMAV2:
+							codec_id = WMA_VERSION_2_9 ;
+							break;
+						case CODEC_ID_WMAV1:
+						default:
+							codec_id = WMA_VERSION_1;
+							break;
+					}
+					memcpy(track.aacbuf + 78, &codec_id, 2); //codec_id
 
-                    unsigned short number_of_channels = stream->codec->channels;
-                    memcpy(track.aacbuf + 80, &number_of_channels, 2); //number_of_channels
+					unsigned short number_of_channels = stream->codec->channels;
+					memcpy(track.aacbuf + 80, &number_of_channels, 2); //number_of_channels
 
-                    unsigned int samples_per_second = stream->codec->sample_rate;
-                    ffmpeg_printf(1, "samples_per_second = %d\n", samples_per_second);
-                    memcpy(track.aacbuf + 82, &samples_per_second, 4); //samples_per_second
+					unsigned int samples_per_second = stream->codec->sample_rate;
+					ffmpeg_printf(1, "samples_per_second = %d\n", samples_per_second);
+					memcpy(track.aacbuf + 82, &samples_per_second, 4); //samples_per_second
 
-                    unsigned int average_number_of_bytes_per_second = stream->codec->bit_rate / 8;
-                    ffmpeg_printf(1, "average_number_of_bytes_per_second = %d\n", average_number_of_bytes_per_second);
-                    memcpy(track.aacbuf + 86, &average_number_of_bytes_per_second, 4); //average_number_of_bytes_per_second
+					unsigned int average_number_of_bytes_per_second = stream->codec->bit_rate / 8;
+					ffmpeg_printf(1, "average_number_of_bytes_per_second = %d\n", average_number_of_bytes_per_second);
+					memcpy(track.aacbuf + 86, &average_number_of_bytes_per_second, 4); //average_number_of_bytes_per_second
 
-                    unsigned short block_alignment = stream->codec->block_align;
-                    ffmpeg_printf(1, "block_alignment = %d\n", block_alignment);
-                    memcpy(track.aacbuf + 90, &block_alignment, 2); //block_alignment
+					unsigned short block_alignment = stream->codec->block_align;
+					ffmpeg_printf(1, "block_alignment = %d\n", block_alignment);
+					memcpy(track.aacbuf + 90, &block_alignment, 2); //block_alignment
 
-                    unsigned short bits_per_sample =
-                        stream->codec->sample_fmt>=0?(stream->codec->sample_fmt+1)*8:8;
-                    ffmpeg_printf(1, "bits_per_sample = %d (%d)\n", bits_per_sample, stream->codec->sample_fmt);
-                    memcpy(track.aacbuf + 92, &bits_per_sample, 2); //bits_per_sample
+					unsigned short bits_per_sample = stream->codec->sample_fmt>=0?(stream->codec->sample_fmt+1)*8:8;
+					ffmpeg_printf(1, "bits_per_sample = %d (%d)\n", bits_per_sample, stream->codec->sample_fmt);
+					memcpy(track.aacbuf + 92, &bits_per_sample, 2); //bits_per_sample
 
-                    memcpy(track.aacbuf + 94, &stream->codec->extradata_size, 2); //bits_per_sample
+					memcpy(track.aacbuf + 94, &stream->codec->extradata_size, 2); //bits_per_sample
 
-                    memcpy(track.aacbuf + 96, stream->codec->extradata, stream->codec->extradata_size);
+					memcpy(track.aacbuf + 96, stream->codec->extradata, stream->codec->extradata_size);
 		    
-                    //ffmpeg_printf(1, "aacbuf:\n");
-                    //Hexdump(track.aacbuf, track.aacbuflen);
+					//ffmpeg_printf(1, "aacbuf:\n");
+					//Hexdump(track.aacbuf, track.aacbuflen);
 		    
-                    //ffmpeg_printf(1, "priv_data:\n");
-                    //Hexdump(stream->codec->priv_data, track.aacbuflen);
+					//ffmpeg_printf(1, "priv_data:\n");
+					//Hexdump(stream->codec->priv_data, track.aacbuflen);
 
-                    track.have_aacheader = 1;
-                }
+					track.have_aacheader = 1;
+				}
 
-                if (context->manager->audio)
-                {
-                    if (context->manager->audio->Command(context, MANAGER_ADD, &track) < 0) {
-                        /* konfetti: fixme: is this a reason to return with error? */
-                        ffmpeg_err("failed to add track %d\n", n);
-                    }
-                }
-
-            }
-            else {
-                ffmpeg_err("codec type audio but codec unknown %d\n", stream->codec->codec_id);
-            }
-            break;
+				if (context->manager->audio)
+				{
+					if (context->manager->audio->Command(context, MANAGER_ADD, &track) < 0) 
+					{
+						/* konfetti: fixme: is this a reason to return with error? */
+						ffmpeg_err("failed to add track %d\n", n);
+					}
+				}
+			}
+			else 
+			{
+				ffmpeg_err("codec type audio but codec unknown %d\n", stream->codec->codec_id);
+			}
+			break;
 	    
-	// subtitle
+			// subtitle
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
-        case AVMEDIA_TYPE_SUBTITLE:
-        {
+			case AVMEDIA_TYPE_SUBTITLE:
+			{
 #if LIBAVCODEC_VERSION_MAJOR < 54
-	    AVMetadataTag * lang;
+				AVMetadataTag * lang;
 #else
-	    AVDictionaryEntry * lang;
+				AVDictionaryEntry * lang;
 #endif
+				ffmpeg_printf(10, "CODEC_TYPE_SUBTITLE %d\n",stream->codec->codec_type);
 
-            ffmpeg_printf(10, "CODEC_TYPE_SUBTITLE %d\n",stream->codec->codec_type);
-
-             //lang = av_dict_get(stream->metadata, "language", NULL, 0);
 #if LIBAVCODEC_VERSION_MAJOR < 54
-	      lang = av_metadata_get(stream->metadata, "language", NULL, 0);
+				lang = av_metadata_get(stream->metadata, "language", NULL, 0);
 #else
-	      lang = av_dict_get(stream->metadata, "language", NULL, 0);
+				lang = av_dict_get(stream->metadata, "language", NULL, 0);
 #endif	     
 
-             if (lang)
-                track.Name        = strdup(lang->value);
-             else
-                track.Name        = strdup("und");
+				if (lang)
+					track.Name        = strdup(lang->value);
+				else
+					track.Name        = strdup("und");
 
-            ffmpeg_printf(10, "Language %s\n", track.Name);
+				ffmpeg_printf(10, "Language %s\n", track.Name);
 
-            track.Encoding       = encoding;
-            track.Id             = n;
+				track.Encoding       = encoding;
+				track.Id             = n;
 
-            track.stream         = stream;
-            track.duration       = (double)stream->duration * av_q2d(stream->time_base) * 1000.0;
+				track.stream         = stream;
+				track.duration       = (double)stream->duration * av_q2d(stream->time_base) * 1000.0;
 
-            track.aacbuf         = 0;
-            track.have_aacheader = -1;
+				track.aacbuf         = 0;
+				track.have_aacheader = -1;
 
-            track.width          = -1; /* will be filled online from videotrack */
-            track.height         = -1; /* will be filled online from videotrack */
+				track.width          = -1; /* will be filled online from videotrack */
+				track.height         = -1; /* will be filled online from videotrack */
 
-            track.extraData      = stream->codec->extradata;
-            track.extraSize      = stream->codec->extradata_size;
+				track.extraData      = stream->codec->extradata;
+				track.extraSize      = stream->codec->extradata_size;
 
-            ffmpeg_printf(1, "subtitle codec %d\n", stream->codec->codec_id);
-            ffmpeg_printf(1, "subtitle width %d\n", stream->codec->width);
-            ffmpeg_printf(1, "subtitle height %d\n", stream->codec->height);
-            ffmpeg_printf(1, "subtitle stream %p\n", stream);
+				ffmpeg_printf(1, "subtitle codec %d\n", stream->codec->codec_id);
+				ffmpeg_printf(1, "subtitle width %d\n", stream->codec->width);
+				ffmpeg_printf(1, "subtitle height %d\n", stream->codec->height);
+				ffmpeg_printf(1, "subtitle stream %p\n", stream);
 
-            if(stream->duration == AV_NOPTS_VALUE) {
-                ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
-                track.duration = (double) avContext->duration / 1000.0;
-            }
-            else {
-                track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
-            }
+				if(stream->duration == AV_NOPTS_VALUE) 
+				{
+					ffmpeg_printf(10, "Stream has no duration so we take the duration from context\n");
+					track.duration = (double) avContext->duration / 1000.0;
+				}
+				else 
+				{
+					track.duration = (double) stream->duration * av_q2d(stream->time_base) * 1000.0;
+				}
 
-            if (track.Name)
-                ffmpeg_printf(10, "FOUND SUBTITLE %s\n", track.Name);
+				if (track.Name)
+					ffmpeg_printf(10, "FOUND SUBTITLE %s\n", track.Name);
 
-            if (context->manager->subtitle)
-                if (context->manager->subtitle->Command(context, MANAGER_ADD, &track) < 0) {
-                    /* konfetti: fixme: is this a reason to return with error? */
-                    ffmpeg_err("failed to add subtitle track %d\n", n);
-                }
-
-            break;
-        } 
+				if (context->manager->subtitle)
+				{
+					if (context->manager->subtitle->Command(context, MANAGER_ADD, &track) < 0) 
+					{
+						/* konfetti: fixme: is this a reason to return with error? */
+						ffmpeg_err("failed to add subtitle track %d\n", n);
+					}
+				}
+				break;
+			} 
         
-        // all others
-        case AVMEDIA_TYPE_UNKNOWN:
-        case AVMEDIA_TYPE_DATA:
-        case AVMEDIA_TYPE_ATTACHMENT:
-        case AVMEDIA_TYPE_NB:
-        default:
-            ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
-         break;	 
+			// all others
+			case AVMEDIA_TYPE_UNKNOWN:
+			case AVMEDIA_TYPE_DATA:
+			case AVMEDIA_TYPE_ATTACHMENT:
+			case AVMEDIA_TYPE_NB:
+			default:
+			ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
+			break;	 
 #endif	 
-        }
+		}
 
-    } /* for */
+	} /* for */
 
-    /* init */
-    latestPts = 0;
-    isContainerRunning = 1;
+	/* init */
+	latestPts = 0;
+	isContainerRunning = 1;
 
-    releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+	releaseMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 static int container_ffmpeg_play(Context_t *context)
 {
-    int error;
-    int ret = 0;
-    pthread_attr_t attr;
+	int error;
+	int ret = 0;
+	pthread_attr_t attr;
 
-    ffmpeg_printf(10, "\n");
+	ffmpeg_printf(10, "\n");
 
-    if ( context && context->playback && context->playback->isPlaying ) {
-        ffmpeg_printf(10, "is Playing\n");
-    }
-    else {
-        ffmpeg_printf(10, "is NOT Playing\n");
-    }
+	if ( context && context->playback && context->playback->isPlaying ) 
+	{
+		ffmpeg_printf(10, "is Playing\n");
+	}
+	else 
+	{
+		ffmpeg_printf(10, "is NOT Playing\n");
+	}
 
-    if (hasPlayThreadStarted == 0) 
-    {
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	if (hasPlayThreadStarted == 0) 
+	{
+		pthread_attr_init(&attr);
+		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-        if((error = pthread_create(&PlayThread, &attr, (void *)&FFMPEGThread, context)) != 0) {
-            ffmpeg_printf(10, "Error creating thread, error:%d:%s\n", error,strerror(error));
+		if((error = pthread_create(&PlayThread, &attr, (void *)&FFMPEGThread, context)) != 0) 
+		{
+			ffmpeg_printf(10, "Error creating thread, error:%d:%s\n", error,strerror(error));
 
-            hasPlayThreadStarted = 0;
-            ret = cERR_CONTAINER_FFMPEG_ERR;
-        }
-        else {
-            ffmpeg_printf(10, "Created thread\n");
+			hasPlayThreadStarted = 0;
+			ret = cERR_CONTAINER_FFMPEG_ERR;
+		}
+		else 
+		{
+			ffmpeg_printf(10, "Created thread\n");
 
-            hasPlayThreadStarted = 1;
-        }
-    }
-    else {
-        ffmpeg_printf(10, "A thread already exists!\n");
+			hasPlayThreadStarted = 1;
+		}
+	}
+	else 
+	{
+		ffmpeg_printf(10, "A thread already exists!\n");
 
-        ret = cERR_CONTAINER_FFMPEG_ERR;
-    }
+		ret = cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    ffmpeg_printf(10, "exiting with value %d\n", ret);
+	ffmpeg_printf(10, "exiting with value %d\n", ret);
 
-    return ret;
+	return ret;
 }
 
-static int container_ffmpeg_stop(Context_t *context) {
-    int ret = cERR_CONTAINER_FFMPEG_NO_ERROR;
-    int wait_time = 20;
+static int container_ffmpeg_stop(Context_t *context) 
+{
+	int ret = cERR_CONTAINER_FFMPEG_NO_ERROR;
+	int wait_time = 20;
 
-    ffmpeg_printf(10, "\n");
+	ffmpeg_printf(10, "\n");
 
-    if (!isContainerRunning)
-    {
-        ffmpeg_err("Container not running\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (!isContainerRunning)
+	{
+		ffmpeg_err("Container not running\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    while ( (hasPlayThreadStarted != 0) && (--wait_time) > 0 ) {
-        ffmpeg_printf(10, "Waiting for ffmpeg thread to terminate itself, will try another %d times\n", wait_time);
+	while ( (hasPlayThreadStarted != 0) && (--wait_time) > 0 ) 
+	{
+		ffmpeg_printf(10, "Waiting for ffmpeg thread to terminate itself, will try another %d times\n", wait_time);
 
-        usleep(100000);
-    }
+		usleep(100000);
+	}
 
-    if (wait_time == 0) {
-        ffmpeg_err( "Timeout waiting for thread!\n");
+	if (wait_time == 0) 
+	{
+		ffmpeg_err( "Timeout waiting for thread!\n");
 
-        ret = cERR_CONTAINER_FFMPEG_ERR;
-    }
+		ret = cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    hasPlayThreadStarted = 0;
+	hasPlayThreadStarted = 0;
 
-    getMutex(FILENAME, __FUNCTION__,__LINE__);
+	getMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    if (avContext != NULL) {
-        av_close_input_file(avContext);
-        avContext = NULL;
-    }
+	if (avContext != NULL) 
+	{
+		av_close_input_file(avContext);
+		avContext = NULL;
+	}
 
-    isContainerRunning = 0;
+	isContainerRunning = 0;
 
-    releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+	releaseMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    ffmpeg_printf(10, "ret %d\n", ret);
-    return ret;
+	ffmpeg_printf(10, "ret %d\n", ret);
+	return ret;
 }
 
 static int container_ffmpeg_seek_bytes(off_t pos) 
 {
-    int flag = AVSEEK_FLAG_BYTE;
+	int flag = AVSEEK_FLAG_BYTE;
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    off_t current_pos = url_ftell(avContext->pb);
+	off_t current_pos = url_ftell(avContext->pb);
 #else
-    off_t current_pos = avio_tell(avContext->pb);
+	off_t current_pos = avio_tell(avContext->pb);
 #endif
 
-    ffmpeg_printf(20, "seeking to position %lld (bytes)\n", pos);
+	ffmpeg_printf(20, "seeking to position %lld (bytes)\n", pos);
 
-    if (current_pos > pos)
-        flag |= AVSEEK_FLAG_BACKWARD;
+	if (current_pos > pos)
+		flag |= AVSEEK_FLAG_BACKWARD;
 
-//#if LIBAVCODEC_VERSION_MAJOR > 54
-    if (avformat_seek_file(avContext, -1, INT64_MIN, pos, INT64_MAX, flag) < 0)
-    {
-        ffmpeg_err( "Error seeking\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
-//#endif    
+	if (avformat_seek_file(avContext, -1, INT64_MIN, pos, INT64_MAX, flag) < 0)
+	{
+		ffmpeg_err( "Error seeking\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
+	ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
 #else
-    ffmpeg_printf(30, "current_pos after seek %lld\n", avio_tell(avContext->pb));
+	ffmpeg_printf(30, "current_pos after seek %lld\n", avio_tell(avContext->pb));
 #endif
 
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 /* seeking relative to a given byteposition N bytes ->for reverse playback needed */
 static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes) {
-    int flag = AVSEEK_FLAG_BYTE;
-    off_t newpos;
+	int flag = AVSEEK_FLAG_BYTE;
+	off_t newpos;
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    off_t current_pos = url_ftell(avContext->pb);
+	off_t current_pos = url_ftell(avContext->pb);
 #else
-    off_t current_pos = avio_tell(avContext->pb);
+	off_t current_pos = avio_tell(avContext->pb);
 #endif
 
-    if (start == -1)
-       start = current_pos;
+	if (start == -1)
+		start = current_pos;
 
-    ffmpeg_printf(250, "start:%lld bytes:%lld\n", start, bytes);
+	ffmpeg_printf(250, "start:%lld bytes:%lld\n", start, bytes);
 
-    newpos = start + bytes;
+	newpos = start + bytes;
 
-    if (current_pos > newpos)
-        flag |= AVSEEK_FLAG_BACKWARD;
+	if (current_pos > newpos)
+		flag |= AVSEEK_FLAG_BACKWARD;
 
-    if (newpos < 0)
-    {
-       ffmpeg_err("end of file reached\n");
-       return cERR_CONTAINER_FFMPEG_END_OF_FILE;
-    }
+	if (newpos < 0)
+	{
+		ffmpeg_err("end of file reached\n");
+		return cERR_CONTAINER_FFMPEG_END_OF_FILE;
+	}
 
-    ffmpeg_printf(20, "seeking to position %lld (bytes)\n", newpos);
+	ffmpeg_printf(20, "seeking to position %lld (bytes)\n", newpos);
 
 /* fixme: should we adapt INT64_MIN/MAX to some better value?
  * take a loog in ffmpeg to be sure what this paramter are doing
  */
-#if LIBAVCODEC_VERSION_MAJOR > 54
-    if (avformat_seek_file(avContext, -1, INT64_MIN, newpos, INT64_MAX, flag) < 0)
-    {
-        ffmpeg_err( "Error seeking\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
-#endif    
+//#if LIBAVCODEC_VERSION_MAJOR > 54
+	if (avformat_seek_file(avContext, -1, INT64_MIN, newpos, INT64_MAX, flag) < 0)
+	{
+		ffmpeg_err( "Error seeking\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
+//#endif    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
+	ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
 #else
-    ffmpeg_printf(30, "current_pos after seek %lld\n", avio_tell(avContext->pb));
+	ffmpeg_printf(30, "current_pos after seek %lld\n", avio_tell(avContext->pb));
 #endif
 
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 /* seeking relative to a given byteposition N seconds ->for reverse playback needed */
-static int container_ffmpeg_seek_rel(Context_t *context, off_t pos, long long int pts, float sec) {
-    Track_t * videoTrack = NULL;
-    Track_t * audioTrack = NULL;
-    Track_t * current = NULL;
-    int flag = 0;
+static int container_ffmpeg_seek_rel(Context_t *context, off_t pos, long long int pts, float sec) 
+{
+	Track_t * videoTrack = NULL;
+	Track_t * audioTrack = NULL;
+	Track_t * current = NULL;
+	int flag = 0;
 
-    ffmpeg_printf(10, "seeking %f sec relativ to %lld\n", sec, pos);
+	ffmpeg_printf(10, "seeking %f sec relativ to %lld\n", sec, pos);
 
-    context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
-    context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
+	context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
+	context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
 
-    if (videoTrack != NULL)
-        current = videoTrack;
-    else if (audioTrack != NULL)
-        current = audioTrack;
+	if (videoTrack != NULL)
+		current = videoTrack;
+	else if (audioTrack != NULL)
+		current = audioTrack;
 
-    if (current == NULL) {
-        ffmpeg_err( "no track avaibale to seek\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (current == NULL) 
+	{
+		ffmpeg_err( "no track avaibale to seek\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    if (pos == -1)
-    {
+	if (pos == -1)
+	{
 #if LIBAVCODEC_VERSION_MAJOR < 54
-        pos = url_ftell(avContext->pb);
+		pos = url_ftell(avContext->pb);
 #else
-        pos = avio_tell(avContext->pb);
+		pos = avio_tell(avContext->pb);
 #endif
-    }
+	}
 
-    if (pts == -1)
-        pts = current->pts;
+	if (pts == -1)
+		pts = current->pts;
 
-    if (sec < 0)
-        flag |= AVSEEK_FLAG_BACKWARD;
+	if (sec < 0)
+		flag |= AVSEEK_FLAG_BACKWARD;
 
-    getMutex(FILENAME, __FUNCTION__,__LINE__);
+	getMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    ffmpeg_printf(10, "iformat->flags %d\n", avContext->iformat->flags);
+	ffmpeg_printf(10, "iformat->flags %d\n", avContext->iformat->flags);
 
-    if (avContext->iformat->flags & AVFMT_TS_DISCONT)
-    {
-        if (avContext->bit_rate)
-        {
-            sec *= avContext->bit_rate / 8.0;
-            ffmpeg_printf(10, "bit_rate %d\n", avContext->bit_rate);
-        }
-        else
-        {
-            sec *= 180000.0;
-        }
+	if (avContext->iformat->flags & AVFMT_TS_DISCONT)
+	{
+		if (avContext->bit_rate)
+		{
+			sec *= avContext->bit_rate / 8.0;
+			ffmpeg_printf(10, "bit_rate %d\n", avContext->bit_rate);
+		}
+		else
+		{
+			sec *= 180000.0;
+		}
 
-        pos += sec;
+		pos += sec;
 
-        if (pos < 0)
-        {
-           ffmpeg_err("end of file reached\n");
-           releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-           return cERR_CONTAINER_FFMPEG_END_OF_FILE;
-        }
+		if (pos < 0)
+		{
+			ffmpeg_err("end of file reached\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_END_OF_FILE;
+		}
 
-        ffmpeg_printf(10, "1. seeking to position %lld bytes ->sec %f\n", pos, sec);
+		ffmpeg_printf(10, "1. seeking to position %lld bytes ->sec %f\n", pos, sec);
 
-        if (container_ffmpeg_seek_bytes(pos) < 0)
-        {
-            ffmpeg_err( "Error seeking\n");
-            releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-            return cERR_CONTAINER_FFMPEG_ERR;
-        }
+		if (container_ffmpeg_seek_bytes(pos) < 0)
+		{
+			ffmpeg_err( "Error seeking\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
 
-        releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-        return pos;
-    }
-    else
-    {
-        sec += ((float) pts / 90000.0f);
+		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+		return pos;
+	}
+	else
+	{
+		sec += ((float) pts / 90000.0f);
 
-        if (sec < 0)
-            sec = 0;
+		if (sec < 0)
+			sec = 0;
 
-        ffmpeg_printf(10, "2. seeking to position %f sec ->time base %f %d\n", sec, av_q2d(((AVStream*) current->stream)->time_base), AV_TIME_BASE);
+		ffmpeg_printf(10, "2. seeking to position %f sec ->time base %f %d\n", sec, av_q2d(((AVStream*) current->stream)->time_base), AV_TIME_BASE);
 
-        if (av_seek_frame(avContext, -1 , sec * AV_TIME_BASE, flag) < 0) {
-            ffmpeg_err( "Error seeking\n");
-            releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-            return cERR_CONTAINER_FFMPEG_ERR;
-        }
+		if (av_seek_frame(avContext, -1 , sec * AV_TIME_BASE, flag) < 0) 
+		{
+			ffmpeg_err( "Error seeking\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
 
-        if (sec <= 0)
-        {
-           ffmpeg_err("end of file reached\n");
-           releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-           return cERR_CONTAINER_FFMPEG_END_OF_FILE;
-        }
-    }
+		if (sec <= 0)
+		{
+			ffmpeg_err("end of file reached\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_END_OF_FILE;
+		}
+	}
 
-    releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 static int container_ffmpeg_seek(Context_t *context, float sec) 
 {
-    Track_t * videoTrack = NULL;
-    Track_t * audioTrack = NULL;
-    Track_t * current = NULL;
-    int flag = 0;
+	Track_t * videoTrack = NULL;
+	Track_t * audioTrack = NULL;
+	Track_t * current = NULL;
+	int flag = 0;
 
 #if !defined(VDR1722)
-    ffmpeg_printf(10, "seeking %f sec\n", sec);
+	ffmpeg_printf(10, "seeking %f sec\n", sec);
 
-    if (sec == 0.0)
-    {
-        ffmpeg_err("sec = 0.0 ignoring\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (sec == 0.0)
+	{
+		ffmpeg_err("sec = 0.0 ignoring\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 #else
-    ffmpeg_printf(10, "goto %f sec\n", sec);
+	ffmpeg_printf(10, "goto %f sec\n", sec);
 
-    if (sec < 0.0)
-    {
-        ffmpeg_err("sec < 0.0 ignoring\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (sec < 0.0)
+	{
+		ffmpeg_err("sec < 0.0 ignoring\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 #endif
 
-    context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
-    context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
+	context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
+	context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
 
-    if (videoTrack != NULL)
-        current = videoTrack;
-    else if (audioTrack != NULL)
-        current = audioTrack;
+	if (videoTrack != NULL)
+		current = videoTrack;
+	else if (audioTrack != NULL)
+		current = audioTrack;
 
-    if (current == NULL) {
-        ffmpeg_err( "no track available to seek\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (current == NULL) 
+	{
+		ffmpeg_err( "no track available to seek\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    if (sec < 0)
-        flag |= AVSEEK_FLAG_BACKWARD;
+	if (sec < 0)
+		flag |= AVSEEK_FLAG_BACKWARD;
 
-    getMutex(FILENAME, __FUNCTION__,__LINE__);
+	getMutex(FILENAME, __FUNCTION__,__LINE__);
 
-    ffmpeg_printf(10, "iformat->flags %d\n", avContext->iformat->flags);
+	ffmpeg_printf(10, "iformat->flags %d\n", avContext->iformat->flags);
 
-    if (avContext->iformat->flags & AVFMT_TS_DISCONT)
-    {
+	if (avContext->iformat->flags & AVFMT_TS_DISCONT)
+	{
 /* konfetti: for ts streams seeking frame per seconds does not work (why?).
  * I take this algo partly from ffplay.c.
  *
@@ -1632,120 +1650,124 @@ static int container_ffmpeg_seek(Context_t *context, float sec)
  */
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-        off_t pos = url_ftell(avContext->pb);
+		off_t pos = url_ftell(avContext->pb);
 #else
-        off_t pos = avio_tell(avContext->pb);
+		off_t pos = avio_tell(avContext->pb);
 #endif
 
-        ffmpeg_printf(10, "pos %lld %d\n", pos, avContext->bit_rate);
+		ffmpeg_printf(10, "pos %lld %d\n", pos, avContext->bit_rate);
 
-        if (avContext->bit_rate)
-        {
-            sec *= avContext->bit_rate / 8.0;
-            ffmpeg_printf(10, "bit_rate %d\n", avContext->bit_rate);
-        }
-        else
-        {
-            sec *= 180000.0;
-        }
+		if (avContext->bit_rate)
+		{
+			sec *= avContext->bit_rate / 8.0;
+			ffmpeg_printf(10, "bit_rate %d\n", avContext->bit_rate);
+		}
+		else
+		{
+			sec *= 180000.0;
+		}
 #if !defined(VDR1722)
-        pos += sec;
+		pos += sec;
 #else
-        pos = sec;
+		pos = sec;
 #endif
-        if (pos < 0)
-        {
-           ffmpeg_err("end of file reached\n");
-           return cERR_CONTAINER_FFMPEG_END_OF_FILE;
-        }
+		if (pos < 0)
+		{
+			ffmpeg_err("end of file reached\n");
+			return cERR_CONTAINER_FFMPEG_END_OF_FILE;
+		}
 
-        ffmpeg_printf(10, "1. seeking to position %lld bytes ->sec %f\n", pos, sec);
+		ffmpeg_printf(10, "1. seeking to position %lld bytes ->sec %f\n", pos, sec);
 
-        if (container_ffmpeg_seek_bytes(pos) < 0)
-        {
-            ffmpeg_err( "Error seeking\n");
-            releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-            return cERR_CONTAINER_FFMPEG_ERR;
-        }
-
-    } 
-    else
-    {
-#if !defined(VDR1722)
-        sec += ((float) current->pts / 90000.0f);
-#endif
-        ffmpeg_printf(10, "2. seeking to position %f sec ->time base %f %d\n", sec, av_q2d(((AVStream*) current->stream)->time_base), AV_TIME_BASE);
-
-        if (av_seek_frame(avContext, -1 /* or streamindex */, sec * AV_TIME_BASE, flag) < 0) 
+		if (container_ffmpeg_seek_bytes(pos) < 0)
+		{
+			ffmpeg_err( "Error seeking\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
+	} 
+	else
 	{
-            ffmpeg_err( "Error seeking\n");
-            releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-            return cERR_CONTAINER_FFMPEG_ERR;
-        }
-    }
+#if !defined(VDR1722)
+		sec += ((float) current->pts / 90000.0f);
+#endif
+		ffmpeg_printf(10, "2. seeking to position %f sec ->time base %f %d\n", sec, av_q2d(((AVStream*) current->stream)->time_base), AV_TIME_BASE);
 
-    releaseMutex(FILENAME, __FUNCTION__,__LINE__);
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+		if (av_seek_frame(avContext, -1 /* or streamindex */, sec * AV_TIME_BASE, flag) < 0) 
+		{
+			ffmpeg_err( "Error seeking\n");
+			releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
+	}
+
+	releaseMutex(FILENAME, __FUNCTION__,__LINE__);
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
-static int container_ffmpeg_get_length(Context_t *context, double * length) {
-    ffmpeg_printf(50, "\n");
-    Track_t * videoTrack = NULL;
-    Track_t * audioTrack = NULL;
-    Track_t * subtitleTrack = NULL;
-    Track_t * current = NULL;
+static int container_ffmpeg_get_length(Context_t *context, double * length) 
+{
+	ffmpeg_printf(50, "\n");
+	Track_t * videoTrack = NULL;
+	Track_t * audioTrack = NULL;
+	Track_t * subtitleTrack = NULL;
+	Track_t * current = NULL;
 
-    if (length == NULL) {
-        ffmpeg_err( "null pointer passed\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+	if (length == NULL) 
+	{
+		ffmpeg_err( "null pointer passed\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
-    context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);    
-    context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack);    
+	context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
+	context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);    
+	context->manager->subtitle->Command(context, MANAGER_GET_TRACK, &subtitleTrack);    
 
-    if (videoTrack != NULL)
-        current = videoTrack;
-    else if (audioTrack != NULL)
-        current = audioTrack;    
-    else if (subtitleTrack != NULL)
-        current = subtitleTrack;    
+	if (videoTrack != NULL)
+		current = videoTrack;
+	else if (audioTrack != NULL)
+		current = audioTrack;    
+	else if (subtitleTrack != NULL)
+		current = subtitleTrack;    
 
-    *length = 0.0;
+	*length = 0.0;
 
-    if (current != NULL) {
-        if (current->duration == 0)
-            return cERR_CONTAINER_FFMPEG_ERR;
-        else
-            *length = (current->duration / 1000.0);
-    }
-    else {
-        if (avContext != NULL)
-        {
-            *length = (avContext->duration / 1000.0);
-        } else
-        {
-           ffmpeg_err( "no Track not context ->no problem :D\n");
-           return cERR_CONTAINER_FFMPEG_ERR;
-        }
-    }
+	if (current != NULL) 
+	{
+		if (current->duration == 0)
+			return cERR_CONTAINER_FFMPEG_ERR;
+		else
+			*length = (current->duration / 1000.0);
+	}
+	else 
+	{
+		if (avContext != NULL)
+		{
+			*length = (avContext->duration / 1000.0);
+		} 
+		else
+		{
+			ffmpeg_err( "no Track not context ->no problem :D\n");
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
+	}
 
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 static int container_ffmpeg_swich_audio(Context_t* context, int* arg)
 {
-    ffmpeg_printf(10, "track %d\n", *arg);
-    /* Hellmaster1024: nothing to do here!*/
-    //float sec=-5.0;
-    //context->playback->Command(context, PLAYBACK_SEEK, (void*)&sec);
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	ffmpeg_printf(10, "track %d\n", *arg);
+	/* Hellmaster1024: nothing to do here!*/
+	//float sec=-5.0;
+	//context->playback->Command(context, PLAYBACK_SEEK, (void*)&sec);
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 static int container_ffmpeg_swich_subtitle(Context_t* context, int* arg)
 {
-    /* Hellmaster1024: nothing to do here!*/
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
+	/* Hellmaster1024: nothing to do here!*/
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 /* konfetti comment: I dont like the mechanism of overwriting
@@ -1758,123 +1780,143 @@ static int container_ffmpeg_swich_subtitle(Context_t* context, int* arg)
  */
 static int container_ffmpeg_get_info(Context_t* context, char ** infoString)
 {
-    Track_t * videoTrack = NULL;
-    Track_t * audioTrack = NULL;
-    char*     meta = NULL;
+	Track_t * videoTrack = NULL;
+	Track_t * audioTrack = NULL;
+	char*     meta = NULL;
 
-    ffmpeg_printf(20, ">\n");
+	ffmpeg_printf(20, ">\n");
 
-    if (avContext != NULL)
-    {
-       if ((infoString == NULL) || (*infoString == NULL))
-       {
-           ffmpeg_err("infostring NULL\n");
-           return cERR_CONTAINER_FFMPEG_ERR;
-       }
+	if (avContext != NULL)
+	{
+		if ((infoString == NULL) || (*infoString == NULL))
+		{
+			ffmpeg_err("infostring NULL\n");
+			return cERR_CONTAINER_FFMPEG_ERR;
+		}
 
-       ffmpeg_printf(20, "%s\n", *infoString);
+		ffmpeg_printf(20, "%s\n", *infoString);
 
-       context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
-       context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
+		context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack);
+		context->manager->audio->Command(context, MANAGER_GET_TRACK, &audioTrack);
 
-       if ((meta = searchMeta(avContext->metadata, *infoString)) == NULL)
-       {
-           if (audioTrack != NULL)
-           {
-               AVStream* stream = audioTrack->stream;
+		if ((meta = searchMeta(avContext->metadata, *infoString)) == NULL)
+		{
+			if (audioTrack != NULL)
+			{
+				AVStream* stream = audioTrack->stream;
 
-               meta = searchMeta(stream->metadata, *infoString);
-           }
+				meta = searchMeta(stream->metadata, *infoString);
+			}
 
-           if ((meta == NULL) && (videoTrack != NULL))
-           {
-               AVStream* stream = videoTrack->stream;
+			if ((meta == NULL) && (videoTrack != NULL))
+			{
+				AVStream* stream = videoTrack->stream;
 
-               meta = searchMeta(stream->metadata, *infoString);
-           }
-       }
+				meta = searchMeta(stream->metadata, *infoString);
+			}
+		}
 
-       if (meta != NULL)
-       {
-          *infoString = strdup(meta);
-       }
-       else
-       {
-          ffmpeg_printf(1, "no metadata found for \"%s\"\n", *infoString);
-          *infoString = strdup("not found");
-       }
-    } else
-    {
-        ffmpeg_err("avContext NULL\n");
-        return cERR_CONTAINER_FFMPEG_ERR;
-    }
+		if (meta != NULL)
+		{
+			*infoString = strdup(meta);
+		}
+		else
+		{
+			ffmpeg_printf(1, "no metadata found for \"%s\"\n", *infoString);
+			*infoString = strdup("not found");
+		}
+	} 
+	else
+	{
+		ffmpeg_err("avContext NULL\n");
+		return cERR_CONTAINER_FFMPEG_ERR;
+	}
 
-    return cERR_CONTAINER_FFMPEG_NO_ERROR;
-
+	return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 static int Command(void  *_context, ContainerCmd_t command, void * argument)
 {
-    Context_t  *context = (Context_t*) _context;
-    int ret = cERR_CONTAINER_FFMPEG_NO_ERROR;
+	Context_t  *context = (Context_t*) _context;
+	int ret = cERR_CONTAINER_FFMPEG_NO_ERROR;
 
-    ffmpeg_printf(50, "Command %d\n", command);
+	ffmpeg_printf(50, "Command %d\n", command);
 
-    switch(command)
-    {
-    case CONTAINER_INIT:  {
-        char * FILENAME = (char *)argument;
-        ret = container_ffmpeg_init(context, FILENAME);
-        break;
-    }
-    case CONTAINER_PLAY:  {
-        ret = container_ffmpeg_play(context);
-        break;
-    }
-    case CONTAINER_STOP:  {
-        ret = container_ffmpeg_stop(context);
-        break;
-    }
-    case CONTAINER_SEEK: {
-        ret = container_ffmpeg_seek(context, (float)*((float*)argument));
-        break;
-    }
-    case CONTAINER_LENGTH: {
-        double length = 0;
-        ret = container_ffmpeg_get_length(context, &length);
+	switch(command)
+	{
+		case CONTAINER_INIT:  
+		{
+			char * FILENAME = (char *)argument;
+			ret = container_ffmpeg_init(context, FILENAME);
+			break;
+		}
+		
+		case CONTAINER_PLAY:  
+		{
+			ret = container_ffmpeg_play(context);
+			break;
+		}
+		
+		case CONTAINER_STOP:  
+		{
+			ret = container_ffmpeg_stop(context);
+			break;
+		}
+		
+		case CONTAINER_SEEK: 
+		{
+			ret = container_ffmpeg_seek(context, (float)*((float*)argument));
+			break;
+		}
+		
+		case CONTAINER_LENGTH: 
+		{
+			double length = 0;
+			ret = container_ffmpeg_get_length(context, &length);
 
-        *((double*)argument) = (double)length;
-        break;
-    }
-    case CONTAINER_SWITCH_AUDIO: {
-        ret = container_ffmpeg_swich_audio(context, (int*) argument);
-        break;
-    }
-    case CONTAINER_SWITCH_SUBTITLE: {
-        ret = container_ffmpeg_swich_subtitle(context, (int*) argument);
-        break;
-    }
-    case CONTAINER_INFO: {
-        ret = container_ffmpeg_get_info(context, (char **)argument);
-        break;
-    }
-    case CONTAINER_STATUS: {
-        *((int*)argument) = hasPlayThreadStarted;
-        break;
-    }
-    case CONTAINER_LAST_PTS: {
-        *((long long int*)argument) = latestPts;
-        break;
-    }
-    default:
-        ffmpeg_err("ContainerCmd %d not supported!\n", command);
-        ret = cERR_CONTAINER_FFMPEG_ERR;
-        break;
-    }
+			*((double*)argument) = (double)length;
+			break;
+		}
+		
+		case CONTAINER_SWITCH_AUDIO: 
+		{
+			ret = container_ffmpeg_swich_audio(context, (int*) argument);
+			break;
+		}
+		
+		case CONTAINER_SWITCH_SUBTITLE: 
+		{
+			ret = container_ffmpeg_swich_subtitle(context, (int*) argument);
+			break;
+		}
+		
+		case CONTAINER_INFO: 
+		{
+			ret = container_ffmpeg_get_info(context, (char **)argument);
+			break;
+		}
+		
+		case CONTAINER_STATUS: 
+		{
+			*((int*)argument) = hasPlayThreadStarted;
+			break;
+		}
+		
+		case CONTAINER_LAST_PTS: 
+		{
+			*((long long int*)argument) = latestPts;
+			break;
+		}
+		
+		default:
+			ffmpeg_err("ContainerCmd %d not supported!\n", command);
+			ret = cERR_CONTAINER_FFMPEG_ERR;
+			break;
+	}
 
-    ffmpeg_printf(50, "exiting with value %d\n", ret);
+	ffmpeg_printf(50, "exiting with value %d\n", ret);
 
-    return ret;
+	return ret;
 }
 
 static char *FFMPEG_Capabilities[] = {
