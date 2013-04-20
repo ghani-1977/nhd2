@@ -4934,7 +4934,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
 		StartSubtitles();
 				
-		return menu_return::RETURN_REPAINT;	
+		return menu_return::RETURN_EXIT;	
 	}
 
 	return returnval;
