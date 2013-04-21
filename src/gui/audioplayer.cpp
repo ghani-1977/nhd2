@@ -1842,12 +1842,12 @@ void CAudioPlayerGui::paintFoot()
 	if (!m_playlist.empty())
 	{
 		// play
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 1*ButtonWidth2 + 25, top + m_buttonHeight - 3);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 1 * ButtonWidth2 + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
+		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + ButtonWidth2 + 25, top + m_buttonHeight - 3);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + ButtonWidth2 + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR, 0, true); // UTF-8
 		
 		// keylevel switch
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, m_x + 0*ButtonWidth + 25, top + m_buttonHeight - 3);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 0 * ButtonWidth + 53 , top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_KEYLEVEL), COL_INFOBAR /*_SHADOW_PLUS_1*/, 0, true); // UTF-8
+		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, m_x + ButtonWidth + 25, top + m_buttonHeight - 3);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + ButtonWidth + 53, top + m_buttonHeight + 24 - 4, ButtonWidth2 - 28, g_Locale->getText(LOCALE_AUDIOPLAYER_KEYLEVEL), COL_INFOBAR, 0, true); // UTF-8
 	}
 
 	if (m_key_level == 0)

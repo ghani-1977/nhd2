@@ -1504,8 +1504,22 @@ void CFrameBuffer::blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint3
 		{
 			fb_pixel_t pix = *(pixpos + xp);
 			
-			if (!transp || (pix != 0)) 
+			//if (!transp || (pix != 0)) 
+			//	*d2 = pix;
+			
+			if (!transp || (pix & 0xff000000) == 0xff000000)
 				*d2 = pix;
+			else 
+			{
+				uint8_t *in = (uint8_t *)(pixpos + xp);
+				uint8_t *out = (uint8_t *)d2;
+				int a = in[3];	/* TODO: big/little endian */
+				*out = (*out + ((*in - *out) * a) / 256);
+				in++; out++;
+				*out = (*out + ((*in - *out) * a) / 256);
+				in++; out++;
+				*out = (*out + ((*in - *out) * a) / 256);
+			}
 			
 			d2++;
 			pixpos++;
