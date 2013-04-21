@@ -167,6 +167,7 @@ bool isVlc = false;
 bool isWebTV = false;
 bool isDVD = false;
 bool isBlueRay = false;
+bool isUpnp = false;
 
 #define TIMESHIFT_SECONDS 3
 
@@ -517,7 +518,6 @@ void CMoviePlayerGui::Init(void)
 	// playback
 	playback = new cPlayback();
 	
-	#if 1
 	// filebrowser
 	if (g_settings.filebrowser_denydirectoryleave)
 		filebrowser = new CFileBrowser(Path_local.c_str());
@@ -533,7 +533,6 @@ void CMoviePlayerGui::Init(void)
 	
 	// webtv
 	webtv = new CWebTV();
-	#endif
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
@@ -601,11 +600,14 @@ void CMoviePlayerGui::cutNeutrino()
 	if (stopped)
 		return;
 	
-	// pause epg scanning
-	g_Sectionsd->setPauseScanning(true);
-	
-	// lock playback
-	g_Zapit->lockPlayBack();
+	if(!isUpnp)
+	{
+		// pause epg scanning
+		g_Sectionsd->setPauseScanning(true);
+		
+		// lock playback
+		g_Zapit->lockPlayBack();
+	}
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	/* hide AC3 Icon */
@@ -641,11 +643,14 @@ void CMoviePlayerGui::restoreNeutrino()
 	if (!stopped)
 		return;
 
-	// unlock playback
-	g_Zapit->unlockPlayBack();
-	
-	// start epg scanning
-	g_Sectionsd->setPauseScanning(false);
+	if(!isUpnp)
+	{
+		// unlock playback
+		g_Zapit->unlockPlayBack();
+		
+		// start epg scanning
+		g_Sectionsd->setPauseScanning(false);
+	}
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	//TODO: check if ac3 is selected???
@@ -730,6 +735,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	isVlc = false;
 	isDVD = false;
 	isBlueRay = false;
+	isUpnp = false;
 
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
@@ -743,6 +749,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -755,6 +762,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -766,6 +774,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -792,6 +801,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isDVD = false;
 		isBlueRay = false;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -803,6 +813,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isDVD = false;
 		isBlueRay = false;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -814,6 +825,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isBlueRay = false;
 		isDVD = true;
+		isUpnp = false;
 		
 		PlayFile();
 	}
@@ -825,6 +837,19 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = true;
+		isUpnp = false;
+		
+		PlayFile();
+	}
+	else if(actionKey == "upnpplayback")
+	{
+		isMovieBrowser = false;
+		timeshift = 0;
+		isWebTV = false;
+		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
+		isUpnp = true;
 		
 		PlayFile();
 	}
@@ -1385,7 +1410,33 @@ void CMoviePlayerGui::PlayFile(void)
 		// hide ts icon
 		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
 #endif		
-	}	
+	}
+	
+	if(isUpnp)
+	{
+		open_filebrowser = false;
+							
+		sel_filename = "UPNP Video Player";
+		update_lcd = true;
+		start_play = true;
+		
+		filename = g_settings.streaming_server_url.c_str();
+		sel_filename = g_settings.streaming_server_url.c_str();
+						
+		was_file = false;
+						
+		//
+		g_file_epg = sel_filename;
+		g_file_epg1 = sel_filename;
+		//
+		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+		
+#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
+		// hide ts icon
+		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
+#endif		
+	}
 
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info
@@ -2546,7 +2597,8 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.hide();
 			
 			//show help
-			showHelpTS();
+			if(!isWebTV)
+				showHelpTS();
 		}
 		else if (msg == CRCInput::RC_info) 
 		{

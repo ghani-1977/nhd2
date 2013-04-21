@@ -403,9 +403,6 @@ bool cPlayback::Start(char * filename)
 		uri = g_uri_escape_string(filename, G_URI_RESERVED_CHARS_GENERIC_DELIMITERS, true);
 	else
 		uri = g_filename_to_uri(filename, NULL, NULL);
-	
-	// create gst pipeline
-	//m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
 
 	if(m_gst_playbin)
 	{
@@ -603,12 +600,10 @@ bool cPlayback::SetSpeed(int speed)
 		if(speed == 0)
 		{
 			gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
-			//trickSeek(0);
 		}
 		// play/continue
 		else if(speed == 1)
 		{
-			//trickSeek(1);
 			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 		}
 		//ff
@@ -760,7 +755,6 @@ bool cPlayback::GetPosition(int &position)
 	//EOF
 	if(end_eof)
 	{
-		//end_eof = false;
 		return false;
 	}
 	

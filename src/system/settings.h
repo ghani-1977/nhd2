@@ -141,6 +141,9 @@ struct SNeutrinoSettings
 	int streaming_transcode_video_codec;
 	int streaming_resolution;
 	int streaming_vlc10;
+	
+	// for upnp video playing
+	std::string streaming_server_url;
 	// END MOVIEPLAYER
 
 	// OSD

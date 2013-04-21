@@ -66,11 +66,16 @@
 #include <gui/widget/stringinput_ext.h>
 
 #include <system/settings.h>
+#include <gui/pictureviewer.h>
+#include <gui/movieplayer.h>
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
 #endif
 #define ConnectLineBox_Width    15
+
+extern CPictureViewer * g_PicViewer;
+extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 
 const struct button_label RescanButton = {NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_UPNPBROWSER_RESCAN};
 const struct button_label StopButton   = {NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_STOP};
@@ -111,7 +116,7 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	// remember last mode
 	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode());
 
-	m_width=(g_settings.screen_EndX - g_settings.screen_StartX) - ConnectLineBox_Width;
+	m_width = (g_settings.screen_EndX - g_settings.screen_StartX) - ConnectLineBox_Width;
 	m_height = (g_settings.screen_EndY - g_settings.screen_StartY);
 
 	m_sheight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
@@ -128,7 +133,7 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	m_y = (((g_settings.screen_EndY- g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
 
 	// Stop sectionsd
-	g_Sectionsd->setPauseScanning(true);
+	//g_Sectionsd->setPauseScanning(true);
 
 	m_indexdevice = 0;
 	m_selecteddevice = 0;
@@ -301,28 +306,56 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 					splitProtocol(protocol, prot, network, mime, additional);
 					if (prot != "http-get")
 						continue;
-#if 0
+
+					//
+					if (mime.substr(0,6) == "image/" && pref < 1)
+					{
+						preferred = i;
+					}
+					//
+					
 					if (mime == "image/jpeg" && pref < 1)
 					{
-						preferred=i;
-						pref=1;
+						preferred = i;
+						pref = 1;
 					}
 					if (mime == "image/gif" && pref < 2)
 					{
-						preferred=i;
-						pref=2;
+						preferred = i;
+						pref = 2;
 					}
-#endif
+
 					if (mime == "audio/mpeg" && pref < 3)
 					{
 						preferred=i;
-						pref=3;
+						pref = 3;
 					}
+					
 					if (mime == "audio/x-vorbis+ogg" && pref < 4)
 					{
 						preferred=i;
-						pref=4;
+						pref = 4;
 					}
+					
+					//
+					if (mime.substr(0,6) == "video/" && pref < 5)
+					{
+						preferred=i;
+						pref = 5;
+					}
+					
+					if (mime == "video/x-flv" && pref < 6)
+					{
+						preferred=i;
+						pref = 6;
+					}
+					
+					if (mime == "video/mp4" && pref < 7)
+					{
+						preferred=i;
+						pref = 7;
+					}
+					//
 				}
 			}
 			p = node->GetAttributeValue((char *) "id");
@@ -384,7 +417,7 @@ void CUpnpBrowserGui::selectDevice()
 		if (changed)
 		{
 			paintDevice();
-			changed=false;
+			changed = false;
 		}
 
 		g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
@@ -442,7 +475,7 @@ void CUpnpBrowserGui::selectDevice()
 				delete scanBox;
 				return;
 			}
-			changed=true;
+			changed = true;
 		}
 		else if(msg == NeutrinoMessages::RECORD_START ||
 			msg == NeutrinoMessages::ZAPTO ||
@@ -450,7 +483,7 @@ void CUpnpBrowserGui::selectDevice()
 			msg == NeutrinoMessages::SHUTDOWN ||
 			msg == NeutrinoMessages::SLEEPTIMER)
 		{
-			loop=false;
+			loop = false;
 			g_RCInput->postMsg(msg, data);
 		}
 		else if(msg == NeutrinoMessages::EVT_TIMER)
@@ -517,10 +550,12 @@ void CUpnpBrowserGui::playnext(void)
 				}
 				nfound=true;
 			}
+			
 			if (i->first=="TotalMatches")
 			{
 				tfound=true;
 			}
+			
 			if (i->first=="Result")
 			{
 				entries=decodeResult(i->second);
@@ -536,6 +571,17 @@ void CUpnpBrowserGui::playnext(void)
 				std::string protocol, prot, network, mime, additional;
 				protocol=(*entries)[0].resources[preferred].protocol;
 				splitProtocol(protocol, prot, network, mime, additional);
+				
+				//
+				if (mime.substr(0,6) != "image/") 
+				{
+					m_frameBuffer->ClearFrameBuffer();
+#if !defined USE_OPENGL
+					m_frameBuffer->blit();
+#endif					
+				}
+				//
+				
 				if (mime == "audio/mpeg")
 				{
 					m_playing_entry = (*entries)[0];
@@ -552,8 +598,35 @@ void CUpnpBrowserGui::playnext(void)
 					CAudioPlayer::getInstance()->play(&mp3, g_settings.audioplayer_highprio == 1);
 					return;
 				}
+				else if (mime.substr(0,6) == "video/")
+				{
+					g_settings.streaming_server_url = std::string((*entries)[0].resources[preferred].url); //FIXME
+					if (CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
+						CAudioPlayer::getInstance()->stop();
+					moviePlayerGui->exec(NULL, "upnpplayback");
+					return;
+				}
+				else if (mime.substr(0,6) == "image/")
+				{
+					g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
+					g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
+
+					if (g_settings.video_Format==3)
+						g_PicViewer->SetAspectRatio(16.0/9);
+					else
+						g_PicViewer->SetAspectRatio(4.0/3);
+
+					g_PicViewer->ShowImage((*entries)[0].resources[preferred].url, false);
+#if !defined USE_OPENGL						
+					m_frameBuffer->blit();
+#endif					
+					g_PicViewer->Cleanup();
+					return;
+				}
 			}
-		} else {
+		} 
+		else 
+		{
 			neutrino_msg_t      msg;
 			neutrino_msg_data_t data;
 			g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
@@ -565,6 +638,13 @@ void CUpnpBrowserGui::playnext(void)
 			}
 		}
 	}
+	
+	//
+	m_frameBuffer->ClearFrameBuffer();
+#if !defined USE_OPENGL		
+	m_frameBuffer->blit();
+#endif	
+	//
 }
 
 bool CUpnpBrowserGui::selectItem(std::string id)
@@ -585,11 +665,13 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 
 	while (loop)
 	{
-		updateTimes();
+		updateTimes();		
+		
 		if (rchanged)
 		{
 			if (entries)
 				delete entries;
+			
 			entries=NULL;
 
 			std::list<UPnPAttribute>attribs;
@@ -686,7 +768,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		}
 		else if(msg == CRCInput::RC_left)
 		{
-			loop=false;
+			loop = false;
 		}
 
 		else if (msg_repeatok == CRCInput::RC_up && selected > 0)
@@ -740,9 +822,9 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		{
 			if ((*entries)[selected - index].isdir)
 			{
-				endall=selectItem((*entries)[selected - index].id);
+				endall = selectItem((*entries)[selected - index].id);
 				if (endall)
-					loop=false;
+					loop = false;
 			}
 			changed=true;
 		}
@@ -757,6 +839,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 					std::string protocol, prot, network, mime, additional;
 					protocol=(*entries)[selected - index].resources[preferred].protocol;
 					splitProtocol(protocol, prot, network, mime, additional);
+					
 					if (mime == "audio/mpeg")
 					{
 						CAudiofile mp3((*entries)[selected - index].resources[preferred].url, CFile::FILE_MP3);
@@ -767,44 +850,48 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						CAudiofile mp3((*entries)[selected - index].resources[preferred].url, CFile::FILE_OGG);
 						CAudioPlayer::getInstance()->play(&mp3, g_settings.audioplayer_highprio == 1);
 					}
-					m_playing_entry = (*entries)[selected - index];
-#if 0
-// #ifdef ENABLE_PICTUREVIEWER
 					else if ((mime == "image/gif") || (mime == "image/jpeg"))
 					{
-						CPictureViewer *viewer = new CPictureViewer();
-						bool loop=true;
-						viewer->SetScaling((CPictureViewer::ScalingMode)g_settings.picviewer_scaling);
-						viewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
+						bool loop = true;
+						g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
+						g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
 
-						if(g_settings.video_Format==1)
-							viewer->SetAspectRatio(16.0/9);
-						else if(g_settings.video_Format==0)
+						if(g_settings.video_Format == 1)
+							g_PicViewer->SetAspectRatio(16.0/9);
+						else if(g_settings.video_Format == 0)
 						{
-							CControldClient cdc;
-							cdc.setVideoFormat(CControldClient::VIDEOFORMAT_4_3);
-							viewer->SetAspectRatio(4.0/3);
+							g_PicViewer->SetAspectRatio(4.0/3);
 						}
 						else
-							viewer->SetAspectRatio(4.0/3);
+							g_PicViewer->SetAspectRatio(4.0/3);
 
-						m_frameBuffer->setMode(720, 576, 16);
-						m_frameBuffer->setTransparency(0);
-						viewer->ShowImage((*entries)[selected - index].resources[preferred].url, true);
+
+						g_PicViewer->ShowImage((*entries)[selected - index].resources[preferred].url, true);
 						while (loop)
 						{
 							g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
 
 							if( msg == CRCInput::RC_home)
-								loop=false;
+								loop = false;
 						}
-						m_frameBuffer->setMode(720, 576, 8 * sizeof(fb_pixel_t));
-						m_frameBuffer->setBlendLevel(g_settings.gtx_alpha1, g_settings.gtx_alpha2);
+					
 						m_frameBuffer->ClearFrameBuffer();
-						delete viewer;
+#if !defined USE_OPENGL							
+						m_frameBuffer->blit();
+#endif					
 					}
-// #endif
-#endif
+					else if (mime.substr(0,6) == "video/")
+					{
+						m_frameBuffer->ClearFrameBuffer();
+#if !defined USE_OPENGL							
+						m_frameBuffer->blit();
+#endif						
+						
+						g_settings.streaming_server_url = std::string((*entries)[selected - index].resources[preferred].url); //FIXME
+						moviePlayerGui->exec(NULL, "upnpplayback");
+					}
+					
+					m_playing_entry = (*entries)[selected - index];
 				}
 
 			} 
@@ -847,10 +934,16 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		}
 
 		if (m_folderplay && (CAudioPlayer::getInstance()->getState() == CBaseDec::STOP))
-			playnext();		
+			playnext();
+		
+#if !defined USE_OPENGL							
+		m_frameBuffer->blit();
+#endif		
 	}
+	
 	if (entries)
 		delete entries;
+	
 	return endall;
 }
 
@@ -922,6 +1015,7 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 	}
 	else
 	{
+		//FIXME: revise this
 		if (preferred != -1)
 		{
 			info = (*entry)[pos].resources[preferred].duration;
@@ -939,8 +1033,7 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 	int w = g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->getRenderWidth(tmp_time);
 
 	m_frameBuffer->paintIcon(fileicon, m_x + 5 , ypos + (m_fheight - 16) / 2);
-	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight,
-		w, info, color, m_fheight);
+	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, info, color, m_fheight);
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 30, ypos + m_fheight, m_width - 50 - w, name, color, m_fheight, true); // UTF-8
 }
 
@@ -973,23 +1066,20 @@ void CUpnpBrowserGui::paintDevice()
 	xstart = (m_width - w) / 2;
 	if(xstart < 10)
 		xstart = 10;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 2*m_mheight, m_width - 20,
-		tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 2*m_mheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 	// third line
 	tmp = m_devices[m_selecteddevice].modelurl;
 	w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 	xstart = (m_width - w) / 2;
 	if(xstart < 10)
 		xstart = 10;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 3*m_mheight, m_width - 20,
-		tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 3*m_mheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 	// Head
 	tmp = g_Locale->getText(LOCALE_UPNPBROWSER_HEAD);
 	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_UPNP, m_x + 7, m_y + m_title_height + 6);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(m_x + 35, m_y + m_theight + m_title_height + 0,
-		m_width - 45, tmp, COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(m_x + 35, m_y + m_theight + m_title_height + 0, m_width - 45, tmp, COL_MENUHEAD, 0, true); // UTF-8
 	ypos = m_y + m_title_height;
 	if(m_theight > 26)
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
@@ -1024,10 +1114,13 @@ void CUpnpBrowserGui::paintDevice()
 	int ButtonWidth = (m_width - 20) / 4;
 	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_0);
-	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-		m_x + 10, top + 4, ButtonWidth, 1, &RescanButton);
+	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 1, &RescanButton);
 
 	//clearItem2DetailsLine(); // clear it
+	
+#if !defined USE_OPENGL
+	m_frameBuffer->blit();
+#endif
 }
 
 void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int selected, unsigned int max, unsigned int offset)
@@ -1155,6 +1248,10 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 3 * ButtonWidth + 10, top + 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 3 * ButtonWidth + 40, top + 19 + 4, ButtonWidth - 40, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR, 0, true); // UTF-8
+	
+#if !defined USE_OPENGL
+	m_frameBuffer->blit();
+#endif	
 }
 
 void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int index, bool use_playing)
@@ -1164,7 +1261,8 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 
 	if ((!use_playing) && ((*entry)[index].isdir))
 	{
-		m_frameBuffer->paintBackgroundBoxRel(m_x, top + 2, m_width, 2 * m_buttonHeight);
+		//m_frameBuffer->paintBackgroundBoxRel(m_x, top + 2, m_width, 2 * m_buttonHeight);
+		m_frameBuffer->paintBackgroundBoxRel(m_x, top, m_width, 2 * m_buttonHeight);
 	}
 	else
 	{
@@ -1175,75 +1273,22 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 		{
 			if (!m_playing_entry_is_shown) 
 			{
-				m_frameBuffer->paintBoxRel(m_x, top + 2, m_width-2, 2 * m_buttonHeight, COL_MENUCONTENTDARK_PLUS_0);
+				m_frameBuffer->paintBoxRel(m_x + 2, top + 2, m_width - 4, 2 * m_buttonHeight + 4, COL_MENUCONTENTDARK_PLUS_0);
 				m_playing_entry_is_shown = true;
-				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4,
-					top + 1 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.title + " - " + 
-									 m_playing_entry.artist, COL_INFOBAR, 0, true); // UTF-8
-				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4,
-					top + 2 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.album, COL_INFOBAR, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 1 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.title + " - " + m_playing_entry.artist, COL_INFOBAR, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 2 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.album, COL_INFOBAR, 0, true); // UTF-8
 			}
 		} 
 		else 
 		{
-			if (entry == NULL) return;
+			if (entry == NULL) 
+				return;
+			
 			m_frameBuffer->paintBoxRel(m_x, top + 2, m_width-2, 2 * m_buttonHeight, COL_MENUCONTENTDARK_PLUS_0);
 			m_playing_entry_is_shown = false;
 			g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 1 * m_buttonHeight + 4, m_x + m_width - 8, (*entry)[index].title + " - " + (*entry)[index].artist, COL_INFOBAR, 0, true); // UTF-8
 			g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 2 * m_buttonHeight + 4, m_x + m_width - 8, (*entry)[index].album, COL_INFOBAR, 0, true); // UTF-8
 		}
-////		printf("title = %s\n", (*entry)[selected].title.c_str());
-//		printf("artist = %s\n", (*entry)[selected].artist.c_str());
-//		printf("album = %s\n", (*entry)[selected].album.c_str());
-//		printf("children = %s\n", (*entry)[selected].children.c_str());
-//		printf("id = %s\n", (*entry)[selected].id.c_str());
-#if 0
-		struct		tm *pStartZeit = localtime(&chanlist[index]->currentEvent.startTime);
-		unsigned 	seit = ( time(NULL) - chanlist[index]->currentEvent.startTime ) / 60;
-		sprintf( cSeit, g_Locale->getText(LOCALE_CHANNELLIST_SINCE), pStartZeit->tm_hour, pStartZeit->tm_min); //, seit );
-		int seit_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(cSeit, true); // UTF-8
-
-		int noch = ( chanlist[index]->currentEvent.startTime + chanlist[index]->currentEvent.duration - time(NULL)   ) / 60;
-		if ( (noch< 0) || (noch>=10000) )
-			noch= 0;
-		sprintf( cNoch, "(%d / %d min)", seit, noch );
-		int noch_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(cNoch, true); // UTF-8
-
-		std::string text1= chanlist[index]->currentEvent.description;
-		std::string text2= chanlist[index]->currentEvent.text;
-
-		int xstart = 10;
-		if (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1) > (width - 30 - seit_len) )
-		{
-			// zu breit, Umbruch versuchen...
-		    int pos;
-		    do
-		    {
-				pos = text1.find_last_of("[ -.]+");
-				if ( pos!=-1 )
-					text1 = text1.substr( 0, pos );
-			} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1) > (width - 30 - seit_len) ) );
-
-			std::string text3= chanlist[index]->currentEvent.description.substr(text1.length()+ 1);
-			if (!(text2.empty()))
-				text3 += " . ";
-
-			xstart += g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text3);
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 10, y+ height+ 5+ 2* fheight, width - 30- noch_len, text3, COL_MENUCONTENTDARK);
-		}
-
-		if (!(text2.empty()))
-		{
-			while ( text2.find_first_of("[ -.+*#?=!$%&/]+") == 0 )
-				text2 = text2.substr( 1 );
-			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x+ xstart, y+ height+ 5+ 2* fheight, width- xstart- 20- noch_len, text2, COL_MENUCONTENTDARK);
-		}
-
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 10, y+ height+ 5+ fheight, width - 30 - seit_len, text1, COL_MENUCONTENTDARK);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x+ width- 10- seit_len, y+ height+ 5+    fheight   , seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x+ width- 10- noch_len, y+ height+ 5+ 2* fheight- 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
-#endif
 
 	}
 }
@@ -1270,11 +1315,11 @@ void CUpnpBrowserGui::paintItem2DetailsLine (int pos, unsigned int /*ch_index*/)
 	fb_pixel_t col2 = COL_MENUCONTENT_PLUS_1;
 
 	// Clear
-	m_frameBuffer->paintBackgroundBoxRel(xpos, m_y + m_title_height, ConnectLineBox_Width, m_height+m_info_height-(m_y + m_title_height));
+	m_frameBuffer->paintBackgroundBoxRel(xpos, m_y + m_title_height, ConnectLineBox_Width, m_height + m_info_height - (m_y + m_title_height));
 	
 	if (pos < 0) 
 	{
-		m_frameBuffer->paintBackgroundBoxRel(m_x - 10, m_y + (m_height - m_info_height - 1 * m_buttonHeight) -8, m_width + 10, m_info_height + 10);
+		m_frameBuffer->paintBackgroundBoxRel(m_x, m_y + (m_height - m_info_height - 1 * m_buttonHeight) + 2, m_width, m_info_height);
 	}
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0)
@@ -1308,6 +1353,7 @@ void CUpnpBrowserGui::paintItem2DetailsLine (int pos, unsigned int /*ch_index*/)
 void CUpnpBrowserGui::updateTimes(const bool force)
 {
 	int top;
+	
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 	{
 		bool updatePlayed = force;
@@ -1328,6 +1374,10 @@ void CUpnpBrowserGui::updateTimes(const bool force)
 			top = m_y + (m_height - m_info_height - 1 * m_buttonHeight) + m_buttonHeight + 4;
 			m_frameBuffer->paintBoxRel(m_x + m_width - w - 15, top + 1, w + 4, m_buttonHeight, COL_MENUCONTENTDARK_PLUS_0);
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + m_width - w - 11, top + 1 + m_buttonHeight, w, play_time, COL_MENUHEAD);
+			
+#if !defined USE_OPENGL							
+			m_frameBuffer->blit();
+#endif			
 		}
 	}
 }
