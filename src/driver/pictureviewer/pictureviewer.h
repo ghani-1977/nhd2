@@ -69,8 +69,8 @@ class CPictureViewer
 	public:
 		CPictureViewer();
 		~CPictureViewer(){Cleanup();};
-		bool ShowImage(const std::string & filename, bool unscaled=false);
-		bool DecodeImage(const std::string & name, bool showBusySign=false, bool unscaled=false);
+		bool ShowImage(const std::string & filename, bool unscaled = false);
+		bool DecodeImage(const std::string & name, bool showBusySign = false, bool unscaled = false);
 		bool DisplayNextImage();
 		void SetScaling( CFrameBuffer::ScalingMode s){m_scaling = s;}
 		void SetAspectRatio(float aspect_ratio) {m_aspect = aspect_ratio;}

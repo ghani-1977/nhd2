@@ -408,7 +408,7 @@ void CUpnpBrowserGui::selectDevice()
 	}
 		
 #if !defined USE_OPENGL
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif	
 
 	// control loop
@@ -418,6 +418,10 @@ void CUpnpBrowserGui::selectDevice()
 		{
 			paintDevice();
 			changed = false;
+			
+#if !defined USE_OPENGL
+			m_frameBuffer->blit();
+#endif			
 		}
 
 		g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
@@ -437,21 +441,21 @@ void CUpnpBrowserGui::selectDevice()
 		{
 			m_selecteddevice--;
 			if (m_selecteddevice < m_indexdevice)
-				m_indexdevice-=m_listmaxshow;
+				m_indexdevice -= m_listmaxshow;
 			changed = true;
 		}
 		else if (msg_repeatok == CRCInput::RC_down && m_selecteddevice + 1 < m_devices.size())
 		{
 			m_selecteddevice++;
 			if (m_selecteddevice + 1 > m_indexdevice + m_listmaxshow)
-				m_indexdevice+=m_listmaxshow;
-			changed=true;
+				m_indexdevice += m_listmaxshow;
+			changed = true;
 		}
 		else if( msg == CRCInput::RC_right || msg == CRCInput::RC_ok)
 		{
 			m_folderplay = false;
 			selectItem("0");
-			changed=true;
+			changed = true;
 		}
 		else if( msg == CRCInput::RC_blue)
 		{
@@ -573,7 +577,7 @@ void CUpnpBrowserGui::playnext(void)
 				splitProtocol(protocol, prot, network, mime, additional);
 				
 				//
-				if (mime.substr(0,6) != "image/") 
+				if (mime.substr(0, 6) != "image/") 
 				{
 					m_frameBuffer->ClearFrameBuffer();
 #if !defined USE_OPENGL
@@ -611,16 +615,13 @@ void CUpnpBrowserGui::playnext(void)
 					g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
 					g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
 
-					if (g_settings.video_Format==3)
+					if (g_settings.video_Format == 1)
 						g_PicViewer->SetAspectRatio(16.0/9);
 					else
 						g_PicViewer->SetAspectRatio(4.0/3);
 
 					g_PicViewer->ShowImage((*entries)[0].resources[preferred].url, false);
-#if !defined USE_OPENGL						
-					m_frameBuffer->blit();
-#endif					
-					g_PicViewer->Cleanup();
+					
 					return;
 				}
 			}
@@ -694,19 +695,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			attribs.push_back(UPnPAttribute("StartingIndex", sindex.str()));
 			attribs.push_back(UPnPAttribute("RequestedCount", scount.str()));
 			attribs.push_back(UPnPAttribute("SortCriteria", ""));
-#if 0
-			try
-			{
-				results = m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
-			}
-			catch (std::runtime_error error)
-			{
-				//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
-				if (entries)
-					delete entries;
-				return endall;
-			}
-#endif
+
 			results=m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
 			for (i=results.begin(); i!=results.end(); i++)
 			{
@@ -782,7 +771,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			changed=true;
 		}
 
-		else if(msg == CRCInput::RC_green && selected > 0)
+		else if( (msg == CRCInput::RC_green || (int) msg == g_settings.key_channelList_pageup) && selected > 0)
 		{
 			if (index > 0)
 			{
@@ -804,7 +793,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			}
 			changed=true;
 		}
-		else if(msg == CRCInput::RC_red && selected + 1 < dirnum)
+		else if( (msg == CRCInput::RC_red || (int) msg == g_settings.key_channelList_pagedown)&& selected + 1 < dirnum)
 		{
 			if (index < ((dirnum - 1) / m_listmaxshow) * m_listmaxshow)
 			{
@@ -856,17 +845,14 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
 						g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
 
-						if(g_settings.video_Format == 1)
+						if(g_settings.video_Ratio == 1)
 							g_PicViewer->SetAspectRatio(16.0/9);
-						else if(g_settings.video_Format == 0)
-						{
-							g_PicViewer->SetAspectRatio(4.0/3);
-						}
 						else
 							g_PicViewer->SetAspectRatio(4.0/3);
 
 
 						g_PicViewer->ShowImage((*entries)[selected - index].resources[preferred].url, true);
+						
 						while (loop)
 						{
 							g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
@@ -878,8 +864,11 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						m_frameBuffer->ClearFrameBuffer();
 #if !defined USE_OPENGL							
 						m_frameBuffer->blit();
-#endif					
+#endif	
+
+						changed = true;
 					}
+
 					else if (mime.substr(0,6) == "video/")
 					{
 						m_frameBuffer->ClearFrameBuffer();
@@ -889,6 +878,8 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						
 						g_settings.streaming_server_url = std::string((*entries)[selected - index].resources[preferred].url); //FIXME
 						moviePlayerGui->exec(NULL, "upnpplayback");
+						
+						changed = true;
 					}
 					
 					m_playing_entry = (*entries)[selected - index];
@@ -902,7 +893,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 				m_playid = 0;
 				playnext();
 			}
-			changed=true;
+			changed = true;
 		}
 		else if( msg == CRCInput::RC_yellow)
 		{
@@ -925,7 +916,6 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		{
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 		}
-
 		else
 		{
 			if( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all )
@@ -977,6 +967,10 @@ void CUpnpBrowserGui::paintDevicePos(unsigned int pos)
 	int w = g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->getRenderWidth(name) + 5;
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 10, ypos + m_fheight, m_width - 30 - w, num, color, m_fheight, true); // UTF-8
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, name, color, m_fheight, true); // UTF-8
+	
+#if !defined USE_OPENGL							
+	m_frameBuffer->blit();
+#endif	
 }
 
 void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int pos, unsigned int selected)
@@ -1035,6 +1029,10 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 	m_frameBuffer->paintIcon(fileicon, m_x + 5 , ypos + (m_fheight - 16) / 2);
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, info, color, m_fheight);
 	g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 30, ypos + m_fheight, m_width - 50 - w, name, color, m_fheight, true); // UTF-8
+	
+#if !defined USE_OPENGL							
+	m_frameBuffer->blit();
+#endif	
 }
 
 void CUpnpBrowserGui::paintDevice()
@@ -1083,7 +1081,8 @@ void CUpnpBrowserGui::paintDevice()
 	ypos = m_y + m_title_height;
 	if(m_theight > 26)
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
-	m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
+	
+	//m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
 #if 0
 	if( CNeutrinoApp::getInstance()->isMuted() )
 	{
@@ -1119,7 +1118,7 @@ void CUpnpBrowserGui::paintDevice()
 	//clearItem2DetailsLine(); // clear it
 	
 #if !defined USE_OPENGL
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 }
 
@@ -1152,8 +1151,7 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	xstart = (m_width - w) / 2;
 	if(xstart < 10)
 		xstart = 10;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_mheight, m_width - 20,
-		tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_mheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 	// second line
 	if ((*entry)[selected].isdir)
@@ -1175,8 +1173,7 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	xstart = (m_width - w) / 2;
 	if(xstart < 10)
 		xstart = 10;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 2*m_mheight, m_width - 20,
-		tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 2*m_mheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 	//third line
 	tmp = "";
@@ -1194,19 +1191,18 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	xstart = (m_width - w) / 2;
 	if(xstart < 10)
 		xstart = 10;
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 3*m_mheight, m_width - 20,
-		tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 3*m_mheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 
 	// Head
 	tmp = g_Locale->getText(LOCALE_UPNPBROWSER_HEAD);
-	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0);
+	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_UPNP, m_x + 7, m_y + m_title_height + 6);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(m_x + 35, m_y + m_theight + m_title_height + 0, m_width - 45, tmp, COL_MENUHEAD, 0, true); // UTF-8
 	ypos = m_y + m_title_height;
 	if(m_theight > 26)
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
-	m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
+	//m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
 #if 0
 	if( CNeutrinoApp::getInstance()->isMuted() )
 	{
@@ -1237,14 +1233,11 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	// Foot buttons
 	top = m_y + (m_height - m_info_height - 2 * m_buttonHeight);
 	int ButtonWidth = (m_width - 20) / 4;
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight+2, COL_MENUHEAD_PLUS_0);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight+2, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_0);
-	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-		m_x + 10, top + 4, ButtonWidth, 1, &StopButton);
-	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-		m_x + ButtonWidth + 10, top + 4, ButtonWidth, 1, &PUpButton);
-	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale,
-		m_x + 2 * ButtonWidth + 10, top + 4, ButtonWidth, 1, &PDownButton);
+	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 1, &StopButton);
+	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + ButtonWidth + 10, top + 4, ButtonWidth, 1, &PUpButton);
+	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 2 * ButtonWidth + 10, top + 4, ButtonWidth, 1, &PDownButton);
 
 	m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_x + 3 * ButtonWidth + 10, top + 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + 3 * ButtonWidth + 40, top + 19 + 4, ButtonWidth - 40, g_Locale->getText(LOCALE_AUDIOPLAYER_PLAY), COL_INFOBAR, 0, true); // UTF-8
@@ -1262,18 +1255,15 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 	if ((!use_playing) && ((*entry)[index].isdir))
 	{
 		//m_frameBuffer->paintBackgroundBoxRel(m_x, top + 2, m_width, 2 * m_buttonHeight);
-		m_frameBuffer->paintBackgroundBoxRel(m_x, top, m_width, 2 * m_buttonHeight);
+		m_frameBuffer->paintBackgroundBoxRel(m_x + 2, top + 2, m_width - 4, 2 * m_buttonHeight + 6);
 	}
 	else
 	{
-//		char cNoch[50]; // UTF-8
-//		char cSeit[50]; // UTF-8
-
 		if (use_playing) 
 		{
 			if (!m_playing_entry_is_shown) 
 			{
-				m_frameBuffer->paintBoxRel(m_x + 2, top + 2, m_width - 4, 2 * m_buttonHeight + 4, COL_MENUCONTENTDARK_PLUS_0);
+				m_frameBuffer->paintBoxRel(m_x + 2, top + 2, m_width - 4, 2 * m_buttonHeight + 6, COL_MENUCONTENTDARK_PLUS_0);
 				m_playing_entry_is_shown = true;
 				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 1 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.title + " - " + m_playing_entry.artist, COL_INFOBAR, 0, true); // UTF-8
 				g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 2 * m_buttonHeight + 4, m_x + m_width - 8, m_playing_entry.album, COL_INFOBAR, 0, true); // UTF-8
@@ -1284,13 +1274,17 @@ void CUpnpBrowserGui::paintDetails(std::vector<UPnPEntry> *entry, unsigned int i
 			if (entry == NULL) 
 				return;
 			
-			m_frameBuffer->paintBoxRel(m_x, top + 2, m_width-2, 2 * m_buttonHeight, COL_MENUCONTENTDARK_PLUS_0);
+			m_frameBuffer->paintBoxRel(m_x + 2, top + 2, m_width - 4, 2 * m_buttonHeight + 6, COL_MENUCONTENTDARK_PLUS_0);
 			m_playing_entry_is_shown = false;
 			g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 1 * m_buttonHeight + 4, m_x + m_width - 8, (*entry)[index].title + " - " + (*entry)[index].artist, COL_INFOBAR, 0, true); // UTF-8
 			g_Font[SNeutrinoSettings::FONT_TYPE_FILEBROWSER_ITEM]->RenderString(m_x + 4, top + 2 * m_buttonHeight + 4, m_x + m_width - 8, (*entry)[index].album, COL_INFOBAR, 0, true); // UTF-8
 		}
 
 	}
+	
+#if !defined USE_OPENGL							
+	m_frameBuffer->blit();
+#endif	
 }
 
 //
@@ -1363,6 +1357,7 @@ void CUpnpBrowserGui::updateTimes(const bool force)
 			m_time_played = CAudioPlayer::getInstance()->getTimePlayed();
 			updatePlayed = true;
 		}
+		
 		char play_time[8];
 		snprintf(play_time, 7, "%ld:%02ld", m_time_played / 60, m_time_played % 60);
 		char tmp_time[] = "000:00";
@@ -1373,12 +1368,12 @@ void CUpnpBrowserGui::updateTimes(const bool force)
 			paintDetails(NULL, 0, true);
 			top = m_y + (m_height - m_info_height - 1 * m_buttonHeight) + m_buttonHeight + 4;
 			m_frameBuffer->paintBoxRel(m_x + m_width - w - 15, top + 1, w + 4, m_buttonHeight, COL_MENUCONTENTDARK_PLUS_0);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + m_width - w - 11, top + 1 + m_buttonHeight, w, play_time, COL_MENUHEAD);
-			
-#if !defined USE_OPENGL							
-			m_frameBuffer->blit();
-#endif			
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + m_width - w - 11, top + 1 + m_buttonHeight, w, play_time, COL_MENUHEAD);			
 		}
 	}
+	
+#if !defined USE_OPENGL							
+	m_frameBuffer->blit();
+#endif	
 }
 

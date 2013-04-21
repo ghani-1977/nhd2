@@ -225,8 +225,6 @@ class CFileBrowser
 		{
 			return Path;
 		}
-
-		//size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data);
 	private:
 		tFileBrowserMode 	m_Mode;
 };

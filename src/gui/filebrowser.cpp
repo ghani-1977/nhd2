@@ -85,7 +85,9 @@ typedef struct stat stat_struct;
 #error not using 64 bit file offsets
 #endif
 
+
 #define SMSKEY_TIMEOUT 2000
+
 size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data)
 {
 	std::string* pStr = (std::string*) data;
@@ -117,6 +119,7 @@ unsigned char SMSKeyInput::handleMsg(const neutrino_msg_t msg)
 	{
 			key = '1';
 	}
+	
 	if(msg == CRCInput::RC_2)
 	{
 		if(m_oldKey == 'a' && timeoutNotReached)
@@ -213,8 +216,10 @@ unsigned char SMSKeyInput::handleMsg(const neutrino_msg_t msg)
 	{
 		key = '0';
 	}
-	m_oldKeyTime=keyTime;
-	m_oldKey=key;
+	
+	m_oldKeyTime = keyTime;
+	m_oldKey = key;
+	
 	return key;
 }
 
@@ -266,14 +271,6 @@ bool sortByName (const CFile& a, const CFile& b)
 		return false;
 
 	return a.Mode < b.Mode;
-/*
-	int result = __gnu_cxx::lexicographical_compare_3way(a.Name.begin(), a.Name.end(), b.Name.begin(), b.Name.end(), comparetolower);
-
-	if (result == 0)
-		return a.Mode < b.Mode;
-	else
-		return result < 0;
-*/
 }
 
 bool sortByNameDirsFirst(const CFile& a, const CFile& b)
@@ -369,6 +366,7 @@ void CFileBrowser::commonInit()
 	Dirs_Selectable = false;
 	Dir_Mode = false;
 	Hide_records = false;
+	
 	selected = 0;
 	selections.clear();
 
