@@ -3873,6 +3873,7 @@ int CDirMenu::exec(CMenuTarget* parent, const std::string & actionKey)
 	{
 		printf("[CDirMenu].exec %s\n",actionKey.c_str());
 		int number = atoi(actionKey.c_str());
+		
 		if(number < MAX_DIR)
 		{
 			if(dirState[number] == DIR_STATE_SERVER_DOWN)
