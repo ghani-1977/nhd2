@@ -388,8 +388,7 @@ CMovieBrowser::~CMovieBrowser()
 	
 	//saveSettings(&m_settings);
 	
-	//hide();
-	//printf("hided\n");
+	hide();
 	
 	m_dir.clear();
 
@@ -505,7 +504,7 @@ void CMovieBrowser::init(void)
 	if(m_settings.browserFrameHeight > MAX_BROWSER_FRAME_HEIGHT)
         	m_settings.browserFrameHeight = MAX_BROWSER_FRAME_HEIGHT;
 	
-	/***** Browser List **************/
+	// Browser List 
 	if(m_settings.browserRowNr == 0)
 	{
 		dprintf(DEBUG_NORMAL, " row error\r\n");
@@ -533,34 +532,6 @@ void CMovieBrowser::init(void)
 	refreshLastRecordList();	
 	refreshBrowserList();	
 	refreshFilterList();	
-#if 0
-	TRACE_1("Frames\r\n\tScren:\t%3d,%3d,%3d,%3d\r\n\tMain:\t%3d,%3d,%3d,%3d\r\n\tTitle:\t%3d,%3d,%3d,%3d \r\n\tBrowsr:\t%3d,%3d,%3d,%3d \r\n\tPlay:\t%3d,%3d,%3d,%3d \r\n\tRecord:\t%3d,%3d,%3d,%3d\r\n\r\n",
-	g_settings.screen_StartX,
-	g_settings.screen_StartY,
-	g_settings.screen_EndX,
-	g_settings.screen_EndY,
-	m_cBoxFrame.iX,
-	m_cBoxFrame.iY,
-	m_cBoxFrame.iWidth,
-	m_cBoxFrame.iHeight,
-	m_cBoxFrameTitleRel.iX,
-	m_cBoxFrameTitleRel.iY,
-	m_cBoxFrameTitleRel.iWidth,
-	m_cBoxFrameTitleRel.iHeight,
-	m_cBoxFrameBrowserList.iX,
-	m_cBoxFrameBrowserList.iY,
-	m_cBoxFrameBrowserList.iWidth,
-	m_cBoxFrameBrowserList.iHeight,
-	m_cBoxFrameLastPlayList.iX,
-	m_cBoxFrameLastPlayList.iY,
-	m_cBoxFrameLastPlayList.iWidth,
-	m_cBoxFrameLastPlayList.iHeight,
-	m_cBoxFrameLastRecordList.iX,
-	m_cBoxFrameLastRecordList.iY,
-	m_cBoxFrameLastRecordList.iWidth,
-	m_cBoxFrameLastRecordList.iHeight
-	);
-#endif
 }
 
 void CMovieBrowser::initGlobalSettings(void)
@@ -585,7 +556,7 @@ void CMovieBrowser::initGlobalSettings(void)
 		m_settings.storageDirUsed[i] = 0;
 	}
 
-	/***** Browser List **************/
+	// Browser List
 	m_settings.browserFrameHeight = g_settings.screen_EndY - g_settings.screen_StartY - 20 - ((g_settings.screen_EndY - g_settings.screen_StartY - 20)>>1) - (INTER_FRAME_SPACE>>1);
 	
 	m_settings.browserRowNr = 6;
@@ -662,7 +633,7 @@ void CMovieBrowser::initRows(void)
 {
 	dprintf(DEBUG_NORMAL, "[mb]->initRows\r\n");
 
-	/***** Last Play List **************/
+	// Last Play List
 	m_settings.lastPlayRowNr = 2;
 	m_settings.lastPlayRow[0] = MB_INFO_TITLE;
 	m_settings.lastPlayRow[1] = MB_INFO_PREVPLAYDATE;
@@ -677,7 +648,7 @@ void CMovieBrowser::initRows(void)
 	m_settings.lastPlayRowWidth[4] = m_defaultRowWidth[m_settings.lastPlayRow[4]];
 	m_settings.lastPlayRowWidth[5] = m_defaultRowWidth[m_settings.lastPlayRow[5]];
 	
-	/***** Last Record List **************/
+	// Last Record List
 	m_settings.lastRecordRowNr = 2;
 	m_settings.lastRecordRow[0] = MB_INFO_TITLE;
 	m_settings.lastRecordRow[1] = MB_INFO_RECORDDATE;
@@ -696,6 +667,7 @@ void CMovieBrowser::initRows(void)
 void CMovieBrowser::initDevelopment(void)
 {
 	dprintf(DEBUG_NORMAL, "[mb]->initDevelopment\r\n");
+	
 	std::string name;
 	name = "/mnt/movie/";
 	//addDir(name);
@@ -820,6 +792,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS* settings)
 	}
 
 	configfile.saveConfig(MOVIEBROWSER_SETTINGS_FILE);
+	
 	return (result);
 }
 
@@ -843,9 +816,6 @@ int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "show_movie_info_menu")
 	{
-		//if(parent) 
-		//	parent->hide ();
-		
 		if(m_movieSelectionHandler != NULL)
 			showMovieInfoMenu(m_movieSelectionHandler);
 	}
@@ -3763,7 +3733,7 @@ CMenuSelector::CMenuSelector(const char * OptionName, const bool Active , std::s
 	returnInt =         ReturnInt;
 };
 
-int CMenuSelector::exec(CMenuTarget* parent)
+int CMenuSelector::exec(CMenuTarget * parent)
 { 
 	if(returnInt != NULL)
 		*returnInt= returnIntValue;
@@ -3842,15 +3812,15 @@ int CFileChooser::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 
 	CFileBrowser browser;
-	browser.Dir_Mode=true;
+	browser.Dir_Mode = true;
 	
 	if (browser.exec(dirPath->c_str()))
 	{
 		*dirPath = browser.getSelectedFile()->Name;
-		short a = dirPath->compare(0,5,"/mnt/");
-		short b = dirPath->compare(0,7,"/media/");
+		short a = dirPath->compare(0, 5, "/mnt/");
+		short b = dirPath->compare(0, 7, "/media/");
 		if(a != 0 && b != 0)
-		    *dirPath ="";   // We clear the  string if the selected folder is not at leaset /mnt/ or /hdd (There is no other possibility to clear this) 
+		    *dirPath = "";   // We clear the  string if the selected folder is not at leaset /mnt/ or /hdd (There is no other possibility to clear this) 
 	}
 	  
 	return menu_return::RETURN_REPAINT;

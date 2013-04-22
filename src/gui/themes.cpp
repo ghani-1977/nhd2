@@ -158,7 +158,7 @@ int CThemes::Show()
 	//themes.addIntroItems(LOCALE_COLORTHEMEMENU_HEAD2);
 	
 	//set default theme
-	themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME, true, NULL, this, "theme_neutrino", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
+	themes.addItem(new CMenuForwarder(LOCALE_COLORTHEMEMENU_NEUTRINO_THEME, true, NULL, this, "theme_neutrino" ));
 	
 	readThemes(themes);
 
