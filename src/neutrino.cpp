@@ -2014,6 +2014,10 @@ void CNeutrinoApp::InitZapper()
 		
 		StartSubtitles();
 	}
+	
+#if defined (PLATFORM_GENERIC) && (ENABLE_GSTREAMER)
+	startAutoRecord(true);
+#endif
 }
 
 #if defined (PLATFORM_COOLSTREAM)
@@ -3800,8 +3804,18 @@ skip_message:
 // exit run
 void CNeutrinoApp::ExitRun(int retcode)
 {
+#if !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)  
 	if (!recordingstatus || ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)
+#endif	  
 	{
+#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+		if(autoshift) 
+		{
+			stopAutoRecord();
+			recordingstatus = 0;
+			timeshiftstatus = 0;
+		}
+#endif
 		// stop recording
 		if(recordingstatus) 
 		{
