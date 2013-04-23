@@ -574,6 +574,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	// permanent timeshift
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
+#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+	g_settings.auto_timeshift = 1;
+#endif	
 
 	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
@@ -3054,7 +3057,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		{
 			g_RCInput->killTimer(shift_timer);
 			shift_timer = 0;
-		}
+		}	
 
 		// auto timeshift
 		if (!recordingstatus && g_settings.auto_timeshift) 		  

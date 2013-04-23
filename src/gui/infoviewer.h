@@ -175,5 +175,4 @@ class CInfoViewerHandler : public CMenuTarget
 
 };
 
-
 #endif

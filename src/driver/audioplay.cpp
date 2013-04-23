@@ -67,7 +67,7 @@ void CAudioPlayer::pause()
 	}
 	else if(state==CBaseDec::PAUSE)
 	{
-		state=CBaseDec::PLAY;
+		state = CBaseDec::PLAY;
 #if ENABLE_GSTREAMER
 		playback->SetSpeed(1);
 #endif		
@@ -80,14 +80,14 @@ void CAudioPlayer::ff(unsigned int seconds)
 
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::REV)
 	{
-		state=CBaseDec::FF;
+		state = CBaseDec::FF;
 #if ENABLE_GSTREAMER
 		playback->SetSpeed(2);
 #endif
 	}
 	else if(state == CBaseDec::FF)
 	{
-		state=CBaseDec::PLAY;
+		state = CBaseDec::PLAY;
 		
 #if ENABLE_GSTREAMER	
 		playback->SetSpeed(1);

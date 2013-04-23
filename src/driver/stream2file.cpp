@@ -77,6 +77,11 @@ extern bool autoshift;
 extern int timeshift;
 extern char timeshiftDir[255];
 
+#if ENABLE_GSTREAMER
+#include <playback_cs.h>
+extern cPlayback * playback;
+#endif
+
 #define MAXPIDS		64
 #define FILENAMEBUFFERSIZE 1024
 
@@ -153,6 +158,17 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 		record = NULL;
 		return STREAM2FILE_INVALID_DIRECTORY;
 	}
+	
+#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+	usleep(10*1000*1000);
+	
+	// start playback
+	playback->Close();
+		
+	playback->Open();
+				
+	playback->Start(buf);
+#endif
 
 	return STREAM2FILE_OK;
 }
@@ -165,6 +181,11 @@ stream2file_error_msg_t stop_recording(const char * const info)
 	stream2file_error_msg_t ret;
 
 	dprintf(DEBUG_NORMAL, "[Stream2File] stop Record\n");
+	
+#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+	// stop playback
+	playback->Close();
+#endif	
 
 	sprintf(buf, "%s.xml", rec_filename);
 	

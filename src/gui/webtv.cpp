@@ -1,4 +1,4 @@
-f/*
+/*
 	WebTV
 
 	License: GPL
@@ -501,8 +501,8 @@ void CWebTV::paintDetails(int index)
 	// infobox refresh
 	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
 	
-	//if(channels.empty()
-	//	return;
+	if(channels.empty() )
+		return;
 	
 	// name/description
 	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30, channels[index]->title, COL_MENUCONTENTDARK, 0, true);

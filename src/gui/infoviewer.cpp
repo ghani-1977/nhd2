@@ -171,10 +171,6 @@ void CInfoViewer::Init()
 	CA_Status = false;
 	virtual_zap_mode = false;
 	chanready = 1;
-	
-	//sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	//snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
-	//timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
 }
 
 void CInfoViewer::start()
