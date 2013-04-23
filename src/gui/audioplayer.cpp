@@ -80,11 +80,6 @@
 
 #include <system/debug.h>
 
-#if ENABLE_GSTREAMER
-#include <playback_cs.h>
-extern cPlayback * playback;
-#endif
-
 
 extern CPictureViewer * g_PicViewer;
 extern int current_muted;
@@ -285,11 +280,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_frameBuffer->saveBackgroundImage();
 	
 	// stop/lock live playback	
-	g_Zapit->lockPlayBack();
-#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	// stop playback
-	playback->Stop();	
-#endif	
+	g_Zapit->lockPlayBack();	
 	
 	//show audio background pic
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
@@ -326,17 +317,13 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	m_frameBuffer->blit();
 #endif	
 
-	//AP end-script
+	// end-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_END_SCRIPT "."); 
 	if (system(AUDIOPLAYER_END_SCRIPT) != 0) 
 		perror("Datei " AUDIOPLAYER_END_SCRIPT " fehlt. Bitte erstellen, wenn gebraucht.\nFile " AUDIOPLAYER_END_SCRIPT " not found. Please create if needed.\n");
 	
 	// unlock playback	
-	g_Zapit->unlockPlayBack();
-#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	// stop playback
-	playback->Play();
-#endif	
+	g_Zapit->unlockPlayBack();	
 	
 	//start epg scanning
 	g_Sectionsd->setPauseScanning(false);
