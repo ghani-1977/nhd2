@@ -1791,7 +1791,6 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	
 	//int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
 	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
-	printf("CFrameBuffer::getIcon: %s bpp: %d\n", name.c_str(), bpp);
 	
 	if(load_ret == FH_ERROR_OK)
 	{
