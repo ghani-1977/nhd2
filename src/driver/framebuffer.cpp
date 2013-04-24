@@ -1468,29 +1468,29 @@ void * CFrameBuffer::convertRGB2FB(unsigned char * rgbbuff, unsigned long x, uns
 	}
 	else
 	{
-	switch (m_transparent) 
-	{
-		case CFrameBuffer::TM_BLACK:
-			for(i = 0; i < count ; i++) 
-			{
-				transp = 0;
-				if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
-					transp = 0xFF;
-				fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-			}
-			break;
-						
-		case CFrameBuffer::TM_INI:
-			for(i = 0; i < count ; i++)
-				fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-			break;
-						
-		case CFrameBuffer::TM_NONE:
-		default:
-			for(i = 0; i < count ; i++)
-				fbbuff[i] = 0xFF000000 | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
-			break;
-	}
+		switch (m_transparent) 
+		{
+			case CFrameBuffer::TM_BLACK:
+				for(i = 0; i < count ; i++) 
+				{
+					transp = 0;
+					if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
+						transp = 0xFF;
+					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				}
+				break;
+							
+			case CFrameBuffer::TM_INI:
+				for(i = 0; i < count ; i++)
+					fbbuff[i] = (transp << 24) | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				break;
+							
+			case CFrameBuffer::TM_NONE:
+			default:
+				for(i = 0; i < count ; i++)
+					fbbuff[i] = 0xFF000000 | ((rgbbuff[i*3] << 16) & 0xFF0000) | ((rgbbuff[i*3+1] << 8) & 0xFF00) | (rgbbuff[i*3+2] & 0xFF);
+				break;
+		}
 	}
 
 	return (void *) fbbuff;
@@ -1776,12 +1776,13 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	int bpp = 0;
 
   	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
+	
   	if (!fh) 
 	{
 		return NULL;
 	}
 	
-	rgbbuff = (unsigned char *) malloc (x*y*4);
+	rgbbuff = (unsigned char *) malloc (x*y*3);
 	
 	if (rgbbuff == NULL) 
 	{
@@ -1789,16 +1790,16 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 		return NULL;
 	}
 	
-	//int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
-	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
+	int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
+	//int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
 	
 	if(load_ret == FH_ERROR_OK)
 	{
 		// convert RGB2FB
 		// with alpha (alpha blending???)
-		if (bpp == 4)
-			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, 0, true);
-		else
+		//if (bpp == 4)
+		//	fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, 0, true);
+		//else
 			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
 
 		// size
