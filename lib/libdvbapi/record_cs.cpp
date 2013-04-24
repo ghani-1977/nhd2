@@ -141,7 +141,7 @@ void cRecord::RecordThread()
 
 	ssize_t r = 0;
 	int buf_pos = 0;
-	uint8_t *buf;
+	uint8_t * buf;
 	buf = (uint8_t *)malloc(BUFSIZE);
 
 	if (!buf)
@@ -211,21 +211,7 @@ void cRecord::RecordThread()
 		buf_pos -= r;
 		memmove(buf, buf + r, buf_pos);
 	}
-	free(buf);
-	
-#if 0
-	// TODO: do we need to notify neutrino about failing recording?
-	CEventServer eventServer;
-	eventServer.registerEvent2(NeutrinoMessages::EVT_RECORDING_ENDED, CEventServer::INITID_NEUTRINO, "/tmp/neutrino.sock");
-	stream2file_status2_t s;
-	s.status = exit_flag;
-	strncpy(s.filename, basename(myfilename), 512);
-	s.filename[511] = '\0';
-	strncpy(s.dir,dirname(myfilename),100);
-	s.dir[99] = '\0';
-	eventServer.sendEvent(NeutrinoMessages::EVT_RECORDING_ENDED, CEventServer::INITID_NEUTRINO, &s, sizeof(s));
-	printf("[stream2file]: pthreads exit code: %i, dir: '%s', filename: '%s' myfilename: '%s'\n", exit_flag, s.dir, s.filename, myfilename);
-#endif	
+	free(buf);	
 	
 	pthread_exit(NULL);
 }

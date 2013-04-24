@@ -242,8 +242,8 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	else
 		m_current = 0;
 	
-	int ret;
-	ret = remove("/tmp/cover.jpg");
+	if(!access("/tmp/cover.jpg", F_OK))
+		remove("/tmp/cover.jpg");
 
 	m_selected = 0;
 
@@ -2330,7 +2330,8 @@ void CAudioPlayerGui::updateMetaData()
 	
 	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
 	{
-		remove("/tmp/cover.jpg");
+		if(!access("/tmp/cover.jpg", F_OK))
+			remove("/tmp/cover.jpg");
 	}
 	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);

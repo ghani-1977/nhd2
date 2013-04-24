@@ -1433,32 +1433,36 @@ void unsetRecordMode(void)
 	cam1->sendMessage(0, 0);
 	
 	// cam0 update	
-	demux_index = live_fe->fenumber;
+	if(live_fe != NULL)
+		demux_index = live_fe->fenumber;
 
 #if defined (PLATFORM_GIGABLUE)
 	ca_mask = 1;
 
 #else
-	ca_mask |= 1 << live_fe->fenumber;
+	if(live_fe != NULL)
+		ca_mask |= 1 << live_fe->fenumber;
 #endif	
-
-	//cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
 	
 	if(standby)
 		cam0->sendMessage(0, 0); // stop
 	else if(live_channel_id == rec_channel_id) 
 	{
-		cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
+		if(live_channel != NULL)
+			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
 	} 
 	else 
 	{
 		cam1->sendMessage(0,0); // stop
-		cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask); // update
+		
+		if(live_channel != NULL)
+			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask); // update
 	}
 	
 	// ci cam
-#if !defined (PLATFORM_COOLSTREAM)	
-	ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
+#if !defined (PLATFORM_COOLSTREAM)
+	if(live_fe != NULL)
+		ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
 #endif	
 	
 	rec_channel_id = 0;
@@ -1698,14 +1702,17 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				
 				msgCurrentServiceInfo.pcrpid = live_channel->getPcrPid();
 				
-				msgCurrentServiceInfo.tsfrequency = live_fe->getFrequency();
-				msgCurrentServiceInfo.rate = live_fe->getRate();
-				msgCurrentServiceInfo.fec = live_fe->getCFEC();
-					
-				if ( live_fe->getInfo()->type == FE_QPSK)
-					msgCurrentServiceInfo.polarisation = live_fe->getPolarization();
-				else
-					msgCurrentServiceInfo.polarisation = 2;
+				if(live_fe != NULL)
+				{
+					msgCurrentServiceInfo.tsfrequency = live_fe->getFrequency();
+					msgCurrentServiceInfo.rate = live_fe->getRate();
+					msgCurrentServiceInfo.fec = live_fe->getCFEC();
+						
+					if ( live_fe->getInfo()->type == FE_QPSK)
+						msgCurrentServiceInfo.polarisation = live_fe->getPolarization();
+					else
+						msgCurrentServiceInfo.polarisation = 2;
+				}
 				
 				msgCurrentServiceInfo.vtype = live_channel->type;
 			}
@@ -1744,14 +1751,17 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				
 				msgRecordServiceInfo.pcrpid = rec_channel->getPcrPid();
 				
-				msgRecordServiceInfo.tsfrequency = live_fe->getFrequency();
-				msgRecordServiceInfo.rate = live_fe->getRate();
-				msgRecordServiceInfo.fec = live_fe->getCFEC();
-					
-				if ( live_fe->getInfo()->type == FE_QPSK)
-					msgRecordServiceInfo.polarisation = live_fe->getPolarization();
-				else
-					msgRecordServiceInfo.polarisation = 2;
+				if(live_fe != NULL)
+				{
+					msgRecordServiceInfo.tsfrequency = live_fe->getFrequency();
+					msgRecordServiceInfo.rate = live_fe->getRate();
+					msgRecordServiceInfo.fec = live_fe->getCFEC();
+						
+					if ( live_fe->getInfo()->type == FE_QPSK)
+						msgRecordServiceInfo.polarisation = live_fe->getPolarization();
+					else
+						msgRecordServiceInfo.polarisation = 2;
+				}
 				
 				msgRecordServiceInfo.vtype = rec_channel->type;
 			}
@@ -3301,13 +3311,15 @@ int stopPlayBack( bool sendPmt)
 	
 		if(currentMode & RECORD_MODE) 
 		{
-			demux_index = record_fe->fenumber;
+			if(record_fe != NULL)
+				demux_index = record_fe->fenumber;
 
 #if defined (PLATFORM_GIGABLUE)
 			ca_mask = 1;
 
 #else
-			ca_mask |= 1 << record_fe->fenumber;
+			if(record_fe != NULL)
+				ca_mask |= 1 << record_fe->fenumber;
 #endif	
 
 			if(live_channel_id == rec_channel_id)

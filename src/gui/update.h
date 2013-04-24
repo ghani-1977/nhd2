@@ -69,7 +69,7 @@ class CFlashUpdate : public CProgressWindow
 		
 	public:
 		CFlashUpdate(int uMode);
-		int exec( CMenuTarget* parent, const std::string & actionKey );
+		int exec( CMenuTarget * parent, const std::string & actionKey );
 
 };
 

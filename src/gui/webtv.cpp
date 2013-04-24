@@ -347,7 +347,7 @@ int CWebTV::Show()
 		
 			loop = false;
 		}
-		else if ( msg == CRCInput::RC_green || msg == CRCInput::RC_home ) 
+		else if ( msg == CRCInput::RC_green || msg == CRCInput::RC_home) 
 		{
 			loop = false;
 		}

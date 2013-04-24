@@ -190,7 +190,7 @@ bool CBaseDec::GetCoverDataBase(CAudiofile * const in, const bool nice)
 
 	if (in->FileType == CFile::FILE_MP3)
 	{
-		FILE* fp = fopen( in->Filename.c_str(), "r" );
+		FILE * fp = fopen( in->Filename.c_str(), "r" );
 		if ( fp == NULL )
 		{
 			fprintf( stderr, "Error opening file %s for meta data reading.\n", in->Filename.c_str() );
@@ -200,7 +200,7 @@ bool CBaseDec::GetCoverDataBase(CAudiofile * const in, const bool nice)
 		{
 			if(in->FileType == CFile::FILE_MP3)
 			{
-				CMP3Dec::getInstance()->SaveCover(fp);
+				Status = CMP3Dec::getInstance()->SaveCover(fp);
 			}
 			
 			if ( fclose( fp ) == EOF )

@@ -1266,7 +1266,7 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 	}
 }
 
-void CMP3Dec::SaveCover(FILE * in)
+bool CMP3Dec::SaveCover(FILE * in)
 {
 	unsigned int i;
 	int ret;
@@ -1279,7 +1279,10 @@ void CMP3Dec::SaveCover(FILE * in)
 	struct id3_file *id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
     
 	if(id3file == 0)
+	{
 		printf("error open id3 file\n");
+		return false;
+	}
 	else
 	{
 		id3_tag * tag = id3_file_tag(id3file);
@@ -1328,7 +1331,10 @@ void CMP3Dec::SaveCover(FILE * in)
 			id3_tag_delete(tag);
 		}
 		else
+		{
 			printf("error open id3 tag\n");
+			return false;
+		}
 
 		id3_finish_file(id3file);
 	}
@@ -1337,7 +1343,10 @@ void CMP3Dec::SaveCover(FILE * in)
 	{
 fail:
 		printf("id3: not enough memory to display tag\n");
+		return false;
 	}
+	
+	return true;
 }
 
 // this is a copy of static libid3tag function "finish_file"

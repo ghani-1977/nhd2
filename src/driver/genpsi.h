@@ -20,11 +20,12 @@ $Id: genpsi.h,v 1.1 2005/08/15 14:47:52 metallica Exp $
  along with this program; if not, write to the Free Software Foundation,
  Inc., 675 Mass Ave, Cambridge MA 02139, USA.
 
- Mit diesem Programm koennen Neutrino TS Streams für das Abspielen unter Enigma gepatched werden 
+ Mit diesem Programm koennen Neutrino TS Streams fï¿½r das Abspielen unter Enigma gepatched werden 
  */
 #ifndef __genpsi_h__
 #define __genpsi_h__
 #include <inttypes.h>
+
 
 int genpsi(int fd2);
 void transfer_pids(uint16_t pid,uint16_t pidart,short isAC3);
@@ -33,6 +34,6 @@ void transfer_pids(uint16_t pid,uint16_t pidart,short isAC3);
 #define EN_TYPE_AUDIO           0x01
 #define EN_TYPE_TELTEX          0x02
 #define EN_TYPE_PCR             0x03
-#define EN_TYPE_AVC           0x04
+#define EN_TYPE_AVC           	0x04
 
 #endif

@@ -27,13 +27,13 @@ $Id: genpsi.c,v 1.2 2006/01/16 12:45:54 sat_man Exp $
 #include <unistd.h>
 #include <driver/genpsi.h>
 
-#define SIZE_TS_PKT			188
-#define OFS_HDR_2			5
+#define SIZE_TS_PKT		188
+#define OFS_HDR_2		5
 #define OFS_PMT_DATA		13
 #define OFS_STREAM_TAB		17
 #define SIZE_STREAM_TAB_ROW	5 
 #define OFS_ENIGMA_TAB		31
-#define SIZE_ENIGMA_TAB_ROW   4  
+#define SIZE_ENIGMA_TAB_ROW   	4  
 
 #define ES_TYPE_MPEG12		0x02
 #define ES_TYPE_AVC		0x1b
@@ -102,7 +102,7 @@ uint32_t calc_crc32psi(uint8_t *dst, const uint8_t *src, uint32_t len)
         uint32_t i;
         uint32_t crc = 0xffffffff;
 
-        for (i=0; i<len; i++)
+        for (i = 0; i < len; i++)
                 crc = (crc << 8) ^ crc_table[((crc >> 24) ^ *src++) & 0xff];
 
         if (dst)
@@ -124,15 +124,18 @@ void transfer_pids(uint16_t pid,uint16_t pidart,short isAC3)
 			avPids.vpid=pid;
 			avPids.vtype = ES_TYPE_MPEG12;
 			break;
+			
 		case EN_TYPE_AVC:
 			avPids.vpid=pid;
 			avPids.vtype = ES_TYPE_AVC;
 			break;
+			
 		case EN_TYPE_AUDIO:
 			avPids.apid[avPids.nba]=pid;
 			avPids.isAC3[avPids.nba]=isAC3;
 			avPids.nba++;
 			break;
+			
 		case EN_TYPE_TELTEX:
 			break;
 
@@ -140,6 +143,7 @@ void transfer_pids(uint16_t pid,uint16_t pidart,short isAC3)
 			break;
 	}
 }
+
 //-- special enigma stream description packet for  --
 //-- at least 1 video, 1 audo and 1 PCR-Pid stream --
 //------------------------------------------------------------------------------------
@@ -150,10 +154,10 @@ static uint8_t pkt_enigma[] =
 	0x00, 0x00, 0x01, 0x00, 0x00,
 	0x00, 0x00, 0x6D, 0x66, 0x30, 0x19, 
 	0x80, 0x13, 'N','E','U','T','R','I','N','O','N','G',	// tag(8), len(8), text(10) -> NG hihi ;)
-	0x00, 0x02, 0x00, 0x6e,				// cVPID(8), len(8), PID(16)
-	0x01, 0x03, 0x00, 0x78, 0x00,			// cAPID(8), len(8), PID(16), ac3flag(8)
-// 0x02, 0x02, 0x00, 0x82,// cTPID(8), len(8), ...
-	0x03, 0x02, 0x00, 0x6e				// cPCRPID(8), ...
+	0x00, 0x02, 0x00, 0x6e,					// cVPID(8), len(8), PID(16)
+	0x01, 0x03, 0x00, 0x78, 0x00,				// cAPID(8), len(8), PID(16), ac3flag(8)
+	//0x02, 0x02, 0x00, 0x82,// cTPID(8), len(8), ...
+	0x03, 0x02, 0x00, 0x6e					// cPCRPID(8), ...
 }; 
 
 //-- PAT packet for at least 1 PMT --
@@ -161,7 +165,7 @@ static uint8_t pkt_enigma[] =
 static uint8_t pkt_pat[] =
 {
 	0x47, 0x40, 0x00, 0x10, 0x00,			// HEADER-1
-	0x00, 0xB0, 0x0D,					// HEADER-2
+	0x00, 0xB0, 0x0D,				// HEADER-2
 	0x04, 0x37, 0xE9, 0x00, 0x00,			// HEADER-3 sid
 	0x6D, 0x66, 0xEF, 0xFF,				// PAT-DATA - PMT (PID=0xFFF) entry
 };
@@ -171,13 +175,12 @@ static uint8_t pkt_pat[] =
 static uint8_t pkt_pmt[] =
 {
 	0x47, 0x4F, 0xFF, 0x10, 0x00,		// HEADER-1
-	0x02, 0xB0, 0x17,				// HEADER-2
+	0x02, 0xB0, 0x17,			// HEADER-2
 	0x6D, 0x66, 0xE9, 0x00, 0x00,		// HEADER-3
 	0xE0, 0x00, 0xF0, 0x00,			// PMT-DATA  
 	0x02, 0xE0, 0x00, 0xF0, 0x00,		//   (video stream 1)
 	0x03, 0xE0, 0x00, 0xF0, 0x00		//   (audio stream 1)
 };  
-
 
 //== setup a new TS packet with format ==
 //== predefined with a template        ==
@@ -186,35 +189,38 @@ static uint8_t pkt_pmt[] =
 
 static int copy_template(uint8_t *dst, uint8_t *src, int len)
 {
-//-- reset buffer --
+	//-- reset buffer --
 	memset(dst, 0xFF, SIZE_TS_PKT);
-//-- copy PMT template --
+	//-- copy PMT template --
 	memmove(dst, src, len);
 	
 	return len;
 }
+
 int genpsi(int fd2)
 {
-//	int  bytes = 0;
+	//int  bytes = 0;
 	uint8_t   pkt[SIZE_TS_PKT];
 	int       i, data_len, patch_len, ofs;
 
-//-- copy "Enigma"-template --
+	//-- copy "Enigma"-template --
 	data_len = COPY_TEMPLATE(pkt, pkt_enigma);
 
-//-- adjust len dependent to number of audio streams --
+	//-- adjust len dependent to number of audio streams --
 	data_len += ((SIZE_ENIGMA_TAB_ROW+1) * (avPids.nba-1));
 
 	patch_len = data_len - OFS_HDR_2 + 1;
 	pkt[OFS_HDR_2+1] |= (patch_len>>8);
 	pkt[OFS_HDR_2+2]  = (patch_len & 0xFF); 
-//-- write row with desc. for video stream --  
+	
+	//-- write row with desc. for video stream --  
 	ofs = OFS_ENIGMA_TAB;
 	pkt[ofs]   = EN_TYPE_VIDEO;
 	pkt[ofs+1] = 0x02;
 	pkt[ofs+2] = (avPids.vpid>>8);
 	pkt[ofs+3] = (avPids.vpid & 0xFF);
-//-- for each audio stream, write row with desc. --
+	
+	//-- for each audio stream, write row with desc. --
 	ofs += SIZE_ENIGMA_TAB_ROW;  
 	for (i=0; i<avPids.nba; i++)
 	{
@@ -226,35 +232,43 @@ int genpsi(int fd2)
 
 		ofs += (SIZE_ENIGMA_TAB_ROW + 1);
 	}
-//-- write row with desc. for pcr stream (eq. video) -- 
+	
+	//-- write row with desc. for pcr stream (eq. video) -- 
 	pkt[ofs]   = EN_TYPE_PCR;
 	pkt[ofs+1] = 0x02;
 	pkt[ofs+2] = (avPids.vpid>>8);
 	pkt[ofs+3] = (avPids.vpid & 0xFF);
  
-//-- calculate CRC --
+	//-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
-//-- write TS packet --
+	
+	//-- write TS packet --
 	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
-//-- (II) build PAT --
+	
+	//-- (II) build PAT --
 	data_len = COPY_TEMPLATE(pkt, pkt_pat);
-//-- calculate CRC --
+	
+	//-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
-//-- write TS packet --
+	
+	//-- write TS packet --
 	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
 
-//-- (III) build PMT --
+	//-- (III) build PMT --
 	data_len = COPY_TEMPLATE(pkt, pkt_pmt);
-//-- adjust len dependent to count of audio streams --
+	
+	//-- adjust len dependent to count of audio streams --
 	data_len += (SIZE_STREAM_TAB_ROW * (avPids.nba-1));
 	patch_len = data_len - OFS_HDR_2 + 1;
 	pkt[OFS_HDR_2+1] |= (patch_len>>8);
 	pkt[OFS_HDR_2+2]  = (patch_len & 0xFF); 
-//-- patch pcr PID --
+	
+	//-- patch pcr PID --
 	ofs = OFS_PMT_DATA;
 	pkt[ofs]  |= (avPids.vpid>>8);
 	pkt[ofs+1] = (avPids.vpid & 0xFF);
-//-- write row with desc. for ES video stream --
+	
+	//-- write row with desc. for ES video stream --
 	ofs = OFS_STREAM_TAB;
 	pkt[ofs]   = avPids.vtype;
 	pkt[ofs+1] = 0xE0 | (avPids.vpid>>8);
@@ -262,7 +276,7 @@ int genpsi(int fd2)
 	pkt[ofs+3] = 0xF0;
 	pkt[ofs+4] = 0x00;
 
-//-- for each ES audio stream, write row with desc. --
+	//-- for each ES audio stream, write row with desc. --
 	for (i=0; i<avPids.nba; i++)
 	{
 		ofs += SIZE_STREAM_TAB_ROW;
@@ -272,13 +286,18 @@ int genpsi(int fd2)
 		pkt[ofs+3] = 0xF0;
 		pkt[ofs+4] = 0x00;
 	}
-//-- calculate CRC --
+	
+	//-- calculate CRC --
 	calc_crc32psi(&pkt[data_len], &pkt[OFS_HDR_2], data_len-OFS_HDR_2 );
-//-- write TS packet --
+	
+	//-- write TS packet --
 	/*bytes +=*/ write(fd2, pkt, SIZE_TS_PKT);
-//-- finish --
-	avPids.vpid=0;
-	avPids.nba=0;
+	
+	//-- finish --
+	avPids.vpid = 0;
+	avPids.nba = 0;
+	
 	fdatasync(fd2);
+	
 	return 1;
 }

@@ -82,7 +82,7 @@ extern char timeshiftDir[255];
 extern cPlayback * playback;
 #endif
 
-#define MAXPIDS		64
+//#define MAXPIDS		64
 #define FILENAMEBUFFERSIZE 1024
 
 static stream2file_status_t exit_flag = STREAM2FILE_STATUS_IDLE;
