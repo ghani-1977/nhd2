@@ -52,7 +52,6 @@ GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
-bool end_eof = false;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -72,8 +71,10 @@ gint match_sinktype(GstElement *element, gpointer type)
 	return strcmp(g_type_name(G_OBJECT_TYPE(element)), (const char*)type);
 }
 
-GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
+GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 {
+	cPlayback *obj = (cPlayback *)user_data;
+	
 	//NOTE: borrowed from e2 :)
 	//source name
 	gchar * sourceName;
@@ -83,7 +84,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 	source = GST_MESSAGE_SRC(msg);
 	
 	if (!GST_IS_OBJECT(source))
-		return GST_BUS_DROP;
+		return GST_BUS_PASS;
 	
 	sourceName = gst_object_get_name(source);
 
@@ -92,7 +93,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 		case GST_MESSAGE_EOS: 
 		{
 			g_message("End-of-stream");
-			end_eof = true;
+			
+			//
+			//obj->Close();
+			obj->playing = false;
+			//
 			break;
 		}
 		
@@ -106,8 +111,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			//g_error("%s", err->message);
 			printf("cPlayback:: Gstreamer error: %s (%i)\n", err->message, err->code );
 			
-			end_eof = true;
-			
 			if ( err->domain == GST_STREAM_ERROR )
 			{
 				if ( err->code == GST_STREAM_ERROR_CODEC_NOT_FOUND )
@@ -119,6 +122,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 				}
 			}
 			g_error_free(err);
+			
+			obj->playing = false;
+			//
+			//obj->Close();
+			//
 			
 			break;
 		}
@@ -232,7 +240,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage *msg, gpointer user_data)
 			break;
 	}
 
-	return GST_BUS_DROP;
+	return GST_BUS_PASS;
 }
 #endif
 
@@ -400,12 +408,16 @@ bool cPlayback::Start(char * filename)
 	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
 	
 	if (isHTTP)
-		uri = g_uri_escape_string(filename, G_URI_RESERVED_CHARS_GENERIC_DELIMITERS, true);
+		//uri = g_uri_escape_string(filename, G_URI_RESERVED_CHARS_GENERIC_DELIMITERS, true);
+		uri = g_strdup_printf ("%s", filename);
 	else
 		uri = g_filename_to_uri(filename, NULL, NULL);
 
 	if(m_gst_playbin)
 	{
+		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
+		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
+		
 		// streaming
 		if(isHTTP)
 		{
@@ -415,25 +427,18 @@ bool cPlayback::Start(char * filename)
 			g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 		}
 		
-		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
-		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
-		
-		
-
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
+		gst_bus_set_sync_handler(bus, Gst_bus_call, this);
 		gst_object_unref(bus);
 		
 		// state playing
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
-		
 		playing = true;
 	}
 	else
 	{
-		if (m_gst_playbin)
-			gst_object_unref(GST_OBJECT(m_gst_playbin));
+		gst_object_unref(GST_OBJECT(m_gst_playbin));
 
 		m_gst_playbin = 0;
 		
@@ -716,7 +721,6 @@ void cPlayback::GetDuration(int &duration)
 		return;	
 
 #if ENABLE_GSTREAMER
-	
 	if(m_gst_playbin)
 	{
 		// duration
@@ -752,12 +756,6 @@ bool cPlayback::GetPosition(int &position)
 		return false;	
 
 #if ENABLE_GSTREAMER
-	//EOF
-	if(end_eof)
-	{
-		return false;
-	}
-	
 	if(m_gst_playbin)
 	{
 		//position

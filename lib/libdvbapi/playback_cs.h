@@ -28,12 +28,12 @@
 class cPlayback
 {
 	private:
-		bool playing;
-
 		int mSpeed;
 		int mAudioStream;
 
 	public:
+		bool playing;
+		
 		bool Open();
 		void Close(void);
 		bool Start(char * filename);
