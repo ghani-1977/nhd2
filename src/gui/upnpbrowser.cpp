@@ -69,6 +69,7 @@
 #include <gui/pictureviewer.h>
 #include <gui/movieplayer.h>
 
+
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
 #endif
@@ -103,16 +104,17 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	if(parent)
 		parent->hide();
 
-	g_Zapit->lockPlayBack();
+	//g_Zapit->lockPlayBack();
 
-	m_frameBuffer->loadBackgroundPic("mp3.jpg");
+	//m_frameBuffer->loadBackgroundPic("mp3.jpg");
 	
 #if !defined USE_OPENGL
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 
 	// tell neutrino we're in audio mode
-	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_audio );
+	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_audio);
+	
 	// remember last mode
 	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode());
 
@@ -140,13 +142,14 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 
 	selectDevice();
 
+	//
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 		CAudioPlayer::getInstance()->stop();
 	
-	g_Zapit->unlockPlayBack();
+	//g_Zapit->unlockPlayBack();
 
 	// Start Sectionsd
-	g_Sectionsd->setPauseScanning(false);
+	//g_Sectionsd->setPauseScanning(false);
 
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );

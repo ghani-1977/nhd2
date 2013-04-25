@@ -42,6 +42,8 @@
 
 static const char * FILENAME = "[playback_cs.cpp]";
 
+cPlayback * playback = NULL;
+
 #if defined ENABLE_GSTREAMER
 #include <gst/gst.h>
 #include <gst/pbutils/missing-plugins.h>

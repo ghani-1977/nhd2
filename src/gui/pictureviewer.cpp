@@ -63,6 +63,11 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 
+#include <playback_cs.h>
+
+extern cPlayback * playback;
+extern char rec_filename[512];				// defined in stream2file.cpp
+
 
 bool comparePictureByDate (const CPicture& a, const CPicture& b)
 {
@@ -160,6 +165,12 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
 		
 	// Stop Sectionsd
 	g_Sectionsd->setPauseScanning(true);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	playback->Close();
+#endif	
+	//
 
 	show();
 
@@ -183,6 +194,20 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
 
 	// Start Sectionsd
 	g_Sectionsd->setPauseScanning(false);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	char fname[255];
+
+	if (strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+			
+		playback->Open();
+		playback->Start(fname);
+	}
+#endif	
+	//
 
 	// Restore last mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );

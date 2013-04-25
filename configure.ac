@@ -140,6 +140,16 @@ if test "$enable_standaloneplugins" = "yes"; then
 AC_DEFINE(ENABLE_STANDALONEPLUGINS,1,[include standaloneplugins support])
 fi
 
+# live view
+AC_ARG_ENABLE(liveview,
+	AS_HELP_STRING(--enable-liveview,enable live view fpr x86 (gst needed)),
+	,[enable_liveview=no])
+AM_CONDITIONAL(ENABLE_LIVEVIEW,test "$enable_liveview" = "yes")
+
+if test "$enable_liveview" = "yes"; then
+AC_DEFINE(ENABLE_LIVEVIEW,1,[enable live view fpr x86 (gst needed)])
+fi
+
 AC_OUTPUT([
 Makefile
 lib/Makefile

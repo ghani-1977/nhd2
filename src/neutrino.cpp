@@ -574,7 +574,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	// permanent timeshift
 	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
-#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
 	g_settings.auto_timeshift = 1;
 #endif	
 
@@ -2015,7 +2015,7 @@ void CNeutrinoApp::InitZapper()
 		StartSubtitles();
 	}
 	
-#if defined (PLATFORM_GENERIC) && (ENABLE_GSTREAMER)
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
 	startAutoRecord(true);
 #endif
 }
@@ -3698,7 +3698,7 @@ skip_message:
 	}
 	else if (msg == NeutrinoMessages::LOCK_RC) 
 	{
-		this->rcLock->exec(NULL,CRCLock::NO_USER_INPUT);
+		this->rcLock->exec(NULL, CRCLock::NO_USER_INPUT);
 		return messages_return::handled;
 	}
 	else if( msg == NeutrinoMessages::CHANGEMODE ) 
@@ -3729,7 +3729,7 @@ skip_message:
 			}
 		}
 		
-		if((data & mode_mask)== mode_tv) 
+		if((data & mode_mask) == mode_tv) 
 		{
 			if( mode != mode_tv ) 
 			{
@@ -3740,25 +3740,25 @@ skip_message:
 			}
 		}
 		
-		if((data &mode_mask)== mode_standby) 
+		if((data &mode_mask) == mode_standby) 
 		{
 			if(mode != mode_standby)
 				standbyMode( true );
 		}
 		
-		if((data &mode_mask)== mode_audio) 
+		if((data &mode_mask) == mode_audio) 
 		{
-			lastMode=mode;
-			mode=mode_audio;
+			lastMode = mode;
+			mode = mode_audio;
 		}
 		
-		if((data &mode_mask)== mode_pic) 
+		if((data &mode_mask) == mode_pic) 
 		{
 			lastMode=mode;
-			mode=mode_pic;
+			mode = mode_pic;
 		}
 		
-		if((data &mode_mask)== mode_ts) 
+		if((data &mode_mask) == mode_ts) 
 		{
 			lastMode = mode;
 			mode = mode_ts;
@@ -3803,19 +3803,16 @@ skip_message:
 
 // exit run
 void CNeutrinoApp::ExitRun(int retcode)
-{
-#if !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)  
-	if (!recordingstatus || ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)
-#endif	  
+{  
+	if (!recordingstatus || ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)  
 	{
-#if defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
 		if(autoshift) 
 		{
 			stopAutoRecord();
 			recordingstatus = 0;
 			timeshiftstatus = 0;
 		}
-#endif
+
 		// stop recording
 		if(recordingstatus) 
 		{
@@ -4225,9 +4222,10 @@ void CNeutrinoApp::tvMode( bool rezap )
 #endif		
 	}
 
-	bool stopauto = (mode != mode_ts);
+	bool stopauto = (mode != mode_ts);	
 	mode = mode_tv;
 
+#if !defined (ENABLE_LIVEVIEW) && !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)	
 	if(stopauto && autoshift) 
 	{
 		//printf("standby on: autoshift ! stopping ...\n");
@@ -4236,6 +4234,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 		recordingstatus = 0;
 		timeshiftstatus = 0;
 	}
+#endif	
 
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();

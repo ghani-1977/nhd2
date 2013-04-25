@@ -270,8 +270,8 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void SelectSubtitles();
 		
 		enum {
-			REBOOT,
 			SHUTDOWN,
+			REBOOT,
 		};
 		
 		void ExitRun(int retcode = SHUTDOWN);

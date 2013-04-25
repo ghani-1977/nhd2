@@ -79,7 +79,10 @@
 #include <audio_cs.h>
 
 #include <system/debug.h>
+#include <playback_cs.h>
 
+extern cPlayback * playback;
+extern char rec_filename[512];				// defined in stream2file.cpp
 
 extern CPictureViewer * g_PicViewer;
 extern int current_muted;
@@ -280,7 +283,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_frameBuffer->saveBackgroundImage();
 	
 	// stop/lock live playback	
-	g_Zapit->lockPlayBack();	
+	//g_Zapit->lockPlayBack();
 	
 	//show audio background pic
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
@@ -295,8 +298,17 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	// remember last mode
 	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode());
 	
+	// stop/lock live playback	
+	g_Zapit->lockPlayBack();
+	
 	//pause epg scanning
 	g_Sectionsd->setPauseScanning(true);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	playback->Close();
+#endif	
+	//
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -327,6 +339,20 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//start epg scanning
 	g_Sectionsd->setPauseScanning(false);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	char fname[255];
+
+	if (strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+			
+		playback->Open();
+		playback->Start(fname);
+	}
+#endif	
+	//
 
 	//last mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );

@@ -106,7 +106,7 @@ extern int dvbsub_start(int pid);
 extern int dvbsub_pause();
 
 
-cPlayback * playback = NULL;
+extern cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -600,14 +600,17 @@ void CMoviePlayerGui::cutNeutrino()
 	if (stopped)
 		return;
 	
-	if(!isUpnp)
-	{
-		// pause epg scanning
-		g_Sectionsd->setPauseScanning(true);
+	// pause epg scanning
+	g_Sectionsd->setPauseScanning(true);
 		
-		// lock playback
-		g_Zapit->lockPlayBack();
-	}
+	// lock playback
+	g_Zapit->lockPlayBack();
+		
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)		
+	playback->Close();
+#endif		
+	//
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	/* hide AC3 Icon */
@@ -643,14 +646,25 @@ void CMoviePlayerGui::restoreNeutrino()
 	if (!stopped)
 		return;
 
-	if(!isUpnp)
-	{
-		// unlock playback
-		g_Zapit->unlockPlayBack();
+	// unlock playback
+	g_Zapit->unlockPlayBack();
 		
-		// start epg scanning
-		g_Sectionsd->setPauseScanning(false);
+	// start epg scanning
+	g_Sectionsd->setPauseScanning(false);
+		
+		//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)		
+	char fname[255];
+
+	if (strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+			
+		playback->Open();
+		playback->Start(fname);
 	}
+#endif		
+	//
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	//TODO: check if ac3 is selected???
@@ -2982,7 +2996,7 @@ void CMoviePlayerGui::PlayFile(void)
 	if(MovieInfoViewer.IsVisible())
 		MovieInfoViewer.hide();
 	
-	playback->Close();
+	//playback->Close();
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);

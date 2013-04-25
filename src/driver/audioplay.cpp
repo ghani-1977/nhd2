@@ -229,11 +229,7 @@ void CAudioPlayer::init()
 {
 	CBaseDec::Init();
 	state = CBaseDec::STOP;
-	
-#if ENABLE_GSTREAMER
-	// init player
-	playback->Open();	
-#endif	
+		
 	thrPlay = 0;	
 }
 

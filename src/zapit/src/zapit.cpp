@@ -2414,7 +2414,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		}		
 	
 		case CZapitMessages::CMD_SB_START_PLAYBACK:
-			//playbackStopForced = false;
 			startPlayBack(live_channel);
 			
 			break;
