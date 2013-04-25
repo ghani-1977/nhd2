@@ -1776,8 +1776,6 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			load_ret = png_load_ext(name.c_str(), &buffer, &x, &y, &bpp);
 		else
 			load_ret = fh->get_pic(name.c_str(), &buffer, &x, &y);
-		
-		printf("getimage: %s bpp:%d\n", name.c_str(), bpp);
 
 		if (load_ret == FH_ERROR_OK) 
 		{
