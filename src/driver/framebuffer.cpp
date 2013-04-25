@@ -1515,8 +1515,19 @@ void CFrameBuffer::blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint3
 		{
 			fb_pixel_t pix = *(pixpos + xp);
 			
-			if (!transp || (pix != 0)) 
+			if (!transp || (pix & 0xff000000) == 0xff000000)
 				*d2 = pix;
+			else 
+			{
+				uint8_t *in = (uint8_t *)(pixpos + xp);
+				uint8_t *out = (uint8_t *)d2;
+				int a = in[3];	//TODO: big/little endian
+				*out = (*out + ((*in - *out) * a) / 256);
+				in++; out++;
+				*out = (*out + ((*in - *out) * a) / 256);
+				in++; out++;
+				*out = (*out + ((*in - *out) * a) / 256);
+			}
 			
 			d2++;
 			pixpos++;
@@ -1646,7 +1657,7 @@ unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int
 extern int fh_png_getsize(const char *name, int *x, int *y, int wanted_width, int wanted_height);
 extern int fh_png_load(const char *name, unsigned char **buffer, int* xp, int* yp);
 extern int fh_png_id(const char *name);
-extern int png_load_ext (const char * name, unsigned char ** buffer, int * xp, int * yp, int * bpp);
+extern int png_load_ext(const char * name, unsigned char ** buffer, int * xp, int * yp, int * bpp);
 
 // JPG
 extern int fh_jpeg_getsize (const char *, int *, int *, int, int);
@@ -1782,7 +1793,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 		return NULL;
 	}
 	
-	rgbbuff = (unsigned char *) malloc (x*y*3);
+	rgbbuff = (unsigned char *) malloc (x*y*4);
 	
 	if (rgbbuff == NULL) 
 	{
@@ -1790,16 +1801,16 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 		return NULL;
 	}
 	
-	int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
-	//int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
+	//int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
+	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
 	
 	if(load_ret == FH_ERROR_OK)
 	{
 		// convert RGB2FB
-		// with alpha (alpha blending???)
-		//if (bpp == 4)
-		//	fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, 0, true);
-		//else
+		// with alpha
+		if (bpp == 4)
+			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, 0, TM_INI, true);
+		else
 			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
 
 		// size

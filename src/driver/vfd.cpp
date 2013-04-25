@@ -426,8 +426,6 @@ void CVFD::setMode(const MODES m, const char * const title)
 		if(strlen(title))
 			ShowText((char *)title);
 	}
-	else if(m == MODE_AUDIO || m == MODE_SCART || m == MODE_PIC || m == MODE_TS || m == MODE_MENU_UTF8)
-		ShowText((char *) "NHD2");
 
 	mode = m;
 

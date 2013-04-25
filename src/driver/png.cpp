@@ -39,11 +39,14 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 
 	if(!(fh=fopen(name,"rb")))
 		return(FH_ERROR_FILE);
+	
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if(png_ptr == NULL) {
+	if(png_ptr == NULL) 
+	{
 		fclose(fh);
 		return(FH_ERROR_FORMAT);
 	}
+	
 	info_ptr = png_create_info_struct(png_ptr);
 	if(info_ptr == NULL)
 	{
@@ -51,6 +54,7 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 		fclose(fh);
 		return(FH_ERROR_FORMAT);
 	}
+	
 #if (PNG_LIBPNG_VER < 10500)
 	if (setjmp(png_ptr->jmpbuf))
 #else
@@ -61,9 +65,11 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 		fclose(fh);
 		return(FH_ERROR_FORMAT);
 	}
+	
 	png_init_io(png_ptr,fh);
 	png_read_info(png_ptr, info_ptr);
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
+	
 	if (alpha)
 	{
 		*bpp = png_get_channels(png_ptr, info_ptr);
@@ -73,12 +79,14 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 			fclose(fh);
 			return fh_png_load(name, buffer, xp, yp);
 		}
+		
 		// 24bit PNGs with alpha-channel
 		int_bpp = 4;
-//		png_set_swap_alpha(png_ptr);
+		//png_set_swap_alpha(png_ptr);
 		if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 			png_set_tRNS_to_alpha(png_ptr);
-	}else // All other PNGs
+	}
+	else // All other PNGs
 	{
 		if (color_type == PNG_COLOR_TYPE_PALETTE)
 		{
@@ -86,12 +94,13 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 			png_set_background(png_ptr, (png_color_16*)&my_background, PNG_BACKGROUND_GAMMA_SCREEN, 0, 1.0);
 			/* other possibility for png_set_background: use png_get_bKGD */
 		}
-		if (color_type == PNG_COLOR_TYPE_GRAY        ||
-		    color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+		
+		if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 		{
 			png_set_gray_to_rgb(png_ptr);
 			png_set_background(png_ptr, (png_color_16*)&my_background, PNG_BACKGROUND_GAMMA_SCREEN, 0, 1.0);
 		}
+		
 		/* this test does not trigger for 8bit-paletted PNGs with newer libpng (1.2.36 at least),
 	   	   but the data delivered is with alpha channel anyway, so always strip alpha for now
 		 */
@@ -99,11 +108,14 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 		if (color_type & PNG_COLOR_MASK_ALPHA)
 #endif
 			png_set_strip_alpha(png_ptr);
+			
 		if (bit_depth < 8)
 			png_set_packing(png_ptr);
 	}
+	
 	if (bit_depth == 16)
 		png_set_strip_16(png_ptr);
+	
 	number_passes = png_set_interlace_handling(png_ptr);
 	png_read_update_info(png_ptr,info_ptr);
 	unsigned long rowbytes = png_get_rowbytes(png_ptr, info_ptr);
@@ -114,15 +126,18 @@ int int_png_load(const char *name, unsigned char **buffer, int* xp, int* yp, int
 		fclose(fh);
 		return(FH_ERROR_FORMAT);
 	}
+	
 	for (pass = 0; pass < number_passes; pass++)
 	{
 		fbptr = (png_byte *)(*buffer);
 		for (i = 0; i < height; i++, fbptr += width * int_bpp)
 			png_read_row(png_ptr, fbptr, NULL);
 	}
+	
 	png_read_end(png_ptr, info_ptr);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	fclose(fh);
+	
 	return(FH_ERROR_OK);
 }
 
