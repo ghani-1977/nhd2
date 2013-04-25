@@ -254,7 +254,7 @@ class CFrameBuffer
 			COLOR = 2
 		};
 		
-		unsigned char * Resize(unsigned char * orgin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL);
+		unsigned char * Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
 		fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
 };

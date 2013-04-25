@@ -1517,7 +1517,7 @@ void CFrameBuffer::blit2FB(void * fbbuff, uint32_t width, uint32_t height, uint3
 			
 			if (!transp || (pix & 0xff000000) == 0xff000000)
 				*d2 = pix;
-			else 
+			else //alpha blending
 			{
 				uint8_t *in = (uint8_t *)(pixpos + xp);
 				uint8_t *out = (uint8_t *)d2;
@@ -1572,13 +1572,13 @@ void CFrameBuffer::displayRGB(unsigned char * rgbbuff, int x_size, int y_size, i
 }
 
 // resize.cpp
-unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst)
+unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst, bool alpha)
 {
 	unsigned char * cr;
 	
 	if(dst == NULL) 
 	{
-		cr = (unsigned char*) malloc(dx*dy*3);
+		cr = (unsigned char*) malloc(dx*dy*(alpha? 4 : 3));
 
 		if(cr == NULL)
 		{
@@ -1625,25 +1625,54 @@ unsigned char * CFrameBuffer::Resize(unsigned char * origin, int ox, int oy, int
 				xb_v[i] = ox - 1;
 		}
 		
-		for(j = 0; j < dy; j++)
+		if (alpha)
 		{
-			ya = j*oy/dy;
-			yb = (j + 1)*oy/dy; 
-			if(yb >= oy) 
-				yb = oy - 1;
-				
-			for(i = 0; i < dx; i++, p += 3)
+			for(j = 0;j < dy;j++)
 			{
-				for(l = ya, r = 0, g = 0, b = 0, sq = 0; l <= yb; l++)
+				ya = j*oy/dy;
+				yb = (j + 1)*oy/dy; 
+				if(yb >= oy) 
+					yb = oy - 1;
+				
+				for(i = 0; i < dx; i++, p += 4)
 				{
-					q = origin + ((l*ox+xa_v[i])*3);
-						
-					for(k = xa_v[i]; k <= xb_v[i]; k++, q += 3, sq++)
+					for(l = ya, r = 0, g = 0, b = 0, a = 0, sq = 0; l <= yb; l++)
 					{
-						r += q[0]; g += q[1]; b += q[2];
+						q = origin + ((l*ox + xa_v[i])*4);
+						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 4, sq++)
+						{
+							r += q[0]; g += q[1]; b += q[2]; a += q[3];
+						}
 					}
+					p[0] = r/sq; 
+					p[1] = g/sq; 
+					p[2] = b/sq; 
+					p[3] = a/sq;
 				}
-				p[0] = r/sq; p[1] = g/sq; p[2] = b/sq;
+			}
+		}
+		else
+		{
+			for(j = 0; j < dy; j++)
+			{
+				ya = j*oy/dy;
+				yb = (j + 1)*oy/dy; 
+				if(yb >= oy) 
+					yb = oy - 1;
+					
+				for(i = 0; i < dx; i++, p += 3)
+				{
+					for(l = ya, r = 0, g = 0, b = 0, sq = 0; l <= yb; l++)
+					{
+						q = origin + ((l*ox+xa_v[i])*3);
+							
+						for(k = xa_v[i]; k <= xb_v[i]; k++, q += 3, sq++)
+						{
+							r += q[0]; g += q[1]; b += q[2];
+						}
+					}
+					p[0] = r/sq; p[1] = g/sq; p[2] = b/sq;
+				}
 			}
 		}
 	}
@@ -1729,12 +1758,13 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 	unsigned char * buffer;
 	fb_pixel_t * ret = NULL;
 	int load_ret;
+	int bpp = 0;
 
   	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
   	if (fh) 
 	{
-		buffer = (unsigned char *) malloc (x*y*3);
+		buffer = (unsigned char *) malloc (x*y*4);
 		
 		if (buffer == NULL) 
 		{
@@ -1742,14 +1772,23 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 		  	return false;
 		}
 		
-		load_ret = fh->get_pic(name.c_str (), &buffer, &x, &y);
+		if ((name.find(".png") == (name.length() - 4)) && (fh_png_id(name.c_str())))
+			load_ret = png_load_ext(name.c_str(), &buffer, &x, &y, &bpp);
+		else
+			load_ret = fh->get_pic(name.c_str(), &buffer, &x, &y);
+		
+		printf("getimage: %s bpp:%d\n", name.c_str(), bpp);
 
 		if (load_ret == FH_ERROR_OK) 
 		{
 			// resize
 			if(x != width || y != height)
 			{
-				buffer = Resize(buffer, x, y, width, height, COLOR);
+				// alpha
+				if(bpp == 4)
+					buffer = Resize(buffer, x, y, width, height, COLOR, NULL, true);
+				else
+					buffer = Resize(buffer, x, y, width, height, COLOR);
 				
 				x = width ;
 				y = height;
@@ -1758,7 +1797,11 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			// convert RGB2FB
 			if( name.find(".png") == (name.length() - 4) )
 			{
-				ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
+				// alpha
+				if (bpp == 4)
+					ret = (fb_pixel_t *) convertRGB2FB(buffer, x, y, 0, TM_INI, true);
+				else
+					ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
 			}
 			else
 				ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha), TM_NONE);
