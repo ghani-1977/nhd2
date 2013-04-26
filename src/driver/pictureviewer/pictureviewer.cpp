@@ -18,17 +18,24 @@ double CPictureViewer::m_aspect_ratio_correction;
 
 bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bool unscaled)
 {
-	dprintf(DEBUG_INFO, "CPictureViewer::DecodeImage: DecodeImage\n"); 
+	dprintf(DEBUG_NORMAL, "CPictureViewer::DecodeImage: %s\n", name.c_str()); 
 	
+	/*
 	if (name == m_NextPic_Name) 
 	{
-		//printf("CPictureViewer::DecodeImage: DecodeImage\n"); 
 		return true;
 	}
+	*/
 	
-	int x, y, xs, ys, imx, imy;
-	xs = CFrameBuffer::getInstance()->getScreenWidth(true);
-	ys = CFrameBuffer::getInstance()->getScreenHeight(true);
+	int x;
+	int y;
+	//int xs;
+	//int ys;
+	int imx;
+	int imy;
+	
+	//xs = CFrameBuffer::getInstance()->getScreenWidth(true);
+	//ys = CFrameBuffer::getInstance()->getScreenHeight(true);
 	
 	// Show red block for "next ready" in view state
 	if (showBusySign)
@@ -152,6 +159,7 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 		m_NextPic_XPan = 0;
 		m_NextPic_YPan = 0;
 	}
+	
 	m_NextPic_Name = name;
 	hideBusy ();
 
@@ -168,7 +176,7 @@ void CPictureViewer::SetVisible (int startx, int endx, int starty, int endy)
 
 bool CPictureViewer::ShowImage(const std::string & filename, bool unscaled)
 {
-	dprintf(DEBUG_INFO, "CPictureViewer::Show Image\n");
+	dprintf(DEBUG_NORMAL, "CPictureViewer::Show Image: %s\n", filename.c_str());
 	
   	if (m_CurrentPic_Buffer != NULL) 
 	{
@@ -187,7 +195,7 @@ bool CPictureViewer::ShowImage(const std::string & filename, bool unscaled)
 
 bool CPictureViewer::DisplayNextImage ()
 {
-	dprintf(DEBUG_INFO, "CPictureViewer::DisplayNextImage\n");
+	dprintf(DEBUG_NORMAL, "CPictureViewer::DisplayNextImage\n");
 	
   	if (m_CurrentPic_Buffer != NULL) 
 	{

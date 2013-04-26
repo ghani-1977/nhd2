@@ -755,7 +755,7 @@ void cPlayback::GetDuration(int &duration)
 bool cPlayback::GetPosition(int &position)
 {
 	if(playing == false) 
-		return false;	
+		return false;
 
 #if ENABLE_GSTREAMER
 	if(m_gst_playbin)

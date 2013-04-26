@@ -17,6 +17,8 @@
 #include <sys/timeb.h>
 #include <sys/param.h>
 
+#include <system/debug.h>
+
 
 #define ITEMW 4
 
@@ -40,11 +42,13 @@ CProgressBar::CProgressBar(int w, int h, int r, int g, int b, bool inv)
 	percent = 255;
 }
 
-void CProgressBar::paint (int x, int y, const unsigned int pcr)
+void CProgressBar::paint (unsigned int x, unsigned int y, const unsigned int pcr)
 {
 	int i, j, siglen;
-	int posx, posy;
-	int xpos, ypos;
+	unsigned int posx;
+	unsigned int posy;
+	unsigned int xpos;
+	unsigned int ypos;
 
 	double div;
 	uint32_t  rgb;
@@ -56,7 +60,7 @@ void CProgressBar::paint (int x, int y, const unsigned int pcr)
 	xpos = x;
 	ypos = y;
 	
-	//printf("CScale::paint: old %d new %d x %d y %d\n", percent, pcr, x, y); fflush(stdout);
+	dprintf(DEBUG_NORMAL, "CScale::paint: old %d new %d x %d y %d\n", percent, pcr, x, y);
 	
 	if (pcr != percent) 
 	{

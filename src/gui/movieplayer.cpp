@@ -102,9 +102,8 @@ static int skt = -1; //dirty hack to close socket when stop playing
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
 
 
-extern int dvbsub_start(int pid);
-extern int dvbsub_pause();
-
+//extern int dvbsub_start(int pid);
+//extern int dvbsub_pause();
 
 extern cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
@@ -157,7 +156,6 @@ unsigned int g_currentapid = 0, g_currentac3 = 0, apidchanged = 0;
 
 unsigned int ac3state = CInfoViewer::NO_AC3;
 
-
 std::string g_file_epg;
 std::string g_file_epg1;
 
@@ -167,7 +165,7 @@ bool isVlc = false;
 bool isWebTV = false;
 bool isDVD = false;
 bool isBlueRay = false;
-bool isUpnp = false;
+bool isURL = false;
 
 #define TIMESHIFT_SECONDS 3
 
@@ -336,44 +334,61 @@ void CMovieInfoViewer::show(int Position)
 	// paint buttons
 	// red
 	// movie info
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxEndY - 18);
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	//if( isMovieBrowser || isVlc )
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 2 + 16 + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 5 + icon_w + 5, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
 	// audio
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxEndY - 18);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)+ 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 5, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// yellow
 	// help
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxEndY - 18);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	if( !isWebTV)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + 18, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 5, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
 		
 	// blue
 	// bookmark
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxEndY - 18);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + 18, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 5, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	/* mp keys */
-	frameBuffer->paintIcon("ico_mp_rewind", BoxEndX - 60 - 16*5, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_play", BoxEndX - 60 - 16*4, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_pause", BoxEndX - 60 - 16*3, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_stop", BoxEndX - 60 - 16*2, BoxEndY - 18);
-	frameBuffer->paintIcon("ico_mp_forward", BoxEndX - 60 - 16, BoxEndY - 18);
+	//frameBuffer->paintIcon("ico_mp_rewind", BoxEndX - 60 - 16*5, BoxEndY - 18);
+	//frameBuffer->paintIcon("ico_mp_play", BoxEndX - 60 - 16*4, BoxEndY - 18);
+	//frameBuffer->paintIcon("ico_mp_pause", BoxEndX - 60 - 16*3, BoxEndY - 18);
+	//frameBuffer->paintIcon("ico_mp_stop", BoxEndX - 60 - 16*2, BoxEndY - 18);
+	//frameBuffer->paintIcon("ico_mp_forward", BoxEndX - 60 - 16, BoxEndY - 18);
 		
 	// ac3
-	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD:NEUTRINO_ICON_DD_GREY, BoxEndX - 2 - 26, BoxEndY - 18);
+	int icon_w_ac3, icon_h_ac3;
+	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_ac3, &icon_h_ac3);
+	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - 5 - icon_w_ac3, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
 		
 	// 4:3/16:9
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
 				
 	if(videoDecoder->getAspectRatio() == 1)
 		aspect_icon = NEUTRINO_ICON_16_9;
-				
-	frameBuffer->paintIcon(aspect_icon, BoxEndX - 2 - 55, BoxEndY - 18);
+	
+	int icon_w_aspect, icon_h_aspect;
+	frameBuffer->getIconSize(aspect_icon, &icon_w_aspect, &icon_h_aspect);
+	frameBuffer->paintIcon(aspect_icon, /*BoxEndX*/BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
+	
+	/* mp keys */
+	frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
+	frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
 		
 	//playstate
 	const char *icon = "mp_play";
@@ -389,10 +404,7 @@ void CMovieInfoViewer::show(int Position)
 		case CMoviePlayerGui::STOPPED: break;
 	}
 
-	// get icon size
-	int icon_w = 0;
-	int icon_h = 0;
-		
+	// get icon size	
 	frameBuffer->getIconSize(icon, &icon_w, &icon_h);
 
 	//int icon_x = BoxStartX + 60 + 5;
@@ -607,8 +619,9 @@ void CMoviePlayerGui::cutNeutrino()
 	g_Zapit->lockPlayBack();
 		
 	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)		
-	playback->Close();
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+	  if(!isURL)
+		playback->Close();
 #endif		
 	//
 	
@@ -653,15 +666,18 @@ void CMoviePlayerGui::restoreNeutrino()
 	g_Sectionsd->setPauseScanning(false);
 		
 		//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)		
-	char fname[255];
-
-	if (strlen(rec_filename))
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
+	if(!isURL)
 	{
-		sprintf(fname, "%s.ts", rec_filename);
-			
-		playback->Open();
-		playback->Start(fname);
+		char fname[255];
+
+		if (strlen(rec_filename))
+		{
+			sprintf(fname, "%s.ts", rec_filename);
+				
+			playback->Open();
+			playback->Start(fname);
+		}
 	}
 #endif		
 	//
@@ -726,7 +742,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	isVlc = false;
 	isDVD = false;
 	isBlueRay = false;
-	isUpnp = false;
+	isURL = false;
 
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
@@ -740,7 +756,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -753,7 +769,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -765,7 +781,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -792,7 +808,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -804,7 +820,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		timeshift = 0;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -816,7 +832,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isBlueRay = false;
 		isDVD = true;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
@@ -828,11 +844,11 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = true;
-		isUpnp = false;
+		isURL = false;
 		
 		PlayFile();
 	}
-	else if(actionKey == "upnpplayback")
+	else if(actionKey == "urlplayback")
 	{
 		isMovieBrowser = false;
 		timeshift = 0;
@@ -840,7 +856,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
-		isUpnp = true;
+		isURL = true;
 		
 		PlayFile();
 	}
@@ -1399,11 +1415,11 @@ void CMoviePlayerGui::PlayFile(void)
 #endif		
 	}
 	
-	if(isUpnp)
+	if(isURL)
 	{
 		open_filebrowser = false;
 							
-		sel_filename = "UPNP Video Player";
+		sel_filename = "Movie Player";
 		
 		update_lcd = true;
 		start_play = true;
@@ -2996,7 +3012,7 @@ void CMoviePlayerGui::PlayFile(void)
 	if(MovieInfoViewer.IsVisible())
 		MovieInfoViewer.hide();
 	
-	//playback->Close();
+	playback->Close();
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);

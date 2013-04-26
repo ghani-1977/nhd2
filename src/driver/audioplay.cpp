@@ -118,7 +118,7 @@ void CAudioPlayer::rev(unsigned int seconds)
 
 CAudioPlayer * CAudioPlayer::getInstance()
 {
-	static CAudioPlayer* AudioPlayer = NULL;
+	static CAudioPlayer * AudioPlayer = NULL;
 	
 	if(AudioPlayer == NULL)
 	{
@@ -128,7 +128,7 @@ CAudioPlayer * CAudioPlayer::getInstance()
 	return AudioPlayer;
 }
 
-void* CAudioPlayer::PlayThread( void* /*dummy*/ )
+void* CAudioPlayer::PlayThread( void * /*dummy*/ )
 {
 	int soundfd = -1;
 	
@@ -142,7 +142,7 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 			break;
 		}
 		getInstance()->m_played_time = position/1000;
-	}while(getInstance()->state != CBaseDec::STOP_REQ);	//(playback->GetPosition(position, duration));
+	}while(getInstance()->state != CBaseDec::STOP_REQ);
 #else
 	// Decode stdin to stdout.
 	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
@@ -159,7 +159,7 @@ void* CAudioPlayer::PlayThread( void* /*dummy*/ )
 	}	
 
 	getInstance()->state = CBaseDec::STOP;	
-#endif	
+#endif
 
 	pthread_exit(0);
 
@@ -173,13 +173,11 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 
 	getInstance()->clearFileData();
 
-	/* + transfer information from CAudiofile to member variable,
-		 so that it does not have to be gathered again
-	   + this assignment is important, otherwise the player would
-		 crash if the file currently played was deleted from the
-		 playlist
+	/* 
+	transfer information from CAudiofile to member variable, so that it does not have to be gathered again
+	this assignment is important, otherwise the player would crash if the file currently played was deleted from the playlist
 	*/
-	m_Audiofile = *file;
+	m_Audiofile = * file;
 
 	state = CBaseDec::PLAY;
 

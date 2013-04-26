@@ -69,6 +69,11 @@
 #include <gui/pictureviewer.h>
 #include <gui/movieplayer.h>
 
+#include <playback_cs.h>
+
+extern cPlayback * playback;
+extern char rec_filename[512];				// defined in stream2file.cpp
+
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -106,10 +111,10 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 
 	//g_Zapit->lockPlayBack();
 
-	//m_frameBuffer->loadBackgroundPic("mp3.jpg");
+	m_frameBuffer->loadBackgroundPic("mp3.jpg");
 	
 #if !defined USE_OPENGL
-	//m_frameBuffer->blit();
+	m_frameBuffer->blit();
 #endif
 
 	// tell neutrino we're in audio mode
@@ -134,8 +139,16 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	m_x = (((g_settings.screen_EndX - g_settings.screen_StartX) - (m_width + ConnectLineBox_Width)) / 2) + g_settings.screen_StartX + ConnectLineBox_Width;
 	m_y = (((g_settings.screen_EndY- g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
 
+	// stop playback
+	g_Zapit->lockPlayBack();
 	// Stop sectionsd
-	//g_Sectionsd->setPauseScanning(true);
+	g_Sectionsd->setPauseScanning(true);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	playback->Close();
+#endif	
+	//	
 
 	m_indexdevice = 0;
 	m_selecteddevice = 0;
@@ -146,10 +159,25 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 		CAudioPlayer::getInstance()->stop();
 	
-	//g_Zapit->unlockPlayBack();
+	// start playback
+	g_Zapit->unlockPlayBack();
 
 	// Start Sectionsd
-	//g_Sectionsd->setPauseScanning(false);
+	g_Sectionsd->setPauseScanning(false);
+	
+	//
+#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
+	char fname[255];
+
+	if (strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+			
+		playback->Open();
+		playback->Start(fname);
+	}
+#endif	
+	//
 
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
@@ -193,9 +221,9 @@ void CUpnpBrowserGui::splitProtocol(std::string &protocol, std::string &prot, st
 
 std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 {
-	XMLTreeParser *parser;
-	XMLTreeNode   *root, *node, *snode;
-	std::vector<UPnPEntry> *entries;
+	XMLTreeParser * parser;
+	XMLTreeNode   * root, * node, * snode;
+	std::vector<UPnPEntry> * entries;
 
 	parser = new XMLTreeParser("UTF-8");
 	parser->Parse(result.c_str(), result.size(), 1);
@@ -206,7 +234,7 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 	}
 	entries = new std::vector<UPnPEntry>;
 
-	for (node=root->GetChild(); node; node=node->GetNext())
+	for (node = root->GetChild(); node; node = node->GetNext())
 	{
 		bool isdir;
 		std::string title, artist = "", album = "", id, children;
@@ -310,12 +338,12 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 					if (prot != "http-get")
 						continue;
 
-					//
+					/*
 					if (mime.substr(0,6) == "image/" && pref < 1)
 					{
 						preferred = i;
 					}
-					//
+					*/
 					
 					if (mime == "image/jpeg" && pref < 1)
 					{
@@ -533,20 +561,8 @@ void CUpnpBrowserGui::playnext(void)
 		attribs.push_back(UPnPAttribute("RequestedCount", "1"));
 		attribs.push_back(UPnPAttribute("SortCriteria", ""));
 
-#if 0
-		try
-		{
-			results=m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
-		}
-		catch (std::runtime_error error)
-		{
-			//ShowMsgUTF(LOCALE_MESSAGEBOX_INFO, error.what(), CMessageBox::mbrBack, CMessageBox::mbBack, "info.raw");
-			m_folderplay = false;
-			return;
-		}
-#endif
 		results=m_devices[m_selecteddevice].SendSOAP("urn:schemas-upnp-org:service:ContentDirectory:1", "Browse", attribs);
-		for (i=results.begin(); i!=results.end(); i++)
+		for (i = results.begin(); i!=results.end(); i++)
 		{
 			if (i->first=="NumberReturned")
 			{
@@ -570,6 +586,7 @@ void CUpnpBrowserGui::playnext(void)
 			}
 		}
 		m_playid++;
+		
 		if ((entries != NULL) && (!(*entries)[0].isdir))
 		{
 			int preferred=(*entries)[0].preferred;
@@ -579,7 +596,7 @@ void CUpnpBrowserGui::playnext(void)
 				protocol=(*entries)[0].resources[preferred].protocol;
 				splitProtocol(protocol, prot, network, mime, additional);
 				
-				//
+				/*
 				if (mime.substr(0, 6) != "image/") 
 				{
 					m_frameBuffer->ClearFrameBuffer();
@@ -587,7 +604,7 @@ void CUpnpBrowserGui::playnext(void)
 					m_frameBuffer->blit();
 #endif					
 				}
-				//
+				*/
 				
 				if (mime == "audio/mpeg")
 				{
@@ -605,14 +622,17 @@ void CUpnpBrowserGui::playnext(void)
 					CAudioPlayer::getInstance()->play(&mp3, g_settings.audioplayer_highprio == 1);
 					return;
 				}
+				/*
 				else if (mime.substr(0,6) == "video/")
 				{
 					g_settings.streaming_server_url = std::string((*entries)[0].resources[preferred].url); //FIXME
 					if (CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 						CAudioPlayer::getInstance()->stop();
-					moviePlayerGui->exec(NULL, "upnpplayback");
+					moviePlayerGui->exec(NULL, "urlplayback");
 					return;
 				}
+				*/
+				/*
 				else if (mime.substr(0,6) == "image/")
 				{
 					g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
@@ -627,6 +647,7 @@ void CUpnpBrowserGui::playnext(void)
 					
 					return;
 				}
+				*/
 			}
 		} 
 		else 
@@ -662,10 +683,10 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 	std::vector<UPnPEntry> *entries;
 	unsigned int index, selected, dirnum;
 
-	index=0;
-	selected=0;
-	dirnum=0;
-	entries=NULL;
+	index = 0;
+	selected = 0;
+	dirnum = 0;
+	entries = NULL;
 
 	while (loop)
 	{
@@ -743,7 +764,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		if (changed)
 		{
 			paintItem(entries, selected - index, dirnum - index, index);
-			changed=false;
+			changed = false;
 		}
 
 		g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
@@ -755,8 +776,8 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		}
 		else if(msg == CRCInput::RC_home)
 		{
-			loop=false;
-			endall=true;
+			loop = false;
+			endall = true;
 		}
 		else if(msg == CRCInput::RC_left)
 		{
@@ -768,8 +789,8 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			selected--;
 			if (selected < index)
 			{
-				index-=m_listmaxshow;
-				rchanged=true;
+				index -= m_listmaxshow;
+				rchanged = true;
 			}
 			changed=true;
 		}
@@ -784,15 +805,15 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 			}
 			else
 				selected=0;
-			changed=true;
+			changed = true;
 		}
 		else if (msg_repeatok == CRCInput::RC_down && selected + 1 < dirnum)
 		{
 			selected++;
 			if (selected + 1 > index + m_listmaxshow)
 			{
-				index+=m_listmaxshow;
-				rchanged=true;
+				index += m_listmaxshow;
+				rchanged = true;
 			}
 			changed=true;
 		}
@@ -800,15 +821,15 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		{
 			if (index < ((dirnum - 1) / m_listmaxshow) * m_listmaxshow)
 			{
-				index+=m_listmaxshow;
-				selected+=m_listmaxshow;
+				index += m_listmaxshow;
+				selected += m_listmaxshow;
 				if (selected + 1 >= dirnum)
-					selected=dirnum - 1;
-				rchanged=true;
+					selected = dirnum - 1;
+				rchanged = true;
 			}
 			else
-				selected=dirnum - 1;
-			changed=true;
+				selected = dirnum - 1;
+			changed = true;
 		}
 		else if(msg == CRCInput::RC_right)
 		{
@@ -818,13 +839,14 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 				if (endall)
 					loop = false;
 			}
-			changed=true;
+			changed = true;
 		}
 		else if(msg == CRCInput::RC_ok)
 		{
 			if (!(*entries)[selected - index].isdir)
 			{
 				m_folderplay = false;
+				
 				int preferred=(*entries)[selected - index].preferred;
 				if (preferred != -1)
 				{
@@ -880,7 +902,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 #endif						
 						
 						g_settings.streaming_server_url = std::string((*entries)[selected - index].resources[preferred].url); //FIXME
-						moviePlayerGui->exec(NULL, "upnpplayback");
+						moviePlayerGui->exec(NULL, "urlplayback");
 						
 						changed = true;
 					}
@@ -896,6 +918,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 				m_playid = 0;
 				playnext();
 			}
+			
 			changed = true;
 		}
 		else if( msg == CRCInput::RC_yellow)
@@ -904,7 +927,6 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 				CAudioPlayer::getInstance()->stop();
 			m_folderplay = false;
 		}
-
 		else if(msg == NeutrinoMessages::RECORD_START ||
 			msg == NeutrinoMessages::ZAPTO ||
 			msg == NeutrinoMessages::STANDBY_ON ||
@@ -923,7 +945,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 		{
 			if( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all )
 				loop = false;
-			changed=true;
+			changed = true;
 		}
 
 		if (m_folderplay && (CAudioPlayer::getInstance()->getState() == CBaseDec::STOP))
@@ -997,6 +1019,7 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 		color   = COL_MENUCONTENT;
 		bgcolor = COL_MENUCONTENT_PLUS_0;
 	}
+	
 	m_frameBuffer->paintBoxRel(m_x, ypos, m_width - 15, m_fheight, bgcolor);
 
 	if (pos >= entry->size())
@@ -1114,7 +1137,7 @@ void CUpnpBrowserGui::paintDevice()
 	top = m_y + (m_height - m_info_height - 2 * m_buttonHeight);
 
 	int ButtonWidth = (m_width - 20) / 4;
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 1 * m_buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, m_buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_0);
 	::paintButtons(m_frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, m_x + 10, top + 4, ButtonWidth, 1, &RescanButton);
 

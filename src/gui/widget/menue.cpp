@@ -1600,7 +1600,7 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	{
 		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
+		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );
 	}
 	else if (CRCInput::isNumeric(directKey))
 	{
