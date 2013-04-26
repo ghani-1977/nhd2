@@ -151,6 +151,7 @@ static int icon_w_sd, icon_h_sd;
 static int icon_w_reso, icon_h_reso;
 static int icon_w_ca, icon_h_ca;
 static int icon_w_rt, icon_h_rt;
+static int TunerNumWidth;
 
 
 CInfoViewer::CInfoViewer ()
@@ -190,6 +191,7 @@ void CInfoViewer::Init()
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
 	frameBuffer->getIconSize("ca2_gray", &icon_w_ca, &icon_h_ca);
 	frameBuffer->getIconSize("radiotextoff", &icon_w_rt, &icon_h_rt);
+	TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T9", true);
 	//
 }
 
@@ -364,9 +366,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	int ChanNameY = BoxStartY + (ChanHeight / 2) + 5;	//oberkante schatten?
 	ChanInfoX = BoxStartX + (ChanWidth / 3);
 
-	asize = (BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 102) - ChanInfoX;
-	asize = asize - (NEUTRINO_ICON_BUTTON_RED_WIDTH+6)*4;
-	asize = asize / 4;
+	// button cell width
+	asize = (BoxWidth - ( 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
 	
 	// infobar shadow
 	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -495,8 +496,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2, BoxEndY - 20 + (20 - icon_h)/2);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, BoxEndY + 2, ButtonWidth - (2 + icon_w + 2 + 2), g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5 + asize, BoxEndY - 20 + (20 - icon_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5, BoxEndY + 2, asize - 5 - icon_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	}
 
 	if( showButtonBar )
@@ -516,8 +517,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2, BoxEndY - 20 + (20 - icon_h)/2 );
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2 + asize + 2 + icon_w + 2, BoxEndY + 2, asize, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize, BoxEndY - 20 + (20 - icon_h)/2 );
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5, BoxEndY + 2, asize - 5 - icon_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 		}
 		else
 			showButton_SubServices();
@@ -826,7 +827,7 @@ void CInfoViewer::showSubchan()
 			int icon_w;
 			int icon_h;
 		
-			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	
 	  		frameBuffer->paintIcon (NEUTRINO_ICON_BUTTON_YELLOW, x + 8, y + dy - 20);
 	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30 - icon_w + icon_w, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
@@ -893,7 +894,7 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 				}
 		}
 		
-		frameBuffer->paintIcon(rt_icon, BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt - 2 - icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd -2 - icon_w_reso - 2 - icon_w_ca -2 - icon_w_rt, BoxEndY - 20 + (20 - icon_h_rt)/2);
+		frameBuffer->paintIcon(rt_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY - 20 + (20 - icon_h_rt)/2);
 	}
 #endif
 }
@@ -907,12 +908,12 @@ void CInfoViewer::showIcon_16_9()
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	if (is_visible)
-		frameBuffer->paintIcon(aspect_icon, BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt -2 - icon_w_dd - 2 - icon_w_aspect, BoxEndY - 20 + (20 - icon_h_aspect)/2 );
+		frameBuffer->paintIcon(aspect_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), BoxEndY - 20 + (20 - icon_h_aspect)/2 );
 }
 
 void CInfoViewer::showIcon_VTXT () const
 {
-	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt, BoxEndY - 20 + (20 - icon_h_vtxt)/2 );
+	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt), BoxEndY - 20 + (20 - icon_h_vtxt)/2 );
 }
 
 void CInfoViewer::showIcon_Resolution() const
@@ -957,9 +958,9 @@ void CInfoViewer::showIcon_Resolution() const
 				break;	
 		}
 		
-		frameBuffer->paintBoxRel(BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt -2 -icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd, BoxEndY - 20 + (20 - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
 		if(icon_name_res !=NEUTRINO_ICON_RESOLUTION_000)
-			frameBuffer->paintIcon(icon_name_res, BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt -2 -icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd, BoxEndY - 20 + (20 - icon_h_sd)/2 );
+			frameBuffer->paintIcon(icon_name_res, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2 );
 		
 		// resolution
 		switch (yres) 
@@ -1023,9 +1024,9 @@ void CInfoViewer::showIcon_Resolution() const
 		}
 	
 
-		frameBuffer->paintBoxRel(BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt -2 -icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd -2 - icon_w_reso, BoxEndY - 20 + (20 - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
 		if(icon_name !=NEUTRINO_ICON_RESOLUTION_000)
-			frameBuffer->paintIcon(icon_name, BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt -2 -icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd - 2 - icon_w_reso, BoxEndY - 20 + (20 - icon_h_reso)/2 );
+			frameBuffer->paintIcon(icon_name, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2 );
 	}
 }
 
@@ -1037,7 +1038,7 @@ void CInfoViewer::showIcon_SubT() const
 	if(cc && cc->getSubtitleCount())
 		have_sub = true;
 
-        frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - 2 - icon_w_subt, BoxEndY - 20 + (20 - icon_h_subt)/2 );
+        frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (2 + icon_w_subt), BoxEndY - 20 + (20 - icon_h_subt)/2 );
 }
 
 void CInfoViewer::showFailure ()
@@ -1577,7 +1578,8 @@ void CInfoViewer::showSNR()
 					if(live_fe != NULL)
 						sprintf(AktivTuner, "T%d", (Index + 1));
 					
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2*ICON_LARGE_WIDTH + 2*ICON_SMALL_WIDTH + 4*2) - 140, BoxEndY+2, ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2), AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+					//int TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T8", true);
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth), BoxEndY + 2, /*ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2)*/TunerNumWidth, AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 				}
 
 				//sig = (ssig & 0xFFFF) * 100 / 65535;
@@ -1726,7 +1728,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		
 				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, BoxEndY - 20 + (20 - icon_h)/2 );
 				
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 2, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 5, BoxEndY + 2, asize - 5, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	  		}
 		}
 
@@ -1835,7 +1837,7 @@ void CInfoViewer::showIcon_Audio(const int ac3state) const
 			break;
 	}
 
-	frameBuffer->paintIcon(dd_icon, BoxEndX - 2 - icon_w_subt -2 - icon_w_vtxt - 2 - icon_w_dd, BoxEndY - 20 + (20 - icon_h_dd)/2 );
+	frameBuffer->paintIcon(dd_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), BoxEndY - 20 + (20 - icon_h_dd)/2 );
 	
 	CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, (ac3state == AC3_ACTIVE)? true:false); //FIXME: remove to remotecontrol
 }
@@ -1849,13 +1851,13 @@ void CInfoViewer::showButton_Audio()
 	int icon_h;
 		
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
-  	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, ChanInfoX + 2 + icon_w + 2 + asize + 2, BoxEndY - 20 + (20 - icon_h)/2 );
+  	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + 5 + icon_w + 5 + asize, BoxEndY - 20 + (20 - icon_h)/2 );
 
   	if (count > 0) 
 	{
-		int sx = ChanInfoX + 2 + icon_w + 2 + asize + 2 + icon_w + 2;
+		int sx = BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5;
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, BoxEndY + 2, asize, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, BoxEndY + 2, asize - 5 - icon_w, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 
   	//const char *dd_icon;
@@ -1969,7 +1971,7 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 			}
 		}
 		
-		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - 2 - icon_w_subt - 2 - icon_w_vtxt - 2 - icon_w_dd - 2 - icon_w_aspect - 2 - icon_w_sd -2 - icon_w_reso - 2 - icon_w_ca, BoxEndY - 20 + (20 - icon_h_ca)/2 );
+		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca), BoxEndY - 20 + (20 - icon_h_ca)/2 );
 #if !defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
 #endif			
