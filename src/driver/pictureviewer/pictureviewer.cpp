@@ -509,8 +509,6 @@ void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height)
 	char fname[255];
 	bool logo_ok = false;
 	
-	//int logo_w, logo_h;
-	
 	// first png, then jpg, then gif
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
 	
@@ -541,7 +539,8 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 	bool ret = false;
 	bool logo_ok = false;
 	
-	int logo_w, logo_h;
+	int logo_w = width;
+	int logo_h = height;
 	
 	// first png, then jpg, then gif
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };

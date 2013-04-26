@@ -101,10 +101,6 @@ static int skt = -1; //dirty hack to close socket when stop playing
 #define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
 
-
-//extern int dvbsub_start(int pid);
-//extern int dvbsub_pause();
-
 extern cPlayback * playback;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
@@ -336,41 +332,34 @@ void CMovieInfoViewer::show(int Position)
 	// movie info
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	//if( isMovieBrowser || isVlc )
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 5 + icon_w + 5, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 5 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
 	// audio
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 5, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// yellow
 	// help
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	if( !isWebTV)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 5, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
 		
 	// blue
 	// bookmark
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, /*BoxEndY - 18*/BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 5, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-		
-	/* mp keys */
-	//frameBuffer->paintIcon("ico_mp_rewind", BoxEndX - 60 - 16*5, BoxEndY - 18);
-	//frameBuffer->paintIcon("ico_mp_play", BoxEndX - 60 - 16*4, BoxEndY - 18);
-	//frameBuffer->paintIcon("ico_mp_pause", BoxEndX - 60 - 16*3, BoxEndY - 18);
-	//frameBuffer->paintIcon("ico_mp_stop", BoxEndX - 60 - 16*2, BoxEndY - 18);
-	//frameBuffer->paintIcon("ico_mp_forward", BoxEndX - 60 - 16, BoxEndY - 18);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// ac3
 	int icon_w_ac3, icon_h_ac3;
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_ac3, &icon_h_ac3);
-	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - 5 - icon_w_ac3, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
+	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - 5 - icon_w_ac3, BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
 		
 	// 4:3/16:9
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
@@ -380,7 +369,7 @@ void CMovieInfoViewer::show(int Position)
 	
 	int icon_w_aspect, icon_h_aspect;
 	frameBuffer->getIconSize(aspect_icon, &icon_w_aspect, &icon_h_aspect);
-	frameBuffer->paintIcon(aspect_icon, /*BoxEndX*/BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect, /*BoxEndY - 18*/BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
+	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
 	
 	/* mp keys */
 	frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);

@@ -679,18 +679,26 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 
         //show Content&Component for Dolby & 16:9
         CSectionsdClient::ComponentTagList tags;
-	//if ( g_Sectionsd->getComponentTagsUniqueKey( epgData.eventID, tags ) )
+	
 	if ( sectionsd_getComponentTagsUniqueKey( epgData.eventID, tags ) )
         {
-                for (unsigned int i=0; i< tags.size(); i++)
+                for (unsigned int i = 0; i < tags.size(); i++)
                 {
+			int icon_w_aspect = 0;
+			int icon_h_aspect = 0;
+			int icon_w_dd = 0;
+			int icon_h_dd = 0;
+			
+			frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
+			frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
+			
                         if( tags[i].streamContent == 1 && (tags[i].componentType == 2 || tags[i].componentType == 3) )
                         {
-                                frameBuffer->paintIcon(NEUTRINO_ICON_16_9, ox+sx-(ICON_LARGE_WIDTH+2)-(ICON_LARGE_WIDTH+2),sy + oy+5 );
+                                frameBuffer->paintIcon(NEUTRINO_ICON_16_9, ox + sx - 2 - icon_w_aspect, sy + oy + 5 );
                         }
                         else if( tags[i].streamContent == 2 && tags[i].componentType == 5 )
                         {
-                                frameBuffer->paintIcon(NEUTRINO_ICON_DD, ox+sx-(ICON_LARGE_WIDTH+2), sy + oy+5);
+                                frameBuffer->paintIcon(NEUTRINO_ICON_DD, ox + sx - 2 - icon_w_dd - 2 - icon_w_aspect, sy + oy + 5);
                         }
                 }
         }
@@ -1174,29 +1182,35 @@ void CEpgData::showTimerEventBar (bool show)
 	}
 
 	frameBuffer->paintBoxRel(x, y, w, h, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);//round
+	
+	int icon_w = 0;
+	int icon_h = 0;
 
 	// Button Red: Timer Record & Channelswitch
 	if (recDir != NULL)
 	{
 		pos = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, x + 8 + cellwidth*pos, y + h_offset );
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 29 + cellwidth*pos, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 8 + icon_w + 2 + cellwidth*pos, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
 	}
 	
 	// --Button Green: empty
-	pos = 1;
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x + 8 + cellwidth*pos, y + h_offset );
+	//pos = 1;
+	//frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x + 8 + cellwidth*pos, y + h_offset );
 	
 	// Button Yellow: Timer Channelswitch
 	pos = 2;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x + 8 + cellwidth*pos, y + h_offset );
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 29 + cellwidth*pos, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + 8 + cellwidth*pos + icon_w + 2, y + h - h_offset, w - 30, g_Locale->getText(LOCALE_TIMERBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
 	
 	
 	// --Button Blue: empty
-	pos = 3;
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, x + 8 + cellwidth*pos, y + h_offset );
+	//pos = 3;
+	//frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, x + 8 + cellwidth*pos, y + h_offset );
 }
 
 //  -- EPG Data Viewer Menu Handler Class

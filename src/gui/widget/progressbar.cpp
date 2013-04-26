@@ -25,8 +25,6 @@
 
 CProgressBar::CProgressBar(int w, int h, int r, int g, int b, bool inv)
 {
-	//printf("new SCALE, w %d h %d size %d\n", w, h, sizeof(CScale)); fflush(stdout);
-	
 	frameBuffer = CFrameBuffer::getInstance ();
 	
 	double div;
@@ -59,8 +57,6 @@ void CProgressBar::paint (unsigned int x, unsigned int y, const unsigned int pcr
 	i = 0;
 	xpos = x;
 	ypos = y;
-	
-	dprintf(DEBUG_NORMAL, "CScale::paint: old %d new %d x %d y %d\n", percent, pcr, x, y);
 	
 	if (pcr != percent) 
 	{
