@@ -380,7 +380,18 @@ void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 	bool logo_ok = false;
 	
 	if(g_settings.epgplus_show_logo)
-		logo_ok = g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2, true);
+	{
+		int logo_w = this->width -2; 
+		int logo_h = this->font->getHeight() - 2;
+		int logo_bpp = 0;
+		
+		// get logo size	
+		g_PicViewer->getLogoSize(this->channel->getChannelID(), &logo_w, &logo_h, &logo_bpp);
+		
+		// paint logo
+		if(logo_bpp == 4)
+			logo_ok = g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2, true);
+	}
 	
 	if(!logo_ok)
 		// display channel number+ channel name
