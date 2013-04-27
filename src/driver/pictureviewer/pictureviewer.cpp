@@ -468,16 +468,40 @@ bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, 
 }
 
 // get size
-void CPictureViewer::getSize(const char * name, int * width, int * height)
+extern int fh_png_id(const char *name);
+extern int png_load_ext(const char * name, unsigned char ** buffer, int * xp, int * yp, int * bpp);
+void CPictureViewer::getSize(/*const char * name*/const std::string &name, int * width, int * height, int * nbpp)
 {
+	unsigned char * rgbbuff;
+	int x, y;
+	int bpp = 0;
+	int load_ret;
+	
 	CFormathandler * fh;
 
-	fh = fh_getsize(name, width, height, INT_MAX, INT_MAX);
+	fh = fh_getsize(name.c_str(), /*width*/&x, /*height*/&y, INT_MAX, INT_MAX);
 	
 	if (fh == NULL) 
 	{
 		*width = 0;
 		*height = 0;
+	}
+	
+	rgbbuff = (unsigned char *) malloc (x*y*4);
+	
+	if (rgbbuff != NULL) 
+	{
+		if ((name.find(".png") == (name.length() - 4)) && (fh_png_id(name.c_str())))
+			load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
+		else
+			load_ret = fh->get_pic(name.c_str(), &rgbbuff, &x, &y);
+		
+		if(load_ret == FH_ERROR_OK)
+		{
+			*nbpp = bpp;
+			*width = x;
+			*height = y;
+		} 
 	}
 }
 
@@ -504,7 +528,7 @@ bool CPictureViewer::checkLogo(uint64_t channel_id)
 	return logo_ok;
 }
 
-void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height)
+void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height, int * bpp)
 {
 	char fname[255];
 	bool logo_ok = false;
@@ -525,10 +549,10 @@ void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height)
 	
 	if(logo_ok)
 	{
-		std::string logo_name = fname; // UTF-8
+		//std::string logo_name = fname; // UTF-8
 		
 		// get logo real size
-		getSize(fname, width, height);
+		getSize(fname, width, height, bpp);
 	}
 }
 
@@ -541,6 +565,7 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 	
 	int logo_w = width;
 	int logo_h = height;
+	int logo_bpp = 0;
 	
 	// first png, then jpg, then gif
 	std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
@@ -564,10 +589,10 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		if( logo_name.find(".png") == (logo_name.length() - 4) )
 		{
 			// scale logo
-			if(!upscale)
+			if(upscale)
 			{
 				// get logo real size
-				getSize(fname, &logo_w, &logo_h);
+				getSize(fname, &logo_w, &logo_h, &logo_bpp);
 				
 				//rescale logo image
 				float aspect = (float)(logo_w) / (float)(logo_h);
