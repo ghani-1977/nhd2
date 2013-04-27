@@ -101,7 +101,7 @@ static int skt = -1; //dirty hack to close socket when stop playing
 #define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
 
-extern cPlayback * playback;
+cPlayback * playback = NULL;
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -1543,7 +1543,6 @@ void CMoviePlayerGui::PlayFile(void)
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
 			FileTime.SetMode(CTimeOSD::MODE_ASC);
-			//FileTime.show( (position / 1000));
 			FileTime.update(position/1000);
 		}
 
