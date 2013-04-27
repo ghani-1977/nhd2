@@ -42,8 +42,6 @@
 
 static const char * FILENAME = "[playback_cs.cpp]";
 
-cPlayback * playback = NULL;
-
 #if defined ENABLE_GSTREAMER
 #include <gst/gst.h>
 #include <gst/pbutils/missing-plugins.h>
@@ -54,7 +52,7 @@ GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
-static bool end_eof = false;
+bool end_eof = false;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -76,7 +74,7 @@ gint match_sinktype(GstElement *element, gpointer type)
 
 GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 {
-	cPlayback *obj = (cPlayback *)user_data;
+	//cPlayback *obj = (cPlayback *)user_data;
 	
 	//NOTE: borrowed from e2 :)
 	//source name
@@ -87,7 +85,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	source = GST_MESSAGE_SRC(msg);
 	
 	if (!GST_IS_OBJECT(source))
-		return GST_BUS_PASS;
+		return GST_BUS_DROP;
 	
 	sourceName = gst_object_get_name(source);
 
@@ -100,6 +98,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			//
 			//obj->Close();
 			//obj->playing = false;
+			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
 			end_eof = false;
 			//
 			break;
@@ -115,6 +114,13 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			//g_error("%s", err->message);
 			printf("cPlayback:: Gstreamer error: %s (%i)\n", err->message, err->code );
 			
+			//
+			//obj->playing = false;
+			//obj->Close();
+			//dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
+			//end_eof = true;
+			//
+			
 			if ( err->domain == GST_STREAM_ERROR )
 			{
 				if ( err->code == GST_STREAM_ERROR_CODEC_NOT_FOUND )
@@ -125,14 +131,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 						printf("%s %s - audioSink\n", FILENAME, __FUNCTION__); //FIXME: how shall playback handle this event???
 				}
 			}
-			g_error_free(err);
-			
-			//
-			//obj->playing = false;
-			//obj->Close();
-			end_eof = true;
-			//
-			
+			g_error_free(err);	
 			break;
 		}
 
@@ -245,7 +244,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			break;
 	}
 
-	return GST_BUS_PASS;
+	return GST_BUS_DROP;
 }
 #endif
 
@@ -434,7 +433,7 @@ bool cPlayback::Start(char * filename)
 		
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, Gst_bus_call, this);
+		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
 		gst_object_unref(bus);
 		
 		// state playing
@@ -762,7 +761,10 @@ bool cPlayback::GetPosition(int &position)
 
 #if ENABLE_GSTREAMER
 	if(end_eof)
+	{
+		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
 		return false;
+	}
 	
 	if(m_gst_playbin)
 	{
