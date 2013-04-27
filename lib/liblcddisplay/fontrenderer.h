@@ -40,18 +40,17 @@
 #include <asm/types.h>
 
 
-
 class LcdFontRenderClass;
 class LcdFont
 {
-        CLCDDisplay             *framebuffer;
+        CLCDDisplay             * framebuffer;
 #if FREETYPE_MAJOR >= 2 && FREETYPE_MINOR >= 3
         FTC_ImageTypeRec        font;
 #else
         FTC_Image_Desc  font;
         FT_Face                 face;
 #endif
-        LcdFontRenderClass *renderer;
+        LcdFontRenderClass * renderer;
         FT_Size                 size;
 
         FT_Error getGlyphBitmap(FT_ULong glyph_index, FTC_SBit *sbit);
@@ -65,10 +64,9 @@ class LcdFont
                 ~LcdFont(){}
 };
 
-
 class LcdFontRenderClass
 { 
-	CLCDDisplay *framebuffer;
+	CLCDDisplay * framebuffer;
 
 	struct fontListEntry
 	{
@@ -94,9 +92,7 @@ class LcdFontRenderClass
 		const char * AddFont(const char * const filename);
 		void InitFontCache();
 
-		FT_Error FTC_Face_Requester(FTC_FaceID  face_id,
-                              FT_Face*    aface);
-
+		FT_Error FTC_Face_Requester(FTC_FaceID  face_id, FT_Face * aface);
 
 		static FT_Error myFTC_Face_Requester(FTC_FaceID  face_id,
                             FT_Library  library,

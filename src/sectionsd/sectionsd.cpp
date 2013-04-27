@@ -672,8 +672,7 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 	{
 		/* if the new event has a lower (== more recent) table ID, replace the old one */
 		already_exists = false;
-		dprintf(DEBUG_DEBUG, "replacing event %016llx:%02x with %04x:%02x '%.40s'\n", si->second->uniqueKey(),
-			si->second->table_id, evt.eventID, evt.table_id, evt.getName().c_str());
+		dprintf(DEBUG_DEBUG, "replacing event %016llx:%02x with %04x:%02x '%.40s'\n", si->second->uniqueKey(), si->second->table_id, evt.eventID, evt.table_id, evt.getName().c_str());
 	}
 	else if (already_exists && ( (evt.table_id == 0x51 || evt.table_id == 0x50 || evt.table_id == 0x4e) && evt.table_id == si->second->table_id && evt.version != si->second->version ))
 	{
@@ -1146,8 +1145,7 @@ static void removeDupEvents(void)
 
 		if ((*e1)->table_id == (*e2)->table_id)
 		{
-			dprintf(DEBUG_DEBUG, "%s: not removing events %llx %llx, t:%02x '%s'\n", __func__,
-				(*e1)->uniqueKey(), (*e2)->uniqueKey(), (*e1)->table_id, (*e1)->getName().c_str());
+			dprintf(DEBUG_DEBUG, "%s: not removing events %llx %llx, t:%02x '%s'\n", __func__, (*e1)->uniqueKey(), (*e2)->uniqueKey(), (*e1)->table_id, (*e1)->getName().c_str());
 			continue;
 		}
 
@@ -1156,8 +1154,7 @@ static void removeDupEvents(void)
 		if ((*e1)->table_id < (*e2)->table_id)
 			del = e2;
 
-		dprintf(DEBUG_DEBUG, "%s: removing event %llx.%02x '%s'\n", __func__,
-			(*del)->uniqueKey(), (*del)->table_id, (*del)->getName().c_str());
+		dprintf(DEBUG_DEBUG, "%s: removing event %llx.%02x '%s'\n", __func__, (*del)->uniqueKey(), (*del)->table_id, (*del)->getName().c_str());
 		/* remember the unique ID for later deletion */
 		to_delete.push_back((*del)->uniqueKey());
 	}
@@ -1202,9 +1199,7 @@ static void removeWasteEvents()
 			if (!lastidfound) 
 			{
 				validevent = false;
-				dprintf(DEBUG_DEBUG, "Same ONID:%04x TSID:%04x SID:%04x\n",last_original_network_id,
-					last_transport_stream_id,
-					last_service_id);
+				dprintf(DEBUG_DEBUG, "Same ONID:%04x TSID:%04x SID:%04x\n",last_original_network_id, last_transport_stream_id, last_service_id);
 			}
 		}
 		else 

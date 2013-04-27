@@ -80,7 +80,7 @@ class nGLCD
 		bool doMirrorOSD;
 		nGLCD();
 		~nGLCD();
-		static nGLCD *getInstance();
+		static nGLCD * getInstance();
 		void DeInit();
 		static void Lock();
 		static void Unlock();
@@ -88,7 +88,7 @@ class nGLCD
 		void mainUnlock();
 		static void lockChannel(std::string &c);
 		static void unlockChannel();
-		static void* Run(void *);
+		static void * Run(void *);
 		static void MirrorOSD(bool b = true);
 		static void Update();
 		static void Suspend();
@@ -99,4 +99,5 @@ class nGLCD
 		void Rescan();
 		sem_t sem;
 };
+
 #endif

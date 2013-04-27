@@ -60,7 +60,7 @@ LcdFontRenderClass::LcdFontRenderClass(CLCDDisplay * fb)
 		return;
 	}
 	printf("\n");
-	font=0;
+	font = 0;
 	pthread_mutex_init(&render_mutex, NULL);
 }
 
@@ -104,7 +104,7 @@ FT_Error LcdFontRenderClass::FTC_Face_Requester(FTC_FaceID  face_id, FT_Face*   
 	printf("[LCDFONT] FTC_Face_Requester (%s/%s)\n", font->family, font->style);
 
 	int error;
-	if ((error=FT_New_Face(library, font->filename, 0, aface)))
+	if ((error = FT_New_Face(library, font->filename, 0, aface)))
 	{
 		printf(" failed: %i\n", error);
 		return error;
@@ -206,52 +206,6 @@ FT_Error LcdFont::getGlyphBitmap(FT_ULong glyph_index, FTC_SBit *sbit)
 }
 
 extern int UTF8ToUnicode(const char * &text, const bool utf8_encoded);	//defined in src/driver/fontrenderer.cpp
-/*
-int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on error
-{
-	int unicode_value;
-	
-	if (utf8_encoded && ((((unsigned char)(*text)) & 0x80) != 0))
-	{
-		int remaining_unicode_length;
-		if ((((unsigned char)(*text)) & 0xf8) == 0xf0)
-		{
-			unicode_value = ((unsigned char)(*text)) & 0x07;
-			remaining_unicode_length = 3;
-		}
-		else if ((((unsigned char)(*text)) & 0xf0) == 0xe0)
-		{
-			unicode_value = ((unsigned char)(*text)) & 0x0f;
-			remaining_unicode_length = 2;
-		}
-		else if ((((unsigned char)(*text)) & 0xe0) == 0xc0)
-		{
-			unicode_value = ((unsigned char)(*text)) & 0x1f;
-			remaining_unicode_length = 1;
-		}
-		else                     // cf.: http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-			return -1;       // corrupted character or a character with > 4 bytes utf-8 representation
-		
-		for (int i = 0; i < remaining_unicode_length; i++)
-		{
-			text++;
-			if (((*text) & 0xc0) != 0x80)
-			{
-				remaining_unicode_length = -1;
-				return -1;          // incomplete or corrupted character
-			}
-			unicode_value <<= 6;
-			unicode_value |= ((unsigned char)(*text)) & 0x3f;
-		}
-		if (remaining_unicode_length == -1)
-			return -1;                  // incomplete or corrupted character
-	}
-	else
-		unicode_value = (unsigned char)(*text);
-
-	return unicode_value;
-}
-*/
 
 void LcdFont::RenderString(int x, int y, const int width, const char * text, const int color, const int selected, const bool utf8_encoded)
 {

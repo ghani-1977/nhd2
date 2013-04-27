@@ -45,7 +45,8 @@ static nGLCD *nglcd = NULL;
 void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
 void sectionsd_getCurrentNextServiceKey(t_channel_id uniqueServiceKey, CSectionsdClient::responseGetCurrentNextInfoChannelID& current_next );
 
-nGLCD::nGLCD() {
+nGLCD::nGLCD() 
+{
 	lcd = NULL;
 	Channel = "NeutrinoHD";
 	Epg = "NeutrinoHD2";

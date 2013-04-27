@@ -20,7 +20,7 @@ class CProgressBar
 
 	public:
 		CProgressBar(int w, int h, int r, int g, int b, bool inv = false);
-		void paint(unsigned int x, unsigned int y, const unsigned int pcr);
+		void paint(unsigned int x, unsigned int y, unsigned char pcr);
 		void reset();
 		int getPercent() { return percent; };
 };

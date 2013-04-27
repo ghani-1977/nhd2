@@ -86,6 +86,7 @@ extern char rec_filename[512];				// defined in stream2file.cpp
 
 extern CPictureViewer * g_PicViewer;
 extern int current_muted;
+bool isURL = false;
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -142,8 +143,10 @@ struct MemoryStruct {
 
 static void *myrealloc(void *ptr, size_t size)
 {
-	/* There might be a realloc() out there that doesn't like reallocing
-	NULL pointers, so we take care of it here */
+	/* 
+	There might be a realloc() out there that doesn't like reallocing
+	NULL pointers, so we take care of it here 
+	*/
 	if(ptr)
 		return realloc(ptr, size);
 	else
@@ -281,9 +284,6 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	bool usedBackground = m_frameBuffer->getuseBackground();
 	if (usedBackground)
 		m_frameBuffer->saveBackgroundImage();
-	
-	// stop/lock live playback	
-	//g_Zapit->lockPlayBack();
 	
 	//show audio background pic
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
@@ -1997,7 +1997,10 @@ void CAudioPlayerGui::paintInfo()
 		
 		// show cover
         	if ( SaveCover(m_curr_audiofile) )
-			g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		}
 
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		xstart=(m_width-w)/2;
