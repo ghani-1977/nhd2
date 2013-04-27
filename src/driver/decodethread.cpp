@@ -46,7 +46,6 @@ SWDecoder::SWDecoder() : mFinish(false)
 	memset(&mState, 0, sizeof(mState));
 }
 
-
 SWDecoder::SWDecoder(SWDecoder &rhs)
 {
 	/* lock rhs only since this is not usable yet */

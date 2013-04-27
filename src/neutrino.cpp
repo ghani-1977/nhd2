@@ -1467,7 +1467,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	if(g_settings.make_hd_list)
 		hdBouquet->channelList->SortSat();
 
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV (%d is HD) and %d RADIO channels\n", tvi, hi, ri); fflush(stdout);
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV (%d is HD) and %d RADIO channels\n", tvi, hi, ri);
 
 	CBouquet * tmp;
 
@@ -1550,7 +1550,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	if(g_settings.make_hd_list)
 		TVfavList->Bouquets.push_back(hdBouquet);
 	
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV bouquets\n", bnum); fflush(stdout);
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d TV bouquets\n", bnum);
 
 	// radio fav list
 	bnum = 0;
@@ -1574,7 +1574,7 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 		}
 	}
 	
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d RADIO bouquets\n", bnum); fflush(stdout);
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: got %d RADIO bouquets\n", bnum);
 
 	SetChannelMode( g_settings.channel_mode);
 
@@ -3149,7 +3149,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			int old_b = bouquetList->getActiveBouquetNumber();
 			int old_mode = g_settings.channel_mode;
 			
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: ZAP START: bouquetList %x size %d old_b %d\n", (int) bouquetList, bouquetList->Bouquets.size(), old_b);fflush(stdout);
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: ZAP START: bouquetList %x size %d old_b %d\n", (int) bouquetList, bouquetList->Bouquets.size(), old_b);
 
 			if(bouquetList->Bouquets.size()) 
 			{
@@ -3175,7 +3175,6 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			}
 _repeat:
 			dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: ZAP RES: nNewChannel %d\n", nNewChannel);
-			fflush(stdout);
 
 			if(nNewChannel == -1) 
 			{
@@ -3192,7 +3191,6 @@ _repeat:
 			{ 
 				// list mode changed
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: bouquetList %x size %d\n", (int) bouquetList, bouquetList->Bouquets.size());
-				fflush(stdout);
 				nNewChannel = bouquetList->exec(true);
 				goto _repeat;
 			}
@@ -3718,7 +3716,7 @@ skip_message:
 		{
 			if( mode != mode_radio ) 
 			{
-				if((data & norezap)==norezap)
+				if((data & norezap) == norezap)
 					radioMode(false);
 				else
 					radioMode(true);
@@ -3733,7 +3731,7 @@ skip_message:
 		{
 			if( mode != mode_tv ) 
 			{
-				if((data & norezap)==norezap)
+				if((data & norezap) == norezap)
 					tvMode(false);
 				else
 					tvMode(true);
@@ -4224,7 +4222,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 
 	bool stopauto = (mode != mode_ts);	
 	mode = mode_tv;
-
+	
 #if !defined (ENABLE_LIVEVIEW) && !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)	
 	if(stopauto && autoshift) 
 	{
@@ -4251,7 +4249,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 	{
 		firstChannel();
 		channelList->tuned = 0xfffffff;;
-		channelList->zapTo( firstchannel.channelNumber -1 );
+		channelList->zapTo( firstchannel.channelNumber - 1 );
 	}
 }
 

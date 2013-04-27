@@ -127,6 +127,7 @@ void GLThreadObj::run()
 	{
 		printf("GLThread: error initializing glew: %d\n", err);
 	}
+	
 	if(g_RCInput)
 	{
 		g_RCInput->postMsg(NeutrinoMessages::SHUTDOWN, 0);
@@ -137,7 +138,6 @@ void GLThreadObj::run()
 	}
 	std::cout << "GL thread stopping" << std::endl;
 }
-
 
 void GLThreadObj::setupCtx()
 {
@@ -151,7 +151,6 @@ void GLThreadObj::setupCtx()
 	glutCreateWindow("Neutrino");
 }
 
-
 void GLThreadObj::setupOSDBuffer()
 {	/* the OSD buffer size can be decoupled from the actual
 	   window size since the GL can blit-stretch with no
@@ -163,7 +162,6 @@ void GLThreadObj::setupOSDBuffer()
 		printf("OSD buffer set to %d bytes\n", mState.width * mState.height * 4);
 	}
 }
-
 
 void GLThreadObj::setupGLObjects()
 {
@@ -183,7 +181,6 @@ void GLThreadObj::setupGLObjects()
 	glGenBuffers(1, &mState.pbo);
 	// glGenBuffers(1, &mState.displaypbo);
 }
-
 
 void GLThreadObj::releaseGLObjects()
 {

@@ -624,7 +624,11 @@ void CMoviePlayerGui::cutNeutrino()
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, NeutrinoMessages::mode_ts);
 	
 	// save (remeber) last mode
-	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode() | NeutrinoMessages::norezap);
+	m_LastMode = CNeutrinoApp::getInstance()->getLastMode();
+	
+#if !defined (ENABLE_LIVEVIEW) && !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)
+	m_LastMode |= NeutrinoMessages::norezap;
+#endif
 	
 	// start mp start-script
 	puts("[movieplayer.cpp] executing " MOVIEPLAYER_START_SCRIPT ".");
@@ -662,6 +666,9 @@ void CMoviePlayerGui::restoreNeutrino()
 
 	// tell neutrino that we are in the last mode
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, m_LastMode);
+	
+	//show infobar
+	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
 	
 	// start end script
 	puts("[movieplayer.cpp] executing " MOVIEPLAYER_END_SCRIPT ".");
