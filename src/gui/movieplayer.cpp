@@ -606,13 +606,6 @@ void CMoviePlayerGui::cutNeutrino()
 		
 	// lock playback
 	g_Zapit->lockPlayBack();
-		
-	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	  if(!isURL)
-		playback->Close();
-#endif		
-	//
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	/* hide AC3 Icon */
@@ -653,23 +646,6 @@ void CMoviePlayerGui::restoreNeutrino()
 		
 	// start epg scanning
 	g_Sectionsd->setPauseScanning(false);
-		
-		//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	if(!isURL)
-	{
-		char fname[255];
-
-		if (strlen(rec_filename))
-		{
-			sprintf(fname, "%s.ts", rec_filename);
-				
-			playback->Open();
-			playback->Start(fname);
-		}
-	}
-#endif		
-	//
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	//TODO: check if ac3 is selected???

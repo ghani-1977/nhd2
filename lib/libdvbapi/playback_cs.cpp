@@ -74,9 +74,6 @@ gint match_sinktype(GstElement *element, gpointer type)
 
 GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 {
-	//cPlayback *obj = (cPlayback *)user_data;
-	
-	//NOTE: borrowed from e2 :)
 	//source name
 	gchar * sourceName;
 	
@@ -96,10 +93,8 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			g_message("End-of-stream");
 			
 			//
-			//obj->Close();
-			//obj->playing = false;
-			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
-			end_eof = false;
+			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! << -1\n", __func__);
+			end_eof = true;
 			//
 			break;
 		}
@@ -109,17 +104,10 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			gchar * debug;
 			GError *err;
 			gst_message_parse_error(msg, &err, &debug);
-			g_free (debug);
+			g_free(debug);
 			
 			//g_error("%s", err->message);
 			printf("cPlayback:: Gstreamer error: %s (%i)\n", err->message, err->code );
-			
-			//
-			//obj->playing = false;
-			//obj->Close();
-			//dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
-			//end_eof = true;
-			//
 			
 			if ( err->domain == GST_STREAM_ERROR )
 			{
@@ -131,7 +119,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 						printf("%s %s - audioSink\n", FILENAME, __FUNCTION__); //FIXME: how shall playback handle this event???
 				}
 			}
-			g_error_free(err);	
+			g_error_free(err);
+			
+			//
+			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!not playing!!!! <<< -1\n", __func__);
+			end_eof = true;
 			break;
 		}
 
@@ -142,6 +134,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	
 			gst_message_parse_info (msg, &inf, &debug);
 			g_free(debug);
+			
 			if ( inf->domain == GST_STREAM_ERROR && inf->code == GST_STREAM_ERROR_DECODE )
 			{
 				if ( g_strrstr(sourceName, "videosink") )
@@ -241,8 +234,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			break;
 		}
 		default:
-			break;
+			return GST_BUS_DROP;
+			//break;
 	}
+	
+	g_free(sourceName);
 
 	return GST_BUS_DROP;
 }
@@ -477,7 +473,7 @@ bool cPlayback::Start(char * filename)
 	playing = false;
 #endif
 
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	return playing;
 }

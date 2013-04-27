@@ -79,14 +79,10 @@
 #include <audio_cs.h>
 
 #include <system/debug.h>
-#include <playback_cs.h>
 
-extern cPlayback * playback;
-extern char rec_filename[512];				// defined in stream2file.cpp
 
 extern CPictureViewer * g_PicViewer;
 extern int current_muted;
-bool isURL = false;
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -303,12 +299,6 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//pause epg scanning
 	g_Sectionsd->setPauseScanning(true);
-	
-	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
-	playback->Close();
-#endif	
-	//
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -339,20 +329,6 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//start epg scanning
 	g_Sectionsd->setPauseScanning(false);
-	
-	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
-	char fname[255];
-
-	if (strlen(rec_filename))
-	{
-		sprintf(fname, "%s.ts", rec_filename);
-			
-		playback->Open();
-		playback->Start(fname);
-	}
-#endif	
-	//
 
 	//last mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );

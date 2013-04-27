@@ -69,11 +69,6 @@
 #include <gui/pictureviewer.h>
 #include <gui/movieplayer.h>
 
-#include <playback_cs.h>
-
-extern cPlayback * playback;
-extern char rec_filename[512];				// defined in stream2file.cpp
-
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -142,13 +137,7 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	// stop playback
 	g_Zapit->lockPlayBack();
 	// Stop sectionsd
-	g_Sectionsd->setPauseScanning(true);
-	
-	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
-	playback->Close();
-#endif	
-	//	
+	g_Sectionsd->setPauseScanning(true);	
 
 	m_indexdevice = 0;
 	m_selecteddevice = 0;
@@ -164,20 +153,6 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 
 	// Start Sectionsd
 	g_Sectionsd->setPauseScanning(false);
-	
-	//
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)	
-	char fname[255];
-
-	if (strlen(rec_filename))
-	{
-		sprintf(fname, "%s.ts", rec_filename);
-			
-		playback->Open();
-		playback->Start(fname);
-	}
-#endif	
-	//
 
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
