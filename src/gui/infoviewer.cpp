@@ -417,7 +417,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// ChannelNumber (centered)
 		int ChanNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth("9999", true);
 		int stringstartposX = BoxStartX + 10 + (ChanWidth >> 1) - ( ChanNumWidth >> 1);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( /*BoxStartX + 10*/stringstartposX, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( stringstartposX, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
 			
 		PIC_X = BoxStartX + ChanWidth;
 		PIC_Y = (ChanNameY + time_height - PIC_H);
@@ -427,7 +427,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// display channel picon
 		bool logo_ok = false;
 		
-		//logo_ok = g_PicViewer->checkLogo(channel_id);
 		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
 
 		if(logo_ok)
@@ -435,39 +434,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			ChanNameWidth = BoxWidth - (time_width + ChanWidth + PIC_W + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
 			// channel name
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + PIC_W + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
-			 
-			#if 0
-			int logo_w = PIC_W; 
-			int logo_h = PIC_H;
-			int logo_bpp = 0;
-			
-			g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
-			
-			if(logo_bpp == 4)
-			{
-				PIC_W = 120;
-				PIC_H = 40;
-				
-				// channel picon
-				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
-				
-				ChanNameWidth = BoxWidth - (time_width + ChanWidth + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
-				// channel name
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
-			}
-			else
-			{
-				PIC_W = 120;
-				PIC_H = 40;
-				
-				// channel picon
-				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
-			
-				ChanNameWidth = BoxWidth - (time_width + ChanWidth + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
-				// channel name
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
-			}
-			#endif
 		}
 		else
 		{

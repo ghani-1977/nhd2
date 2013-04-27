@@ -54,6 +54,7 @@ GstElement * audioSink = NULL;
 GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
+static bool end_eof = false;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -98,7 +99,8 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			
 			//
 			//obj->Close();
-			obj->playing = false;
+			//obj->playing = false;
+			end_eof = false;
 			//
 			break;
 		}
@@ -125,9 +127,10 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			}
 			g_error_free(err);
 			
-			obj->playing = false;
 			//
+			//obj->playing = false;
 			//obj->Close();
+			end_eof = true;
 			//
 			
 			break;
@@ -758,6 +761,9 @@ bool cPlayback::GetPosition(int &position)
 		return false;
 
 #if ENABLE_GSTREAMER
+	if(end_eof)
+		return false;
+	
 	if(m_gst_playbin)
 	{
 		//position
