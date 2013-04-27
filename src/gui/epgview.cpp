@@ -502,7 +502,7 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	
 	//channel logo
 	bool logo_ok = false;
-	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight);
+	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight, true);
 
 	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 +(logo_ok? PIC_W + 10 : 0), sy - toph + topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5 : 0), text1, COL_MENUHEAD, 0, true);
 	

@@ -59,6 +59,11 @@
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 
+static int icon_w_hd = 0;
+static int icon_h_hd = 0;
+static int icon_w_s = 0;
+static int icon_h_s = 0;
+
 CBEChannelWidget::CBEChannelWidget(const std::string & Caption, unsigned int Bouquet)
 {
 	frameBuffer = CFrameBuffer::getInstance();
@@ -73,6 +78,11 @@ CBEChannelWidget::CBEChannelWidget(const std::string & Caption, unsigned int Bou
 	caption = Caption;
 	bouquet = Bouquet;
 	mode = CZapitClient::MODE_TV;
+	
+	//
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_hd, &icon_h_hd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_w_s, &icon_h_s);
+	//
 }
 
 void CBEChannelWidget::paintItem(int pos)
@@ -122,13 +132,13 @@ void CBEChannelWidget::paintItem(int pos)
 	{
 		if(current < Channels->size())
 		{
-			// hd icon
-			if((*Channels)[current]->isHD() ) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 - 30, ypos + (fheight - 16)/2 );
-				
 			// scrambled icon
 			if((*Channels)[current]->scrambled) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - 15 - 28, ypos + (fheight - 16)/2 );
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - (SCROLLBAR_WIDTH + 2 + icon_w_s), ypos + (fheight - icon_h_s)/2 );
+			
+			// hd icon
+			if((*Channels)[current]->isHD() ) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - (SCROLLBAR_WIDTH + 2 + icon_w_s + 2 + icon_w_hd), ypos + (fheight - icon_h_hd)/2 );
 		}
 	}
 }
@@ -321,6 +331,11 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string & actionKey)
 	
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height -ButtonHeight - 2 - info_height) / 2;
+	
+	//
+	//frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_hd, &icon_h_hd);
+	//frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_w_s, &icon_h_s);
+	//
 
 	Channels = mode == CZapitClient::MODE_TV ? &(g_bouquetManager->Bouquets[bouquet]->tvChannels) : &(g_bouquetManager->Bouquets[bouquet]->radioChannels);
 	paintHead();

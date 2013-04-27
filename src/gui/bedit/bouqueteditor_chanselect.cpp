@@ -55,6 +55,11 @@ extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 void addChannelToBouquet(const unsigned int bouquet, const t_channel_id channel_id);
 
+static int icon_w_hd = 0;
+static int icon_h_hd = 0;
+static int icon_w_s = 0;
+static int icon_h_s = 0;
+
 CBEChannelSelectWidget::CBEChannelSelectWidget(const std::string & Caption, unsigned int Bouquet, CZapitClient::channelsMode Mode)
 	:CListBox(Caption.c_str())
 {	
@@ -66,6 +71,11 @@ CBEChannelSelectWidget::CBEChannelSelectWidget(const std::string & Caption, unsi
 	fheight     = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 
 	liststart = 0;
+	
+	//
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_hd, &icon_h_hd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_w_s, &icon_h_s);
+	//
 }
 
 uint CBEChannelSelectWidget::getItemCount()
@@ -137,13 +147,13 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool select
 		// hd/scrambled icons
 		if (g_settings.channellist_ca)
 		{
-			// hd icon
-			if( Channels[itemNr]->isHD() ) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - 15 - 28 - 30, ypos + (fheight - 16)/2 );
-					
 			// scrambled icon
 			if( Channels[itemNr]->scrambled) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - 15 - 28, ypos + (fheight - 16)/2 );
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - (SCROLLBAR_WIDTH + 2 + icon_w_s), ypos + (fheight - icon_h_s)/2 );
+			
+			// hd icon
+			if( Channels[itemNr]->isHD() ) 
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - (SCROLLBAR_WIDTH + 2 + icon_w_s + 2 + icon_w_hd), ypos + (fheight - icon_h_hd)/2 );
 		}
 	}
 }

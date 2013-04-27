@@ -62,7 +62,7 @@ extern char recDir[255];// defined in neutrino.cpp
 
 #include <algorithm>
 extern CPictureViewer * g_PicViewer;
-#define PIC_W 78
+#define PIC_W 120
 
 void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
@@ -724,10 +724,10 @@ void EventList::paintHead(t_channel_id channel_id)
 	}
 
 	// logo
-        logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight);
+	logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight, true);
 
 	// title
-	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + BORDER_LEFT + (logo_ok? 5 + PIC_W:0), y + theight+1, width - BORDER_LEFT - (logo_ok? 5 + PIC_W:0) - BORDER_RIGHT - icon_h_w - 5 - timestr_len, name.c_str(), COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + BORDER_LEFT + (logo_ok? 5 + PIC_W:0), y + theight + 1, width - BORDER_LEFT - (logo_ok? 5 + PIC_W : 0) - BORDER_RIGHT - icon_h_w - 5 - timestr_len, name.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 }
 
 void EventList::paint(t_channel_id channel_id)
@@ -735,7 +735,13 @@ void EventList::paint(t_channel_id channel_id)
 	liststart = (selected/listmaxshow)*listmaxshow;
 
 	if (evtlist[0].eventID != 0)
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - 30, y + 5 );
+	{
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w, &icon_h);
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - BORDER_RIGHT - icon_w, y + (theight - icon_h)/2 );
+	}
 
 	frameBuffer->paintBoxRel(x, y + theight, width, height - theight - iheight, COL_MENUCONTENT_PLUS_0);
 	

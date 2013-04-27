@@ -103,8 +103,6 @@ extern CFrontend * getFE(int index);
 
 // in us
 #define LCD_UPDATE_TIME_TV_MODE (60 * 1000 * 1000)
-//#define FADE_TIME 40000
-
 
 int time_left_width;
 int time_dot_width;
@@ -125,7 +123,6 @@ static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
 extern int timeshift;
 extern bool autoshift;
 extern uint32_t shift_timer;
-
 
 #define RED_BAR 40
 #define YELLOW_BAR 70
@@ -153,6 +150,8 @@ static int icon_w_ca, icon_h_ca;
 static int icon_w_rt, icon_h_rt;
 static int TunerNumWidth;
 
+static int PIC_W = 120;
+static int PIC_H = 40;
 
 CInfoViewer::CInfoViewer ()
 {
@@ -413,9 +412,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	}
 
 	// channel logo/number/name
-#define PIC_W 65
-#define PIC_H 39
-
 	if (satellitePosition != 0 && satellitePositions.size() ) 
 	{
 		// ChannelNumber (centered)
@@ -431,32 +427,52 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// display channel picon
 		bool logo_ok = false;
 		
-		logo_ok = g_PicViewer->checkLogo(channel_id);
+		//logo_ok = g_PicViewer->checkLogo(channel_id);
+		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
 
 		if(logo_ok)
 		{
+			ChanNameWidth = BoxWidth - (time_width + ChanWidth + PIC_W + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
+			// channel name
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + PIC_W + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+			 
+			#if 0
 			int logo_w = PIC_W; 
 			int logo_h = PIC_H;
 			int logo_bpp = 0;
-			 
+			
 			g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
-			 
-			if(logo_bpp !=4)
+			
+			if(logo_bpp == 4)
 			{
-				// paint logo
-				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, logo_w > PIC_W? PIC_W : logo_w, logo_h > PIC_H?PIC_H:logo_h);
+				PIC_W = 120;
+				PIC_H = 40;
+				
+				// channel picon
+				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
 				
 				ChanNameWidth = BoxWidth - (time_width + ChanWidth + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
 				// channel name
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 8, ChanNameY + time_height, /*BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth*/ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 			}
 			else
-				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, logo_w, logo_h);
+			{
+				PIC_W = 120;
+				PIC_H = 40;
+				
+				// channel picon
+				g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
+			
+				ChanNameWidth = BoxWidth - (time_width + ChanWidth + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
+				// channel name
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + logo_w + 8, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+			}
+			#endif
 		}
 		else
 		{
 			// ChannelName
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, /*BoxEndX - (ChanNameX + 20) - time_width - LEFT_OFFSET - 5 - ChanWidth*/ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + ChanWidth, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
 		}
 	}
 
