@@ -665,15 +665,6 @@ void ClearFB(int color)
 #endif	
 }
 
-void ClearB(int color)
-{
-	CFrameBuffer::getInstance()->ClearFrameBuffer();
-		
-#if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif	
-}
-
 int  GetCurFontWidth()
 {
 	int mx = (displaywidth)%(40-nofirst); // # of unused pixels
@@ -1828,7 +1819,6 @@ static void * reader_thread(void * /*arg*/)
 	
 	reader_running = 1;
 	
-	//ttx_paused = 0;
 	while(reader_running) 
 	{
 		if(ttx_paused)
@@ -1836,9 +1826,6 @@ static void * reader_thread(void * /*arg*/)
 		else
 			RenderPage();
 
-#if !defined USE_OPENGL
-		CFrameBuffer::getInstance()->blit();
-#endif
 		if(ttx_req_pause) 
 		{
 			ttx_req_pause = 0;
@@ -1995,7 +1982,6 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	sy = s_y;
 	ey = s_y + s_h;
 	
-
 	dprintf(DEBUG_DEBUG, "stride=%d sx=%d ex=%d sy=%d ey=%d\n", CFrameBuffer::getInstance()->getStride(), sx, ex, sy, ey);
 
 	//initialisations
@@ -2011,16 +1997,8 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 		pthread_create(&ttx_sub_thread, 0, reader_thread, (void *) NULL);
 		return 1;
 	}
-	
-	//main loop	
-#if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif
 
 	do {
-		//update page or timestring and lcd
-		//RenderPage();
-
 		if (GetRCCode() == 1)
 		{
 			if (transpmode == 2) // TV mode
@@ -2162,11 +2140,7 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 		}
 
 		// update page or timestring and lcd
-		RenderPage();
-		
-#if !defined USE_OPENGL
-		CFrameBuffer::getInstance()->blit();
-#endif		
+		RenderPage();		
 	} while ((RCCode != RC_HOME) && (RCCode != RC_STANDBY));
 
 	//exit
@@ -2216,15 +2190,16 @@ int Init( int source )
 		tuxtxt_cache.current_page  [magazine] = -1;
 		tuxtxt_cache.current_subpage [magazine] = -1;
 	}
+	
 #if TUXTXT_CFG_STANDALONE
 	/* init data */
 	memset(&tuxtxt_cache.astCachetable, 0, sizeof(tuxtxt_cache.astCachetable));
 	memset(&tuxtxt_cache.subpagetable, 0xFF, sizeof(tuxtxt_cache.subpagetable));
 	memset(&tuxtxt_cache.astP29, 0, sizeof(tuxtxt_cache.astP29));
-
 	memset(&tuxtxt_cache.basictop, 0, sizeof(tuxtxt_cache.basictop));
 	memset(&tuxtxt_cache.adip, 0, sizeof(tuxtxt_cache.adip));
 	memset(&tuxtxt_cache.flofpages, 0 , sizeof(tuxtxt_cache.flofpages));
+	
 	tuxtxt_cache.maxadippg  = -1;
 	tuxtxt_cache.bttok      = 0;
 	maxhotlist = -1;
@@ -2263,7 +2238,7 @@ int Init( int source )
 	color_mode   = 10;
 	trans_mode   = 10;
 	menulanguage = 0;	/* german */
-	national_subset = 0;/* default */
+	national_subset = 0;	/* default */
 	auto_national   = 1;
 	swapupdown      = 0;
 	showhex         = 0;
@@ -2281,7 +2256,6 @@ int Init( int source )
 	if ((conf = fopen(TUXTXTCONF, "rt")) == 0)
 	{ 
 	        dprintf(DEBUG_NORMAL, "failed to open %s\n", TUXTXTCONF);
-		perror("TuxTxt <fopen tuxtxt.conf>");
 	}
 	else
 	{
@@ -2397,8 +2371,6 @@ int Init( int source )
 	}
 
 	/* center screen */
-	//StartX = sx; //+ (((ex-sx) - 40*fontwidth) / 2)
-	//test;
 	StartX = sx+ (((ex-sx) - 40*fontwidth) / 2);
 	StartY = sy + (((ey-sy) - 25*fontheight) / 2);
 
@@ -3103,6 +3075,10 @@ void Menu_Init(char *menu, int current_pid, int menuitem, int hotindex)
 	national_subset = national_subset_bak;
 	Menu_HighlightLine(menu, MenuLine[menuitem], 1);
 	Menu_UpdateHotlist(menu, hotindex, menuitem);
+	
+#if !defined USE_OPENGL
+	CFrameBuffer::getInstance()->blit();
+#endif	
 }
 
 void ConfigMenu(int Init, int source)
@@ -3439,7 +3415,7 @@ void ConfigMenu(int Init, int source)
 					break;
 				}
 				break; /* RC_RIGHT */
-#if 0
+
 			case RC_PLUS:
 				switch (menuitem)
 				{
@@ -3471,7 +3447,6 @@ void ConfigMenu(int Init, int source)
 				break;
 				}
 				break;  /* RC_PLUS */
-#endif
 
 			case RC_MINUS:
 				switch (menuitem)
@@ -3972,10 +3947,6 @@ void PageCatching()
 	/* set blocking mode */
 	val = fcntl(rc, F_GETFL);
 	fcntl(rc, F_SETFL, val &~ O_NONBLOCK);
-	
-#if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif
 
 	/* loop */
 	do {
@@ -5444,7 +5415,9 @@ void DoFlashing(int startrow)
 		}
 		PosY += fontheight*factor;
 	}
-
+#if !defined USE_OPENGL
+	CFrameBuffer::getInstance()->blit();
+#endif
 }
 
 void RenderPage()
@@ -5463,7 +5436,6 @@ void RenderPage()
 			return;
 	}
 	
-
 	/* update page or timestring */
 	if (transpmode != 2 && tuxtxt_cache.pageupdate && tuxtxt_cache.page_receiving != tuxtxt_cache.page && inputcounter == 2)
 	{
@@ -5487,6 +5459,7 @@ void RenderPage()
 			DecodePage();
 		else
 			startrow = 1;
+		
 		if (boxed)
 		{ 
 			if (screenmode != 0) 
@@ -5649,13 +5622,13 @@ void RenderPage()
 		RenderCharFB(ns[0],&atrtable[ATR_WB]);
 		RenderCharFB(ns[1],&atrtable[ATR_WB]);
 		RenderCharFB(ns[2],&atrtable[ATR_WB]);
-
-		tuxtxt_cache.pageupdate=0;
-	}
-
+		
 #if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif
+		CFrameBuffer::getInstance()->blit();
+#endif		
+
+		tuxtxt_cache.pageupdate = 0;
+	}
 }
 
 /*

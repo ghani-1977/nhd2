@@ -619,14 +619,13 @@ int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKe
 		dprintf(DEBUG_NORMAL, "CSubtitleChangeExec::exec: TTX, pid %x page %x lang %s\n", pid, page, ptr);
 		
 		dvbsub_stop();
-		//dvbsub_close();
 		
 		tuxtx_stop_subtitle();
 		
 		tuxtx_set_pid(pid, page, ptr);
 		
 		// start tuxtxt
-		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->fenumber : 0 ); // this 
+		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->fenumber : 0 ); //FIXME
 	}
 	
         return menu_return::RETURN_EXIT;
