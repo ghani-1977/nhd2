@@ -77,11 +77,6 @@ extern bool autoshift;
 extern int timeshift;
 extern char timeshiftDir[255];
 
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-#include <playback_cs.h>
-extern cPlayback * playback;
-#endif
-
 #define FILENAMEBUFFERSIZE 1024
 
 static stream2file_status_t exit_flag = STREAM2FILE_STATUS_IDLE;
@@ -157,13 +152,6 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 		record = NULL;
 		return STREAM2FILE_INVALID_DIRECTORY;
 	}
-	
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	playback->Close();
-	playback->Open();
-	usleep(10*1000*1000);		
-	playback->Start(buf);
-#endif
 
 	return STREAM2FILE_OK;
 }
@@ -175,12 +163,7 @@ stream2file_error_msg_t stop_recording(const char * const info)
 	int fd;
 	stream2file_error_msg_t ret;
 
-	dprintf(DEBUG_NORMAL, "[Stream2File] stop Record\n");
-	
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	// stop playback
-	playback->Close();
-#endif	
+	dprintf(DEBUG_NORMAL, "[Stream2File] stop Record\n");	
 
 	sprintf(buf, "%s.xml", rec_filename);
 	
