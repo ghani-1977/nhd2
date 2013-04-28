@@ -724,7 +724,7 @@ void EventList::paintHead(t_channel_id channel_id)
 	}
 
 	// logo
-	logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight, true);
+	logo_ok = g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight, true, false, true); //upscale, dont center x, center y
 
 	// title
 	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + BORDER_LEFT + (logo_ok? 5 + PIC_W:0), y + theight + 1, width - BORDER_LEFT - (logo_ok? 5 + PIC_W : 0) - BORDER_RIGHT - icon_h_w - 5 - timestr_len, name.c_str(), COL_MENUHEAD, 0, true); // UTF-8

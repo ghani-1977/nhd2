@@ -427,7 +427,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// display channel picon
 		bool logo_ok = false;
 		
-		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true);
+		logo_ok = g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, PIC_W, PIC_H, true, false, true);
 
 		if(logo_ok)
 		{
