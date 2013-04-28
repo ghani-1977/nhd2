@@ -215,13 +215,11 @@ void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 	}
 	else
 	{
-		if (channel_id == Zapit->getCurrentServiceID())
-		{
-			//printf("Kanal ist aktuell\n");
+		if ( channel_id == Zapit->getCurrentServiceID() )
 			return;
-		}
 
-		if (Zapit->zapTo_serviceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
+		//if (Zapit->zapTo_serviceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
+		if (Zapit->zapTo_record(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
 			Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
 	}
 }

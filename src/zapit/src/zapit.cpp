@@ -1610,15 +1610,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CBasicServer::receive_data(connfd, &msgZaptoServiceID, sizeof(msgZaptoServiceID));
 			
 			if(msgZaptoServiceID.record) 
-			{
-				//msgResponseZapComplete.zapStatus = zapit_to_record(msgZaptoServiceID.channel_id);
-				//FIXME??? i dont know any more why i ve done this
 				msgResponseZapComplete.zapStatus = zapTo_RecordID(msgZaptoServiceID.channel_id);
-			} 
 			else 
-			{
 				msgResponseZapComplete.zapStatus = zapTo_ChannelID(msgZaptoServiceID.channel_id, (rmsg.cmd == CZapitMessages::CMD_ZAPTO_SUBSERVICEID));
-			}
+
 			CBasicServer::send_data(connfd, &msgResponseZapComplete, sizeof(msgResponseZapComplete));
 			break;
 		}
@@ -3471,7 +3466,7 @@ unsigned int zapTo_ChannelID(t_channel_id channel_id, bool isSubService)
 
 	if (zapit(channel_id, isSubService) < 0) 
 	{
-		dprintf(DEBUG_DEBUG, "[zapit] zapit failed, chid %llx\n", channel_id);
+		dprintf(DEBUG_NORMAL, "[zapit] zapit failed, chid %llx\n", channel_id);
 		
 		eventServer->sendEvent((isSubService ? CZapitClient::EVT_ZAP_SUB_FAILED : CZapitClient::EVT_ZAP_FAILED), CEventServer::INITID_ZAPIT, &channel_id, sizeof(channel_id));
 		
@@ -3480,17 +3475,17 @@ unsigned int zapTo_ChannelID(t_channel_id channel_id, bool isSubService)
 
 	result |= CZapitClient::ZAP_OK;
 
-	dprintf(DEBUG_DEBUG, "[zapit] zapit OK, chid %llx\n", channel_id);
+	dprintf(DEBUG_NORMAL, "[zapit] zapit OK, chid %llx\n", channel_id);
 	
 	if (isSubService) 
 	{
-		dprintf(DEBUG_DEBUG, "[zapit] isSubService chid %llx\n", channel_id);
+		dprintf(DEBUG_NORMAL, "[zapit] isSubService chid %llx\n", channel_id);
 		
 		eventServer->sendEvent(CZapitClient::EVT_ZAP_SUB_COMPLETE, CEventServer::INITID_ZAPIT, &channel_id, sizeof(channel_id));
 	}
 	else if (current_is_nvod) 
 	{
-		dprintf(DEBUG_DEBUG, "[zapit] NVOD chid %llx\n", channel_id);
+		dprintf(DEBUG_NORMAL, "[zapit] NVOD chid %llx\n", channel_id);
 		
 		eventServer->sendEvent(CZapitClient::EVT_ZAP_COMPLETE_IS_NVOD, CEventServer::INITID_ZAPIT, &channel_id, sizeof(channel_id));
 		
