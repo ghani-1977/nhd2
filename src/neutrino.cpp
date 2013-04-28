@@ -573,10 +573,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
 
 	// permanent timeshift
-	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	g_settings.auto_timeshift = 1;
-#endif	
+	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );	
 
 	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
@@ -2014,10 +2011,6 @@ void CNeutrinoApp::InitZapper()
 		
 		StartSubtitles();
 	}
-	
-#if defined (ENABLE_LIVEVIEW) && defined (PLATFORM_GENERIC) && defined (ENABLE_GSTREAMER)
-	startAutoRecord(true);
-#endif
 }
 
 #if defined (PLATFORM_COOLSTREAM)
@@ -4223,7 +4216,6 @@ void CNeutrinoApp::tvMode( bool rezap )
 	bool stopauto = (mode != mode_ts);	
 	mode = mode_tv;
 	
-#if !defined (ENABLE_LIVEVIEW) && !defined (PLATFORM_GENERIC) && !defined (ENABLE_GSTREAMER)	
 	if(stopauto && autoshift) 
 	{
 		//printf("standby on: autoshift ! stopping ...\n");
@@ -4231,8 +4223,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 		stopAutoRecord();
 		recordingstatus = 0;
 		timeshiftstatus = 0;
-	}
-#endif	
+	}	
 
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();
