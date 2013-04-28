@@ -1270,7 +1270,7 @@ int CChannelList::numericZap(int key)
 	}
 	
 	//TEST: PiP
-	if( (key == g_settings.key_pip) || (key == g_settings.key_pip_subchannel) )
+	if(key == g_settings.key_pip )
 	{
 		CChannelList * orgList = bouquetList->orgChannelList;
 		CChannelList * channelList = new CChannelList(g_Locale->getText(LOCALE_CHANNELLIST_CURRENT_TP), false, true);

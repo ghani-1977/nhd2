@@ -29,13 +29,8 @@ bool CPictureViewer::DecodeImage(const std::string & name, bool showBusySign, bo
 	
 	int x;
 	int y;
-	//int xs;
-	//int ys;
 	int imx;
 	int imy;
-	
-	//xs = CFrameBuffer::getInstance()->getScreenWidth(true);
-	//ys = CFrameBuffer::getInstance()->getScreenHeight(true);
 	
 	// Show red block for "next ready" in view state
 	if (showBusySign)
@@ -470,7 +465,7 @@ bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, 
 // get size
 extern int fh_png_id(const char *name);
 extern int png_load_ext(const char * name, unsigned char ** buffer, int * xp, int * yp, int * bpp);
-void CPictureViewer::getSize(/*const char * name*/const std::string &name, int * width, int * height, int * nbpp)
+void CPictureViewer::getSize(const std::string &name, int * width, int * height, int * nbpp)
 {
 	unsigned char * rgbbuff;
 	int x, y;
@@ -479,7 +474,7 @@ void CPictureViewer::getSize(/*const char * name*/const std::string &name, int *
 	
 	CFormathandler * fh;
 
-	fh = fh_getsize(name.c_str(), /*width*/&x, /*height*/&y, INT_MAX, INT_MAX);
+	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
 	if (fh == NULL) 
 	{

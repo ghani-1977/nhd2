@@ -2039,6 +2039,7 @@ enum keynames {
 	KEY_SUBCHANNEL_DOWN,
 	KEY_ZAP_HISTORY,
 	KEY_LASTCHANNEL,
+	KEY_SAME_TP,
 	
 	// mp
         MPKEY_REWIND,
@@ -2062,7 +2063,7 @@ enum keynames {
 	KEY_EXTRAS_WEBTV,
 };
 
-#define KEYBINDS_COUNT 36
+#define KEYBINDS_COUNT 37
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2085,6 +2086,7 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_SUBCHANNELDOWN,
 	LOCALE_KEYBINDINGMENU_ZAPHISTORY,
 	LOCALE_KEYBINDINGMENU_LASTCHANNEL,
+	LOCALE_KEYBINDINGMENU_PIP,
 	
 	// mp
         LOCALE_MPKEY_REWIND,
@@ -2130,6 +2132,7 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_SUBCHANNELDOWN,
 	LOCALE_KEYBINDINGMENU_ZAPHISTORY,
 	LOCALE_KEYBINDINGMENU_LASTCHANNEL,
+	LOCALE_KEYBINDINGMENU_PIP,
 	
 	// mp
         LOCALE_MPKEY_REWIND,
@@ -2206,6 +2209,7 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_subchannel_down,
 		&g_settings.key_zaphistory,
 		&g_settings.key_lastchannel,
+		&g_settings.key_pip,
 
 		// mp
 		&g_settings.mpkey_rewind,
@@ -2250,7 +2254,7 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	// quick zap
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_KEYBINDINGMENU_QUICKZAP));
 
-	for (int i = KEY_CHANNEL_UP; i <= KEY_LASTCHANNEL; i++)
+	for (int i = KEY_CHANNEL_UP; i <= KEY_SAME_TP; i++)
 		bindSettings.addItem(new CMenuForwarder(keydescription[i], true, NULL, keychooser[i]));
 
 	// mp keys

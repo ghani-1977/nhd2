@@ -300,7 +300,6 @@ struct SNeutrinoSettings
 	
 	//pip
 	int key_pip;
-	int key_pip_subchannel;
 
 	int mpkey_rewind;
 	int mpkey_forward;

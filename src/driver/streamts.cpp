@@ -47,13 +47,12 @@
 
 extern CFrontend * live_fe;
 
-
 static unsigned char exit_flag = 0;
 static unsigned int writebuf_size = 0;
 static unsigned char writebuf[PACKET_SIZE];
 
 #ifdef SYNC_TS
-static int sync_byte_offset (const unsigned char * buf, const unsigned int len)
+static int sync_byte_offset(const unsigned char * buf, const unsigned int len)
 {
 
 	unsigned int i;
@@ -73,9 +72,10 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 	unsigned char * bp;
 	ssize_t written;
 
-	//printf("packet_stdout count %d\n", count);
-	/* ensure, that there is always at least one complete
-	 * packet inside of the send buffer */
+	/* 
+	*ensure, that there is always at least one complete
+	*packet inside of the send buffer 
+	*/
 	while (writebuf_size + count >= PACKET_SIZE) 
 	{
 		/* how many bytes are to be sent from the input buffer? */
@@ -88,8 +88,10 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 			bp = writebuf;
 		}
 
-		/* if send buffer is empty, then do not memcopy,
-		   but send directly from input buffer */
+		/* 
+		if send buffer is empty, then do not memcopy,
+		but send directly from input buffer 
+		*/
 		else {
 			bp = buf;
 		}
@@ -104,9 +106,11 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 			return;
 		}
 
-		/* if the packet could not be written completely, then
+		/* 
+		 * if the packet could not be written completely, then
 		 * how many bytes must be stored in the send buffer
-		 * until the next packet is to be sent?  */
+		 * until the next packet is to be sent?  
+		 */
 		writebuf_size = PACKET_SIZE - written;
 
 		/* move all bytes of the packet which were not sent
@@ -117,13 +121,15 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 		/* * advance in the input buffer */
 		buf += size;
 
-		/* * decrease the todo size */
+		/* decrease the todo size */
 		count -= size;
 	}
 
-	/* if there are still some bytes left in the input buffer,
+	/* 
+	 * if there are still some bytes left in the input buffer,
 	 * then store them in the send buffer and increase send
-	 * buffer size */
+	 * buffer size 
+	 */
 	if (count) {
 		memmove(writebuf + writebuf_size, buf, count);
 		writebuf_size += count;
@@ -364,8 +370,8 @@ void * streamts_live_thread(void *data)
 		return 0;
 	}
 	
-	live_fe->locked = true;
-
+	//live_fe->locked = true;
+	
 	cDemux * dmx = new cDemux();
 	
 #if defined (PLATFORM_COOLSTREAM)
@@ -405,7 +411,7 @@ void * streamts_live_thread(void *data)
 	free(buf);
 	close(fd);
 	
-	live_fe->locked = false;
+	//live_fe->locked = false;
 	
 	return 0;
 }
@@ -425,7 +431,8 @@ void streamts_file_thread(void *data)
 
 	buf = (unsigned char *) malloc(IN_SIZE);
 
-	if (buf == NULL) {
+	if (buf == NULL) 
+	{
 		perror("malloc");
 		return;
 	}
@@ -474,9 +481,12 @@ void streamts_file_thread(void *data)
 			else
 				tsfile[j++] = bp[i++];
 	}
+	
 	tsfilelen = strlen(tsfile);
+	
 	/* open ts file */
-	if ((dvrfd = open(tsfile, O_RDONLY)) < 0) {
+	if ((dvrfd = open(tsfile, O_RDONLY)) < 0) 
+	{
 		free(buf);
 		return;
 	}
@@ -515,6 +525,7 @@ void streamts_file_thread(void *data)
 		}
 		packet_stdout(fd, buf, pos, NULL);
 	}
+	
 	close(dvrfd);
 	free(buf);
 

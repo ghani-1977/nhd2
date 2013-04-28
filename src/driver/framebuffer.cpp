@@ -748,7 +748,7 @@ void CFrameBuffer::setIconBasePath(const std::string & iconPath)
 }
 
 // get icon size
-void CFrameBuffer::getIconSize(const char* const filename, int * width, int * height)
+void CFrameBuffer::getIconSize(const char * const filename, int * width, int * height)
 {
 
 	if(filename == NULL)
@@ -791,7 +791,7 @@ void CFrameBuffer::getIconSize(const char* const filename, int * width, int * he
 	}
 	else
 	{
-		CFormathandler *fh;
+		CFormathandler * fh;
 		int x, y;
 		
 		fh = fh_getsize(iconfile.c_str(), &x, &y, INT_MAX, INT_MAX);

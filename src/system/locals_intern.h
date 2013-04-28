@@ -481,6 +481,7 @@ const char * locale_real_names[] = {
 	"keybindingmenu.channelup",
 	"keybindingmenu.head",
 	"keybindingmenu.lastchannel",
+	"keybindingmenu.pip",
 	"keybindingmenu.modechange",
 	"keybindingmenu.pagedown",
 	"keybindingmenu.pageup",

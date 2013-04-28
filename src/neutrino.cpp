@@ -712,7 +712,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// pip keys
 	g_settings.key_pip = configfile.getInt32("key_pip", CRCInput::RC_pip);
-	g_settings.key_pip_subchannel = configfile.getInt32("key_pip_subchannel", CRCInput::RC_pipsubch);
+	//g_settings.key_pip_subchannel = configfile.getInt32("key_pip_subchannel", CRCInput::RC_pipsubch);
 
 	// mpkeys
 	g_settings.mpkey_rewind = configfile.getInt32( "mpkey.rewind", CRCInput::RC_rewind );
@@ -1175,6 +1175,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 
 	configfile.setInt32( "key_list_start", g_settings.key_list_start );
 	configfile.setInt32( "key_list_end", g_settings.key_list_end );
+	
+	configfile.setInt32( "key_pip", g_settings.key_pip );
 	
 	// mp keys
 	configfile.setInt32( "mpkey.rewind", g_settings.mpkey_rewind );
@@ -2985,7 +2987,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					nGLCD::Update();				
 #endif				
 			}
-			else if( (msg == (neutrino_msg_t) g_settings.key_pip) || (msg == (neutrino_msg_t) g_settings.key_pip_subchannel) )
+			else if( msg == (neutrino_msg_t) g_settings.key_pip )
 			{
 				StopSubtitles();
 				

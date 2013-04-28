@@ -420,6 +420,10 @@ bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
 			pes.pes_type = DMX_PES_OTHER;
 			break;
 			
+		case DMX_PIP_CHANNEL:
+			pes.pes_type = DMX_PES_VIDEO1; //for pip channel we need only video
+			break;
+			
 		default:
 			printf("[%s] %s unknown pesFilter type %s\n", FILENAME, __FUNCTION__, aDMXCHANNELTYPE[type]);
 			return false;

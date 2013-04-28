@@ -639,6 +639,7 @@ keybindingmenu.channellist Channellist
 keybindingmenu.channelup channel up
 keybindingmenu.head Keybinding Setup
 keybindingmenu.lastchannel last Channel
+keybindingmenu.pip same TP
 keybindingmenu.modechange Modechange
 keybindingmenu.pagedown page down
 keybindingmenu.pageup page up

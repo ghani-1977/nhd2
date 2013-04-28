@@ -1264,7 +1264,7 @@ void setVolumePercent(int percent)
 		
 	int vol = current_volume + (current_volume*volume_percent)/100;
 		
-	dprintf(DEBUG_NORMAL, "vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
+	dprintf(DEBUG_NORMAL, "[zapit] vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
 		
 	audioDecoder->setVolume(vol, vol);
 }
