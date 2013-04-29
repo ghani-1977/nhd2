@@ -153,12 +153,10 @@
 #include "gui/proxyserver_setup.h"
 #include "gui/opkg_manager.h"
 #include "gui/themes.h"
-//#include "gui/webtv.h"
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
-//extern bool has_hdd;				// defined in hdd_menu.cpp
 extern bool parentallocked;			// defined neutrino.cpp
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
 #if !defined (PLATFORM_COOLSTREAM)
@@ -175,7 +173,6 @@ void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config *Cfg);
 
 extern char recDir[255];// defined in neutrino.cpp
-
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -745,38 +742,56 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	audioSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_PREF_LANG_HEAD));
 	
 	// auto ac3 
-	CMenuOptionChooser * a1 = new CMenuOptionChooser(LOCALE_AUDIOMENU_DOLBYDIGITAL, &g_settings.audio_DolbyDigital, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, g_settings.auto_lang/*true*/, audioSetupNotifier );
+	CMenuOptionChooser * a1 = new CMenuOptionChooser(LOCALE_AUDIOMENU_DOLBYDIGITAL, &g_settings.audio_DolbyDigital, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, g_settings.auto_lang, audioSetupNotifier );
 	
-	CLangSelectNotifier * langNotifier = new CLangSelectNotifier(a1);
+	// audiolang
+	CMenuOptionStringChooser * audioepglangSelect[3];
+	CLangSelectNotifier * langNotifier = new CLangSelectNotifier();
 	
-	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_LANG, &g_settings.auto_lang, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, langNotifier /*NULL*/));
+	for(int i = 0; i < 3; i++) 
+	{
+		audioepglangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_LANG, g_settings.pref_lang[i], g_settings.auto_lang, langNotifier, CRCInput::RC_nokey, "", true);
+		
+		std::map<std::string, std::string>::const_iterator it;
+		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
+			audioepglangSelect[i]->addOption(it->first.c_str());
+	}
+	
+	CAutoAudioNotifier * autoAudioNotifier = new CAutoAudioNotifier(a1, audioepglangSelect[0], audioepglangSelect[1], audioepglangSelect[2]);
+	
+	// auto lang
+	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_LANG, &g_settings.auto_lang, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, autoAudioNotifier));
 	
 	// ac3
 	audioSettings.addItem(a1);
-		
-	for(int i = 0; i < 3; i++) 
-	{
-		CMenuOptionStringChooser * audioepglangSelect = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_LANG, g_settings.pref_lang[i], true, langNotifier, CRCInput::RC_nokey, "", true);
-		std::map<std::string, std::string>::const_iterator it;
-		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
-			audioepglangSelect->addOption(it->first.c_str());
-
-		audioSettings.addItem(audioepglangSelect);
-	}
 	
+	// lang
+	for(int i = 0; i < 3; i++) 
+		audioSettings.addItem(audioepglangSelect[i]);
+	
+	// sublang
 	audioSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_PREF_SUBS_HEAD));
-	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_SUBS, &g_settings.auto_subs, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL));
 	
+	CMenuOptionStringChooser * sublangSelect[3];
 	for(int i = 0; i < 3; i++) 
 	{
-		CMenuOptionStringChooser * sublangSelect = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_SUBS, g_settings.pref_subs[i], true, NULL, CRCInput::RC_nokey, "", true);
+		sublangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_SUBS, g_settings.pref_subs[i], g_settings.auto_subs, NULL, CRCInput::RC_nokey, "", true);
 		std::map<std::string, std::string>::const_iterator it;
 		
 		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
-			sublangSelect->addOption(it->first.c_str());
+			sublangSelect[i]->addOption(it->first.c_str());
 
-		audioSettings.addItem(sublangSelect);
+		//audioSettings.addItem(sublangSelect[i]);
 	}
+	
+	CSubLangSelectNotifier * subLangSelectNotifier = new CSubLangSelectNotifier(sublangSelect[0], sublangSelect[1], sublangSelect[2]);
+	
+	// auto sublang
+	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_SUBS, &g_settings.auto_subs, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, subLangSelectNotifier));
+	
+	// sublang
+	for(int i = 0; i < 3; i++) 
+		audioSettings.addItem(sublangSelect[i]);
 }
 
 // Init Parentallock Settings
@@ -1159,7 +1174,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 			{
 				std::string name = xmlGetAttribute(search, (char *) "name");
 				std::string zone = xmlGetAttribute(search, (char *) "zone");
+				
 				//printf("Timezone: %s -> %s\n", name.c_str(), zone.c_str());
+				
 				tzSelect->addOption(name.c_str());
 				found = true;
 			}

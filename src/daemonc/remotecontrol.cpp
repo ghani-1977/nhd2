@@ -561,9 +561,9 @@ void CRemoteControl::processAPIDnames()
 			pref_ac3_found = -1;
 	}
 
-	for(unsigned int count=0; count< current_PIDs.APIDs.size(); count++)
+	for(unsigned int count = 0; count < current_PIDs.APIDs.size(); count++)
 	{
-		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
+		dprintf(DEBUG_NORMAL, "CRemoteControl::processAPIDnames: apid name= %s (%s) pid= 0x%x\n", current_PIDs.APIDs[count].desc, getISO639Description( current_PIDs.APIDs[count].desc ), current_PIDs.APIDs[count].pid);
 		
 		if ( current_PIDs.APIDs[count].component_tag != 0xFF )
 		{
@@ -595,9 +595,9 @@ void CRemoteControl::processAPIDnames()
 			{
 				has_unresolved_ctags = false;
 
-				for (unsigned int i=0; i< tags.size(); i++)
+				for (unsigned int i = 0; i < tags.size(); i++)
 				{
-					for (unsigned int j=0; j< current_PIDs.APIDs.size(); j++)
+					for (unsigned int j = 0; j < current_PIDs.APIDs.size(); j++)
 					{
 						if ( current_PIDs.APIDs[j].component_tag == tags[i].componentTag )
 						{
@@ -620,11 +620,11 @@ void CRemoteControl::processAPIDnames()
 		}
 	}
 	
-	dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
+	dprintf(DEBUG_NORMAL, "CRemoteControl::processAPIDnames: pref_found %d pref_ac3_found %d ac3_found %d\n", pref_found, pref_ac3_found, ac3_found);
 	
 	if(pref_ac3_found >= 0) 
 	{
-		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
+		dprintf(DEBUG_NORMAL, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[pref_ac3_found].desc, current_PIDs.APIDs[pref_ac3_found].pid);
 		setAPID(pref_ac3_found);
 	} 
 	else if(pref_found >= 0) 
@@ -634,7 +634,7 @@ void CRemoteControl::processAPIDnames()
 	}
 	else if(ac3_found >= 0) 
 	{
-		dprintf(DEBUG_INFO, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
+		dprintf(DEBUG_NORMAL, "CRemoteControl::processAPIDnames: set apid name= %s pid= 0x%x\n", current_PIDs.APIDs[ac3_found].desc, current_PIDs.APIDs[ac3_found].pid);
 		setAPID(ac3_found);
 	}
 	else if ( current_PIDs.PIDs.selected_apid >= current_PIDs.APIDs.size() )

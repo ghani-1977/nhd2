@@ -982,9 +982,12 @@ int CMenuOptionChooser::paint( bool selected )
 
 	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_option, true); // UTF-8
 	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
-	int stringstartposOption = x + dx - stringwidth - BORDER_RIGHT  - ICON_OFFSET; //+ offx
+	int stringstartposOption = x + dx - (stringwidth + BORDER_RIGHT  + ICON_OFFSET); //+ offx
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y + height, dx - (stringstartposName - x), optionNameString.c_str(), color, 0, true); // UTF-8
+	// locale
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName, y + height, dx - (stringstartposName - x), optionNameString.c_str(), color, 0, true); // UTF-8
+	
+	// option
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x), l_option, color, 0, true); // UTF-8
 
 	// menutitle on VFD
@@ -1000,7 +1003,7 @@ int CMenuOptionChooser::paint( bool selected )
 }
 
 // CMenuOptionStringChooser
-CMenuOptionStringChooser::CMenuOptionStringChooser(const neutrino_locale_t OptionName, char* OptionValue, bool Active, CChangeObserver* Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
+CMenuOptionStringChooser::CMenuOptionStringChooser(const neutrino_locale_t OptionName, char * OptionValue, bool Active, CChangeObserver* Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
 {
 	height      = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	optionName  = OptionName;
@@ -1145,23 +1148,17 @@ int CMenuOptionStringChooser::paint( bool selected )
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT  + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
         }
         
-        const char * l_optionName = g_Locale->getText(optionName);
+        // locale text
+	const char * l_optionName = g_Locale->getText(optionName);
 	int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
-	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(optionValue, true);
-	
-        // stringstartposName
 	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
-
-	// stringstartposOption
-	int stringstartposOption = stringstartposName + optionwidth + 10;
 	
-	stringwidth = dx - BORDER_LEFT - BORDER_RIGHT - optionwidth - 50; // FIXME:50???
-
-	// option name
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName, y + height, optionwidth,  l_optionName, color, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y+height, dx- (stringstartposName - x),  l_optionName, color, 0, true); // UTF-8
 	
 	// option value
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, stringwidth, optionValue, color, 0, true); // UTF-8
+	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(optionValue, true);
+	int stringstartposOption = std::max(stringstartposName + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true) + ICON_OFFSET, x + dx - stringwidth - ICON_OFFSET); //+ offx
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x),  optionValue, color, 0, true);
 	
 	// menutitle on VFD
 	if (selected)

@@ -93,7 +93,7 @@ class CMiscNotifier : public CChangeObserver
 	private:
 		CMenuItem * toDisable[1];
 	public:
-		CMiscNotifier( CMenuItem* );
+		CMiscNotifier( CMenuItem * );
 		bool changeNotify(const neutrino_locale_t, void *);
 };
 
@@ -225,14 +225,36 @@ class CDataResetNotifier : public CMenuTarget
 		int exec(CMenuTarget* parent, const std::string& actionKey);
 };
 
+// autoaudio select notifier
+class CAutoAudioNotifier : public CChangeObserver
+{
+	private:
+		CMenuItem * toDisable[4];
+		
+	public:
+		CAutoAudioNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3, CMenuItem * item4);
+		bool changeNotify(const neutrino_locale_t, void * /*data*/);
+};
+
 // language select notifier
 class CLangSelectNotifier : public CChangeObserver
 {
-	private:
-		CMenuItem * toDisable[1];
+	//private:
+	//	CMenuItem * toDisable[4];
 		
 	public:
-		CLangSelectNotifier(CMenuItem *);
+	//	CLangSelectNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3, CMenuItem * item4);
+		bool changeNotify(const neutrino_locale_t, void * /*data*/);
+};
+
+// autoaudio select notifier
+class CSubLangSelectNotifier : public CChangeObserver
+{
+	private:
+		CMenuItem * toDisable[3];
+		
+	public:
+		CSubLangSelectNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3);
 		bool changeNotify(const neutrino_locale_t, void * /*data*/);
 };
 
@@ -263,6 +285,5 @@ class CAudioSetupNotifierVolPercent : public CChangeObserver
 
 int safe_mkdir(char * path);
 int check_dir(const char * newdir);
-
 
 #endif

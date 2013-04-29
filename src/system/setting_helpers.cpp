@@ -205,7 +205,7 @@ bool CDHCPNotifier::changeNotify(const neutrino_locale_t, void * data)
 {
 	CNeutrinoApp::getInstance()->networkConfig.inet_static = ((*(int*)(data)) == 0);
 	
-	for(int x=0; x<5; x++)
+	for(int x=0; x < 5; x++)
 		toDisable[x]->setActive(CNeutrinoApp::getInstance()->networkConfig.inet_static);
 	
 	return true;
@@ -985,19 +985,30 @@ int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
 	return true;
 }
 
-// lang select notifier
-CLangSelectNotifier::CLangSelectNotifier(CMenuItem * i1)
+// auto audio select notifier
+CAutoAudioNotifier::CAutoAudioNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3, CMenuItem * item4)
 {
-	toDisable[0] = i1;
+	toDisable[0] = item1;
+	toDisable[1] = item2;
+	toDisable[2] = item3;
+	toDisable[3] = item4;
+}
+
+bool CAutoAudioNotifier::changeNotify(const neutrino_locale_t, void *)
+{
+	// only ac3
+	toDisable[0]->setActive(g_settings.auto_lang);
+	toDisable[1]->setActive(g_settings.auto_lang);
+	toDisable[2]->setActive(g_settings.auto_lang);
+	toDisable[3]->setActive(g_settings.auto_lang);
+	
+	return true;
 }
 
 void sectionsd_set_languages(const std::vector<std::string>& newLanguages);
 
 bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 {
-	// only ac3
-	toDisable[0]->setActive(g_settings.auto_lang);
-	
 	std::vector<std::string> v_languages;
 	bool found = false;
 	std::map<std::string, std::string>::const_iterator it;
@@ -1026,6 +1037,24 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 	
 	if(found)
 		sectionsd_set_languages(v_languages);
+	
+	return true;
+}
+
+// sublang select notifier
+CSubLangSelectNotifier::CSubLangSelectNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3)
+{
+	toDisable[0] = item1;
+	toDisable[1] = item2;
+	toDisable[2] = item3;
+}
+
+bool CSubLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
+{
+	// only ac3
+	toDisable[0]->setActive(g_settings.auto_subs);
+	toDisable[1]->setActive(g_settings.auto_subs);
+	toDisable[2]->setActive(g_settings.auto_subs);
 	
 	return true;
 }
