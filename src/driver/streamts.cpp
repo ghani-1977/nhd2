@@ -34,16 +34,13 @@
 
 
 #define TS_SIZE 188
-//#define IN_SIZE		(2048 * TS_SIZE)
 #define IN_SIZE         (TS_SIZE * 362)
 
 /* maximum number of pes pids */
 #define MAXPIDS		64
 
 /* tcp packet data size */
-//#define PACKET_SIZE	1448
 #define PACKET_SIZE	7*TS_SIZE
-
 
 extern CFrontend * live_fe;
 
@@ -73,24 +70,26 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 	ssize_t written;
 
 	/* 
-	*ensure, that there is always at least one complete
-	*packet inside of the send buffer 
+	* ensure, that there is always at least one complete
+	* packet inside of the send buffer 
 	*/
 	while (writebuf_size + count >= PACKET_SIZE) 
 	{
 		/* how many bytes are to be sent from the input buffer? */
 		size = PACKET_SIZE - writebuf_size;
 
-		/* send buffer is not empty, so copy from
-		   input buffer to get a complete packet */
+		/* 
+		* send buffer is not empty, so copy from
+		* input buffer to get a complete packet 
+		*/
 		if (writebuf_size) {
 			memmove(writebuf + writebuf_size, buf, size);
 			bp = writebuf;
 		}
 
 		/* 
-		if send buffer is empty, then do not memcopy,
-		but send directly from input buffer 
+		* if send buffer is empty, then do not memcopy,
+		* but send directly from input buffer 
 		*/
 		else {
 			bp = buf;
@@ -113,12 +112,14 @@ void packet_stdout (int fd, unsigned char * buf, int count, void * /*p*/)
 		 */
 		writebuf_size = PACKET_SIZE - written;
 
-		/* move all bytes of the packet which were not sent
-		 * to the beginning of the send buffer */
+		/* 
+		* move all bytes of the packet which were not sent
+		* to the beginning of the send buffer 
+		*/
 		if (writebuf_size)
 			memmove(writebuf, bp + written, writebuf_size);
 
-		/* * advance in the input buffer */
+		/* advance in the input buffer */
 		buf += size;
 
 		/* decrease the todo size */
@@ -259,7 +260,8 @@ void streamts_main_thread(void * /*data*/)
 					pfd[tcnt].revents = 0;
 					tcnt++;
 					exit_flag = 0;
-					pthread_create (&st, NULL, streamts_live_thread, (void *) connfd);
+					
+					pthread_create(&st, NULL, streamts_live_thread, (void *) connfd);
 				} 
 				else 
 				{
@@ -291,7 +293,7 @@ void streamts_main_thread(void * /*data*/)
 	return;
 }
 
-void * streamts_live_thread(void *data)
+void * streamts_live_thread(void * data)
 {
 	unsigned char * buf;
 	int pid;
