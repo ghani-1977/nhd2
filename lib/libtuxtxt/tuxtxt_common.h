@@ -20,7 +20,6 @@ extern CFrontend * live_fe;
 
 tuxtxt_cache_struct tuxtxt_cache;
 static pthread_mutex_t tuxtxt_cache_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t tuxtxt_cache_biglock = PTHREAD_MUTEX_INITIALIZER;
 
 int tuxtxt_get_zipsize(int p,int sp)
 {
@@ -362,9 +361,6 @@ int tuxtxt_GetSubPage(int page, int subpage, int offset)
 
 void tuxtxt_clear_cache()
 {
-	//
-	pthread_mutex_lock(&tuxtxt_cache_biglock);
-	//
 	pthread_mutex_lock(&tuxtxt_cache_lock);
 	int clear_page, clear_subpage, d26;
 	tuxtxt_cache.maxadippg  = -1;
@@ -428,13 +424,12 @@ void tuxtxt_clear_cache()
 	printf("TuxTxt cache cleared\n");
 #endif
 	pthread_mutex_unlock(&tuxtxt_cache_lock);
-	pthread_mutex_unlock(&tuxtxt_cache_biglock);
 }
+
 /******************************************************************************
  * init_demuxer                                                               *
  ******************************************************************************/
 static cDemux * dmx = NULL;
-//int tuxtxt_init_demuxer( int source = 0 );
 int tuxtxt_init_demuxer( int source )
 {
 
@@ -457,10 +452,10 @@ int tuxtxt_init_demuxer( int source )
 
 	return 1;
 }
+
 /******************************************************************************
  * CacheThread support functions                                              *
  ******************************************************************************/
-
 void tuxtxt_decode_p2829(unsigned char *vtxt_row, tstExtData **ptExtData)
 {
 	int bitsleft, colorindex;
@@ -563,8 +558,10 @@ void tuxtxt_allocate_cache(int magazine)
  * CacheThread                                                                *
  ******************************************************************************/
 static int stop_cache = 0;
-void *tuxtxt_CacheThread(void * /*arg*/)
+void * tuxtxt_CacheThread(void * arg)
 {
+	printf("tuxtxt_CacheThread: starting... tid %ld\n", syscall(__NR_gettid));
+	
 	const unsigned char rev_lut[32] = {
 		0x00,0x08,0x04,0x0c, /*  upper nibble */
 		0x02,0x0a,0x06,0x0e,
@@ -584,7 +581,7 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 	unsigned char pagedata[9][23*40];
 	tstPageinfo *pageinfo_thread;
 
-	printf("TuxTxt running thread...(%04x)\n",tuxtxt_cache.vtxtpid);
+	printf("TuxTxt running thread...(%03x)\n",tuxtxt_cache.vtxtpid);
 	tuxtxt_cache.receiving = 1;
 	nice(3);
 	while (!stop_cache)
@@ -592,8 +589,7 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 		/* check stopsignal */
 		pthread_testcancel();
 
-		if (!tuxtxt_cache.receiving)
-			continue;
+		if (!tuxtxt_cache.receiving) continue;
 
 		/* read packet */
 		ssize_t readcnt;
@@ -609,13 +605,6 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 			continue;
 		}
 
-		/* this "big hammer lock" is a hack: it avoids a crash if
-		 * tuxtxt_clear_cache() is called while the cache thread is in the
-		 * middle of the following loop, leading to tuxtxt_cache.current_page[]
-		 * etc. being set to -1 and tuxtxt_cache.astCachetable[] etc. being set
-		 * to NULL
-		 * it probably also avoids the possible race in tuxtxt_allocate_cache() */
-		pthread_mutex_lock(&tuxtxt_cache_biglock);
 		/* analyze it */
 		for (line = 0; line < readcnt/0x2e /*4*/; line++)
 		{
@@ -653,14 +642,14 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 				if (!magazine) magazine = 8;
 
 				if (packet_number == 0 && tuxtxt_cache.current_page[magazine] != -1 && tuxtxt_cache.current_subpage[magazine] != -1)
-					tuxtxt_compress_page(tuxtxt_cache.current_page[magazine],tuxtxt_cache.current_subpage[magazine],pagedata[magazine]);
+ 				    tuxtxt_compress_page(tuxtxt_cache.current_page[magazine],tuxtxt_cache.current_subpage[magazine],pagedata[magazine]);
 
-				//printf("********************** receiving packet %d page %03x subpage %02x\n",packet_number, tuxtxt_cache.current_page[magazine],tuxtxt_cache.current_subpage[magazine]);//FIXME
+				//printf("receiving packet %d page %03x subpage %02x\n",packet_number, tuxtxt_cache.current_page[magazine],tuxtxt_cache.current_subpage[magazine]);//FIXME
 
 				/* analyze row */
 				if (packet_number == 0)
 				{
-					/* get pagenumber */
+    					/* get pagenumber */
 					b2 = dehamming[vtxt_row[3]];
 					b3 = dehamming[vtxt_row[2]];
 
@@ -754,9 +743,8 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 					}
 					else
 					{
-						//pageinfo_thread->nationalvalid = 1;// FIXME without full eval some is broken
+						pageinfo_thread->nationalvalid = 1;
 						pageinfo_thread->national = rev_lut[b1] & 0x07;
-//printf("TuxTxt 0: b1=%x\n", rev_lut[b1]);
 					}
 
 					/* check parity, copy line 0 to cache (start and end 8 bytes are not needed and used otherwise) */
@@ -803,7 +791,7 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 								for (byte = 2; byte < 42; byte++)
 									*p++ = dehamming[vtxt_row[byte]]; /* decode hamming 8/4 */
 							else /* other hex page: no parity check, just copy */
-								memmove(p, &vtxt_row[2], 40);
+								memcpy(p, &vtxt_row[2], 40);
 						}
 					}
 					else if (packet_number == 27)
@@ -958,7 +946,7 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 						if (!(pageinfo_thread->ext->p26[descode]))
 							pageinfo_thread->ext->p26[descode] = (unsigned char*) malloc(13 * 3);
 						if (pageinfo_thread->ext->p26[descode])
-							memmove(pageinfo_thread->ext->p26[descode], &vtxt_row[3], 13 * 3);
+							memcpy(pageinfo_thread->ext->p26[descode], &vtxt_row[3], 13 * 3);
 #if 0//TUXTXT_DEBUG
 						int i, t, m;
 
@@ -993,8 +981,7 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 							pageinfo_thread->function = t1 & 0x0f;
 							if (!pageinfo_thread->nationalvalid)
 							{
-//printf("TuxTxt 28: t1=%x\n", t1>>4);
-								// pageinfo_thread->nationalvalid = 1; // FIXME without full eval some is broken
+								pageinfo_thread->nationalvalid = 1;
 								pageinfo_thread->national = (t1>>4) & 0x07;
 							}
 						}
@@ -1057,12 +1044,11 @@ void *tuxtxt_CacheThread(void * /*arg*/)
 				printf("line %d row %X %X, continue\n", line, vtx_rowbyte[0], vtx_rowbyte[1]);
 #endif
 		}
-		pthread_mutex_unlock(&tuxtxt_cache_biglock);
 	}
-
+	
+	//return 0;
 	pthread_exit(NULL);
 }
-//
 
 /******************************************************************************
  * start_thread                                                               *

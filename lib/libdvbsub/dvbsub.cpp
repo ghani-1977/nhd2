@@ -10,7 +10,7 @@
 
 #include <cerrno>
 
-#include <dmx_cs.h>	/* libcoolstream */
+#include <dmx_cs.h>	/* libdvbapi */
 
 #include "Debug.hpp"
 #include "PacketQueue.hpp"
