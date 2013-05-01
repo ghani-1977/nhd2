@@ -427,6 +427,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	
 	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 	
+	// close unused frontend
 	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
 		CFrontend * fe = fe_it->second;
@@ -441,16 +442,17 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		if( !fe->locked && femap.size() > 1)
 			fe->Close();
 	}
-	//
 	
+	// get preferred frontend
 	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		dprintf(DEBUG_INFO, "getFrontend: fe(%d,%d): fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		dprintf(DEBUG_INFO, "getFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fe_adapter,
-				fe->fenumber, 
+				fe->fenumber,
+				fe->locked,
 				fe->getFrequency(), 
 				fe->getTsidOnid(), 
 				thischannel->getFreqId(), 

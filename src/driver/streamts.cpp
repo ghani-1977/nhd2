@@ -372,9 +372,6 @@ void * streamts_live_thread(void * data)
 		return 0;
 	}
 	
-	// lock streaming tuner 
-	live_fe->locked = true;
-	
 	cDemux * dmx = new cDemux();
 	
 #if defined (PLATFORM_COOLSTREAM)
@@ -413,9 +410,6 @@ void * streamts_live_thread(void * data)
 	
 	free(buf);
 	close(fd);
-	
-	// unlock streaming tuner
-	live_fe->locked = false;
 	
 	return 0;
 }
