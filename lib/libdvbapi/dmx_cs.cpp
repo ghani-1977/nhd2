@@ -416,7 +416,7 @@ bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
 			break;
 		
 		case DMX_TP_CHANNEL:
-			pes.output   = DMX_OUT_TSDEMUX_TAP;     /* to demux */		
+			pes.output   = DMX_OUT_TSDEMUX_TAP;     /* to demux */	/* Output multiplexed into a new TS  */	
 			pes.pes_type = DMX_PES_OTHER;
 			break;
 			
