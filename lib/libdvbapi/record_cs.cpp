@@ -23,26 +23,21 @@
 #include <string.h> 
 
 #include <sys/types.h>
-
 #include <unistd.h>
 
 #include "record_cs.h"
-
 #include <system/debug.h>
-//#include <client/zapittypes.h>
-
 #include <frontend_c.h>
+
 
 extern CFrontend * record_fe;
 
-
 static const char * FILENAME = "[record_cs.cpp]";
 
-
 /* helper function to call the cpp thread loop */
-void *execute_record_thread(void *c)
+void * execute_record_thread(void *c)
 {
-	cRecord *obj = (cRecord *)c;
+	cRecord * obj = (cRecord *)c;
 	obj->RecordThread();
 	
 	return NULL;
@@ -85,6 +80,10 @@ bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int num
 
 	for (i = 0; i < numpids; i++)
 		dmx->addPid(apids[i]);
+	
+	for (i = 0; i < numpids; i++)
+		printf("apid 0x%02x \n", apids[i]);
+	printf("\n");
 
 	file_fd = fd;
 	exit_flag = RECORD_RUNNING;
@@ -135,7 +134,6 @@ bool cRecord::Stop(void)
 
 void cRecord::RecordThread()
 {
-	//dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 #define BUFSIZE (1 << 20) /* 1024 kB */
 #define READSIZE (BUFSIZE / 16)
 
@@ -164,7 +162,6 @@ void cRecord::RecordThread()
 
 			if (r < 0)
 			{
-				//if (errno != EAGAIN)
 				if (errno != EAGAIN && errno != EOVERFLOW )
 				{
 					dprintf(DEBUG_INFO, "read failed\n");
@@ -211,6 +208,7 @@ void cRecord::RecordThread()
 		buf_pos -= r;
 		memmove(buf, buf + r, buf_pos);
 	}
+	
 	free(buf);	
 	
 	pthread_exit(NULL);
