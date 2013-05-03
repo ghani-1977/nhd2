@@ -239,7 +239,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 		{
 			//CURRENT-EPG for current channel arrived!;
 			
-#if defined (PLATFORM_DREAMBOX)
+#if defined (ENABLE_LCD)
 			CVFD::getInstance()->setEPGTitle(info_CN.current_name);
 #endif			
 			

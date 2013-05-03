@@ -1977,7 +1977,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	lcdSettings.addItem(oj2);
 #endif	
 	// LCD
-#if defined (PLATFORM_DREAMBOX)
+#if defined (ENABLE_LCD)
 	//option invert
 	CMenuOptionChooser* oj_inverse = new CMenuOptionChooser(LOCALE_LCDMENU_INVERSE, &g_settings.lcd_setting[SNeutrinoSettings::LCD_INVERSE], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) );
 	lcdSettings.addItem(oj_inverse);
@@ -2026,7 +2026,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 #endif	
 #endif
 
-	// vfd time
+	// vfd time //FIXME: not working with new driver seems like the ioctl is brocken :-(
 #ifdef __sh__	
 	lcdSettings.addItem(GenericMenuSeparatorLine);
 
