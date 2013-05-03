@@ -1698,7 +1698,7 @@ void CAudioPlayerGui::paintHead()
 		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
 
 #if 1
-	if( /*CNeutrinoApp::getInstance()->isMuted()*/current_muted )
+	if( current_muted )
 	{
 		int xpos = m_x + m_width - 75;
 		ypos = m_y + m_title_height;
@@ -2419,7 +2419,7 @@ void CAudioPlayerGui::updateTimes(const bool force)
 #if ENABLE_LCD	
 		if((updatePlayed || updateTotal) && m_time_total != 0)
 		{
-			CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, CNeutrinoApp::getInstance()->isMuted());
+			CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, current_muted);
 		}
 #endif		
 	}
@@ -2433,7 +2433,7 @@ void CAudioPlayerGui::paintLCD()
 			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_STOP);
 			
 #if ENABLE_LCD
-			CVFD::getInstance()->showAudioProgress(0, CNeutrinoApp::getInstance()->isMuted());
+			CVFD::getInstance()->showAudioProgress(0, current_muted);
 #endif
 			break;
 		case CAudioPlayerGui::PLAY:
@@ -2444,13 +2444,13 @@ void CAudioPlayerGui::paintLCD()
 			
 #if ENABLE_LCD
 			if(m_curr_audiofile.FileType != CFile::STREAM_AUDIO && m_time_total != 0)
-				CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, CNeutrinoApp::getInstance()->isMuted());
+				CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, current_muted);
 #endif
 
 #ifdef INCLUDE_UNUSED_STUFF
 #if ENABLE_LCD
 			else
-				CVFD::getInstance()->showAudioProgress(100 * CAudioPlayer::getInstance()->getScBuffered() / 65536, CNeutrinoApp::getInstance()->isMuted());
+				CVFD::getInstance()->showAudioProgress(100 * CAudioPlayer::getInstance()->getScBuffered() / 65536, current_muted);
 #endif			
 #endif /* INCLUDE_UNUSED_STUFF */
 
