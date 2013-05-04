@@ -150,13 +150,13 @@ xmlDocPtr scanInputParser = NULL;
 CBouquetManager * g_bouquetManager = NULL;
 
 /* Audio/Video Decoder */
-extern cVideo * videoDecoder;			/* defined in video_cs.pp (libcoolstream) */
-extern cAudio * audioDecoder;			/* defined in audio_cs.pp (libcoolstream) */
+extern cVideo * videoDecoder;			/* defined in video_cs.pp (libdvbapi) */
+extern cAudio * audioDecoder;			/* defined in audio_cs.pp (libdvbapi) */
 
 /* Demuxes */
-extern cDemux * audioDemux;			/* defined in dmx_cs.pp (libcoolstream) */
-extern cDemux * videoDemux;			/* defined in dmx_cs.pp (libcoolstream) */
-cDemux * pcrDemux = NULL;			/* defined in dmx_cs.pp (libcoolstream) */
+extern cDemux * audioDemux;			/* defined in dmx_cs.pp (libdvbapi) */
+extern cDemux * videoDemux;			/* defined in dmx_cs.pp (libdvbapi) */
+cDemux * pcrDemux = NULL;			/* defined in dmx_cs.pp (libdvbapi) */
 extern cDemux * pmtDemux;			/* defined in pmt.cpp */
 
 /* the map which stores the wanted scanned cables/satellites/terrestrials */
@@ -2445,7 +2445,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				//HACK:
 				/* dirty hack to unblank video, it seems like gst after stop playing stop video with not blanking */
 				/* i'm not sure if this works with all mipsel cores */
-#if defined (ENABLE_GSTREAMER)			
+#if 0 //defined (ENABLE_GSTREAMER)			
 				videoDecoder->Resume();
 				videoDecoder->Stop();
 #endif				

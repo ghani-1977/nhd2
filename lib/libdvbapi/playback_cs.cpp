@@ -53,6 +53,8 @@ GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
 bool end_eof = false;
+
+extern cVideo * videoDecoder;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -193,7 +195,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 					
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
 					if(videoSink)
-						dprintf(DEBUG_NORMAL, "%s %s - video sink closed\n", FILENAME, __FUNCTION__);
+						dprintf(DEBUG_NORMAL, "%s %s - video sink created\n", FILENAME, __FUNCTION__);
 					
 					gst_iterator_free(children);
 				}
@@ -334,6 +336,32 @@ void cPlayback::Close(void)
 		gst_object_unref(bus);
 		
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
+	}
+	
+	/*
+	* sometimes video/audio event poll close only needed device, so be sure and increase them
+	*/
+	if (audioSink)
+	{
+		gst_object_unref(GST_OBJECT(audioSink));
+		audioSink = NULL;
+		dprintf(DEBUG_NORMAL, "%s %s - audio sink closed\n", FILENAME, __FUNCTION__);
+	}
+	if (videoSink)
+	{
+		gst_object_unref(GST_OBJECT(videoSink));
+		videoSink = NULL;
+		dprintf(DEBUG_NORMAL, "%s %s - audio sink closed\n", FILENAME, __FUNCTION__);
+	}
+	
+	//HACK:
+	// dvbmediasink dont blank video
+	if(videoDecoder)
+	{
+		videoDecoder->Open();		
+		videoDecoder->Resume();
+		videoDecoder->Stop();
+		videoDecoder->Close();		
 	}
 
 	// close gst
