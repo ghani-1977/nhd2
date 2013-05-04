@@ -430,11 +430,11 @@ bool cPlayback::Start(char * filename)
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 		
 		// streaming
-		if(isHTTP)
+		//if(isHTTP)
 		{
-			//flags |= GST_PLAY_FLAG_BUFFERING;
 			  /* increase the default 2 second / 2 MB buffer limitations to 5s / 5MB */
 			g_object_set(G_OBJECT(m_gst_playbin), "buffer-duration", 5LL * GST_SECOND, NULL);
+		
 			g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 		}
 		
