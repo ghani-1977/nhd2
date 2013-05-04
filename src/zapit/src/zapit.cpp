@@ -2445,7 +2445,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				//HACK:
 				/* dirty hack to unblank video, it seems like gst after stop playing stop video with not blanking */
 				/* i'm not sure if this works with all mipsel cores */
-#if 0 //defined (ENABLE_GSTREAMER)			
+#if defined (ENABLE_GSTREAMER)			
 				videoDecoder->Resume();
 				videoDecoder->Stop();
 #endif				

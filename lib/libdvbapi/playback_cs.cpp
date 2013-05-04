@@ -30,10 +30,6 @@
 
 #include <unistd.h>
 
-#include "dmx_cs.h"
-#include "audio_cs.h"
-#include "video_cs.h"
-
 #include "playback_cs.h"
 
 #include <driver/framebuffer.h>
@@ -53,8 +49,6 @@ GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
 bool end_eof = false;
-
-extern cVideo * videoDecoder;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -338,30 +332,19 @@ void cPlayback::Close(void)
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
 	
-	/*
-	* sometimes video/audio event poll close only needed device, so be sure and increase them
-	*/
+	/* sometimes video/audio event poll close only needed device, so be sure and decrease them */
 	if (audioSink)
 	{
 		gst_object_unref(GST_OBJECT(audioSink));
 		audioSink = NULL;
 		dprintf(DEBUG_NORMAL, "%s %s - audio sink closed\n", FILENAME, __FUNCTION__);
 	}
+	
 	if (videoSink)
 	{
 		gst_object_unref(GST_OBJECT(videoSink));
 		videoSink = NULL;
 		dprintf(DEBUG_NORMAL, "%s %s - audio sink closed\n", FILENAME, __FUNCTION__);
-	}
-	
-	//HACK:
-	// dvbmediasink dont blank video
-	if(videoDecoder)
-	{
-		videoDecoder->Open();		
-		videoDecoder->Resume();
-		videoDecoder->Stop();
-		videoDecoder->Close();		
 	}
 
 	// close gst
