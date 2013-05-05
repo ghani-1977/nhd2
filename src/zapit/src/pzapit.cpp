@@ -530,8 +530,6 @@ int main (int argc, char** argv)
 		
 		return 0;
 	}
-	//
-
 
 	/* choose source mode */
 	zapit.setMode(radio ? CZapitClient::MODE_RADIO : CZapitClient::MODE_TV);
@@ -607,7 +605,7 @@ int main (int argc, char** argv)
 			return 0;
 		}
 
-	channel_found:
+channel_found:
 		zapit.zapTo(channels[channel-1].nr);
 		std::cout << "[pzapit] zapped to " << channels[channel-1].name << std::endl;
 	}
@@ -636,5 +634,7 @@ int main (int argc, char** argv)
 		}
 	}
 
+	/* never reached */
+	
 	return 0;
 }
