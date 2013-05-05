@@ -1967,9 +1967,9 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 #ifndef __sh__	
 			//FIXME: dont know why popen dont work in oe1.2
 			system( (fullfilename+" "+para).c_str() ); //execute
-#endif			
+#else			
 			//
-			FILE *f = popen( (fullfilename+" "+para).c_str(),"r"); //execute
+			FILE *f = popen( (fullfilename+" "+para).c_str(), "r"); //execute
 			if (f != NULL)
 			{
 				found = true;
@@ -1979,6 +1979,7 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 					result += output;
 				pclose(f);
 			}
+#endif			
 		}
 	}
 	chdir(cwd);

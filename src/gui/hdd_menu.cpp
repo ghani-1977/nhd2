@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+
 #include <fcntl.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
@@ -420,6 +421,9 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 	sprintf(cmd, "init_hdd.sh /dev/%s", actionKey.c_str());
 	printf("CHDDInit: executing %s\n", cmd);
 	
+#ifndef __sh__
+	system(cmd);
+#else
 	f = popen(cmd, "r");
 	if (!f) 
 	{
@@ -454,6 +458,8 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 		}
 	}
 	pclose(f);
+#endif
+
 	progress->showGlobalStatus(100);
 	sleep(2);
 	
@@ -648,7 +654,11 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	sprintf(cmd, "mkfs.ext3 -T largefile -m0 %s", src);
 
 	printf("CHDDFmtExec: executing %s\n", cmd);
-
+	
+#ifndef __sh__
+	system(cmd);
+	progress->showGlobalStatus(20);
+#else
 	f = popen(cmd, "r");
 	if (!f) 
 	{
@@ -683,6 +693,8 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 		}
 	}
 	pclose(f);
+#endif
+
 	progress->showGlobalStatus(100);
 	sleep(2);
 
@@ -808,6 +820,10 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& actionKey)
 
 	printf("CHDDChkExec: Executing %s\n", cmd);
 	
+#ifndef __sh__
+	system(cmd);
+	progress->showGlobalStatus(20);
+#else
 	f = popen(cmd, "r");
 	
 	// handle error
@@ -850,8 +866,12 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	}
 	
 	pclose(f);
+#endif
+
 	progress->showGlobalStatus(100);
+#ifdef __sh__	
 	progress->showStatusMessageUTF(buf);
+#endif	
 	sleep(2);
 	progress->hide();
 	delete progress;

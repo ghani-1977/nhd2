@@ -39,7 +39,9 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "gui/opkg_manager.h"
 
@@ -51,15 +53,13 @@
 #include <gui/widget/messagebox.h>
 #include "gui/widget/progresswindow.h"
 #include <driver/screen_max.h>
+#include <gui/filebrowser.h>
 
 #include <system/debug.h>
-
-#include <stdio.h>
 
 
 COPKGManager::COPKGManager()
 {
-	width = MENU_WIDTH;
 	vp_pkg_menu = NULL;
 	v_pkg_list.clear();
 	v_pkg_installed.clear();
@@ -74,11 +74,11 @@ COPKGManager::~COPKGManager()
 
 const opkg_cmd_struct_t pkg_types[OM_MAX] =
 {
-	{OM_LIST, 		"opkg-cl list"},
-	{OM_LIST_INSTALLED, 	"opkg-cl list-installed"},
-	{OM_LIST_UPGRADEABLE,	"opkg-cl list-upgradable"},
-	{OM_UPDATE,		"opkg-cl update"},
-	{OM_UPGRADE,		"opkg-cl upgrade"},
+	{OM_LIST, 		"opkg list"},
+	{OM_LIST_INSTALLED, 	"opkg list-installed"},
+	{OM_LIST_UPGRADEABLE,	"opkg list-upgradable"},
+	{OM_UPDATE,		"opkg update"},
+	{OM_UPGRADE,		"opkg upgrade"},
 };
 
 const char *pkg_menu_names[] = {
@@ -89,6 +89,14 @@ const char *pkg_menu_names[] = {
 	"Upgrade System",
 };
 
+const char * cmd_names[] = {
+	"list",
+	"list-installed",
+	"list-upgradable",
+	"update",
+	"upgrade",
+};
+
 int COPKGManager::exec(CMenuTarget * parent, const std::string &actionKey)
 {
 	int   res = menu_return::RETURN_REPAINT;
@@ -96,50 +104,52 @@ int COPKGManager::exec(CMenuTarget * parent, const std::string &actionKey)
 	if (parent)
 		parent->hide();
 	
-	for(uint pi = 0; pi < OM_MAX; pi++)
+	// internet
+	if(actionKey == "internet")
 	{
-		if(actionKey == pkg_types[pi].cmdstr)
+		if(!showPkgMenu(OM_LIST)) 
 		{
-			if (pi < OM_UPDATE)
-				res = showPkgMenu(pi);
-			else
-			{
-				if(execCmd(pkg_types[pi].cmdstr))
-				{
-					DisplayInfoMessage("Command successfull, restart of Neutrino may be required...");
-					//CNeutrinoApp::getInstance()->exec(NULL, "restart");
-					return res;
-				}
-				else
-					DisplayInfoMessage("Command failed");
-			}
-			
-			return res;
+			return menu_return::RETURN_REPAINT;
 		}
 	}
 	
-	if (vp_pkg_menu)
+	// manual
+	if(actionKey == "manual")
 	{
-		for(uint i = 0; i < vp_pkg_menu->size(); i++)
+		CFileBrowser fileBrowser;
+		CFileFilter fileFilter;
+		fileFilter.addFilter("ipk");
+		fileBrowser.Filter = &fileFilter;
+		
+		if (fileBrowser.exec(g_settings.update_dir) == true)
 		{
-			if(actionKey == vp_pkg_menu->at(i)) 
-			{
-				if(execCmd(pkg_types[OM_UPDATE].cmdstr))
-				{
-					std::string action_name = "opkg-cl -V 3 install " + getBlankPkgName(vp_pkg_menu->at(i));
-					if(execCmd(action_name.c_str()))
-					{
-						DisplayInfoMessage("Update successfull, restart of Neutrino required...");
-						//CNeutrinoApp::getInstance()->exec(NULL, "restart");
-						return res;
-					}
-				}
-				else
-					DisplayInfoMessage("Update failed");
-				
-				return res;
-			}
+			filename = fileBrowser.getSelectedFile()->Name;
 		}
+		else
+			return menu_return::RETURN_REPAINT;
+	}
+	
+	// install
+	if(!filename.empty())
+	{
+		std::string success;
+		std::string action_name = "opkg -V 1 install " + getBlankPkgName(filename);
+		
+		if( !system(action_name.c_str()))
+		{
+				success = getBlankPkgName(filename) + " successfull installed";
+				
+				DisplayInfoMessage(success.c_str());
+		}
+		else
+		{
+				success = getBlankPkgName(filename) + " install failed";
+				DisplayErrorMessage(success.c_str());
+		}
+		
+		// remove filename.ipk
+		if(actionKey == "manual")
+			remove(getBlankPkgName(filename).c_str());
 	}
 	
 	res = showMenu(); 
@@ -147,55 +157,105 @@ int COPKGManager::exec(CMenuTarget * parent, const std::string &actionKey)
 	return res;
 }
 
+class CUpdateMenuTarget : public CMenuTarget
+{
+	int    myID;
+	int *  myselectedID;
 
+	public:
+		CUpdateMenuTarget(const int id, int * const selectedID)
+		{
+			myID = id;
+			myselectedID = selectedID;
+		}
+
+		virtual int exec(CMenuTarget *, const std::string &)
+		{
+			*myselectedID = myID;
+			return menu_return::RETURN_EXIT_ALL;
+		}
+};
 
 //show items
-int COPKGManager::showPkgMenu(const int pkg_content_id)
+bool COPKGManager::showPkgMenu(const int pkg_content_id)
 {
+	int selected = -1;
+	std::vector<std::string> urls;
 	CHintBox * loadingBox;
 
 	loadingBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, "Loading package list");	// UTF-8	
 	loadingBox->paint();
 
+	// update list
 	if(!execCmd(pkg_types[OM_UPDATE].cmdstr))
-		DisplayInfoMessage("Update failed");
+	{
+		loadingBox->hide();
+		delete loadingBox;
+		DisplayErrorMessage("Update failed");
+
+		return false;
+	}
 		
-	CMenuWidget * menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
+	CMenuWidget menu("OPKG-Manager", NEUTRINO_ICON_UPDATE, MENU_WIDTH + 50);
 	
-	//menu->addIntroItems();
-	getPkgData(pkg_content_id);
+	if(!getPkgData(pkg_content_id))
+	{
+		loadingBox->hide();
+		delete loadingBox;
+		return false;
+	}
+	
 	if (vp_pkg_menu)
 	{
 		for(uint i = 0; i < vp_pkg_menu->size(); i++)
 		{
 			printf("Update to %s\n", vp_pkg_menu->at(i).c_str());
-			//std::string action_name = getBlankPkgName(vp_pkg_menu->at(i));
-			menu->addItem( new CMenuForwarderNonLocalized(vp_pkg_menu->at(i).c_str(), true, NULL , this, vp_pkg_menu->at(i).c_str()));
+			urls.push_back(vp_pkg_menu->at(i));
+
+			menu.addItem( new CMenuForwarderNonLocalized(vp_pkg_menu->at(i).c_str(), true, NULL, new CUpdateMenuTarget(i, &selected), NULL, NULL, NEUTRINO_ICON_UPDATE_SMALL));
 		}
 	}
 
 	loadingBox->hide();
-	int res = menu->exec (NULL, "");
-	menu->hide ();
-	delete menu;
+	
+	if (urls.empty())
+	{
+		ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText(LOCALE_FLASHUPDATE_GETINFOFILEERROR)); // UTF-8
+		delete loadingBox;
+		return false;
+	}
+	
+	menu.exec(NULL, "");
+	if (selected == -1)
+	{
+		delete loadingBox;
+		return false;
+	}
+	
 	delete loadingBox;
-	return res;
+	
+	filename = urls[selected];
+	
+	printf("%s: %s\n", __FUNCTION__, filename.c_str());
+	
+	return true;
 }
 
 int COPKGManager::showMenu()
 {
-	CMenuWidget *menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
+	CMenuWidget * menu = new CMenuWidget("OPKG-Manager", NEUTRINO_ICON_UPDATE);
 	
-	//menu->addIntroItems();
-	for(uint i = 0; i < OM_MAX; i++)
-	{
-		menu->addItem( new CMenuForwarderNonLocalized(pkg_menu_names[i], true, NULL , this, pkg_types[i].cmdstr));
-	}
+	// return
+	menu->addItem(GenericMenuBack);
+	menu->addItem(GenericMenuSeparatorLine);
 
+	menu->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_UPDATEMODE_INTERNET, true, NULL, this, "internet" ));
+	menu->addItem(new CMenuForwarder(LOCALE_FLASHUPDATE_UPDATEMODE_MANUAL, true, NULL, this, "manual" ));
 
 	int res = menu->exec (NULL, "");
 	menu->hide ();
 	delete menu;
+	
 	return res;
 }
 
@@ -217,26 +277,12 @@ bool COPKGManager::hasOpkgSupport()
 	return ret;
 }
 
-
-void COPKGManager::getPkgData(const int pkg_content_id)
+bool COPKGManager::getPkgData(const int pkg_content_id)
 {
 	char cmd[100];
-	FILE * f;
-	snprintf(cmd, sizeof(cmd), pkg_types[pkg_content_id].cmdstr);
-	
-	printf("COPKGManager: executing %s\n", cmd);
-	
-	f = popen(cmd, "r");
-	
-	if (!f) //failed
-	{
-		DisplayInfoMessage("Command failed");
-		sleep(2);
-		return;
-	}
-	
+	FILE * output;
 	char buf[OM_MAX_LINE_LENGTH];
-	setbuf(f, NULL);
+	//setbuf(output, NULL);
 	int in, pos;
 	bool is_pkgline;
 	pos = 0;
@@ -246,113 +292,165 @@ void COPKGManager::getPkgData(const int pkg_content_id)
 		case OM_LIST: //list of pkgs
 		{
 			v_pkg_list.clear();
-			vp_pkg_menu = &v_pkg_list;
+			//vp_pkg_menu = &v_pkg_list;
 			break;
 		}
+		
 		case OM_LIST_INSTALLED: //installed pkgs
 		{
 			v_pkg_installed.clear();
-			vp_pkg_menu = &v_pkg_installed;
+			//vp_pkg_menu = &v_pkg_installed;
 			break;
 		}
+		
 		case OM_LIST_UPGRADEABLE:
 		{
 			v_pkg_upgradable.clear();
-			vp_pkg_menu = &v_pkg_upgradable;
+			//vp_pkg_menu = &v_pkg_upgradable;
 			break;
 		}
+		
 		default:
-			vp_pkg_menu = NULL;
+			//vp_pkg_menu = NULL;
 			printf("unknown content id! \n\t");
 			break;
 	}
+	
+	// dump output to /tmp
+	sprintf(cmd, "%s > /tmp/%s.list", pkg_types[pkg_content_id].cmdstr, cmd_names[pkg_content_id]);
+	
+	printf("COPKGManager: executing >> %s\n", cmd);
+	
+	system(cmd);
+	
+	// check if cmd executed
+	char buffer[255];
+	sprintf(buffer, "/tmp/%s.list", cmd_names[pkg_content_id]);
+	
+	if(access(buffer, F_OK)) 
+		return false;
+	
+	output = fopen(buffer, "r");
 
-	while (true)
+	if(output != NULL)
 	{
-		in = fgetc(f);
-		if (in == EOF)
-			break;
-
-		buf[pos] = (char)in;
-		if (pos == 0)
-			is_pkgline = ((in != ' ') && (in != '\t'));
-		/* avoid buffer overflow */
-		if (pos+1 > OM_MAX_LINE_LENGTH)
-			in = '\n';
-		else
-			pos++;
-		buf[pos] = 0;
-		
-		if (in == '\b' || in == '\n')
+		while (true)
 		{
-			pos = 0; /* start a new line */
-			if ((in == '\n') && is_pkgline)
+			in = fgetc(output);
+			if (in == EOF)
+				break;
+
+			buf[pos] = (char)in;
+			if (pos == 0)
+				is_pkgline = ((in != ' ') && (in != '\t'));
+			
+			// avoid buffer overflow
+			if (pos+1 > OM_MAX_LINE_LENGTH)
+				in = '\n';
+			else
+				pos++;
+			buf[pos] = 0;
+			
+			if (in == '\b' || in == '\n')
 			{
-				//clean up string
-				int ipos = -1;
-				std::string line = buf;
-				while( (ipos = line.find('\n')) != -1 )
-					line = line.erase(ipos, 1);
-								
-				//add to lists
-				switch (pkg_content_id) 
+				pos = 0; /* start a new line */
+				if ((in == '\n') && is_pkgline)
 				{
-					case OM_LIST: //list of pkgs
+					//clean up string
+					int ipos = -1;
+					std::string line = buf;
+					while( (ipos = line.find('\n')) != -1 )
+						line = line.erase(ipos, 1);
+									
+					//add to lists
+					switch (pkg_content_id) 
 					{
-						v_pkg_list.push_back(line);
-						//printf("%s\n", buf);
-						break;
+						case OM_LIST: //list of pkgs
+						{
+							v_pkg_list.push_back(line);
+							//printf("%s\n", buf);
+							break;
+						}
+						case OM_LIST_INSTALLED: //installed pkgs
+						{
+							v_pkg_installed.push_back(line);
+							//printf("%s\n", buf);
+							break;
+						}
+						case OM_LIST_UPGRADEABLE:
+						{
+							v_pkg_upgradable.push_back(line);
+							//printf("%s\n", buf);
+							break;
+						}
+						default:
+							printf("unknown output! \n\t");
+							printf("%s\n", buf);
+							break;
 					}
-					case OM_LIST_INSTALLED: //installed pkgs
-					{
-						v_pkg_installed.push_back(line);
-						//printf("%s\n", buf);
-						break;
-					}
-					case OM_LIST_UPGRADEABLE:
-					{
-						v_pkg_upgradable.push_back(line);
-						//printf("%s\n", buf);
-						break;
-					}
-					default:
-						printf("unknown output! \n\t");
-						printf("%s\n", buf);
-						break;
 				}
 			}
 		}
-	}
 
- 	pclose(f);
+		fclose(output);
+	}
+	else
+		return false;
+	
+	switch (pkg_content_id) 
+	{
+		case OM_LIST: //list of pkgs
+		{
+			//v_pkg_list.clear();
+			vp_pkg_menu = &v_pkg_list;
+			break;
+		}
+		
+		case OM_LIST_INSTALLED: //installed pkgs
+		{
+			//v_pkg_installed.clear();
+			vp_pkg_menu = &v_pkg_installed;
+			break;
+		}
+		
+		case OM_LIST_UPGRADEABLE:
+		{
+			//v_pkg_upgradable.clear();
+			vp_pkg_menu = &v_pkg_upgradable;
+			break;
+		}
+		
+		default:
+			//vp_pkg_menu = NULL;
+			printf("unknown content id! \n\t");
+			break;
+	}
+	
+	return true;
 }
 
 std::string COPKGManager::getBlankPkgName(const std::string& line)
 {
 	int l_pos = line.find(" ");
 	std::string name = line.substr(0, l_pos);
+	
 	return name;
 }
 
 bool COPKGManager::execCmd(const char * cmdstr)
 {
 	char cmd[100];
-	FILE * f;
+
 	snprintf(cmd, sizeof(cmd), cmdstr);
 	
 	printf("COPKGManager: executing %s\n", cmd);
 	
-	f = popen(cmd, "r");
-	
-	if (!f) //failed
+	if(!system(cmd))
 	{
-		DisplayInfoMessage("Command failed");
+		DisplayErrorMessage("Command failed");
 		sleep(2);
 		return false;
 	}
-	
-
- 	pclose(f);
 
 	return true;
 }

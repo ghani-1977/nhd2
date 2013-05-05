@@ -358,7 +358,7 @@ bool CFlashUpdate::checkVersion4Update()
 
 		filename = CFileSelected->Name;
 
-		FILE* fd = fopen(filename.c_str(), "r");
+		FILE * fd = fopen(filename.c_str(), "r");
 		if(fd)
 			fclose(fd);
 		else 

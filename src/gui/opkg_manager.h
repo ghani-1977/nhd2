@@ -66,7 +66,7 @@ typedef struct opkg_cmd_t
 class COPKGManager : public CMenuTarget
 {
 	private:
-		int width;
+		std::string filename;
 		
 		std::vector<std::string>* vp_pkg_menu;
 		std::vector<std::string> v_pkg_list;
@@ -74,9 +74,9 @@ class COPKGManager : public CMenuTarget
 		std::vector<std::string> v_pkg_upgradable;
 		
 		bool execCmd(const char* cmdstr);
-		void getPkgData(const int pkg_content_id);
+		bool getPkgData(const int pkg_content_id);
 		std::string getBlankPkgName(const std::string& line);
-		int showPkgMenu(const int pkg_content_id);
+		bool showPkgMenu(const int pkg_content_id);
 		int showMenu();
 
 	public:	
@@ -87,6 +87,5 @@ class COPKGManager : public CMenuTarget
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 		static bool hasOpkgSupport();
 };
-
 
 #endif
