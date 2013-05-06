@@ -120,6 +120,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			//
 			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!not playing!!!! <<< -1\n", __func__);
 			end_eof = true;
+			//
 			break;
 		}
 
@@ -230,8 +231,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			break;
 		}
 		default:
-			return GST_BUS_DROP;
-			//break;
+			break;
 	}
 	
 	g_free(sourceName);
@@ -258,7 +258,6 @@ cPlayback::~cPlayback()
 	//FIXME: all deleting stuff is done in Close()	
 }
 
-//Used by Fileplay
 bool cPlayback::Open()
 {
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__ );
@@ -312,7 +311,6 @@ bool cPlayback::Open()
 	return true;
 }
 
-// used by movieplay
 void cPlayback::Close(void)
 {  
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
@@ -419,7 +417,6 @@ bool cPlayback::Start(char * filename)
 	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
 	
 	if (isHTTP)
-		//uri = g_uri_escape_string(filename, G_URI_RESERVED_CHARS_GENERIC_DELIMITERS, true);
 		uri = g_strdup_printf ("%s", filename);
 	else
 		uri = g_filename_to_uri(filename, NULL, NULL);
