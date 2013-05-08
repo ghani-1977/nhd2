@@ -818,7 +818,7 @@ int CUserMenuMenu::exec(CMenuTarget * parent, const std::string & actionKey)
                 parent->hide();
 
         CMenuWidget menu(local , NEUTRINO_ICON_KEYBINDING);
-       // menu.addItem(GenericMenuSeparator);
+	//menu.addItem(GenericMenuSeparator);
         menu.addItem(GenericMenuBack);
         menu.addItem(GenericMenuSeparatorLine);
 
@@ -827,9 +827,9 @@ int CUserMenuMenu::exec(CMenuTarget * parent, const std::string & actionKey)
         menu.addItem(GenericMenuSeparatorLine);
 
         char text[10];
-        for(int item = 0; item < SNeutrinoSettings::ITEM_MAX; item++) // Do not show more than 13 items
+        for(int item = 0; item < SNeutrinoSettings::ITEM_MAX; item++)
         {
-                snprintf(text,10,"%d:",item);
+                snprintf(text, 10, "%d:", item);
                 text[9] = 0;// terminate for sure
                 
                 menu.addItem( new CMenuOptionChooser(text, &g_settings.usermenu[button][item], USERMENU_ITEM_OPTIONS, USERMENU_ITEM_OPTION_COUNT,true, NULL, CRCInput::RC_nokey, "", true ));
