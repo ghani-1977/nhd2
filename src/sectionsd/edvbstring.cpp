@@ -606,7 +606,7 @@ static inline unsigned int recode(unsigned char d, int cp)
 }
 
 #if defined (ENABLE_FREESATEPG)
-static freesatHuffmanDecoder *huffmanDecoder = NULL;
+static freesatHuffmanDecoder huffmanDecoder;
 #endif
 
 std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
@@ -666,12 +666,12 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 		++i;
 		{} //eDebug("unsup. Big5 subset of ISO/IEC 10646-1 enc.");
 		break;
+	case 0x15: // UTF-8 encoding of ISO/IEC 10646-1
+			return std::string((char*)data+1, len-1);
 #if defined (ENABLE_FREESATEPG)
 	case 0x1F:
 		{
-			if (!huffmanDecoder)
-				huffmanDecoder = new freesatHuffmanDecoder;
-			std::string decoded_string = huffmanDecoder->decode((const unsigned char *)data, len);
+			std::string decoded_string = huffmanDecoder.decode((const unsigned char *)data, len);
 			if (!decoded_string.empty())
 				return decoded_string;
 		}
@@ -681,9 +681,9 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 	case 0x0:
 	case 0xD ... 0xF:
 #if defined (ENABLE_FREESATEPG)
-	case 0x15 ... 0x1E:
+	case 0x16 ... 0x1E:
 #else
-	case 0x15 ... 0x1F:
+	case 0x16 ... 0x1F:
 #endif	  
 	{} //eDebug("reserved %d", data[0]);
 	++i;
