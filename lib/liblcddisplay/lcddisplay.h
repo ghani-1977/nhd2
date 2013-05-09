@@ -82,6 +82,10 @@ class CLCDDisplay
 		
 		raw_display_t _buffer;
 		int _stride;
+		raw_display_t surface_data;
+		int surface_stride;
+		int surface_bpp, surface_bypp;
+		int surface_buffer_size;
 	
 	public:
 		enum
@@ -103,6 +107,7 @@ class CLCDDisplay
 
 		void update();
 
+		void surface_fill_rect(int area_left, int area_top, int area_right, int area_bottom, int color);
 		void draw_point(const int x, const int y, const int state);
 		void draw_line(const int x1, const int y1, const int x2, const int y2, const int state);
 		void draw_fill_rect (int left,int top,int right,int bottom,int state);
@@ -127,6 +132,7 @@ class CLCDDisplay
 		bool isOled() const { return !!is_oled; }
 		int raw_buffer_size;
 		int xres, yres, bpp;
+		int bypp;
 };
 
 #endif

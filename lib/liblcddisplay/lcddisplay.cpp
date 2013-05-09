@@ -37,17 +37,49 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <byteswap.h>
 
+#ifndef BYTE_ORDER
+#error "no BYTE_ORDER defined!"
+#endif
 
 void CLCDDisplay::setSize(int w, int h, int b)
 {
 	xres = w;
 	yres = h;
-	bpp = b;
-	raw_buffer_size = xres * yres * bpp/8;
+	bpp = 8;
+	bypp = 1;
+	surface_bpp = b;
+
+	switch (surface_bpp)
+	{
+	case 8:
+		surface_bypp = 1;
+		break;
+	case 15:
+	case 16:
+		surface_bypp = 2;
+		break;
+	case 24:		// never use 24bit mode
+	case 32:
+		surface_bypp = 4;
+		break;
+	default:
+		surface_bypp = (bpp+7)/8;
+	}
+
+	surface_stride = xres*surface_bypp;
+	surface_buffer_size = xres * yres * surface_bypp;
+	surface_data = new unsigned char[surface_buffer_size];
+	memset(surface_data, 0, surface_buffer_size);
+
+	printf("[CLCDDisplay] %s surface buffer %p %d bytes, stride %d\n", __FUNCTION__, surface_data, surface_buffer_size, surface_stride);
+
+	_stride = xres*bypp;
+	raw_buffer_size = xres * yres * bypp;
 	_buffer = new unsigned char[raw_buffer_size];
 	memset(_buffer, 0, raw_buffer_size);
-	_stride = xres*bpp/8;
+
 	printf("[CLCDDisplay] %s lcd buffer %p %d bytes, stride %d, type %d\n", __FUNCTION__, _buffer, raw_buffer_size, _stride, is_oled);
 }
 
@@ -265,6 +297,14 @@ void CLCDDisplay::update()
 #ifndef PLATFORM_GENERIC
 	if ((fd >= 0) && (last_brightness > 0))
 	{
+		for (unsigned int y = 0; y < yres; y++)
+		{
+			for (unsigned int x = 0; x < xres; x++)
+			{
+				surface_fill_rect(x, y, x+1, y+1, _buffer[y * xres + x]);
+			}
+		}
+
 		if (is_oled == 0 || is_oled == 2)
 		{
 			unsigned int height = yres;
@@ -272,9 +312,9 @@ void CLCDDisplay::update()
 
 			// hack move last line to top
 			unsigned char linebuffer[width];
-			memmove(linebuffer, _buffer+raw_buffer_size-width, width);
-			memmove(_buffer+width, _buffer, raw_buffer_size-width);
-			memmove(_buffer, linebuffer, width);
+			memmove(linebuffer, surface_data+surface_buffer_size-width, width);
+			memmove(surface_data+width, surface_data, surface_buffer_size-width);
+			memmove(surface_data, linebuffer, width);
 
 			unsigned char raw[132*8];
 			int x, y, yy;
@@ -289,7 +329,7 @@ void CLCDDisplay::update()
 					int pix=0;
 					for (yy=0; yy<8; yy++)
 					{
-						pix|=(_buffer[(y*8+yy)*width+x]>=108)<<yy;
+						pix|=(surface_data[(y*8+yy)*width+x]>=108)<<yy;
 					}
 					
 					if (flipped)
@@ -308,18 +348,18 @@ void CLCDDisplay::update()
 			write(fd, raw, 132*8);
 			
 			// hack move last line back to bottom
-			memmove(linebuffer, _buffer, width);
-			memmove(_buffer, _buffer+width, raw_buffer_size-width);
-			memmove(_buffer+raw_buffer_size-width, linebuffer, width);
+			memmove(linebuffer, surface_data, width);
+			memmove(surface_data, surface_data+width, surface_buffer_size-width);
+			memmove(surface_data+surface_buffer_size-width, linebuffer, width);
 		}
 		else if (is_oled == 3)
 		{
 			/* for now, only support flipping / inverting for 8bpp displays */
-			if ((flipped || inverted) && _stride == xres)
+			if ((flipped || inverted) && surface_stride == xres)
 			{
 				unsigned int height = yres;
 				unsigned int width = xres;
-				unsigned char raw[_stride * height];
+				unsigned char raw[surface_stride * height];
 				
 				for (unsigned int y = 0; y < height; y++)
 				{
@@ -328,19 +368,19 @@ void CLCDDisplay::update()
 						if (flipped)
 						{
 							/* 8bpp, no bit swapping */
-							raw[(height - 1 - y) * width + (width - 1 - x)] = _buffer[y * width + x] ^ inverted;
+							raw[(height - 1 - y) * width + (width - 1 - x)] = surface_data[y * width + x] ^ inverted;
 						}
 						else
 						{
-							raw[y * width + x] = _buffer[y * width + x] ^ inverted;
+							raw[y * width + x] = surface_data[y * width + x] ^ inverted;
 						}
 					}
 				}
-				write(fd, raw, _stride * height);
+				write(fd, raw, surface_stride * height);
 			}
 			else
 			{
-				write(fd, _buffer, _stride * yres);
+				write(fd, surface_data, surface_stride * yres);
 			}
 		}
 		else /* is_oled == 1 */
@@ -353,7 +393,7 @@ void CLCDDisplay::update()
 				int pix=0;
 				for (x=0; x<128 / 2; x++)
 				{
-					pix = (_buffer[y*132 + x * 2 + 2] & 0xF0) |(_buffer[y*132 + x * 2 + 1 + 2] >> 4);
+					pix = (surface_data[y*132 + x * 2 + 2] & 0xF0) |(surface_data[y*132 + x * 2 + 1 + 2] >> 4);
 					if (inverted)
 						pix = 0xFF - pix;
 					if (flipped)
@@ -374,6 +414,67 @@ void CLCDDisplay::update()
 		}
 	}
 #endif
+}
+
+void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right, int area_bottom, int color) 
+{
+		int area_width  = area_right-area_left;
+		int area_height = area_bottom-area_top;
+
+		if (surface_bpp == 8)
+		{
+			for (int y=area_top; y<area_bottom; y++)
+		 		memset(((uint8_t*)surface_data)+y*surface_stride+area_left, color, area_width);
+		} else if (surface_bpp == 16)
+		{
+			uint32_t icol;
+
+#if 0
+			if (surface_clut.data && color < surface_clut.colors)
+				icol=(surface_clut.data[color].a<<24)|(surface_clut.data[color].r<<16)|(surface_clut.data[color].g<<8)|(surface_clut.data[color].b);
+			else
+#endif
+				icol=0x10101*color;
+#if BYTE_ORDER == LITTLE_ENDIAN
+			uint16_t col = bswap_16(((icol & 0xFF) >> 3) << 11 | ((icol & 0xFF00) >> 10) << 5 | (icol & 0xFF0000) >> 19);
+#else
+			uint16_t col = ((icol & 0xFF) >> 3) << 11 | ((icol & 0xFF00) >> 10) << 5 | (icol & 0xFF0000) >> 19;
+#endif
+			for (int y=area_top; y<area_bottom; y++)
+			{
+				uint16_t *dst=(uint16_t*)(((uint8_t*)surface_data)+y*surface_stride+area_left*surface_bypp);
+				int x=area_width;
+				while (x--)
+					*dst++=col;
+			}
+		} else if (surface_bpp == 32)
+		{
+			uint32_t col;
+
+#if 0
+			if (surface_clut.data && color < surface_clut.colors)
+				col=(surface_clut.data[color].a<<24)|(surface_clut.data[color].r<<16)|(surface_clut.data[color].g<<8)|(surface_clut.data[color].b);
+			else
+#endif
+				col=0x10101*color;
+			
+			col^=0xFF000000;
+			
+#if 0
+			if (surface_data_phys && gAccel::getInstance())
+				if (!gAccel::getInstance()->fill(surface,  area, col))
+					continue;
+#endif
+
+			for (int y=area_top; y<area_bottom; y++)
+			{
+				uint32_t *dst=(uint32_t*)(((uint8_t*)surface_data)+y*surface_stride+area_left*surface_bypp);
+				int x=area_width;
+				while (x--)
+					*dst++=col;
+			}
+		}	else
+			printf("[CLCDDisplay] couldn't fill %d bpp", surface_bpp);
 }
 
 void CLCDDisplay::draw_point(const int x, const int y, const int state)
