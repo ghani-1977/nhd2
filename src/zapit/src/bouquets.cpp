@@ -179,30 +179,6 @@ void CZapitBouquet::moveService(const unsigned int oldPosition, const unsigned i
 	}
 }
 
-/*
-size_t CZapitBouquet::recModeRadioSize(const transponder_id_t transponder_id)
-{
-	size_t size = 0;
-
-	for (size_t i = 0; i < radioChannels.size(); i++)
-		if (transponder_id == radioChannels[i]->getTransponderId())
-			size++;
-
-	return size;
-}
-
-size_t CZapitBouquet::recModeTVSize(const transponder_id_t transponder_id)
-{
-	size_t size = 0;
-
-	for (size_t i = 0; i < tvChannels.size(); i++)
-		if (transponder_id == tvChannels[i]->getTransponderId())
-			size++;
-
-	return size;
-}
-*/
-
 void CBouquetManager::writeBouquetHeader(FILE * bouq_fd, uint32_t i, const char * bouquetName)
 {
 	fprintf(bouq_fd, "\t<Bouquet name=\"%s\" hidden=\"%d\" locked=\"%d\">\n", bouquetName, Bouquets[i]->bHidden ? 1 : 0, Bouquets[i]->bLocked ? 1 : 0);

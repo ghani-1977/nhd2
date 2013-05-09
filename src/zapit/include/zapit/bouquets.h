@@ -50,8 +50,6 @@ class CZapitBouquet
 		
 		void moveService (const unsigned int oldPosition, const unsigned int newPosition, const unsigned char serviceType);
 		
-		size_t recModeRadioSize(const transponder_id_t transponder_id);
-		size_t recModeTVSize   (const transponder_id_t transponder_id);
 		CZapitChannel * getChannelByChannelID(const t_channel_id channel_id, const unsigned char serviceType = ST_RESERVED);
 		void sortBouquet(void);
 };
