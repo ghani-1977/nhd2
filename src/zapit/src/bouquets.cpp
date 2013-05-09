@@ -179,6 +179,7 @@ void CZapitBouquet::moveService(const unsigned int oldPosition, const unsigned i
 	}
 }
 
+/*
 size_t CZapitBouquet::recModeRadioSize(const transponder_id_t transponder_id)
 {
 	size_t size = 0;
@@ -200,6 +201,7 @@ size_t CZapitBouquet::recModeTVSize(const transponder_id_t transponder_id)
 
 	return size;
 }
+*/
 
 void CBouquetManager::writeBouquetHeader(FILE * bouq_fd, uint32_t i, const char * bouquetName)
 {
@@ -412,9 +414,9 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		while ((search = xmlGetNextOccurence(search, "Bouquet")) != NULL) 
 		{
 			char * name = xmlGetAttribute(search, (char *) "name");
-			CZapitBouquet* newBouquet = addBouquet(name, bUser);
-			char * hidden = xmlGetAttribute(search, (char *) "hidden");
-			char * locked = xmlGetAttribute(search, (char *) "locked");
+			CZapitBouquet *newBouquet = addBouquet(name, bUser);
+			char *hidden = xmlGetAttribute(search, (char *) "hidden");
+			char *locked = xmlGetAttribute(search, (char *) "locked");
 			newBouquet->bHidden = hidden ? (strcmp(hidden, "1") == 0) : false;
 			newBouquet->bLocked = locked ? (strcmp(locked, "1") == 0) : false;
 			newBouquet->bFav = (strcmp(name, "Favorites") == 0);
@@ -456,34 +458,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 		dprintf(DEBUG_INFO, "found %d bouquets\n", Bouquets.size());
 	}
 }
-/*
-void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
-{
-	xmlDocPtr parser;
-	
-	if (ignoreBouquetFile == false) 
-	{
-		parser = parseXmlFile(BOUQUETS_XML);
-		if (parser != NULL) 
-		{
-			parseBouquetsXml(xmlDocGetRootElement(parser), false);
-			xmlFreeDoc(parser);
-			parser = NULL;
-		}
-		sortBouquets();
-	}
-	
-	parser = parseXmlFile(UBOUQUETS_XML);
-	if (parser != NULL) 
-	{
-		parseBouquetsXml(xmlDocGetRootElement(parser), true);
-		xmlFreeDoc(parser);
-		parser = NULL;
-	}
 
-	renumServices();
-}
-*/
 void CBouquetManager::makeBouquetfromCurrentservices(const xmlNodePtr root)
 {
 	xmlNodePtr provider = root->xmlChildrenNode;
@@ -528,35 +503,6 @@ void CBouquetManager::makeBouquetfromCurrentservices(const xmlNodePtr root)
 		provider = provider->xmlNextNode;
 	}
 }
-
-/*
-void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
-{
-	xmlDocPtr parser;
-	
-	if (ignoreBouquetFile == false) 
-	{
-		parser = parseXmlFile(BOUQUETS_XML);
-		if (parser != NULL) 
-		{
-			parseBouquetsXml(xmlDocGetRootElement(parser), false);
-			xmlFreeDoc(parser);
-			parser = NULL;
-		}
-		sortBouquets();
-	}
-	
-	parser = parseXmlFile(UBOUQUETS_XML);
-	if (parser != NULL) 
-	{
-		parseBouquetsXml(xmlDocGetRootElement(parser), true);
-		xmlFreeDoc(parser);
-		parser = NULL;
-	}
-
-	renumServices();
-}
-*/
 
 void CBouquetManager::loadBouquets(bool ignoreBouquetFile)
 {
@@ -609,9 +555,12 @@ void CBouquetManager::makeRemainingChannelsBouquet(void)
 	{
 		for (vector<CZapitChannel*>::iterator jt = (*it)->tvChannels.begin(); jt != (*it)->tvChannels.end(); jt++) 
 		{
-			if(tomake) chans_processed.insert((*jt)->getChannelID());
+			if(tomake) 
+				chans_processed.insert((*jt)->getChannelID());
+			
 			if(!(*jt)->number) 
 				(*jt)->number = i++;
+			
 			if(!(*jt)->pname && !(*it)->bUser) 
 				(*jt)->pname = (char *) (*it)->Name.c_str();
 		}
@@ -620,6 +569,7 @@ void CBouquetManager::makeRemainingChannelsBouquet(void)
 		{
 			if(tomake) 
 				chans_processed.insert((*jt)->getChannelID());
+			
 			if(!(*jt)->number) 
 				(*jt)->number = j++;
 			if(!(*jt)->pname && !(*it)->bUser) 
@@ -652,10 +602,16 @@ void CBouquetManager::makeRemainingChannelsBouquet(void)
 	}
 
 	for (vector<CZapitChannel*>::iterator jt = remainChannels->tvChannels.begin(); jt != remainChannels->tvChannels.end(); jt++)
-		if(!(*jt)->number) (*jt)->number = i++;
+	{
+		if(!(*jt)->number) 
+			(*jt)->number = i++;
+	}
 
 	for (vector<CZapitChannel*>::iterator jt = remainChannels->radioChannels.begin(); jt != remainChannels->radioChannels.end(); jt++)
-		if(!(*jt)->number) (*jt)->number = j++;
+	{
+		if(!(*jt)->number) 
+			(*jt)->number = j++;
+	}
 }
 
 void CBouquetManager::renumServices()
@@ -715,7 +671,6 @@ int CBouquetManager::existsBouquet(char const * const name)
 
 	for (i = 0; i < Bouquets.size(); i++) 
 	{
-		//if (strncasecmp(Bouquets[i]->Name.c_str(), name,Bouquets[i]->Name.length())==0)
 		if (Bouquets[i]->Name == name)
 			return (int)i;
 	}
@@ -734,7 +689,6 @@ int CBouquetManager::existsUBouquet(char const * const name, bool myfav)
 			if (Bouquets[i]->bFav)
 				return (int)i;
 		}
-		//else if (Bouquets[i]->bUser && strncasecmp(Bouquets[i]->Name.c_str(), name,Bouquets[i]->Name.length())==0)
 		else if (Bouquets[i]->bUser && (Bouquets[i]->Name == name))
 			return (int)i;
 	}

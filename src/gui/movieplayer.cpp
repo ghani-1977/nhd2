@@ -102,6 +102,8 @@ static int skt = -1; //dirty hack to close socket when stop playing
 #define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
 
 cPlayback * playback = NULL;
+
+//
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
 extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
@@ -2275,7 +2277,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
 					}
-					else
+					else if(!playback->playing)
 					{
 						sleep(3);
 						exit = true;

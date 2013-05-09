@@ -89,7 +89,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			g_message("End-of-stream");
 			
 			//
-			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! << -1\n", __func__);
+			dprintf(DEBUG_NORMAL, "cPlayback::%s (EOS) !!!!EOF!!!! << -1\n", __func__);
 			end_eof = true;
 			//
 			break;
@@ -118,7 +118,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			g_error_free(err);
 			
 			//
-			dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!not playing!!!! <<< -1\n", __func__);
+			dprintf(DEBUG_NORMAL, "cPlayback::%s (ERROR)!!!!not playing!!!! <<< -1\n", __func__);
 			end_eof = true;
 			//
 			break;
@@ -264,7 +264,6 @@ bool cPlayback::Open()
 	
 	mAudioStream = 0;
 	mSpeed = 0;
-
 	playing = false;
 	
 #if defined (ENABLE_GSTREAMER)
@@ -330,7 +329,7 @@ void cPlayback::Close(void)
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
 	
-	/* sometimes video/audio event poll close only needed device, so be sure and decrease them */
+	// sometimes video/audio event poll close only needed device, so be sure and decrease them 
 	if (audioSink)
 	{
 		gst_object_unref(GST_OBJECT(audioSink));
@@ -403,6 +402,10 @@ bool cPlayback::Start(char * filename)
 	{
 		isHTTP = true;
 	}
+	else if(!strncmp("rtsp://", filename, 7))
+	{
+		isHTTP = true;
+	}
 	else if(!strncmp("mms://", filename, 6))
 	{
 		isHTTP = true;
@@ -423,17 +426,22 @@ bool cPlayback::Start(char * filename)
 
 	if(m_gst_playbin)
 	{
+		// set uri
 		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
+		//g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
+		
+		/* increase the default 2 second / 2 MB buffer limitations to 5s / 5MB */
+		if(isHTTP)
+		{
+			g_object_set(G_OBJECT(m_gst_playbin), "buffer-duration", 5LL * GST_SECOND, NULL);
+			flags |= 0x100; // USE_BUFFERING
+		}
+		
+		// set flags
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 		
-		// streaming
-		//if(isHTTP)
-		{
-			  /* increase the default 2 second / 2 MB buffer limitations to 5s / 5MB */
-			g_object_set(G_OBJECT(m_gst_playbin), "buffer-duration", 5LL * GST_SECOND, NULL);
-		
-			g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
-		}
+		// set buffer size
+		//g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 		
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
@@ -455,6 +463,9 @@ bool cPlayback::Start(char * filename)
 	}
 	
 	g_free(uri);
+	
+	// set buffer size
+	g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 #elif defined (ENABLE_LIBEPLAYER3)
 	//open file
 	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0) 
@@ -481,7 +492,7 @@ bool cPlayback::Start(char * filename)
 	playing = false;
 #endif
 
-	dprintf(DEBUG_INFO, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
+	dprintf(DEBUG_NORMAL, "%s:%s (playing %d)\n", FILENAME, __FUNCTION__, playing);	
 
 	return playing;
 }
@@ -587,7 +598,7 @@ void cPlayback::trickSeek(int ratio)
 		pos = position;
 	}
 
-	//gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
+	gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 			
 	if (validposition)
 	{
@@ -725,18 +736,20 @@ bool cPlayback::GetSpeed(int &speed) const
 // in milliseconds
 void cPlayback::GetDuration(int &duration)
 {
-	if(playing == false) 
-		return;	
+	//if(playing == false) 
+	//	return;	
 
 #if ENABLE_GSTREAMER
 	if(m_gst_playbin)
 	{
 		// duration
-		GstFormat fmt_d = GST_FORMAT_TIME; //Returns time in nanosecs
+		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
 		double length = 0;
 		gint64 len;
 
-		gst_element_query_duration(m_gst_playbin, &fmt_d, &len);
+		gst_element_query_duration(m_gst_playbin, &fmt, &len);
+		//	return;
+		
 		length = len / 1000000.0;
 		if(length < 0) 
 			length = 0;
@@ -767,24 +780,42 @@ bool cPlayback::GetPosition(int &position)
 	if(end_eof)
 	{
 		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
+		playing = false;
 		return false;
 	}
 	
 	if(m_gst_playbin)
 	{
 		//position
-		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
-		
 		gint64 pts = 0;
-		unsigned long long int sec = 0;
 		
-		gst_element_query_position(m_gst_playbin, &fmt, &pts);
-		position = pts /  1000000.0;
+		if (audioSink || videoSink)
+		{
+			//g_signal_emit_by_name(audioSink ? audioSink : videoSink, "get-decoder-time", &pos);
+			if (!GST_CLOCK_TIME_IS_VALID(pts)) 
+				return false;
+			
+			position = pts /  1000000.0;
+		}
+		else
+		{
+			GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
+			
+			gint64 pts = 0;
+			unsigned long long int sec = 0;
+			
+			if(!gst_element_query_position(m_gst_playbin, &fmt, &pts))
+				return false;
+			
+			position = pts /  1000000.0;
+		}
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	if (player && player->playback && !player->playback->isPlaying) 
 	{	  
-		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);	
+		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
+		
+		playing = false;
 	
 		return false;
 	} 
