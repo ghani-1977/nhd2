@@ -77,7 +77,7 @@ libneutrino_driver_a_SOURCES += \
 	radiotools.cpp
 endif
 
-if BOXTYPE_GENERIC
+if USE_OPENGL
 libneutrino_driver_a_SOURCES += \
 	glthread.cpp
 endif

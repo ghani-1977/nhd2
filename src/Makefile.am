@@ -69,7 +69,7 @@ neutrino_LDADD = \
 	@MAD_LIBS@ \
 	@ID3TAG_LIBS@ \
 	@VORBISIDEC_LIBS@ \
-	-ljpeg -lgif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
+	-ljpeg -lungif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if !BOXTYPE_COOLSTREAM
 neutrino_LDADD += $(top_builddir)/lib/libdvbapi/libdvbapi.a
@@ -104,7 +104,7 @@ if ENABLE_GRAPHLCD
 neutrino_LDADD += -lglcddrivers -lglcdgraphics -lusb
 endif
 
-if BOXTYPE_GENERIC
+if USE_OPENGL
 neutrino_LDADD += \
 	-lglut -lGL -lGLU -lGLEW -lOpenThreads
 endif

@@ -137,22 +137,7 @@ int cAudio::SetMute(int enable)
 	ret = ioctl(audio_fd, AUDIO_SET_MUTE, enable);
 	
 	if(ret < 0)
-		perror("AUDIO_SET_MUTE");
-	
-#if !defined (PLATFORM_GENERIC)
-	//HACK?
-	FILE *f;
-	if((f = fopen("/proc/stb/audio/j1_mute", "wb")) == NULL) 
-	{
-		printf("cannot open /proc/stb/audio/j1_mute(%m)\n");
-	}
-	else
-	{
-		fprintf(f, "%d", enable);
-
-		fclose(f);
-	}
-#endif 
+		perror("AUDIO_SET_MUTE"); 
 #endif
 
 	return ret;
