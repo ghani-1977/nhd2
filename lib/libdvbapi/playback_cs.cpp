@@ -439,9 +439,6 @@ bool cPlayback::Start(char * filename)
 		// set flags
 		g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 		
-		// set buffer size
-		//g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
-		
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
 		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
