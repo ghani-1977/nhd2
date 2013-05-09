@@ -428,7 +428,6 @@ bool cPlayback::Start(char * filename)
 	{
 		// set uri
 		g_object_set(G_OBJECT (m_gst_playbin), "uri", uri, NULL);
-		//g_object_set(G_OBJECT (m_gst_playbin), "flags", flags, NULL);	
 		
 		/* increase the default 2 second / 2 MB buffer limitations to 5s / 5MB */
 		if(isHTTP)

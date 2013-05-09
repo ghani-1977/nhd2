@@ -6,7 +6,6 @@
 #include <set>
 
 #if defined (ENABLE_FREESATEPG)
-//#include <config.h>
 #include "freesatv2.h"
 #endif
 
@@ -616,7 +615,7 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 	if (!len)
 		return "";
 
-	int i=0, t=0;
+	int i = 0, t = 0;
 
 	if ( tsidonid )
 	{
@@ -627,16 +626,18 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 
 		twochar = TransponderUseTwoCharMapping.find(tsidonid) != TransponderUseTwoCharMapping.end();
 	}
-//printf("table %d tsidonid %04x twochar %d : %20s\n", table, tsidonid, twochar, data);
+	
+	//printf("table %d tsidonid %04x twochar %d : %20s\n", table, tsidonid, twochar, data);
+	
 	switch(data[0])
 	{
 	case 1 ... 12:
 		newtable=data[i++]+4;
-//			eDebug("(1..12)text encoded in ISO-8859-%d",table);
+		//printf("(1..12)text encoded in ISO-8859-%d\n", table);
 		break;
 	case 0x10:
 	{
-//			eDebug("(0x10)text encoded in ISO-8859-%d",n);
+		//printf("(0x10)text encoded in ISO-8859-%d\n",n);
 		int n=(data[i+1]<<8)|(data[i+2]);
 		i += 3;
 		switch(n)
@@ -656,15 +657,15 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 		break;
 	case 0x12:
 		++i;
-		{} //eDebug("unsup. KSC 5601 enc.");
+		{} //printf("unsup. KSC 5601 enc.\n");
 		break;
 	case 0x13:
 		++i;
-		{} //eDebug("unsup. GB-2312-1980 enc.");
+		{} //printf("unsup. GB-2312-1980 enc.\n");
 		break;
 	case 0x14:
 		++i;
-		{} //eDebug("unsup. Big5 subset of ISO/IEC 10646-1 enc.");
+		{} //printf("unsup. Big5 subset of ISO/IEC 10646-1 enc.\n");
 		break;
 	case 0x15: // UTF-8 encoding of ISO/IEC 10646-1
 			return std::string((char*)data+1, len-1);
@@ -685,7 +686,7 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 #else
 	case 0x16 ... 0x1F:
 #endif	  
-	{} //eDebug("reserved %d", data[0]);
+	{} //printf("reserved %d\n", data[0]);
 	++i;
 	break;
 	}
@@ -696,7 +697,7 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 		table = newtable;
 	}
 
-//dprintf("recode:::: tsidonid %X table %d two-char %d len %d\n", tsidonid, table, twochar, len);
+	//printf("recode:::: tsidonid %X table %d two-char %d len %d\n", tsidonid, table, twochar, len);
 	unsigned char res[2048];
 	while (i < len)
 	{
@@ -704,7 +705,6 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 
 		if ( i+1 < len && twochar && (code=doVideoTexSuppl(data[i], data[i+1])) ) {
 			i+=2;
-//dprintf("recode:::: doVideoTexSuppl code %lX\n", code);
 		}
 
 		if (!code) {
@@ -754,99 +754,7 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 	}
 	return std::string((char*)res, t);
 }
-#if 0
-eString convertUTF8DVB(const eString &string, int table)
-{
-	unsigned long *coding_table=0;
 
-	int len=string.length(), t=0;
-
-	unsigned char buf[len];
-
-	for(int i=0; i<len; i++)
-	{
-		unsigned char c1=string[i];
-		unsigned int c;
-		if(c1<0x80)
-			c=c1;
-		else
-		{
-			i++;
-			unsigned char c2=string[i];
-			c=((c1&0x3F)<<6) + (c2&0x3F);
-			if (table==0||table==1||c1<0xA0)
-				;
-			else
-			{
-				if (!coding_table)
-				{
-					switch(table)
-					{
-					case 2:
-						coding_table = c88592;
-						break;
-					case 3:
-						coding_table = c88593;
-						break;
-					case 4:
-						coding_table = c88594;
-						break;
-					case 5:
-						coding_table = c88595;
-						break;
-					case 6:
-						coding_table = c88596;
-						break;
-					case 7:
-						coding_table = c88597;
-						break;
-					case 8:
-						coding_table = c88598;
-						break;
-					case 9:
-						coding_table = c88599;
-						break;
-					case 10:
-						coding_table = c885910;
-						break;
-					case 11:
-						coding_table = c885911;
-						break;
-						/*				case 12:   // reserved.. for indian use
-												coding_table = c885912;
-												break;*/
-					case 13:
-						coding_table = c885913;
-						break;
-					case 14:
-						coding_table = c885914;
-						break;
-					case 15:
-						coding_table = c885915;
-						break;
-					case 16:
-						coding_table = c885916;
-						break;
-					default:
-						//eFatal("unknown coding table %d", table);
-						break;
-					}
-				}
-				for(unsigned int j=0; j<96; j++)
-				{
-					if(coding_table[j]==c)
-					{
-						c=0xA0+j;
-						break;
-					}
-				}
-			}
-		}
-		buf[t++]=(unsigned char)c;
-	}
-	return eString((char*)buf,t);
-}
-#endif
 const std::string convertLatin1UTF8(const std::string &string)
 {
 	unsigned int t=0, i=0, len=string.size();
