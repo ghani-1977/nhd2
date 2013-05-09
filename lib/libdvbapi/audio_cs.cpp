@@ -702,6 +702,9 @@ int cAudio::StopClip()
 	breakBufferFillSize = 0;
 	
 	Stop();
+	
+	// set audio source to demux
+	setSource(AUDIO_SOURCE_DEMUX);
 
 	//
 	Close();

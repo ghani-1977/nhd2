@@ -2440,7 +2440,19 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 						
 			if(videoDecoder)
 			{
+#if !defined (PLATFORM_COOLSTREAM)			  
 				videoDecoder->Open();
+				
+				// set source	
+				if(videoDecoder)
+					videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
+		
+#ifdef __sh__		
+				// StreamType
+				if(videoDecoder)
+					videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif
+				//
 				
 				//HACK:
 				/* dirty hack to unblank video, it seems like gst after stop playing stop video with not blanking */
@@ -2453,6 +2465,20 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 			if(audioDecoder)
 				audioDecoder->Open();
+			
+			//	
+			// set source
+			if(audioDecoder)
+				audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
+	
+			// set streamtype for sh4
+#ifdef __sh__		
+			// StreamType
+			if(audioDecoder)
+				audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif	
+			//
+#endif			
 	
 			startPlayBack(live_channel);
 			
@@ -3150,18 +3176,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	
 	// select audio output and start audio
 	if (have_audio) 
-	{
-		// set source
-#if !defined (PLATFORM_COOLSTREAM)		
-		if(audioDecoder)
-			audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
-#endif		
-		
-#ifdef __sh__		
-		// StreamType
-		if(audioDecoder)
-			audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif	  
+	{	
 		//audio codec
 		const char *audioStr = "UNKNOWN";
 		
@@ -3237,18 +3252,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 
 	// start video
 	if (have_video) 
-	{
-		// set source
-#if !defined (PLATFORM_COOLSTREAM)		
-		if(videoDecoder)
-			videoDecoder->setSource(VIDEO_SOURCE_DEMUX);
-#endif		
-		
-#ifdef __sh__		
-		// StreamType
-		if(videoDecoder)
-			videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif	  
+	{		
 		const char *videoStr = "UNKNOWN";
 		
 		if(videoDecoder)
@@ -3429,8 +3433,32 @@ void leaveStandby(void)
 	// open video decoder
 	videoDecoder->Open();
 	
+	// set source	
+	if(videoDecoder)
+		videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
+		
+#ifdef __sh__		
+	// StreamType
+	if(videoDecoder)
+		videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif
+	//	
+	
 	// open audiodecoder
 	audioDecoder->Open();
+	
+	//	
+	// set source
+	if(audioDecoder)
+		audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
+	
+	// set streamtype for sh4
+#ifdef __sh__		
+	// StreamType
+	if(audioDecoder)
+		audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif	
+	//
 #endif	
 
 	// if we have already zapped channel
@@ -3863,7 +3891,8 @@ int zapit_main_thread(void *data)
 	videoDecoder = new cVideo();
 		
 	// set video system
-	videoDecoder->SetVideoSystem(video_mode);	
+	if(videoDecoder)
+		videoDecoder->SetVideoSystem(video_mode);	
 	
 	// audio decoder
 	audioDecoder = new cAudio();
