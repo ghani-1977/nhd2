@@ -47,9 +47,10 @@
 /*zapit includes*/
 #include <dvbstring.h>
 #include <edvbstring.h>
-#ifdef ENABLE_FREESATEPG
-#include "FreesatTables.hpp"
-#endif
+
+//#ifdef ENABLE_FREESATEPG
+//#include "FreesatTables.hpp"
+//#endif
 
 #define NOVA		0x3ffe
 #define CANALDIGITAAL	0x3fff
@@ -296,6 +297,7 @@ void SIsectionEIT::parseExtendedEventDescriptor(const char *buf, SIevent &e, uns
 	}
 }
 
+#if 0
 #ifdef ENABLE_FREESATEPG
 std::string SIsectionEIT::freesatHuffmanDecode(std::string input)
 {
@@ -403,6 +405,7 @@ std::string SIsectionEIT::freesatHuffmanDecode(std::string input)
 	else return input;
 }
 #endif
+#endif
 
 void SIsectionEIT::parseShortEventDescriptor(const char *buf, SIevent &e, unsigned maxlen)
 {
@@ -415,56 +418,16 @@ void SIsectionEIT::parseShortEventDescriptor(const char *buf, SIevent &e, unsign
 	char lang[] = {tolower(evt->language_code_hi), tolower(evt->language_code_mid), tolower(evt->language_code_lo), '\0'};
 	std::string language(lang);
 
-	buf+=sizeof(struct descr_short_event_header);
-	if(evt->event_name_length) {
-#if 0
-		if(*buf < 0x06) { // other code table
-#ifdef ENABLE_FREESATEPG
-			e.setName(language, buf[1] == 0x1f ? freesatHuffmanDecode(std::string(buf+1, evt->event_name_length-1)) : std::string(buf+1, evt->event_name_length-1));
-#else
-			e.setName(language, std::string(buf+1, evt->event_name_length-1));
-#endif
-		} else
-#endif // 0
-		{
-#ifdef ENABLE_FREESATEPG
-//			e.setName(language, buf[0] == 0x1f ? freesatHuffmanDecode(std::string(buf, evt->event_name_length)) : std::string(buf, evt->event_name_length));
+	buf += sizeof(struct descr_short_event_header);
+	
+	if(evt->event_name_length)
+		e.setName(language, convertDVBUTF8(buf, evt->event_name_length, table, tsidonid));
 
-			std::string tmp_str = buf[0] == 0x1f ? freesatHuffmanDecode(std::string(buf, evt->event_name_length)) : std::string(buf, evt->event_name_length);
-			e.setName(language, convertDVBUTF8(tmp_str.c_str(), tmp_str.size(), table, tsidonid));
-#else
-			//e.setName(language, std::string(buf, evt->event_name_length));
-			e.setName(language, convertDVBUTF8(buf, evt->event_name_length, table, tsidonid));
-#endif
-		}
-	}
-	buf+=evt->event_name_length;
+	buf += evt->event_name_length;
 	unsigned char textlength=*((unsigned char *)buf);
-	if(textlength > 2) {
-#if 0
-		if(*(buf+1) < 0x06) {// other code table
-#ifdef ENABLE_FREESATEPG
-			e.setText(language, buf[2] == 0x1f ? freesatHuffmanDecode(std::string((++buf)+1, textlength-1)) : std::string((++buf)+1, textlength-1));
-#else
-			e.setText(language, std::string((++buf)+1, textlength-1));
-#endif
-		} else
-#endif // 0
-		{
-#ifdef ENABLE_FREESATEPG
-//			e.setText(language, buf[1] == 0x1f ? freesatHuffmanDecode(std::string(++buf, textlength)) : std::string(++buf, textlength));
-			std::string tmp_str = buf[1] == 0x1f ? freesatHuffmanDecode(std::string(++buf, textlength)) : std::string(++buf, textlength);
-			e.setText(language, convertDVBUTF8(tmp_str.c_str(), tmp_str.size(), table, tsidonid));
-#else
-			//e.setText(language, std::string(++buf, textlength));
-			e.setText(language, convertDVBUTF8((++buf), textlength, table, tsidonid));
-#endif
-		}
-	}
-
-//  printf("Name: %s\n", e.name.c_str());
-//  printf("Text: %s\n", e.text.c_str());
-
+	
+	if(textlength > 2)
+		e.setText(language, convertDVBUTF8((++buf), textlength, table, tsidonid));
 }
 
 void SIsectionEIT::parseDescriptors(const char *des, unsigned len, SIevent &e)
@@ -474,8 +437,10 @@ void SIsectionEIT::parseDescriptors(const char *des, unsigned len, SIevent &e)
 	   skip it here... */
 	des += sizeof(struct eit_event);
 	len -= sizeof(struct eit_event);
-	while(len>=sizeof(struct descr_generic_header)) {
-		desc=(struct descr_generic_header *)des;
+	
+	while(len>=sizeof(struct descr_generic_header)) 
+	{
+		desc = (struct descr_generic_header *)des;
 		// printf("Type: %s\n", decode_descr(desc->descriptor_tag));
 		if(desc->descriptor_tag==0x4D)
 			parseShortEventDescriptor((const char *)desc, e, len);
