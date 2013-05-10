@@ -71,9 +71,6 @@
 #include <settings.h>
 #include <configfile.h>
 
-// Daher nehmen wir SmartPointers aus der Boost-Lib (www.boost.org)
-//#include <boost/shared_ptr.hpp>
-
 #include <sectionsdclient/sectionsdMsg.h>
 #include <sectionsdclient/sectionsdclient.h>
 #include <eventserver.h>
@@ -358,11 +355,6 @@ static const SIevent nullEvt; // Null-Event
 // Wir verwalten die events in SmartPointers
 // und nutzen verschieden sortierte Menge zum Zugriff
 //------------------------------------------------------------
-
-// SmartPointer auf SIevent
-//typedef Loki::SmartPtr<class SIevent, Loki::RefCounted, Loki::DisallowConversion, Loki::NoCheck>
-//  SIeventPtr;
-//typedef boost::shared_ptr<class SIevent> SIeventPtr;
 typedef SIevent *SIeventPtr;
 
 typedef std::map<event_id_t, SIeventPtr, std::less<event_id_t> > MySIeventsOrderUniqueKey;
@@ -1270,7 +1262,6 @@ static void removeWasteEvents()
 #endif
 
 //  SIservicePtr;
-//typedef boost::shared_ptr<class SIservice>SIservicePtr;
 typedef SIservice *SIservicePtr;
 
 typedef std::map<t_channel_id, SIservicePtr, std::less<t_channel_id> > MySIservicesOrderUniqueKey;
@@ -1599,7 +1590,6 @@ static bool addService(const SIservice &s, const int is_actual)
 }
 
 //  SIsPtr;
-//typedef boost::shared_ptr<class SIbouquet>SIbouquetPtr;
 typedef SIbouquet *SIbouquetPtr;
 
 typedef std::map<t_bouquetentry_id, SIbouquetPtr, std::less<t_bouquetentry_id> > MySIbouquetsOrderUniqueKey;
@@ -1657,7 +1647,6 @@ static int addBouquetEntry(const SIbouquet &s/*, int section_nr, int count*/)
  */
 
 //  SIsPtr;
-//typedef boost::shared_ptr<class SInetwork>SInetworkPtr;
 typedef SInetwork *SInetworkPtr;
 
 typedef std::map<t_transponder_id, SInetworkPtr, std::less<t_transponder_id> > MySItranspondersOrderUniqueKey;
