@@ -72,7 +72,7 @@
 #include <configfile.h>
 
 // Daher nehmen wir SmartPointers aus der Boost-Lib (www.boost.org)
-#include <boost/shared_ptr.hpp>
+//#include <boost/shared_ptr.hpp>
 
 #include <sectionsdclient/sectionsdMsg.h>
 #include <sectionsdclient/sectionsdclient.h>
@@ -363,7 +363,7 @@ static const SIevent nullEvt; // Null-Event
 //typedef Loki::SmartPtr<class SIevent, Loki::RefCounted, Loki::DisallowConversion, Loki::NoCheck>
 //  SIeventPtr;
 //typedef boost::shared_ptr<class SIevent> SIeventPtr;
-typedef SIevent * SIeventPtr;
+typedef SIevent *SIeventPtr;
 
 typedef std::map<event_id_t, SIeventPtr, std::less<event_id_t> > MySIeventsOrderUniqueKey;
 static MySIeventsOrderUniqueKey mySIeventsOrderUniqueKey;
@@ -538,6 +538,10 @@ static bool deleteEvent(const event_id_t uniqueKey)
 			mySIeventsOrderFirstEndTimeServiceIDEventUniqueKey.erase(e->second);
 			mySIeventsOrderServiceUniqueKeyFirstStartTimeEventUniqueKey.erase(e->second);
 		}
+		
+		//test
+		delete e->second;
+		//
 
 		mySIeventsOrderUniqueKey.erase(uniqueKey);
 		mySIeventsNVODorderUniqueKey.erase(uniqueKey);
@@ -1266,8 +1270,8 @@ static void removeWasteEvents()
 #endif
 
 //  SIservicePtr;
-typedef boost::shared_ptr<class SIservice>
-		SIservicePtr;
+//typedef boost::shared_ptr<class SIservice>SIservicePtr;
+typedef SIservice *SIservicePtr;
 
 typedef std::map<t_channel_id, SIservicePtr, std::less<t_channel_id> > MySIservicesOrderUniqueKey;
 static MySIservicesOrderUniqueKey mySIservicesOrderUniqueKey;
@@ -1587,7 +1591,7 @@ static bool addService(const SIservice &s, const int is_actual)
 			unlockServices();
 		}
 		//  if(sptr->serviceID==0x01 || sptr->serviceID==0x02 || sptr->serviceID==0x04)
-//		mySIservicesOrderServiceName.insert(sptr);
+			//mySIservicesOrderServiceName.insert(sptr);
 		is_new = true;
 	}
 
@@ -1595,8 +1599,8 @@ static bool addService(const SIservice &s, const int is_actual)
 }
 
 //  SIsPtr;
-typedef boost::shared_ptr<class SIbouquet>
-		SIbouquetPtr;
+//typedef boost::shared_ptr<class SIbouquet>SIbouquetPtr;
+typedef SIbouquet *SIbouquetPtr;
 
 typedef std::map<t_bouquetentry_id, SIbouquetPtr, std::less<t_bouquetentry_id> > MySIbouquetsOrderUniqueKey;
 static MySIbouquetsOrderUniqueKey mySIbouquetsOrderUniqueKey;
@@ -1653,8 +1657,8 @@ static int addBouquetEntry(const SIbouquet &s/*, int section_nr, int count*/)
  */
 
 //  SIsPtr;
-typedef boost::shared_ptr<class SInetwork>
-		SInetworkPtr;
+//typedef boost::shared_ptr<class SInetwork>SInetworkPtr;
+typedef SInetwork *SInetworkPtr;
 
 typedef std::map<t_transponder_id, SInetworkPtr, std::less<t_transponder_id> > MySItranspondersOrderUniqueKey;
 static MySItranspondersOrderUniqueKey mySItranspondersOrderUniqueKey;
@@ -3877,6 +3881,24 @@ static void commandFreeMemory(int connfd, char * /*data*/, const unsigned /*data
 	deleteSIexceptEPG();
 
 	writeLockEvents();
+	
+	//test
+	std::set<SIeventPtr> allevents;
+
+	allevents.insert(mySIeventsOrderFirstEndTimeServiceIDEventUniqueKey.begin(), mySIeventsOrderFirstEndTimeServiceIDEventUniqueKey.end());
+	/* this probably not needed, but takes only additional ~2 seconds
+	 * with even count > 70000 */
+	allevents.insert(mySIeventsOrderServiceUniqueKeyFirstStartTimeEventUniqueKey.begin(), mySIeventsOrderServiceUniqueKeyFirstStartTimeEventUniqueKey.end());
+	MySIeventsOrderUniqueKey::iterator it;
+	for(it = mySIeventsOrderUniqueKey.begin(); it != mySIeventsOrderUniqueKey.end(); ++it)
+		allevents.insert(it->second);
+	for(it = mySIeventsNVODorderUniqueKey.begin(); it != mySIeventsNVODorderUniqueKey.end(); ++it)
+		allevents.insert(it->second);
+
+	for(std::set<SIeventPtr>::iterator ait = allevents.begin(); ait != allevents.end(); ++ait)
+		delete (*ait);
+	//
+	
 	mySIeventsOrderFirstEndTimeServiceIDEventUniqueKey.clear();
 	mySIeventsOrderServiceUniqueKeyFirstStartTimeEventUniqueKey.clear();
 	mySIeventsOrderUniqueKey.clear();
