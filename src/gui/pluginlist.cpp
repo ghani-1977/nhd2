@@ -209,16 +209,16 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 		}
 		else if ( msg == CRCInput::RC_ok )
 		{
-			if(selected==0)
+			if(selected == 0)
 			{
-				loop=false;
+				loop = false;
 			}
 			else
 			{
 				//exec the plugin :))
 				if (pluginSelected() == close)
 				{
-					loop=false;
+					loop = false;
 				}
 			}
 		}

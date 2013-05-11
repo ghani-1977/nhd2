@@ -63,7 +63,7 @@ class CPluginList : public CMenuTarget
 		
 		int		    key;
 		neutrino_locale_t   name;
-		uint pluginlisttype;
+		uint 		    pluginlisttype;
 
 		CFrameBuffer * frameBuffer;
 		
@@ -103,7 +103,7 @@ class CPluginList : public CMenuTarget
 class CPluginChooser : public CPluginList
 {
 	private:
-		char* selected_plugin;
+		char *selected_plugin;
 		
 	protected:
 		CPluginList::result_ pluginSelected();

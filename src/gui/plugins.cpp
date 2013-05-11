@@ -278,7 +278,7 @@ PluginParam * CPlugins::makeParam(const char * const id, const int value, Plugin
 	return makeParam(id, aval, next);
 }
 
-void CPlugins::start_plugin_by_name(const std::string & filename,int param)
+void CPlugins::start_plugin_by_name(const std::string & filename, int param)
 {
 	for (int i = 0; i <  (int) plugin_list.size(); i++)
 	{
@@ -312,7 +312,7 @@ void CPlugins::startScriptPlugin(int number)
 		return;
 	}
 	
-	if( safe_system(script) )
+	if( !safe_system(script) )
 	{
 		printf("CPlugins::startScriptPlugin: script %s successfull started\n", script);
 	} 
@@ -322,14 +322,22 @@ void CPlugins::startScriptPlugin(int number)
 	}
 }
 
-void CPlugins::startPlugin(int number,int param)
+void CPlugins::startPlugin(int number, int param)
 {
 	printf("CPlugins::startPlugin: %s\n", plugin_list[number].pluginfile.c_str());
+	
+	g_RCInput->clearRCMsg();
 	
 	// script type
 	if (plugin_list[number].type == CPlugins::P_TYPE_SCRIPT)
 	{
+		g_RCInput->stopInput();
+
 		startScriptPlugin(number);
+		
+		g_RCInput->restartInput();
+		g_RCInput->clearRCMsg();
+
 		return;
 	}
 	
@@ -340,20 +348,6 @@ void CPlugins::startPlugin(int number,int param)
 		return;
 	}
 
-	PluginExec execPlugin;
-	char depstring[129];
-	char			*argv[20];
-	void			*libhandle[20];
-	int			argc = 0, i = 0, lcd_fd=-1;
-	char			*p;
-	char			*np;
-	void			*handle;
-	char *        		error;
-	int           		vtpid      =  0;
-	PluginParam * 		startparam =  0;
-
-	g_RCInput->clearRCMsg();
-	
 #if defined (ENABLE_STANDALONEPLUGINS)
 	g_RCInput->stopInput();
 	
@@ -369,6 +363,18 @@ void CPlugins::startPlugin(int number,int param)
 	g_RCInput->restartInput();
 	g_RCInput->clearRCMsg();
 #else
+	PluginExec execPlugin;
+	char depstring[129];
+	char			*argv[20];
+	void			*libhandle[20];
+	int			argc = 0, i = 0, lcd_fd = -1;
+	char			*p;
+	char			*np;
+	void			*handle;
+	char *        		error;
+	int           		vtpid      =  0;
+	PluginParam * 		startparam =  0;
+	
 	// fb
 	if (plugin_list[number].fb)
 	{
@@ -408,8 +414,8 @@ void CPlugins::startPlugin(int number,int param)
 	{
 		vtpid = g_RemoteControl->current_PIDs.PIDs.vtxtpid;
 
-		if (param>0)
-			vtpid=param;
+		if (param > 0)
+			vtpid = param;
 		
 		startparam = makeParam(P_ID_VTXTPID, vtpid, startparam);
 	}	
@@ -436,7 +442,7 @@ void CPlugins::startPlugin(int number,int param)
 	argc = 0;
 	if ( depstring[0] )
 	{
-		p=depstring;
+		p = depstring;
 		while ( 1 )
 		{
 			argv[ argc ] = p;
@@ -445,30 +451,29 @@ void CPlugins::startPlugin(int number,int param)
 			if ( !np )
 				break;
 
-			*np=0;
-			p=np+1;
+			*np = 0;
+			p = np + 1;
 			if ( argc == 20 )	// mehr nicht !
 				break;
 		}
 	}
 	
-	for ( i = 0; i <argc; i++ )
+	for ( i = 0; i < argc; i++ )
 	{
 		std::string libname = argv[i];
 		printf("[CPlugins] try load shared lib : %s\n",argv[i]);
-		libhandle[i] = dlopen( *argv[i] == '/' ?
-					argv[i] : (PLUGINDIR "/"+libname).c_str(),
-					RTLD_NOW | RTLD_GLOBAL );
+		libhandle[i] = dlopen( *argv[i] == '/' ? argv[i] : (PLUGINDIR "/"+libname).c_str(), RTLD_NOW | RTLD_GLOBAL );
+		
 		if ( !libhandle[i] )
 		{
-			fputs (dlerror(), stderr);
+			fputs(dlerror(), stderr);
 			break;
 		}
 	}
 	
 	if ( i == argc )		// alles geladen
 	{
-		handle = dlopen ( plugin_list[number].pluginfile.c_str(), RTLD_NOW);
+		handle = dlopen(plugin_list[number].pluginfile.c_str(), RTLD_NOW);
 		if (!handle)
 		{
 			fputs (dlerror(), stderr);
@@ -536,8 +541,7 @@ void CPlugins::startPlugin(int number,int param)
 
 bool CPlugins::hasPlugin(CPlugins::p_type_t type)
 {
-	for (std::vector<plugin>::iterator it=plugin_list.begin();
-			it!=plugin_list.end(); it++)
+	for (std::vector<plugin>::iterator it=plugin_list.begin(); it!=plugin_list.end(); it++)
 	{
 		if (it->type == type && !it->hide)
 			return true;
