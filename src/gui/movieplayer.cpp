@@ -2018,7 +2018,6 @@ void CMoviePlayerGui::PlayFile(void)
 						name_ok = true;
 					}
 
-					
 					if (!name_ok)
 					{
 						apidtitle = "Stream ";

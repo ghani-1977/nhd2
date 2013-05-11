@@ -52,7 +52,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-#define FFMPEG_DEBUG
+//#define FFMPEG_DEBUG
 
 #ifdef FFMPEG_DEBUG
 
@@ -768,7 +768,7 @@ static void FFMPEGThread(Context_t *context)
 									ffmpeg_printf(0, "type %d\n", sub.rects[i]->type);
 									ffmpeg_printf(0, "text %s\n", sub.rects[i]->text);
 									ffmpeg_printf(0, "ass %s\n", sub.rects[i]->ass);
-								    // pict ->AVPicture
+									//pict ->AVPicture
 								}
 							}
 						}
@@ -909,6 +909,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 	if (avformat_find_stream_info(avContext, NULL) < 0) {
 		ffmpeg_err("Error avformat_find_stream_info\n");
 #endif
+
 #ifdef this_is_ok
 		/* crow reports that sometimes this returns an error
 		* but the file is played back well. so remove this
@@ -1035,14 +1036,24 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 			if (encoding != NULL) 
 			{
 				track.type           = eTypeES;
-				//AVDictionaryEntry *lang;
-				//lang = av_dict_get(stream->metadata, "language", NULL, 0);
+				
+				// language description
+#if LIBAVCODEC_VERSION_MAJOR < 54
+				AVMetadataTag *lang;
+#else
+				AVDictionaryEntry *lang;
+#endif
 
-				//if (lang)
-					// track.Name        = strdup(lang->value);
-				//else
-					//track.Name        = strdup("und");
-				track.Name        = strdup("Stream");
+#if LIBAVCODEC_VERSION_MAJOR < 54
+				lang = av_metadata_get(stream->metadata, "language", NULL, 0);
+#else
+				lang = av_dict_get(stream->metadata, "language", NULL, 0);
+#endif
+
+				if (lang)
+					track.Name = strdup(lang->value);
+				else
+					track.Name        = strdup("Stream");
 
 				ffmpeg_printf(10, "Language %s\n", track.Name);
 
@@ -1073,7 +1084,6 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
 					AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
 
-					//( (AVStream*) audioTrack->stream)->codec->flags |= CODEC_FLAG_TRUNCATED;
 					if(codec != NULL && !avcodec_open(stream->codec, codec))
 						printf("AVCODEC__INIT__SUCCESS\n");
 					else
@@ -1082,11 +1092,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 				// aac
 				else if(stream->codec->codec_id == CODEC_ID_AAC) 
 				{
-					//ffmpeg_printf(10,"Create AAC ExtraData\n");
-					//ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
+					ffmpeg_printf(10,"Create AAC ExtraData\n");
+					ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
 					//Hexdump(stream->codec->extradata, stream->codec->extradata_size);
 
-					  /* extradata
+					 /* extradata
 					13 10 56 e5 9d 48 00 (anderen cops)
 						object_type: 00010 2 = LC
 						sample_rate: 011 0 6 = 24000
@@ -1127,7 +1137,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 					track.aacbuf[5] = 0x1F;
 					track.aacbuf[6] = 0xFC;
 
-					//printf("AAC_HEADER -> ");
+					//ffmpeg_printf(10, "AAC_HEADER -> ");
 					//Hexdump(track.aacbuf,7);
 					track.have_aacheader = 1;
 				} 
@@ -1211,7 +1221,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
 					memcpy(track.aacbuf + 96, stream->codec->extradata, stream->codec->extradata_size);
 		    
-					//ffmpeg_printf(1, "aacbuf:\n");
+					ffmpeg_printf(1, "aacbuf:\n");
 					//Hexdump(track.aacbuf, track.aacbuflen);
 		    
 					//ffmpeg_printf(1, "priv_data:\n");
@@ -1478,13 +1488,11 @@ static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes) {
 /* fixme: should we adapt INT64_MIN/MAX to some better value?
  * take a loog in ffmpeg to be sure what this paramter are doing
  */
-//#if LIBAVCODEC_VERSION_MAJOR > 54
 	if (avformat_seek_file(avContext, -1, INT64_MIN, newpos, INT64_MAX, flag) < 0)
 	{
 		ffmpeg_err( "Error seeking\n");
 		return cERR_CONTAINER_FFMPEG_ERR;
-	}
-//#endif    
+	}    
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
 	ffmpeg_printf(30, "current_pos after seek %lld\n", url_ftell(avContext->pb));
