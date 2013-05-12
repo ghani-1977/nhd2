@@ -99,8 +99,8 @@ bool cVideo::Close()
 	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
-	if(video_fd >= 0)
-		close(video_fd);
+	//if(video_fd >= 0)
+	close(video_fd);
 	video_fd = -1;	
 
 	return true;

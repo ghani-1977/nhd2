@@ -74,13 +74,11 @@ class cAudio
 		int audio_num;
 		
 		// for pcm playback
-#ifdef __sh__		
+#if defined (ENABLE_PCMDECODER)		
 		int uNoOfChannels;
 		int uSampleRate;
 		int uBitsPerSample;
 		int bLittleEndian;
-#elif !defined (ENABLE_GSTREAMER)
-		int clipfd;
 #endif		
 		
 		bool Muted;
@@ -135,9 +133,11 @@ class cAudio
 		int setChannel(int channel);
 		
 		// for pcm playback
+#if defined (ENABLE_PCMDECODER)		
 		int PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample, int LittleEndian);
 		int WriteClip(unsigned char * buffer, int size);
-		int StopClip();		
+		int StopClip();
+#endif		
 		
 		void SetHdmiDD(int ac3);
 		

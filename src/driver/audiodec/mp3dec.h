@@ -63,14 +63,11 @@ class CMP3Dec : public CBaseDec
 		void CreateInfo(CAudioMetaData* const, const int);
 		bool GetMP3Info(FILE*, const bool, CAudioMetaData* const);
 		void GetID3(FILE*, CAudioMetaData* const);
-		long scanHeader( FILE*, struct mad_header* const, struct tag* const,
-						const bool );
+		long scanHeader( FILE*, struct mad_header* const, struct tag* const, const bool );
 
 	public:
 		static CMP3Dec* getInstance();
-		virtual RetCode Decoder(FILE *InputFp, const int OutputFd,
-								State* const state, CAudioMetaData* m,
-								time_t* const t, unsigned int* const secondsToSkip);
+		virtual RetCode Decoder(FILE *InputFp, const int OutputFd, State* const state, CAudioMetaData* m, time_t* const t, unsigned int* const secondsToSkip);
 		bool GetMetaData(FILE *in, const bool nice, CAudioMetaData* const m);
 		bool SaveCover(FILE*);
 		CMP3Dec(){};

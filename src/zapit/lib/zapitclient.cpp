@@ -1111,6 +1111,7 @@ void CZapitClient::stopPlayBack()
 void CZapitClient::lockPlayBack()
 {
 	send(CZapitMessages::CMD_SB_LOCK_PLAYBACK);
+	
 	close_connection();
 }
 

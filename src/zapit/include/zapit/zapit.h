@@ -38,6 +38,9 @@ void sendSubPIDs(int connfd);
 void sendRecordAPIDs(int connfd);
 void sendRecordSubPIDs(int connfd);
 
+void closeAVDecoder(void);
+void openAVDecoder(void);
+
 void enterStandby(void);
 void leaveStandby(void);
 

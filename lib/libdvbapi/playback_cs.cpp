@@ -255,7 +255,6 @@ cPlayback::cPlayback(int num)
 cPlayback::~cPlayback()
 {  
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
-	//FIXME: all deleting stuff is done in Close()	
 }
 
 bool cPlayback::Open()
@@ -304,7 +303,6 @@ bool cPlayback::Open()
 	//FIXME: add sample ts player
 	dprintf(DEBUG_NORMAL, "[playback_cs.cpp]: no player found, sorry we can not play\n");
 	return false;
-	
 #endif
 
 	return true;
@@ -375,7 +373,7 @@ void cPlayback::Close(void)
 }
 
 // start
-bool cPlayback::Start(char * filename)
+bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned short _ap, int _ac3, int _duration)
 {
 	dprintf(DEBUG_NORMAL, "%s:%s - filename=%s\n", FILENAME, __FUNCTION__, filename);
 
@@ -552,7 +550,7 @@ bool cPlayback::Stop(void)
 	return true;
 }
 
-bool cPlayback::SetAPid(unsigned short pid)
+bool cPlayback::SetAPid(unsigned short pid, int _ac3)
 {
 	dprintf(DEBUG_NORMAL, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
 	
@@ -588,7 +586,7 @@ void cPlayback::trickSeek(int ratio)
 	int position;
 	int duration;
 	
-	if( GetPosition(position) )
+	if( GetPosition(position, duration) )
 	{
 		validposition = true;
 		pos = position;
@@ -730,44 +728,7 @@ bool cPlayback::GetSpeed(int &speed) const
 }
 
 // in milliseconds
-void cPlayback::GetDuration(int &duration)
-{
-	//if(playing == false) 
-	//	return;	
-
-#if ENABLE_GSTREAMER
-	if(m_gst_playbin)
-	{
-		// duration
-		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
-		double length = 0;
-		gint64 len;
-
-		gst_element_query_duration(m_gst_playbin, &fmt, &len);
-		//	return;
-		
-		length = len / 1000000.0;
-		if(length < 0) 
-			length = 0;
-		
-		duration = (int)(length);
-	}
-#elif defined (ENABLE_LIBEPLAYER3)
-	// duration
-	double length = 0;
-
-	if(player && player->playback)
-		player->playback->Command(player, PLAYBACK_LENGTH, &length);
-	
-	if(length < 0) 
-		length = 0;
-
-	duration = (int)(length*1000);
-#endif
-}
-
-// in milliseconds
-bool cPlayback::GetPosition(int &position)
+bool cPlayback::GetPosition(int &position, int &duration)
 {
 	if(playing == false) 
 		return false;
@@ -782,29 +743,25 @@ bool cPlayback::GetPosition(int &position)
 	
 	if(m_gst_playbin)
 	{
-		//position
-		gint64 pts = 0;
+		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs	
 		
-		if (audioSink || videoSink)
-		{
-			//g_signal_emit_by_name(audioSink ? audioSink : videoSink, "get-decoder-time", &pos);
-			if (!GST_CLOCK_TIME_IS_VALID(pts)) 
-				return false;
+		// position
+		gint64 pts = 0;
 			
-			position = pts /  1000000.0;
-		}
-		else
-		{
-			GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
+		gst_element_query_position(m_gst_playbin, &fmt, &pts);
 			
-			gint64 pts = 0;
-			unsigned long long int sec = 0;
+		position = (int)pts /  1000000.0;
 			
-			if(!gst_element_query_position(m_gst_playbin, &fmt, &pts))
-				return false;
-			
-			position = pts /  1000000.0;
-		}
+		//printf("%s: pts%lld, position:%d\n", __FUNCTION__, pts, position);
+		
+		//duration
+		gint64 len;
+
+		gst_element_query_duration(m_gst_playbin, &fmt, &len);
+		
+		duration = (int)len / 1000.0;
+
+		//printf("%s: len%lld, duration:%d\n", __FUNCTION__, len, duration);
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	if (player && player->playback && !player->playback->isPlaying) 
@@ -816,7 +773,7 @@ bool cPlayback::GetPosition(int &position)
 		return false;
 	} 
 
-	//PTS
+	// position
 	unsigned long long int vpts = 0;
 
 	if(player && player->playback)
@@ -824,6 +781,20 @@ bool cPlayback::GetPosition(int &position)
 
 	/* len is in nanoseconds. we have 90 000 pts per second. */
 	position = vpts/90;
+	
+	//printf("%s: pts%lld, position:%d\n", __FUNCTION__, vpts, position);
+	
+	// duration
+	double length = 0;
+
+	if(player && player->playback)
+		player->playback->Command(player, PLAYBACK_LENGTH, &length);
+	
+	if(length < 0) 
+		length = 0;
+
+	duration = (int)(length*1000);
+	//printf("%s: len%lld, duration:%d\n", __FUNCTION__, length, duration);
 #endif
 	
 	return true;
@@ -858,7 +829,7 @@ bool cPlayback::SetPosition(int position)
 	return true;
 }
 
-void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t *numpida, std::string * language)
+void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t *numpida, std::string *language)
 { 
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 
@@ -1043,6 +1014,4 @@ bool cPlayback::SyncAV(void)
 
 	return true;
 }
-
-
 

@@ -44,8 +44,10 @@
 #include <sstream>
 #include <driver/netfile.h>
 
+#if defined (ENABLE_PCMDECODER)
 #include <audio_cs.h>
 extern cAudio *audioDecoder;
+#endif
 
 #define ProgName "FlacDec"
 // nr of msecs to skip in ff/rev mode
@@ -156,15 +158,17 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 				flacdec->Status=CFlacDec::DSPSET_ERR;
 				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 		}
-					
+		
+#if defined (ENABLE_PCMDECODER)		
 		if(audioDecoder)
 		{
-			if(audioDecoder->PrepareClipPlay(flacdec->mChannels, flacdec->mSampleRate, flacdec->mBps, 1))
+			if(audioDecoder->PrepareClipPlay(flacdec->mChannels, flacdec->mSampleRate, flacdec->mBps, 1) < 0)
 			{
-				flacdec->Status=CFlacDec::DSPSET_ERR;
+				flacdec->Status = CFlacDec::DSPSET_ERR;
 				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 			}
-		}		
+		}
+#endif		
 	}
 
 	const unsigned bps = frame->header.bits_per_sample, channels = frame->header.channels;
@@ -398,6 +402,7 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 			else	
 				cnt = flacdec->mBuffersize;
 
+#if defined (ENABLE_PCMDECODER)			
 			if(audioDecoder)
 			{
 				if(audioDecoder->WriteClip(&u8buffer[j], cnt) != (ssize_t)cnt) 
@@ -406,6 +411,7 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 					return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 				}
 			}
+#endif			
 		
 			j += cnt;
 		}
@@ -552,8 +558,10 @@ CBaseDec::RetCode CFlacDec::Decoder(FILE *in, const int OutputFd, State* const s
 		usleep(100000);
 	}
 	
+#if defined (ENABLE_PCMDECODER)	
 	if(audioDecoder)
 		audioDecoder->StopClip();
+#endif	
 
 	/* clean up the junk from the party */
 	if (mMetadata)

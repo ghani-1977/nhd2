@@ -67,7 +67,7 @@
 #include <gui/widget/stringinput_ext.h>
 
 #include <system/settings.h>
-#include <libxmltree/xmlinterface.h>
+#include <xmlinterface.h>
 
 #include <algorithm>
 #include <sys/time.h>
@@ -1982,7 +1982,8 @@ void CAudioPlayerGui::paintInfo()
 		xstart=(m_width-w)/2;
 		if(xstart < 10)
 			xstart=10;
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x+xstart, m_y +4+ 2*m_fheight, m_width- 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8		
+		
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x+xstart, m_y + 4 + 2*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8		
 
 		// reset so fields get painted always
 		m_metainfo.clear();
@@ -2290,12 +2291,14 @@ void CAudioPlayerGui::updateMetaData()
 		info.precision(3);
 
 		if ( meta.bitrate > 0 )
-		{
+		{		  
 			info << " / ";
+			
 			if ( meta.vbr )
 			{
 				info << "VBR ";
 			}
+			
 			info << meta.bitrate/1000 << "kbps";
 		}
 
@@ -2313,21 +2316,21 @@ void CAudioPlayerGui::updateMetaData()
 			updateScreen = true;
 			updateLcd = true;
 		}
-		if (!meta.title.empty() &&
-				meta.title != m_curr_audiofile.MetaData.title)
+		
+		if (!meta.title.empty() && meta.title != m_curr_audiofile.MetaData.title)
 		{
 			m_curr_audiofile.MetaData.title = meta.title;
 			updateScreen = true;
 			updateLcd = true;
 		}
-		if (!meta.sc_station.empty()  &&
-				meta.sc_station != m_curr_audiofile.MetaData.album)
+		
+		if (!meta.sc_station.empty()  && meta.sc_station != m_curr_audiofile.MetaData.album)
 		{
 			m_curr_audiofile.MetaData.album = meta.sc_station;
 			updateLcd = true;
 		}
 	}
-	//if (CAudioPlayer::getInstance()->getScBuffered() != 0)
+	
 	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
 	{
 		updateLcd = true;
@@ -2515,6 +2518,7 @@ void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 		std::string tmp = File.Filename.substr(File.Filename.rfind('/') + 1);
 		tmp = tmp.substr(0,tmp.length()-4);	//remove extension (.mp3)
 		std::string::size_type i = tmp.rfind(" - ");
+		
 		if(i != std::string::npos)
 		{ // Trennzeichen " - " gefunden
 			File.MetaData.artist = tmp.substr(0, i);

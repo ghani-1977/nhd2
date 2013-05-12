@@ -273,7 +273,8 @@ int CAPIDSelectExec::exec(CMenuTarget * parent, const std::string & actionKey)
 #define BARLEN 200
 #define SHADOW_OFFSET	5
 
-extern cVideo * videoDecoder;
+extern cVideo *videoDecoder;
+extern cAudio *audioDecoder;
 static CProgressBar * timescale;
 
 CMovieInfoViewer::CMovieInfoViewer()
@@ -1533,11 +1534,11 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{
-#if defined (PLATFORM_COOLSTREAM)
+//#if defined (PLATFORM_COOLSTREAM)
 				playback->GetPosition(position, duration);
-#else				
-				playback->GetPosition(position);
-#endif				
+//#else				
+//				playback->GetPosition(position);
+//#endif				
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -2193,11 +2194,12 @@ void CMoviePlayerGui::PlayFile(void)
 				duration = p_movie_info->length * 60 * 1000;
 			  
 			// PlayBack Start
-#if defined (PLATFORM_COOLSTREAM)			  
+//#if defined (PLATFORM_COOLSTREAM)			  
 			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3, duration))
-#else
-			if(!playback->Start((char *)filename)) 
-#endif
+//#else
+			//if(!playback->Start((char *)filename)) 
+//			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3))
+//#endif
 			{
 				dprintf(DEBUG_NORMAL, "%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();
@@ -2230,11 +2232,11 @@ void CMoviePlayerGui::PlayFile(void)
 					duration = VlcGetStreamLength();
 				else
 				{
-#if defined (PLATFORM_COOLSTREAM)
+//#if defined (PLATFORM_COOLSTREAM)
 					playback->GetPosition(position, duration);
-#else					
-					playback->GetDuration(duration);
-#endif					
+//#else					
+//					playback->GetDuration(duration);
+//#endif					
 				}
 				
 				//
@@ -2260,14 +2262,14 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				if(!isWebTV)
 				{
-#if defined (PLATFORM_COOLSTREAM)
+//#if defined (PLATFORM_COOLSTREAM)
 					if( playback->GetPosition(position, duration) )
 					{
-#else			  
-					if(playback->GetPosition(position)) 
-					{
-						playback->GetDuration(duration);
-#endif					
+//#else			  
+//					if(playback->GetPosition(position)) 
+//					{
+//						playback->GetDuration(duration);
+//#endif					
 					
 						if(duration > 100)
 							file_prozent = (unsigned char) (position / (duration / 100));

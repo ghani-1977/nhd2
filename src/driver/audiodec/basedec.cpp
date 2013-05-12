@@ -60,7 +60,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 {
 	RetCode Status = OK;
 
-	FILE* fp = fopen( in->Filename.c_str(), "r" );
+	FILE * fp = fopen( in->Filename.c_str(), "r" );
 	if ( fp == NULL )
 	{
 		fprintf( stderr, "Error opening file %s for decoding.\n", in->Filename.c_str() );
@@ -89,7 +89,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 			else
 			*/
 			{
-				Status = CMP3Dec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t,secondsToSkip );
+				Status = CMP3Dec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
 				
 			}
 		}
@@ -105,15 +105,15 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 		*/
 		else if( in->FileType == CFile::FILE_WAV )
 		{
-			Status = CWavDec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t,secondsToSkip );
+			Status = CWavDec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t, secondsToSkip );
 		}
 		else if( in->FileType == CFile::FILE_CDR )
 		{
-			Status = CCdrDec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t,secondsToSkip );
+			Status = CCdrDec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
 		}
 		else if( in->FileType == CFile::FILE_FLAC )
 		{
-			Status = CFlacDec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t,secondsToSkip );
+			Status = CFlacDec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
 		}
 		else
 		{

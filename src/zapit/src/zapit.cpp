@@ -2417,6 +2417,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
 			stopPlayBack(true);
+			
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
@@ -2425,59 +2426,27 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:		
 			stopPlayBack(true);									
 #if !defined (PLATFORM_COOLSTREAM)			
-			if(videoDecoder)
-				videoDecoder->Close();
-			
-			if(audioDecoder)
-				audioDecoder->Close();
+			closeAVDecoder();
 #endif			
 			
 			playbackStopForced = true;
+
 			break;
 	
 		case CZapitMessages::CMD_SB_UNLOCK_PLAYBACK:
 			playbackStopForced = false;
-						
+			
+#if !defined (PLATFORM_COOLSTREAM)
+			openAVDecoder();
+			
+			//HACK: dirty hack???
+#if defined (ENABLE_GSTREAMER)
 			if(videoDecoder)
 			{
-#if !defined (PLATFORM_COOLSTREAM)			  
-				videoDecoder->Open();
-				
-				// set source	
-				if(videoDecoder)
-					videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
-		
-#ifdef __sh__		
-				// StreamType
-				if(videoDecoder)
-					videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif
-				//
-				
-				//HACK:
-				/* dirty hack to unblank video, it seems like gst after stop playing stop video with not blanking */
-				/* i'm not sure if this works with all mipsel cores */
-#if defined (ENABLE_GSTREAMER)			
 				videoDecoder->Resume();
 				videoDecoder->Stop();
-#endif				
 			}
-	
-			if(audioDecoder)
-				audioDecoder->Open();
-			
-			//	
-			// set source
-			if(audioDecoder)
-				audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
-	
-			// set streamtype for sh4
-#ifdef __sh__		
-			// StreamType
-			if(audioDecoder)
-				audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif	
-			//
+#endif				
 #endif			
 	
 			startPlayBack(live_channel);
@@ -3387,6 +3356,48 @@ int stopPlayBack( bool sendPmt)
 	return 0;
 }
 
+void closeAVDecoder(void)
+{
+	// close videodecoder
+	if(videoDecoder)
+		videoDecoder->Close();
+	
+	// close audiodecoder
+	if(audioDecoder)
+		audioDecoder->Close();
+}
+
+void openAVDecoder(void)
+{
+	if(videoDecoder)
+	{
+		// open video decoder
+		videoDecoder->Open();
+	
+		videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
+		
+#ifdef __sh__		
+		// StreamType
+		videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif
+	}
+	//	
+	
+	if(audioDecoder)
+	{
+		// open audiodecoder
+		audioDecoder->Open();
+		
+		// set source
+		audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
+	
+#ifdef __sh__		
+		// StreamType
+		audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
+#endif	
+	}
+}
+
 void enterStandby(void)
 { 
 	if (standby)
@@ -3400,12 +3411,9 @@ void enterStandby(void)
 	/* stop playback */
 	stopPlayBack(true);
 	
-#if !defined (PLATFORM_COOLSTREAM)	
-	// close videodecoder
-	videoDecoder->Close();
-	
-	// close audiodecoder
-	audioDecoder->Close();
+#if !defined (PLATFORM_COOLSTREAM)
+	// close AVdecoder
+	closeAVDecoder();
 #endif	
 	
 	//close frontend	
@@ -3430,35 +3438,7 @@ void leaveStandby(void)
 		cam1 = new CCam();
 	
 #if !defined (PLATFORM_COOLSTREAM)	
-	// open video decoder
-	videoDecoder->Open();
-	
-	// set source	
-	if(videoDecoder)
-		videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
-		
-#ifdef __sh__		
-	// StreamType
-	if(videoDecoder)
-		videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif
-	//	
-	
-	// open audiodecoder
-	audioDecoder->Open();
-	
-	//	
-	// set source
-	if(audioDecoder)
-		audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
-	
-	// set streamtype for sh4
-#ifdef __sh__		
-	// StreamType
-	if(audioDecoder)
-		audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
-#endif	
-	//
+	openAVDecoder();
 #endif	
 
 	// if we have already zapped channel

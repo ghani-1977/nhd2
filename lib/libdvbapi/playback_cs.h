@@ -19,8 +19,8 @@
 #ifndef __PLAYBACK_CS_H
 #define __PLAYBACK_CS_H
 
-#include <string>
 #include <stdint.h>
+#include <string>
 
 #include <config.h>
 
@@ -36,13 +36,13 @@ class cPlayback
 		
 		bool Open();
 		void Close(void);
-		bool Start(char * filename);
+		bool Start(char * filename, unsigned short _vp = 0, int _vtype = 0, unsigned short _ap = 0, int _ac3 = 0, int _duration = 0);
 		
 		bool Play(void);
 		bool SyncAV(void);
 		
 		bool Stop(void);
-		bool SetAPid(unsigned short pid);
+		bool SetAPid(unsigned short pid, int _ac = 0);
 
 #if ENABLE_GSTREAMER
 		void trickSeek(int ratio);
@@ -50,8 +50,7 @@ class cPlayback
 		bool SetSpeed(int speed);
 		bool SetSlow(int slow);
 		bool GetSpeed(int &speed) const;
-		void GetDuration(int &duration);
-		bool GetPosition(int &position);
+		bool GetPosition(int &position, int &duration);
 		bool SetPosition(int position);
 		void FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t *numpida, std::string *language);
 

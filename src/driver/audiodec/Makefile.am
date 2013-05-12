@@ -3,9 +3,15 @@ INCLUDES = \
         -I$(top_srcdir)/lib \
 	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/lib/libconfigfile \
-	-I$(top_srcdir)/lib/libcoolstream \
         @FREETYPE_CFLAGS@ \
         @VORBISIDEC_CFLAGS@
+
+if BOXTYPE_COOLSTREAM
+INCLUDES += -I$(top_srcdir)/src/zapit/include \
+	-I$(top_srcdir)/lib/libcoolstream
+else
+INCLUDES += -I$(top_srcdir)/lib/libdvbapi
+endif
 
 if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include

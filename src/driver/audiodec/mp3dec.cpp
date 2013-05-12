@@ -54,9 +54,10 @@
 #include <neutrino.h>
 #include <driver/netfile.h>
 
+#if defined (ENABLE_PCMDECODER)
 #include <audio_cs.h>
 extern cAudio * audioDecoder;
-
+#endif
 
 /* libid3tag extension: This is neccessary in order to call fclose
    on the file. Normally libid3tag closes the file implicit.
@@ -218,7 +219,7 @@ inline signed short CMP3Dec::MadFixedToSShort(const mad_fixed_t Fixed, bool left
 	
 	dither->random = random;
 
-  /* clip */
+	/* clip */
 #if 0
 	if (output >= MAD_F_ONE)
 		output = 32767;
@@ -241,7 +242,6 @@ inline signed short CMP3Dec::MadFixedToSShort(const mad_fixed_t Fixed, bool left
 	return (signed short) (output >> scalebits);
 }
 #else
-
 inline signed short CMP3Dec::MadFixedToSShort(const mad_fixed_t Fixed)
 {
 	/* A fixed point number is formed of the following bit pattern:
@@ -366,19 +366,17 @@ void CMP3Dec::CreateInfo(CAudioMetaData * m, int FrameNumber)
 #define INPUT_BUFFER_SIZE	(2*8192) //(5*8192) /* enough to skip big id3 tags */
 #define OUTPUT_BUFFER_SIZE      8192
 
-CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* const state, CAudioMetaData* meta_data, time_t* const time_played, unsigned int* const secondsToSkip)
+CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* const state, CAudioMetaData* meta_data, time_t* const time_played, unsigned int* const secondsToSkip)
 {
 	struct mad_stream	Stream;
 	struct mad_frame	Frame;
 	struct mad_synth	Synth;
-	mad_timer_t			Timer;
-	unsigned char		InputBuffer[INPUT_BUFFER_SIZE],
-						OutputBuffer[OUTPUT_BUFFER_SIZE],
-						*OutputPtr=OutputBuffer;
+	mad_timer_t		Timer;
+	unsigned char		InputBuffer[INPUT_BUFFER_SIZE], OutputBuffer[OUTPUT_BUFFER_SIZE], *OutputPtr = OutputBuffer;
 	const unsigned char	*OutputBufferEnd=OutputBuffer+OUTPUT_BUFFER_SIZE;
-	RetCode				Status=OK;
-	int 					ret;
-	unsigned long		FrameCount=0;
+	RetCode			Status = OK;
+	int 			ret;
+	unsigned long		FrameCount = 0;
         signed short ll, rr;
 
 	/* First the structures used by libmad must be initialized. */
@@ -391,7 +389,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 	// to make sure the amount of frames is calculated
 	// before jumping (without this state/secondsToSkip could change
 	// anytime within the loop)
-	bool jumpDone=false;
+	bool jumpDone = false;
 
 	/* Decoding options can here be set in the options field of the
 	 * Stream structure.
@@ -412,7 +410,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 		/* The input bucket must be filled if it becomes empty or if
 		 * it's the first execution of the loop.
 		 */
-		if(Stream.buffer==NULL || Stream.error==MAD_ERROR_BUFLEN)
+		if(Stream.buffer == NULL || Stream.error==MAD_ERROR_BUFLEN)
 		{
 			size_t ReadSize, Remaining;
 			unsigned char	*ReadStart;
@@ -436,10 +434,10 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 			 */
 			if(Stream.next_frame!=NULL)
 			{
-				Remaining=Stream.bufend-Stream.next_frame;
-				memmove(InputBuffer,Stream.next_frame,Remaining);
-				ReadStart=InputBuffer+Remaining;
-				ReadSize=INPUT_BUFFER_SIZE-Remaining;
+				Remaining = Stream.bufend - Stream.next_frame;
+				memmove(InputBuffer, Stream.next_frame, Remaining);
+				ReadStart = InputBuffer + Remaining;
+				ReadSize = INPUT_BUFFER_SIZE - Remaining;
 			}
 			else
 				ReadSize=INPUT_BUFFER_SIZE,
@@ -452,7 +450,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 			 * reached we also leave the loop but the return status is
 			 * left untouched.
 			 */
-			ReadSize=fread(ReadStart,1,ReadSize,InputFp);
+			ReadSize=fread(ReadStart, 1, ReadSize, InputFp);
 			if(ReadSize<=0)
 			{
 				if(ferror(InputFp))
@@ -466,9 +464,11 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 				{
 					fprintf(stderr,"%s: end of input stream\n",ProgName);
 					
-					// Lets flush the remaining seconds through the decoder matrix				
+					// Lets flush the remaining seconds through the decoder matrix	
+#if defined (ENABLE_PCMDECODER)					
 					if(audioDecoder)
-						audioDecoder->Flush();					
+						audioDecoder->Flush();	
+#endif					
 				}
 				break;
 			}
@@ -513,7 +513,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE *InputFp, const int OutputFd, State* con
 		 * the end of the buffer if those bytes forms an incomplete
 		 * frame. Before refilling, the remainign bytes must be moved
 		 * to the begining of the buffer and used for input for the
-q		 * next mad_frame_decode() invocation. (See the comments marked
+		 * next mad_frame_decode() invocation. (See the comments marked
 		 * {1} earlier for more details.)
 		 *
 		 * Recoverable errors are caused by malformed bit-streams, in
@@ -554,7 +554,7 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 						Timer.seconds=0;
 						Timer.fraction=0;
 					}
-					*time_played=Timer.seconds;
+					*time_played = Timer.seconds;
 					FrameCount+=actFramesToSkip + FRAMES_TO_PLAY;
 				}
 				Stream.buffer=NULL;
@@ -604,8 +604,8 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 					Timer.seconds=0;
 					Timer.fraction=0;
 				}
-				*time_played=Timer.seconds;
-				FrameCount-=actFramesToSkip + FRAMES_TO_PLAY;
+				*time_played = Timer.seconds;
+				FrameCount -= actFramesToSkip + FRAMES_TO_PLAY;
 			}
 			Stream.buffer=NULL;
 			Stream.next_frame=NULL;
@@ -647,9 +647,17 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 		 */
 		FrameCount++;
 		if (FrameCount == 1)
-		{	  
+		{
+#if defined (ENABLE_PCMDECODER)		  
 			if(audioDecoder)
-				audioDecoder->PrepareClipPlay(2, Frame.header.samplerate, 16, 1);		
+			{
+				if(audioDecoder->PrepareClipPlay(2, Frame.header.samplerate, 16, 1) < 0)
+				{
+					Status = DSPSET_ERR;
+					break;
+				}
+			}
+#endif			
 
 			if ( !meta_data )
 			{
@@ -732,7 +740,8 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{				  
+					{
+#if defined (ENABLE_PCMDECODER)					  
 						if(audioDecoder)
 						{
 							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
@@ -741,7 +750,8 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 								Status = WRITE_ERR;
 								break;
 							}
-						}					
+						}
+#endif						
 						
 						OutputPtr = OutputBuffer;
 					}
@@ -764,7 +774,8 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{			  
+					{
+#if defined (ENABLE_PCMDECODER)					  
 						if(audioDecoder)
 						{
 							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
@@ -776,7 +787,8 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 									break;
 								}
 							}
-						}					
+						}
+#endif						
 						
 						OutputPtr = OutputBuffer;
 					}
@@ -808,19 +820,23 @@ q		 * next mad_frame_decode() invocation. (See the comments marked
 	if(OutputPtr != OutputBuffer && Status != WRITE_ERR)
 	{
 		ssize_t	BufferSize=OutputPtr-OutputBuffer;
-	
+		
+#if defined (ENABLE_PCMDECODER)		
 		if(audioDecoder)
 		{
 			if(audioDecoder->WriteClip(OutputBuffer, BufferSize) != BufferSize)
 			{
 				fprintf(stderr,"%s: PCM write error at the end (%s).\n", ProgName,strerror(errno));
-				Status=WRITE_ERR;
+				Status = WRITE_ERR;
 			}
-		}	
+		}
+#endif		
 	}
 	
+#if defined (ENABLE_PCMDECODER)	
 	if(audioDecoder)
 		audioDecoder->StopClip();
+#endif	
 	
 	CVFD::getInstance()->Unlock ();
 	

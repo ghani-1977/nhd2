@@ -37,8 +37,10 @@
 #include <sstream>
 #include <driver/netfile.h>
 
+#if defined (ENABLE_PCMDECODER)
 #include <audio_cs.h>
 extern cAudio * audioDecoder;
+#endif
 
 #define ProgName "OggDec"
 // nr of msecs to skip in ff/rev mode
@@ -89,8 +91,16 @@ CBaseDec::RetCode COggDec::Decoder(FILE *in, const int OutputFd, State* const st
 
 	SetMetaData(&vf, meta_data);
 	
+#if defined (ENABLE_PCMDECODER)	
 	if(audioDecoder)
-		audioDecoder->PrepareClipPlay(ov_info(&vf,0)->channels, ov_info(&vf,0)->rate, 16, 0);	
+	{
+		if( audioDecoder->PrepareClipPlay(ov_info(&vf,0)->channels, ov_info(&vf,0)->rate, 16, 0); < 0)
+		{
+			Status = DSPSET_ERR;
+			return Status;
+		}
+	}
+#endif	
 
 	/* up and away ... */
 	mSlotSize = MAX_OUTPUT_SAMPLES * 2 * ov_info(&vf,0)->channels;
@@ -187,18 +197,23 @@ CBaseDec::RetCode COggDec::Decoder(FILE *in, const int OutputFd, State* const st
 	} while (rval != 0 && *state!=STOP_REQ && Status==OK);
 
 	//printf("COggDec::Decoder: read loop stop, rval %d state %d status %d\n", rval, *state, Status);
+	
 	// let buffer run dry
 	while(rval==0 && *state!=STOP_REQ && Status==OK && mReadSlot != mWriteSlot)
 		usleep(100000);
 
 	//pthread_cancel(OutputThread);
 	//printf("COggDec::Decoder: OutputThread join\n");
+	
 	Status = WRITE_ERR;
 	pthread_join(OutputThread, NULL);
+	
 	//printf("COggDec::Decoder: OutputThread join done\n");
 	
+#if defined (ENABLE_PCMDECODER)	
 	if(audioDecoder)
 		audioDecoder->StopClip();
+#endif	
   
 	for(int i = 0 ; i < DECODE_SLOTS ; i++)
 		free(mPcmSlots[i]);
@@ -222,6 +237,7 @@ void* COggDec::OutputDsp(void * arg)
 			usleep(10000);
 		}
 	
+#if defined (ENABLE_PCMDECODER)	
 		if(audioDecoder)
 		{
 			if (audioDecoder->WriteClip((unsigned char *)dec->mPcmSlots[dec->mReadSlot], dec->mSlotSize) != dec->mSlotSize)
@@ -231,6 +247,7 @@ void* COggDec::OutputDsp(void * arg)
 				break;
 			}
 		}
+#endif		
 		
 		*dec->mTimePlayed = (int)(dec->mSlotTime[dec->mReadSlot]/1000);
 		dec->mReadSlot=(dec->mReadSlot+1)%DECODE_SLOTS;

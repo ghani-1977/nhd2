@@ -115,8 +115,8 @@ static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes);
 /* ***************************** */
 /* MISC Functions                */
 /* ***************************** */
-
-void getMutex(const char *filename, const char *function, int line) {
+void getMutex(const char *filename, const char *function, int line) 
+{
 	ffmpeg_printf(100, "::%d requesting mutex\n", line);
 
 	pthread_mutex_lock(&mutex);
@@ -124,13 +124,14 @@ void getMutex(const char *filename, const char *function, int line) {
 	ffmpeg_printf(100, "::%d received mutex\n", line);
 }
 
-void releaseMutex(const char *filename, const const char *function, int line) {
+void releaseMutex(const char *filename, const const char *function, int line) 
+{
 	pthread_mutex_unlock(&mutex);
 
 	ffmpeg_printf(100, "::%d released mutex\n", line);
 }
 
-static char* Codec2Encoding(enum CodecID id, int* version)
+static char *Codec2Encoding(enum CodecID id, int* version)
 {
 	switch (id)
 	{
@@ -279,7 +280,8 @@ long long int calcPts(AVStream* stream, AVPacket* packet)
 }
 
 /*Hellmaster1024: get the Duration of the subtitle from the SSA line*/
-float getDurationFromSSALine(unsigned char* line){
+float getDurationFromSSALine(unsigned char* line)
+{
 	int i,h,m,s,ms;
 	char* Text = strdup((char*) line);
 	char* ptr1;
@@ -311,7 +313,6 @@ float getDurationFromSSALine(unsigned char* line){
 /* search for metatdata in context and stream
  * and map it to our metadata.
  */
-
 #if LIBAVCODEC_VERSION_MAJOR < 54
 static char* searchMeta(AVMetadata *metadata, char* ourTag)
 #else
@@ -838,7 +839,6 @@ static void FFMPEGThread(Context_t *context)
 /* **************************** */
 /* Container part for ffmpeg    */
 /* **************************** */
-
 int container_ffmpeg_init(Context_t *context, char * filename)
 {
 	int n, err;
@@ -1012,12 +1012,13 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 				}
 
 				if (context->manager->video)
-				if (context->manager->video->Command(context, MANAGER_ADD, &track) < 0) 
 				{
-					/* konfetti: fixme: is this a reason to return with error? */
-					ffmpeg_err("failed to add track %d\n", n);
+					if (context->manager->video->Command(context, MANAGER_ADD, &track) < 0) 
+					{
+						/* konfetti: fixme: is this a reason to return with error? */
+						ffmpeg_err("failed to add track %d\n", n);
+					}
 				}
-
 			}
 			else 
 			{
@@ -1035,7 +1036,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
 			if (encoding != NULL) 
 			{
-				track.type           = eTypeES;
+				track.type = eTypeES;
 				
 				// language description
 #if LIBAVCODEC_VERSION_MAJOR < 54
@@ -1176,7 +1177,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 					unsigned int reserved = 0;
 					memcpy(track.aacbuf + 74, &reserved, 4); // reserved
 
-                    // type_specific_data
+// type_specific_data
 #define WMA_VERSION_1           0x160
 #define WMA_VERSION_2_9         0x161
 #define WMA_VERSION_9_PRO       0x162
@@ -1319,10 +1320,10 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 			case AVMEDIA_TYPE_ATTACHMENT:
 			case AVMEDIA_TYPE_NB:
 			default:
-			ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
-			break;	 
+				ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
+				break;	 
 #endif	 
-		}
+		} /* switch (stream->codec->codec_type) */
 
 	} /* for */
 
@@ -1458,7 +1459,8 @@ static int container_ffmpeg_seek_bytes(off_t pos)
 }
 
 /* seeking relative to a given byteposition N bytes ->for reverse playback needed */
-static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes) {
+static int container_ffmpeg_seek_bytes_rel(off_t start, off_t bytes) 
+{
 	int flag = AVSEEK_FLAG_BYTE;
 	off_t newpos;
 #if LIBAVCODEC_VERSION_MAJOR < 54

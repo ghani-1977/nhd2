@@ -47,8 +47,8 @@
 #include <cstdlib>
 #include <ctime>
 
-typedef std::set<long> CPosList;
 
+typedef std::set<long> CPosList;
 typedef std::map<unsigned char, CPosList> CTitle2Pos;
 typedef std::pair<unsigned char, CPosList> CTitle2PosItem;
 
@@ -57,13 +57,9 @@ class CAudiofileExt : public CAudiofile
 	public:
 		
 		CAudiofileExt();
-
 		CAudiofileExt(std::string name, CFile::FileType type);
-		
 		CAudiofileExt(const CAudiofileExt& src);
-
 		void operator=(const CAudiofileExt& src);
-
 
 		char firstChar;
 };
@@ -209,13 +205,9 @@ class CAudioPlayerGui : public CMenuTarget
 		* @param file the file to return the information for
 		*/
 		void getFileInfoToDisplay(std::string& fileInfo, CAudiofileExt &file);
-
 		void printSearchTree();
-		
 		void buildSearchTree();
-	
 		unsigned char getFirstChar(CAudiofileExt &file);
-
 		void printTimevalDiff(timeval &start, timeval &end);
 
 		/**
@@ -251,7 +243,6 @@ class CAudioPlayerGui : public CMenuTarget
 		bool shufflePlaylist(void);
 		bool playNext(bool allow_rotate = false);
 		bool playPrev(bool allow_rotate = false);
-		
 		bool SaveCover(CAudiofileExt &File);
 	
 	public:

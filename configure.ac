@@ -27,9 +27,6 @@ TUXBOX_APPS_LIB_PKGCONFIG(PNG,libpng)
 TUXBOX_APPS_LIB_PKGCONFIG(AVCODEC,libavcodec)
 TUXBOX_APPS_LIB_PKGCONFIG(AVUTIL,libavutil)
 TUXBOX_APPS_LIB_PKGCONFIG(AVFORMAT,libavformat)
-if test "$BOXTYPE" = "generic" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate"; then
-TUXBOX_APPS_LIB_PKGCONFIG(GST,gstreamer-0.10)
-fi
 
 # keybaord
 AC_ARG_ENABLE(keyboard-no-rc,
@@ -43,27 +40,38 @@ AC_ARG_ENABLE(opengl,
 AM_CONDITIONAL(USE_OPENGL,test "$enable_opengl" = "yes")
 
 if test "$enable_opengl" = "yes"; then
-AC_DEFINE(USE_OPENGL,1,[include gstreamer engine])
+AC_DEFINE(USE_OPENGL,1,[include opengl engine])
 fi
 
 # libeplayer3
 AC_ARG_ENABLE(libeplayer3,
-	AS_HELP_STRING(--enable-libeplayer3,include libeplayer3 gstreamer as player engine support),
+	AS_HELP_STRING(--enable-libeplayer3,include libeplayer3 as player engine support),
 	,[enable_libeplayer3=no])
 AM_CONDITIONAL(ENABLE_LIBEPLAYER3,test "$enable_libeplayer3" = "yes")
 
 if test "$enable_libeplayer3" = "yes"; then
-AC_DEFINE(ENABLE_LIBEPLAYER3,1,[include libeplayer3 engine])
+AC_DEFINE(ENABLE_LIBEPLAYER3,1,[include libeplayer3 as player engine support])
 fi
 
 # gstreamer
 AC_ARG_ENABLE(gstreamer,
-	AS_HELP_STRING(--enable-gstreamer,include enigma2 gstreamer as player engine support),
+	AS_HELP_STRING(--enable-gstreamer,include gstreamer as player engine support),
 	,[enable_gstreamer=no])
 AM_CONDITIONAL(ENABLE_GSTREAMER,test "$enable_gstreamer" = "yes")
 
 if test "$enable_gstreamer" = "yes"; then
-AC_DEFINE(ENABLE_GSTREAMER,1,[include gstreamer engine])
+AC_DEFINE(ENABLE_GSTREAMER,1,[include gstreamer as player engine support])
+TUXBOX_APPS_LIB_PKGCONFIG(GST,gstreamer-0.10)
+fi
+
+# pcm decoder
+AC_ARG_ENABLE(pcmdecoder,
+	AS_HELP_STRING(--disable-pcmdecoder,disable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)),
+	,[enable_pcmdecoder=yes])
+AM_CONDITIONAL(ENABLE_PCMDECODER,test "$enable_pcmdecoder" = "yes")
+
+if test "$enable_pcmdecoder" = "yes"; then
+AC_DEFINE(ENABLE_PCMDECODER,1,[disable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)])
 fi
 
 # lcd
@@ -138,16 +146,6 @@ AM_CONDITIONAL(ENABLE_STANDALONEPLUGINS,test "$enable_standaloneplugins" = "yes"
 
 if test "$enable_standaloneplugins" = "yes"; then
 AC_DEFINE(ENABLE_STANDALONEPLUGINS,1,[include standaloneplugins support])
-fi
-
-# live view
-AC_ARG_ENABLE(liveview,
-	AS_HELP_STRING(--enable-liveview,enable live view fpr x86 (gst needed)),
-	,[enable_liveview=no])
-AM_CONDITIONAL(ENABLE_LIVEVIEW,test "$enable_liveview" = "yes")
-
-if test "$enable_liveview" = "yes"; then
-AC_DEFINE(ENABLE_LIVEVIEW,1,[enable live view fpr x86 (gst needed)])
 fi
 
 AC_OUTPUT([

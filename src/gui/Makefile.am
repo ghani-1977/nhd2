@@ -21,7 +21,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libxmltree \
 	@CURL_CFLAGS@ \
-	@FREETYPE_CFLAGS@
+	@FREETYPE_CFLAGS@ 
 
 if BOXTYPE_COOLSTREAM
 INCLUDES += -I$(top_srcdir)/src/zapit/include \
