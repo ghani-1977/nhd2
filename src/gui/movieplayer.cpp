@@ -1534,11 +1534,7 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{
-//#if defined (PLATFORM_COOLSTREAM)
-				playback->GetPosition(position, duration);
-//#else				
-//				playback->GetPosition(position);
-//#endif				
+				playback->GetPosition((int64_t &)position, (int64_t &)duration);				
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -2193,13 +2189,8 @@ void CMoviePlayerGui::PlayFile(void)
 			if(p_movie_info != NULL)
 				duration = p_movie_info->length * 60 * 1000;
 			  
-			// PlayBack Start
-//#if defined (PLATFORM_COOLSTREAM)			  
+			// PlayBack Start			  
 			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3, duration))
-//#else
-			//if(!playback->Start((char *)filename)) 
-//			if(!playback->Start((char *)filename, g_vpid, g_vtype, g_currentapid, g_currentac3))
-//#endif
 			{
 				dprintf(DEBUG_NORMAL, "%s::%s Starting Playback failed!\n", FILENAME, __FUNCTION__);
 				playback->Close();
@@ -2227,19 +2218,18 @@ void CMoviePlayerGui::PlayFile(void)
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition(startposition);
 				
+				// set speed (play speed)
+				playback->SetSpeed(1);
+				
 				// get duration
 				if(isVlc)
 					duration = VlcGetStreamLength();
 				else
 				{
-//#if defined (PLATFORM_COOLSTREAM)
-					playback->GetPosition(position, duration);
-//#else					
-//					playback->GetDuration(duration);
-//#endif					
+					playback->GetPosition((int64_t &)position, (int64_t &)duration);					
 				}
 				
-				//
+				// show movieinfoviewer at start
 				if(timeshift)
 				{
 					g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
@@ -2262,23 +2252,24 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				if(!isWebTV)
 				{
-//#if defined (PLATFORM_COOLSTREAM)
-					if( playback->GetPosition(position, duration) )
-					{
-//#else			  
-//					if(playback->GetPosition(position)) 
-//					{
-//						playback->GetDuration(duration);
-//#endif					
-					
+					if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
+					{					
 						if(duration > 100)
 							file_prozent = (unsigned char) (position / (duration / 100));
 
 						playback->GetSpeed(speed);
 						
-						dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
+						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
+						
+#if defined (ENABLE_GSTREAMER)						
+						if(position >= duration) 
+						{
+							usleep(550000);	//NOTE: otherwise 550ms will be skiped at eof
+							exit = true;
+						}
+#endif						
 					}
-					else if(!playback->playing)
+					else if(!playback->playing )
 					{
 						sleep(3);
 						exit = true;

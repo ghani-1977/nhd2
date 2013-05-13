@@ -586,7 +586,7 @@ void cPlayback::trickSeek(int ratio)
 	int position;
 	int duration;
 	
-	if( GetPosition(position, duration) )
+	if( GetPosition((int64_t &)position, (int64_t &)duration) )
 	{
 		validposition = true;
 		pos = position;
@@ -728,7 +728,7 @@ bool cPlayback::GetSpeed(int &speed) const
 }
 
 // in milliseconds
-bool cPlayback::GetPosition(int &position, int &duration)
+bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 {
 	if(playing == false) 
 		return false;
@@ -743,25 +743,27 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	
 	if(m_gst_playbin)
 	{
-		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs	
+		GstFormat fmt_p = GST_FORMAT_TIME; //Returns time in nanosecs
+		GstFormat fmt_d = GST_FORMAT_TIME; //Returns time in nanosecs	
 		
 		// position
-		gint64 pts = 0;
+		gint64 pts;
+		position = 0;
 			
-		gst_element_query_position(m_gst_playbin, &fmt, &pts);
+		gst_element_query_position(m_gst_playbin, &fmt_p, &pts);
 			
-		position = (int)pts /  1000000.0;
-			
-		//printf("%s: pts%lld, position:%d\n", __FUNCTION__, pts, position);
+		position = pts / 1000000;	// in ms
+		
+		dprintf(DEBUG_INFO, "%s: position: %lld ms ", __FUNCTION__, position);
 		
 		//duration
 		gint64 len;
 
-		gst_element_query_duration(m_gst_playbin, &fmt, &len);
+		gst_element_query_duration(m_gst_playbin, &fmt_d, &len);
 		
-		duration = (int)len / 1000.0;
+		duration = len / 1000000;
 
-		//printf("%s: len%lld, duration:%d\n", __FUNCTION__, len, duration);
+		dprintf(DEBUG_INFO, "(duration: %lld ms)\n", duration);
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	if (player && player->playback && !player->playback->isPlaying) 
@@ -779,10 +781,7 @@ bool cPlayback::GetPosition(int &position, int &duration)
 	if(player && player->playback)
 		player->playback->Command(player, PLAYBACK_PTS, &vpts);
 
-	/* len is in nanoseconds. we have 90 000 pts per second. */
 	position = vpts/90;
-	
-	//printf("%s: pts%lld, position:%d\n", __FUNCTION__, vpts, position);
 	
 	// duration
 	double length = 0;
@@ -794,7 +793,8 @@ bool cPlayback::GetPosition(int &position, int &duration)
 		length = 0;
 
 	duration = (int)(length*1000);
-	//printf("%s: len%lld, duration:%d\n", __FUNCTION__, length, duration);
+	
+	printf("%s: position: %lld ms (duration: %lld ms)\n", __FUNCTION__, position, duration);
 #endif
 	
 	return true;

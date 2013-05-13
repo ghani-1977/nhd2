@@ -137,12 +137,24 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	int duration = 0;
 	
 	do {
-		if(! playback->GetPosition(position, duration))
+		if(playback->GetPosition((int64_t &)position, (int64_t &)duration))
+		{
+			getInstance()->m_played_time = position/1000;	// in sec
+		
+#if defined (ENABLE_GSTREAMER)			
+			if(position >= duration) 
+			{
+				usleep(550000);	//NOTE: otherwise 550ms will be skiped at eof
+				getInstance()->state = CBaseDec::STOP;
+				break;
+			}
+#endif			
+		}
+		else
 		{
 			getInstance()->state = CBaseDec::STOP;
 			break;
 		}
-		getInstance()->m_played_time = position/1000;
 	}while(getInstance()->state != CBaseDec::STOP_REQ);	//(playback->GetPosition(position, duration));
 #else	
 	// Decode stdin to stdout.
