@@ -444,6 +444,8 @@ bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned s
 		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
 		gst_object_unref(bus);
 		
+		// start playing
+		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
 		playing = true;
 	}
 	else
