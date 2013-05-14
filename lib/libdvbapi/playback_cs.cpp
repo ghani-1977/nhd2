@@ -78,7 +78,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	source = GST_MESSAGE_SRC(msg);
 	
 	if (!GST_IS_OBJECT(source))
-		return GST_BUS_PASS;
+		return GST_BUS_DROP;
 	
 	sourceName = gst_object_get_name(source);
 
@@ -236,7 +236,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	
 	g_free(sourceName);
 
-	return GST_BUS_PASS;
+	return GST_BUS_DROP;
 }
 #endif
 
