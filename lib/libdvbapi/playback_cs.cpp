@@ -784,6 +784,8 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 
 	position = vpts/90;
 	
+	dprintf(DEBUG_INFO, "%s: position: %lld ms ", __FUNCTION__, position);
+	
 	// duration
 	double length = 0;
 
@@ -795,7 +797,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 
 	duration = (int)(length*1000);
 	
-	printf("%s: position: %lld ms (duration: %lld ms)\n", __FUNCTION__, position, duration);
+	dprintf(DEBUG_INFO, "(duration: %lld ms)\n", duration);
 #endif
 	
 	return true;
