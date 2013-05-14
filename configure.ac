@@ -140,7 +140,7 @@ fi
 
 # standalone plugins
 AC_ARG_ENABLE(standaloneplugins,
-	AS_HELP_STRING(--enable-standalonepluigns,include standaloneplugins support),
+	AS_HELP_STRING(--enable-standaloneplugins,include standaloneplugins support),
 	,[enable_standaloneplugins=no])
 AM_CONDITIONAL(ENABLE_STANDALONEPLUGINS,test "$enable_standaloneplugins" = "yes")
 
