@@ -78,7 +78,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	source = GST_MESSAGE_SRC(msg);
 	
 	if (!GST_IS_OBJECT(source))
-		return GST_BUS_DROP;
+		return GST_BUS_PASS;
 	
 	sourceName = gst_object_get_name(source);
 
@@ -236,10 +236,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 	
 	g_free(sourceName);
 
-	return GST_BUS_DROP;
+	return GST_BUS_PASS;
 }
 #endif
 
+/* its called only one time, (mainmenu/movieplayergui init)*/
 cPlayback::cPlayback(int num)
 { 
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
@@ -252,6 +253,7 @@ cPlayback::cPlayback(int num)
 #endif	
 }
 
+/* called at housekepping */
 cPlayback::~cPlayback()
 {  
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
@@ -442,8 +444,6 @@ bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned s
 		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
 		gst_object_unref(bus);
 		
-		// state playing
-		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
 		playing = true;
 	}
 	else
@@ -743,14 +743,13 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 	
 	if(m_gst_playbin)
 	{
-		GstFormat fmt_p = GST_FORMAT_TIME; //Returns time in nanosecs
-		GstFormat fmt_d = GST_FORMAT_TIME; //Returns time in nanosecs	
+		GstFormat fmt = GST_FORMAT_TIME; //Returns time in nanosecs
 		
 		// position
 		gint64 pts;
 		position = 0;
-			
-		gst_element_query_position(m_gst_playbin, &fmt_p, &pts);
+		
+		gst_element_query_position(m_gst_playbin, &fmt, &pts);
 			
 		position = pts / 1000000;	// in ms
 		
@@ -759,7 +758,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		//duration
 		gint64 len;
 
-		gst_element_query_duration(m_gst_playbin, &fmt_d, &len);
+		gst_element_query_duration(m_gst_playbin, &fmt, &len);
 		
 		duration = len / 1000000;
 

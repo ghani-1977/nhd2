@@ -83,7 +83,7 @@ bool cAudio::Open(int num)
 
 	if(audio_fd > 0)
 	{
-		dprintf(DEBUG_INFO, "cAudio::Open %s\n", devname);
+		dprintf(DEBUG_NORMAL, "cAudio::Open %s\n", devname);
 		
 		return true;
 	}	
@@ -96,7 +96,7 @@ bool cAudio::Close()
 	if (audio_fd < 0)
 		return false;
 	  
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);	
 
 	//if (audio_fd >= 0)
 	close(audio_fd);
@@ -111,7 +111,7 @@ int cAudio::SetMute(int enable)
 	if (audio_fd < 0)
 		return -1;
 	
-	dprintf(DEBUG_INFO, "%s:%s (%d)\n", FILENAME, __FUNCTION__, enable);	
+	dprintf(DEBUG_NORMAL, "%s:%s (%d)\n", FILENAME, __FUNCTION__, enable);	
 	
 	Muted = enable?true:false;
 	

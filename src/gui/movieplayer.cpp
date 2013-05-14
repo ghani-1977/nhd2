@@ -1534,7 +1534,8 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{
-				playback->GetPosition((int64_t &)position, (int64_t &)duration);				
+				//FIXME: is this needed???
+				playback->GetPosition((int64_t &)position, (int64_t &)duration);
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -1554,7 +1555,7 @@ void CMoviePlayerGui::PlayFile(void)
 								{
 									endHintBox.paint();	// we are 5 sec before the end postition, show warning
 									showEndHintBox = true;
-									TRACE("[mp]  user stop in 5 sec...\r\n");
+									dprintf(DEBUG_INFO, "[mp]  user stop in 5 sec...\r\n");
 								}
 							} 
 							else 
@@ -1568,8 +1569,8 @@ void CMoviePlayerGui::PlayFile(void)
 
 							if (play_sec >= p_movie_info->bookmarks.end && play_sec <= p_movie_info->bookmarks.end + 2 && play_sec > jump_not_until)	// stop playing
 							{
-								// *********** we ARE close behind the stop position, stop playing *******************************
-								TRACE("[mp]  user stop\r\n");
+								// we ARE close behind the stop position, stop playing 
+								dprintf(DEBUG_INFO, "[mp]  user stop\r\n");
 								playstate = CMoviePlayerGui::STOPPED;
 							}
 						}
@@ -1620,17 +1621,19 @@ void CMoviePlayerGui::PlayFile(void)
 										//playstate = CMoviePlayerGui::JPOS;	// bookmark  is of type loop, jump backward
 										playback->SetPosition(g_jumpseconds * 1000);
 									}
-									TRACE("[mp]  do jump %d sec\r\n", g_jumpseconds);
+									
+									dprintf(DEBUG_INFO, "[mp]  do jump %d sec\r\n", g_jumpseconds);
 									update_lcd = true;
 									loop = false;	// do no further bookmark checks
 								}
 							}
 						}
+						
 						// check if we shall show the commercial warning
 						if (showComHintBox == true) 
 						{
 							comHintBox.paint();
-							TRACE("[mp]  com jump in 5 sec...\r\n");
+							dprintf(DEBUG_INFO, "[mp]  com jump in 5 sec...\r\n");
 						} 
 						else
 							comHintBox.hide();
@@ -1639,7 +1642,7 @@ void CMoviePlayerGui::PlayFile(void)
 						if (showLoopHintBox == true) 
 						{
 							loopHintBox.paint();
-							TRACE("[mp]  loop jump in 5 sec...\r\n");
+							dprintf(DEBUG_INFO, "[mp]  loop jump in 5 sec...\r\n");
 						} 
 						else
 							loopHintBox.hide();
@@ -2222,6 +2225,7 @@ void CMoviePlayerGui::PlayFile(void)
 				playback->SetSpeed(1);
 				
 				// get duration
+				/*
 				if(isVlc)
 					duration = VlcGetStreamLength();
 				else
@@ -2239,6 +2243,7 @@ void CMoviePlayerGui::PlayFile(void)
 					if(!MovieInfoViewer.IsVisible())
 						MovieInfoViewer.show(position/1000);
 				}
+				*/
 			}
 		}
 		
@@ -2259,15 +2264,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 						playback->GetSpeed(speed);
 						
-						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d, %d%%)\n", speed, position, duration, duration-position, file_prozent);			
-						
-#if defined (ENABLE_GSTREAMER)						
-						if(position >= duration) 
-						{
-							usleep(550000);	//NOTE: otherwise 550ms will be skiped at eof
-							exit = true;
-						}
-#endif						
+						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
 					}
 					else if(!playback->playing )
 					{

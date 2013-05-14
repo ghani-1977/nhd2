@@ -83,7 +83,7 @@ bool cVideo::Open(int num)
 
 	if(video_fd > 0)
 	{
-		dprintf(DEBUG_INFO, "cVideo::Open %s\n", devname);
+		dprintf(DEBUG_NORMAL, "cVideo::Open %s\n", devname);
 		return true;
 	}
 	
@@ -97,7 +97,7 @@ bool cVideo::Close()
 	if(video_fd < 0)
 		return false;
 	
-	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
 	//if(video_fd >= 0)
 	close(video_fd);
