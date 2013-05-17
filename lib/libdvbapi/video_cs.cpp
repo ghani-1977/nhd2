@@ -898,13 +898,21 @@ int cVideo::showSinglePic(const char *filename)
 			unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
 			unsigned char iframe[s.st_size];
 			unsigned char stuffing[8192];
+#ifdef __sh__
+			int streamtype = VIDEO_ENCODING_MPEG2;
+#else
 			int streamtype = VIDEO_STREAMTYPE_MPEG2;
+#endif			
 			memset(stuffing, 0, 8192);
 			read(f, iframe, s.st_size);
 			
 			if (ioctl(video_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
 					printf("VIDEO_SELECT_SOURCE MEMORY failed (%m)\n");
+#ifdef __sh__
+			if (ioctl(video_fd, VIDEO_SET_ENCODING, streamtype) < 0)
+#else
 			if (ioctl(video_fd, VIDEO_SET_STREAMTYPE, streamtype) < 0)
+#endif			  
 				printf("VIDEO_SET_STREAMTYPE failed(%m)\n");
 			if (ioctl(video_fd, VIDEO_PLAY) < 0)
 				printf("VIDEO_PLAY failed (%m)\n");
