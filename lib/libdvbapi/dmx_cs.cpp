@@ -214,7 +214,7 @@ retry:
 		}
 	}
 
-	rc = ::read(demux_fd, buff, len);
+	rc = read(demux_fd, buff, len);
 	
 	if (rc < 0)
 		perror ("cDemux::Read");

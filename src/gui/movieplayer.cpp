@@ -2225,7 +2225,6 @@ void CMoviePlayerGui::PlayFile(void)
 				playback->SetSpeed(1);
 				
 				// get duration
-				/*
 				if(isVlc)
 					duration = VlcGetStreamLength();
 				else
@@ -2243,7 +2242,6 @@ void CMoviePlayerGui::PlayFile(void)
 					if(!MovieInfoViewer.IsVisible())
 						MovieInfoViewer.show(position/1000);
 				}
-				*/
 			}
 		}
 		

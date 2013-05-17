@@ -2852,7 +2852,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radiomode.jpg");
+					//frameBuffer->loadBackgroundPic("radiomode.jpg");
+					videoDecoder->showSinglePic(DATADIR "/neutrino/icons/radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -2878,7 +2879,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radiomode.jpg");
+					//frameBuffer->loadBackgroundPic("radiomode.jpg");
+					videoDecoder->showSinglePic(DATADIR "/neutrino/icons/radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -2904,7 +2906,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radiomode.jpg");
+					//frameBuffer->loadBackgroundPic("radiomode.jpg");
+					videoDecoder->showSinglePic(DATADIR "/neutrino/icons/radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -2930,7 +2933,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				if( mode == mode_radio )
 				{
-					frameBuffer->loadBackgroundPic("radiomode.jpg");
+					//frameBuffer->loadBackgroundPic("radiomode.jpg");
+					videoDecoder->showSinglePic(DATADIR "/neutrino/icons/radiomode.jpg");
 						
 #if !defined USE_OPENGL
 					frameBuffer->blit();
@@ -3299,7 +3303,7 @@ _repeat:
 			AudioMute( !current_muted, true);
 		}
 		return messages_return::handled;
-	}
+	}	
 	// event messages
 	else if (msg == NeutrinoMessages::EVT_VOLCHANGED) 
 	{
@@ -4179,6 +4183,8 @@ void CNeutrinoApp::tvMode( bool rezap )
 #if ENABLE_RADIOTEXT	  
 		if (g_settings.radiotext_enable && g_Radiotext) 
 		{
+			videoDecoder->finishShowSinglePic();
+			
 			delete g_Radiotext;
 			g_Radiotext = NULL;
 		}
@@ -4502,10 +4508,11 @@ void CNeutrinoApp::radioMode( bool rezap)
 		channelList->zapTo( firstchannel.channelNumber -1 );
 	}
 
-	frameBuffer->loadBackgroundPic("radiomode.jpg");
+	//frameBuffer->loadBackgroundPic("radiomode.jpg");
+	videoDecoder->showSinglePic(DATADIR "/neutrino/icons/radiomode.jpg");
 	
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+	//frameBuffer->blit();
 #endif	
 
 #if ENABLE_RADIOTEXT

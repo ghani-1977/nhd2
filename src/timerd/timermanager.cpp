@@ -683,8 +683,7 @@ void CTimerManager::saveEventsToConfig()
 
 bool CTimerManager::shutdown()
 {
-
-	time_t nextAnnounceTime=0;
+	time_t nextAnnounceTime = 0;
 	bool status = false;
 	
 	dprintf(DEBUG_NORMAL, "[timermanager] stopping timermanager thread ...\n");

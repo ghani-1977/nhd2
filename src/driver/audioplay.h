@@ -34,8 +34,8 @@
 
 class CAudioPlayer
 {
-	private:
-		time_t m_played_time;
+	private:		
+		time_t m_played_time;	
 		int  m_sc_buffered;
 		FILE		*soundfd;
 		pthread_t	thrPlay;

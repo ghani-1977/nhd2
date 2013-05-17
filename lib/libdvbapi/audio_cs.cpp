@@ -405,26 +405,28 @@ int cAudio::setChannel(int channel)
 static unsigned int SubFrameLen = 0;
 static unsigned int SubFramesPerPES = 0;
 
-static const unsigned char clpcm_pes[18] = {   0x00, 0x00, 0x01, 0xBD, //start code
-					0x07, 0xF1,             //pes length
-					0x81, 0x81, 0x09,       //fixed
-					0x21, 0x00, 0x01, 0x00, 0x01, //PTS marker bits
-					0x1E, 0x60, 0x0A,           //first pes only, 0xFF after
-					0xFF
-			};
+static const unsigned char clpcm_pes[18] = {   
+	0x00, 0x00, 0x01, 0xBD, 	//start code
+	0x07, 0xF1,             	//pes length
+	0x81, 0x81, 0x09,       	//fixed
+	0x21, 0x00, 0x01, 0x00, 0x01, 	//PTS marker bits
+	0x1E, 0x60, 0x0A,           	//first pes only, 0xFF after
+	0xFF
+};
 
-static const unsigned char clpcm_prv[14] = {   0xA0,   //sub_stream_id
-					0, 0,   //resvd and UPC_EAN_ISRC stuff, unused
-					0x0A,   //private header length
-					0, 9,   //first_access_unit_pointer
-					0x00,   //emph,rsvd,stereo,downmix
-					0x0F,   //quantisation word length 1,2
-					0x0F,   //audio sampling freqency 1,2
-					0,              //resvd, multi channel type
-					0,              //bit shift on channel GR2, assignment
-					0x80,   //dynamic range control
-					0, 0    //resvd for copyright management
-			};
+static const unsigned char clpcm_prv[14] = {   
+	0xA0,   	//sub_stream_id
+	0, 0,   	//resvd and UPC_EAN_ISRC stuff, unused
+	0x0A,   	//private header length
+	0, 9,   	//first_access_unit_pointer
+	0x00,   	//emph,rsvd,stereo,downmix
+	0x0F,   	//quantisation word length 1,2
+	0x0F,   	//audio sampling freqency 1,2
+	0,              //resvd, multi channel type
+	0,              //bit shift on channel GR2, assignment
+	0x80,   	//dynamic range control
+	0, 0    	//resvd for copyright management
+};
 
 static unsigned char lpcm_pes[18];
 static unsigned char lpcm_prv[14];
@@ -449,8 +451,7 @@ int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample,
 	memcpy(lpcm_pes, clpcm_pes, sizeof(lpcm_pes));
 	memcpy(lpcm_prv, clpcm_prv, sizeof(lpcm_prv));
 
-	//figure out size of subframe
-	//and set up sample rate
+	//figure out size of subframe and set up sample rate
 	switch(uSampleRate) 
 	{
 		case 48000:
@@ -512,7 +513,7 @@ int cAudio::PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample,
 			return 1;
 	}
 	
-	//
+	// open audiodecoder device
 	Open();
 	
 	// set audio source to memory this able us to inject data
@@ -534,9 +535,9 @@ int cAudio::WriteClip(unsigned char *buffer, int size)
 {
 	//unsigned int qty;
 	unsigned int n;
-	unsigned int injectBufferSize = sizeof(lpcm_pes)+sizeof(lpcm_prv)+SubFrameLen;
+	unsigned int injectBufferSize = sizeof(lpcm_pes) + sizeof(lpcm_prv) + SubFrameLen;
 	unsigned char * injectBuffer = (unsigned char *)malloc(sizeof(unsigned char)*injectBufferSize);
-	unsigned char * injectBufferDataPointer = &injectBuffer[sizeof(lpcm_pes)+sizeof(lpcm_prv)];
+	unsigned char * injectBufferDataPointer = &injectBuffer[sizeof(lpcm_pes) + sizeof(lpcm_prv)];
 
 	for(int pos = 0; pos < size; )
 	{
@@ -558,7 +559,8 @@ int cAudio::WriteClip(unsigned char *buffer, int size)
 			memcpy(&injectBufferDataPointer[breakBufferFillSize], &buffer[pos], sizeof(unsigned char)*(SubFrameLen - breakBufferFillSize));
 			pos += (SubFrameLen - breakBufferFillSize);
 			breakBufferFillSize = 0;
-		} else
+		} 
+		else
 		{
 		        memcpy(injectBufferDataPointer, &buffer[pos], sizeof(unsigned char)*SubFrameLen);
 			pos += SubFrameLen;
@@ -573,32 +575,32 @@ int cAudio::WriteClip(unsigned char *buffer, int size)
 		//write the PCM data
 		if(uBitsPerSample == 16) 
 		{
-			for(n=0; n<SubFrameLen; n+=2) 
+			for(n = 0; n < SubFrameLen; n += 2) 
 			{
 				unsigned char tmp;
-				tmp=injectBufferDataPointer[n];
-				injectBufferDataPointer[n]=injectBufferDataPointer[n+1];
-				injectBufferDataPointer[n+1]=tmp;
+				tmp = injectBufferDataPointer[n];
+				injectBufferDataPointer[n] = injectBufferDataPointer[n + 1];
+				injectBufferDataPointer[n + 1] = tmp;
 			}
 		} 
 		else 
 		{
 			//A1cA1bA1a-B1cB1bB1a-A2cA2bA2a-B2cB2bB2a to A1aA1bB1aB1b.A2aA2bB2aB2b-A1cB1cA2cB2c
-			for(n=0; n<SubFrameLen; n+=12) 
+			for(n = 0; n < SubFrameLen; n += 12) 
 			{
 				unsigned char tmp[12];
-				tmp[ 0]=injectBufferDataPointer[n+2];
-				tmp[ 1]=injectBufferDataPointer[n+1];
-				tmp[ 8]=injectBufferDataPointer[n+0];
-				tmp[ 2]=injectBufferDataPointer[n+5];
-				tmp[ 3]=injectBufferDataPointer[n+4];
-				tmp[ 9]=injectBufferDataPointer[n+3];
-				tmp[ 4]=injectBufferDataPointer[n+8];
-				tmp[ 5]=injectBufferDataPointer[n+7];
-				tmp[10]=injectBufferDataPointer[n+6];
-				tmp[ 7]=injectBufferDataPointer[n+11];
-				tmp[ 8]=injectBufferDataPointer[n+10];
-				tmp[11]=injectBufferDataPointer[n+9];
+				tmp[ 0] = injectBufferDataPointer[n+2];
+				tmp[ 1] = injectBufferDataPointer[n+1];
+				tmp[ 8] = injectBufferDataPointer[n+0];
+				tmp[ 2] = injectBufferDataPointer[n+5];
+				tmp[ 3] = injectBufferDataPointer[n+4];
+				tmp[ 9] = injectBufferDataPointer[n+3];
+				tmp[ 4] = injectBufferDataPointer[n+8];
+				tmp[ 5] = injectBufferDataPointer[n+7];
+				tmp[10] = injectBufferDataPointer[n+6];
+				tmp[ 7] = injectBufferDataPointer[n+11];
+				tmp[ 8] = injectBufferDataPointer[n+10];
+				tmp[11] = injectBufferDataPointer[n+9];
 				
 				memcpy(&injectBufferDataPointer[n], tmp, 12);
 			}

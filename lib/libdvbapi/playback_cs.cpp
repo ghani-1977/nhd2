@@ -753,18 +753,22 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		
 		gst_element_query_position(m_gst_playbin, &fmt, &pts);
 			
-		position = pts / 1000000;	// in ms
+		//position = pts / 1000000;	// in ms
+		position = pts / 1111111;
+		//position /= 100;
 		
-		dprintf(DEBUG_INFO, "%s: position: %lld ms ", __FUNCTION__, position);
+		dprintf(DEBUG_DEBUG, "%s: position: %lld ms ", __FUNCTION__, position);
 		
 		//duration
 		gint64 len;
 
 		gst_element_query_duration(m_gst_playbin, &fmt, &len);
 		
-		duration = len / 1000000;
+		//duration = len / 1000000;
+		duration = len / 1111111;
+		//duration /= 100;
 
-		dprintf(DEBUG_INFO, "(duration: %lld ms)\n", duration);
+		dprintf(DEBUG_DEBUG, "(duration: %lld ms)\n", duration);
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	if (player && player->playback && !player->playback->isPlaying) 
@@ -784,7 +788,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 
 	position = vpts/90;
 	
-	dprintf(DEBUG_INFO, "%s: position: %lld ms ", __FUNCTION__, position);
+	dprintf(DEBUG_DEBUG, "%s: position: %lld ms ", __FUNCTION__, position);
 	
 	// duration
 	double length = 0;
@@ -797,7 +801,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 
 	duration = (int)(length*1000);
 	
-	dprintf(DEBUG_INFO, "(duration: %lld ms)\n", duration);
+	dprintf(DEBUG_DEBUG, "(duration: %lld ms)\n", duration);
 #endif
 	
 	return true;

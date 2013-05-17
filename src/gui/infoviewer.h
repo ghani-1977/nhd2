@@ -125,8 +125,8 @@ class CInfoViewer
 		void showSNR();
 		
 #if ENABLE_RADIOTEXT		
-		void showRadiotext();
-		void killRadiotext();
+		//void showRadiotext();
+		//void killRadiotext();
 #endif		
 
 		CProgressBar *snrscale, *sigscale, *timescale;
@@ -165,6 +165,11 @@ class CInfoViewer
 		void    clearVirtualZapMode() {virtual_zap_mode = false;}
 		
 		void	showEpgInfo();
+		
+#if ENABLE_RADIOTEXT		
+		void showRadiotext();
+		void killRadiotext();
+#endif
 };
 
 class CInfoViewerHandler : public CMenuTarget

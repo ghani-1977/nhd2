@@ -522,7 +522,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 		 */
 		// decode 'FRAMES_TO_PLAY' frames each 'FRAMES_TO_SKIP' frames in ff/rev mode 
 		if( (*state!=FF && *state!=REV) || FrameCount % actFramesToSkip < FRAMES_TO_PLAY )
-			ret=mad_frame_decode(&Frame,&Stream);
+			ret = mad_frame_decode(&Frame,&Stream);
 		else if(*state==FF) // in FF mode just decode the header, this sets bufferptr to next frame and also gives stats about the frame for totals
 			if (secondsToJump != 0 && !jumpDone)
 			{	
@@ -841,7 +841,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 	CVFD::getInstance()->Unlock ();
 	
 	/* Accounting report if no error occured. */
-	if(Status==OK)
+	if(Status == OK)
 	{
 		/* The duration timer is converted to a human readable string
 		 * with the versatile but still constrained mad_timer_string()

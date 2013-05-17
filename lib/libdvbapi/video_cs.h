@@ -299,6 +299,11 @@ class cVideo
 #endif		
 		
 		int64_t GetPTS(void);
+		
+		// single pic
+		int showSinglePic(const char *filename);
+		void finishShowSinglePic();
+		//
 };
 
 #endif

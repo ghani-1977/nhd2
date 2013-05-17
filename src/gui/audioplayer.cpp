@@ -350,7 +350,8 @@ int CAudioPlayerGui::show()
 	int ret = -1;
 
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-	paintLCD();	
+		
+	paintLCD();		
 
 	bool loop = true;
 	bool update = true;
@@ -644,7 +645,9 @@ int CAudioPlayerGui::show()
 						savePlaylist();
 
 						CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-						paintLCD();						
+						
+						paintLCD();
+						
 						update = true;
 					}
 				} 
@@ -730,16 +733,18 @@ int CAudioPlayerGui::show()
 						case 0:	
 							scanXmlFile(RADIO_STATION_XML_FILE); 	
 
-							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-							paintLCD();							
+							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));							
+							paintLCD();
+							
 							break;
 							
 						case 1:	openSCbrowser();
 							break;
 							
 						case 2:	readDir_ic();
-							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
-							paintLCD();							
+							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));							
+							paintLCD();
+							
 							break;
 							
 						default: break;
@@ -860,7 +865,7 @@ int CAudioPlayerGui::show()
 			CNFSSmallMenu nfsMenu;
 			nfsMenu.exec(this, "");
 
-			CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
+			CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));			
 			paintLCD();			
 			update = true;
 			//pushback key if...
@@ -1461,7 +1466,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 		result = true;
 	}
 	
-	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
+	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));	
 	paintLCD();
 	
 	// if playlist is turned off -> start playing immediately
@@ -1545,7 +1550,7 @@ bool CAudioPlayerGui::openSCbrowser(void)
 		result = true;
 	}
 	
-	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
+	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));	
 	paintLCD();
 	
 	// if playlist is turned off -> start playing immediately
@@ -2110,11 +2115,9 @@ void CAudioPlayerGui::stop()
 {
 	m_state = CAudioPlayerGui::STOP;
 	m_current = 0;
-	
-#if !defined (PLATFORM_GIGABLUE)	
+		
 	//LCD
-	paintLCD();
-#endif	
+	paintLCD();	
 
 	//Display
 	paintInfo();
@@ -2139,10 +2142,8 @@ void CAudioPlayerGui::pause()
 		m_state = CAudioPlayerGui::PLAY;
 		CAudioPlayer::getInstance()->pause();
 	}
-	
-#if !defined (PLATFORM_GIGABLUE)	
-	paintLCD();
-#endif	
+		
+	paintLCD();	
 }
 
 void CAudioPlayerGui::ff(unsigned int seconds)
@@ -2160,9 +2161,7 @@ void CAudioPlayerGui::ff(unsigned int seconds)
 		CAudioPlayer::getInstance()->ff(seconds);
 	}
 	
-#if !defined (PLATFORM_GIGABLUE)
-	paintLCD();
-#endif	
+	paintLCD();	
 }
 
 void CAudioPlayerGui::rev(unsigned int seconds)
@@ -2180,9 +2179,7 @@ void CAudioPlayerGui::rev(unsigned int seconds)
 		CAudioPlayer::getInstance()->rev(seconds);
 	}
 
-#if !defined (PLATFORM_GIGABLUE)
 	paintLCD();
-#endif	
 }
 
 void CAudioPlayerGui::play(unsigned int pos)
@@ -2244,10 +2241,8 @@ void CAudioPlayerGui::play(unsigned int pos)
 	/* Play */
 	CAudioPlayer::getInstance()->play(&m_curr_audiofile, g_settings.audioplayer_highprio == 1);
 
-	//LCD
-#if !defined (PLATFORM_GIGABLUE)	
+	//LCD	
 	paintLCD();
-#endif	
 	
 	// Display
 	if(!m_screensaver)
@@ -2343,11 +2338,9 @@ void CAudioPlayerGui::updateMetaData()
 	}
 	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
-	
-#if !defined (PLATFORM_GIGABLUE)	
+		
 	if(updateLcd)
 		paintLCD();
-#endif
 
 	if(updateScreen)
 		paintInfo();

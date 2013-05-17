@@ -73,9 +73,12 @@ extern "C" {
 
 /*zapit includes*/
 #include <frontend_c.h>
+#include <video_cs.h>
+#include <global.h>
 
 
 extern CFrontend * live_fe;
+extern cVideo *videoDecoder;
 
 rtp_classes rtp_content;
 
@@ -95,7 +98,7 @@ int Rass_GalStart, Rass_GalEnd, Rass_GalCount, Rass_SlideFoto;
 #endif
 
 #define floor
-const char *DataDir = "./";
+const char *DataDir = "/tmp";
 //cRadioAudio *RadioAudio;
 //cRadioTextOsd *RadioTextOsd;
 //cRDSReceiver *RDSReceiver;
@@ -128,34 +131,43 @@ char *CRadioText::rds_entitychar(char *text)
 	int i = 0, l, lof, lre, space;
 	char *temp;
 
-	while (i < 5) {
-		if ((temp = strstr(text, entitystr[i])) != NULL) {
+	while (i < 5) 
+	{
+		if ((temp = strstr(text, entitystr[i])) != NULL) 
+		{
 			if (S_Verbose >= 2)
 				printf("RText-Entity: %s\n", text);
+			
 			l = strlen(entitystr[i]);
 			lof = (temp-text);
-			if (strlen(text) < RT_MEL) {
+			
+			if (strlen(text) < RT_MEL) 
+			{
 				lre = strlen(text) - lof - l;
 				space = 1;
 			}
-			else {
+			else 
+			{
 				lre =  RT_MEL - 1 - lof - l;
 				space = 0;
 			}
 			memmove(text+lof, entitychar[i], 1);
 			memmove(text+lof+1, temp+l, lre);
+			
 			if (space != 0)
 				memmove(text+lof+1+lre, "         ", l-1);
 		}
 		else i++;
 	}
+	
 	return text;
 }
 
 char* CRadioText::ptynr2string(int nr)
 {
-	switch (nr) {
-        // Source: http://www.ebu.ch/trev_255-beale.pdf
+	switch (nr) 
+	{
+		// Source: http://www.ebu.ch/trev_255-beale.pdf
 		case  0: return tr(const_cast<char *>("unknown program type"));
 		case  1: return tr(const_cast<char *>("News")); 
 		case  2: return tr(const_cast<char *>("Current affairs")); 
@@ -184,23 +196,29 @@ bool CRadioText::DividePes(unsigned char *data, int length, int *substart, int *
 	int found = 0;
 	while ((i<length-2) && (found < 2))
 	{
-		if ((found == 0) && (data[i] == 0xFF) && (data[i+1] == 0xFD)) {
+		if ((found == 0) && (data[i] == 0xFF) && (data[i+1] == 0xFD)) 
+		{
 			*substart = i;
 			found++;
 		}
-		else if ((found == 1) && (data[i] == 0xFD) && (data[i+1] == 0xFF)) {
+		else if ((found == 1) && (data[i] == 0xFD) && (data[i+1] == 0xFF)) 
+		{
 			*subend = i;
 			found++;
 		}
 		i++;
 	}
-	if ((found == 1) && (data[length-1] == 0xFD)) {
+	if ((found == 1) && (data[length-1] == 0xFD)) 
+	{
 		*subend = length-1;
 		found++;
 	}
-	if (found == 2) {
+	if (found == 2) 
+	{
 		return(true);
-	} else {
+	} 
+	else 
+	{
 		return(false);
 	}
 }
@@ -230,24 +248,36 @@ int CRadioText::PES_Receive(unsigned char *data, int len)
 		while (DividePes(&data[0], pesl, &substart, &subend))
 		{
 			int inner_offset = subend + 1;
-if (inner_offset < 3) fprintf(stderr, "RT %s: inner_offset < 3 (%d)\n", __FUNCTION__, inner_offset);
+			if (inner_offset < 3) 
+				fprintf(stderr, "RT %s: inner_offset < 3 (%d)\n", __FUNCTION__, inner_offset);
+			
 			int rdsl = data[subend - 1];	// RDS DataFieldLength
 			// RDS DataSync = 0xfd @ end
-			if (data[subend] == 0xfd && rdsl > 0) {
+			if (data[subend] == 0xfd && rdsl > 0) 
+			{
 				// print RawData with RDS-Info
-				if (S_Verbose >= 3) {
+				if (S_Verbose >= 3) 
+				{
 					printf("\n\nPES-Data(%d/%d): ", pesl, len);
 					for (int a=inner_offset -rdsl; a<offset; a++)
 						printf("%02x ", data[a]);
 					printf("(End)\n\n");
 				}
 
-if (subend-2-rdsl < 0) fprintf(stderr, "RT %s: start: %d subend-2-rdsl < 0 (%d-2-%d)\n", __FUNCTION__, substart,subend,rdsl);
-				for (int i = subend - 2, val; i > subend - 2 - rdsl; i--) { // <-- data reverse, from end to start
-if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
+				if (subend-2-rdsl < 0) 
+					fprintf(stderr, "RT %s: start: %d subend-2-rdsl < 0 (%d-2-%d)\n", __FUNCTION__, substart,subend,rdsl);
+				for (int i = subend - 2, val; i > subend - 2 - rdsl; i--) 
+				{ 
+					// <-- data reverse, from end to start
+					if (i < 0) 
+					{ 
+						fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); 
+						break; 
+					}
 					val = data[i];
 
-					if (val == 0xfe) {	// Start
+					if (val == 0xfe) 
+					{	// Start
 						index = -1;
 						rt_start = true;
 						rt_bstuff = false;
@@ -255,12 +285,15 @@ if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 							printf("RDS-Start: ");
 					}
 
-					if (rt_start) {
+					if (rt_start) 
+					{
 						if (S_Verbose >= 3)
 							printf("%02x ", val);
 						// byte-stuffing reverse: 0xfd00->0xfd, 0xfd01->0xfe, 0xfd02->0xff
-						if (rt_bstuff) {
-							switch (val) {
+						if (rt_bstuff) 
+						{
+							switch (val) 
+							{
 								case 0x00: mtext[index] = 0xfd; break;
 								case 0x01: mtext[index] = 0xfe; break;
 								case 0x02: mtext[index] = 0xff; break;
@@ -275,9 +308,11 @@ if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 						if (val == 0xfd && index > 0)	// stuffing found
 							rt_bstuff = true;
 						// early check for used MEC
-						if (index == 5) {
+						if (index == 5) 
+						{
 							//mec = val;
-							switch (val) {
+							switch (val) 
+							{
 								case 0x0a:			// RT
 									have_radiotext = true;
 								case 0x46:			// RTplus-Tags
@@ -293,30 +328,38 @@ if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 										printf("(RDS-MEC '%02x' not used -> End)\n", val);
 							}
 						}
-						if (index >= mframel) {		// max. rdslength, garbage ?
+						if (index >= mframel) 
+						{		
+							// max. rdslength, garbage ?
 							if (S_Verbose >= 1)
 								printf("RDS-Error: too long, garbage ?\n");
 							rt_start = false;
 						}
 					}
 
-					if (rt_start && val == 0xff) {	// End
+					if (rt_start && val == 0xff) 
+					{	// End
 						if (S_Verbose >= 2)
 							printf("(RDS-End)\n");
 						rt_start = false;
-						if (index < 9) {		//  min. rdslength, garbage ?
+						if (index < 9) 
+						{		//  min. rdslength, garbage ?
 							if (S_Verbose >= 1)
 								printf("RDS-Error: too short -> garbage ?\n");
 						}
-						else {
+						else 
+						{
 							// crc16-check
 							unsigned short crc16 = crc16_ccitt(mtext, index-3, true);
-							if (crc16 != (mtext[index-2]<<8)+mtext[index-1]) {
-							    if (S_Verbose >= 1)
-								printf("RDS-Error: wrong CRC # calc = %04x <> transmit = %02x%02x\n", crc16, mtext[index-2], mtext[index-1]);
-							} else {
+							if (crc16 != (mtext[index-2]<<8)+mtext[index-1]) 
+							{
+								if (S_Verbose >= 1)
+									printf("RDS-Error: wrong CRC # calc = %04x <> transmit = %02x%02x\n", crc16, mtext[index-2], mtext[index-1]);
+							} else 
+							{
 
-							switch (mec) {
+								switch (mec) 
+								{
 								case 0x0a:
 								case 0x46:
 									if (S_Verbose >= 2)
@@ -325,6 +368,9 @@ if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 									break;
 								case 0x07:  RT_PTY = mtext[8];			// PTY
 									RT_MsgShow = true;
+									//
+									//g_InfoViewer->showRadiotext();
+									//
 									if (S_Verbose >= 1)
 										printf("RDS-PTY set to '%s'\n", ptynr2string(RT_PTY));
 									break;
@@ -354,7 +400,6 @@ if (i < 0) { fprintf(stderr, "RT %s: i < 0 (%d)\n", __FUNCTION__, i); break; }
 	}
 }
 
-
 void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 {
 	static bool rtp_itoggle = false;
@@ -365,90 +410,110 @@ void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 	// byte 1+2 = ADD (10bit SiteAdress + 6bit EncoderAdress)
 	// byte 3   = SQC (Sequence Counter 0x00 = not used)
 	int leninfo = mtext[4];	// byte 4 = MFL (Message Field Length)
-	if (len >= leninfo+7) {	// check complete length
-
+	if (len >= leninfo+7) 
+	{	
+		// check complete length
 		// byte 5 = MEC (Message Element Code, 0x0a for RT, 0x46 for RTplus)
-		if (mtext[5] == 0x0a) {
-		// byte 6+7 = DSN+PSN (DataSetNumber+ProgramServiceNumber, 
-		//		       	   ignore here, always 0x00 ?)
-		// byte 8   = MEL (MessageElementLength, max. 64+1 byte @ RT)
-		if (mtext[8] == 0 || mtext[8] > RT_MEL || mtext[8] > leninfo-4) {
-			if (S_Verbose >= 1)
-			printf("RT-Error: Length = 0 or not correct !");
-			return;
-		}
-		// byte 9 = RT-Status bitcodet (0=AB-flagcontrol, 1-4=Transmission-Number, 5+6=Buffer-Config,
-		//				    ingnored, always 0x01 ?)
-fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02d\n", mtext[5], mtext[6], mtext[7], mtext[8], mtext[9], mtext[4]);
-		char temptext[RT_MEL];
-		memset(temptext, 0x20, RT_MEL-1);
-		temptext[RT_MEL - 1] = '\0';
-		for (int i = 1, ii = 0; i < mtext[8]; i++) {
-			if (mtext[9+i] <= 0xfe)
-			// additional rds-character, see RBDS-Standard, Annex E
-				temptext[ii++] = (mtext[9+i] >= 0x80) ? rds_addchar[mtext[9+i]-0x80] : mtext[9+i];
-		}
-		memcpy(plustext, temptext, RT_MEL);
-		rds_entitychar(temptext);
-		// check repeats
-		bool repeat = false;
-		for (int ind = 0; ind < S_RtOsdRows; ind++) {
-			if (memcmp(RT_Text[ind], temptext, RT_MEL-1) == 0) {
-				repeat = true;
+		if (mtext[5] == 0x0a) 
+		{
+			// byte 6+7 = DSN+PSN (DataSetNumber+ProgramServiceNumber, 
+			//		       	   ignore here, always 0x00 ?)
+			// byte 8   = MEL (MessageElementLength, max. 64+1 byte @ RT)
+			if (mtext[8] == 0 || mtext[8] > RT_MEL || mtext[8] > leninfo-4) 
+			{
 				if (S_Verbose >= 1)
-					printf("RText-Rep[%d]: %s\n", ind, RT_Text[ind]);
+					printf("RT-Error: Length = 0 or not correct !");
+				return;
 			}
-		}
-		if (!repeat) {
-			memcpy(RT_Text[RT_Index], temptext, RT_MEL);
-			// +Memory
-			char *temp;
-			asprintf(&temp, "%s", RT_Text[RT_Index]);
-		if (++rtp_content.rt_Index >= 2*MAX_RTPC)
-		    rtp_content.rt_Index = 0;
-		asprintf(&rtp_content.radiotext[rtp_content.rt_Index], "%s", rtrim(temp));
-		free(temp);
-		if (S_Verbose >= 1)
-		    printf("Radiotext[%d]: %s\n", RT_Index, RT_Text[RT_Index]);
-		RT_Index +=1; if (RT_Index >= S_RtOsdRows) RT_Index = 0;
-		}
-		RTP_TToggle = 0x03;		// Bit 0/1 = Title/Artist
-		RT_MsgShow = true;
-		S_RtOsd = 1;
-		RT_Info = (RT_Info > 0) ? RT_Info : 1;
-		RadioStatusMsg();
-	}
-
-	else if (RTP_TToggle > 0 && mtext[5] == 0x46 && S_RtFunc >= 2) {	// RTplus tags V2.0, only if RT
-		if (mtext[6] > leninfo-2 || mtext[6] != 8) { // byte 6 = MEL, only 8 byte for 2 tags
-			if (S_Verbose >= 1)
-				printf("RTp-Error: Length not correct !");
-			return;
-		}
-
-		uint rtp_typ[2], rtp_start[2], rtp_len[2];
-		// byte 7+8 = ApplicationID, always 0x4bd7
-		// byte 9   = Applicationgroup Typecode / PTY ?
-		// bit 10#4 = Item Togglebit
-		// bit 10#3 = Item Runningbit
-		// Tag1: bit 10#2..11#5 = Contenttype, 11#4..12#7 = Startmarker, 12#6..12#1 = Length
-		rtp_typ[0]   = (0x38 & mtext[10]<<3) | mtext[11]>>5;
-		rtp_start[0] = (0x3e & mtext[11]<<1) | mtext[12]>>7;
-		rtp_len[0]   = 0x3f & mtext[12]>>1;
-		// Tag2: bit 12#0..13#3 = Contenttype, 13#2..14#5 = Startmarker, 14#4..14#0 = Length(5bit)
-		rtp_typ[1]   = (0x20 & mtext[12]<<5) | mtext[13]>>3;
-		rtp_start[1] = (0x38 & mtext[13]<<3) | mtext[14]>>5;
-		rtp_len[1]   = 0x1f & mtext[14];
-		if (S_Verbose >= 2)
-			printf("RTplus (tag=Typ/Start/Len):  Toggle/Run = %d/%d, tag#1 = %d/%d/%d, tag#2 = %d/%d/%d\n", 
-				(mtext[10]&0x10)>0, (mtext[10]&0x08)>0, rtp_typ[0], rtp_start[0], rtp_len[0], rtp_typ[1], rtp_start[1], rtp_len[1]);
-		// save info
-		for (int i = 0; i < 2; i++) {
-			if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) {	// length-error
+			// byte 9 = RT-Status bitcodet (0=AB-flagcontrol, 1-4=Transmission-Number, 5+6=Buffer-Config,
+			//				    ingnored, always 0x01 ?)
+			fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02d\n", mtext[5], mtext[6], mtext[7], mtext[8], mtext[9], mtext[4]);
+			char temptext[RT_MEL];
+			memset(temptext, 0x20, RT_MEL-1);
+			temptext[RT_MEL - 1] = '\0';
+			for (int i = 1, ii = 0; i < mtext[8]; i++) 
+			{
+				if (mtext[9+i] <= 0xfe)
+					// additional rds-character, see RBDS-Standard, Annex E
+					temptext[ii++] = (mtext[9+i] >= 0x80) ? rds_addchar[mtext[9+i]-0x80] : mtext[9+i];
+			}
+			memcpy(plustext, temptext, RT_MEL);
+			rds_entitychar(temptext);
+			// check repeats
+			bool repeat = false;
+			for (int ind = 0; ind < S_RtOsdRows; ind++) 
+			{
+				if (memcmp(RT_Text[ind], temptext, RT_MEL-1) == 0) 
+				{
+					repeat = true;
+					if (S_Verbose >= 1)
+						printf("RText-Rep[%d]: %s\n", ind, RT_Text[ind]);
+				}
+			}
+			if (!repeat) 
+			{
+				memcpy(RT_Text[RT_Index], temptext, RT_MEL);
+				// +Memory
+				char *temp;
+				asprintf(&temp, "%s", RT_Text[RT_Index]);
+				if (++rtp_content.rt_Index >= 2*MAX_RTPC)
+					rtp_content.rt_Index = 0;
+				asprintf(&rtp_content.radiotext[rtp_content.rt_Index], "%s", rtrim(temp));
+				free(temp);
 				if (S_Verbose >= 1)
-					printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n",
-						i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
-			} else {
+					printf("Radiotext[%d]: %s\n", RT_Index, RT_Text[RT_Index]);
+				RT_Index += 1; 
+				if (RT_Index >= S_RtOsdRows) 
+					RT_Index = 0;
+			}
+			RTP_TToggle = 0x03;		// Bit 0/1 = Title/Artist
+			RT_MsgShow = true;
+			S_RtOsd = 1;
+			RT_Info = (RT_Info > 0) ? RT_Info : 1;
+			RadioStatusMsg();
+			
+			//
+			//g_InfoViewer->showRadiotext();
+			//
+		}
+		else if (RTP_TToggle > 0 && mtext[5] == 0x46 && S_RtFunc >= 2) 
+		{	
+			// RTplus tags V2.0, only if RT
+			if (mtext[6] > leninfo-2 || mtext[6] != 8) 
+			{ 
+				// byte 6 = MEL, only 8 byte for 2 tags
+				if (S_Verbose >= 1)
+					printf("RTp-Error: Length not correct !");
+				return;
+			}
+
+			uint rtp_typ[2], rtp_start[2], rtp_len[2];
+			// byte 7+8 = ApplicationID, always 0x4bd7
+			// byte 9   = Applicationgroup Typecode / PTY ?
+			// bit 10#4 = Item Togglebit
+			// bit 10#3 = Item Runningbit
+			// Tag1: bit 10#2..11#5 = Contenttype, 11#4..12#7 = Startmarker, 12#6..12#1 = Length
+			rtp_typ[0]   = (0x38 & mtext[10]<<3) | mtext[11]>>5;
+			rtp_start[0] = (0x3e & mtext[11]<<1) | mtext[12]>>7;
+			rtp_len[0]   = 0x3f & mtext[12]>>1;
+			// Tag2: bit 12#0..13#3 = Contenttype, 13#2..14#5 = Startmarker, 14#4..14#0 = Length(5bit)
+			rtp_typ[1]   = (0x20 & mtext[12]<<5) | mtext[13]>>3;
+			rtp_start[1] = (0x38 & mtext[13]<<3) | mtext[14]>>5;
+			rtp_len[1]   = 0x1f & mtext[14];
+			if (S_Verbose >= 2)
+				printf("RTplus (tag=Typ/Start/Len):  Toggle/Run = %d/%d, tag#1 = %d/%d/%d, tag#2 = %d/%d/%d\n", 
+					(mtext[10]&0x10)>0, (mtext[10]&0x08)>0, rtp_typ[0], rtp_start[0], rtp_len[0], rtp_typ[1], rtp_start[1], rtp_len[1]);
+		// save info
+		for (int i = 0; i < 2; i++) 
+		{
+			if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) 
+			{	
+				// length-error
+				if (S_Verbose >= 1)
+					printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n", i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
+			} 
+			else 
+			{
 				char temptext[RT_MEL];
 				memset(temptext, 0x20, RT_MEL-1);
 				memmove(temptext, plustext+rtp_start[i], rtp_len[i]+1);
@@ -456,12 +521,15 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 				// +Memory
 				memset(rtp_content.temptext, 0x20, RT_MEL-1);
 				memcpy(rtp_content.temptext, temptext, RT_MEL-1);
-				switch (rtp_typ[i]) {
+				switch (rtp_typ[i]) 
+				{
 				case 1:		// Item-Title	
-					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) {
+					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) 
+					{
 					RTP_TToggle -= 0x01;
 					RT_Info = 2;
-					if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) {
+					if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) 
+					{
 						memcpy(RTP_Title, temptext, RT_MEL-1);
 						if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
 							rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
@@ -478,6 +546,10 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 						if (rtp_content.item_Index >= 0)
 						    asprintf(&rtp_content.item_Title[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
 						RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
+						
+						//
+						//g_InfoViewer->showRadiotext();
+						//
 						}
 					}
 					break;
@@ -502,6 +574,10 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 							if (rtp_content.item_Index >= 0)
 								asprintf(&rtp_content.item_Artist[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
 							RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
+							
+							//
+							//g_InfoViewer->showRadiotext();
+							//
 						}
 					}
 					break;
@@ -602,8 +678,10 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 			rtp_content.item_New = false;
 		}
 
-		if (rtp_itoggle) {
-			if (S_Verbose >= 1) {
+		if (rtp_itoggle) 
+		{
+			if (S_Verbose >= 1) 
+			{
 				struct tm tm_store;
 				struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
 				if (rtp_idiffs > 0)
@@ -617,12 +695,13 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 			rtp_itoggle = false;
 			rtp_idiffs = 0;
 			RadioStatusMsg();
-//		AudioRecorderService();
+			//AudioRecorderService();
 			}
 			RTP_TToggle = 0;
 		}
 	}
-	else {
+	else 
+	{
 		if (S_Verbose >= 1)
 			printf("RDS-Error: [RTDecode] Length not correct !\n");
 	}
@@ -630,11 +709,14 @@ fprintf(stderr, "MEC=0x%02x DSN=0x%02x PSN=0x%02x MEL=%02d STATUS=0x%02x MFL=%02
 
 void CRadioText::RDS_PsPtynDecode(bool ptyn, unsigned char *mtext, int len)
 {
-	if (len < 16) return;
+	if (len < 16) 
+		return;
 
 	// decode Text
-	for (int i = 8; i <= 15; i++) {
-		if (mtext[i] <= 0xfe) {
+	for (int i = 8; i <= 15; i++) 
+	{
+		if (mtext[i] <= 0xfe) 
+		{
 			// additional rds-character, see RBDS-Standard, Annex E
 			if (!ptyn)
 				RDS_PSText[RDS_PSIndex][i-8] = (mtext[i] >= 0x80) ? rds_addchar[mtext[i]-0x80] : mtext[i];
@@ -643,16 +725,22 @@ void CRadioText::RDS_PsPtynDecode(bool ptyn, unsigned char *mtext, int len)
 		}
 	}
 
-	if (S_Verbose >= 1) {
+	if (S_Verbose >= 1) 
+	{
 		if (!ptyn)
 			printf("RDS-PS  No= %d, Content[%d]= '%s'\n", mtext[7], RDS_PSIndex, RDS_PSText[RDS_PSIndex]);
 		else
 			printf("RDS-PTYN  No= %d, Content= '%s'\n", mtext[7], RDS_PTYN);
 	}
 
-	if (!ptyn) {
+	if (!ptyn) 
+	{
 		RDS_PSIndex += 1; if (RDS_PSIndex >= 12) RDS_PSIndex = 0;
 		RT_MsgShow = RDS_PSShow = true;
+		
+		//
+		//g_InfoViewer->showRadiotext();
+		//
 	}
 }
 
@@ -662,7 +750,8 @@ void CRadioText::RadioStatusMsg(void)
 	if (!RT_MsgShow || S_RtMsgItems <= 0)
 		return;
 	
-	if (S_RtMsgItems >= 2) {
+	if (S_RtMsgItems >= 2) 
+	{
 		char temp[100];
 		int ind = (RT_Index == 0) ? S_RtOsdRows - 1 : RT_Index - 1;
 		strcpy(temp, RT_Text[ind]);
@@ -670,7 +759,8 @@ void CRadioText::RadioStatusMsg(void)
 //		cStatus::MsgOsdTextItem(rtrim(temp), false);
 	}
 
-	if ((S_RtMsgItems == 1 || S_RtMsgItems >= 3) && ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2)) {
+	if ((S_RtMsgItems == 1 || S_RtMsgItems >= 3) && ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2)) 
+	{
 //		struct tm tm_store;
 //		struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
 //		cStatus::MsgOsdProgramme(mktime(ts), RTP_Title, RTP_Artist, 0, NULL, NULL);
@@ -693,10 +783,12 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 	// byte 1+2 = ADD (10bit SiteAdress + 6bit EncoderAdress)
 	// byte 3   = SQC (Sequence Counter 0x00 = not used)
 	// byte 4   = MFL (Message Field Length), 
-	if (len >= mtext[4]+7) {	// check complete length
+	if (len >= mtext[4]+7) 
+	{	// check complete length
 		// byte 5   = MEC (0xda for Rass)
 		// byte 6   = MEL
-		if (mtext[6] == 0 || mtext[6] > mtext[4]-2) {
+		if (mtext[6] == 0 || mtext[6] > mtext[4]-2) 
+		{
 			if ((S_Verbose && 0x0f) >= 1)
 				printf("Rass-Error: Length = 0 or not correct !\n");
 			return;
@@ -708,7 +800,8 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 		uint pmax = mtext[14] + mtext[13]*256 + mtext[12]*65536;
 
 		// byte 15+16 = Rass-Kennung = Header, <Rass-STA>
-		if (mtext[15] == 0x40 && mtext[16] == 0xda) {		// first
+		if (mtext[15] == 0x40 && mtext[16] == 0xda) 
+		{		// first
 			// byte 17+18 = Anzahl Dateien im Archiv, <NOI>
 			afiles = mtext[18] + mtext[17]*256;
 			// byte 19+20 = Slide-Nummer, <Rass-ID>
@@ -722,14 +815,16 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			slidedel  = mtext[23] & 0x08;
 			// byte 24 	  = Dateiart, <Item-Type>: 0=unbekannt/1=MPEG-Still/2=Definition
 			filetype = mtext[24];
-			if (filetype != 1 && filetype != 2) {
+			if (filetype != 1 && filetype != 2) 
+			{
 				if ((S_Verbose && 0x0f) >= 1)
 					printf("Rass-Error: Filetype unknown !\n");
 				return;
 			}
 			// byte 25-28 = Dateilänge, <Item-Length>
 			filemax  = mtext[28] + mtext[27]*256 + mtext[26]*65536 + mtext[25]*65536*256;
-			if (filemax >= 65536) {
+			if (filemax >= 65536) 
+			{
 				if ((S_Verbose && 0x0f) >= 1)
 					printf("Rass-Error: Filesize will be too big !\n");
 				return;
@@ -742,7 +837,8 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 				printf("Rass-Header: afiles= %d\n             slidenumr= %d, slideelem= %d\n             slideshow= %d, -save= %d, -canschow= %d, -delete= %d\n             filetype= %d, filemax= %d\n             fileoffp= %d, fileoffb= %d\n",
 					afiles, slidenumr, slideelem, slideshow, slidesave, slidecan, slidedel, filetype, filemax, fileoffp, fileoffb);
 
-			if (fileoffp == 0) {	// First
+			if (fileoffp == 0) 
+			{	// First
 				if (S_Verbose >= 2)
 					printf("Rass-Start@0 ...\n");
 				start = true;
@@ -756,9 +852,11 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			}
 			splfd = plfd;
 		}
-		else if (plfd < pmax && plfd == splfd+1) {		// Between
+		else if (plfd < pmax && plfd == splfd+1) 
+		{		// Between
 			splfd = plfd;
-			if (!start && fileoffp == plfd) {	// Data start, <with Rfu no more necesssary>
+			if (!start && fileoffp == plfd) 
+			{	// Data start, <with Rfu no more necesssary>
 				if (S_Verbose >= 2)
 					printf("Rass-Start@%d ...\n", fileoffp);
 				start = true;
@@ -766,22 +864,29 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			}
 			else
 				fileoffb = 15;
-			if (start) {
-				for (int i=fileoffb; i < len-2; i++) {
+			if (start) 
+			{
+				for (int i=fileoffb; i < len-2; i++) 
+				{
 					if (index < filemax)
 						daten[index++] = mtext[i];
 					else
-					start = false;
+						start = false;
 				}
 			}
 		}
-		else if (plfd == pmax && plfd == splfd+1) {		// Last
+		else if (plfd == pmax && plfd == splfd+1) 
+		{		
+			// Last
 			fileoffb = 15;
-			if (start) {
-				for (int i=fileoffb; i < len-4; i++) {
+			if (start) 
+			{
+				for (int i=fileoffb; i < len-4; i++) 
+				{
 					if (index <= filemax)
 						daten[index++] = mtext[i];
-					else {
+					else 
+					{
 						start = false;
 						return;
 					}
@@ -790,10 +895,12 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 					printf("... Rass-End (%d bytes)\n", index);
 			}
 
-			if (filemax > 0) {		// nothing todo, if 0 byte file
+			if (filemax > 0) 
+			{	// nothing todo, if 0 byte file
 				// crc-check with bytes 'len-4/3'
 				unsigned short crc16 = crc16_ccitt(daten, filemax, false);
-				if (crc16 != (mtext[len-4]<<8)+mtext[len-3]) {
+				if (crc16 != (mtext[len-4]<<8)+mtext[len-3]) 
+				{
 					if ((S_Verbose && 0x0f) >= 1)
 						printf("Rass-Error: wrong CRC # calc = %04x <> transmit = %02x%02x\n", crc16, mtext[len-4], mtext[len-3]);
 					start = false;
@@ -802,27 +909,38 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			}
 
 			// show & save file ?
-			if (index == filemax) {
-				if (slideshow || (slidecan && Rass_Show == -1)) {
-					if (filetype == 1) {	// show only mpeg-still
+			if (index == filemax) 
+			{
+				if (slideshow || (slidecan && Rass_Show == -1)) 
+				{
+					if (filetype == 1) 
+					{	// show only mpeg-still
 						char *filepath;
 						asprintf(&filepath, "%s/%s", DataDir, "Rass_show.mpg");
-						if ((fd = fopen(filepath, "wb")) != NULL) {
+						if ((fd = fopen(filepath, "wb")) != NULL) 
+						{
 							fwrite(daten, 1, filemax, fd);
 							//fflush(fd);		// for test in replaymode
 							fclose(fd);
 							Rass_Show = 1;
 							if (S_Verbose >= 2)
 								printf("Rass-File: ready for displaying :-)\n");
+							
+							//
+							videoDecoder->showSinglePic(filepath);
+							//
 						}
 						else
 							printf("ERROR vdr-radio: writing imagefile failed '%s'", filepath);
 						free(filepath);
 					}
 				}
-				if (slidesave || slidedel || slidenumr < RASS_GALMAX) {
+				
+				if (slidesave || slidedel || slidenumr < RASS_GALMAX) 
+				{
 					// lfd. Fotogallery 100.. ???
-					if (slidenumr >= 100 && slidenumr < RASS_GALMAX) {
+					if (slidenumr >= 100 && slidenumr < RASS_GALMAX) 
+					{
 						(Rass_SlideFoto < RASS_GALMAX) ? Rass_SlideFoto++ : Rass_SlideFoto = 100;
 						slidenumr = Rass_SlideFoto;
 					}
@@ -830,23 +948,30 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 					char *filepath;
 					(filetype == 2) ? asprintf(&filepath, "%s/Rass_%d.def", DataDir, slidenumr)
 							: asprintf(&filepath, "%s/Rass_%d.mpg", DataDir, slidenumr);
-					if ((fd = fopen(filepath, "wb")) != NULL) {
+					if ((fd = fopen(filepath, "wb")) != NULL) 
+					{
 						fwrite(daten, 1, filemax, fd);
 						fclose(fd);
 						if (S_Verbose >= 1)
 							printf("Rass-File: saving '%s'\n", filepath);
 						// archivemarker mpeg-stills
-						if (filetype == 1) { 
+						if (filetype == 1) 
+						{ 
 							// 0, 1000/1100/1110/1111..9000/9900/9990/9999
-							if (slidenumr == 0 || slidenumr > RASS_GALMAX) {
-								if (slidenumr == 0) {
+							if (slidenumr == 0 || slidenumr > RASS_GALMAX) 
+							{
+								if (slidenumr == 0) 
+								{
 									Rass_Flags[0][0] = !slidedel;
 									(RT_Info > 0) ? : RT_Info = 0;	// open RadioTextOsd for ArchivTip
 								}
-								else {
+								else 
+								{
 									int islide = (int) floor(slidenumr/1000);
-									for (int i = 3; i >= 0; i--) {
-										if ((slidenumr % (i==3 ? 1000 : i==2 ? 100 : i==1 ? 10 : 1)) == 0) {
+									for (int i = 3; i >= 0; i--) 
+									{
+										if ((slidenumr % (i==3 ? 1000 : i==2 ? 100 : i==1 ? 10 : 1)) == 0) 
+										{
 					        					Rass_Flags[islide][3-i] = !slidedel;	//true;
 											break;
 										}
@@ -854,7 +979,8 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 								}
 							}
 							// gallery
-							else {
+							else 
+							{
 								Rass_Gallery[slidenumr] = !slidedel;
 								if (!slidedel && (int)slidenumr > Rass_GalEnd)
 									Rass_GalEnd = slidenumr;
@@ -862,13 +988,18 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 									Rass_GalStart = slidenumr;
 								// counter
 								Rass_GalCount = 0;
-								for (int i = Rass_GalStart; i <= Rass_GalEnd; i++) {
+								for (int i = Rass_GalStart; i <= Rass_GalEnd; i++) 
+								{
 									if (Rass_Gallery[i])
 										Rass_GalCount++;
 								}
 								Rass_Flags[10][0] = (Rass_GalCount > 0);
 							}
 						}
+						
+						//
+						videoDecoder->showSinglePic(filepath);
+						//
 					}
 					else
 						printf("ERROR vdr-radio: writing image/data-file failed '%s'", filepath);
@@ -878,12 +1009,14 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			start = false;
 			splfd = spmax = 0;
 		}
-		else {
+		else 
+		{
 			start = false;
 			splfd = spmax = 0;
 		}
 	}
-	else {
+	else 
+	{
 		start = false;
 		splfd = spmax = 0;
 		if (S_Verbose >= 1)
@@ -1137,18 +1270,23 @@ int CRadioText::RassImage(int QArchiv, int QKey, bool DirUp)
 {
 	int i;
 
-	if (QKey >= 0 && QKey <= 9) {
+	if (QKey >= 0 && QKey <= 9) 
+	{
 		if (QArchiv == 0)
 			(Rass_Flags[QKey][0]) ? QArchiv = QKey * 1000 : QArchiv = 0;
-		else if (QArchiv > 0) {
-			if (floor(QArchiv/1000) == QKey) {
-				for (i = 3; i >= 0; i--) {
-//					if (fmod(QArchiv, pow(10, i)) == 0)
+		else if (QArchiv > 0) 
+		{
+			if (floor(QArchiv/1000) == QKey) 
+			{
+				for (i = 3; i >= 0; i--) 
+				{
+					//if (fmod(QArchiv, pow(10, i)) == 0)
 					if ((QArchiv % (i==3 ? 1000 : i==2 ? 100 : i==1 ? 10 : 1)) == 0)
 						break;
 				}
 
-				if (i > 0) {
+				if (i > 0) 
+				{
 					--i;
 					QArchiv += QKey * (int) (i==3 ? 1000 : i==2 ? 100 : i==1 ? 10 : 1);
 				}
@@ -1162,20 +1300,25 @@ int CRadioText::RassImage(int QArchiv, int QKey, bool DirUp)
 	}
 
 	// Gallery
-	else if (QKey > 9 && Rass_GalCount >= 0) {
+	else if (QKey > 9 && Rass_GalCount >= 0) 
+	{
 		if (QArchiv < Rass_GalStart || QArchiv > Rass_GalEnd)
 			QArchiv = Rass_GalStart - 1; 
-		if (DirUp) {
-			for (i = QArchiv+1; i <= Rass_GalEnd; i++) {
+		if (DirUp) 
+		{
+			for (i = QArchiv+1; i <= Rass_GalEnd; i++) 
+			{
 				if (Rass_Gallery[i])
 					break;
 			}
 			QArchiv = (i <= Rass_GalEnd) ? i : Rass_GalStart;
 		}
-		else {
-			for (i = QArchiv-1; i >= Rass_GalStart; i--) {
-			if (Rass_Gallery[i])  
-				break;
+		else 
+		{
+			for (i = QArchiv-1; i >= Rass_GalStart; i--) 
+			{
+				if (Rass_Gallery[i])  
+					break;
 			}
 			QArchiv = (i >= Rass_GalStart) ? i : Rass_GalEnd;
 		}
@@ -1187,11 +1330,13 @@ int CRadioText::RassImage(int QArchiv, int QKey, bool DirUp)
 		asprintf(&image, "%s/Rass_%d.mpg", DataDir, QArchiv);
 	else
 		asprintf(&image, "%s/Rass_show.mpg", DataDir);
-// Houdini: SetBackgroundImage() does not accept mpg stills
+// 	Houdini: SetBackgroundImage() does not accept mpg stills
 //	frameBuffer->useBackground(frameBuffer->loadBackground(image));// set useBackground true or false
 //	frameBuffer->paintBackground();
 //	RadioAudio->SetBackgroundImage(image);
-	free(image);
+
+	videoDecoder->showSinglePic(image);
+	//free(image);
 
 	return QArchiv;
 }
@@ -2285,7 +2430,7 @@ void *RadioTextThread(void *data)
 {
 	CRadioText *rt = ((CRadioText::s_rt_thread*)data)->rt_object;
 	int fd = ((CRadioText::s_rt_thread*)data)->fd;
-	//	struct dmx_pes_filter_params flt;
+	//struct dmx_pes_filter_params flt;
 	cDemux *audioDemux = rt->audioDemux;
 	printf("in RadioTextThread fd = %d\n", fd);
 
@@ -2300,15 +2445,17 @@ void *RadioTextThread(void *data)
 		if (audioDemux->Start())
 			ret = true;
 	}
-	if (!ret) {
+	
+	if (!ret) 
+	{
 		perror("RadiotextThread Audiodemuxer");
 		perror("DMX_SET_PES_FILTER");
 		audioDemux->Stop();
 		pthread_exit(NULL);
 	}
 	/*
-	   -- read PES packet for pid
-	   */
+	-- read PES packet for pid
+	*/
 #if 0
 	ringbuffer_t *buf_in = ringbuffer_create(0x1FFFF);
 	char  *b;				/* ptr to packet start */
@@ -2327,7 +2474,7 @@ void *RadioTextThread(void *data)
 		//printf("."); fflush(stdout);
 		//  -- Read PES packet  (sync Read)
 		//n = pes_SyncBufferRead (audioDemux, buf_in, &skipped_bytes);
-		n = audioDemux->Read(buf, sizeof(buf), 500 /*5000*/);
+		n = audioDemux->Read(buf, sizeof(buf), /*500*/ 5000);
 
 		// -- error or eof?
 		if (n <= 0) {
@@ -2379,7 +2526,7 @@ CRadioText::CRadioText(void)
 	S_RtFgCol 	= 1;
 	S_RtDispl 	= 1;
 	S_RtMsgItems 	= 0;
-//int S_RtpMemNo = 25;
+	//int S_RtpMemNo = 25;
 	RT_Index 	= 0;
 	RT_PTY 		= 0;
 
@@ -2392,13 +2539,14 @@ CRadioText::CRadioText(void)
 	for (int i=0; i<5; i++) strcpy(RT_Text[i], "");
 	strcpy(RDS_PTYN, "");
 	have_radiotext	= false;
-   audioDemux = NULL;
+	audioDemux = NULL;
 }
 
 void CRadioText::radiotext_stop(void)
 {
 	printf("\nCRadioText::radiotext_stop: ###################### pid 0x%x ######################\n", getPid());
-	if (getPid() != 0) {
+	if (getPid() != 0) 
+	{
 		// this stuff takes a while sometimes - look for a better syncronisation
 		printf("Stopping RT Thread\n");
 		rtThreadRunning = false;
@@ -2408,7 +2556,6 @@ void CRadioText::radiotext_stop(void)
 		audioDemux->Stop();
 		S_RtOsd = 0;
 	}
-
 }
 
 CRadioText::~CRadioText(void)
@@ -2422,7 +2569,6 @@ CRadioText::~CRadioText(void)
 	audioDemux = NULL;
 	dmxfd = -1;
 }
-
 
 void CRadioText::setPid(uint inPid)
 {
@@ -2468,8 +2614,8 @@ void CRadioText::setPid(uint inPid)
 		}
 
 		// Setup-Params
-		//		S_Activate = false;
-		//		S_HMEntry = false;
+		//S_Activate = false;
+		//S_HMEntry = false;
 		S_RtFunc = 1;
 		S_RtOsd = 0;
 		S_RtOsdTitle = 1;

@@ -601,6 +601,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	{
 		if ((g_settings.radiotext_enable) && (!recordModeActive) && (!calledFromNumZap))
 			showRadiotext();
+			//showIcon_RadioText(g_Radiotext->haveRadiotext());
 		else
 			showIcon_RadioText(false);
 	}
@@ -639,6 +640,16 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			{
 				res = messages_return::cancel_info;
 			} 
+#if 0			
+			else if(msg == CRCInput::RC_page_up || msg == g_settings.key_channelList_pageup)
+			{
+				g_Radiotext->Rass_Archiv += 1000;
+			}
+			else if(msg == CRCInput::RC_page_down || msg == g_settings.key_channelList_pagedown)
+			{
+				g_Radiotext->Rass_Archiv -= 1000;
+			}
+#endif			
 			else if ( (msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id) ) //FIXME:sec_timer_id???
 			{
 				showSNR();
@@ -651,6 +662,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 #if ENABLE_RADIOTEXT				
 				if ((g_settings.radiotext_enable) && (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio))
 					showRadiotext();
+					//showIcon_RadioText(g_Radiotext->haveRadiotext());
 #endif				
 
 				showIcon_16_9();
@@ -859,23 +871,21 @@ void CInfoViewer::showSubchan()
 // radiotext
 #if ENABLE_RADIOTEXT
 void CInfoViewer::showIcon_RadioText(bool rt_available) const
-// painting the icon for radiotext mode
 {
-#if 1
 	if (showButtonBar)
 	{
 		int mode = CNeutrinoApp::getInstance()->getMode();
 		std::string rt_icon = "radiotextoff";
 		if ((!virtual_zap_mode) && (!recordModeActive) && (mode == NeutrinoMessages::mode_radio))
 		{
-			if (g_settings.radiotext_enable){
-					rt_icon = rt_available ? "radiotextget" : "radiotextwait";
-				}
+			if (g_settings.radiotext_enable)
+			{
+				rt_icon = rt_available ? "radiotextget" : "radiotextwait";
+			}
 		}
 		
 		frameBuffer->paintIcon(rt_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY - 20 + (20 - icon_h_rt)/2);
 	}
-#endif
 }
 #endif
 
@@ -1020,7 +1030,7 @@ void CInfoViewer::showIcon_SubT() const
         frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (2 + icon_w_subt), BoxEndY - 20 + (20 - icon_h_subt)/2 );
 }
 
-void CInfoViewer::showFailure ()
+void CInfoViewer::showFailure()
 {
   	ShowHintUTF (LOCALE_MESSAGEBOX_ERROR, g_Locale->getText (LOCALE_INFOVIEWER_NOTAVAILABLE), 430);	// UTF-8
 }
@@ -1195,29 +1205,9 @@ void CInfoViewer::showRadiotext()
 			}
 #endif
 		}
-		
-		
-#if 0
-		// framebuffer can only display raw images
-		// show mpeg-still
-		char *image;
-		if (g_Radiotext->Rass_Archiv >= 0)
-			asprintf(&image, "%s/Rass_%d.mpg", DataDir, g_Radiotext->Rass_Archiv);
-		else
-			asprintf(&image, "%s/Rass_show.mpg", DataDir);
-		frameBuffer->useBackground(frameBuffer->loadBackground(image));// set useBackground true or false
-		frameBuffer->paintBackground();
-		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif
-//		RadioAudio->SetBackgroundImage(image);
-		free(image);
-#endif
 	}
 	
 	g_Radiotext->RT_MsgShow = false;
-
 }
 #endif
 
