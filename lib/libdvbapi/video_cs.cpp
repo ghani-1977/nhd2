@@ -877,7 +877,7 @@ int64_t cVideo::GetPTS(void)
 	return pts;
 }
 
-//
+// show mpeg still (used by RASS)
 int cVideo::showSinglePic(const char *filename)
 {
 	
@@ -887,8 +887,6 @@ int cVideo::showSinglePic(const char *filename)
 	{
 		struct stat s;
 		fstat(f, &s);
-		//if (video_fd == -1)
-		//	video_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
 		
 		if (video_fd >= 0)
 		{
@@ -955,14 +953,12 @@ void cVideo::finishShowSinglePic()
 {
 	if (video_fd >= 0)
 	{
-		if (ioctl(video_fd, VIDEO_STOP, 0) < 0)
+		if (ioctl(video_fd, VIDEO_STOP, 1) < 0) // blank
 			printf("VIDEO_STOP failed (%m)\n");
 		if (ioctl(video_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_DEMUX) < 0)
 			printf("VIDEO_SELECT_SOURCE DEMUX failed (%m)\n");
-		//close(video_fd);
-		//video_fd = -1;
 	}
 }
-//
+
 
 
