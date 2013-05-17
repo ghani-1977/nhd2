@@ -639,17 +639,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			else if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) 
 			{
 				res = messages_return::cancel_info;
-			} 
-#if 0			
-			else if(msg == CRCInput::RC_page_up || msg == g_settings.key_channelList_pageup)
-			{
-				g_Radiotext->Rass_Archiv += 1000;
-			}
-			else if(msg == CRCInput::RC_page_down || msg == g_settings.key_channelList_pagedown)
-			{
-				g_Radiotext->Rass_Archiv -= 1000;
-			}
-#endif			
+			} 			
 			else if ( (msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id) ) //FIXME:sec_timer_id???
 			{
 				showSNR();
@@ -1121,23 +1111,24 @@ void CInfoViewer::showRadiotext()
 #if 0
 				// RDS- or Rass-Symbol, ARec-Symbol or Bitrate
 				int inloff = (ftitel->Height() + 9 - 20) / 2;
-				if (Rass_Flags[0][0]) {
-				osd->DrawBitmap(Setup.OSDWidth-51, inloff, rass, bcolor, fcolor);
-				if (ARec_Record)
-					osd->DrawBitmap(Setup.OSDWidth-107, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
-				else
-					inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
-				osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-59, ftext->Height(), taRight);
+				if (Rass_Flags[0][0]) 
+				{
+					osd->DrawBitmap(Setup.OSDWidth-51, inloff, rass, bcolor, fcolor);
+					if (ARec_Record)
+						osd->DrawBitmap(Setup.OSDWidth-107, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
+					else
+						inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
+					osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-59, ftext->Height(), taRight);
 				}
 				else 
 				{
-				osd->DrawBitmap(Setup.OSDWidth-84, inloff, rds, bcolor, fcolor);
-				if (ARec_Record)
-					osd->DrawBitmap(Setup.OSDWidth-140, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
-				else
-					inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
-				osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-92, ftext->Height(), taRight);
-			}
+					osd->DrawBitmap(Setup.OSDWidth-84, inloff, rds, bcolor, fcolor);
+					if (ARec_Record)
+						osd->DrawBitmap(Setup.OSDWidth-140, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
+					else
+						inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
+					osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-92, ftext->Height(), taRight);
+				}
 #endif
 			}
 			// Body
@@ -1260,12 +1251,12 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == channel_id) 
 		{
 	  		if ( is_visible && showButtonBar )
-				showButton_Audio ();
+				showButton_Audio();
 			
 			// radiotext
 #if ENABLE_RADIOTEXT			
-			if (g_settings.radiotext_enable && g_Radiotext && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio))
-				g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
+			//if (g_settings.radiotext_enable && g_Radiotext && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio))
+			//	g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
 #endif			
 		}
 		return messages_return::handled;

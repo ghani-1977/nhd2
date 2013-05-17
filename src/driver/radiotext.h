@@ -84,7 +84,7 @@ class CRadioText {
 	public:
 		typedef struct {
 			CRadioText *rt_object;
-			int fd;
+			//int fd;
 		} s_rt_thread;
 
 	private:
@@ -107,7 +107,7 @@ class CRadioText {
 
 		uint pid;
 		pthread_t threadRT;
-		int dmxfd;
+		//int dmxfd;
 
 	public:
 		CRadioText(void);
@@ -125,7 +125,7 @@ class CRadioText {
 		void setPid(uint inPid);
 		uint getPid(){ return pid; }
 		int  run(void);
-		int  getDMXfd(void) { return dmxfd; }
+//		int  getDMXfd(void) { return dmxfd; }
 		//s_rt_thread& getThreadParams(void) { return rt; }
 		pthread_t getThread(void) { return threadRT; }
 		void radiotext_stop(void);

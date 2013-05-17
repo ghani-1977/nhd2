@@ -1323,7 +1323,7 @@ void CFrameBuffer::useBackground(bool ub)
 	if(!useBackgroundPaint) 
 	{
 		delete[] background;
-		background=0;
+		background = 0;
 	}
 }
 

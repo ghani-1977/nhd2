@@ -346,6 +346,14 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 
 			processAPIDnames();
+			
+#if ENABLE_RADIOTEXT			
+			if (g_settings.radiotext_enable && g_Radiotext && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio))
+			{
+				CFrameBuffer::getInstance()->loadBackgroundPic("radiomode.jpg");
+				g_Radiotext->setPid(current_PIDs.APIDs[current_PIDs.PIDs.selected_apid].pid);
+			}
+#endif			
 		}
 
 	    	return messages_return::handled;
