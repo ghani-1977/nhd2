@@ -934,7 +934,7 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 #if !defined USE_OPENGL							
 							CFrameBuffer::getInstance()->blit();
 #endif							
-							
+							videoDecoder->finishShowSinglePic();
 							videoDecoder->showSinglePic(filepath);
 							//
 						}
@@ -1011,7 +1011,7 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 #if !defined USE_OPENGL						
 						CFrameBuffer::getInstance()->blit();
 #endif						
-						
+						videoDecoder->finishShowSinglePic();
 						videoDecoder->showSinglePic(filepath);
 						//
 					}
@@ -1110,7 +1110,7 @@ int CRadioText::RassImage(int QArchiv, int QKey, bool DirUp)
 #if !defined USE_OPENGL	
 	CFrameBuffer::getInstance()->blit();
 #endif	
-	
+	videoDecoder->finishShowSinglePic();
 	videoDecoder->showSinglePic(image);
 	
 	free(image);

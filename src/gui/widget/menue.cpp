@@ -163,7 +163,7 @@ CMenuWidget::~CMenuWidget()
 	page_start.clear();
 }
 
-void CMenuWidget::addItem(CMenuItem* menuItem, const bool defaultselected)
+void CMenuWidget::addItem(CMenuItem *menuItem, const bool defaultselected)
 {
 	if (defaultselected)
 		selected = items.size();

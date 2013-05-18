@@ -387,7 +387,7 @@ int CHDDMenuHandler::hddMenu()
 }
 
 // hdd init
-#if 0
+#if 1
 int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 {
 	char cmd[100];

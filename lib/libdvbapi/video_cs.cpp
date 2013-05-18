@@ -896,28 +896,31 @@ int cVideo::showSinglePic(const char *filename)
 			unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
 			unsigned char iframe[s.st_size];
 			unsigned char stuffing[8192];
-#ifdef __sh__
-			int streamtype = VIDEO_ENCODING_MPEG2;
-#else
-			int streamtype = VIDEO_STREAMTYPE_MPEG2;
-#endif			
+			
 			memset(stuffing, 0, 8192);
 			read(f, iframe, s.st_size);
 			
-			if (ioctl(video_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
-					printf("VIDEO_SELECT_SOURCE MEMORY failed (%m)\n");
-#ifdef __sh__
-			if (ioctl(video_fd, VIDEO_SET_ENCODING, streamtype) < 0)
+			// setsource
+			setSource(VIDEO_SOURCE_MEMORY);
+#if defined (__sh__)
+			// set streamtype
+			//videoDecoder->SetStreamType(STREAM_TYPE_PROGRAM);
+			
+			// set encoding
+			//SetEncoding(VIDEO_ENCODING_MPEG2);
+			
 #else
-			if (ioctl(video_fd, VIDEO_SET_STREAMTYPE, streamtype) < 0)
+			//SetStreamType(VIDEO_STREAMTYPE_MPEG2);
 #endif			  
-				printf("VIDEO_SET_STREAMTYPE failed(%m)\n");
-			if (ioctl(video_fd, VIDEO_PLAY) < 0)
-				printf("VIDEO_PLAY failed (%m)\n");
-			if (ioctl(video_fd, VIDEO_CONTINUE) < 0)
-				printf("video: VIDEO_CONTINUE: %m\n");
-			if (ioctl(video_fd, VIDEO_CLEAR_BUFFER) < 0)
-				printf("video: VIDEO_CLEAR_BUFFER: %m\n");
+			
+			// play
+			Start();
+			
+			// unfreeze
+			Resume();
+			
+			// clear buffer
+			Flush();
 			
 			while(pos <= (s.st_size-4) && !(seq_end_avail = (!iframe[pos] && !iframe[pos+1] && iframe[pos+2] == 1 && iframe[pos+3] == 0xB7)))
 				++pos;
@@ -929,8 +932,6 @@ int cVideo::showSinglePic(const char *filename)
 			if (!seq_end_avail)
 				write(video_fd, seq_end, sizeof(seq_end));
 			write(video_fd, stuffing, 8192);
-			
-			//m_showSinglePicTimer->start(150, true);
 		}
 		else
 		{
@@ -953,10 +954,11 @@ void cVideo::finishShowSinglePic()
 {
 	if (video_fd >= 0)
 	{
-		if (ioctl(video_fd, VIDEO_STOP, 1) < 0) // blank
-			printf("VIDEO_STOP failed (%m)\n");
-		if (ioctl(video_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_DEMUX) < 0)
-			printf("VIDEO_SELECT_SOURCE DEMUX failed (%m)\n");
+		// stop playing
+		Stop();
+		
+		// set source to demux
+		setSource(VIDEO_SOURCE_DEMUX);
 	}
 }
 

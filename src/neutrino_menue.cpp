@@ -345,7 +345,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_MISC, true, "", &miscSettings, NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "miscsettings", LOCALE_HELPTEXT_MISCSETTINGS ));
 
 	//HDD settings
-	//if(has_hdd)
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, true, "", new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "hddsettings", LOCALE_HELPTEXT_HDDSETTINGS ));
 }
 
