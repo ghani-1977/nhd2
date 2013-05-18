@@ -374,12 +374,6 @@ bool cDemux::pesFilter(const unsigned short Pid, const dmx_input_t Input)
 	
 	dprintf(DEBUG_INFO, "%s:%s dmx(%d) type=%s Pid=0x%x\n", FILENAME, __FUNCTION__, demux_num, aDMXCHANNELTYPE[type], Pid);
 	
-	/* allow PID 0 for web streaming e.g.
-	 * this check originally is from tuxbox cvs but I'm not sure
-	 * what it is good for...
-	if (pid <= 0x0001 && dmx_type != DMX_PCR_ONLY_CHANNEL)
-		return false;
-	 */
 	if ((Pid >= 0x0002 && Pid <= 0x000f) || Pid >= 0x1fff)
 		return false;
 	
