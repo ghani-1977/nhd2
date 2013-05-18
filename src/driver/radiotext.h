@@ -79,7 +79,8 @@ class cRDSReceiver : public cReceiver {
 #define RT_MEL 65
 #define tr(a) a
 
-class CRadioText {
+class CRadioText
+{
 
 	public:
 		typedef struct {
