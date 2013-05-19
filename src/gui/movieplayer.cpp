@@ -2216,10 +2216,6 @@ void CMoviePlayerGui::PlayFile(void)
 
 					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
-				
-#if defined (ENABLE_GSTREAMER)
-				sleep(3); //TODO: fixme this is not really good it allow us seeking
-#endif
 
 				// set position 
 				//if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
