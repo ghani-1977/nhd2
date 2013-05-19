@@ -636,7 +636,7 @@ int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	dprintf(DEBUG_INFO, "CNVODChangeExec exec: %s\n", actionKey.c_str());
 	
-	unsigned sel= atoi(actionKey.c_str());
+	unsigned int sel = atoi(actionKey.c_str());
 	g_RemoteControl->setSubChannel(sel);
 
 	parent->hide();
@@ -645,12 +645,12 @@ int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 	return menu_return::RETURN_EXIT;
 }
 
-// stream features changge exec (teletext/plugins)
+// stream features change exec (teletext/plugins)
 int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 {
 	dprintf(DEBUG_INFO, "CStreamFeaturesChangeExec exec: %s\n", actionKey.c_str());
 	
-	int sel= atoi(actionKey.c_str());
+	unsigned int sel = atoi(actionKey.c_str());
 
 	if(parent != NULL)
 		parent->hide();
@@ -658,10 +658,6 @@ int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & act
 	if(actionKey == "teletext") 
 	{
 		g_RCInput->postMsg(CRCInput::RC_text, 0);
-	}
-	else if (sel >= 0)
-	{
-		g_PluginList->startPlugin(sel, 0);
 	}
 
 	return menu_return::RETURN_EXIT;

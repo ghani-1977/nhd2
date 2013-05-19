@@ -148,7 +148,7 @@ void GLThreadObj::setupCtx()
 	glutInit(&argc, const_cast<char **>(argv));
 	glutInitWindowSize(mX, mY);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("Neutrino");
+	glutCreateWindow("NeutrinoHD2");
 }
 
 void GLThreadObj::setupOSDBuffer()

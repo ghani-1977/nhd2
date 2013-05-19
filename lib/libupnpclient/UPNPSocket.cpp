@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <errno.h>
+#include <unistd.h>
+
 #include "upnpclient.h"
 
 CUPnPSocket::CUPnPSocket()

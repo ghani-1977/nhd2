@@ -1490,7 +1490,7 @@ void CMoviePlayerGui::PlayFile(void)
 				skt = -1;
 			}
 			
-			dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");			
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop >>\n");			
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
 		}
@@ -2216,21 +2216,20 @@ void CMoviePlayerGui::PlayFile(void)
 
 					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
+				
+#if defined (ENABLE_GSTREAMER)
+				sleep(3); //TODO: fixme this is not really good it allow us seeking
+#endif
 
 				// set position 
-				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
-					playback->SetPosition(startposition);
+				//if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
+				playback->SetPosition(startposition);
 				
-				// set speed (play speed)
-				playback->SetSpeed(1);
-				
-				// get duration
+				// get duration //NOTE: only duration is here needed
 				if(isVlc)
 					duration = VlcGetStreamLength();
 				else
-				{
-					playback->GetPosition((int64_t &)position, (int64_t &)duration);					
-				}
+					playback->GetPosition((int64_t &)position, (int64_t &)duration);
 				
 				// show movieinfoviewer at start
 				if(timeshift)
@@ -2253,7 +2252,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(!isVlc)
 			{
-				if(!isWebTV)
+				//if(!isWebTV)
 				{
 					if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
 					{					
@@ -2264,10 +2263,9 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
 					}
-					else if(!playback->playing )
+					else
 					{
-						sleep(3);
-						exit = true;
+						g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 					}
 				}
 			}
@@ -2280,7 +2278,7 @@ void CMoviePlayerGui::PlayFile(void)
 					file_prozent = (unsigned char) (position / (duration / 100));
 			}
 		}
-	
+		
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 
 		{
 			//exit play
@@ -2939,7 +2937,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{
-			dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");	
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop >\n");	
 
 			if (isMovieBrowser == true) 
 			{
@@ -2960,7 +2958,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 	} while (playstate >= CMoviePlayerGui::PLAY);
 	
-	dprintf(DEBUG_NORMAL, "[movieplayer] stop\n");	
+	dprintf(DEBUG_NORMAL, "[movieplayer] stop >>\n");	
 
 	if(FileTime.IsVisible())
 		FileTime.hide();

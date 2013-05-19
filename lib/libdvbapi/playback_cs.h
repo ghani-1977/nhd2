@@ -30,10 +30,10 @@ class cPlayback
 	private:
 		int mSpeed;
 		int mAudioStream;
+		
+		bool playing;
 
 	public:
-		bool playing;
-		
 		bool Open();
 		void Close(void);
 		bool Start(char * filename, unsigned short _vp = 0, int _vtype = 0, unsigned short _ap = 0, int _ac3 = 0, int _duration = 0);

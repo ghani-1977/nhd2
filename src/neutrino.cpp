@@ -1721,6 +1721,11 @@ void CNeutrinoApp::SetupFonts()
 	}
 
 	style[0] = g_fontRenderer->AddFont(font.filename);
+	
+	//
+	if(style[0] == NULL)
+		return;
+	//
 
 	if(font.name != NULL)
 		free((void *)font.name);
@@ -2220,7 +2225,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	NVODChanger = new CNVODChangeExec;
 	
 	// init stream feature changer
-	StreamFeaturesChanger = new CStreamFeaturesChangeExec; // user menu
+	StreamFeaturesChanger = new CStreamFeaturesChangeExec; // used by user menu to start vtxt
 	
 	// init IP changer
 	MyIPChanger = new CIPChangeNotifier;
@@ -2240,25 +2245,25 @@ int CNeutrinoApp::run(int argc, char **argv)
 	c_SMSKeyInput = new SMSKeyInput();	//filebrowser.cpp
 
 	// init gui
-	CMenuWidget    mainMenu(LOCALE_MAINMENU_HEAD, NEUTRINO_ICON_MAINMENU);
-	CMenuWidget    mainSettings(LOCALE_MAINSETTINGS_HEAD, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget    videoSettings(LOCALE_VIDEOMENU_HEAD, NEUTRINO_ICON_VIDEO);
-	CMenuWidget    audioSettings(LOCALE_AUDIOMENU_HEAD, NEUTRINO_ICON_AUDIO);
-	CMenuWidget    parentallockSettings(LOCALE_PARENTALLOCK_PARENTALLOCK, NEUTRINO_ICON_LOCK);
-	CMenuWidget    languageSettings(LOCALE_LANGUAGESETUP_HEAD, NEUTRINO_ICON_LANGUAGE );
-	CMenuWidget    networkSettings(LOCALE_NETWORKMENU_HEAD, NEUTRINO_ICON_NETWORK);
-	CMenuWidget    recordingSettings(LOCALE_RECORDINGMENU_HEAD, NEUTRINO_ICON_RECORDING );
-	CMenuWidget    streamingSettings(LOCALE_STREAMINGMENU_HEAD, NEUTRINO_ICON_STREAMING );
-	CMenuWidget    colorSettings(LOCALE_MAINSETTINGS_OSD, NEUTRINO_ICON_COLORS );
-	CMenuWidget    lcdSettings(LOCALE_LCDMENU_HEAD, NEUTRINO_ICON_LCD );
-	CMenuWidget    keySettings(LOCALE_MAINSETTINGS_KEYBINDING, NEUTRINO_ICON_KEYBINDING );
-	CMenuWidget    miscSettings(LOCALE_MISCSETTINGS_HEAD, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget    audioplayerSettings(LOCALE_AUDIOPLAYERSETTINGS_GENERAL, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget    PicViewerSettings(LOCALE_PICTUREVIEWERSETTINGS_GENERAL, NEUTRINO_ICON_SETTINGS );
-	CMenuWidget    service(LOCALE_SERVICEMENU_HEAD, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget    TunerSetup( LOCALE_SERVICEMENU_SCANTS, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget    bindSettings(LOCALE_KEYBINDINGMENU_HEAD, NEUTRINO_ICON_KEYBINDING );
-	CMenuWidget    MediaPlayer(LOCALE_MAINMENU_MEDIAPLAYER, NEUTRINO_ICON_MOVIE);
+	CMenuWidget mainMenu(LOCALE_MAINMENU_HEAD, NEUTRINO_ICON_MAINMENU);
+	CMenuWidget mainSettings(LOCALE_MAINSETTINGS_HEAD, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget videoSettings(LOCALE_VIDEOMENU_HEAD, NEUTRINO_ICON_VIDEO);
+	CMenuWidget audioSettings(LOCALE_AUDIOMENU_HEAD, NEUTRINO_ICON_AUDIO);
+	CMenuWidget parentallockSettings(LOCALE_PARENTALLOCK_PARENTALLOCK, NEUTRINO_ICON_LOCK);
+	CMenuWidget languageSettings(LOCALE_LANGUAGESETUP_HEAD, NEUTRINO_ICON_LANGUAGE );
+	CMenuWidget networkSettings(LOCALE_NETWORKMENU_HEAD, NEUTRINO_ICON_NETWORK);
+	CMenuWidget recordingSettings(LOCALE_RECORDINGMENU_HEAD, NEUTRINO_ICON_RECORDING );
+	CMenuWidget streamingSettings(LOCALE_STREAMINGMENU_HEAD, NEUTRINO_ICON_STREAMING );
+	CMenuWidget colorSettings(LOCALE_MAINSETTINGS_OSD, NEUTRINO_ICON_COLORS );
+	CMenuWidget lcdSettings(LOCALE_LCDMENU_HEAD, NEUTRINO_ICON_LCD );
+	CMenuWidget keySettings(LOCALE_MAINSETTINGS_KEYBINDING, NEUTRINO_ICON_KEYBINDING );
+	CMenuWidget miscSettings(LOCALE_MISCSETTINGS_HEAD, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget audioplayerSettings(LOCALE_AUDIOPLAYERSETTINGS_GENERAL, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget PicViewerSettings(LOCALE_PICTUREVIEWERSETTINGS_GENERAL, NEUTRINO_ICON_SETTINGS );
+	CMenuWidget service(LOCALE_SERVICEMENU_HEAD, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget TunerSetup( LOCALE_SERVICEMENU_SCANTS, NEUTRINO_ICON_SETTINGS);
+	CMenuWidget bindSettings(LOCALE_KEYBINDINGMENU_HEAD, NEUTRINO_ICON_KEYBINDING );
+	CMenuWidget MediaPlayer(LOCALE_MAINMENU_MEDIAPLAYER, NEUTRINO_ICON_MOVIE);
 
 	// main menu
 	InitMainMenu(mainMenu, mainSettings, 
@@ -2300,7 +2305,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 			 miscSettingsGeneral, 
 			 miscSettingsChannelList, 
 			 miscSettingsEPG, 
-			 miscSettingsFileBrowser );
+			 miscSettingsFileBrowser);
 	
 	// video settings
 	InitVideoSettings(videoSettings, videoSetupNotifier);
@@ -2446,7 +2451,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// recordingsettings
 	InitRecordingSettings(recordingSettings);
 
-	// streamungsettings
+	// streamingsettings
 	InitStreamingSettings(streamingSettings);
 
 	// lcdsettinsg
@@ -2520,7 +2525,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: initialized everything\n");
 
 	// start plugins
-	g_PluginList->startPlugin("startup.cfg");
+	g_PluginList->startPlugin("startup.cfg"); //NOTE: startup.cfg not used anymore
 
 	// clear msg 
 	g_RCInput->clearRCMsg();
@@ -4941,7 +4946,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
 		StartSubtitles();
 				
-		return menu_return::RETURN_EXIT;	
+		return menu_return::RETURN_REPAINT/*EXIT*/;	
 	}
 
 	return returnval;

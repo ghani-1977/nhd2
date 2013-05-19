@@ -2737,7 +2737,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu_prev = SNeutrinoSettings::ITEM_VTXT;
 				keyhelper.get(&key, &icon);
 				menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, StreamFeaturesChanger, "teletext", key, icon);
-				menu->addItem(menu_item, 0);
+				menu->addItem(menu_item, false);
 
                                 break;
 				

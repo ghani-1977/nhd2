@@ -168,6 +168,7 @@ void CMenuWidget::addItem(CMenuItem *menuItem, const bool defaultselected)
 	if (defaultselected)
 		selected = items.size();
 	
+	//TODO:need marker to skip not needed item (e.g HDD setup when any device is pluged on)
 	items.push_back(menuItem);
 }
 
@@ -194,7 +195,7 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 #endif	
 
 	int retval = menu_return::RETURN_REPAINT;
-	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
+	unsigned long long int timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
 	//control loop
 	do {

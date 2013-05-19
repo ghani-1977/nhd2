@@ -211,7 +211,7 @@ int CMessageBox::exec(int timeout)
 	if ( timeout == -1 )
 		timeout = g_settings.timing[SNeutrinoSettings::TIMING_EPG];
 
-	uint64_t timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
+	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
 
 #if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();

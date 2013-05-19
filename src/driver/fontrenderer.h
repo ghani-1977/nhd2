@@ -80,7 +80,9 @@ class FBFontRenderClass
 {
 		struct fontListEntry
 		{
-			char *filename, *style, *family;
+			char *filename;
+			char *style;
+			char *family;
 			fontListEntry *next;
 			~fontListEntry();
 		}

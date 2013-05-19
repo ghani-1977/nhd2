@@ -109,7 +109,7 @@ bool CMovieInfo::convertTs2XmlName(std::string * filename)
 		//strReplace(fname, extension.c_str(), ".jpg");
 		bytes = filename->find( extension.c_str() );
 	}
-		///
+	///
 	bool result = false;
 
 	if (bytes != -1) 

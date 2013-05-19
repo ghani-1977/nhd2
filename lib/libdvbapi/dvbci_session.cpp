@@ -417,7 +417,7 @@ void eDVBCISession::receiveData(tSlot *slot, const unsigned char *ptr, size_t le
 				}
 			}
 #if 1
-			printf("1. Call receivedAPDU tag = 0x%2x, len = %d\n", (int) tag, alen);
+			printf("1. Call receivedAPDU tag = 0x%2x, len = %d\n", (int) *tag, alen);
 #endif
 			if (session->receivedAPDU(tag, pkt, alen))
 				session->action = 1;

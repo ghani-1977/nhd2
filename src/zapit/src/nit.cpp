@@ -40,7 +40,7 @@
 #include <nit.h>
 #include <scan.h>
 
-#define NIT_SIZE 1024
+#define NIT_SIZE 4192
 
 
 extern CFrontend * getFE(int index);

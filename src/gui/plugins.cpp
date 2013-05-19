@@ -391,7 +391,7 @@ void CPlugins::startPlugin(int number, int param)
 	{
 		// filehandle pointer
 		startparam = makeParam(P_ID_FBUFFER, frameBuffer->getFileHandle(), startparam);
-		startparam = makeParam(P_ID_LFBUFFER, (int)frameBuffer->getFrameBufferPointer(), startparam);
+		startparam = makeParam(P_ID_LFBUFFER, (long int)frameBuffer->getFrameBufferPointer(), startparam);
 		startparam = makeParam(P_ID_XRESFBUFFER, frameBuffer->getScreenWidth(true), startparam);
 		startparam = makeParam(P_ID_YRESFBUFFER, frameBuffer->getScreenHeight(true), startparam);
 		startparam = makeParam(P_ID_STRIDEFBUFFER, frameBuffer->getStride(), startparam);

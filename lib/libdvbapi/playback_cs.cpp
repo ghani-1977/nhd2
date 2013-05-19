@@ -234,7 +234,9 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			break;
 	}
 	
+	//gst_message_unref(msg);
 	g_free(sourceName);
+	
 
 	return GST_BUS_DROP;
 }
@@ -314,10 +316,11 @@ void cPlayback::Close(void)
 {  
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 	
-	if(playing)
-		Stop();
+	Stop();
 	
-#if ENABLE_GSTREAMER	
+#if ENABLE_GSTREAMER
+	end_eof = false;
+	
 	// disconnect bus handler
 	if (m_gst_playbin)
 	{
@@ -325,6 +328,7 @@ void cPlayback::Close(void)
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
 		gst_bus_set_sync_handler(bus, NULL, NULL);
 		gst_object_unref(bus);
+		bus = NULL;
 		
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
@@ -349,7 +353,7 @@ void cPlayback::Close(void)
 	{
 		// unref m_gst_playbin
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
-		m_gst_playbin = NULL;
+		//m_gst_playbin = NULL;
 		
 		dprintf(DEBUG_NORMAL, "GST playbin closed\n");
 	}
@@ -738,8 +742,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 #if ENABLE_GSTREAMER
 	if(end_eof)
 	{
-		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __func__);
-		playing = false;
+		dprintf(DEBUG_NORMAL, "cPlayback::%s !!!!EOF!!!! < -1\n", __FUNCTION__);
 		return false;
 	}
 	
@@ -753,9 +756,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		
 		gst_element_query_position(m_gst_playbin, &fmt, &pts);
 			
-		//position = pts / 1000000;	// in ms
-		position = pts / 1111111;
-		//position /= 100;
+		position = pts / 1000000;	// in ms
 		
 		dprintf(DEBUG_DEBUG, "%s: position: %lld ms ", __FUNCTION__, position);
 		
@@ -764,9 +765,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 
 		gst_element_query_duration(m_gst_playbin, &fmt, &len);
 		
-		//duration = len / 1000000;
-		duration = len / 1111111;
-		//duration /= 100;
+		duration = len / 1000000;	// in ms
 
 		dprintf(DEBUG_DEBUG, "(duration: %lld ms)\n", duration);
 	}
@@ -812,15 +811,14 @@ bool cPlayback::SetPosition(int position)
 	if(playing == false) 
 		return false;
 	
+	dprintf(DEBUG_NORMAL, "%s:%s position: %d\n", FILENAME, __FUNCTION__, position);
+	
 #if ENABLE_GSTREAMER
 	gint64 time_nanoseconds;
-	gint64 pos;
-	GstFormat fmt = GST_FORMAT_TIME;
 		
 	if(m_gst_playbin)
 	{
-		gst_element_query_position(m_gst_playbin, &fmt, &pos);
-		time_nanoseconds = pos + (position * 1000000.0);
+		time_nanoseconds = (position * 1000000.0);
 		if(time_nanoseconds < 0) 
 			time_nanoseconds = 0;
 		

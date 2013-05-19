@@ -31,8 +31,11 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <poll.h>
-#include "upnpclient.h"
+#include <unistd.h>
 #include <algorithm>
+
+#include "upnpclient.h"
+
 
 struct ToLower
 {
