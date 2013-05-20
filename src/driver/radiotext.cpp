@@ -821,8 +821,10 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			{
 				if ((S_Verbose && 0x0f) >= 1)
 					printf("Rass-Error: Filetype unknown !\n");
+				
 				return;
 			}
+			
 			// byte 25-28 = Dateilänge, <Item-Length>
 			filemax  = mtext[28] + mtext[27]*256 + mtext[26]*65536 + mtext[25]*65536*256;
 			if (filemax >= 65536) 
@@ -855,7 +857,7 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 			splfd = plfd;
 		}
 		else if (plfd < pmax && plfd == splfd+1) 
-		{		// Between
+		{	// Between
 			splfd = plfd;
 			if (!start && fileoffp == plfd) 
 			{	// Data start, <with Rfu no more necesssary>
@@ -929,11 +931,6 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 								printf("Rass-File: ready for displaying :-)\n");
 							
 							//
-							CFrameBuffer::getInstance()->useBackground(false);
-							CFrameBuffer::getInstance()->paintBackground();
-#if !defined USE_OPENGL							
-							CFrameBuffer::getInstance()->blit();
-#endif							
 							videoDecoder->finishShowSinglePic();
 							videoDecoder->showSinglePic(filepath);
 							//
@@ -1006,11 +1003,6 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 						}
 						
 						//
-						CFrameBuffer::getInstance()->useBackground(false);
-						CFrameBuffer::getInstance()->paintBackground();
-#if !defined USE_OPENGL						
-						CFrameBuffer::getInstance()->blit();
-#endif						
 						videoDecoder->finishShowSinglePic();
 						videoDecoder->showSinglePic(filepath);
 						//
@@ -1105,13 +1097,10 @@ int CRadioText::RassImage(int QArchiv, int QKey, bool DirUp)
 	else
 		asprintf(&image, "%s/Rass_show.mpg", DataDir);
 
-	CFrameBuffer::getInstance()->useBackground(false);
-	CFrameBuffer::getInstance()->paintBackground();
-#if !defined USE_OPENGL	
-	CFrameBuffer::getInstance()->blit();
-#endif	
+	//
 	videoDecoder->finishShowSinglePic();
 	videoDecoder->showSinglePic(image);
+	//
 	
 	free(image);
 
