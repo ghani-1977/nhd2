@@ -49,6 +49,7 @@ GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
 bool end_eof = false;
+bool isTS = false;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -234,7 +235,6 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 			break;
 	}
 	
-	//gst_message_unref(msg);
 	g_free(sourceName);
 	
 
@@ -320,6 +320,7 @@ void cPlayback::Close(void)
 	
 #if ENABLE_GSTREAMER
 	end_eof = false;
+	isTS = false;
 	
 	// disconnect bus handler
 	if (m_gst_playbin)
@@ -328,7 +329,6 @@ void cPlayback::Close(void)
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
 		gst_bus_set_sync_handler(bus, NULL, NULL);
 		gst_object_unref(bus);
-		bus = NULL;
 		
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
 	}
@@ -420,6 +420,13 @@ bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned s
 	strcat(file, filename);
 
 #if defined (ENABLE_GSTREAMER)
+	end_eof = false;
+	isTS = false;
+	
+	// check if ts file
+	if (strstr(filename, ".ts"))
+		isTS = true;
+	
 	int m_buffer_size = 5*1024*1024;
 	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
 	
@@ -451,6 +458,7 @@ bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned s
 		// start playing
 		gst_element_set_state(GST_ELEMENT(m_gst_playbin), GST_STATE_PLAYING);
 		playing = true;
+		mSpeed = 1;
 	}
 	else
 	{
@@ -478,6 +486,7 @@ bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned s
 			if (player->playback->Command(player, PLAYBACK_PLAY, NULL) == 0 ) // playback.c uses "int = 0" for "true"
 			{
 				playing = true;
+				mSpeed = 1;
 			}
 		}		
 	}
@@ -754,7 +763,40 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		gint64 pts;
 		position = 0;
 		
-		gst_element_query_position(m_gst_playbin, &fmt, &pts);
+		if(!isTS)
+		{
+			if(audioSink)
+			{
+				gchar *name = gst_element_get_name(audioSink);
+				
+				gboolean use_get_decoder_time = strstr(name, "dvbaudiosink") || strstr(name, "dvbvideosink");
+				
+				g_free(name);
+
+				if (use_get_decoder_time)
+					g_signal_emit_by_name(audioSink, "get-decoder-time", &pts);
+				else
+					gst_element_query_position(m_gst_playbin, &fmt, &pts);
+			}
+			else 
+			if(videoSink)
+			{
+				gchar *name = gst_element_get_name(videoSink);
+				
+				gboolean use_get_decoder_time = strstr(name, "dvbaudiosink") || strstr(name, "dvbvideosink");
+				
+				g_free(name);
+
+				if (use_get_decoder_time)
+					g_signal_emit_by_name(videoSink, "get-decoder-time", &pts);
+				else
+					gst_element_query_position(m_gst_playbin, &fmt, &pts);
+			}
+			else		  
+				gst_element_query_position(m_gst_playbin, &fmt, &pts);
+		}
+		else
+			gst_element_query_position(m_gst_playbin, &fmt, &pts);
 			
 		position = pts / 1000000;	// in ms
 		

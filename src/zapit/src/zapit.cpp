@@ -3337,7 +3337,7 @@ int stopPlayBack( bool sendPmt)
 	// audio decoder stop
 	audioDecoder->Stop();
 	
-	// video decoder stop
+	// video decoder stop (blanking)
 	videoDecoder->Stop();	
 
 	playing = false;
@@ -3374,14 +3374,14 @@ void openAVDecoder(void)
 		// open video decoder
 		videoDecoder->Open();
 	
+		// set source
 		videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
 		
 #ifdef __sh__		
 		// StreamType
 		videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
 #endif
-	}
-	//	
+	}	
 	
 	if(audioDecoder)
 	{

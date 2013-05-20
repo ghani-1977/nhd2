@@ -553,10 +553,8 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("m2ts");
 	tsfilefilter.addFilter("vob");
 	tsfilefilter.addFilter("mp4");
-	tsfilefilter.addFilter("mov");
-#if !ENABLE_GSTREAMER	
-	tsfilefilter.addFilter("flv");
-#endif	
+	tsfilefilter.addFilter("mov");	
+	tsfilefilter.addFilter("flv");	
 	
 	tsfilefilter.addFilter("dat");
 	tsfilefilter.addFilter("trp");
@@ -1276,6 +1274,11 @@ void CMoviePlayerGui::PlayFile(void)
 	CTimeOSD FileTime;
 	CMovieInfoViewer MovieInfoViewer;
 	
+	//
+	position = 0;
+	duration = 0;
+	startposition = 0;
+	
 	// global flags
 	bool update_lcd = false;
 	bool open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
@@ -1530,12 +1533,12 @@ void CMoviePlayerGui::PlayFile(void)
 
 		// movie infos (moviebrowser)
 		if (isMovieBrowser == true) 
-		{
+		{	  
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
-			{
-				//FIXME: is this needed???
+			{				
 				playback->GetPosition((int64_t &)position, (int64_t &)duration);
+				
 
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
@@ -1649,7 +1652,7 @@ void CMoviePlayerGui::PlayFile(void)
 					}
 				}
 			}
-		}// isMovieBrowser == true
+		}// isMovieBrowser == true		
 
 		// setup all needed flags
 		if (open_filebrowser) 
@@ -1744,8 +1747,8 @@ void CMoviePlayerGui::PlayFile(void)
 						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
 						dprintf(DEBUG_NORMAL, "CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
 						
-						// get the start position for the movie
-						startposition = 1000 * moviebrowser->getCurrentStartPos();
+						// get the start position for the movie					
+						startposition = 1000 * moviebrowser->getCurrentStartPos();						
 
 						update_lcd = true;
 						start_play = true;
@@ -2216,16 +2219,19 @@ void CMoviePlayerGui::PlayFile(void)
 
 					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
-
+				
+#if !defined (ENABLE_GSTREAMER)
 				// set position 
-				//if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
-				playback->SetPosition(startposition);
+				//FIXME:???
+				if( !isWebTV && !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
+					playback->SetPosition(startposition);
+#endif				
 				
 				// get duration //NOTE: only duration is here needed
 				if(isVlc)
-					duration = VlcGetStreamLength();
+					duration = VlcGetStreamLength();				
 				else
-					playback->GetPosition((int64_t &)position, (int64_t &)duration);
+					playback->GetPosition((int64_t &)position, (int64_t &)duration);				
 				
 				// show movieinfoviewer at start
 				if(timeshift)
@@ -2248,21 +2254,19 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(!isVlc)
 			{
-				//if(!isWebTV)
-				{
-					if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
-					{					
-						if(duration > 100)
-							file_prozent = (unsigned char) (position / (duration / 100));
+				
+				if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
+				{					
+					if(duration > 100)
+						file_prozent = (unsigned char) (position / (duration / 100));
 
-						playback->GetSpeed(speed);
-						
-						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
-					}
-					else
-					{
-						g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
-					}
+					playback->GetSpeed(speed);
+							
+					dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
+				}
+				else
+				{
+					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 				}
 			}
 			else
@@ -2437,7 +2441,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
-			
+						
 			if(isMovieBrowser == true)
 			{
 				int pos_sec = position / 1000;
@@ -2522,7 +2526,7 @@ void CMoviePlayerGui::PlayFile(void)
 						cSelectedMenuBookStart[4].selected = false;	// clear for next bookmark menu
 					}
 				}
-			}
+			}		
 		} 
 		else if ( (msg == (neutrino_msg_t) g_settings.mpkey_audio) || ( msg == CRCInput::RC_audio) ) 
 		{

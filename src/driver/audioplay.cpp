@@ -142,7 +142,7 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 			getInstance()->state = CBaseDec::STOP;
 			break;	
 		}
-		getInstance()->m_played_time = position/1000;	// in sec
+		getInstance()->m_played_time = position/1000;	// in sec				  
 	}while(getInstance()->state != CBaseDec::STOP_REQ);	//(playback->GetPosition(position, duration));
 #else	
 	// Decode stdin to stdout.
