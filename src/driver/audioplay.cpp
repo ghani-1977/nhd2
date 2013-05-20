@@ -49,7 +49,7 @@ void CAudioPlayer::stop()
 	state = CBaseDec::STOP_REQ;
 	
 #if !defined (ENABLE_PCMDECODER)
-	playback->Stop();
+	playback->Close();
 #endif	
 	if(thrPlay)
 		pthread_join(thrPlay,NULL);
@@ -140,6 +140,9 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 		if(!playback->GetPosition((int64_t &)position, (int64_t &)duration))
 		{
 			getInstance()->state = CBaseDec::STOP;
+#if !defined (ENABLE_GSTREAMER)
+			playback->Close();
+#endif
 			break;	
 		}
 		getInstance()->m_played_time = position/1000;	// in sec				  
