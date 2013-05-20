@@ -96,7 +96,6 @@
 <webtv title="Schweizersportfernsehen" urlkey="0" url="rtmp://ipmedia.mpl.miisolutions.net/ipmedia-live01/mp4:ssflive" description="Stream" />
 <webtv title="Shop 24 Direct" urlkey="0" url="rtmp://streamserver.smartcast.de/stapa1i/stapa1i.stream" description="Stream" />
 <webtv title="Sport 1" urlkey="0" url="rtsp://megaserver.youfreetv.net:1935/live/sport1.stream" description="Stream" />
-<webtv title="Streetclip TV" urlkey="0" url="rtmp://stream.streetclip.tv:1935/live/high-stream" description="Stream" />
 <webtv title="Tele 1" urlkey="0" url="rtsp://fl1.sz.xlcdn.com:80/live/_definst_/sz=ZentralschweizerFernsehenTele1AG=flash-high_2" description="Stream" />
 <webtv title="Tele 1" urlkey="0" url="rtsp://fl1.sz.xlcdn.com/live/sz=ZentralschweizerFernsehenTele1AG=flash_3" description="Stream" />
 <webtv title="TeleBärn" urlkey="0" url="rtsp://rtmp.infomaniak.ch/livecast/barntele" description="Stream" />
