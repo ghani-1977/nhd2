@@ -369,7 +369,8 @@ int CTimerList::exec(CMenuTarget* parent, const std::string & actionKey)
 	int ret = show();
 
 	return ret;
-/*
+	
+	/*
 	if( ret > -1)
 	{
 		return menu_return::RETURN_REPAINT;
