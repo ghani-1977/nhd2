@@ -64,16 +64,16 @@ extern int tuxtx_subtitle_running(int * pid, int * page, int * running);
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
 const CMenuOptionChooser::keyval OPTIONS_OFF0_ON1_OPTIONS[OPTIONS_OFF0_ON1_OPTION_COUNT] =
 {
-        { 0, LOCALE_OPTIONS_OFF },
-        { 1, LOCALE_OPTIONS_ON  }
+        { 0, LOCALE_OPTIONS_OFF, NULL },
+        { 1, LOCALE_OPTIONS_ON, NULL  }
 }; 
 
 #define AUDIOMENU_ANALOGOUT_OPTION_COUNT 3
 const CMenuOptionChooser::keyval AUDIOMENU_ANALOGOUT_OPTIONS[AUDIOMENU_ANALOGOUT_OPTION_COUNT] =
 {
-	{ 0, LOCALE_AUDIOMENU_STEREO    },
-	{ 1, LOCALE_AUDIOMENU_MONOLEFT  },
-	{ 2, LOCALE_AUDIOMENU_MONORIGHT }
+	{ 0, LOCALE_AUDIOMENU_STEREO, NULL   },
+	{ 1, LOCALE_AUDIOMENU_MONOLEFT, NULL  },
+	{ 2, LOCALE_AUDIOMENU_MONORIGHT, NULL }
 };
 
 // ac3
@@ -86,7 +86,7 @@ const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 };
 #endif
 
-int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &actionkey)
+int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 
@@ -108,7 +108,7 @@ int CAudioSelectMenuHandler::doMenu()
 	unsigned int count;
 	CSubtitleChangeExec SubtitleChanger;
 	
-	unsigned int shortcut_num = 1;
+	//unsigned int shortcut_num = 1;
 
 	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
@@ -152,7 +152,7 @@ int CAudioSelectMenuHandler::doMenu()
 					AudioSelector.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_SUBTITLES_HEAD));
 				}
 				char spid[10];
-				int pid = sd->pId;
+				//int pid = sd->pId;
 				snprintf(spid,sizeof(spid), "DVB:%d", sd->pId);
 				char item[64];
 				//snprintf(item,sizeof(item), "DVB: %s (pid %x)", sd->ISO639_language_code.c_str(), sd->pId);

@@ -69,8 +69,8 @@ class CScanTs : public CMenuTarget
 		CProgressBar * snrscale, * sigscale;
 
 		void paint(bool fortest = false);
-		void paintLineLocale(int x, int * y, int width, const neutrino_locale_t l);
-		void paintLine(int x, int y, int width, const char * const txt);
+		void paintLineLocale(int _x, int * _y, int _width, const neutrino_locale_t l);
+		void paintLine(int _x, int _y, int w, const char * const txt);
 		void paintRadar(void);
 		int handleMsg(neutrino_msg_t msg, neutrino_msg_data_t data);
 		int greater_xpos(int xpos, const neutrino_locale_t txt);

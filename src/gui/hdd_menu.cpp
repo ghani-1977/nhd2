@@ -69,22 +69,22 @@
 #define HDD_NOISE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval HDD_NOISE_OPTIONS[HDD_NOISE_OPTION_COUNT] =
 {
-	{ 0,   LOCALE_OPTIONS_OFF },
-	{ 128, LOCALE_HDD_SLOW },
-	{ 190, LOCALE_HDD_MIDDLE },
-	{ 254, LOCALE_HDD_FAST }
+	{ 0,   LOCALE_OPTIONS_OFF, NULL },
+	{ 128, LOCALE_HDD_SLOW, NULL },
+	{ 190, LOCALE_HDD_MIDDLE, NULL },
+	{ 254, LOCALE_HDD_FAST, NULL }
 };
 
 #define HDD_SLEEP_OPTION_COUNT 7
 const CMenuOptionChooser::keyval HDD_SLEEP_OPTIONS[HDD_SLEEP_OPTION_COUNT] =
 {
-	{0, LOCALE_OPTIONS_OFF},
-	{12, LOCALE_HDD_1MIN},
-	{60, LOCALE_HDD_5MIN},
-	{120, LOCALE_HDD_10MIN},
-	{240, LOCALE_HDD_20MIN},
-	{241, LOCALE_HDD_30MIN},
-	{242, LOCALE_HDD_60MIN}
+	{0, LOCALE_OPTIONS_OFF, NULL},
+	{12, LOCALE_HDD_1MIN, NULL},
+	{60, LOCALE_HDD_5MIN, NULL},
+	{120, LOCALE_HDD_10MIN, NULL},
+	{240, LOCALE_HDD_20MIN, NULL},
+	{241, LOCALE_HDD_30MIN, NULL},
+	{242, LOCALE_HDD_60MIN, NULL}
 };
 
 static int my_filter(const struct dirent * dent)
@@ -391,12 +391,12 @@ int CHDDMenuHandler::hddMenu()
 int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 {
 	char cmd[100];
-	CHintBox * hintbox;
+	//CHintBox * hintbox;
 	int res;
 	FILE * f;
 	char dst[128];
 	CProgressWindow * progress;
-	bool idone;
+	//bool idone;
 
 	printf("CHDDInit: key %s\n", actionKey.c_str());
 
@@ -613,7 +613,7 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
         return 1;
 }
 
-int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
+int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 {
 	char cmd[100];
 	CHintBox * hintbox;
@@ -625,7 +625,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	bool mountPoint = false;
 	
 	CProgressWindow * progress;
-	bool idone;
+	//bool idone;
 
 	sprintf(src, "/dev/%s", actionKey.c_str());
 	//sprintf((char *)dst, "/media/%s", actionKey.c_str());
@@ -749,7 +749,7 @@ int CHDDFmtExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	printf("CHDDFmtExec: executing %s\n", cmd);
 	system(cmd);
 
-_remount:
+//_remount:
 	progress->hide();
 	delete progress;
 
@@ -788,7 +788,7 @@ _return:
 	return menu_return::RETURN_REPAINT;
 }
 
-int CHDDChkExec::exec(CMenuTarget* parent, const std::string& actionKey)
+int CHDDChkExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 {
 	char cmd[100];
 	CHintBox * hintbox;
@@ -798,10 +798,10 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	const char * fstype = NULL;
 	bool mountPoint = false;
 	
-	FILE * f;
-	CProgressWindow * progress;
-	int oldpass = 0, pass, step, total;
-	int percent = 0, opercent = 0;
+	//FILE * f;
+	CProgressWindow * progress = NULL;
+	//int oldpass = 0, pass, step, total;
+	//int percent = 0, opercent = 0;
 
 	sprintf(src, "/dev/%s", actionKey.c_str());
 
@@ -923,7 +923,7 @@ int CHDDChkExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	progress->hide();
 	delete progress;
 
-ret1:
+//ret1:
 	//fstype = blkid_get_tag_value(NULL, "TYPE", src);
 	//printf("fstype: %s\n", fstype);
 
@@ -945,7 +945,7 @@ ret1:
 	return menu_return::RETURN_REPAINT;
 }
 
-int CHDDMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
+int CHDDMountMSGExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 {
 	CHintBox * hintbox;
 	int res;
@@ -1010,7 +1010,7 @@ int CHDDMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 				else //fallback to /tmp/hdd
 				{
 					// create /tmp/hdd
-					safe_mkdir("/tmp/hdd");
+					safe_mkdir((char *)"/tmp/hdd");
 					// mount to /tmp/hdd
 					res = mount(src, "/tmp/hdd", fstype, 0, NULL);
 					
@@ -1049,7 +1049,7 @@ int CHDDMountMSGExec::exec(CMenuTarget* parent, const std::string& actionKey)
 	return menu_return::RETURN_EXIT;
 }
 
-int CHDDuMountMSGExec::exec(CMenuTarget * parent, const std::string& actionKey)
+int CHDDuMountMSGExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 {
 	CHintBox * hintbox;
 	int res;

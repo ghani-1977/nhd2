@@ -54,7 +54,7 @@ CTimeOSD::~CTimeOSD()
 	hide();
 }
 
-void CTimeOSD::show(int Position)
+void CTimeOSD::show(int /*Position*/)
 {	 
 	// show / update
 	GetDimensions();

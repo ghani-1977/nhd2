@@ -129,9 +129,9 @@ void CImageInfo::hide()
 #endif	
 }
 
-void CImageInfo::paint_pig(int x, int y, int w, int h)
+void CImageInfo::paint_pig(int _x, int _y, int w, int h)
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, w, h);	
+	frameBuffer->paintBackgroundBoxRel(_x, _y, w, h);	
 		
 	//dont pig if we have 1980 x 1080
 #ifdef __sh__	
@@ -139,9 +139,9 @@ void CImageInfo::paint_pig(int x, int y, int w, int h)
 	videoDecoder->getPictureInfo(xres, yres, framerate);
 	
 	if(xres <= 1280)	
-		videoDecoder->Pig( x, y, w, h );
+		videoDecoder->Pig(_x, _y, w, h);
 #else
-	videoDecoder->Pig( x, y, w, h );
+	videoDecoder->Pig(_x, _y, w, h);
 #endif	
 }
 
@@ -173,8 +173,7 @@ void CImageInfo::paint()
 
 
 	CConfigFile config('\t');
-	if( !config.loadConfig("/var/etc/.version"));
-		printf("/var/etc/.version not found using default.\n");
+	config.loadConfig("/var/etc/.version");
 
 	const char * imagename = config.getString("imagename", "NeutrinoHD2").c_str();
 	const char * homepage  = config.getString("homepage",  "http://www.dgstation-forum.org").c_str();

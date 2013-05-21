@@ -80,7 +80,7 @@ int CWebTV::exec()
 {
 	if(mode == WEBTV)
 		readXml();
-	else if(mode = IPTV)
+	else if(mode == IPTV)
 		readIPTVlist();
 	
 	return Show();
@@ -178,7 +178,7 @@ bool CWebTV::readIPTVlist()
 	}
 	IPTVChannels.clear();
 	
-	webtv_channels * IPTVChannels_list = new webtv_channels();
+	//webtv_channels * IPTVChannels_list = new webtv_channels();
 	
 	std::string name, service, description;
 	
@@ -514,7 +514,7 @@ void CWebTV::clearItem2DetailsLine()
 	  paintItem2DetailsLine(-1, 0);  
 }
 
-void CWebTV::paintItem2DetailsLine(int pos, int ch_index)
+void CWebTV::paintItem2DetailsLine(int pos, int /*ch_index*/)
 {
 #define ConnectLineBox_Width	16
 
@@ -729,7 +729,7 @@ void CWebTV::paintMiniTV()
 
 					for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
 					{
-						if ( i < epgText.size() )
+						if ( i < (int)epgText.size() )
 							g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
 						else
 							g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8

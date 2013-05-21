@@ -407,7 +407,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 					continue;
 				}
 				
-				char * recDir = g_settings.network_nfs_recordingdir;
+				//char * recDir = g_settings.network_nfs_recordingdir;
 				
 				if (recDir != NULL)
 				{
@@ -857,7 +857,7 @@ void  EventList::showFunctionBar(bool show)
 	}
 }
 
-int CEventListHandler::exec(CMenuTarget* parent, const std::string &actionKey)
+int CEventListHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	int           res = menu_return::RETURN_REPAINT;
 	EventList     *e;
@@ -992,20 +992,18 @@ bool CEventFinderMenuHandler::changeNotify(const neutrino_locale_t OptionName, v
 #define SEARCH_LIST_OPTION_COUNT 3
 const CMenuOptionChooser::keyval SEARCH_LIST_OPTIONS[SEARCH_LIST_OPTION_COUNT] =
 {
-	{ EventList::SEARCH_LIST_CHANNEL     , LOCALE_TIMERLIST_CHANNEL    },
-	{ EventList::SEARCH_LIST_BOUQUET     , LOCALE_BOUQUETLIST_HEAD     },
-	{ EventList::SEARCH_LIST_ALL         , LOCALE_CHANNELLIST_HEAD    }
+	{ EventList::SEARCH_LIST_CHANNEL     , LOCALE_TIMERLIST_CHANNEL, NULL    },
+	{ EventList::SEARCH_LIST_BOUQUET     , LOCALE_BOUQUETLIST_HEAD, NULL     },
+	{ EventList::SEARCH_LIST_ALL         , LOCALE_CHANNELLIST_HEAD, NULL    }
 };
-
 
 #define SEARCH_EPG_OPTION_COUNT 3
 const CMenuOptionChooser::keyval SEARCH_EPG_OPTIONS[SEARCH_EPG_OPTION_COUNT] =
 {
-	{ EventList::SEARCH_EPG_TITLE       , LOCALE_FONTSIZE_EPG_TITLE    },
-	{ EventList::SEARCH_EPG_INFO1     	, LOCALE_FONTSIZE_EPG_INFO1     },
-	{ EventList::SEARCH_EPG_INFO2       , LOCALE_FONTSIZE_EPG_INFO2    }
+	{ EventList::SEARCH_EPG_TITLE       , LOCALE_FONTSIZE_EPG_TITLE, NULL    },
+	{ EventList::SEARCH_EPG_INFO1     	, LOCALE_FONTSIZE_EPG_INFO1, NULL     },
+	{ EventList::SEARCH_EPG_INFO2       , LOCALE_FONTSIZE_EPG_INFO2, NULL    }
 };
-
 
 CEventFinderMenu::CEventFinderMenu(int* event, int* search_epg_item, std::string* search_keyword, int* search_list, t_channel_id* search_channel_id, t_bouquet_id * search_bouquet_id)
 {

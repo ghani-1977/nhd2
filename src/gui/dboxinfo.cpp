@@ -248,7 +248,7 @@ void CDBoxInfoWidget::paint()
 	
 	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
 	
-	for(int i = 0; i < n; i++) 
+	for(int i1 = 0; i1 < n; i1++) 
 	{
 		ypos += mheight;
 		
@@ -259,7 +259,7 @@ void CDBoxInfoWidget::paint()
 		int64_t megabytes;
 		int removable = 0;
 		
-		sprintf(str, "/dev/%s", namelist[i]->d_name);
+		sprintf(str, "/dev/%s", namelist[i1]->d_name);
 		fd_hdd = open(str, O_RDONLY);
 
 		if(fd_hdd < 0) 
@@ -276,7 +276,7 @@ void CDBoxInfoWidget::paint()
 		megabytes = bytes/1000000;
 
 		// vendor
-		sprintf(str, "/sys/block/%s/device/vendor", namelist[i]->d_name);
+		sprintf(str, "/sys/block/%s/device/vendor", namelist[i1]->d_name);
 		f = fopen(str, "r");
 
 		if(!f) 
@@ -287,7 +287,7 @@ void CDBoxInfoWidget::paint()
 		fclose(f);
 
 		// model
-		sprintf(str, "/sys/block/%s/device/model", namelist[i]->d_name);
+		sprintf(str, "/sys/block/%s/device/model", namelist[i1]->d_name);
 		f = fopen(str, "r");
 		
 		if(!f) 
@@ -298,7 +298,7 @@ void CDBoxInfoWidget::paint()
 		fclose(f);
 
 		// removable
-		sprintf(str, "/sys/block/%s/removable", namelist[i]->d_name);
+		sprintf(str, "/sys/block/%s/removable", namelist[i1]->d_name);
 		f = fopen(str, "r");
 		
 		if(!f) 
@@ -314,12 +314,12 @@ void CDBoxInfoWidget::paint()
 		if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
 		{
 			//strcat(str, ", free %ldKb", (long)(s.f_bfree/1024)*s.f_bsize);
-			sprintf(str, "HDD: %s (%s-%s %lld %s), free %ldMB", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB", (long)( ((s.f_bfree/1024)/1024))*s.f_bsize);
+			sprintf(str, "HDD: %s (%s-%s %lld %s), free %ldMB", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB", (long)( ((s.f_bfree/1024)/1024))*s.f_bsize);
 		}
 		else
-			sprintf(str, "HDD: %s (%s-%s %lld %s)", namelist[i]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
+			sprintf(str, "HDD: %s (%s-%s %lld %s)", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
 		
-		free(namelist[i]);
+		free(namelist[i1]);
 		
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT, true);
 	}
@@ -328,13 +328,13 @@ void CDBoxInfoWidget::paint()
 	ypos += mheight/2;
 	
 	//frontend
-	for(int i = 0; i < FrontendCount; i++)
+	for(int i2 = 0; i2 < FrontendCount; i2++)
 	{
-		CFrontend * fe = getFE(i);
+		CFrontend * fe = getFE(i2);
 		ypos += mheight;
 		char tbuf[255];
 		
-		sprintf(tbuf, "Tuner-%d: %s", i + 1, fe->getInfo()->name);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
+		sprintf(tbuf, "Tuner-%d: %s", i2 + 1, fe->getInfo()->name);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
 	}	
 }

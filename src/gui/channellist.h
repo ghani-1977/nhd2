@@ -98,7 +98,7 @@ class CChannelList
 		void processTextToArray(std::string text);
 
 	public:
-		CChannelList(const char * const Name, bool historyMode = false, bool _vlist = false );
+		CChannelList(const char * const Name, bool _historyMode = false, bool _vlist = false );
 		~CChannelList();
 		
 		void addChannel(CZapitChannel* chan, int num = 0);

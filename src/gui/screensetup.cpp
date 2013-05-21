@@ -45,10 +45,11 @@
 #include <global.h>
 #include <neutrino.h>
 
-int x=15*5;
-int y=15*25;
-int BoxHeight=15*4;
-int BoxWidth=15*23;
+
+int x = 15*5;
+int y = 15*25;
+int BoxHeight = 15*4;
+int BoxWidth = 15*23;
 
 CScreenSetup::CScreenSetup()
 {
@@ -204,9 +205,9 @@ void CScreenSetup::hide()
 #endif
 }
 
-void CScreenSetup::paintBorder( int selected )
+void CScreenSetup::paintBorder( int _selected )
 {
-	if ( selected == 0 )
+	if ( _selected == 0 )
 		paintBorderUL();
 	else
 		paintBorderLR();
@@ -235,10 +236,10 @@ void CScreenSetup::paintCoords()
 	int w = 15*9;
 	int h = 15*6;
 
-	int x = (frameBuffer->getScreenWidth(true) - w) / 2;
-	int y = (frameBuffer->getScreenHeight(true) - h) / 2;
+	int x1 = (frameBuffer->getScreenWidth(true) - w) / 2;
+	int y1 = (frameBuffer->getScreenHeight(true) - h) / 2;
 
-	frameBuffer->paintBoxRel(x, y, 15*9, 15*6, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintBoxRel(x1, y1, 15*9, 15*6, COL_MENUCONTENT_PLUS_0);
 
 	char xpos[30];
 	char ypos[30];
@@ -250,10 +251,10 @@ void CScreenSetup::paintCoords()
 	sprintf((char*) &xepos, "EX: %d", x_coord[1] );
 	sprintf((char*) &yepos, "EY: %d", y_coord[1] );
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10,y+30, 200, xpos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10,y+50, 200, ypos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10,y+70, 200, xepos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+10,y+90, 200, yepos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 30, 200, xpos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 50, 200, ypos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 70, 200, xepos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 90, 200, yepos, COL_MENUCONTENT);
 }
 
 inline unsigned int make16color(__u32 rgb)

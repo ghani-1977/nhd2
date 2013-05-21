@@ -50,7 +50,7 @@
 //  -- (2004-03-06 rasc)
 // 
 
-int CEPGMenuHandler::exec(CMenuTarget* parent, const std::string &actionkey)
+int CEPGMenuHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 

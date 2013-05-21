@@ -113,7 +113,7 @@ class EpgPlus
 		{
 			//// construction / destruction
 			public:
-				Header ( CFrameBuffer* frameBuffer , int x , int y , int width);
+				Header( CFrameBuffer* _frameBuffer , int _x , int _y , int _width);
 
 				~Header();
 
@@ -138,15 +138,15 @@ class EpgPlus
 		{
 			//// construction / destruction
 			public:
-				TimeLine ( CFrameBuffer* frameBuffer , int x , int y , int width , int startX , int durationX);
+				TimeLine( CFrameBuffer* _frameBuffer , int _x , int _y , int _width , int _startX , int _durationX);
     
 				~TimeLine();
 
 			//// methods
 			public:
 				static void init();
-				void paint ( time_t startTime , int    duration);
-				void paintMark ( time_t startTime , int    duration , int    x , int    width);
+				void paint ( time_t startTime, int _duration);
+				void paintMark ( time_t startTime, int _duration , int _x , int _width);
 				void paintGrid();
 				void clearMark();
 				static int getUsedHeight();
@@ -172,7 +172,7 @@ class EpgPlus
 		{
 			//// construction / destruction
 			public:
-				ChannelEventEntry( const CChannelEvent* channelEvent, CFrameBuffer* frameBuffer, TimeLine* timeLine, Footer* footer, int x, int y, int width);
+				ChannelEventEntry( const CChannelEvent* _channelEvent, CFrameBuffer* _frameBuffer, TimeLine* _timeLine, Footer* _footer, int _x, int _y, int _width);
 				~ChannelEventEntry();
 
 			//// methods
@@ -263,10 +263,10 @@ class EpgPlus
 			//// construction / destruction
 			public:
 				Footer
-				  ( CFrameBuffer* frameBuffer
-				  , int x
-				  , int y
-				  , int width
+				  ( CFrameBuffer* _frameBuffer
+				  , int _x
+				  , int _y
+				  , int _width
 				  );
 
 				~Footer();
@@ -286,7 +286,7 @@ class EpgPlus
 				  );
 
 				void paintButtons
-				  ( button_label* buttonLabels
+				  ( button_label* _buttonLabels
 				  , int numberOfButtons
 				  );
 

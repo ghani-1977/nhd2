@@ -57,7 +57,7 @@ extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 //
 
 
-int CDVBSubSelectMenuHandler::exec(CMenuTarget* parent, const std::string &actionKey)
+int CDVBSubSelectMenuHandler::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 
@@ -103,7 +103,7 @@ int CDVBSubSelectMenuHandler::doMenu ()
 					sep_added = true;
 				}
 				char spid[10];
-				int pid = sd->pId;
+				//int pid = sd->pId;
 				snprintf(spid,sizeof(spid), "DVB:%d", sd->pId);
 				char item[64];
 	

@@ -66,7 +66,7 @@ public:
 		m_pass = a4;
 		m_type = type;
 	}
-	bool changeNotify(const neutrino_locale_t OptionName, void *)
+	bool changeNotify(const neutrino_locale_t /*OptionName*/, void *)
 	{
 		if(*m_type == (int)CFSMounter::NFS)
 		{
@@ -84,7 +84,7 @@ public:
 
 CNFSMountGui::CNFSMountGui()
 {
-#warning move probing from exec() to fsmounter
+//#warning move probing from exec() to fsmounter
 	m_nfs_sup = CFSMounter::FS_UNPROBED;
 	m_cifs_sup = CFSMounter::FS_UNPROBED;
 	m_lufs_sup = CFSMounter::FS_UNPROBED;
@@ -206,21 +206,21 @@ int CNFSMountGui::menu()
 	return ret;
 }
 
-#warning MESSAGEBOX_NO_YES_XXX is defined in neutrino.cpp, too!
+//#warning MESSAGEBOX_NO_YES_XXX is defined in neutrino.cpp, too!
 #define MESSAGEBOX_NO_YES_OPTION_COUNT 2
 const CMenuOptionChooser::keyval MESSAGEBOX_NO_YES_OPTIONS[MESSAGEBOX_NO_YES_OPTION_COUNT] =
 {
-	{ 0, LOCALE_MESSAGEBOX_NO  },
-	{ 1, LOCALE_MESSAGEBOX_YES }
+	{ 0, LOCALE_MESSAGEBOX_NO, NULL  },
+	{ 1, LOCALE_MESSAGEBOX_YES, NULL }
 };
 
 #define NFS_TYPE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval NFS_TYPE_OPTIONS[NFS_TYPE_OPTION_COUNT] =
 {
-	{ CFSMounter::NFS , LOCALE_NFS_TYPE_NFS  },
-	{ CFSMounter::CIFS, LOCALE_NFS_TYPE_CIFS },
-	{ CFSMounter::LUFS, LOCALE_NFS_TYPE_LUFS },
-	{ CFSMounter::SMBFS, LOCALE_NFS_TYPE_SMBFS }
+	{ CFSMounter::NFS , LOCALE_NFS_TYPE_NFS, NULL  },
+	{ CFSMounter::CIFS, LOCALE_NFS_TYPE_CIFS, NULL },
+	{ CFSMounter::LUFS, LOCALE_NFS_TYPE_LUFS, NULL },
+	{ CFSMounter::SMBFS, LOCALE_NFS_TYPE_SMBFS, NULL }
 };
 
 int CNFSMountGui::menuEntry(int nr)

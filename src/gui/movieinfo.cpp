@@ -343,7 +343,7 @@ bool CMovieInfo::loadMovieInfo(MI_MOVIE_INFO * movie_info, CFile * file)
 	return (result);
 }
 
-bool CMovieInfo::parseXmlTree(char *text, MI_MOVIE_INFO * movie_info)
+bool CMovieInfo::parseXmlTree(char */*text*/, MI_MOVIE_INFO */*movie_info*/)
 {
 #ifndef XMLTREE_LIB
 	return (false);		// no XML lib available return false
@@ -983,7 +983,7 @@ bool CMovieInfo::loadFile_std(CFile & file, char *buffer, int buffer_size)
 	return (result);
 }
 
-bool CMovieInfo::loadFile_vlc(CFile & file, char *buffer, int buffer_size)
+bool CMovieInfo::loadFile_vlc(CFile &/*file*/, char */*buffer*/, int /*buffer_size*/)
 {
 	bool result = false;
 	return (result);
@@ -1020,7 +1020,7 @@ bool CMovieInfo::saveFile_std(const CFile & file, const char *text, const int te
 	return (result);
 }
 
-bool CMovieInfo::saveFile_vlc(const CFile & file, const char *text, const int text_size)
+bool CMovieInfo::saveFile_vlc(const CFile &/*file*/, const char */*text*/, const int /*text_size*/)
 {
 	bool result = false;
 	return (result);

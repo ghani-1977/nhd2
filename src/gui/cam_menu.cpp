@@ -267,15 +267,15 @@ int CCAMMenuHandler::handleCamMsg (const neutrino_msg_t msg, neutrino_msg_data_t
 				char * sptr = pMenu->subtitle;
 				char * tptr = sptr;
 				int bpos = 0;
-				for(int i = 0; i < slen; i++) 
+				for(int i1 = 0; i1 < slen; i1++) 
 				{
-					if((tptr[i] == 0x8A) || ((bpos > 38) && (tptr[i] == 0x20)) ) 
+					if((tptr[i1] == 0x8A) || ((bpos >= 38) && (tptr[i1] == 0x20)) ) 
 					{
 						bpos = 0;
-						tptr[i] = 0;
+						tptr[i1] = 0;
 						printf("CCAMMenuHandler::handleCamMsg: subtitle: %s\n", sptr);
 						menu->addItem(new CMenuForwarderNonLocalized(convertDVBUTF8(sptr, strlen(sptr), 0).c_str(), false));
-						sptr = &tptr[i+1];
+						sptr = &tptr[i1+1];
 					}
 					bpos++;
 				}
@@ -310,13 +310,13 @@ int CCAMMenuHandler::handleCamMsg (const neutrino_msg_t msg, neutrino_msg_data_t
 		} 
 		else 
 		{
-			char str[255];
-			snprintf(str, 255, "%s\n%s\n%s", pMenu->title, pMenu->subtitle, pMenu->bottom);
+			char _str[255];
+			snprintf(_str, 255, "%s\n%s\n%s", pMenu->title, pMenu->subtitle, pMenu->bottom);
 			
 			if(hintBox)
 				delete hintBox;
 			//hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, convertDVBUTF8(pMenu->title, strlen(pMenu->title), 0).c_str());
-			hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, convertDVBUTF8(str, strlen(str), 0).c_str());
+			hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, convertDVBUTF8(_str, strlen(_str), 0).c_str());
 			hintBox->paint();
 			sleep(4);//FIXME
 			

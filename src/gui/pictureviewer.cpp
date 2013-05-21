@@ -104,7 +104,7 @@ CPictureViewerGui::~CPictureViewerGui()
 	delete m_viewer;
 }
 
-int CPictureViewerGui::exec(CMenuTarget* parent, const std::string & actionKey)
+int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	selected = 0;
 	

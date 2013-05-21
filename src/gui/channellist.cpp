@@ -110,7 +110,7 @@ void addChannelToBouquet(const unsigned int bouquet, const t_channel_id channel_
 
 extern int old_b_id;
 
-CChannelList::CChannelList(const char * const Name, bool historyMode, bool _vlist)
+CChannelList::CChannelList(const char * const Name, bool _historyMode, bool _vlist)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	name = Name;
@@ -118,7 +118,7 @@ CChannelList::CChannelList(const char * const Name, bool historyMode, bool _vlis
 	liststart = 0;
 	tuned = 0xfffffff;
 	zapProtection = NULL;
-	this->historyMode = historyMode;
+	this->historyMode = _historyMode;
 	vlist = _vlist;
 	
 	//printf("CChannelList::CChannelList: add %s : %x\n", name.c_str(), this);fflush(stdout);
@@ -218,14 +218,14 @@ void CChannelList::updateEvents(void)
 				p_requested_channels[count] = chanlist[count]->channel_id&0xFFFFFFFFFFFFULL;
 			}
 
-			CChannelEventList events;
-			sectionsd_getChannelEvents(events, (CNeutrinoApp::getInstance()->getMode()) != NeutrinoMessages::mode_radio, p_requested_channels, size_requested_channels);
+			CChannelEventList pevents;
+			sectionsd_getChannelEvents(pevents, (CNeutrinoApp::getInstance()->getMode()) != NeutrinoMessages::mode_radio, p_requested_channels, size_requested_channels);
 			
 			for (uint32_t count = 0; count < chanlist.size(); count++) 
 			{
 				chanlist[count]->currentEvent = CChannelEvent();
 				
-				for ( CChannelEventList::iterator e = events.begin(); e != events.end(); ++e )
+				for ( CChannelEventList::iterator e = pevents.begin(); e != pevents.end(); ++e )
 				{
 					if ((chanlist[count]->channel_id&0xFFFFFFFFFFFFULL) == e->get_channel_id())
 					{
@@ -1110,7 +1110,7 @@ bool CChannelList::zapTo_ChannelID(const t_channel_id channel_id)
 }
 
 // forceStoreToLastChannels defaults to false
-void CChannelList::zapTo(int pos, bool forceStoreToLastChannels)
+void CChannelList::zapTo(int pos, bool /*forceStoreToLastChannels*/)
 {
 	// show emty channellist error msg
 	if (chanlist.empty()) 
@@ -1671,7 +1671,7 @@ void CChannelList::clearItem2DetailsLine ()
 	  paintItem2DetailsLine(-1, 0);  
 }
 
-void CChannelList::paintItem2DetailsLine(int pos, int ch_index)
+void CChannelList::paintItem2DetailsLine(int pos, int /*ch_index*/)
 {
 #define ConnectLineBox_Width	16
 
@@ -1843,7 +1843,7 @@ void CChannelList::paintItem(int pos)
 
 			if ( (width - numwidth - 60 - SCROLLBAR_WIDTH - prg_offset - ch_name_len - icon_ca_w - icon_hd_w - 4) < ch_desc_len ) //60:???
 				ch_desc_len = (width - numwidth - 60 - SCROLLBAR_WIDTH - icon_ca_w - icon_hd_w - 4 - ch_name_len - prg_offset); //30: hd icon width
-			if (ch_desc_len < 0)
+			if (ch_desc_len <= 0)
 				ch_desc_len = 0;
 			
 			// next infos
@@ -2139,7 +2139,7 @@ void CChannelList::paintMiniTV()
 
 			for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
 			{
-				if ( i < epgText.size() )
+				if ( i < (int)epgText.size() )
 					g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
 				else
 					g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8

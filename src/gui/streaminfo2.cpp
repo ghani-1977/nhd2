@@ -203,7 +203,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 				cnt++;
 			int dheight = g_Font[font_info]->getHeight ();
 			int dx1 = x + 10;
-			int dy = y+ height - dheight - 5;
+			//int dy = y+ height - dheight - 5;
 			
 			/**/
 			if (ret && (lastb != bit_s)) 
@@ -343,9 +343,9 @@ void CStreamInfo2::hide ()
 #endif
 }
 
-void CStreamInfo2::paint_pig(int x, int y, int w, int h)
+void CStreamInfo2::paint_pig(int _x, int _y, int w, int h)
 {
-  	frameBuffer->paintBackgroundBoxRel (x, y, w, h);	
+  	frameBuffer->paintBackgroundBoxRel (_x, _y, w, h);	
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -356,9 +356,9 @@ void CStreamInfo2::paint_pig(int x, int y, int w, int h)
 	videoDecoder->getPictureInfo(xres, yres, framerate);
 	
 	if(xres <= 1280)	
-		videoDecoder->Pig( x, y, w, h );
+		videoDecoder->Pig( _x, _y, w, h );
 #else
-	videoDecoder->Pig( x, y, w, h );
+	videoDecoder->Pig( _x, _y, w, h );
 #endif
 }
 
@@ -414,8 +414,8 @@ void CStreamInfo2::paint_signal_fe_box(int _x, int _y, int w, int h)
 	signal.old_snr = 1;
 	signal.old_ber = 1;
 
-	feSignal s = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-//	paint_signal_fe(rate, signal);
+	//feSignal s = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	//paint_signal_fe(rate, signal);
 }
 
 void CStreamInfo2::paint_signal_fe(struct bitrate br, struct feSignal s)
@@ -505,7 +505,7 @@ void CStreamInfo2::SignalRenderStr(unsigned int value, int _x, int _y)
 	g_Font[font_small]->RenderString(_x, _y + 5, 60, str, COL_MENUCONTENTDARK, 0, true);
 }
 
-void CStreamInfo2::paint(int mode)
+void CStreamInfo2::paint(int /*mode*/)
 {
 	const char * head_string;
 
@@ -551,7 +551,7 @@ void CStreamInfo2::paint(int mode)
 
 void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 {
-	char buf[100], buf2[100];
+	char buf[100];
 	int xres, yres, framerate;
 	int aspectRatio;
 
@@ -672,8 +672,8 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 
 	//channel
 	CChannelList *channelList = CNeutrinoApp::getInstance ()->channelList;
-	int curnum = channelList->getActiveChannelNumber();
-	CZapitChannel * channel = channelList->getChannel(curnum);
+	//int curnum = channelList->getActiveChannelNumber();
+	//CZapitChannel * channel = channelList->getChannel(curnum);
 	CZapitClient::CCurrentServiceInfo si = g_Zapit->getCurrentServiceInfo();
 
 	ypos += iheight;
@@ -684,14 +684,14 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
  
 	//tsfrequenz
 	ypos += iheight;
-	char * f=NULL, *s=NULL, *m=NULL;
+	char * f = NULL, *s = NULL, *m = NULL;
 	
 	if(live_fe != NULL)
 	{
 		if( live_fe->getInfo()->type == FE_QPSK) 
 		{
 			live_fe->getDelSys((fe_code_rate_t)si.fec, dvbs_get_modulation((fe_code_rate_t)si.fec), f, s, m);
-			sprintf ((char *) buf,"%d.%d (%c) %d %s %s %s", si.tsfrequency / 1000, si.tsfrequency % 1000, si.polarisation ? 'V' : 'H', si.rate / 1000,f,m,s=="DVB-S2"?"S2":"S1");
+			sprintf ((char *) buf,"%d.%d (%c) %d %s %s %s", si.tsfrequency / 1000, si.tsfrequency % 1000, si.polarisation ? 'V' : 'H', si.rate / 1000,f,m,s/*=="DVB-S2"?"S2":"S1"*/);
 			g_Font[font_info]->RenderString(xpos, ypos, width*2/3-10, "Tp. Freq.:" , COL_MENUCONTENTDARK, 0, true); // UTF-8
 			g_Font[font_info]->RenderString(xpos + spaceoffset, ypos, width*2/3-10, buf, COL_MENUCONTENTDARK, 0, true); // UTF-8	
 		}
@@ -742,20 +742,24 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 	} 
 	else 
 	{
-		unsigned int i=0,j=0,sw=spaceoffset;
-		for (i= 0; (i<g_RemoteControl->current_PIDs.APIDs.size()) && (i<10); i++)
+		unsigned int i1 = 0, sw = spaceoffset;
+		for (i1 = 0; (i1 < g_RemoteControl->current_PIDs.APIDs.size()) && (i1 < 10); i1++)
 		{
-			sprintf((char*) buf, "0x%04x (%i)", g_RemoteControl->current_PIDs.APIDs[i].pid, g_RemoteControl->current_PIDs.APIDs[i].pid );
-			if (i == g_RemoteControl->current_PIDs.PIDs.selected_apid){
-				g_Font[font_small]->RenderString(xpos+sw, ypos, width*2/3-10, buf, COL_MENUHEAD, 0, true); // UTF-8
+			sprintf((char*) buf, "0x%04x (%i)", g_RemoteControl->current_PIDs.APIDs[i1].pid, g_RemoteControl->current_PIDs.APIDs[i1].pid );
+			if (i1 == g_RemoteControl->current_PIDs.PIDs.selected_apid)
+			{
+				g_Font[font_small]->RenderString(xpos + sw, ypos, width*2/3 - 10, buf, COL_MENUHEAD, 0, true); // UTF-8
 			}
-			else{
-				g_Font[font_small]->RenderString(xpos+sw, ypos, width*2/3-10, buf, COL_MENUCONTENTDARK, 0, true); // UTF-8
+			else
+			{
+				g_Font[font_small]->RenderString(xpos + sw, ypos, width*2/3 - 10, buf, COL_MENUCONTENTDARK, 0, true); // UTF-8
 			}
-			sw = g_Font[font_small]->getRenderWidth(buf)+sw+10;
-			if (((i+1)%3 == 0) &&(g_RemoteControl->current_PIDs.APIDs.size()-1 > i)){ // if we have lots of apids, put "intermediate" line with pids
-				ypos+= sheight;
-				sw=spaceoffset;
+			sw = g_Font[font_small]->getRenderWidth(buf) + sw + 10;
+			if (((i1 + 1)%3 == 0) &&(g_RemoteControl->current_PIDs.APIDs.size() - 1 > i1))
+			{ 
+				// if we have lots of apids, put "intermediate" line with pids
+				ypos += sheight;
+				sw = spaceoffset;
 			}
 		}
 	}
@@ -772,7 +776,7 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 	yypos = ypos;
 }
 
-int CStreamInfo2Handler::exec(CMenuTarget* parent, const std::string &actionkey)
+int CStreamInfo2Handler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 	
@@ -912,7 +916,7 @@ void CStreamInfo2::showSNR ()
 {
 	char percent[10];
 	int barwidth = 150;
-	uint16_t ssig, ssnr;
+	//uint16_t ssig, ssnr;
 	int sig, snr;
 	int posx, posy;
 	int sw;

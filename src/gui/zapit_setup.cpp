@@ -47,16 +47,16 @@ extern CBouquetList * bouquetList;
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
 const CMenuOptionChooser::keyval OPTIONS_OFF0_ON1_OPTIONS[OPTIONS_OFF0_ON1_OPTION_COUNT] =
 {
-        { 0, LOCALE_OPTIONS_OFF },
-        { 1, LOCALE_OPTIONS_ON  }
+        { 0, LOCALE_OPTIONS_OFF, NULL },
+        { 1, LOCALE_OPTIONS_ON, NULL  }
 };
 
 /* option off1 on0*/
 #define OPTIONS_OFF1_ON0_OPTION_COUNT 2
 const CMenuOptionChooser::keyval OPTIONS_OFF1_ON0_OPTIONS[OPTIONS_OFF1_ON0_OPTION_COUNT] =
 {
-        { 1, LOCALE_OPTIONS_OFF },
-        { 0, LOCALE_OPTIONS_ON  }
+        { 1, LOCALE_OPTIONS_OFF, NULL },
+        { 0, LOCALE_OPTIONS_ON, NULL  }
 };
 
 //option off0_on1

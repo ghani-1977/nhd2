@@ -63,7 +63,7 @@
 #define PSI_STEP	5
 
 
-void CPSISetup::setContrast(int contrast)
+void CPSISetup::setContrast(int Contrast)
 {
 	FILE* fd;
 #ifdef __sh__
@@ -72,11 +72,11 @@ void CPSISetup::setContrast(int contrast)
 	fd = fopen("/proc/stb/vmpeg/0/pep_contrast", "w");
 #endif
 	if(fd > 0)
-		fprintf(fd, "%d", contrast);
+		fprintf(fd, "%d", Contrast);
 	fclose(fd);
 }
 
-void CPSISetup::setSaturation(int saturation)
+void CPSISetup::setSaturation(int Saturation)
 {
 	FILE* fd;
 #ifdef __sh__
@@ -85,11 +85,11 @@ void CPSISetup::setSaturation(int saturation)
 	fd = fopen("/proc/stb/vmpeg/0/pep_saturation", "w");
 #endif
 	if(fd > 0)
-		fprintf(fd, "%d", saturation);
+		fprintf(fd, "%d", Saturation);
 	fclose(fd);
 }
 
-void CPSISetup::setBrightness(int brightness)
+void CPSISetup::setBrightness(int Brightness)
 {
 	FILE* fd;
 #ifdef __sh__
@@ -98,11 +98,11 @@ void CPSISetup::setBrightness(int brightness)
 	fd = fopen("/proc/stb/vmpeg/0/pep_brightness", "w");
 #endif
 	if(fd > 0)
-		fprintf(fd, "%d", brightness);
+		fprintf(fd, "%d", Brightness);
 	fclose(fd);
 }
 
-void CPSISetup::setTint(int tint)
+void CPSISetup::setTint(int Tint)
 {
 	FILE* fd;
 #ifdef __sh__
@@ -111,7 +111,7 @@ void CPSISetup::setTint(int tint)
 	fd = fopen("/proc/stb/vmpeg/0/pep_hue", "w");
 #endif
 	if(fd > 0)
-		fprintf(fd, "%d", tint);
+		fprintf(fd, "%d", Tint);
 	fclose(fd);
 }
 
@@ -460,7 +460,7 @@ void CPSISetup::paint()
 	paintSlider(x + 10, y + hheight + 3*mheight, tint, LOCALE_PSISETUP_TINT, NEUTRINO_ICON_VOLUMESLIDER2, false);
 }
 
-void CPSISetup::paintSlider(const int x, const int y, const unsigned char * const spos, const neutrino_locale_t text, const char * const iconname, const bool selected) // UTF-8
+void CPSISetup::paintSlider(const int _x, const int _y, const unsigned char * const spos, const neutrino_locale_t text, const char * const iconname, const bool /*selected*/) // UTF-8
 {
 	if (!spos)
 		return;
@@ -477,16 +477,16 @@ void CPSISetup::paintSlider(const int x, const int y, const unsigned char * cons
 	
 	int startx = width - icon_w - slider_w - 50;
 
-	frameBuffer->paintBoxRel(x + startx, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintBoxRel(_x + startx, _y, 120, mheight, COL_MENUCONTENT_PLUS_0);
 
-	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + startx, y + 2 + mheight / 4);
-	frameBuffer->paintIcon(iconname, x + startx + 3 + sspos, y + mheight / 4);
+	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, _x + startx, _y + 2 + mheight / 4);
+	frameBuffer->paintIcon(iconname, _x + startx + 3 + sspos, _y + mheight / 4);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x, y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x, _y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
 	
 	sprintf(wert, "%3d", sspos); // UTF-8 encoded
 
-	frameBuffer->paintBoxRel(x + startx + 120 + 10, y, 50, mheight, COL_MENUCONTENT_PLUS_0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + startx + 120 + 10, y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
+	frameBuffer->paintBoxRel(_x + startx + 120 + 10, _y, 50, mheight, COL_MENUCONTENT_PLUS_0);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x + startx + 120 + 10, _y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
 }
 

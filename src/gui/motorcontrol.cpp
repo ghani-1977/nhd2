@@ -468,28 +468,28 @@ void CMotorControl::hide()
 	stopSatFind();
 }
 
-void CMotorControl::paintLine(int x, int * y, int width, char * txt)
+void CMotorControl::paintLine(int _x, int * _y, int _width, char * txt)
 {
-	*y += mheight;
-	frameBuffer->paintBoxRel(x, *y - mheight, width, mheight, COL_MENUCONTENT_PLUS_0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x, *y, width, txt, COL_MENUCONTENT, 0, true);
+	*_y += mheight;
+	frameBuffer->paintBoxRel(_x, *_y - mheight, _width, mheight, COL_MENUCONTENT_PLUS_0);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(_x, *_y, _width, txt, COL_MENUCONTENT, 0, true);
 }
 
-void CMotorControl::paintLine(int x, int y, int width, char * txt)
+void CMotorControl::paintLine(int _x, int _y, int _width, char * txt)
 {
-	//frameBuffer->paintBoxRel(x, y - mheight, width, mheight, COL_MENUCONTENT_PLUS_0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x, y, width, txt, COL_MENUCONTENT, 0, true);
+	//frameBuffer->paintBoxRel(_x, _y - mheight, _width, mheight, COL_MENUCONTENT_PLUS_0);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(_x, _y, _width, txt, COL_MENUCONTENT, 0, true);
 }
 
-void CMotorControl::paintSeparator(int xpos, int * ypos, int width, char * txt)
+void CMotorControl::paintSeparator(int xpos, int * _ypos, int _width, char * /*txt*/)
 {
 	//int stringwidth = 0;
 	//int stringstartposX = 0;
 	int th = 10;
 	//*ypos += mheight;
-	*ypos += th;
-	frameBuffer->paintHLineRel(xpos, width - 20, *ypos - (th >> 1), COL_MENUCONTENT_PLUS_3);
-	frameBuffer->paintHLineRel(xpos, width - 20, *ypos - (th >> 1) + 1, COL_MENUCONTENT_PLUS_1);
+	*_ypos += th;
+	frameBuffer->paintHLineRel(xpos, _width - 20, *_ypos - (th >> 1), COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintHLineRel(xpos, _width - 20, *_ypos - (th >> 1) + 1, COL_MENUCONTENT_PLUS_1);
 	
 #if 0
 	stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(txt);

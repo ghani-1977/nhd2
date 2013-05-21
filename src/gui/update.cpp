@@ -137,9 +137,9 @@ class CNonLocalizedMenuSeparator : public CMenuSeparator
 	const char * the_text;
 
 	public:
-		CNonLocalizedMenuSeparator(const char * text, const neutrino_locale_t Text) : CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, Text)
+		CNonLocalizedMenuSeparator(const char *ltext, const neutrino_locale_t Text) : CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, Text)
 		{
-			the_text = text;
+			the_text = ltext;
 		}
 
 		virtual const char * getString(void)
@@ -558,27 +558,27 @@ CFlashExpert::CFlashExpert()
 	selectedMTD = -1;
 }
 
-void CFlashExpert::readmtd(int readmtd)
+void CFlashExpert::readmtd(int _readmtd)
 {
 	char tmp[10];
-	sprintf(tmp, "%d", readmtd);
+	sprintf(tmp, "%d", _readmtd);
 	std::string filename = "/tmp/mtd";
 	filename += tmp;
 	filename += ".img"; // US-ASCII (subset of UTF-8 and ISO8859-1)
 
-	if (readmtd == -1) 
+	if (_readmtd == -1) 
 	{
 		filename = "/tmp/flashimage.img"; // US-ASCII (subset of UTF-8 and ISO8859-1)
-		readmtd = MTD_OF_WHOLE_IMAGE;
+		_readmtd = MTD_OF_WHOLE_IMAGE;
 	}
 	
 	setTitle(LOCALE_FLASHUPDATE_TITLEREADFLASH);
 	paint();
 	showGlobalStatus(0);
-	showStatusMessageUTF((std::string(g_Locale->getText(LOCALE_FLASHUPDATE_ACTIONREADFLASH)) + " (" + CMTDInfo::getInstance()->getMTDName(readmtd) + ')')); // UTF-8
+	showStatusMessageUTF((std::string(g_Locale->getText(LOCALE_FLASHUPDATE_ACTIONREADFLASH)) + " (" + CMTDInfo::getInstance()->getMTDName(_readmtd) + ')')); // UTF-8
 	CFlashTool ft;
 	ft.setStatusViewer( this );
-	ft.setMTDDevice(CMTDInfo::getInstance()->getMTDFileName(readmtd));
+	ft.setMTDDevice(CMTDInfo::getInstance()->getMTDFileName(_readmtd));
 
 	if(!ft.readFromMTD(filename, 100)) 
 	{
@@ -647,10 +647,10 @@ void CFlashExpert::showMTDSelector(const std::string & actionkey)
 	
 	CMTDInfo* mtdInfo =CMTDInfo::getInstance();
 
-	for(int x = 0; x < mtdInfo->getMTDCount(); x++) 
+	for(int x1 = 0; x1 < mtdInfo->getMTDCount(); x1++) 
 	{
 		char sActionKey[20];
-		sprintf(sActionKey, "%s%d", actionkey.c_str(), x);
+		sprintf(sActionKey, "%s%d", actionkey.c_str(), x1);
 
 		/* for Cuberevo family boxes */
 		/*
@@ -680,19 +680,15 @@ void CFlashExpert::showMTDSelector(const std::string & actionkey)
 		*/
 		
 		if(actionkey == "writemtd")
-		{
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)			  
-			if ( /*x != 0 && x != 1 && x != 2 && x != 3 && x != 4*/x > 4 && x != 8)
-#endif			  
-			{
-				mtdselector->addItem(new CMenuForwarderNonLocalized(mtdInfo->getMTDName(x).c_str(), true, NULL, this, sActionKey));
-			}
+		{			  
+			mtdselector->addItem(new CMenuForwarderNonLocalized(mtdInfo->getMTDName(x1).c_str(), true, NULL, this, sActionKey));
 		}
 		else if(actionkey == "readmtd")
 		{
-			mtdselector->addItem(new CMenuForwarderNonLocalized(mtdInfo->getMTDName(x).c_str(), true, NULL, this, sActionKey));
+			mtdselector->addItem(new CMenuForwarderNonLocalized(mtdInfo->getMTDName(x1).c_str(), true, NULL, this, sActionKey));
 		}
 	}
+	
 	mtdselector->exec(NULL,"");
 	delete mtdselector;
 }
@@ -721,7 +717,7 @@ void CFlashExpert::showFileSelector(const std::string & actionkey)
 			if(pos!=-1)
 			{
 				fileselector->addItem(new CMenuForwarderNonLocalized(filen.c_str(), true, NULL, this, (actionkey + filen).c_str()));
-#warning TODO: make sure file is UTF-8 encoded
+//#warning TODO: make sure file is UTF-8 encoded
 			}
 			free(namelist[count]);
 		}

@@ -180,8 +180,8 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORAT
 #define VIDEOMENU_VIDEORATIO_OPTION_COUNT 3
 const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
 {
-	{ 0, LOCALE_VIDEOMENU_VIDEORATIO_43 },
-	{ 1, LOCALE_VIDEOMENU_VIDEORATIO_169 },
+	{ 0, LOCALE_VIDEOMENU_VIDEORATIO_43, NULL },
+	{ 1, LOCALE_VIDEOMENU_VIDEORATIO_169, NULL },
 	{ 2, NONEXISTANT_LOCALE, "Auto" }
 };
 #endif
@@ -197,10 +197,10 @@ bestfit
 #define VIDEOMENU_VIDEOFORMAT_OPTION_COUNT 4
 const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFORMAT_OPTION_COUNT] = 
 {
-	{ 0, LOCALE_VIDEOMENU_LETTERBOX },
-	{ 1, LOCALE_VIDEOMENU_PANSCAN },
-	{ 2, LOCALE_VIDEOMENU_FULLSCREEN },
-	{ 3, LOCALE_VIDEOMENU_PANSCAN2 }
+	{ 0, LOCALE_VIDEOMENU_LETTERBOX, NULL },
+	{ 1, LOCALE_VIDEOMENU_PANSCAN, NULL },
+	{ 2, LOCALE_VIDEOMENU_FULLSCREEN, NULL },
+	{ 3, LOCALE_VIDEOMENU_PANSCAN2, NULL }
 };
 #else
 // giga
@@ -213,10 +213,10 @@ nonlinear
 #define VIDEOMENU_VIDEOFORMAT_OPTION_COUNT 4
 const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFORMAT_OPTION_COUNT] = 
 {
-	{ 0, LOCALE_VIDEOMENU_LETTERBOX },
-	{ 1, LOCALE_VIDEOMENU_PANSCAN },
-	{ 2, LOCALE_VIDEOMENU_PANSCAN2 },
-	{ 3, LOCALE_VIDEOMENU_FULLSCREEN }
+	{ 0, LOCALE_VIDEOMENU_LETTERBOX, NULL },
+	{ 1, LOCALE_VIDEOMENU_PANSCAN, NULL },
+	{ 2, LOCALE_VIDEOMENU_PANSCAN2, NULL },
+	{ 3, LOCALE_VIDEOMENU_FULLSCREEN, NULL }
 };
 #endif
 
@@ -251,7 +251,7 @@ bool get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_info, std::string 
 	return false;
 }
 
-int CAPIDSelectExec::exec(CMenuTarget * parent, const std::string & actionKey)
+int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey)
 {
 	apidchanged = 0;
 	unsigned int sel = atoi(actionKey.c_str());
@@ -2026,7 +2026,7 @@ void CMoviePlayerGui::PlayFile(void)
 					switch(g_ac3flags[count])
 					{
 						case 1: /*AC3,EAC3*/
-							if (apidtitle.find("AC3") < 0 || is_file_player)
+							if (apidtitle.find("AC3") <= 0 || is_file_player)
 							{
 								apidtitle.append(" (AC3)");
 								

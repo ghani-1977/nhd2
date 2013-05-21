@@ -726,7 +726,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 
 void CInfoViewer::showSubchan()
 {
-  	CFrameBuffer *frameBuffer = CFrameBuffer::getInstance();
+  	//CFrameBuffer *frameBuffer = CFrameBuffer::getInstance();
   	CNeutrinoApp *neutrino = CNeutrinoApp::getInstance();
 
   	std::string subChannelName;	// holds the name of the subchannel/audio channel
@@ -938,7 +938,7 @@ void CInfoViewer::showIcon_Resolution() const
 		}
 		
 		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
-		if(icon_name_res !=NEUTRINO_ICON_RESOLUTION_000)
+		//if(icon_name_res != NEUTRINO_ICON_RESOLUTION_000)
 			frameBuffer->paintIcon(icon_name_res, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2 );
 		
 		// resolution
@@ -1002,9 +1002,8 @@ void CInfoViewer::showIcon_Resolution() const
 				break;
 		}
 	
-
 		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
-		if(icon_name !=NEUTRINO_ICON_RESOLUTION_000)
+		//if(icon_name != NEUTRINO_ICON_RESOLUTION_000)
 			frameBuffer->paintIcon(icon_name, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2 );
 	}
 }
@@ -1520,7 +1519,7 @@ void CInfoViewer::showSNR()
 				{
 					int Index = 0;
 					
-					for(unsigned int i = 0; i < FrontendCount; i++)
+					for(int i = 0; i < FrontendCount; i++)
 					{
 						CFrontend * fe = getFE(i);
 						
@@ -1665,8 +1664,8 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				}
 
 				// hline
-				int height = g_SignalFont->getHeight() - 1;
-				int HlineYPos = BoxStartY + ChanHeight + 4 - 2 * height;
+				int lheight = g_SignalFont->getHeight() - 1;
+				int HlineYPos = BoxStartY + ChanHeight + 4 - 2*lheight;
 				int posx = BoxStartX + 5;
 				int posy = HlineYPos + 3;
 				
@@ -1977,7 +1976,7 @@ void CInfoViewer::showEpgInfo()   //message on event change
 	}
 }
 
-int CInfoViewerHandler::exec(CMenuTarget * parent, const std::string & actionkey)
+int CInfoViewerHandler::exec(CMenuTarget * parent, const std::string &/*actionkey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 	CChannelList * channelList;

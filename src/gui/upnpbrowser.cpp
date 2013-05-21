@@ -840,7 +840,7 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 					}
 					else if ((mime == "image/gif") || (mime == "image/jpeg"))
 					{
-						bool loop = true;
+						bool _loop = true;
 						g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
 						g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
 
@@ -852,12 +852,12 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 
 						g_PicViewer->ShowImage((*entries)[selected - index].resources[preferred].url, true);
 						
-						while (loop)
+						while (_loop)
 						{
 							g_RCInput->getMsg(&msg, &data, 10); // 1 sec timeout to update play/stop state display
 
 							if( msg == CRCInput::RC_home)
-								loop = false;
+								_loop = false;
 						}
 					
 						m_frameBuffer->ClearFrameBuffer();

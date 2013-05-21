@@ -410,10 +410,10 @@ int CAudioPlayerGui::show()
 
 					sprintf(fname, "%s/mp3-%d.jpg", DATADIR "/neutrino/icons", pic_index);
 
-					int ret = access(fname, F_OK);
-					dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret ? "not found" : "found");
+					int ret1 = access(fname, F_OK);
+					dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret1 ? "not found" : "found");
 					
-					if(ret == 0) 
+					if(ret1 == 0) 
 					{
 						pic_index++;
 
@@ -557,7 +557,7 @@ int CAudioPlayerGui::show()
 			if(m_show_playlist && !m_playlist.empty() )
 			{
 				int prevselected = m_selected;
-				int step =  msg == CRCInput::RC_page_down ? m_listmaxshow : 1;
+				unsigned int step =  msg == CRCInput::RC_page_down ? m_listmaxshow : 1;
 				m_selected += step;
 
 				if(m_selected >= m_playlist.size()) {

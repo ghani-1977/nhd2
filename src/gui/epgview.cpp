@@ -251,14 +251,14 @@ void CEpgData::showText( int startPos, int ypos )
 	medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 	medlinecount=(oy - topboxheight - botboxheight)/medlineheight;
 
-	int textCount = epgText.size();
-	int y=ypos;
+	int _textCount = epgText.size();
+	int y = ypos;
 
 	frameBuffer->paintBoxRel(sx, y, ox - 15, sb, COL_MENUCONTENT_PLUS_0);
 
-	for(int i = startPos; i < textCount && i < startPos+medlinecount; i++, y += medlineheight)
+	for(int i = startPos; i < _textCount && i < startPos + medlinecount; i++, y += medlineheight)
 	{
-		if ( i< info1_lines )
+		if ( i < info1_lines )
 			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(sx + 10, y + medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
 		else
 			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(sx + 10, y + medlineheight, ox - 15 - 15, epgText[i], COL_MENUCONTENT, 0, true); // UTF-8
@@ -266,11 +266,11 @@ void CEpgData::showText( int startPos, int ypos )
 
 	frameBuffer->paintBoxRel(sx + ox - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((textCount- 1)/ medlinecount)+ 1;
-	float sbh= (sb - 4)/ sbc;
+	int sbc= ((_textCount - 1)/ medlinecount) + 1;
+	float sbh = (sb - 4)/ sbc;
 	int sbs= (startPos + 1)/ medlinecount;
 
-	frameBuffer->paintBoxRel(sx + ox - 13, ypos + 2 + int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(sx + ox - 13, ypos + 2 + int(sbs*sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 }
 
 #define GENRE_MOVIE_COUNT 9
@@ -426,7 +426,7 @@ const neutrino_locale_t * genre_sub_classes_list[10] =
 	genre_travel_hobbies
 };
 
-bool CEpgData::hasFollowScreenings(const t_channel_id channel_id, const std::string & title) 
+bool CEpgData::hasFollowScreenings(const t_channel_id /*channel_id*/, const std::string & title) 
 {
 	time_t curtime = time(NULL);
 	
@@ -1100,7 +1100,7 @@ void CEpgData::GetPrevNextEPGData( unsigned long long id, time_t* startzeit )
 // -- 2002-05-03 rasc
 //
 
-int CEpgData::FollowScreenings (const t_channel_id channel_id, const std::string & title)
+int CEpgData::FollowScreenings (const t_channel_id /*channel_id*/, const std::string & title)
 {
 	CChannelEventList::iterator e;
 	time_t			curtime;
@@ -1156,7 +1156,7 @@ int CEpgData::FollowScreenings (const t_channel_id channel_id, const std::string
 // -- 2002-05-13 rasc
 //
 
-void CEpgData::showTimerEventBar (bool show)
+void CEpgData::showTimerEventBar (bool _show)
 {
 	int  x, y, w, h;
 	int  cellwidth;		// 4 cells
@@ -1170,7 +1170,7 @@ void CEpgData::showTimerEventBar (bool show)
 	cellwidth = w / 4;
 	
 	// hide only?
-	if (! show)
+	if (! _show)
 	{
 		// hide
 		frameBuffer->paintBackgroundBoxRel(x, y, w, h);
@@ -1217,7 +1217,7 @@ void CEpgData::showTimerEventBar (bool show)
 //  -- to be used for calls from Menue
 //  -- (2004-03-06 rasc)
 
-int CEPGDataHandler::exec(CMenuTarget* parent, const std::string &actionKey)
+int CEPGDataHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	int           res = menu_return::RETURN_REPAINT;
 	CChannelList  *channelList;
