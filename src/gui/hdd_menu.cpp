@@ -391,12 +391,12 @@ int CHDDMenuHandler::hddMenu()
 int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 {
 	char cmd[100];
-	//CHintBox * hintbox;
+	CHintBox * hintbox;
 	int res;
 	FILE * f;
 	char dst[128];
 	CProgressWindow * progress;
-	//bool idone;
+	bool idone;
 
 	printf("CHDDInit: key %s\n", actionKey.c_str());
 
@@ -625,7 +625,7 @@ int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	bool mountPoint = false;
 	
 	CProgressWindow * progress;
-	//bool idone;
+	bool idone;
 
 	sprintf(src, "/dev/%s", actionKey.c_str());
 	//sprintf((char *)dst, "/media/%s", actionKey.c_str());
@@ -749,7 +749,7 @@ int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	printf("CHDDFmtExec: executing %s\n", cmd);
 	system(cmd);
 
-//_remount:
+_remount:
 	progress->hide();
 	delete progress;
 
@@ -798,10 +798,10 @@ int CHDDChkExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	const char * fstype = NULL;
 	bool mountPoint = false;
 	
-	//FILE * f;
-	CProgressWindow * progress = NULL;
-	//int oldpass = 0, pass, step, total;
-	//int percent = 0, opercent = 0;
+	FILE * f;
+	CProgressWindow * progress;
+	int oldpass = 0, pass, step, total;
+	int percent = 0, opercent = 0;
 
 	sprintf(src, "/dev/%s", actionKey.c_str());
 
@@ -923,7 +923,7 @@ int CHDDChkExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	progress->hide();
 	delete progress;
 
-//ret1:
+ret1:
 	//fstype = blkid_get_tag_value(NULL, "TYPE", src);
 	//printf("fstype: %s\n", fstype);
 
