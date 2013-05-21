@@ -637,6 +637,8 @@ bool cPlayback::SetSpeed(int speed)
 		{
 			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
 		}
+		//FIXME: brocken
+		/*
 		//ff
 		else if(speed > 1)
 		{
@@ -647,6 +649,7 @@ bool cPlayback::SetSpeed(int speed)
 		{
 			trickSeek(speed);
 		}
+		*/
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	int speedmap = 0;
