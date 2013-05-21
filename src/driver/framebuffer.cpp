@@ -67,10 +67,10 @@ void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(c
 static uint32_t * virtual_fb = NULL;
 
 inline unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
-                                  uint32_t  rl = 0, uint32_t  ro = 0,
-                                  uint32_t  gl = 0, uint32_t  go = 0,
-                                  uint32_t  bl = 0, uint32_t  bo = 0,
-                                  uint32_t  tl = 0, uint32_t  to = 0)
+                                  uint32_t  /*rl*/ = 0, uint32_t  /*ro*/ = 0,
+                                  uint32_t  /*gl*/ = 0, uint32_t  /*go*/ = 0,
+                                  uint32_t  /*bl*/ = 0, uint32_t  /*bo*/ = 0,
+                                  uint32_t  /*tl*/ = 0, uint32_t  /*to*/ = 0)
 {
         return ((t << 24) & 0xFF000000) | ((r << 8) & 0xFF0000) | ((g << 0) & 0xFF00) | (b >> 8 & 0xFF);
 }
@@ -118,7 +118,7 @@ CFrameBuffer* CFrameBuffer::getInstance()
 	return frameBuffer;
 }
 
-void CFrameBuffer::init(const char * const fbDevice)
+void CFrameBuffer::init(const char * const /*fbDevice*/)
 {
 	int tr = 0xFF;
 	
@@ -237,7 +237,7 @@ void CFrameBuffer::init(const char * const fbDevice)
 
 	return;
 
-nolfb:
+//nolfb:
 	dprintf(DEBUG_NORMAL, "CFrameBuffer::init: framebuffer not available.\n");
 	lfb = 0;
 }
@@ -763,9 +763,9 @@ void CFrameBuffer::getIconSize(const char * const filename, int * width, int * h
 
 	if (icon_fd == -1)
 	{
-		std::string      iconfile = iconBasePath + filename + ".raw";
+		std::string iconfile1 = iconBasePath + filename + ".raw";
 		
-		icon_fd = open(iconfile.c_str(), O_RDONLY);
+		icon_fd = open(iconfile1.c_str(), O_RDONLY);
 		
 		if (icon_fd == -1)
 		{
@@ -818,17 +818,17 @@ bool CFrameBuffer::paintIcon8(const std::string & filename, const int x, const i
 
 	struct rawHeader header;
 	uint16_t         width, height;
-	int              fd;
+	int              _fd;
 
-	fd = open((iconBasePath + filename).c_str(), O_RDONLY);
+	_fd = open((iconBasePath + filename).c_str(), O_RDONLY);
 
-	if (fd == -1) 
+	if (_fd == -1) 
 	{
 		printf("CFrameBuffer::paintIcon8: error while loading icon: %s%s\n", iconBasePath.c_str(), filename.c_str());
 		return false;
 	}
 
-	read(fd, &header, sizeof(struct rawHeader));
+	read(_fd, &header, sizeof(struct rawHeader));
 
 	width  = (header.width_hi  << 8) | header.width_lo;
 	height = (header.height_hi << 8) | header.height_lo;
@@ -839,12 +839,12 @@ bool CFrameBuffer::paintIcon8(const std::string & filename, const int x, const i
 	
 	fb_pixel_t * d2;
 
-	for (int count=0; count<height; count ++ ) 
+	for (int count = 0; count < height; count ++ ) 
 	{
 		read(fd, &pixbuf[0], width );
 		unsigned char *pixpos = &pixbuf[0];
 		d2 = (fb_pixel_t *) d;
-		for (int count2=0; count2<width; count2 ++ ) 
+		for (int count2 = 0; count2 < width; count2 ++ ) 
 		{
 			unsigned char color = *pixpos;
 			
@@ -858,7 +858,7 @@ bool CFrameBuffer::paintIcon8(const std::string & filename, const int x, const i
 		}
 		d += stride;
 	}
-	close(fd);
+	close(_fd);
 
 	return true;
 }
@@ -962,7 +962,7 @@ bool CFrameBuffer::paintIconRaw(const std::string & filename, const int x, const
 * if height h is given, center vertically between y and y+h
 * offset is a color offset (probably only useful with palette) 
 */
-bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const int y, const int h, const unsigned char offset, bool paint)
+bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const int y, const int h, const unsigned char /*offset*/, bool paint)
 {
 	if (!getActive())
 		return false;
@@ -1026,32 +1026,32 @@ void CFrameBuffer::loadPal(const std::string & filename, const unsigned char off
 		return;
 
 	struct rgbData rgbdata;
-	int            fd;
+	int            _fd;
 
-	fd = open((iconBasePath + filename).c_str(), O_RDONLY);
+	_fd = open((iconBasePath + filename).c_str(), O_RDONLY);
 
-	if (fd == -1) 
+	if (_fd == -1) 
 	{
 		printf("CFrameBuffer::loadPal: error while loading palette: %s%s\n", iconBasePath.c_str(), filename.c_str());
 		return;
 	}
 
 	int pos = 0;
-	int readb = read(fd, &rgbdata,  sizeof(rgbdata) );
+	int readb = read(_fd, &rgbdata,  sizeof(rgbdata) );
 	
 	while(readb) 
 	{
 		__u32 rgb = (rgbdata.r<<16) | (rgbdata.g<<8) | (rgbdata.b);
 		int colpos = offset+pos;
-		if( colpos>endidx)
+		if( colpos > endidx)
 			break;
 
 		paletteSetColor(colpos, rgb, 0xFF);
-		readb = read(fd, &rgbdata,  sizeof(rgbdata) );
+		readb = read(_fd, &rgbdata,  sizeof(rgbdata) );
 		pos++;
 	}
 	paletteSet(&cmap);
-	close(fd);
+	close(_fd);
 }
 
 void CFrameBuffer::paintPixel(const int x, const int y, const fb_pixel_t col)
@@ -1159,20 +1159,20 @@ void CFrameBuffer::setBackgroundColor(const fb_pixel_t color)
 }
 
 // raw as background image
-bool CFrameBuffer::loadPictureToMem(const std::string & filename, const uint16_t width, const uint16_t height, const uint16_t stride, fb_pixel_t * memp)
+bool CFrameBuffer::loadPictureToMem(const std::string & filename, const uint16_t width, const uint16_t height, const uint16_t _stride, fb_pixel_t * memp)
 {
 	struct rawHeader header;
-	int              fd;	
+	int              _fd;	
 
-	fd = open((iconBasePath + filename).c_str(), O_RDONLY );
+	_fd = open((iconBasePath + filename).c_str(), O_RDONLY );
 
-	if (fd == -1)
+	if (_fd == -1)
 	{
 		printf("CFrameBuffer::loadPictureToMem: error while loading icon: %s%s\n", iconBasePath.c_str(), filename.c_str());
 		return false;
 	}
 
-	read(fd, &header, sizeof(struct rawHeader));
+	read(_fd, &header, sizeof(struct rawHeader));
 
 	if ((width  != ((header.width_hi  << 8) | header.width_lo)) || (height != ((header.height_hi << 8) | header.height_lo)))
 	{
@@ -1180,13 +1180,15 @@ bool CFrameBuffer::loadPictureToMem(const std::string & filename, const uint16_t
 		return false;
 	}
 
-	if ((stride == 0) || (stride == width * sizeof(fb_pixel_t)))
-		read(fd, memp, height * width * sizeof(fb_pixel_t));
+	if ((_stride == 0) || (_stride == width * sizeof(fb_pixel_t)))
+		read(_fd, memp, height * width * sizeof(fb_pixel_t));
 	else
+	{
 		for (int i = 0; i < height; i++)
-			read(fd, ((uint8_t *)memp) + i * stride, width * sizeof(fb_pixel_t));
+			read(_fd, ((uint8_t *)memp) + i * _stride, width * sizeof(fb_pixel_t));
+	}
 
-	close(fd);
+	close(_fd);
 	
 	return true;
 }
@@ -1208,7 +1210,7 @@ bool CFrameBuffer::savePictureFromMem(const std::string & filename, const fb_pix
 {
 	struct rawHeader header;
 	uint16_t         width, height;
-	int              fd;
+	int              _fd;
 	
 	width = BACKGROUNDIMAGEWIDTH;
 	height = BACKGROUNDIMAGEHEIGHT;
@@ -1219,19 +1221,20 @@ bool CFrameBuffer::savePictureFromMem(const std::string & filename, const fb_pix
 	header.height_hi = height >>    8;
 	header.transp    =              0;
 
-	fd = open((iconBasePath + filename).c_str(), O_WRONLY | O_CREAT);
+	_fd = open((iconBasePath + filename).c_str(), O_WRONLY | O_CREAT);
 
-	if (fd==-1)
+	if (_fd==-1)
 	{
 		printf("CFrameBuffer::savePictureFromMem: error while saving icon: %s%s", iconBasePath.c_str(), filename.c_str() );
 		return false;
 	}
 
-	write(fd, &header, sizeof(struct rawHeader));
+	write(_fd, &header, sizeof(struct rawHeader));
 
-	write(fd, memp, width * height * sizeof(fb_pixel_t));
+	write(_fd, memp, width * height * sizeof(fb_pixel_t));
 
-	close(fd);
+	close(_fd);
+	
 	return true;
 }
 
@@ -1758,7 +1761,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 	unsigned char * buffer;
 	fb_pixel_t * ret = NULL;
 	int load_ret;
-	int bpp = 0;
+	int _bpp = 0;
 
   	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
@@ -1773,7 +1776,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 		}
 		
 		if ((name.find(".png") == (name.length() - 4)) && (fh_png_id(name.c_str())))
-			load_ret = png_load_ext(name.c_str(), &buffer, &x, &y, &bpp);
+			load_ret = png_load_ext(name.c_str(), &buffer, &x, &y, &_bpp);
 		else
 			load_ret = fh->get_pic(name.c_str(), &buffer, &x, &y);
 
@@ -1783,7 +1786,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			if(x != width || y != height)
 			{
 				// alpha
-				if(bpp == 4)
+				if(_bpp == 4)
 					buffer = Resize(buffer, x, y, width, height, COLOR, NULL, true);
 				else
 					buffer = Resize(buffer, x, y, width, height, COLOR);
@@ -1825,7 +1828,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	CFormathandler * fh;
 	unsigned char * rgbbuff;
 	fb_pixel_t * fbbuff = NULL;
-	int bpp = 0;
+	int _bpp = 0;
 
   	fh = fh_getsize(name.c_str(), &x, &y, INT_MAX, INT_MAX);
 	
@@ -1843,13 +1846,13 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	}
 	
 	//int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
-	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &bpp);
+	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &_bpp);
 	
 	if(load_ret == FH_ERROR_OK)
 	{
 		// convert RGB2FB
 		// with alpha
-		if (bpp == 4)
+		if (_bpp == 4)
 			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, 0, TM_INI, true);
 		else
 			fbbuff = (fb_pixel_t *) convertRGB2FB(rgbbuff, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));

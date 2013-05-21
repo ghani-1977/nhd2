@@ -56,7 +56,7 @@ static const char * aDMXCHANNELTYPE[] = {
 	"DMX_PCR_ONLY_CHANNEL"
 };
 
-cDemux::cDemux(int num)
+cDemux::cDemux(int /*num*/)
 {  
 	// dmx file descriptor
 	demux_fd = -1;

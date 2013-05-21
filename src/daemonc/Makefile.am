@@ -19,3 +19,4 @@ endif
 noinst_LIBRARIES = libneutrino_daemonc.a
 
 libneutrino_daemonc_a_SOURCES = remotecontrol.cpp
+

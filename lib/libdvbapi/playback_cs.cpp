@@ -69,7 +69,7 @@ gint match_sinktype(GstElement *element, gpointer type)
 	return strcmp(g_type_name(G_OBJECT_TYPE(element)), (const char*)type);
 }
 
-GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
+GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user_data*/)
 {
 	//source name
 	gchar * sourceName;
@@ -98,10 +98,10 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 		
 		case GST_MESSAGE_ERROR: 
 		{
-			gchar * debug;
+			gchar * debug1;
 			GError *err;
-			gst_message_parse_error(msg, &err, &debug);
-			g_free(debug);
+			gst_message_parse_error(msg, &err, &debug1);
+			g_free(debug1);
 			
 			//g_error("%s", err->message);
 			printf("cPlayback:: Gstreamer error: %s (%i)\n", err->message, err->code );
@@ -127,11 +127,11 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 
 		case GST_MESSAGE_INFO:
 		{
-			gchar * debug;
+			gchar * _debug;
 			GError * inf;
 	
-			gst_message_parse_info (msg, &inf, &debug);
-			g_free(debug);
+			gst_message_parse_info (msg, &inf, &_debug);
+			g_free(_debug);
 			
 			if ( inf->domain == GST_STREAM_ERROR && inf->code == GST_STREAM_ERROR_DECODE )
 			{
@@ -243,7 +243,7 @@ GstBusSyncReply Gst_bus_call(GstBus * bus, GstMessage * msg, gpointer user_data)
 #endif
 
 /* its called only one time, (mainmenu/movieplayergui init)*/
-cPlayback::cPlayback(int num)
+cPlayback::cPlayback(int /*num*/)
 { 
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 
@@ -379,7 +379,7 @@ void cPlayback::Close(void)
 }
 
 // start
-bool cPlayback::Start(char *filename, unsigned short _vp, int _vtype, unsigned short _ap, int _ac3, int _duration)
+bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, unsigned short /*_ap*/, int /*_ac3*/, int /*_duration*/)
 {
 	dprintf(DEBUG_NORMAL, "%s:%s - filename=%s\n", FILENAME, __FUNCTION__, filename);
 
@@ -565,13 +565,11 @@ bool cPlayback::Stop(void)
 	return true;
 }
 
-bool cPlayback::SetAPid(unsigned short pid, int _ac3)
+bool cPlayback::SetAPid(unsigned short pid, int /*_ac3*/)
 {
 	dprintf(DEBUG_NORMAL, "%s:%s curpid:%d nextpid:%d\n", FILENAME, __FUNCTION__, mAudioStream, pid);
 	
 #if ENABLE_GSTREAMER
-	int current_audio;
-	
 	if(pid != mAudioStream)
 	{
 		g_object_set (G_OBJECT (m_gst_playbin), "current-audio", pid, NULL);
@@ -917,7 +915,8 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 			// ac3flags
 			if ( gst_structure_has_name (structure, "audio/mpeg"))
 			{
-				gint mpegversion, layer = -1;
+				gint mpegversion;
+				//gint layer = -1;
 				
 				if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
 					//return atUnknown;

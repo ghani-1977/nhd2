@@ -64,7 +64,7 @@ cAudio::~cAudio(void)
 	Close();
 }
 
-bool cAudio::Open(int num)
+bool cAudio::Open(int /*num*/)
 {  
 	audio_num = 0; //always 0
 	

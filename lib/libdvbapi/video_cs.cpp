@@ -65,7 +65,7 @@ cVideo::~cVideo(void)
 	Close();
 }
 
-bool cVideo::Open(int num)
+bool cVideo::Open(int /*num*/)
 { 
 	video_num = 0; // eventually always 0
 	

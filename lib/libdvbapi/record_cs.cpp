@@ -43,7 +43,7 @@ void * execute_record_thread(void *c)
 	return NULL;
 }
 
-cRecord::cRecord(int num)
+cRecord::cRecord(int /*num*/)
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
