@@ -1395,19 +1395,17 @@ void CMoviePlayerGui::PlayFile(void)
 							
 		sel_filename = "Movie Player";
 		
-		update_lcd = true;
-		start_play = true;
-		
 		filename = g_settings.streaming_server_url.c_str();
 		sel_filename = g_settings.streaming_server_url.c_str();
-						
-		was_file = false;
-						
-		//
+		
 		g_file_epg = sel_filename;
 		g_file_epg1 = sel_filename;
-		//
 		
+		update_lcd = true;
+		start_play = true;
+		was_file = false;
+		is_file_player = true;
+						
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
 		
 #if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
@@ -1673,7 +1671,7 @@ void CMoviePlayerGui::PlayFile(void)
 			g_numpida = 0; g_currentapid = 0;
 
 			// moviebrowser
-			if (isMovieBrowser == true) 
+			if (isMovieBrowser == true) //moviebrowser
 			{	
 				if (moviebrowser->exec(Path_local.c_str())) 
 				{
@@ -1815,7 +1813,7 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 
 			}
-			else if (isWebTV)
+			else if (isWebTV)	//webtv
 			{
 				if( webtv->exec())
 				{
@@ -1832,6 +1830,7 @@ void CMoviePlayerGui::PlayFile(void)
 						update_lcd = true;
 						start_play = true;
 						was_file = true;
+						is_file_player = true;
 					}
 				}
 				else if (playstate == CMoviePlayerGui::STOPPED) 
@@ -1865,8 +1864,6 @@ void CMoviePlayerGui::PlayFile(void)
 						CFile::FileType ftype;
 						ftype = file->getType();
 
-						is_file_player = true;
-
 						filename = file->Name.c_str();
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
 						
@@ -1876,6 +1873,7 @@ void CMoviePlayerGui::PlayFile(void)
 						update_lcd = true;
 						start_play = true;
 						was_file = true;
+						is_file_player = true;
 					}
 				}
 				else if(playstate == CMoviePlayerGui::STOPPED)
@@ -1910,8 +1908,6 @@ void CMoviePlayerGui::PlayFile(void)
 						CFile::FileType ftype;
 						ftype = file->getType();
 
-						is_file_player = true;
-
 						filename = file->Name.c_str();
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
 						
@@ -1921,6 +1917,7 @@ void CMoviePlayerGui::PlayFile(void)
 						update_lcd = true;
 						start_play = true;
 						was_file = true;
+						is_file_player = true;
 					}
 				}
 				else if(playstate == CMoviePlayerGui::STOPPED)
@@ -1944,8 +1941,6 @@ void CMoviePlayerGui::PlayFile(void)
 						CFile::FileType ftype;
 						ftype = file->getType();
 
-						is_file_player = true;
-
 						filename = file->Name.c_str();
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
 						
@@ -1955,6 +1950,7 @@ void CMoviePlayerGui::PlayFile(void)
 						update_lcd = true;
 						start_play = true;
 						was_file = true;
+						is_file_player = true;
 					}
 				}
 				else if (playstate == CMoviePlayerGui::STOPPED) 
@@ -2220,12 +2216,9 @@ void CMoviePlayerGui::PlayFile(void)
 					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
 				
-#if !defined (ENABLE_GSTREAMER)
 				// set position 
-				//FIXME:???
-				if( !isWebTV && !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
-					playback->SetPosition(startposition);
-#endif				
+				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
+					playback->SetPosition(startposition);			
 				
 				// get duration //NOTE: only duration is here needed
 				if(isVlc)
