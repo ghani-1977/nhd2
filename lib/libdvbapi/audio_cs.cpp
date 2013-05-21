@@ -143,16 +143,16 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 	volume = (left + right)/2;
 	
+	// map volume
+	if (volume < 0)
+		volume = 0;
+	else if (volume > 100)
+		volume = 100;
+	
+	volume = 63 - volume * 63/100;
+	
 #ifdef __sh__	
 	unsigned char vol = volume;
-	
-	// map volume
-	if (vol < 0)
-		vol = 0;
-	else if (vol > 100)
-		vol = 100;
-	
-	vol = 63 - vol * 63/100;
 	
 	char sVolume[4];
 	
@@ -176,6 +176,17 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 	if(ret < 0)
 		perror("AUDIO_SET_MIXER");
+	
+	//HACK?
+	FILE *f;
+	if((f = fopen("/proc/stb/avs/0/volume", "wb")) == NULL) 
+	{
+		printf("cannot open /proc/stb/avs/0/volume(%m)\n");
+	}
+
+	fprintf(f, "%d", volume); /* in -1dB */
+
+	fclose(f);
 #endif
 	
 	return ret;

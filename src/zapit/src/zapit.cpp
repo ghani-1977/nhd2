@@ -2439,12 +2439,18 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 #if !defined (PLATFORM_COOLSTREAM)
 			openAVDecoder();
 			
-			//HACK: dirty hack???
+			//HACK: dirty hack for gstreamer on some platforms???
 #if defined (ENABLE_GSTREAMER)
 			if(videoDecoder)
 			{
 				videoDecoder->Resume();
 				videoDecoder->Stop();
+			}
+			
+			if(audioDecoder)
+			{
+				audioDecoder->Resume();
+				audioDecoder->Stop();
 			}
 #endif				
 #endif			
