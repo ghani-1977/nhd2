@@ -118,7 +118,7 @@ CFrameBuffer* CFrameBuffer::getInstance()
 	return frameBuffer;
 }
 
-void CFrameBuffer::init(const char * const /*fbDevice*/)
+void CFrameBuffer::init(const char * const fbDevice)
 {
 	int tr = 0xFF;
 	
@@ -237,7 +237,7 @@ void CFrameBuffer::init(const char * const /*fbDevice*/)
 
 	return;
 
-//nolfb:
+nolfb:
 	dprintf(DEBUG_NORMAL, "CFrameBuffer::init: framebuffer not available.\n");
 	lfb = 0;
 }
@@ -1799,7 +1799,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 			if( name.find(".png") == (name.length() - 4) )
 			{
 				// alpha
-				if (bpp == 4)
+				if (_bpp == 4)
 					ret = (fb_pixel_t *) convertRGB2FB(buffer, x, y, 0, TM_INI, true);
 				else
 					ret = (fb_pixel_t *)convertRGB2FB(buffer, x, y, convertSetupAlpha2Alpha(g_settings.infobar_alpha));
@@ -1845,7 +1845,6 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 		return NULL;
 	}
 	
-	//int load_ret = fh->get_pic(name.c_str (), &rgbbuff, &x, &y);
 	int load_ret = png_load_ext(name.c_str(), &rgbbuff, &x, &y, &_bpp);
 	
 	if(load_ret == FH_ERROR_OK)
