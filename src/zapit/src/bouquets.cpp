@@ -189,7 +189,7 @@ void CBouquetManager::writeBouquetFooter(FILE * bouq_fd)
 	fprintf(bouq_fd, "\t</Bouquet>\n");
 }
 
-void CBouquetManager::writeBouquetChannels(FILE * bouq_fd, uint32_t i, bool bUser)
+void CBouquetManager::writeBouquetChannels(FILE * bouq_fd, uint32_t i, bool /*bUser*/)
 {
 	bool write_names = 1;
 
@@ -400,7 +400,7 @@ void CBouquetManager::parseBouquetsXml(const xmlNodePtr root, bool bUser)
 
 			while ((channel_node = xmlGetNextOccurence(channel_node, "S")) != NULL) 
 			{
-				std::string  name = xmlGetAttribute(channel_node, (char *) "n");
+				std::string  name1 = xmlGetAttribute(channel_node, (char *) "n");
 				GET_ATTR(channel_node, (char *) "i", SCANF_SERVICE_ID_TYPE, service_id);
 				GET_ATTR(channel_node, (char *) "on", SCANF_ORIGINAL_NETWORK_ID_TYPE, original_network_id);
 				GET_ATTR(channel_node, (char *) "s", SCANF_SATELLITE_POSITION_TYPE, satellitePosition);

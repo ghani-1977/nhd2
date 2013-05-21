@@ -478,7 +478,7 @@ bool CZapitClient::getBouquetChannels(const unsigned int bouquet, BouquetChannel
 }
 
 /* get bouqutes channels */
-bool CZapitClient::getBouquetNChannels(const unsigned int bouquet, BouquetNChannelList& channels, channelsMode mode, const bool utf_encoded)
+bool CZapitClient::getBouquetNChannels(const unsigned int bouquet, BouquetNChannelList& channels, channelsMode mode, const bool /*utf_encoded*/)
 {
 	bool                                      return_value;
 	CZapitMessages::commandGetBouquetChannels msg;
@@ -643,7 +643,7 @@ void CZapitClient::getVolumePercent(unsigned int * percent, t_channel_id channel
 }
 
 /* delivery_system */
-delivery_system_t CZapitClient::getDeliverySystem(int feindex)
+delivery_system_t CZapitClient::getDeliverySystem(int /*feindex*/)
 {
 	send(CZapitMessages::CMD_GET_DELIVERY_SYSTEM, 0, 0);
 

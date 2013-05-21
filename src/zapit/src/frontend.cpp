@@ -318,6 +318,8 @@ fe_code_rate_t CFrontend::getCodeRate(const uint8_t fec_inner, int system)
 				return FEC_AUTO;
 		}
 	}
+	
+	return FEC_NONE;
 }
 
 fe_modulation_t CFrontend::getModulation(const uint8_t modulation)
@@ -577,7 +579,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 	TIMER_INIT();
 	
 	int msec = TIME_STEP;
-	int tmsec = msec;
+	//int tmsec = msec;
 
 	pfd.fd = fd;
 	pfd.events = POLLIN | POLLPRI;
@@ -662,7 +664,7 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 /* set frontend */
 /// S2API ///
 #if HAVE_DVB_API_VERSION >= 5
-void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool nowait)
+void CFrontend::setFrontend(const struct dvb_frontend_parameters *feparams, bool /*nowait*/)
 {
 	fe_delivery_system delsys = SYS_DVBS;
 	fe_modulation_t modulation = QPSK;
@@ -1019,7 +1021,7 @@ void CFrontend::sendDiseqcCommand(const struct dvb_diseqc_master_cmd *cmd, const
 		usleep(1000 * ms);
 }
 
-uint32_t CFrontend::getDiseqcReply(const int timeout_ms) const
+uint32_t CFrontend::getDiseqcReply(const int /*timeout_ms*/) const
 {
 	return 0;
 }
@@ -1252,7 +1254,7 @@ uint32_t CFrontend::sendEN50494TuningCommand(const uint32_t frequency, const int
 }
 #endif
 
-const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
+bool CFrontend::tuneChannel(CZapitChannel * /*channel*/, bool /*nvod*/)
 {
 	dprintf(DEBUG_INFO, "CFrontend::tuneChannel: fe(%d,%d) tpid %llx\n", fe_adapter, fenumber, currentTransponder.TP_id);
 
@@ -1264,7 +1266,7 @@ const bool CFrontend::tuneChannel(CZapitChannel * channel, bool nvod)
 	return tuneFrequency(&transponder->second.feparams, transponder->second.polarization, false);
 }
 
-const bool CFrontend::retuneTP(bool nowait)
+bool CFrontend::retuneTP(bool nowait)
 {
 	// used in pip only atm
 	tuneFrequency(&curfe, currentTransponder.polarization, nowait);
@@ -1272,7 +1274,7 @@ const bool CFrontend::retuneTP(bool nowait)
 	return 0;
 }
 
-const bool CFrontend::retuneChannel(void)
+bool CFrontend::retuneChannel(void)
 {
 	setFrontend(&currentTransponder.feparams);
 
@@ -1296,7 +1298,7 @@ int CFrontend::tuneFrequency(FrontendParameters * feparams, uint8_t polarization
 	return setParameters(&TP, nowait);
 }
 
-int CFrontend::setParameters(TP_params * TP, bool nowait)
+int CFrontend::setParameters(TP_params * TP, bool /*nowait*/)
 {
 	int freq_offset = 0;
 	
@@ -1498,7 +1500,7 @@ void CFrontend::setDiseqc(int sat_no, const uint8_t pol, const uint32_t frequenc
 	currentTransponder.diseqc = sat_no;
 }
 
-void CFrontend::setSec(const uint8_t sat_no, const uint8_t pol, const bool high_band)
+void CFrontend::setSec(const uint8_t /*sat_no*/, const uint8_t pol, const bool high_band)
 {
 	if (info.type != FE_QPSK) 
 		return;
@@ -1923,6 +1925,9 @@ int CFrontend::getDeliverySystem()
 
 		case FE_OFDM:
 			system = DVB_T;
+			break;
+			
+		case FE_ATSC:
 			break;
 	}
 	

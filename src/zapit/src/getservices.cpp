@@ -39,7 +39,7 @@
 
 /* system */
 #include <system/debug.h>
-#include <system/setting_helpers.h>
+#include <system/setting_helpers.h>	/* needed for safe_mkdir */
 
 
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */
@@ -860,7 +860,7 @@ void SaveServices(bool tocopy)
 	{
 		if (errno == ENOENT) 
 		{
-			res = safe_mkdir(CONFIGDIR "/zapit");
+			res = safe_mkdir((char *)CONFIGDIR "/zapit");
 
 			if (res != 0) 
 				perror("[getservices] mkdir");

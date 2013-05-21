@@ -104,7 +104,7 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	//filter[4] = 0x00;
 	mask[0] = 0xFF;
 	//mask[4] = 0xFF;
-	unsigned char sec = 0x00;
+	//unsigned char sec = 0x00;
 
 	if (dmx->sectionFilter(0x10, filter, mask, 5) < 0) 
 	{

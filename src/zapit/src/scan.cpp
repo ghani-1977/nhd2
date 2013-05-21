@@ -352,7 +352,7 @@ _repeat:
 	return 0;
 }
 
-int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_position satellitePosition, bool satfeed, int feindex)
+int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_position satellitePosition, bool /*satfeed*/, int feindex)
 {
 	uint8_t polarization = 0;
 	uint8_t system = 0, modulation = 1;

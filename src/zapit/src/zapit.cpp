@@ -2661,10 +2661,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				leaveStandby();
 			}
 			
-			// striper
-			CZapitMessages::responseCmd response;
-			response.cmd = CZapitMessages::CMD_READY;
-			CBasicServer::send_data(connfd, &response, sizeof(response));
+			// 
+			CZapitMessages::responseCmd response1;
+			response1.cmd = CZapitMessages::CMD_READY;
+			CBasicServer::send_data(connfd, &response1, sizeof(response1));
 			
 			break;
 		}
@@ -3554,7 +3554,7 @@ void getZapitConfig(Zapit_config *Cfg)
 }
 
 sdt_tp_t sdt_tp;
-void * sdt_thread(void * arg)
+void * sdt_thread(void */*arg*/)
 {
 	dprintf(DEBUG_INFO, "[zapit] sdt_thread: starting... tid %ld\n", syscall(__NR_gettid));
 	
@@ -3617,7 +3617,9 @@ void * sdt_thread(void * arg)
 			char tpstr[256];
 			char satstr[256];
 			bool tpdone = 0;
-			bool satfound = 0;
+			//bool satfound = 0;
+			//FIXME: writing current services is brocken ;(
+			//NOTE: think about nulti services
 
 			tI = transponders.find(tpid);
 			if(tI == transponders.end()) 

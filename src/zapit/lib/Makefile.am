@@ -6,3 +6,6 @@ INCLUDES = \
 
 noinst_LIBRARIES = libzapitclient.a
 libzapitclient_a_SOURCES = zapitclient.cpp zapittools.cpp
+
+AM_CXXFLAGS = -Werror
+AM_CPPFLAGS = -Werror

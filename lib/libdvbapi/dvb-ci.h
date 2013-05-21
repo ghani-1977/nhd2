@@ -74,8 +74,8 @@ struct queueData
 	__u8 prio;
 	unsigned char *data;
 	unsigned int len;
-	queueData( unsigned char *data, unsigned int len, __u8 prio = 0 )
-		:prio(prio), data(data), len(len)
+	queueData( unsigned char *_data, unsigned int _len, __u8 _prio = 0 )
+		:prio(_prio), data(_data), len(_len)
 	{
 
 	}

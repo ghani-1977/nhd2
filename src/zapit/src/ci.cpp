@@ -156,7 +156,7 @@ CCaPmt::~CCaPmt(void)
 }
 
 // ci
-unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int demux, int camask) // returns number of bytes written
+unsigned int CCaPmt::writeToBuffer(unsigned char * const buffer, int /*demux*/, int /*camask*/) // returns number of bytes written
 {
 	unsigned int pos = 0;
 	unsigned int i;

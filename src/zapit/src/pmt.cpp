@@ -177,17 +177,15 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			case 0x59: /* dvbsub descriptor */
 				if (esInfo->stream_type == 0x06) 
 				{
-					unsigned char fieldCount=descriptor_length/8;
-					for (unsigned char fIdx=0; fIdx<fieldCount; fIdx++)
+					unsigned char fieldCount1 = descriptor_length/8;
+					for (unsigned char fIdx = 0; fIdx < fieldCount1; fIdx++)
 					{
 						char tmpLang[4];
-						memcpy(tmpLang,&buffer[pos + 8*fIdx + 2],3);
+						memcpy(tmpLang,&buffer[pos + 8*fIdx + 2], 3);
 						tmpLang[3] = '\0';
-						unsigned char subtitling_type=buffer[pos+8*fIdx+5];
-						unsigned short composition_page_id=
-							*((unsigned short*)(&buffer[pos + 8*fIdx + 6]));
-						unsigned short ancillary_page_id=
-							*((unsigned short*)(&buffer[pos + 8*fIdx + 8]));
+						unsigned char subtitling_type = buffer[pos + 8*fIdx + 5];
+						unsigned short composition_page_id = *((unsigned short*)(&buffer[pos + 8*fIdx + 6]));
+						unsigned short ancillary_page_id = *((unsigned short*)(&buffer[pos + 8*fIdx + 8]));
 							
 						/*dvbsub */
 						channel->addDVBSubtitle(esInfo->elementary_PID, tmpLang, subtitling_type, composition_page_id, ancillary_page_id);

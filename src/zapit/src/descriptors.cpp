@@ -114,7 +114,7 @@ void Video_window_descriptor(const unsigned char * const)
 }
 
 /* 0x09 */
-void CA_descriptor(const unsigned char * const buffer, uint16_t ca_system_id, uint16_t* ca_pid)
+void CA_descriptor(const unsigned char * const buffer, uint16_t /*ca_system_id*/, uint16_t* ca_pid)
 {
 	//if ((((buffer[2] & 0x1F) << 8) | buffer[3]) == ca_system_id)
 		*ca_pid = ((buffer[4] & 0x1F) << 8) | buffer[5];
@@ -224,7 +224,7 @@ void FlexMuxTiming_descriptor(const unsigned char * const)
  */
 
 /* 0x40 */
-void network_name_descriptor(const unsigned char * const buffer)
+void network_name_descriptor(const unsigned char * const /*buffer*/)
 {
 #if 0
 	unsigned char tag = buffer[0];
