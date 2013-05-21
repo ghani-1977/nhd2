@@ -104,8 +104,6 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	if(parent)
 		parent->hide();
 
-	//g_Zapit->lockPlayBack();
-
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
 	
 #if !defined USE_OPENGL
@@ -136,6 +134,7 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 
 	// stop playback
 	g_Zapit->lockPlayBack();
+	
 	// Stop sectionsd
 	g_Sectionsd->setPauseScanning(true);	
 
@@ -878,6 +877,10 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						
 						g_settings.streaming_server_url = std::string((*entries)[selected - index].resources[preferred].url); //FIXME
 						moviePlayerGui->exec(NULL, "urlplayback");
+						
+						//test
+						// stop playback
+						g_Zapit->lockPlayBack();
 						
 						changed = true;
 					}
