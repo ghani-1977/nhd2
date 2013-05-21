@@ -1799,7 +1799,24 @@ void CInfoViewer::showIcon_Audio(const int ac3state) const
 
 	frameBuffer->paintIcon(dd_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), BoxEndY - 20 + (20 - icon_h_dd)/2 );
 	
-	CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, (ac3state == AC3_ACTIVE)? true:false); //FIXME: remove to remotecontrol
+	if (ac3state == AC3_ACTIVE)
+	{
+		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true);
+#if defined(PLATFORM_SPARK7162)
+		CVFD::getInstance()->ShowIcon(VFD_ICON_AC3, true);
+		CVFD::getInstance()->ShowIcon(VFD_ICON_MP3, false);//FIXME:@dbo: why???
+#endif
+		//CVFD::getInstance()->ShowIcon(VFD_ICON_MP3, false);//FIXME:@dbo: why???
+	}
+	else
+	{
+		CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, false);
+#if defined(PLATFORM_SPARK7162)
+		CVFD::getInstance()->ShowIcon(VFD_ICON_AC3, false);
+		CVFD::getInstance()->ShowIcon(VFD_ICON_MP3, true); //FIXME:@dbo: why???
+#endif
+		//CVFD::getInstance()->ShowIcon(VFD_ICON_MP3, true); //FIXME:@dbo: why???
+	}
 }
 
 void CInfoViewer::showButton_Audio()

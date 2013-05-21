@@ -2516,6 +2516,28 @@ void CNeutrinoApp::showInfo()
 	StartSubtitles();
 }
 
+// checking timer
+//FIXME: @dbo: why? cant your vfd do this?
+#if defined(PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+static void check_timer() 
+{
+	CTimerd::TimerList tmpTimerList;
+	CTimerdClient tmpTimerdClient;
+	tmpTimerList.clear();
+	tmpTimerdClient.getTimerList(tmpTimerList);
+	
+	if(tmpTimerList.size() > 0) 
+	{
+		CVFD::getInstance()->ShowIcon(VFD_ICON_CLOCK, true);
+	} 
+	else 
+	{
+		CVFD::getInstance()->ShowIcon(VFD_ICON_CLOCK, false);
+	}
+	tmpTimerList.clear();
+}
+#endif
+
 // real run
 void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 {
@@ -2540,6 +2562,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 	while( true ) 
 	{
 		g_RCInput->getMsg(&msg, &data, 100);	// 10 secs..
+		
+		//FIXME: @dbo???
+#if defined(PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+		check_timer();
+#endif		
 
 		// mode TV/Radio
 		if( (mode == mode_tv) || (mode == mode_radio) ) 
@@ -4450,6 +4477,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		wasshift = false;
 
 		StartSubtitles();
+		
+		g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
 	}
 }
 

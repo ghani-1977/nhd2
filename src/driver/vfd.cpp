@@ -47,6 +47,12 @@
 static struct aotom_ioctl_data aotom_data;
 #endif
 
+#if defined(PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+static bool usb_icon = false;
+static bool timer_icon = false;
+static bool hdd_icon = false;
+#endif
+
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
 #ifdef __sh__
@@ -81,6 +87,7 @@ void CVFD::closeDevice()
 }
 #endif
 
+// default: has_lcd:1, is4digits:0, has_led:0
 // constructor
 CVFD::CVFD()
 {
@@ -329,7 +336,11 @@ void CVFD::showTime(bool force)
 			{
 				hour = t->tm_hour;
 				minute = t->tm_min;
-				strftime(timestr, 20, "%H:%M", t);
+#if defined (PLATFORM_KATHREIN)							/* time and date at kathrein because 16 character vfd	*/
+				strftime(timestr, 20, "%H:%M - %d.%m.%y", t);
+#elif !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_KATHREIN)		/* no time at spark7162 because clock integrated	*/
+ 				strftime(timestr, 20, "%H:%M", t);
+#endif				
 				ShowText(timestr);
 			}
 		} 
@@ -435,14 +446,27 @@ void CVFD::setMode(const MODES m, const char * const title)
 	{
 		case MODE_TVRADIO:	
 			showServicename(servicename);
-			ShowIcon(VFD_ICON_MP3, false);	
-			ShowIcon(VFD_ICON_TV, true);			
+#if !defined(PLATFORM_SPARK7162)			
+			ShowIcon(VFD_ICON_MP3, false);	        // NOTE: @dbo  //ICON_MP3 and ICON_DOLBY switched in infoviewer 
+#endif			
+	
+#if defined (PLATFORM_KATHREIN)
+			ShowIcon(VFD_ICON_USB, usb_icon);	
+			ShowIcon(VFD_ICON_HDD, hdd_icon);	
+#elif defined(PLATFORM_SPARK7162)
+			ShowIcon(VFD_ICON_USB, usb_icon);	
+			ShowDiskLevel();
+			ShowIcon(VFD_ICON_STANDBY, false);	
+#endif		
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 			break;
 
 		case MODE_AUDIO:
 		{
+#if defined(PLATFORM_SPARK7162)
+			ShowIcon(VFD_ICON_AC3, false);			
+#endif		  
 			ShowIcon(VFD_ICON_MP3, true);			
 			ShowIcon(VFD_ICON_TV, false);			
 			showAudioPlayMode(AUDIO_MODE_STOP);			
@@ -471,12 +495,18 @@ void CVFD::setMode(const MODES m, const char * const title)
 			/* clear all symbols */
 			Clear();
 			ClearIcons();
+#if defined(PLATFORM_SPARK7162)
+			ShowIcon(VFD_ICON_CLOCK, timer_icon);	
+#endif			
 			showclock = false;
 			break;
 
 		case MODE_STANDBY:
 			ShowIcon(VFD_ICON_TV, false);
 			ClearIcons();
+#if defined(PLATFORM_SPARK7162)
+			ShowIcon(VFD_ICON_STANDBY, true);	
+#endif			
 			showclock = true;
 			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
 						/* "showTime()" clears the whole lcd in MODE_STANDBY */
@@ -682,7 +712,42 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 #endif
 }
 
+#if defined(PLATFORM_SPARK7162)			/* only for Spark7162 STB's which Display has a HDD Level indicator */	 
+void CVFD::ShowDiskLevel()
+{
+	int hdd_icons[9] ={24, 23, 21, 20, 19, 18, 17, 16, 22};
+	int percent, digits, i, j;
+	long t, u;
+	if (get_fs_usage(g_settings.network_nfs_recordingdir, t, u))
+	{
+		ShowIcon(SPARK_HDD, true);
+		percent = (u * 1000ULL) / t + 60; 
+		digits = percent / 125;
+		if (percent > 1050)
+			digits = 9;
+		//printf("HDD Fuell = %d Digits = %d\n", percent, digits);
+		if (digits > 0)
+		{
+			for (i=0; i<digits; i++)
+				ShowIcon(hdd_icons[i], true);
+						
+			for (j=i; j < 9; j++)
+				ShowIcon(hdd_icons[j], false);
+		}
+	}
+	else
+	{
+		ShowIcon(SPARK_HDD, false);
+
+	}
+}
+#endif
+
+#if defined(PLATFORM_SPARK7162)
+void CVFD::ShowIcon(int icon, bool show)
+#else
 void CVFD::ShowIcon(vfd_icon icon, bool show)
+#endif
 {
 	if(!has_lcd || is4digits) 
 		return;
@@ -690,13 +755,30 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
 #ifdef __sh__
+#if defined (PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+	switch (icon)
+	{
+		case VFD_ICON_USB:
+			usb_icon = show;
+			break;
+		case VFD_ICON_CLOCK:
+			timer_icon = show;
+			break;
+#if defined (PLATFORM_KATHREIN)
+		case VFD_ICON_HDD:
+			hdd_icon = show;
+			break;
+#endif
+		default:
+			break;
+	}
+#endif
+
 	openDevice();
 #if defined(PLATFORM_SPARK7162)
 	aotom_data.u.icon.icon_nr = icon;
-	if (show == true)
-		aotom_data.u.icon.on = 1;
-	else
-		aotom_data.u.icon.on = 0;
+	aotom_data.u.icon.on = show ? 1 : 0;
+	
 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
 		perror("VFDICONDISPLAYONOFF");	
 #else

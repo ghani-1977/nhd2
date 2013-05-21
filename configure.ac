@@ -66,8 +66,8 @@ fi
 
 # pcm decoder
 AC_ARG_ENABLE(pcmdecoder,
-	AS_HELP_STRING(--disable-pcmdecoder,disable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)),
-	,[enable_pcmdecoder=yes])
+	AS_HELP_STRING(--enable-pcmdecoder,enable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)),
+	,[enable_pcmdecoder=no])
 AM_CONDITIONAL(ENABLE_PCMDECODER,test "$enable_pcmdecoder" = "yes")
 
 if test "$enable_pcmdecoder" = "yes"; then
@@ -140,7 +140,7 @@ fi
 
 # standalone plugins
 AC_ARG_ENABLE(standaloneplugins,
-	AS_HELP_STRING(--enable-standaloneplugins,include standaloneplugins support),
+	AS_HELP_STRING(--enable-standaloneplugins,disable standaloneplugins support),
 	,[enable_standaloneplugins=no])
 AM_CONDITIONAL(ENABLE_STANDALONEPLUGINS,test "$enable_standaloneplugins" = "yes")
 

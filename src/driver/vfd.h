@@ -113,15 +113,27 @@ typedef enum
 	VFD_ICON_480I		= TIME_SECOND,
 	VFD_ICON_USB		= USB,
 	VFD_ICON_MP3		= MP3,
-	VFD_ICON_PLAY		= PLAY_HEAD,
+	VFD_ICON_PLAY		= PLAY_LOG,
 	VFD_ICON_PAUSE		= PLAY_PAUSE,
 	VFD_ICON_LOCK 		= CA,
+	VFD_ICON_AC3 		= AC3,
+	SPARK_HDD		= HDD_A9,
+	SPARK_HDD_A8		= HDD_A8,
+	SPARK_HDD_A7		= HDD_A7,
+	SPARK_HDD_A6		= HDD_A6,
+	SPARK_HDD_A5		= HDD_A5,
+	SPARK_HDD_A4		= HDD_A4,
+	SPARK_HDD_A3		= HDD_A3,
+	SPARK_HDD_FULL		= HDD_FULL,
+	SPARK_HDD_A2		= HDD_A2,
+	SPARK_HDD_A1		= HDD_A1,
+	VFD_ICON_CLOCK		= CLOCK,
+	VFD_ICON_STANDBY	= CYCLE,
 } vfd_icon;
 
 #endif //spark7162
 
 #if defined(PLATFORM_KATHREIN)
-
 typedef enum
 {
 	vfd_910_usb = 1,
@@ -141,7 +153,6 @@ typedef enum
 	vfd_910_rec = 15,
 	vfd_910_clock = 16,
 } ufs910_vfd_icon;
-
 
 // neutrino common translate for ufs910  / ufs913
 typedef enum
@@ -163,8 +174,9 @@ typedef enum
 	VFD_ICON_PLAY		= vfd_910_play,
 	VFD_ICON_PAUSE		= vfd_910_pause,
 	VFD_ICON_LOCK 		= vfd_910_lock,
+	VFD_ICON_HDD 		= vfd_910_hdd,	
+	VFD_ICON_CLOCK		= vfd_910_clock,
 } vfd_icon;
-
 #endif //ufs910, ufs913
 
 #if !defined(PLATFORM_KATHREIN) && !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
@@ -460,7 +472,12 @@ class CVFD
 		void Unlock();
 		void Clear();
 		void ClearIcons();
+#if defined(PLATFORM_SPARK7162)
+		void ShowDiskLevel();
+		void ShowIcon(int icon, bool show);
+#else
 		void ShowIcon(vfd_icon icon, bool show);
+#endif		
 		void ShowText(const char * str);
 
 		void ShowScrollText(char * str);

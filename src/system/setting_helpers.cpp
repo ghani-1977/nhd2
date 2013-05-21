@@ -1183,5 +1183,23 @@ int check_dir(const char * newdir)
 	return 1;//error			  
 }
 
+bool get_fs_usage(const char * dir, long &btotal, long &bused, long *bsize /*=NULL*/)
+{
+	btotal = bused = 0;
+	struct statfs s;
+
+	if (::statfs(dir, &s) == 0 && s.f_blocks) 
+	{
+		btotal = s.f_blocks;
+		bused = s.f_blocks - s.f_bfree;
+		if (bsize != NULL)
+			*bsize = s.f_bsize;
+		//printf("fs (%s): total %ld used %ld\n", dir, btotal, bused);
+		return true;
+	}
+	
+	return false;
+}
+
 
 

@@ -543,20 +543,67 @@ int CHDDBrowser::exec(CMenuTarget * parent, const std::string& actionKey)
 int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
 {
         char cmd[100];
+	char str[256];
+	FILE * f;
+	int removable = 0;
         struct dirent **namelist;
 
         int n = scandir("/sys/block", &namelist, my_filter, alphasort);
 
         if (n < 0)
                 return 0;
+	
+	const char hdparm[] = "/sbin/hdparm";
+	bool hdparm_link = false;
+	struct stat stat_buf;
+	
+	if(::lstat(hdparm, &stat_buf) == 0)
+		if( S_ISLNK(stat_buf.st_mode) )
+			hdparm_link = true;
 
         for (int i = 0; i < n; i++) 
 	{
-                printf("CHDDDestExec: noise %d sleep %d /dev/%s\n", g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
+                removable = 0;
+		printf("CHDDDestExec: checking /sys/block/%s\n", namelist[i]->d_name);
+ 
+		sprintf(str, "/sys/block/%s/removable", namelist[i]->d_name);
+		f = fopen(str, "r");
+		if (!f)
+		{
+			printf("Can't open %s\n", str);
+			continue;
+		}
+		fscanf(f, "%d", &removable);
+		fclose(f);
+		
+		if (removable)   // show USB icon, no need for hdparm
+		{
+#if defined(PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+			CVFD::getInstance()->ShowIcon(VFD_ICON_USB, true);
+#endif
+			printf("CHDDDestExec: /dev/%s is not a hdd, no sleep needed\n", namelist[i]->d_name);
 
-                snprintf(cmd, sizeof(cmd), "hdparm -M%d -S%d /dev/%s >/dev/null 2>/dev/null &", g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
+		} 
+		else 
+		{
+			//show HDD icon and set hdparm for all hdd's
+#if defined(PLATFORM_KATHREIN)
+			CVFD::getInstance()->ShowIcon(VFD_ICON_HDD, true);
+#endif
+	                printf("CHDDDestExec: noise %d sleep %d /dev/%s\n", g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
 
-                system(cmd);
+			if(hdparm_link)
+			{
+				//hdparm -M is not included in busybox hdparm!
+	        	        snprintf(cmd, sizeof(cmd), "%s -S%d /dev/%s >/dev/null 2>/dev/null &", hdparm, g_settings.hdd_sleep, namelist[i]->d_name);
+			}
+			else
+			{
+	        	        snprintf(cmd, sizeof(cmd), "%s -M%d -S%d /dev/%s >/dev/null 2>/dev/null &", hdparm, g_settings.hdd_noise, g_settings.hdd_sleep, namelist[i]->d_name);
+			}
+			
+        	        system(cmd);
+		}
 
                 free(namelist[i]);
         }

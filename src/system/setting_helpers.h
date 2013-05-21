@@ -40,7 +40,9 @@
 
 #include <string>
 
+
 unsigned long long getcurrenttime();
+bool get_fs_usage(const char * dir, long &total, long &used, long *bsize = NULL);
 
 // sat setup notifuer
 class CSatelliteSetupNotifier : public CChangeObserver
