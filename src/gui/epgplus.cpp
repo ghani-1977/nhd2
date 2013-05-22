@@ -338,7 +338,8 @@ EpgPlus::ChannelEntry::ChannelEntry(const CZapitChannel * _channel, int _index, 
 	if (_channel != NULL) 
 	{
 		std::stringstream _displayName;
-		_displayName << index + 1 << " " << _channel->getName();
+		//_displayName << index + 1 << " " << _channel->getName();
+		_displayName << _channel->number << " " << _channel->getName();
 	
 		this->displayName = _displayName.str ();
 	}
@@ -882,7 +883,7 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 
 					case SwapMode_ByBouquet:
 		  			{
-						unsigned int currentBouquetNumber = _bouquetList->getActiveBouquetNumber ();
+						unsigned int currentBouquetNumber = _bouquetList->getActiveBouquetNumber();
 
 						++currentBouquetNumber;
 
@@ -938,7 +939,6 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 						if (bouquet->channelList->getSize () > 0) 
 						{
 			  				// select first channel of bouquet
-
 			  				_bouquetList->activateBouquet (currentBouquetNumber, false);
 
 			  				this->channelListStartIndex = (*bouquet->channelList)[0]->number - 1;
@@ -973,9 +973,9 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchSwapMode (this));
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchViewMode (this));
 
-				/*
-				int result = menuWidgetOptions.exec (NULL, "");
+				/*int result =*/ menuWidgetOptions.exec (NULL, "");
 
+				/*
 				if (result == menu_return::RETURN_REPAINT) 
 				{
 		  			this->refreshAll = true;
@@ -1410,11 +1410,11 @@ struct CMenuOptionChooser::keyval menuOptionChooserSwitchSwapModes[] = {
 };
 
 EpgPlus::MenuOptionChooserSwitchSwapMode::MenuOptionChooserSwitchSwapMode (EpgPlus * _epgPlus)
-:CMenuOptionChooser (LOCALE_EPGPLUS_SWAP_MODE, (int *) &epgPlus->currentSwapMode, menuOptionChooserSwitchSwapModes, sizeof (menuOptionChooserSwitchSwapModes) / sizeof (CMenuOptionChooser::keyval)
+:CMenuOptionChooser (LOCALE_EPGPLUS_SWAP_MODE, (int *) &_epgPlus->currentSwapMode, menuOptionChooserSwitchSwapModes, sizeof (menuOptionChooserSwitchSwapModes) / sizeof (CMenuOptionChooser::keyval)
 					  , true, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW) 
 {
 	this->epgPlus = _epgPlus;
-	this->oldSwapMode = epgPlus->currentSwapMode;
+	this->oldSwapMode = _epgPlus->currentSwapMode;
 	this->oldTimingMenuSettings = g_settings.timing[SNeutrinoSettings::TIMING_MENU];
 }
 

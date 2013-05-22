@@ -841,7 +841,7 @@ bool CFrameBuffer::paintIcon8(const std::string & filename, const int x, const i
 
 	for (int count = 0; count < height; count ++ ) 
 	{
-		read(fd, &pixbuf[0], width );
+		read(_fd, &pixbuf[0], width );
 		unsigned char *pixpos = &pixbuf[0];
 		d2 = (fb_pixel_t *) d;
 		for (int count2 = 0; count2 < width; count2 ++ ) 

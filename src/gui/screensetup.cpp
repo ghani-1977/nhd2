@@ -217,8 +217,8 @@ void CScreenSetup::paintBorder( int _selected )
 
 void CScreenSetup::paintIcons()
 {
-        frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, x+6, y+8);
-        frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x+6, y+36 );
+        frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, x + 6, y + 8);
+        frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, x + 6, y + 36 );
 }
 
 void CScreenSetup::paintBorderUL()
@@ -251,10 +251,10 @@ void CScreenSetup::paintCoords()
 	sprintf((char*) &xepos, "EX: %d", x_coord[1] );
 	sprintf((char*) &yepos, "EY: %d", y_coord[1] );
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 30, 200, xpos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 50, 200, ypos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 70, 200, xepos, COL_MENUCONTENT);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + 90, 200, yepos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x1 + 10, y1 + 30, 200, xpos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x1 + 10, y1 + 50, 200, ypos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x1 + 10, y1 + 70, 200, xepos, COL_MENUCONTENT);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x1 + 10, y1 + 90, 200, yepos, COL_MENUCONTENT);
 }
 
 inline unsigned int make16color(__u32 rgb)
