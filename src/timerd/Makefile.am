@@ -10,3 +10,6 @@ INCLUDES = \
 noinst_LIBRARIES = libtimerd.a
 
 libtimerd_a_SOURCES = timerd.cpp timermanager.cpp
+
+AM_CPPFLAGS = -Werror
+AM_CXXFLAGS = -Werror
