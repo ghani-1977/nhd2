@@ -1564,7 +1564,7 @@ int start_scan(CZapitMessages::commandStartScan StartScan)
 	scan_runs = 1;
 	
 	//stop playback
-	stopPlayBack(true);
+	stopPlayBack();
 	
 	// stop pmt update filter
         pmt_stop_update_filter(&pmt_update_fd);	
@@ -1945,12 +1945,10 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		}
 		case CZapitMessages::CMD_SCANSTART: 
 		{
-			int scan_mode;
-			
 			CZapitMessages::commandStartScan StartScan;
 			CBasicServer::receive_data(connfd, &StartScan, sizeof(StartScan));
 			
-			scan_mode = StartScan.scan_mode;
+			int scan_mode = StartScan.scan_mode;
 			
 			printf("[zapit] CMD_SCANSTART: fe(%d) scan_mode: %d\n", StartScan.feindex, scan_mode);
 	
@@ -2090,7 +2088,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				//live_channel = 0;
 			}
 	
-			stopPlayBack(true);
+			stopPlayBack();
 				
 			// stop update pmt filter
 			pmt_stop_update_filter(&pmt_update_fd);
