@@ -222,7 +222,7 @@ COnOffNotifier::COnOffNotifier( CMenuItem* a1,CMenuItem* a2,CMenuItem* a3,CMenuI
         if(a5 != NULL){ toDisable[4] =a5;number++;};
 }
 
-COnOffNotifier::COnOffNotifier(int OffValue)
+COnOffNotifier::COnOffNotifier(int /*OffValue*/)
 {
 	number = 0;
 }
@@ -563,7 +563,7 @@ bool CRecAPIDSettingsNotifier::changeNotify(const neutrino_locale_t, void *)
 }
 
 // apid changer exec
-int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
+int CAPIDChangeExec::exec(CMenuTarget */*parent*/, const std::string & actionKey)
 {
 	dprintf(DEBUG_INFO, "CAPIDChangeExec exec: %s\n", actionKey.c_str());
 
@@ -578,7 +578,7 @@ int CAPIDChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
 }
 
 // txt/dvb sub change exec
-int CSubtitleChangeExec::exec(CMenuTarget * parent, const std::string & actionKey)
+int CSubtitleChangeExec::exec(CMenuTarget */*parent*/, const std::string & actionKey)
 {
 	dprintf(DEBUG_INFO, "CSubtitleChangeExec::exec: action %s\n", actionKey.c_str());
 	
@@ -650,7 +650,7 @@ int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & act
 {
 	dprintf(DEBUG_INFO, "CStreamFeaturesChangeExec exec: %s\n", actionKey.c_str());
 	
-	unsigned int sel = atoi(actionKey.c_str());
+	//unsigned int sel = atoi(actionKey.c_str());
 
 	if(parent != NULL)
 		parent->hide();
@@ -784,31 +784,31 @@ unsigned long long getcurrenttime()
 #define USERMENU_ITEM_OPTION_COUNT SNeutrinoSettings::ITEM_MAX
 const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUNT] =
 {
-        {SNeutrinoSettings::ITEM_NONE, LOCALE_USERMENU_ITEM_NONE},
-        {SNeutrinoSettings::ITEM_BAR, LOCALE_USERMENU_ITEM_BAR},
-        {SNeutrinoSettings::ITEM_EPG_LIST, LOCALE_EPGMENU_EVENTLIST},
-        {SNeutrinoSettings::ITEM_EPG_SUPER, LOCALE_EPGMENU_EPGPLUS},
-        {SNeutrinoSettings::ITEM_EPG_INFO, LOCALE_EPGMENU_EVENTINFO},
-        {SNeutrinoSettings::ITEM_EPG_MISC, LOCALE_USERMENU_ITEM_EPG_MISC},
-        {SNeutrinoSettings::ITEM_AUDIO_SELECT, LOCALE_AUDIOSELECTMENUE_HEAD},
-        {SNeutrinoSettings::ITEM_SUBCHANNEL, LOCALE_INFOVIEWER_SUBSERVICE},
-        {SNeutrinoSettings::ITEM_RECORD, LOCALE_TIMERLIST_TYPE_RECORD} ,
-        {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEPLAYER_MOVIES},
-        {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME},
-        {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD},
-        {SNeutrinoSettings::ITEM_TECHINFO, LOCALE_EPGMENU_STREAMINFO},
-        {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS},
-        {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT},
-        {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES},
-        {SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER},
+        {SNeutrinoSettings::ITEM_NONE, LOCALE_USERMENU_ITEM_NONE, NULL},
+        {SNeutrinoSettings::ITEM_BAR, LOCALE_USERMENU_ITEM_BAR, NULL},
+        {SNeutrinoSettings::ITEM_EPG_LIST, LOCALE_EPGMENU_EVENTLIST, NULL},
+        {SNeutrinoSettings::ITEM_EPG_SUPER, LOCALE_EPGMENU_EPGPLUS, NULL},
+        {SNeutrinoSettings::ITEM_EPG_INFO, LOCALE_EPGMENU_EVENTINFO, NULL},
+        {SNeutrinoSettings::ITEM_EPG_MISC, LOCALE_USERMENU_ITEM_EPG_MISC, NULL},
+        {SNeutrinoSettings::ITEM_AUDIO_SELECT, LOCALE_AUDIOSELECTMENUE_HEAD, NULL},
+        {SNeutrinoSettings::ITEM_SUBCHANNEL, LOCALE_INFOVIEWER_SUBSERVICE, NULL},
+        {SNeutrinoSettings::ITEM_RECORD, LOCALE_TIMERLIST_TYPE_RECORD, NULL} ,
+        {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEPLAYER_MOVIES, NULL},
+        {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME, NULL},
+        {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD, NULL},
+        {SNeutrinoSettings::ITEM_TECHINFO, LOCALE_EPGMENU_STREAMINFO, NULL},
+        {SNeutrinoSettings::ITEM_PLUGIN, LOCALE_USERMENU_ITEM_PLUGINS, NULL},
+        {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT, NULL},
+        {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES, NULL},
+        {SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER, NULL},
 #if ENABLE_GRAPHLCD        
-        {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD},
+        {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD, NULL},
 #endif
-	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS},
-	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD},
+	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS, NULL},
+	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD, NULL},
 };
 
-int CUserMenuMenu::exec(CMenuTarget * parent, const std::string & actionKey)
+int CUserMenuMenu::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
         if(parent != NULL)
                 parent->hide();
@@ -887,7 +887,7 @@ extern Zapit_config zapitCfg;
 void loadZapitSettings();
 void getZapitConfig(Zapit_config *Cfg);
 
-int CDataResetNotifier::exec(CMenuTarget * parent, const std::string& actionKey)
+int CDataResetNotifier::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 {
 	CFileBrowser fileBrowser;
 	CFileFilter fileFilter;

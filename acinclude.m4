@@ -127,6 +127,9 @@ TUXBOX_APPS_DIRECTORY_ONE(plugindir,PLUGINDIR,localstatedir,/var,/tuxbox/plugins
 
 TUXBOX_APPS_DIRECTORY_ONE(themesdir,THEMESDIR,datadir,/share,/tuxbox/neutrino/themes,
 	[--with-themesdir=PATH     ],[where to find the themes (don't change)])
+
+TUXBOX_APPS_DIRECTORY_ONE(isocodesdir,ISOCODESDIR,datadir,/share,/iso-codes,
+	[--with-isocodesdir=PATH     ],[where to find the iso-codes ])
 ])
 
 dnl automake <= 1.6 needs this specifications
@@ -137,6 +140,7 @@ AC_SUBST(GAMESDIR)
 AC_SUBST(LIBDIR)
 AC_SUBST(PLUGINDIR)
 AC_SUBST(THEMESDIR)
+AC_SUBST(ISOCODESDIR)
 dnl end workaround
 
 AC_DEFUN([TUXBOX_APPS_ENDIAN],[

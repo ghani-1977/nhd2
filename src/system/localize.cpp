@@ -48,8 +48,7 @@
 #include <map>
 
 
-static const char * iso639filename_alternative = "/usr/local/share/iso-codes/iso-639.tab";
-static const char * iso639filename = "/share/iso-codes/iso-639.tab";
+static const char * iso639filename = ISOCODESDIR "/iso-639.tab";
 
 std::map<std::string, std::string> iso639;
 std::map<std::string, std::string> iso639rev;
@@ -58,9 +57,6 @@ void initialize_iso639_map(void)
 {
 	std::string s, t, u, v;
 	std::ifstream in(iso639filename);
-	
-	if(!in.is_open())
-		std::ifstream in(iso639filename_alternative);
 	
 	if (in.is_open())
 	{
