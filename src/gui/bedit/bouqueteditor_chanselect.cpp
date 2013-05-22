@@ -98,14 +98,14 @@ bool CBEChannelSelectWidget::hasChanged()
 	return modified;
 }
 
-void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool selected)
+void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool _selected)
 {
 	int ypos = y + theight + paintNr*fheight;
 
 	uint8_t    color;
 	fb_pixel_t bgcolor;
 	
-	if (selected)
+	if (_selected)
 	{
 		color   = COL_MENUCONTENTSELECTED;
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
@@ -261,14 +261,14 @@ void CBEChannelSelectWidget::paintDetails(int index)
 		
 	if(sit != satellitePositions.end()) 
 	{
-		int satNameWidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth (sit->second.name);
+		//int satNameWidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth (sit->second.name);
 		snprintf(&buf[len], sizeof(buf) - len, "(%s)\n", sit->second.name.c_str());
 	}
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + ButtonHeight + 5 + fheight, width - 30, buf, COL_MENUCONTENTDARK, 0, true);
 }
 
-void CBEChannelSelectWidget::paintItem2DetailsLine(int pos, int ch_index)
+void CBEChannelSelectWidget::paintItem2DetailsLine(int pos, int /*ch_index*/)
 {
 #define ConnectLineBox_Width	16
 

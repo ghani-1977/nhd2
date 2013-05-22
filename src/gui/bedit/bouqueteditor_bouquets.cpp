@@ -187,7 +187,7 @@ void CBEBouquetWidget::hide()
 #endif
 }
 
-int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string & actionKey)
+int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;

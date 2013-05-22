@@ -235,7 +235,7 @@ void CBEChannelWidget::paintDetails(int index)
 		
 	if(sit != satellitePositions.end()) 
 	{
-		int satNameWidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth (sit->second.name);
+		//int satNameWidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth (sit->second.name);
 		snprintf(&buf[len], sizeof(buf) - len, "(%s)\n", sit->second.name.c_str());
 	}
 	
@@ -248,7 +248,7 @@ void CBEChannelWidget::clearItem2DetailsLine()
 	  paintItem2DetailsLine(-1, 0);  
 }
 
-void CBEChannelWidget::paintItem2DetailsLine(int pos, int ch_index)
+void CBEChannelWidget::paintItem2DetailsLine(int pos, int /*ch_index*/)
 {
 #define ConnectLineBox_Width	16
 
@@ -310,7 +310,7 @@ void CBEChannelWidget::hide()
 #endif
 }
 
-int CBEChannelWidget::exec(CMenuTarget* parent, const std::string & actionKey)
+int CBEChannelWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
