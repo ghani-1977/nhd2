@@ -139,7 +139,7 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 { 
 	dprintf(DEBUG_INFO, "%s:%s volume: %d\n", FILENAME, __FUNCTION__, left);
 	
-	int ret = 0;
+	int ret = -1;
 	
 	volume = (left + right)/2;
 	
@@ -172,11 +172,13 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	mixer.volume_left = left;
 	mixer.volume_right = right;
 	
-	ret = ioctl(audio_fd, AUDIO_SET_MIXER, &mixer);
+	if (audio_fd > 0)
+	{
+		ret = ioctl(audio_fd, AUDIO_SET_MIXER, &mixer);
 	
-	if(ret < 0)
-		perror("AUDIO_SET_MIXER");
-	
+		if(ret < 0)
+			perror("AUDIO_SET_MIXER");
+	}
 #if !defined (PLATFORM_GENERIC)
 	//HACK?
 	FILE *f;
