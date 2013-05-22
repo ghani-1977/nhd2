@@ -42,7 +42,7 @@ CProgressBar::CProgressBar(int w, int h, int r, int g, int b, bool inv)
 
 void CProgressBar::paint (unsigned int x, unsigned int y, unsigned char pcr)
 {
-	int i, j, siglen;
+	int i, siglen;
 	unsigned int posx;
 	unsigned int posy;
 	unsigned int xpos;

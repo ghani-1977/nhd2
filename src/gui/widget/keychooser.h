@@ -92,12 +92,11 @@ class CKeyChooserItemNoKey : public CMenuTarget
 			key=Key;
 		};
 
-		int exec(CMenuTarget* parent, const std::string & actionKey)
+		int exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 		{
-			*key=CRCInput::RC_nokey;
+			*key = CRCInput::RC_nokey;
 			return menu_return::RETURN_REPAINT;
 		}
 };
-
 
 #endif

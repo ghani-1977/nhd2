@@ -284,7 +284,7 @@ void CVfdControler::paint()
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, y + hheight + mheight*3 + mheight/2, width, g_Locale->getText(LOCALE_OPTIONS_DEFAULT), COL_MENUCONTENT, 0, true); // UTF-8
 }
 
-void CVfdControler::paintSlider(int x, int y, unsigned int spos, float factor, const neutrino_locale_t text, bool selected)
+void CVfdControler::paintSlider(int _x, int _y, unsigned int spos, float factor, const neutrino_locale_t text, bool selected)
 {
 	char wert[5];
 	
@@ -297,15 +297,15 @@ void CVfdControler::paintSlider(int x, int y, unsigned int spos, float factor, c
 	
 	int startx = width - icon_w - slider_w - 50;
 
-	frameBuffer->paintBoxRel(x + startx, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
-	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + startx, y + 2 + mheight/4);
-	frameBuffer->paintIcon(selected ? NEUTRINO_ICON_VOLUMESLIDER2BLUE : NEUTRINO_ICON_VOLUMESLIDER2, (int)(x + (startx + 3) + (spos / factor)), y + mheight/4);
+	frameBuffer->paintBoxRel(_x + startx, _y, 120, mheight, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, _x + startx, _y + 2 + mheight/4);
+	frameBuffer->paintIcon(selected ? NEUTRINO_ICON_VOLUMESLIDER2BLUE : NEUTRINO_ICON_VOLUMESLIDER2, (int)(_x + (startx + 3) + (spos / factor)), _y + mheight/4);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x, y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x, _y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
 	
 	// wert //FIXME
 	sprintf(wert, "%3d", spos ); // UTF-8 encoded
 
-	frameBuffer->paintBoxRel(x + startx + 120 + 10, y, 50, mheight, COL_MENUCONTENT_PLUS_0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + startx + 120 + 10, y+mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
+	frameBuffer->paintBoxRel(_x + startx + 120 + 10, _y, 50, mheight, COL_MENUCONTENT_PLUS_0);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x + startx + 120 + 10, _y + mheight, width, wert, COL_MENUCONTENT, 0, true); // UTF-8
 }

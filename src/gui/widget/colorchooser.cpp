@@ -265,14 +265,14 @@ void CColorChooser::paint()
 	frameBuffer->paintBoxRel(x + /*3*(width/4)*/startx + 2, y + hheight + 2 + 5, mheight*4 - 4, mheight*4 - 4 -10, 254);
 }
 
-void CColorChooser::paintSlider(int x, int y, unsigned char *spos, const neutrino_locale_t text, const char * const iconname, const bool selected)
+void CColorChooser::paintSlider(int _x, int _y, unsigned char *spos, const neutrino_locale_t text, const char * const iconname, const bool selected)
 {
 	if (!spos)
 		return;
 	
-	frameBuffer->paintBoxRel(x + 70, y, 120, mheight, COL_MENUCONTENT_PLUS_0);
-	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, x + 70, y + 2 + mheight/4);
-	frameBuffer->paintIcon(selected ? iconname : NEUTRINO_ICON_VOLUMESLIDER2, x+73+(*spos), y+mheight/4);
+	frameBuffer->paintBoxRel(_x + 70, _y, 120, mheight, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintIcon(NEUTRINO_ICON_VOLUMEBODY, _x + 70, _y + 2 + mheight/4);
+	frameBuffer->paintIcon(selected ? iconname : NEUTRINO_ICON_VOLUMESLIDER2, _x + 73 + (*spos), _y + mheight/4);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x,y+mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x, _y + mheight, width, g_Locale->getText(text), COL_MENUCONTENT, 0, true); // UTF-8
 }

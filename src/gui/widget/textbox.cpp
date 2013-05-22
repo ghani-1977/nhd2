@@ -70,7 +70,7 @@
 #define MIN_WINDOW_WIDTH  ((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
 #define MIN_WINDOW_HEIGHT 40	
 
-CTextBox::CTextBox(const char * text, Font * font_text, const int mode, const CBox * position, CFBWindow::color_t textBackgroundColor)
+CTextBox::CTextBox(const char * text, Font * font_text, const int _mode, const CBox * position, CFBWindow::color_t textBackgroundColor)
 {
 	dprintf(DEBUG_DEBUG, "[CTextBox] new\r\n");
 	
@@ -92,10 +92,10 @@ CTextBox::CTextBox(const char * text, Font * font_text, const int mode, const CB
 		m_nMaxWidth = m_cFrame.iWidth;
 	}
 
-	m_nMode	= mode;
+	m_nMode	= _mode;
 
 	/* in case of auto line break, we do no support auto width  yet */
-	if( !(mode & NO_AUTO_LINEBREAK))
+	if( !(_mode & NO_AUTO_LINEBREAK))
 	{
 		m_nMode = m_nMode & ~AUTO_WIDTH; /* delete any AUTO_WIDTH*/
 	}

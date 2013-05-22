@@ -247,8 +247,6 @@ void CHintBoxExt::refresh(bool paintBg)
 	if (!m_iconfile.empty())
 	{
 		m_window->paintIcon(m_iconfile.c_str(), 8, 15);
-	
-		int stringstartposX = 40 + (m_width >> 1) - (neededWidth >> 1);
 	}
 	
 	int stringstartposX = 10 + (m_width >> 1) - (neededWidth >> 1);

@@ -1150,7 +1150,7 @@ int CMenuOptionStringChooser::paint( bool selected )
         
         // locale text
 	const char * l_optionName = g_Locale->getText(optionName);
-	int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
+	//int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
 	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y+height, dx- (stringstartposName - x),  l_optionName, color, 0, true); // UTF-8
@@ -1423,218 +1423,6 @@ int CMenuForwarder::paint(bool selected)
 	return y + height;
 }
 
-/*
-// CMenuForwarderItemMenuIcon
-CMenuForwarderItemMenuIcon::CMenuForwarderItemMenuIcon(const neutrino_locale_t Text, const bool Active, const char * const Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon, const neutrino_locale_t HelpText )
-{
-	option = Option;
-	option_string = NULL;
-	text = Text;
-	active = Active;
-	jumpTarget = Target;
-	actionKey = ActionKey ? ActionKey : "";
-	directKey = DirectKey;
-	iconName = IconName ? IconName : "";
-	itemIcon = ItemIcon ? ItemIcon : "";
-	helptext = HelpText;
-}
-
-CMenuForwarderItemMenuIcon::CMenuForwarderItemMenuIcon(const neutrino_locale_t Text, const bool Active, const std::string &Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon, const neutrino_locale_t HelpText)
-{
-	option = NULL;
-	option_string = &Option;
-	text = Text;
-	active = Active;
-	jumpTarget = Target;
-	actionKey = ActionKey ? ActionKey : "";
-	directKey = DirectKey;
-	iconName = IconName ? IconName : "";
-	itemIcon = ItemIcon ? ItemIcon : "";
-	helptext = HelpText;
-}
-
-int CMenuForwarderItemMenuIcon::getHeight(void) const
-{
-	return g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-}
-
-int CMenuForwarderItemMenuIcon::getWidth(void) const
-{
-	int tw = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(g_Locale->getText(text), true);
-	const char * option_text = NULL;
-
-	if (option)
-		option_text = option;
-	else if (option_string)
-		option_text = option_string->c_str();
-	
-
-        if (option_text != NULL)
-                tw += BORDER_LEFT + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(option_text, true);
-
-	return tw;
-}
-
-int CMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
-{
-	if(jumpTarget)
-		return jumpTarget->exec(parent, actionKey);
-	else
-		return menu_return::RETURN_EXIT;
-}
-
-const char * CMenuForwarderItemMenuIcon::getOption(void)
-{
-	if (option)
-		return option;
-	else
-		if (option_string)
-			return option_string->c_str();
-		else
-			return NULL;
-}
-
-const char * CMenuForwarderItemMenuIcon::getName(void)
-{
-	return g_Locale->getText(text);
-}
-
-const char * CMenuForwarderItemMenuIcon::getHelpText(void)
-{
-	return g_Locale->getText(helptext);
-}
-
-int CMenuForwarderItemMenuIcon::paint(bool selected)
-{
-	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
-	int height = getHeight();
-	const char * l_text = getName();
-	int stringstartposX = x + (offx == 0? BORDER_LEFT : offx) + BORDER_LEFT;
-	const char * option_text = getOption();	
-	unsigned char color   = COL_MENUCONTENT;
-	fb_pixel_t    bgcolor = COL_MENUCONTENT_PLUS_0;
-
-	if (selected)
-	{
-		color   = COL_MENUCONTENTSELECTED;
-		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
-	}
-	else if (!active)
-	{
-		color   = COL_MENUCONTENTINACTIVE;
-		bgcolor = COL_MENUCONTENTINACTIVE_PLUS_0;
-	}
-	
-	if (selected)
-	{
-		// item icon
-		if (!itemIcon.empty())
-		{
-			//NOTE: CMenuWidget menues are always centered
-			// get icon size
-			int icon_w = 0;
-			int icon_h = 0;
-			
-			// check item icon size w/h equal 0 means icons doesnt exist
-			frameBuffer->getIconSize(itemIcon.c_str(), &icon_w, &icon_h);
-			
-			//refresh pic box
-			frameBuffer->paintBoxRel(x + BORDER_LEFT + (dx/3)*2 + (((dx - (dx/3)*2 - BORDER_RIGHT)/2) - ITEM_ICON_W/2), ( frameBuffer->getScreenHeight(true) - ITEM_ICON_H)/2, ITEM_ICON_W, ITEM_ICON_H, COL_MENUCONTENTDARK_PLUS_0 ); // 25 foot height
-		
-			// paint item icon
-			int hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-			int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-			int sp_height = 5;
-	
-			//if(icon_w >= 100 || icon_h >= 100)
-			if( (HEIGHT - hheight -fheight - 2*sp_height) >= 100 && (icon_w >= 100 || icon_h >= 100) )
-				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - ITEM_ICON_W/2), ( frameBuffer->getScreenHeight(true) - ITEM_ICON_H)/2);  //25:foot height
-		}
-		
-		// help bar
-		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-			
-		//help text
-		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0);
-			
-		// paint help icon
-		int icon_w = 0;
-		int icon_h = 0;
-		
-		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
-			
-		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
-			
-		// help text
-		const char * help_text = getHelpText();
-		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
-			
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
-	
-		// menutitle on VFD
-		char str[256];
-
-		if (option_text != NULL) 
-		{
-			snprintf(str, 255, "%s %s", l_text, option_text);
-
-			CVFD::getInstance()->showMenuText(0, str, -1, true);
-		} 
-		else
-		{
-			CVFD::getInstance()->showMenuText(0, l_text, -1, true);
-		}
-	}
-	
-	// paint item
-	frameBuffer->paintBoxRel(x + BORDER_LEFT, y, (dx/3)*2, height, bgcolor);
-
-	// paint icon/direkt-key
-	int icon_w = 0;
-	int icon_h = 0;
-		
-	if (!iconName.empty())
-	{
-		frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
-		
-		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y + ((height - icon_h)/2) );
-	}
-	else if (CRCInput::isNumeric(directKey))
-	{
-		// define icon name depends of numeric value
-		char i_name[6]; 							// X +'\0'
-		snprintf(i_name, 6, "%d", CRCInput::getNumericValue(directKey));
-		i_name[5] = '\0'; 							// even if snprintf truncated the string, ensure termination
-		iconName = i_name;
-		
-		if (!iconName.empty())
-		{
-			frameBuffer->getIconSize(iconName.c_str(), &icon_w, &icon_h);
-			
-			frameBuffer->paintIcon(iconName, x + BORDER_LEFT + 5, y + ((height - icon_h)/2) );
-		}
-		else
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + BORDER_LEFT + 5, y + height, height, CRCInput::getKeyName(directKey), color, height);
-	}
-	
-	//local-text
-	stringstartposX = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, (dx/3)*2 - (stringstartposX - x), l_text, color, 0, true); // UTF-8
-	
-	//option-text
-	if (option_text != NULL)
-	{
-		int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(option_text, true);
-		int stringstartposOption = std::max(stringstartposX + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_text, true) + BORDER_LEFT + BORDER_LEFT/2, x + (dx/3)*2 - stringwidth - BORDER_RIGHT ); //+ offx
-		
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, (dx/3)*2 - (stringstartposOption- x),  option_text, color, 0, true);
-	}
-
-	return y + height;
-}
-*/
-
 // CMenuForwarderNonLocalized 
 const char * CMenuForwarderNonLocalized::getName(void)
 {
@@ -1650,24 +1438,6 @@ CMenuForwarderNonLocalized::CMenuForwarderNonLocalized(const char * const Text, 
 {
 	the_text = Text;
 }
-
-/*
-// CMenuForwarderNonLocalizedItemMenuIcon
-const char * CMenuForwarderNonLocalizedItemMenuIcon::getName(void)
-{
-	return the_text.c_str();
-}
-
-CMenuForwarderNonLocalizedItemMenuIcon::CMenuForwarderNonLocalizedItemMenuIcon(const char * const Text, const bool Active, const char * const Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
-{
-	the_text = Text;
-}
-
-CMenuForwarderNonLocalizedItemMenuIcon::CMenuForwarderNonLocalizedItemMenuIcon(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
-{
-	the_text = Text;
-}
-*/
 
 // CMenuSeparator
 CMenuSeparator::CMenuSeparator(const int Type, const neutrino_locale_t Text)
@@ -1694,7 +1464,7 @@ const char * CMenuSeparator::getString(void)
 	return g_Locale->getText(text);
 }
 
-int CMenuSeparator::paint(bool selected)
+int CMenuSeparator::paint(bool /*selected*/)
 {
 	int height;
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
@@ -1734,73 +1504,6 @@ int CMenuSeparator::paint(bool selected)
 
 	return y+ height;
 }
-
-/*
-// CMenuSeparatorMainMenu
-CMenuSeparatorItemMenuIcon::CMenuSeparatorItemMenuIcon(const int Type, const neutrino_locale_t Text)
-{
-	directKey = CRCInput::RC_nokey;
-	iconName = "";
-	type     = Type;
-	text     = Text;
-}
-
-int CMenuSeparatorItemMenuIcon::getHeight(void) const
-{
-	return (text == NONEXISTANT_LOCALE) ? BORDER_LEFT : g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-}
-
-int CMenuSeparatorItemMenuIcon::getWidth(void) const
-{
-	return 0;
-}
-
-const char * CMenuSeparatorItemMenuIcon::getString(void)
-{
-	return g_Locale->getText(text);
-}
-
-int CMenuSeparatorItemMenuIcon::paint(bool selected)
-{
-	int height;
-	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
-	height = getHeight();
-
-	frameBuffer->paintBoxRel(x + BORDER_LEFT, y, (dx/3)*2, height, COL_MENUCONTENT_PLUS_0 );
-
-	if ((type & LINE))
-	{
-		frameBuffer->paintHLineRel(x + BORDER_LEFT, (dx/3)*2, y + (height >> 1), COL_MENUCONTENTDARK_PLUS_0);
-		frameBuffer->paintHLineRel(x + BORDER_LEFT, (dx/3)*2, y + (height >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0);
-	}
-
-	if ((type & STRING))
-	{
-
-		if (text != NONEXISTANT_LOCALE)
-		{
-			int stringstartposX;
-
-			const char * l_text = getString();
-			int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_text, true); // UTF-8
-
-			// if no alignment is specified, align centered 
-			if (type & ALIGN_LEFT)
-				stringstartposX = x + (BORDER_LEFT + 10) ;
-			else if (type & ALIGN_RIGHT)
-				stringstartposX = x + (dx/3)*2 - stringwidth - (BORDER_RIGHT + 10);
-			else // ALIGN_CENTER
-				stringstartposX = x + ( ((dx/3)*2) >> 1) - (stringwidth >> 1);
-
-			frameBuffer->paintBoxRel(stringstartposX - 5, y, stringwidth + 10, height, COL_MENUCONTENT_PLUS_0);
-
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposX, y + height, (dx/3)*2 - (stringstartposX- x) , l_text, COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
-		}
-	}
-
-	return y + height;
-}
-*/
 
 bool CPINProtection::check()
 {
@@ -1862,27 +1565,7 @@ int CLockedMenuForwarder::exec(CMenuTarget * parent)
 	return CMenuForwarder::exec(parent);
 }
 
-/*
-int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
-{
-	Parent = parent;
-	
-	if( (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_NEVER) || AlwaysAsk )
-	{
-		if (!check())
-		{
-			Parent = NULL;
-			return menu_return::RETURN_REPAINT;
-		}
-	}
-
-	Parent = NULL;
-	
-	return CMenuForwarderItemMenuIcon::exec(parent);
-}
-*/
-
-int CMenuSelectorTarget::exec(CMenuTarget* parent, const std::string & actionKey)
+int CMenuSelectorTarget::exec(CMenuTarget*/*parent*/, const std::string & actionKey)
 {
         if (actionKey != "")
                 *m_select = atoi(actionKey.c_str());
@@ -2144,7 +1827,7 @@ const char * CMenuSeparatorItemMenuIcon::getString(void)
 	return g_Locale->getText(text);
 }
 
-int CMenuSeparatorItemMenuIcon::paint(bool selected)
+int CMenuSeparatorItemMenuIcon::paint(bool /*selected*/)
 {
 	int height;
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();

@@ -164,8 +164,6 @@ void CHintBox::refresh(void)
 	if (!iconfile.empty())
 	{
 		window->paintIcon(iconfile.c_str(), 8, 15);
-		
-		int stringstartposX = 40 + (width >> 1) - (neededWidth >> 1);
 	}
 	
 	int stringstartposX = 10 + (width >> 1) - (neededWidth >> 1);

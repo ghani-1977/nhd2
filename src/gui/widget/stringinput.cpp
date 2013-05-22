@@ -448,7 +448,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 	return res;
 }
 
-int CStringInput::handleOthers(const neutrino_msg_t msg, const neutrino_msg_data_t data)
+int CStringInput::handleOthers(const neutrino_msg_t /*msg*/, const neutrino_msg_data_t /*data*/)
 {
 	return messages_return::unhandled;
 }

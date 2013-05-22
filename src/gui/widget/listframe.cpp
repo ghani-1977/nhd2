@@ -86,9 +86,10 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int mode, const CBox* position, const char* textTitle, Font* font_title)
+CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int _mode, const CBox* position, const char* textTitle, Font* font_title)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame] new\r\n");
+	
 	initVar();
 
 	if(lines != NULL) 
@@ -99,8 +100,10 @@ CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int mode, const
 			m_nNrOfRows = LF_MAX_ROWS;
 	}
 
-	if(font_text != NULL)	m_pcFontList = font_text;
-	if(font_text != NULL)	m_pcFontHeaderList = font_text;
+	if(font_text != NULL)	
+		m_pcFontList = font_text;
+	if(font_text != NULL)	
+		m_pcFontHeaderList = font_text;
 
 	if(position != NULL) 
 	{
@@ -109,7 +112,7 @@ CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int mode, const
 		m_nMaxWidth = m_cFrame.iWidth;
 	}
 
-	m_nMode	= mode;
+	m_nMode	= _mode;
 
 #if 0
 	TRACE("  Mode: ");

@@ -745,11 +745,13 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 //////////////////////////////////////////////////////////////////////
 bool CMsgBox::setText(const std::string* newText)
 {
-	bool result = false;
+	bool _result = false;
+	
 	// update text in textbox if there is one
 	if(m_pcTextBox != NULL && newText != NULL)
 	{
-		result = m_pcTextBox->setText(newText);
+		_result = m_pcTextBox->setText(newText);
+		
 		if(m_nMode & AUTO_WIDTH || m_nMode & AUTO_HIGH)
 		{
 			/* window might changed in size ...*/
@@ -763,13 +765,13 @@ bool CMsgBox::setText(const std::string* newText)
 			// since the frames size has changed, we have to recenter the window again */
 			if(m_nMode & CENTER)
 			{
-				m_cBoxFrame.iX		= g_settings.screen_StartX + ((g_settings.screen_EndX - g_settings.screen_StartX - m_cBoxFrame.iWidth) >>1);
-				m_cBoxFrame.iY		= g_settings.screen_StartY + ((g_settings.screen_EndY - g_settings.screen_StartY - m_cBoxFrame.iHeight) >>1);
+				m_cBoxFrame.iX = g_settings.screen_StartX + ((g_settings.screen_EndX - g_settings.screen_StartX - m_cBoxFrame.iWidth) >>1);
+				m_cBoxFrame.iY = g_settings.screen_StartY + ((g_settings.screen_EndY - g_settings.screen_StartY - m_cBoxFrame.iHeight) >>1);
 			}
 		}
 	}
 	
-	return(result);
+	return(_result);
 };
 
 
@@ -831,7 +833,7 @@ int ShowMsg2UTF(	const char * const Title,
 					const CMsgBox::result_ Default, 
 					const uint32_t ShowButtons, 
 					const char * const Icon, 
-					const int Width, 
+					const int /*Width*/, 
 					const int timeout, 
 					bool returnDefaultOnTimeout)
 {
