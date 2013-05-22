@@ -1327,50 +1327,51 @@ enum XML_Error XML_Parser::initializeEncoding()
 
 enum XML_Error XML_Parser::processXmlDecl(int isGeneralTextEntity, const char *s, const char *next)
 {
-  const char *encodingName=0;
-  const ENCODING *newEncoding=0;
-  const char *version;
-  int standalone=-1;
+	const char *encodingName=0;
+	const ENCODING *newEncoding=0;
+	const char *version;
+	int standalone=-1;
 
-  if (!XmlParseXmlDecl(isGeneralTextEntity, encoding, s, next, &eventPtr,
-		       &version, &encodingName, &newEncoding, &standalone))
-    return XML_ERROR_SYNTAX;
+	if (!XmlParseXmlDecl(isGeneralTextEntity, encoding, s, next, &eventPtr, &version, &encodingName, &newEncoding, &standalone))
+		return XML_ERROR_SYNTAX;
 
-  if (!isGeneralTextEntity && standalone==1) dtd.standalone=1;
+	if (!isGeneralTextEntity && standalone == 1) 
+		dtd.standalone=1;
 
-  if (defaultHandler) reportDefault(encoding, s, next);
+	if (defaultHandler) 
+		reportDefault(encoding, s, next);
 
-  if (!protocolEncodingName)
-  {
-    if (newEncoding)
-    {
-      if (newEncoding->minBytesPerChar!=encoding->minBytesPerChar)
-      {
-	eventPtr=encodingName;
-	return XML_ERROR_INCORRECT_ENCODING;
-      };
+	if (!protocolEncodingName)
+	{
+		if (newEncoding)
+		{
+			if (newEncoding->minBytesPerChar!=encoding->minBytesPerChar)
+			{
+				eventPtr=encodingName;
+				return XML_ERROR_INCORRECT_ENCODING;
+			};
 
-      encoding=newEncoding;
-    }
-    else if (encodingName)
-    {
-      enum XML_Error result;
-      const XML_Char *s=poolStoreString(&tempPool, encoding, encodingName,
-                                        encodingName +
-					XmlNameLength(encoding, encodingName));
+			encoding=newEncoding;
+		}
+		else if (encodingName)
+		{
+			enum XML_Error result;
+			const XML_Char *ls = poolStoreString(&tempPool, encoding, encodingName, encodingName + XmlNameLength(encoding, encodingName));
 
-      if (!s) return XML_ERROR_NO_MEMORY;
+			if (!ls) 
+				return XML_ERROR_NO_MEMORY;
 
-      result=handleUnknownEncoding(s);
+			result = handleUnknownEncoding(ls);
 
-      poolDiscard(&tempPool);
+			poolDiscard(&tempPool);
 
-      if (result==XML_ERROR_UNKNOWN_ENCODING) eventPtr=encodingName;
-      return result;
-    };
-  };
+			if (result == XML_ERROR_UNKNOWN_ENCODING) 
+				  eventPtr=encodingName;
+			return result;
+		};
+	};
 
-  return XML_ERROR_NONE;
+	return XML_ERROR_NONE;
 };
 
 enum XML_Error XML_Parser::handleUnknownEncoding(const XML_Char *encodingName)

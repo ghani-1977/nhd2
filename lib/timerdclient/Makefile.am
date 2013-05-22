@@ -7,3 +7,4 @@ INCLUDES = \
 noinst_LIBRARIES  = libtimerdclient.a
 
 libtimerdclient_a_SOURCES = timerdclient.cpp
+

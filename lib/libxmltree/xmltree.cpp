@@ -316,18 +316,21 @@ void XMLTreeNode::SetMatchingMode(matchmode mode)
 
 void XMLTreeNode::DeleteAttribute(char *name)
 {
-  XMLAttribute *a, *next, *prev;
+	XMLAttribute *a, *lnext, *prev;
 
-  a=GetAttribute(name);
-  if (!a) return;
+	a = GetAttribute(name);
+	if (!a) 
+		return;
 
-  next=a->GetNext();
-  prev=a->GetPrevious();
+	lnext = a->GetNext();
+	prev = a->GetPrevious();
 
-  if (prev) prev->SetNext(next);
-  if (next) next->SetPrevious(prev);
+	if (prev) 
+		prev->SetNext(lnext);
+	if (lnext) 
+		lnext->SetPrevious(prev);
 
-  delete a;
+	delete a;
 }
 
 void XMLTreeNode::DeleteAttributes()
@@ -361,28 +364,32 @@ void XMLTreeNode::DeleteChildren()
   child=0;
 }
 
-void XMLTreeParser::StartElementHandler(const XML_Char *name, const XML_Char **atts)
+void XMLTreeParser::StartElementHandler(const XML_Char *name, const XML_Char **latts)
 {
-  XMLTreeNode     *n;
-  const XML_Char **a=atts;
+	XMLTreeNode     *n;
+	const XML_Char **a = latts;
 
-  n=new XMLTreeNode(current, (char *) name);
+	n = new XMLTreeNode(current, (char *) name);
 
-  if (a)
-  {
-    while (*a) { n->SetAttribute((char *) a[0], (char *) a[1]); a+=2; };
-  }
-  
-  if (current)
-  {
-    n->SetPDataOff(current->GetDataSize());
-    current->AddNode(n, XMLTreeNode::ADD_CHILD);
-    current=n;
-  }
-  else
-  {
-    root=current=n;
-  }
+	if (a)
+	{
+		while (*a) 
+		{ 
+			n->SetAttribute((char *) a[0], (char *) a[1]); 
+			a+=2; 
+		};
+	}
+	
+	if (current)
+	{
+		n->SetPDataOff(current->GetDataSize());
+		current->AddNode(n, XMLTreeNode::ADD_CHILD);
+		current = n;
+	}
+	else
+	{
+		root = current=n;
+	}
 }
 
 void XMLTreeParser::EndElementHandler(const XML_Char* /*name*/)
@@ -399,11 +406,11 @@ void XMLTreeParser::CharacterDataHandler(const XML_Char *s, int len)
     current->AppendData((char *) s, len);
 }
 
-XMLTreeParser::XMLTreeParser(const XML_Char *encoding): XML_Parser(encoding)
+XMLTreeParser::XMLTreeParser(const XML_Char *lencoding): XML_Parser(lencoding)
 {
-  root=current=0;
+	root=current = 0;
 
-  startElementHandler=endElementHandler=characterDataHandler=1;
+	startElementHandler = endElementHandler = characterDataHandler = 1;
 }
 
 XMLTreeParser::~XMLTreeParser()
