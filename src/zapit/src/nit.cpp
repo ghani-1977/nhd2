@@ -51,8 +51,9 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	int secdone[255];
 	int sectotal = -1;
 
-	for(int i = 0; i < 255; i++)
-		secdone[i] = 0;
+	memset(secdone, 0, 255);
+	
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
 	
 	cDemux * dmx = new cDemux();
 	
@@ -83,11 +84,8 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
 
-	filter[0] = 0x40;	/* Tid */
-	//filter[4] = 0x00;
+	filter[0] = 0x40;	/* nit tid */
 	mask[0] = 0xFF;
-	//mask[4] = 0xFF;
-	//unsigned char sec = 0x00;
 
 	if (dmx->sectionFilter(0x10, filter, mask, 5) < 0) 
 	{

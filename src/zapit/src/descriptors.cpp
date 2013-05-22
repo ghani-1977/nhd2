@@ -332,8 +332,6 @@ int satellite_delivery_system_descriptor(const unsigned char * const buffer, t_t
 	if (feparams.u.qpsk.symbol_rate >= 50000000)
 		feparams.u.qpsk.symbol_rate /= 10;
 
-	//feparams.frequency = (int) 1000 * (int) round ((double) feparams.frequency / (double) 1000);
-
 	freq = feparams.frequency/1000;
 
 	if(feparams.frequency > 15000000) 
@@ -711,6 +709,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 			break;
 	}
 
+	//set channel pidflags
 	if(channel) 
 	{
 		if(tpchange)
@@ -730,6 +729,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 		}
 	}
 
+	// set live_channel_id
 	if(channel && (channel->getServiceType() == 1) && !channel->scrambled) 
 	{
 		live_channel_id = channel->getChannelID();
@@ -987,7 +987,6 @@ int terrestrial_delivery_system_descriptor(const unsigned char * const buffer, t
 	TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
 
 	add_to_scan(TsidOnid, &feparams, 0, true, feindex);
-
 
 	return 0;
 }

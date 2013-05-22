@@ -42,6 +42,8 @@ int parse_pat(CZapitChannel * const channel, CFrontend * fe)
 	
 	if(!fe)
 		return -1;
+	
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
 
 	cDemux * dmx = new cDemux();
 	

@@ -106,6 +106,8 @@ extern void parseScanInputXml(int feindex);
 
 bool tuneFrequency(FrontendParameters *feparams, uint8_t polarization, t_satellite_position satellitePosition, int feindex)
 {
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	
 	// init tuner
 	initTuner(getFE(feindex));
 	//
@@ -271,12 +273,12 @@ _repeat:
 			freq = tI->second.feparams.frequency/100;
 		else
 			freq = tI->second.feparams.frequency/1000;
-		
+			
 		// parse sdt
 		dprintf(DEBUG_INFO, "parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
 		
 		// parse sdt
-		if( !parse_sdt(&tI->second.transport_stream_id, &tI->second.original_network_id, satellitePosition, freq, feindex) )
+		if(parse_sdt(&tI->second.transport_stream_id, &tI->second.original_network_id, satellitePosition, freq, feindex) < 0)
 		{
 			dprintf(DEBUG_INFO, "[scan] SDT failed !\n");
 			continue;
@@ -295,7 +297,7 @@ _repeat:
 		{
 			dprintf(DEBUG_INFO, "[scan] trying to parse NIT\n");
 			
-			if( !parse_nit(satellitePosition, freq, feindex) )
+			if( parse_nit(satellitePosition, freq, feindex) < 0 )
 			{
 				dprintf(DEBUG_INFO, "[scan] NIT failed !\n");
 			}
@@ -304,6 +306,7 @@ _repeat:
 		dprintf(DEBUG_INFO, "[scan] tpid ready: %llx\n", TsidOnid);
 	}
 
+	// add found transponder by nit to scan
 	if(!scan_mode) 
 	{
 		dprintf(DEBUG_INFO, "[scan] found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
@@ -396,8 +399,9 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 
 void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, uint8_t diseqc_pos, bool satfeed, int feindex)
 {
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	
 	xmlNodePtr tps = NULL;
-	//transponder_list_t::iterator tI;
 	found_transponders = 0;
 	processed_transponders = 0;
 
@@ -417,24 +421,6 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 	
 	tps = search->xmlChildrenNode;
 
-	/* TPs from current service list */
-	#if 0
-	for(tI = transponders.begin(); tI != transponders.end(); tI++) 
-	{
-		if(abort_scan)
-			return;
-
-		t_satellite_position satpos = GET_SATELLITEPOSITION_FROM_TRANSPONDER_ID(tI->first) & 0xFFF;
-		if(GET_SATELLITEPOSITION_FROM_TRANSPONDER_ID(tI->first) & 0xF000)
-			satpos = -satpos;
-		
-		if(satpos != satellitePosition)
-			continue;
-		
-		add_to_scan(tI->first, &tI->second.feparams, tI->second.polarization, false, feindex);
-	}
-	#endif
-
 	/* read all transponders */
 	while ((tps = xmlGetNextOccurence(tps, "transponder")) != NULL) 
 	{
@@ -449,6 +435,7 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 	
 	eventServer->sendEvent( CZapitClient::EVT_SCAN_NUM_TRANSPONDERS, CEventServer::INITID_ZAPIT, &found_transponders, sizeof(found_transponders));
 
+	// start scanning
 	get_sdts(satellitePosition, feindex);
 
 	/* 
@@ -490,6 +477,8 @@ void scan_provider(xmlNodePtr search, t_satellite_position satellitePosition, ui
 
 void stop_scan(const bool success)
 {
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	
 	/* notify client about end of scan */
 	scan_runs = 0;
 	eventServer->sendEvent(success ? CZapitClient::EVT_SCAN_COMPLETE : CZapitClient::EVT_SCAN_FAILED, CEventServer::INITID_ZAPIT);
@@ -535,7 +524,7 @@ void * start_scanthread(void *scanmode)
 	scan_mode = mode & 0xFF;	// NIT (0) or fast (1)
 	scan_sat_mode = mode & 0xFF00; 	// single = 0, all = 1
 
-	dprintf(DEBUG_INFO, "scan.cpp:start_scanthread: scan mode %s, satellites %s\n", scan_mode ? "fast" : "NIT", scan_sat_mode ? "all" : "single");
+	dprintf(DEBUG_NORMAL, "scan.cpp:start_scanthread: scan mode %s, satellites %s\n", scan_mode ? "fast" : "NIT", scan_sat_mode ? "all" : "single");
 	
 	CZapitClient myZapitClient;
 
@@ -655,7 +644,6 @@ void * start_scanthread(void *scanmode)
 		stop_scan(false);
 
 		//live_fe->setTsidOnid(0);
-		
 		zapit(live_channel_id, 0);
 	}
 
@@ -668,7 +656,7 @@ void * start_scanthread(void *scanmode)
 
 void * scan_transponder(void * arg)
 {
-	dprintf(DEBUG_INFO, "[scan.cpp] scan_transponder: starting... tid %ld\n", syscall(__NR_gettid));
+	dprintf(DEBUG_NORMAL, "[scan.cpp] scan_transponder: starting... tid %ld\n", syscall(__NR_gettid));
 	
 	CZapitMessages::commandScanTP ScanTP = *(CZapitMessages::commandScanTP *) arg;
 	TP_params * TP = &ScanTP.TP;
@@ -742,6 +730,7 @@ void * scan_transponder(void * arg)
 	        //g_bouquetManager->renumServices();
 	        g_bouquetManager->clearAll();
 		g_bouquetManager->loadBouquets();
+		
 		stop_scan(true);
 		myZapitClient.reloadCurrentServices();
 	} 
@@ -750,7 +739,6 @@ void * scan_transponder(void * arg)
 		stop_scan(false);
 
 		//live_fe->setTsidOnid(0);
-		
 		zapit(live_channel_id, 0);
 	}
 	

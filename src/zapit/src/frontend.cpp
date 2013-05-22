@@ -1323,7 +1323,7 @@ int CFrontend::setParameters(TP_params * TP, bool /*nowait*/)
 		/* set Sec for Sat */
 		setSec(TP->diseqc, TP->polarization, high_band);
 
-		dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) freq= %d (offset= %d) fec= %d\n", fe_adapter, fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
+		dprintf(DEBUG_NORMAL, "CFrontend::setParameters: fe(%d,%d) freq= %d (offset= %d) fec= %d\n", fe_adapter, fenumber, TP->feparams.frequency, freq_offset, TP->feparams.u.qpsk.fec_inner);
 	}
 
 	if (info.type == FE_QAM) 
@@ -1332,12 +1332,12 @@ int CFrontend::setParameters(TP_params * TP, bool /*nowait*/)
 		if (TP->feparams.frequency < 1000*1000)
 			TP->feparams.frequency = TP->feparams.frequency * 1000; // convert to hz cable freq are in cables.xml in khz
 		
-		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d fec= %d mod= %d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
+		dprintf(DEBUG_NORMAL, "cFrontend::setParameters: fe(%d,%d) freq= %d fec= %d mod= %d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.qam.fec_inner, TP->feparams.u.qam.modulation, TP->feparams.inversion);
 	}
 
 	if (info.type == FE_OFDM) 
 	{
-		dprintf(DEBUG_INFO, "cFrontend::setParameters: fe(%d,%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
+		dprintf(DEBUG_NORMAL, "cFrontend::setParameters: fe(%d,%d) freq= %d band=%d HP=%d LP=%d const=%d trans=%d guard=%d hierarchy=%d inv= %d\n", fe_adapter, fenumber, TP->feparams.frequency, TP->feparams.u.ofdm.bandwidth, TP->feparams.u.ofdm.code_rate_HP, TP->feparams.u.ofdm.code_rate_LP, TP->feparams.u.ofdm.constellation, TP->feparams.u.ofdm.transmission_mode, TP->feparams.u.ofdm.guard_interval, TP->feparams.u.ofdm.hierarchy_information, TP->feparams.inversion);
 	}
 	
 	do {
@@ -1348,7 +1348,7 @@ int CFrontend::setParameters(TP_params * TP, bool /*nowait*/)
 		getEvent();
 	} while (0);
 
-	dprintf(DEBUG_INFO, "CFrontend::setParameters: fe(%d,%d) %s\n", fe_adapter, fenumber, tuned? "tuned" : "tune failed");
+	dprintf(DEBUG_NORMAL, "CFrontend::setParameters: fe(%d,%d) %s\n", fe_adapter, fenumber, tuned? "tuned" : "tune failed");
 
 	if (info.type == FE_QPSK)
 		TP->feparams.frequency += freq_offset;

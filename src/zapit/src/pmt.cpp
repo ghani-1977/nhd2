@@ -149,21 +149,21 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0x56: /* teletext descriptor */
-				for (unsigned char fIdx=0; fIdx<fieldCount; fIdx++) 
+				for (unsigned char fIdx = 0; fIdx < fieldCount; fIdx++) 
 				{
 					char tmpLang[4];
 					memcpy(tmpLang, &buffer[pos + 5*fIdx + 2], 3);
 					tmpLang[3] = '\0';
-					unsigned char teletext_type=buffer[pos + 5*fIdx + 5]>> 3;
+					unsigned char teletext_type = buffer[pos + 5*fIdx + 5]>> 3;
 					unsigned char teletext_magazine_number = buffer[pos + 5*fIdx + 5] & 7;
-					unsigned char teletext_page_number=buffer[pos + 5*fIdx + 6];
-					if (teletext_type==0x02)
+					unsigned char teletext_page_number = buffer[pos + 5*fIdx + 6];
+					if (teletext_type == 0x02)
 					{
-						channel->addTTXSubtitle(esInfo->elementary_PID, tmpLang,teletext_magazine_number, teletext_page_number);
+						channel->addTTXSubtitle(esInfo->elementary_PID, tmpLang, teletext_magazine_number, teletext_page_number);
 					} 
 					else 
 					{
-						if (teletext_type==0x05)
+						if (teletext_type == 0x05)
 						{
 							channel->addTTXSubtitle(esInfo->elementary_PID, tmpLang, teletext_magazine_number, teletext_page_number, true);
 						}
@@ -181,7 +181,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 					for (unsigned char fIdx = 0; fIdx < fieldCount1; fIdx++)
 					{
 						char tmpLang[4];
-						memcpy(tmpLang,&buffer[pos + 8*fIdx + 2], 3);
+						memcpy(tmpLang, &buffer[pos + 8*fIdx + 2], 3);
 						tmpLang[3] = '\0';
 						unsigned char subtitling_type = buffer[pos + 8*fIdx + 5];
 						unsigned short composition_page_id = *((unsigned short*)(&buffer[pos + 8*fIdx + 6]));

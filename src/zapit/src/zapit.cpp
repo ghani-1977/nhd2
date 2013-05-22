@@ -240,6 +240,8 @@ CConfigFile fe_configfile(',', false);
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
+bool retune = false;
+
 /* variables for EN 50494 (a.k.a Unicable) */
 //int uni_scr = -1;	/* the unicable SCR address,     -1 == no unicable */
 //int uni_qrg = 0;	/* the unicable frequency in MHz, 0 == from spec */
@@ -885,6 +887,9 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 		  
 	transponder_change = frontend->setInput(thischannel, current_is_nvod);
 	
+	if(retune)
+		transponder_change = true;
+	
 	// drive rotor
 	if(transponder_change && !current_is_nvod) 
 	{
@@ -911,6 +916,10 @@ static bool tune_to_channel(CFrontend * frontend, CZapitChannel * thischannel, b
 	// tune fe (by TP change, nvod, twin_mode)
 	if (transponder_change || current_is_nvod ) 
 	{
+		//
+		if(retune)
+			retune = false;
+		
 		if ( frontend->tuneChannel(thischannel, current_is_nvod) == false) 
 		{
 			return false;
@@ -1535,7 +1544,6 @@ void parseScanInputXml(int feindex)
  * return 0 on success
  * return -1 otherwise
  */
-//int start_scan(int scan_mode)
 int start_scan(CZapitMessages::commandStartScan StartScan)
 {
 	// reread scaninputParser
@@ -1949,6 +1957,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			// start scan thread
 			if(start_scan(StartScan) == -1)
 				eventServer->sendEvent(CZapitClient::EVT_SCAN_FAILED, CEventServer::INITID_ZAPIT);
+			
+			retune = true;
 	
 			break;
 		}
@@ -2026,6 +2036,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		
 			// tune it
 			getFE(TuneTP.feindex)->tuneFrequency(&TuneTP.TP.feparams, TuneTP.TP.polarization, true);
+			
+			// set retune flag
+			retune = true;
 		}
 		break;
 	
@@ -2074,7 +2087,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				if(scanProviders.size() > 0)
 					scanProviders.clear();
  
-				live_channel = 0;
+				//live_channel = 0;
 			}
 	
 			stopPlayBack(true);
@@ -2089,6 +2102,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				dprintf(DEBUG_INFO, "pthread_create\n");
 				scan_runs = 0;
 			} 
+			
+			retune = true;
 	
 			break;
 		}
@@ -3637,8 +3652,7 @@ void * sdt_thread(void */*arg*/)
 
 			if(live_channel) 
 			{
-				ret = parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe/*->fenumber*/ );
-				if(ret)
+				if( parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe/*->fenumber*/ ) < 0 )
 					continue;
 			}
 

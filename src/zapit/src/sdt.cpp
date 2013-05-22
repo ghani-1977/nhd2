@@ -38,7 +38,7 @@
 
 #include <dmx_cs.h>
 
-#define SDT_SIZE 4192
+#define SDT_SIZE 1024
 
 
 extern CFrontend * getFE(int index);
@@ -51,6 +51,8 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	int sectotal = -1;
 
 	memset(secdone, 0, 255);
+	
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
 
 	cDemux * dmx = new cDemux();
 	
@@ -85,7 +87,7 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 	memset(filter, 0x00, DMX_FILTER_SIZE);
 	memset(mask, 0x00, DMX_FILTER_SIZE);
 
-	filter[0] = 0x42;
+	filter[0] = 0x42;	/* sdt tid */
 	mask[0] = 0xFF;
 
 	if (dmx->sectionFilter(0x11, filter, mask, 1) < 0) 
