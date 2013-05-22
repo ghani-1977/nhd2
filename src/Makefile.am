@@ -90,7 +90,7 @@ if ENABLE_LIBEPLAYER3
 neutrino_LDADD += $(top_builddir)/lib/libeplayer3/libeplayer3.a
 else
 if ENABLE_GSTREAMER
-neutrino_LDADD += -lgstreamer-0.10 -lgobject-2.0 -lglib-2.0
+neutrino_LDADD += -lgstreamer-0.10
 endif
 endif
 
