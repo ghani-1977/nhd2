@@ -198,7 +198,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		                  CMenuWidget &colorSettings, 
 				  CMenuWidget &lcdSettings, 
 				  CMenuWidget &keySettings,
-		                  CMenuWidget &languageSettings, 
 				  CMenuWidget &miscSettings, 
 				  CMenuWidget &service,
                         	  CMenuWidget &audioplayerSettings, 

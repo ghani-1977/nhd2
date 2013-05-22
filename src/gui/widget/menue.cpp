@@ -1868,7 +1868,7 @@ int CMenuSeparatorItemMenuIcon::paint(bool /*selected*/)
 	return y + height;
 }
 
-int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget* parent)
+int CLockedMenuForwarderItemMenuIcon::exec(CMenuTarget *parent)
 {
 	Parent = parent;
 	

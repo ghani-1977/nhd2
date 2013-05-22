@@ -1372,7 +1372,7 @@ void CNeutrinoApp::firstChannel()
 }
 
 // CNeutrinoApp -  channelsInit, get the Channellist from zapit
-void CNeutrinoApp::channelsInit(bool bOnly)
+void CNeutrinoApp::channelsInit(bool /*bOnly*/)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::channelsInit: Creating channels lists...\n");
 
@@ -1529,18 +1529,18 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	{
 		if (!g_bouquetManager->Bouquets[i]->bHidden && !g_bouquetManager->Bouquets[i]->tvChannels.empty())
 		{
-			CBouquet* tmp;
+			CBouquet * ltmp;
 			if(g_bouquetManager->Bouquets[i]->bUser) 
-				tmp = TVfavList->addBouquet(g_bouquetManager->Bouquets[i]);
+				ltmp = TVfavList->addBouquet(g_bouquetManager->Bouquets[i]);
 			else
-				tmp = TVbouquetList->addBouquet(g_bouquetManager->Bouquets[i]);
+				ltmp = TVbouquetList->addBouquet(g_bouquetManager->Bouquets[i]);
 
 			ZapitChannelList * channels = &(g_bouquetManager->Bouquets[i]->tvChannels);
-			tmp->channelList->setSize(channels->size());
+			ltmp->channelList->setSize(channels->size());
 			
 			for(int j = 0; j < (int) channels->size(); j++) 
 			{
-				tmp->channelList->addChannel((*channels)[j]);
+				ltmp->channelList->addChannel((*channels)[j]);
 			}
 			bnum++;
 		}
@@ -1557,17 +1557,17 @@ void CNeutrinoApp::channelsInit(bool bOnly)
 	{	
 		if (!g_bouquetManager->Bouquets[i]->bHidden && !g_bouquetManager->Bouquets[i]->radioChannels.empty() )
 		{
-			CBouquet * tmp;
+			CBouquet * ltmp;
 			if(g_bouquetManager->Bouquets[i]->bUser) 
-				tmp = RADIOfavList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
+				ltmp = RADIOfavList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
 			else
-				tmp = RADIObouquetList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
+				ltmp = RADIObouquetList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
 
-			ZapitChannelList* channels = &(g_bouquetManager->Bouquets[i]->radioChannels);
-			tmp->channelList->setSize(channels->size());
+			ZapitChannelList *channels = &(g_bouquetManager->Bouquets[i]->radioChannels);
+			ltmp->channelList->setSize(channels->size());
 			for(int j = 0; j < (int) channels->size(); j++) 
 			{
-				tmp->channelList->addChannel((*channels)[j]);
+				ltmp->channelList->addChannel((*channels)[j]);
 			}
 			bnum++;
 		}
@@ -2275,7 +2275,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 		     colorSettings, 
 		     lcdSettings, 
 		     keySettings, 
-		     languageSettings, 
 		     miscSettings, 
 		     service, 
 		     audioplayerSettings, 
@@ -2498,8 +2497,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 // quickZap
 void CNeutrinoApp::quickZap(int msg)
 {
-	int res;
-
 	StopSubtitles();
 	
 	if(g_settings.zap_cycle && (bouquetList!=NULL) && !(bouquetList->Bouquets.empty()))
@@ -3256,8 +3253,8 @@ _repeat:
 				
 				if ((g_settings.shutdown_real_rcdelay)) 
 				{
-					neutrino_msg_t      msg;
-					neutrino_msg_data_t data;
+					neutrino_msg_t      lmsg;
+					neutrino_msg_data_t ldata;
 					struct timeval      endtime;
 					time_t              seconds;
 
@@ -3274,9 +3271,9 @@ _repeat:
 
 					while(true) 
 					{
-						g_RCInput->getMsg_ms(&msg, &data, timeout);
+						g_RCInput->getMsg_ms(&lmsg, &ldata, timeout);
 						
-						if (msg == CRCInput::RC_timeout)
+						if (lmsg == CRCInput::RC_timeout)
 							break;
 
 						gettimeofday(&endtime, NULL);
@@ -3286,7 +3283,7 @@ _repeat:
 						
 						if (seconds >= 1) 
 						{
-							if ( msg == CRCInput::RC_standby )
+							if ( lmsg == CRCInput::RC_standby )
 								new_msg = NeutrinoMessages::SHUTDOWN;
 							break;
 						}
@@ -3563,14 +3560,14 @@ _repeat:
 	{
 		system(NEUTRINO_RECORDING_TIMER_SCRIPT);
 
-		char * recDir = ((CTimerd::RecordingInfo*)data)->recordingDir;
+		char * lrecDir = ((CTimerd::RecordingInfo*)data)->recordingDir;
 
 		// ether-wake
 		for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 		{
-			if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
+			if (strcmp(g_settings.network_nfs_local_dir[i], lrecDir) == 0) 
 			{
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: waking up %s (%s)\n",g_settings.network_nfs_ip[i].c_str(),recDir);
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: waking up %s (%s)\n",g_settings.network_nfs_ip[i].c_str(),lrecDir);
 					
 				std::string command = "etherwake ";
 				command += g_settings.network_nfs_mac[i];
@@ -4567,15 +4564,15 @@ void CNeutrinoApp::startNextRecording()
 			
 			if (recDir != NULL)
 			{
-				char *recDir = strlen(nextRecordingInfo->recordingDir) > 0 ? nextRecordingInfo->recordingDir : g_settings.network_nfs_recordingdir;
+				char *lrecDir = strlen(nextRecordingInfo->recordingDir) > 0 ? nextRecordingInfo->recordingDir : g_settings.network_nfs_recordingdir;
 
-				if (!CFSMounter::isMounted(recDir)) 
+				if (!CFSMounter::isMounted(lrecDir)) 
 				{
 					doRecord = false;
 					
-					for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+					for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 					{
-						if (strcmp(g_settings.network_nfs_local_dir[i], recDir) == 0) 
+						if (strcmp(g_settings.network_nfs_local_dir[i], lrecDir) == 0) 
 						{
 							CFSMounter::MountRes mres =
 								CFSMounter::mount(g_settings.network_nfs_ip[i].c_str(), g_settings.network_nfs_dir[i],
@@ -4608,14 +4605,14 @@ void CNeutrinoApp::startNextRecording()
 						// recording dir does not seem to exist in config anymore
 						// or an error occured while mounting
 						// -> try default dir
-						recDir = g_settings.network_nfs_recordingdir;
+						lrecDir = g_settings.network_nfs_recordingdir;
 					
 						doRecord = true;
 					}
 				}
 
-				(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = std::string(recDir);
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::startNextRecording: start to dir %s\n", recDir);
+				(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = std::string(lrecDir);
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::startNextRecording: start to dir %s\n", lrecDir);
 
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
 			}
@@ -4987,7 +4984,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 }
 
 // changeNotify - features menu recording start / stop
-bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void *data)
+bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data*/)
 {
 	if ((ARE_LOCALES_EQUAL(OptionName, LOCALE_MAINMENU_RECORDING_START)) || (ARE_LOCALES_EQUAL(OptionName, LOCALE_MAINMENU_RECORDING)))
 	{
