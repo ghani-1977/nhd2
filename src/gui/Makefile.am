@@ -1,3 +1,5 @@
+AM_CPPFLAGS = -fno-strict-aliasing
+
 BUILT_SOURCES  = svn_version.h
 
 svn_version.h:
@@ -69,6 +71,5 @@ if ENABLE_GRAPHLCD
 libneutrino_gui_a_SOURCES += \
 	glcdsetup.cpp
 endif
-
 
 

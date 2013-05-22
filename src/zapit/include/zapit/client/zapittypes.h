@@ -158,13 +158,6 @@ typedef struct Zapit_config {
 	int scanSDT;
 } t_zapit_config;
 
-//nit_data: SatellitesPosition/feindex
-struct nit_Data
-{
-	t_satellite_position satellitePosition;
-	int feindex;
-};
-
 //complete zapit start thread-parameters in a struct
 typedef struct ZAPIT_start_arg
 {

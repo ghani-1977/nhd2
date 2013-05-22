@@ -666,14 +666,6 @@ struct printSIsectionPPT : public std::unary_function<SIsectionPPT, void>
 };
 #endif
 
-/*
-// Fuer for_each
-struct parseSIsectionEIT : public std::unary_function<SIsectionEIT, void>
-{
-	void operator() (const SIsectionEIT &s) { s.parse();}
-};
-*/
-
 // Menge aller present/following EITs (actual TS)
 class SIsectionsEIT : public std::set <SIsectionEIT, std::less<SIsectionEIT> >
 {
@@ -914,70 +906,6 @@ protected:
 	void parse(void);
 	void parseDescriptors(const char *desc, unsigned len, SInetwork &s);
 	void copyDeliveryDescriptor(const char *buf, SInetwork &s);
-};
-#endif
-#ifndef DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
-// Fuer for_each
-struct printSIsectionSDT : public std::unary_function<SIsectionSDT, void>
-{
-	void operator() (const SIsectionSDT &s) { s.dump();}
-};
-
-// Menge aller SDTs (actual TS)
-class SIsectionsSDT : public std::set <SIsectionSDT, std::less<SIsectionSDT> >
-{
-public:
-	int readSections(void) {
-		SIsections sections;
-		int rc=sections.readSections(0x11, 0x42, 0xff);
-
-		for (SIsections::iterator k=sections.begin(); k!=sections.end(); k++)
-			insert(*k);
-
-		return rc;
-	}
-};
-
-// Fuer for_each
-struct printSIsectionBAT : public std::unary_function<SIsectionBAT, void>
-{
-	void operator() (const SIsectionBAT &s) { s.dump();}
-};
-
-// Menge aller BATs
-class SIsectionsBAT : public std::set <SIsectionBAT, std::less<SIsectionBAT> >
-{
-public:
-	int readSections(void) {
-		SIsections sections;
-		int rc=sections.readSections(0x11, 0x4a, 0xff);
-
-		for (SIsections::iterator k=sections.begin(); k!=sections.end(); k++)
-			insert(*k);
-
-		return rc;
-	}
-};
-
-// Fuer for_each
-struct printSIsectionNIT : public std::unary_function<SIsectionNIT, void>
-{
-	void operator() (const SIsectionNIT &s) { s.dump();}
-};
-
-// Menge aller NITs (actual network)
-class SIsectionsNIT : public std::set <SIsectionNIT, std::less<SIsectionNIT> >
-{
-public:
-	int readSections(void) {
-		SIsections sections;
-		int rc=sections.readSections(0x10, 0x40, 0xff);
-
-		for (SIsections::iterator k=sections.begin(); k!=sections.end(); k++)
-			insert(*k);
-
-		return rc;
-	}
 };
 #endif
 

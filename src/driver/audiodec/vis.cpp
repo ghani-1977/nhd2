@@ -45,7 +45,7 @@ static gint xscale256[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 1
 static gint xscale512[] = { 0, 2, 4, 6, 10, 14, 20, 28, 40, 56, 80, 108, 148, 202, 274, 374, 510 };
 
 //#define DEBUG
-#if HAVE_DBOX2
+#if 1
 #define SAMPLES 256
 #define LOG 8
 #define xscale xscale128

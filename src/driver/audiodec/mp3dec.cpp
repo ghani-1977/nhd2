@@ -819,7 +819,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 	*/
 	if(OutputPtr != OutputBuffer && Status != WRITE_ERR)
 	{
-		ssize_t	BufferSize=OutputPtr-OutputBuffer;
+		ssize_t	BufferSize = OutputPtr-OutputBuffer;
 		
 #if defined (ENABLE_PCMDECODER)		
 		if(audioDecoder)
@@ -1284,11 +1284,7 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 
 bool CMP3Dec::SaveCover(FILE * in)
 {
-	unsigned int i;
-	int ret;
 	struct id3_frame const *frame;
-	id3_ucs4_t const *ucs4;
-	id3_utf8_t *utf8;
 	const char * coverfile = "/tmp/cover.jpg";
 
 	/* text information */
@@ -1304,8 +1300,9 @@ bool CMP3Dec::SaveCover(FILE * in)
 		id3_tag * tag = id3_file_tag(id3file);
 		if(tag)
 		{
-			if (frame = id3_tag_findframe(tag, "APIC", 0))
-			//for (i = 0; (frame = id3_tag_findframe(tag, "APIC", i)); i++)
+			frame = id3_tag_findframe(tag, "APIC", 0);
+			
+			if (frame)
 			{
 				printf("Cover found\n");
 				// Picture file data
@@ -1357,7 +1354,6 @@ bool CMP3Dec::SaveCover(FILE * in)
     
 	if(0)
 	{
-fail:
 		printf("id3: not enough memory to display tag\n");
 		return false;
 	}

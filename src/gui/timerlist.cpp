@@ -155,88 +155,88 @@ public:
 
 class CTimerListRepeatNotifier : public CChangeObserver
 {
-private:
-	CMenuForwarder* m1;
-	CMenuForwarder* m2;
+	private:
+		CMenuForwarder* m1;
+		CMenuForwarder* m2;
 
-	int* iRepeat;
-public:
-	CTimerListRepeatNotifier( int* repeat, CMenuForwarder* a1, CMenuForwarder *a2)
-	{
-		m1 = a1;
-		m2 = a2;
-		iRepeat=repeat;
-	}
+		int* iRepeat;
+	public:
+		CTimerListRepeatNotifier( int* repeat, CMenuForwarder* a1, CMenuForwarder *a2)
+		{
+			m1 = a1;
+			m2 = a2;
+			iRepeat=repeat;
+		}
 
-	bool changeNotify(const neutrino_locale_t /*OptionName*/, void *)
-	{
-		if(*iRepeat >= (int)CTimerd::TIMERREPEAT_WEEKDAYS)
-			m1->setActive (true);
-		else
-			m1->setActive (false);
-		if (*iRepeat != (int)CTimerd::TIMERREPEAT_ONCE)
-			m2->setActive(true);
-		else
-			m2->setActive(false);
-		return true;
-	}
+		bool changeNotify(const neutrino_locale_t /*OptionName*/, void *)
+		{
+			if(*iRepeat >= (int)CTimerd::TIMERREPEAT_WEEKDAYS)
+				m1->setActive (true);
+			else
+				m1->setActive (false);
+			if (*iRepeat != (int)CTimerd::TIMERREPEAT_ONCE)
+				m2->setActive(true);
+			else
+				m2->setActive(false);
+			return true;
+		}
 };
 
 class CTimerListApidNotifier : public CChangeObserver
 {
-private:
-	int* o_dflt;
-	int* o_std;
-	int* o_alt;
-	int* o_ac3;
-	CMenuItem* m_dflt;
-	CMenuItem* m_std;
-	CMenuItem* m_alt;
-	CMenuItem* m_ac3;
-public:
-	CTimerListApidNotifier( int* o1, int* o2, int* o3, int* o4)
-	{
-		o_dflt=o1;
-		o_std=o2;
-		o_alt=o3;
-		o_ac3=o4;
-	}
-
-	void setItems(CMenuItem* m1, CMenuItem* m2, CMenuItem* m3, CMenuItem* m4)
-	{
-		m_dflt=m1;
-		m_std=m2;
-		m_alt=m3;
-		m_ac3=m4;
-	}
-
-	bool changeNotify(const neutrino_locale_t OptionName, void *)
-	{
-		if(OptionName == LOCALE_TIMERLIST_APIDS_DFLT)
+	private:
+		int* o_dflt;
+		int* o_std;
+		int* o_alt;
+		int* o_ac3;
+		CMenuItem* m_dflt;
+		CMenuItem* m_std;
+		CMenuItem* m_alt;
+		CMenuItem* m_ac3;
+	public:
+		CTimerListApidNotifier( int* o1, int* o2, int* o3, int* o4)
 		{
-			if(*o_dflt==0)
+			o_dflt=o1;
+			o_std=o2;
+			o_alt=o3;
+			o_ac3=o4;
+		}
+
+		void setItems(CMenuItem* m1, CMenuItem* m2, CMenuItem* m3, CMenuItem* m4)
+		{
+			m_dflt=m1;
+			m_std=m2;
+			m_alt=m3;
+			m_ac3=m4;
+		}
+
+		bool changeNotify(const neutrino_locale_t OptionName, void *)
+		{
+			if(OptionName == LOCALE_TIMERLIST_APIDS_DFLT)
 			{
-				m_std->setActive(true);
-				m_alt->setActive(true);
-				m_ac3->setActive(true);
+				if(*o_dflt==0)
+				{
+					m_std->setActive(true);
+					m_alt->setActive(true);
+					m_ac3->setActive(true);
+				}
+				else
+				{
+					m_std->setActive(false);
+					m_alt->setActive(false);
+					m_ac3->setActive(false);
+					*o_std=0;
+					*o_alt=0;
+					*o_ac3=0;
+				}
 			}
 			else
 			{
-				m_std->setActive(false);
-				m_alt->setActive(false);
-				m_ac3->setActive(false);
-				*o_std=0;
-				*o_alt=0;
-				*o_ac3=0;
+				if(*o_std || *o_alt || *o_ac3)
+						*o_dflt=0;
 			}
+			return true;
 		}
-		else
-		{
-			if(*o_std || *o_alt || *o_ac3)
-					 *o_dflt=0;
-		}
-		return true;
-	}
 };
 
 CTimerList::CTimerList()
@@ -985,8 +985,8 @@ int CTimerList::modifyTimer()
 
 	CMenuForwarder *m5 = new CMenuForwarder(LOCALE_TIMERLIST_REPEATCOUNT, timer->eventRepeat != (int)CTimerd::TIMERREPEAT_ONCE ,timerSettings_repeatCount.getValue() , &timerSettings_repeatCount);
 
-	CTimerListRepeatNotifier notifier((int *)&timer->eventRepeat,m4,m5);
-	CMenuOptionChooser* m3 = new CMenuOptionChooser(LOCALE_TIMERLIST_REPEAT, (int *)&timer->eventRepeat, TIMERLIST_REPEAT_OPTIONS, TIMERLIST_REPEAT_OPTION_COUNT, true, &notifier);
+	CTimerListRepeatNotifier notifier((int *)&timer->eventRepeat, m4, m5);
+	CMenuOptionChooser * m3 = new CMenuOptionChooser(LOCALE_TIMERLIST_REPEAT, (int *)&timer->eventRepeat, TIMERLIST_REPEAT_OPTIONS, TIMERLIST_REPEAT_OPTION_COUNT, true, &notifier);
 
 	//printf("TIMER: rec dir %s len %s\n", timer->recordingDir, strlen(timer->recordingDir));
 
@@ -1075,7 +1075,7 @@ int CTimerList::newTimer()
 	CIntInput timerSettings_repeatCount(LOCALE_TIMERLIST_REPEATCOUNT, (int&)timerNew.repeatCount,3, LOCALE_TIMERLIST_REPEATCOUNT_HELP1, LOCALE_TIMERLIST_REPEATCOUNT_HELP2);
 	CMenuForwarder *m5 = new CMenuForwarder(LOCALE_TIMERLIST_REPEATCOUNT, false,timerSettings_repeatCount.getValue() , &timerSettings_repeatCount);
 
-	CTimerListRepeatNotifier notifier((int *)&timerNew.eventRepeat,m4,m5);
+	CTimerListRepeatNotifier notifier((int *)&timerNew.eventRepeat, m4, m5);
 	strcpy(m_weekdaysStr,"-------");
 	CMenuOptionChooser* m3 = new CMenuOptionChooser(LOCALE_TIMERLIST_REPEAT, (int *)&timerNew.eventRepeat, TIMERLIST_REPEAT_OPTIONS, TIMERLIST_REPEAT_OPTION_COUNT, true, &notifier);
 

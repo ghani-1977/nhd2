@@ -217,7 +217,6 @@ int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t
 
 static uint32_t fake_tid, fake_nid;
 
-#define NIT_THREAD
 int get_sdts(t_satellite_position satellitePosition, int feindex)
 {
 	transponder_id_t TsidOnid = 0;
@@ -266,24 +265,6 @@ _repeat:
 		if(abort_scan)
 			return 0;
 
-#ifdef NIT_THREAD
-		pthread_t nthread;
-		
-		struct nit_Data nit_data;
-		
-		nit_data.satellitePosition = satellitePosition;
-		nit_data.feindex = feindex;
-
-		if(!scan_mode)
-		{
-			if(pthread_create(&nthread, 0, nit_thread,  (void *)&nit_data)) 
-			{
-				dprintf(DEBUG_INFO, "pthread_create\n");
-				nthread = 0;
-			}
-		}
-#endif
-
 		freq_id_t freq;
 
 		if( getFE(feindex)->getInfo()->type == FE_QAM)
@@ -291,11 +272,11 @@ _repeat:
 		else
 			freq = tI->second.feparams.frequency/1000;
 		
+		// parse sdt
 		dprintf(DEBUG_INFO, "parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
-
-		int status = parse_sdt(&tI->second.transport_stream_id, &tI->second.original_network_id, satellitePosition, freq, feindex);
-
-		if(status < 0) 
+		
+		// parse sdt
+		if( !parse_sdt(&tI->second.transport_stream_id, &tI->second.original_network_id, satellitePosition, freq, feindex) )
 		{
 			dprintf(DEBUG_INFO, "[scan] SDT failed !\n");
 			continue;
@@ -308,23 +289,18 @@ _repeat:
 			transponders.insert (std::pair <transponder_id_t, transponder> (TsidOnid,transponder (tI->second.transport_stream_id,tI->second.feparams,tI->second.polarization,tI->second.original_network_id)));
 		else
 			stI->second.feparams.u.qpsk.fec_inner = tI->second.feparams.u.qpsk.fec_inner;
-
-#ifdef NIT_THREAD
-		if(!scan_mode && nthread) 
-		{
-			if(pthread_join(nthread, NULL))
-				perror("pthread_join !!!!!!!!!");
-		}
-#else
+		
+		// parse nit
 		if(!scan_mode) 
 		{
 			dprintf(DEBUG_INFO, "[scan] trying to parse NIT\n");
 			
-			int status = parse_nit(satellitePosition, freq, feindex);
-			
-			dprintf(DEBUG_INFO, "[scan] NIT %s\n", (status < 0)? "failed" : "success");
+			if( !parse_nit(satellitePosition, freq, feindex) )
+			{
+				dprintf(DEBUG_INFO, "[scan] NIT failed !\n");
+			}
 		}
-#endif
+
 		dprintf(DEBUG_INFO, "[scan] tpid ready: %llx\n", TsidOnid);
 	}
 

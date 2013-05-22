@@ -40,27 +40,10 @@
 #include <nit.h>
 #include <scan.h>
 
-#define NIT_SIZE 4192
+#define NIT_SIZE 1024
 
 
 extern CFrontend * getFE(int index);
-
-
-void * nit_thread(void * data)
-{
-	dprintf(DEBUG_INFO, "[nit.cpp] nit_thread: starting... tid %ld\n", syscall(__NR_gettid));
-	
-	struct nit_Data nit_data = *(struct nit_Data *) data;
-	
-	t_satellite_position satellitePosition = nit_data.satellitePosition;
-	int feindex = nit_data.feindex;
-
-	int status = parse_nit(satellitePosition, 0, feindex);
-
-	dprintf(DEBUG_NORMAL, "[NIT]nit_thread: %s\n", (status < 0)? "failed":"finished");
-
-	pthread_exit(NULL);
-}
 
 int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feindex)
 {
@@ -216,7 +199,6 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 							break;
 
 						case 0x5A:
-							//if (terrestrial_delivery_system_descriptor(buffer + pos2) < 0)
 							if(terrestrial_delivery_system_descriptor(buffer + pos2, transport_stream_id, original_network_id, satellitePosition, freq, feindex) < 0)
 							{
 								ret = -2;

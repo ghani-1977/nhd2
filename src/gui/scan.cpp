@@ -208,7 +208,7 @@ int CScanTs::exec(CMenuTarget * parent, const std::string & actionKey)
                 	perror(NEUTRINO_SCAN_START_SCRIPT " failed");
 	}
 	
-	#if 0
+	/*
 	// send fe mode
 	g_Zapit->setFEMode((fe_mode_t)scanSettings->femode, feindex);
 
@@ -223,7 +223,7 @@ int CScanTs::exec(CMenuTarget * parent, const std::string & actionKey)
 		// send diseqc repeat to zapit
 		g_Zapit->setDiseqcRepeat( scanSettings->diseqcRepeat, feindex);
 	}
-	#endif
+	*/
 	
 	// send bouquets mode
 	g_Zapit->setScanBouquetMode( (CZapitClient::bouquetMode) scanSettings->bouquetMode);
@@ -513,6 +513,7 @@ void CScanTs::paintLineLocale(int _x, int * _y, int _width, const neutrino_local
 void CScanTs::paintLine(int _x, int _y, int w, const char * const txt)
 {
 	//printf("CScanTs::paintLine x %d y %d w %d width %d xpos2 %d: %s\n", x, y, w, width, xpos2, txt);
+	
 	frameBuffer->paintBoxRel(_x, _y, w, mheight, COL_MENUCONTENT_PLUS_0);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(_x, _y + mheight, w, txt, COL_MENUCONTENT, 0, true); // UTF-8
 }
@@ -586,7 +587,7 @@ void CScanTs::paint(bool fortest)
 	ypos += mheight >> 1; // 1/2 blank line
 
 	ypos_service_numbers = ypos; paintLineLocale(xpos1         , &ypos, 72                 , LOCALE_SCANTS_NUMBEROFTVSERVICES   );
-	ypos = ypos_service_numbers; paintLineLocale(xpos1 +     72, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFRADIOSERVICES);
+	ypos = ypos_service_numbers; paintLineLocale(xpos1 +     56/*72*/, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFRADIOSERVICES);
 	ypos = ypos_service_numbers; paintLineLocale(xpos1 + 2 * 72, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFDATASERVICES );
 	ypos = ypos_service_numbers; paintLineLocale(xpos1 + 3 * 72, &ypos, width - 3 * 72 - 10, LOCALE_SCANTS_NUMBEROFTOTALSERVICES);
 }
