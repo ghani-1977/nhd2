@@ -62,7 +62,7 @@ std::map <t_channel_id, uint8_t> service_types;
 
 extern CEventServer *eventServer;
 extern CScanSettings * scanSettings;
-extern t_channel_id live_channel_id;
+//extern t_channel_id live_channel_id;
 
 CFrontend * getFE(int index);
 
@@ -730,10 +730,12 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 	}
 
 	// set live_channel_id
-	if(channel && (channel->getServiceType() == 1) && !channel->scrambled) 
+	/*
+	if(channel && (channel->getServiceType() == ST_DIGITAL_TELEVISION_SERVICE) && !channel->scrambled) 
 	{
 		live_channel_id = channel->getChannelID();
 	}
+	*/
 }
 
 void current_service_descriptor(const unsigned char * const buffer, const t_service_id service_id, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq)

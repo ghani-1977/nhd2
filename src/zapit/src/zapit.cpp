@@ -2095,7 +2095,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 			scan_runs = 1;
 	
-			if (pthread_create(&scan_thread, 0, scan_transponder,  (void*) &ScanTP)) 
+			if (pthread_create(&scan_thread, 0, scan_transponder, (void*) &ScanTP)) 
 			{
 				dprintf(DEBUG_INFO, "pthread_create\n");
 				scan_runs = 0;

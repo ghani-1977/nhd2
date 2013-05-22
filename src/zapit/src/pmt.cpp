@@ -624,6 +624,7 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 	else 
 	{
 		channel->setCaPmt(caPmt);
+		
 		unsigned char * p = new unsigned char[pmtlen];
 		memmove(p, buffer, pmtlen);
 		channel->setRawPmt(p, pmtlen);

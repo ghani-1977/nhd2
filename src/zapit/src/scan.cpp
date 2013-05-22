@@ -620,13 +620,13 @@ void * start_scanthread(void *scanmode)
 	}
 
 	// report status
-	dprintf(DEBUG_INFO, "scan.cpp:scanthread: found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
+	dprintf(DEBUG_NORMAL, "scan.cpp:scanthread: found %d transponders (%d failed) and %d channels\n", found_transponders, failed_transponders, found_channels);
 
 	if (found_channels) 
 	{
 		SaveServices(true);
 		
-		dprintf(DEBUG_INFO, "scan.cpp:scanthread: save services done\n"); 
+		dprintf(DEBUG_NORMAL, "scan.cpp:scanthread: save services done\n"); 
 		
 	        g_bouquetManager->saveBouquets();
 	        //g_bouquetManager->sortBouquets();
@@ -651,7 +651,7 @@ void * start_scanthread(void *scanmode)
 	scanedtransponders.clear();
 	nittransponders.clear();
 
-	pthread_exit(0);
+	pthread_exit(NULL);
 }
 
 void * scan_transponder(void * arg)
@@ -746,5 +746,5 @@ void * scan_transponder(void * arg)
 	scanedtransponders.clear();
 	nittransponders.clear();
 
-	pthread_exit(0);
+	pthread_exit(NULL);
 }
