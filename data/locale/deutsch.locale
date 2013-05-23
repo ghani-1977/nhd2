@@ -1577,7 +1577,7 @@ miscsettings.backupfailed Backup fehlgeschalgen
 miscsettings.restore Image Einstellungen wiederherstellen
 miscsettings.restorewarn Alle Settings werden ersetzt?
 
-opkgmanager.head OPKG Manager
+opkgmanager.head Software Update Manager
 
 keybinding.key_recordsbrowser Aufnahmen Browser
 keybinding.key_audioplayer Audioplayer

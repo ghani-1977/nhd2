@@ -1576,7 +1576,7 @@ miscsettings.backupfailed Backup failed
 miscsettings.restore Settings restore
 miscsettings.restorewarn Do you want to restore the previous settings?
 
-opkgmanager.head OPKG Manager
+opkgmanager.head Software update manager
 
 keybinding.key_recordsbrowser Records browser
 keybinding.key_audioplayer Audioplayer
