@@ -226,7 +226,6 @@ int parse_nit(t_satellite_position satellitePosition, freq_id_t freq, int feinde
 	//} while (filter[4]++ != buffer[7]);
 
 _return:
-	//dmx->Stop();
 	delete dmx;
 	
 	return ret;
