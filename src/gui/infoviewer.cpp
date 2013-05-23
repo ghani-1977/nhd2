@@ -874,7 +874,7 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 			}
 		}
 		
-		frameBuffer->paintIcon(rt_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY - 20 + (20 - icon_h_rt)/2);
+		frameBuffer->paintIcon(rt_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY - 20 + (20 - icon_h_rt)/2);
 	}
 }
 #endif
@@ -887,12 +887,12 @@ void CInfoViewer::showIcon_16_9()
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	if (is_visible)
-		frameBuffer->paintIcon(aspect_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), BoxEndY - 20 + (20 - icon_h_aspect)/2 );
+		frameBuffer->paintIcon(aspect_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), BoxEndY - 20 + (20 - icon_h_aspect)/2 );
 }
 
 void CInfoViewer::showIcon_VTXT () const
 {
-	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt), BoxEndY - 20 + (20 - icon_h_vtxt)/2 );
+	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt), BoxEndY - 20 + (20 - icon_h_vtxt)/2 );
 }
 
 void CInfoViewer::showIcon_Resolution() const
@@ -937,9 +937,9 @@ void CInfoViewer::showIcon_Resolution() const
 				break;	
 		}
 		
-		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
 		//if(icon_name_res != NEUTRINO_ICON_RESOLUTION_000)
-			frameBuffer->paintIcon(icon_name_res, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2 );
+		frameBuffer->paintIcon(icon_name_res, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY - 20 + (20 - icon_h_sd)/2 );
 		
 		// resolution
 		switch (yres) 
@@ -1002,9 +1002,9 @@ void CInfoViewer::showIcon_Resolution() const
 				break;
 		}
 	
-		frameBuffer->paintBoxRel(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
 		//if(icon_name != NEUTRINO_ICON_RESOLUTION_000)
-			frameBuffer->paintIcon(icon_name, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2 );
+		frameBuffer->paintIcon(icon_name, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY - 20 + (20 - icon_h_reso)/2 );
 	}
 }
 
@@ -1016,7 +1016,7 @@ void CInfoViewer::showIcon_SubT() const
 	if(cc && cc->getSubtitleCount())
 		have_sub = true;
 
-        frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (2 + icon_w_subt), BoxEndY - 20 + (20 - icon_h_subt)/2 );
+        frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt), BoxEndY - 20 + (20 - icon_h_subt)/2 );
 }
 
 void CInfoViewer::showFailure()
@@ -1538,7 +1538,7 @@ void CInfoViewer::showSNR()
 						sprintf(AktivTuner, "T%d", (Index + 1));
 					
 					//int TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T8", true);
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth), BoxEndY + 2, /*ButtonWidth - (2 + NEUTRINO_ICON_BUTTON_BLUE_WIDTH + 2 + 2)*/TunerNumWidth, AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth), BoxEndY + 2, TunerNumWidth, AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 				}
 
 				//sig = (ssig & 0xFFFF) * 100 / 65535;
@@ -1796,7 +1796,7 @@ void CInfoViewer::showIcon_Audio(const int ac3state) const
 			break;
 	}
 
-	frameBuffer->paintIcon(dd_icon, BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), BoxEndY - 20 + (20 - icon_h_dd)/2 );
+	frameBuffer->paintIcon(dd_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), BoxEndY - 20 + (20 - icon_h_dd)/2 );
 	
 	if (ac3state == AC3_ACTIVE)
 	{
@@ -1947,7 +1947,7 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 			}
 		}
 		
-		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca), BoxEndY - 20 + (20 - icon_h_ca)/2 );
+		frameBuffer->paintIcon( fta ? "ca2_gray" : "ca2", BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca), BoxEndY - 20 + (20 - icon_h_ca)/2 );
 #if !defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
 #endif			

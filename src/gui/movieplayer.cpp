@@ -268,10 +268,12 @@ int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey
 }
 
 //
-#define TIMEOSD_FONT SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME
-#define TIMEBARH 38
-#define BARLEN 200
+#define TIMEOSD_FONT 	SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME
+#define TIMEBARH 	38
+#define BARLEN 		200
 #define SHADOW_OFFSET	5
+#define LEFT_OFFSET 	5
+#define RIGHT_OFFSET 	5
 
 extern cVideo *videoDecoder;
 extern cAudio *audioDecoder;
@@ -309,16 +311,16 @@ void CMovieInfoViewer::show(int Position)
 	timescale->reset();
 	
 	// paint shadow
-	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP );
+	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH );
 		
 	// paint info box
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP ); 
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_BOTH); 
 		
 	// timescale bg
 	frameBuffer->paintBoxRel(BoxStartX + 10, BoxStartY + 15, BoxWidth - 20, 6, COL_INFOBAR_SHADOW_PLUS_1 ); 
 		
 	// bottum bar
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1 ); 
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, CORNER_BOTTOM); 
 		
 	// mp icon
 	int m_icon_w = 0;
@@ -335,9 +337,9 @@ void CMovieInfoViewer::show(int Position)
 	// movie info
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + RIGHT_OFFSET, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	//if( isMovieBrowser || isVlc )
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + 5 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
 	// audio
@@ -362,7 +364,7 @@ void CMovieInfoViewer::show(int Position)
 	// ac3
 	int icon_w_ac3, icon_h_ac3;
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_ac3, &icon_h_ac3);
-	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - 5 - icon_w_ac3, BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
+	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3, BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
 		
 	// 4:3/16:9
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
@@ -372,15 +374,15 @@ void CMovieInfoViewer::show(int Position)
 	
 	int icon_w_aspect, icon_h_aspect;
 	frameBuffer->getIconSize(aspect_icon, &icon_w_aspect, &icon_h_aspect);
-	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
+	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
 	
 	/* mp keys */
 	frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
-	frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - 5 - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
 		
 	//playstate
 	const char *icon = "mp_play";
