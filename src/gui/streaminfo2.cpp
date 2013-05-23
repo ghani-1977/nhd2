@@ -99,7 +99,6 @@ CStreamInfo2::CStreamInfo2 ()
 	rate.min_short_average = 0;
 	
 	 ts_dmx = NULL;
-
 }
 
 CStreamInfo2::~CStreamInfo2 ()
@@ -122,7 +121,7 @@ int CStreamInfo2::exec()
 	return menu_return::RETURN_EXIT_ALL;
 }
 
-int CStreamInfo2::exec (CMenuTarget * parent, const std::string &)
+int CStreamInfo2::exec(CMenuTarget * parent, const std::string &)
 {
 	if (parent)
 		parent->hide ();
@@ -561,12 +560,13 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 		      g_Font[font_info]->getRenderWidth(g_Locale->getText (LOCALE_STREAMINFO_ARATIO)),
 		      g_Font[font_info]->getRenderWidth(g_Locale->getText (LOCALE_STREAMINFO_FRAMERATE)),
 		      g_Font[font_info]->getRenderWidth(g_Locale->getText (LOCALE_STREAMINFO_AUDIOTYPE))}; 
-	for(i=0 ; i<4; i++)
+		      
+	for(i = 0 ; i < 4; i++)
 	{
 		if(spaceoffset < array[i])
 			spaceoffset = array[i];
 	}
-	spaceoffset+=4;
+	spaceoffset += 4;
 
 	//Pic Infos
 	videoDecoder->getPictureInfo(xres, yres, framerate);

@@ -149,7 +149,6 @@ void CDBoxInfoWidget::paint()
 
 	ypos += hheight + (mheight >>1);
 
-
 	//cpu
 	FILE* fd = fopen("/proc/cpuinfo", "rt");
 
@@ -175,14 +174,14 @@ void CDBoxInfoWidget::paint()
 				if (p)
 					hw = ++p;
 				hw += " Info";
-				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + hheight + 1, width - 10, hw.c_str(), COL_MENUHEAD, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + hheight + 1, width - 10, hw.c_str(), COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
 				break;
 			}
 			i++;
 			if (i > 4)
 				continue;
 
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width - 10, buffer, COL_MENUCONTENT, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width - 10, buffer, COL_MENUCONTENTINACTIVE, true);
 			ypos+= mheight;
 		}
 		fclose(fd);
@@ -190,8 +189,15 @@ void CDBoxInfoWidget::paint()
 		if (buffer)
 			free(buffer);
 	}
+	
+	// separator
+	//ypos += mheight;
+	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
 
-	// up
+	// up time
+	ypos += mheight/2;
+	
 	int updays, uphours, upminutes;
 	struct sysinfo info;
 	struct tm *current_time;
@@ -230,16 +236,19 @@ void CDBoxInfoWidget::paint()
 			LOAD_INT(info.loads[2]), LOAD_FRAC(info.loads[2]));
 
 	strcat(sbuf, ubuf);
-	ypos += mheight/2;
+	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width, sbuf, COL_MENUCONTENT, true);
 	
 	// mem
 	ypos += mheight;
 
 	sprintf(ubuf, "memory total %dKb, free %dKb", (int) info.totalram/1024, (int) info.freeram/1024);
-	ypos += mheight/2;
-
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width, ubuf, COL_MENUCONTENT, true);
+	
+	// separator
+	ypos += mheight/2;
+	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
     	
     	//hdd devices
 	FILE * f;
@@ -313,28 +322,38 @@ void CDBoxInfoWidget::paint()
 		
 		if (::statfs(g_settings.network_nfs_recordingdir, &s) == 0) 
 		{
-			//strcat(str, ", free %ldKb", (long)(s.f_bfree/1024)*s.f_bsize);
-			sprintf(str, "HDD: %s (%s-%s %lld %s), free %ldMB", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB", (long)( ((s.f_bfree/1024)/1024))*s.f_bsize);
+			sprintf(str, "%s (%s-%s %lld %s), free %ldMB", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB", (long)( ((s.f_bfree/1024)/1024))*s.f_bsize);
 		}
 		else
-			sprintf(str, "HDD: %s (%s-%s %lld %s)", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
+			sprintf(str, "%s (%s-%s %lld %s)", namelist[i1]->d_name, vendor, model, megabytes < 10000 ? megabytes : megabytes/1000, megabytes < 10000 ? "MB" : "GB");
 		
 		free(namelist[i1]);
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT, true);
+		int offset = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth((char *)"HDD: ", true); // UTF-8
+		
+		//g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, (char *)"HDD:", COL_MENUCONTENTINACTIVE, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10 + offset, ypos + mheight, width, str, COL_MENUCONTENT, true);
 	}
-
-	// free space
-	ypos += mheight/2;
 	
 	//frontend
+	ypos += mheight/2;
+	
 	for(int i2 = 0; i2 < FrontendCount; i2++)
 	{
 		CFrontend * fe = getFE(i2);
 		ypos += mheight;
 		char tbuf[255];
+		char tbuf1[255];
 		
-		sprintf(tbuf, "Tuner-%d: %s", i2 + 1, fe->getInfo()->name);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
+		//sprintf(tbuf, "Tuner-%d: %s", i2 + 1, fe->getInfo()->name);
+		//g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
+		sprintf(tbuf, "Tuner-%d: ", i2 + 1);
+		int offset1 = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tbuf, true); // UTF-8
+		
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENTINACTIVE, true);
+		
+		sprintf(tbuf1, "%s", fe->getInfo()->name);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10 + offset1, ypos+ mheight, width, tbuf1, COL_MENUCONTENT, true);
 	}	
 }
