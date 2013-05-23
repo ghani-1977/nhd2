@@ -270,7 +270,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		
 		enum {
 			SHUTDOWN,
-			REBOOT,
+			REBOOT
 		};
 		
 		void ExitRun(int retcode = SHUTDOWN);

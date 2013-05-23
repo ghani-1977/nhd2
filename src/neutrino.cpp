@@ -2099,8 +2099,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CVFD::getInstance()->init();
 #endif	
 
-	// VFD clear all symbols
+	// VFD clear
+#if defined (PLATFORM_COOLSTREAM)	
 	CVFD::getInstance()->Clear();
+#endif	
 
 	// show msg in vfd
 	CVFD::getInstance()->ShowText( (char *)"NHD2");	
@@ -3837,7 +3839,8 @@ void CNeutrinoApp::ExitRun(int retcode)
 		CVFD::getInstance()->setMode(CVFD::MODE_SHUTDOWN);
 		
 		// show good bye in VFD
-		CVFD::getInstance()->ShowText((char *) "BYE");
+		if (!CVFD::getInstance()->is4digits)
+			CVFD::getInstance()->ShowText((char *) "BYE");
 
 		// stop playback
 		g_Zapit->stopPlayBack();
@@ -4351,8 +4354,9 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 #if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif		
-
+#if defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->Clear();
+#endif		
 		
 		// show time in vfd
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -5041,9 +5045,10 @@ void stop_daemons()
 	dprintf(DEBUG_NORMAL, "stop_daemons: zapit shutdown done\n");	
 
 	// clear vfd
-	CVFD::getInstance()->Clear();
+	//CVFD::getInstance()->Clear();
 	
 #if defined (PLATFORM_COOLSTREAM)
+	CVFD::getInstance()->Clear();
 	cs_deregister_messenger();
 	cs_api_exit();
 #endif

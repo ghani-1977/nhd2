@@ -258,6 +258,13 @@ void CVFD::setlcdparameter(int dimm, const int power)
 	int ret = ioctl(fd, IOC_VFD_SET_BRIGHT, dimm);
 	if(ret < 0)
 		perror("IOC_VFD_SET_BRIGHT");
+#elif defined (PLATFORM_GIGABLUE)  
+	FILE * f;
+	if((f = fopen("/proc/stb/fp/oled_brightness", "w")) == NULL) 
+		return;
+	
+	fprintf(f, "%d", dimm);
+	fclose(f);	
 #endif		
 }
 
@@ -491,9 +498,8 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_SHUTDOWN:
-			//ShowIcon(VFD_ICON_TV, false);
+			//Clear();
 			/* clear all symbols */
-			Clear();
 			ClearIcons();
 #if defined(PLATFORM_SPARK7162)
 			ShowIcon(VFD_ICON_CLOCK, timer_icon);	
@@ -636,13 +642,14 @@ void CVFD::Unlock()
 
 void CVFD::Clear()
 {
-	if(!has_lcd) 
+	if(!has_lcd || is4digits) 
 		return;
 	
 #if defined (PLATFORM_GIGABLUE)
 	ShowText("    "); // 4 empty digits
 #elif defined __sh__ 
 	struct vfd_ioctl_data data;
+	
 #if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
 	data.start_address = 0x01;
 	data.length = 0x0;

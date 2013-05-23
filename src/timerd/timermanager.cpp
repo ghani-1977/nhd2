@@ -55,7 +55,7 @@ void CTimerManager::Init(void)
 	m_saveEvents = false;
 	m_isTimeSet = false;
 	wakeup = 0; 	//fallback
-#if !defined (PLATFORM_GIGABLUE)
+
 	int fd = open("/proc/stb/fp/was_timer_wakeup", O_RDONLY);
 	unsigned char buffer[2];
 	
@@ -77,13 +77,7 @@ void CTimerManager::Init(void)
 		}
 	}
 
-	close(fd);
-#else
-	if(wakeup)
-	{
-		creat("/tmp/.wakeup", 0);
-	}
-#endif	
+	close(fd);	
 
 	loadRecordingSafety();
 
@@ -741,8 +735,7 @@ bool CTimerManager::shutdown()
 		
 		//summer
 		sprintf(WakeupTime, "%lu", (nextAnnounceTime - 180));	//3 min for safe time recording
-
-#if !defined (PLATFORM_GIGABLUE)		
+		
 		int fd1 = open("/proc/stb/fp/wakeup_time", O_WRONLY);
 		int ret = write(fd1, WakeupTime, strlen(WakeupTime));
 		close(fd1);
@@ -770,8 +763,7 @@ bool CTimerManager::shutdown()
 			fclose(fd);
 			
 			status = true;
-		}
-#endif		
+		}		
 		
 #if vfd_support_wakeup
 		time_t wakeup_time;
