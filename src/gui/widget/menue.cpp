@@ -573,10 +573,10 @@ void CMenuWidget::paint()
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + hheight + 1, width - BORDER_RIGHT - (stringstartposX - x), l_name, COL_MENUHEAD, 0, true); // UTF-8
 	
 	// paint separator
-	frameBuffer->paintBoxRel(x, y + hheight, width + sb_width, sp_height, COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintBoxRel(x, y + hheight, width + sb_width, sp_height, COL_MENUCONTENTDARK_PLUS_0);
 	
 	//paint foot
-	frameBuffer->paintBoxRel(x, y + height - fheight, width + sb_width, fheight, COL_MENUFOOT_PLUS_0 );
+	frameBuffer->paintBoxRel(x, y + height - fheight, width + sb_width, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
 	// all height position (needed to paint itemIcon and help text)
 	HEIGHT = y + full_height;
@@ -1708,7 +1708,7 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 			
 		//help text
 		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0);
+		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 			
 		// paint help icon
 		int icon_w = 0;
