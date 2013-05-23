@@ -216,7 +216,7 @@ void CVFD::init()
 	
 	// set led color
 #if defined (PLATFORM_GIGABLUE)
-	vfd_led("1");  //1:, 2:, 3:
+	vfd_led(1);  //0:off, 1:blue, 2:red, 3:purple
 #endif
 }
 
@@ -584,21 +584,6 @@ void CVFD::setPower(int power)
 #endif
 }
 
-void CVFD::setFPTime(void)
-{
-	if(!has_lcd)
-		return;
-
-#ifdef __sh__
-	//openDevice();
-	
-	//if( ioctl(fd, VFDSETTIME) < 0)  
-	//	perror("VFDPWRLED");
-	
-	//closeDevice();
-#endif
-}
-
 int CVFD::getPower()
 {
 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
@@ -911,7 +896,7 @@ void CVFD::ShowText(const char * str)
 	closeDevice();
 #elif defined (PLATFORM_GIGABLUE)	
 	FILE *f;
-	if((f = fopen("/proc/vfd","w")) == NULL) 
+	if((f = fopen("/proc/vfd", "w")) == NULL) 
 		return;
 	
 	fprintf(f,"%s", str);
@@ -936,16 +921,33 @@ void CVFD::setFan(bool enable)
 #endif	
 }
 
-void CVFD::vfd_led(const char * led)
+void CVFD::vfd_led(int led)
 {
+	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	
 #if defined (PLATFORM_GIGABLUE)  
 	FILE * f;
 	if((f = fopen("/proc/stb/fp/led0_pattern", "w")) == NULL) 
 		return;
 	
-	fprintf(f, "%s", led);
+	fprintf(f, "%d", led);
 	fclose(f);
 #endif	
+}
+
+void CVFD::setFPTime(void)
+{
+	if(!has_lcd)
+		return;
+
+#ifdef __sh__
+	openDevice();
+	
+	if( ioctl(fd, VFDSETTIME) < 0)  
+		perror("VFDPWRLED");
+	
+	closeDevice();
+#endif
 }
 
 

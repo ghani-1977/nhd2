@@ -487,7 +487,7 @@ class CVFD
 		void setFan(bool enable);
 		void setFPTime(void);
 		
-		void vfd_led(const char * led);
+		void vfd_led(int led);
 		
 #ifdef __sh__
 		void openDevice();

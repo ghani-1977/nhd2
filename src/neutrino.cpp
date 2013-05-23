@@ -2456,21 +2456,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// lcdsettinsg
 	InitLcdSettings(lcdSettings);
 
-#if !defined (PLATFORM_GIGABLUE)  && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS)
-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER] == 1)
-	{
-		dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: vfd set led on\n");
-
-		CVFD::getInstance()->setPower(1);
-		CVFD::getInstance()->setlcdparameter();
-	}
-	else if(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER] == 0)
-	{
-		dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: vfd set led off\n");
-
-		CVFD::getInstance()->setPower(0);
-		CVFD::getInstance()->setlcdparameter();
-	}
+	CVFD::getInstance()->setPower(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER]);
+	CVFD::getInstance()->setlcdparameter();
+#if defined (PLATFORM_GIGABLUE)
+	CVFD::getInstance()->vfd_led(g_settings.lcd_ledcolor);
 #endif	
 	
 	// audio mute
@@ -4938,8 +4927,8 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "setfptime")
 	{
-		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
-		hintBox->paint();
+		//CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
+		//hintBox->paint();
 
 #if !defined ENABLE_LCD
 #ifdef __sh__
@@ -4947,10 +4936,10 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 #endif
 #endif
 		
-		sleep(2);
+		//sleep(2);
 		
-		hintBox->hide();
-		delete hintBox;
+		//hintBox->hide();
+		//delete hintBox;
 
 		return menu_return::RETURN_REPAINT;	
 	}

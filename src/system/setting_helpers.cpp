@@ -280,9 +280,12 @@ bool CLcdNotifier::changeNotify(const neutrino_locale_t, void * Data)
 
 	dprintf(DEBUG_NORMAL, "ClcdNotifier: state: %d\n", state);
 	
+#if defined (PLATFORM_GIGABLUE)
+	CVFD::getInstance()->vfd_led(state);
+#else	
 	CVFD::getInstance()->setPower(state);
-	
 	CVFD::getInstance()->setlcdparameter();
+#endif	
 
 	return true;
 }

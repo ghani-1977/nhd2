@@ -1944,11 +1944,12 @@ const CMenuOptionChooser::keyval LCDMENU_EPGALIGN_OPTIONS[LCDMENU_EPGALIGN_OPTIO
 #endif
 
 /* led color */
-#define LCDMENU_LEDCOLOR_OPTION_COUNT 3
+#define LCDMENU_LEDCOLOR_OPTION_COUNT 4
 const CMenuOptionChooser::keyval LCDMENU_LEDCOLOR_OPTIONS[LCDMENU_LEDCOLOR_OPTION_COUNT] =
 {
-	{ 1, LOCALE_LCDMENU_LEDCOLOR_RED, NULL },
-	{ 2, LOCALE_LCDMENU_LEDCOLOR_BLUE, NULL },
+	{ 0, LOCALE_OPTIONS_OFF, NULL },
+	{ 1, LOCALE_LCDMENU_LEDCOLOR_BLUE, NULL },
+	{ 2, LOCALE_LCDMENU_LEDCOLOR_RED, NULL },
 	{ 3, LOCALE_LCDMENU_LEDCOLOR_PURPLE, NULL },
 };
 
@@ -2020,7 +2021,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #elif defined (PLATFORM_GIGABLUE)
 	// led color
-	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_LEDCOLOR, &g_settings.lcd_ledcolor, LCDMENU_LEDCOLOR_OPTIONS, LCDMENU_LEDCOLOR_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
+	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_LEDCOLOR, &g_settings.lcd_ledcolor, LCDMENU_LEDCOLOR_OPTIONS, LCDMENU_LEDCOLOR_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #endif	
 #endif
 
