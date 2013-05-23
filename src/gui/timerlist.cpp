@@ -256,7 +256,7 @@ CTimerList::~CTimerList()
 	delete Timer;
 }
 
-int CTimerList::exec(CMenuTarget* parent, const std::string & actionKey)
+int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 {
 	const char * key = actionKey.c_str();
 
@@ -362,9 +362,7 @@ int CTimerList::exec(CMenuTarget* parent, const std::string & actionKey)
 	}
 
 	if(parent)
-	{
 		parent->hide();
-	}
 
 	int ret = show();
 

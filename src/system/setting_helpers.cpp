@@ -635,7 +635,7 @@ int CSubtitleChangeExec::exec(CMenuTarget */*parent*/, const std::string & actio
 }
 
 // nvod change exec
-int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
+int CNVODChangeExec::exec(CMenuTarget* parent, const std::string &actionKey)
 {
 	dprintf(DEBUG_INFO, "CNVODChangeExec exec: %s\n", actionKey.c_str());
 	
@@ -648,22 +648,36 @@ int CNVODChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
 	return menu_return::RETURN_EXIT;
 }
 
-// stream features change exec (teletext/plugins)
-int CStreamFeaturesChangeExec::exec(CMenuTarget* parent, const std::string & actionKey)
+// tuxtxt changer
+extern int current_muted;
+int CTuxtxtChangeExec::exec(CMenuTarget *parent, const std::string &actionKey)
 {
-	dprintf(DEBUG_INFO, "CStreamFeaturesChangeExec exec: %s\n", actionKey.c_str());
-	
-	//unsigned int sel = atoi(actionKey.c_str());
+	dprintf(DEBUG_INFO, "CTuxtxtChangeExec exec: %s\n", actionKey.c_str());
 
-	if(parent != NULL)
+	if(parent)
 		parent->hide();
 	
-	if(actionKey == "teletext") 
-	{
-		g_RCInput->postMsg(CRCInput::RC_text, 0);
-	}
+	g_RCInput->clearRCMsg();
 
-	return menu_return::RETURN_EXIT;
+	CNeutrinoApp::getInstance()->StopSubtitles();
+				
+	tuxtx_stop_subtitle();
+
+	tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
+
+	CFrameBuffer::getInstance()->paintBackground();
+
+#if !defined USE_OPENGL
+	CFrameBuffer::getInstance()->blit();
+#endif
+				
+	g_RCInput->clearRCMsg();
+				
+	CNeutrinoApp::getInstance()->AudioMute(current_muted, true);
+
+	CNeutrinoApp::getInstance()->StartSubtitles();
+
+	return menu_return::RETURN_REPAINT;
 }
 
 const char * mypinghost(const char * const host)
@@ -811,7 +825,7 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
 	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD, NULL},
 };
 
-int CUserMenuMenu::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
+int CUserMenuMenu::exec(CMenuTarget *parent, const std::string &/*actionKey*/)
 {
         if(parent != NULL)
                 parent->hide();

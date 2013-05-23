@@ -134,7 +134,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CColorSetupNotifier		*colorSetupNotifier;
 		CKeySetupNotifier       	*keySetupNotifier;
 		CNVODChangeExec         	*NVODChanger;
-		CStreamFeaturesChangeExec	*StreamFeaturesChanger;		// for user menu
+		CTuxtxtChangeExec		*TuxtxtChanger;		// for user menu
 		CIPChangeNotifier		*MyIPChanger;
 		CRCLock                         *rcLock;
                 CTimerList                      *Timerlist;			// for user menu
@@ -157,7 +157,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void scartMode( bool bOnOff );
 		void standbyMode( bool bOnOff );
 		
-		void AudioMute( int newValue, bool isEvent= false );
 		void setvol(int vol);
 		
 		void saveEpg();
@@ -223,6 +222,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void SetupTiming();
 		void SetupFonts();
 
+		void AudioMute( int newValue, bool isEvent= false );
 		void setVolume(const neutrino_msg_t key, const bool bDoPaint = true, bool nowait = false);
 		~CNeutrinoApp();
 

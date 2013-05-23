@@ -2226,8 +2226,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// init nvod changer
 	NVODChanger = new CNVODChangeExec;
 	
-	// init stream feature changer
-	StreamFeaturesChanger = new CStreamFeaturesChangeExec; // used by user menu to start vtxt
+	// init tuxtxt changer
+	TuxtxtChanger = new CTuxtxtChangeExec; // used by user menu to start vtxt
 	
 	// init IP changer
 	MyIPChanger = new CIPChangeNotifier;
@@ -4970,7 +4970,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
 		StartSubtitles();
 				
-		return menu_return::RETURN_REPAINT/*EXIT*/;	
+		return menu_return::RETURN_REPAINT;	
 	}
 
 	return returnval;

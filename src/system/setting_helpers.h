@@ -191,8 +191,8 @@ class CNVODChangeExec : public CMenuTarget
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 };
 
-// streaming features notifier
-class CStreamFeaturesChangeExec : public CMenuTarget
+// tuxtxt notifier
+class CTuxtxtChangeExec : public CMenuTarget
 {
 	public:
 		int exec(CMenuTarget* parent, const std::string & actionKey);

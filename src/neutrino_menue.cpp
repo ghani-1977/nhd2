@@ -2367,7 +2367,6 @@ bool CNeutrinoApp::getNVODMenu(CMenuWidget * menu)
                 } 
 		else 
 		{
-                        //menu->addItem(new CMenuForwarderNonLocalized((Latin1_to_UTF8(e->subservice_name)).c_str(), true, NULL, NVODChanger, nvod_id, CRCInput::convertDigitToKey(count)), (count == g_RemoteControl->selected_subchannel));
 			if (count == 0)
 				menu->addItem(new CMenuForwarderNonLocalized( (Latin1_to_UTF8(e->subservice_name)).c_str(), true, NULL, NVODChanger, nvod_id, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
 			else
@@ -2534,7 +2533,7 @@ bool CNeutrinoApp::showUserMenu(int button)
         CPauseSectionsdNotifier * tmpPauseSectionsdNotifier     = NULL;
         CAudioSelectMenuHandler * tmpAudioSelectMenuHandler     = NULL;
         CMenuWidget * tmpNVODSelector                           = NULL;
-        CStreamInfo2Handler * tmpStreamInfo2Handler          = NULL;
+        CStreamInfo2Handler * tmpStreamInfo2Handler          	= NULL;
         CEventListHandler * tmpEventListHandler                 = NULL;
         CEPGplusHandler * tmpEPGplusHandler                     = NULL;
         CEPGDataHandler * tmpEPGDataHandler                     = NULL;
@@ -2736,7 +2735,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu_items++;
 				menu_prev = SNeutrinoSettings::ITEM_VTXT;
 				keyhelper.get(&key, &icon);
-				menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, StreamFeaturesChanger, "teletext", key, icon);
+				menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, TuxtxtChanger, "-1", key, icon);
 				menu->addItem(menu_item, false);
 
                                 break;
