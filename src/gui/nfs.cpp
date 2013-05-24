@@ -154,7 +154,7 @@ int CNFSMountGui::exec( CMenuTarget* parent, const std::string & actionKey )
 	}
 	else if(actionKey.substr(0,7)=="domount")
 	{
-		int nr=atoi(actionKey.substr(7,1).c_str());
+		int nr = atoi(actionKey.substr(7,1).c_str());
 		CFSMounter::mount(g_settings.network_nfs_ip[nr].c_str(), g_settings.network_nfs_dir[nr], 
 				  g_settings.network_nfs_local_dir[nr], (CFSMounter::FSType) g_settings.network_nfs_type[nr],
 				  g_settings.network_nfs_username[nr], g_settings.network_nfs_password[nr],

@@ -117,12 +117,10 @@ class CMovieInfoViewer
 		int BoxStartX, BoxStartY, BoxEndY, BoxEndX;
 		int BoxWidth, BoxHeight;
 		
-		//CProgressBar * timescale;
-
 	public:
 		CMovieInfoViewer();
 		~CMovieInfoViewer();
-		void show(int Position);
+		void show(int Position, bool show = true);
 		void updatePos(short runningPercent);
 		void hide();
 		bool IsVisible() {return visible;}

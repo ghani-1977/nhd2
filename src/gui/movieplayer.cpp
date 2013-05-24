@@ -301,7 +301,7 @@ CMovieInfoViewer::~CMovieInfoViewer()
 	}
 }
 
-void CMovieInfoViewer::show(int Position)
+void CMovieInfoViewer::show(int Position, bool show)
 {	
 	// show / update
 	GetDimensions();
@@ -438,7 +438,7 @@ void CMovieInfoViewer::show(int Position)
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 	// duration
-	if(!isWebTV && !isVlc)
+	if(!isWebTV && !isVlc && show)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningTotal, COL_INFOBAR);
 	
 	updatePos(file_prozent);
@@ -2236,7 +2236,7 @@ void CMoviePlayerGui::PlayFile(void)
 				else
 				{
 					if(!MovieInfoViewer.IsVisible())
-						MovieInfoViewer.show(position/1000);
+						MovieInfoViewer.show(position/1000, false);
 				}
 			}
 		}

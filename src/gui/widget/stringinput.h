@@ -41,6 +41,7 @@
 
 #include <string>
 
+#define MAX_INPUT_CHARS		30
 
 class CStringInput : public CMenuTarget
 {
@@ -94,7 +95,6 @@ class CStringInput : public CMenuTarget
 
 		void hide();
 		int exec( CMenuTarget* parent, const std::string & actionKey );
-
 };
 
 class CStringInputSMS : public CStringInput
@@ -158,6 +158,5 @@ class CPINChangeWidget : public CStringInput
 		CPINChangeWidget(const neutrino_locale_t Name, char* Value, int Size, const neutrino_locale_t Hint_1, const char * const Valid_Chars= (const char *) "0123456789", CChangeObserver* Observ = NULL)
 		: CStringInput(Name, (char *)Value, Size, Hint_1, NONEXISTANT_LOCALE, Valid_Chars, Observ){};
 };
-
 
 #endif

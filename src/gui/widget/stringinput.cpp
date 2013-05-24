@@ -74,7 +74,7 @@ CStringInput::CStringInput(const neutrino_locale_t Name, std::string* Value, int
 	head = NULL;
         value = new char[Size+1];
         value[Size] = '\0';
-        strncpy(value,Value->c_str(),Size);
+        strncpy(value, Value->c_str(), Size);
         valueString = Value;
         size = Size;
 
@@ -134,8 +134,8 @@ void CStringInput::init()
 
 	if (!(iconfile.empty()))
 		neededWidth += 28;
-	if (neededWidth+20> width)
-		width = neededWidth+20;
+	if (neededWidth + 20 > width)
+		width = neededWidth + 20;
 
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	
@@ -150,13 +150,16 @@ void CStringInput::init()
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	iheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->getHeight();
 
-	height = hheight+ mheight+ 50;
+	height = hheight + mheight + 50 + 2*iheight;
+	
+	/*
 	if (hint_1 != NONEXISTANT_LOCALE)
 	{
 		height += iheight;
 		if (hint_2 != NONEXISTANT_LOCALE)
 			height += iheight;
 	}
+	*/
 
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) >>1 );
 	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 1 );
@@ -198,8 +201,8 @@ void CStringInput::keyRedPressed()
 
 void CStringInput::keyYellowPressed()
 {
-	selected=0;
-	for(int i=0 ; i < size ; i++)
+	selected = 0;
+	for(int i = 0 ; i < size ; i++)
 	{
 		value[i]=' ';
 		paintChar(i);
@@ -321,7 +324,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
-	bool loop=true;
+	bool loop = true;
 	while (loop)
 	{
 		if ( strncmp(value, dispval, size) != 0)
@@ -392,8 +395,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		}
 		else if ( (msg==CRCInput::RC_home) || (msg==CRCInput::RC_timeout) )
 		{
-			if ( ( strcmp(value, oldval) != 0) &&
-			     (ShowLocalizedMessage(name, LOCALE_MESSAGEBOX_DISCARD, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbCancel) == CMessageBox::mbrCancel))
+			if ( ( strcmp(value, oldval) != 0) && (ShowLocalizedMessage(name, LOCALE_MESSAGEBOX_DISCARD, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbCancel) == CMessageBox::mbrCancel))
 				continue;
 
 			strncpy(value, oldval, size);
@@ -424,23 +426,23 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 	hide();
 
-	for(int count=size-1;count>=0;count--)
+	for(int count = size - 1; count >= 0; count--)
 	{
-		if((value[count]==' ') || (value[count]==0))
+		if((value[count] ==' ') || (value[count] == 0))
 		{
-			value[count]=0;
+			value[count] = 0;
 		}
 		else
 			break;
 	}
-	value[size]=0;
+	value[size] = 0;
 
 	if (valueString != NULL)
         {
                 *valueString = value;
         }
 
-        if ( (observ) && (msg==CRCInput::RC_ok) )
+        if ( (observ) && (msg == CRCInput::RC_ok) )
         {
                 observ->changeNotify(name, value);
         }
@@ -490,12 +492,12 @@ void CStringInput::paint()
 
 	if (hint_1 != NONEXISTANT_LOCALE)
 	{
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x+ 20, y+ hheight+ mheight+ iheight+ 40, width- 20, getHint1(), COL_MENUCONTENT, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x + 20, y + hheight + mheight + iheight + 40, width- 20, getHint1(), COL_MENUCONTENT, 0, true); // UTF-8
 		if (hint_2 != NONEXISTANT_LOCALE)
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x+ 20, y+ hheight+ mheight+ iheight* 2+ 40, width- 20, g_Locale->getText(hint_2), COL_MENUCONTENT, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->RenderString(x + 20, y + hheight + mheight + iheight*2 + 40, width - 20, g_Locale->getText(hint_2), COL_MENUCONTENT, 0, true); // UTF-8
 	}
 
-	for (int count=0;count<size;count++)
+	for (int count = 0; count < size; count++)
 		paintChar(count);
 }
 
@@ -574,10 +576,9 @@ void CStringInputSMS::initSMS(const char * const Valid_Chars)
 		arraySizes[i] = j;
 	}
 
-	height+=260;
-	y = ((500-height)>>1);
+	height += 260;
+	y = ((500 - height)>>1);
 }
-
 
 void CStringInputSMS::NormalKeyPressed(const neutrino_msg_t key)
 {
@@ -681,17 +682,16 @@ void CStringInputSMS::paint()
 {
 	CStringInput::paint();
 
-	//frameBuffer->paintIcon(NEUTRINO_ICON_NUMERIC_PAD, x + 20 + 140, y + hheight + mheight + iheight*3 + 30, COL_MENUCONTENT);
-	//test
+	//numeric pad
 	int icol_w = 28;
 	int icol_h = 16;
 	frameBuffer->getIconSize(NEUTRINO_ICON_NUMERIC_PAD, &icol_w, &icol_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_NUMERIC_PAD, x + (width - icol_w)/2, y+ hheight+ mheight+ iheight* 3 + 20, COL_MENUCONTENT);
+	frameBuffer->paintIcon(NEUTRINO_ICON_NUMERIC_PAD, x + (width - icol_w)/2, y + hheight + mheight + iheight*3 + 20, COL_MENUCONTENT);
 
-	frameBuffer->paintBoxRel(x,y+height-25, width,25, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
-	frameBuffer->paintHLine(x, x+width,  y+height-25, COL_INFOBAR_SHADOW_PLUS_0);
+	frameBuffer->paintBoxRel(x, y + height - 25, width, 25, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	frameBuffer->paintHLine(x, x + width,  y + height - 25, COL_INFOBAR_SHADOW_PLUS_0);
 
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 8, y+height-25+1, 230, 2, CStringInputSMSButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 8, y + height - 25 + 1, 230, 2, CStringInputSMSButtons);
 }
 
 void CPINInput::paintChar(int pos)

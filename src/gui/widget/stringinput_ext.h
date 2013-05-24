@@ -41,6 +41,7 @@
 #include <string>
 #include <vector>
 
+
 class CExtendedInput_Item;
 class CExtendedInput : public CMenuTarget
 {

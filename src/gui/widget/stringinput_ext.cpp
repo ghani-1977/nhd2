@@ -61,7 +61,6 @@ CExtendedInput::CExtendedInput(const neutrino_locale_t Name, char* Value, const 
 
 void CExtendedInput::Init(void)
 {
-
 	frameBuffer = CFrameBuffer::getInstance();
 	hheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	mheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();

@@ -40,7 +40,7 @@
 
 #include <gui/widget/menue.h>
 #include <gui/widget/icons.h>
-
+#include <gui/widget/stringinput.h>
 
 
 struct SNeutrinoSettings
@@ -90,15 +90,15 @@ struct SNeutrinoSettings
 	// NETWORK
 #define NETWORK_NFS_NR_OF_ENTRIES 8
 	std::string network_nfs_ip[NETWORK_NFS_NR_OF_ENTRIES];
-	char network_nfs_mac[NETWORK_NFS_NR_OF_ENTRIES][31];
+	char network_nfs_mac[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
 	char network_nfs_local_dir[NETWORK_NFS_NR_OF_ENTRIES][100];
 	char network_nfs_dir[NETWORK_NFS_NR_OF_ENTRIES][100];
 	int  network_nfs_automount[NETWORK_NFS_NR_OF_ENTRIES];
-	char network_nfs_mount_options1[NETWORK_NFS_NR_OF_ENTRIES][31];
-	char network_nfs_mount_options2[NETWORK_NFS_NR_OF_ENTRIES][31];
+	char network_nfs_mount_options1[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
+	char network_nfs_mount_options2[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS +  1];
 	int  network_nfs_type[NETWORK_NFS_NR_OF_ENTRIES];
-	char network_nfs_username[NETWORK_NFS_NR_OF_ENTRIES][31];
-	char network_nfs_password[NETWORK_NFS_NR_OF_ENTRIES][31];
+	char network_nfs_username[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
+	char network_nfs_password[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
 
 	std::string network_ntpserver;
 	std::string network_ntprefresh;
@@ -131,10 +131,10 @@ struct SNeutrinoSettings
 	int  streaming_type;
 	std::string streaming_server_ip;
 	char streaming_server_port[10];
-	char streaming_server_cddrive[21];
+	char streaming_server_cddrive[MAX_INPUT_CHARS + 1];
 	char streaming_videorate[6];
 	char streaming_audiorate[6];
-	char streaming_server_startdir[40];
+	char streaming_server_startdir[MAX_INPUT_CHARS + 1];
 	int streaming_transcode_audio;
 	int streaming_force_avi_rawaudio;
 	int streaming_force_transcode_video;
@@ -453,9 +453,9 @@ struct SNeutrinoSettings
 
 	// UPDATE
 	char	update_dir[100];
-	char softupdate_proxyserver[31];
-	char softupdate_proxyusername[31];
-	char softupdate_proxypassword[31];
+	char softupdate_proxyserver[MAX_INPUT_CHARS + 1];
+	char softupdate_proxyusername[MAX_INPUT_CHARS + 1];
+	char softupdate_proxypassword[MAX_INPUT_CHARS + 1];
 	// END UPDATE
 
 	// VFD

@@ -278,7 +278,7 @@ class CMenuOptionStringChooser : public CMenuItem
 			return active;
 		}
 
-		int exec(CMenuTarget* parent);
+		int exec(CMenuTarget *parent);
 };
 
 class CMenuOptionLanguageChooser : public CMenuItem

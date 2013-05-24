@@ -56,6 +56,7 @@
 #define LOCAL_OFFSET	8	// offset from painted icon at left border
 
 static int HEIGHT;
+static int FULL_HEIGHT;
 
 
 /* the following generic menu items are integrated into multiple menus at the same time */
@@ -552,6 +553,8 @@ void CMenuWidget::paint()
 	
 	full_width = width + sb_width;
 	full_height = height;
+	
+	FULL_HEIGHT = full_height;
 	
 	//
 	if(savescreen) 
@@ -1193,31 +1196,12 @@ int CMenuOptionStringChooser::paint( bool selected )
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y+height, dx- (stringstartposName - x),  l_optionName, color, 0, true); // UTF-8
 	
 	// option value
-	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(optionValue, true);
+	int stringwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(optionValue, true) + BORDER_RIGHT;
 	int stringstartposOption = std::max(stringstartposName + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true) + ICON_OFFSET, x + dx - stringwidth - ICON_OFFSET); //+ offx
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x),  optionValue, color, 0, true);
 	
 	if (selected)
 	{
-		//helpbar
-		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
-		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight - 2, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //FIXME: 2???
-		
-		// paint help icon
-		int icon_w = 0;
-		int icon_h = 0;
-		
-		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
-			
-		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
-			
-		// help text locale
-		const char * help_text = g_Locale->getText(optionName);
-		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
-			
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
-		
 		// vfd
 		char str[256];
 		snprintf(str, 255, "%s %s", l_optionName, optionValue);
