@@ -1559,9 +1559,9 @@ void CNeutrinoApp::channelsInit(bool /*bOnly*/)
 		{
 			CBouquet * ltmp;
 			if(g_bouquetManager->Bouquets[i]->bUser) 
-				ltmp = RADIOfavList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
+				ltmp = RADIOfavList->addBouquet(g_bouquetManager->Bouquets[i]);
 			else
-				ltmp = RADIObouquetList->addBouquet(g_bouquetManager->Bouquets[i]->Name.c_str(), i, g_bouquetManager->Bouquets[i]->bLocked);
+				ltmp = RADIObouquetList->addBouquet(g_bouquetManager->Bouquets[i]);
 
 			ZapitChannelList *channels = &(g_bouquetManager->Bouquets[i]->radioChannels);
 			ltmp->channelList->setSize(channels->size());

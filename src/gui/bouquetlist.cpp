@@ -55,6 +55,8 @@
 #include <global.h>
 #include <neutrino.h>
 
+#include <system/debug.h>
+
 
 extern CBouquetManager * g_bouquetManager;
 
@@ -245,7 +247,7 @@ int CBouquetList::doMenu()
 		delete menu;
 		delete selector;
 		
-		printf("CBouquetList::doMenu: %d selected\n", select);
+		dprintf(DEBUG_NORMAL, "CBouquetList::doMenu: %d selected\n", select);
 
 		if(select >= 0) 
 		{
@@ -257,15 +259,19 @@ int CBouquetList::doMenu()
 					hide();
 					bouquet_id = g_bouquetManager->existsUBouquet(Bouquets[selected]->channelList->getName());
 					if(bouquet_id < 0) 
-					{
 						tmp = g_bouquetManager->addBouquet(Bouquets[selected]->channelList->getName(), true);
-					} 
 					else
 						tmp = g_bouquetManager->Bouquets[bouquet_id];
-
+  
+					// tv
 					channels = &zapitBouquet->tvChannels;
 					for(int i1 = 0; i1 < (int) channels->size(); i1++)
 						tmp->addService((*channels)[i1]);
+					
+					// radio
+					channels = &zapitBouquet->radioChannels;
+					for(int li = 0; li < (int) channels->size(); li++)
+						tmp->addService((*channels)[li]);
 					return 1;
 					break;
 					

@@ -779,6 +779,20 @@ int CMenuOptionNumberChooser::paint(bool selected)
 		// refresh
 		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 		
+		// paint help icon
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
+			
+		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
+			
+		// help text locale
+		const char * help_text = (optionString != NULL) ? optionString : g_Locale->getText(optionName);
+		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
+		
 		// vfd
 		char str[256];
 		snprintf(str, 255, "%s %s", l_optionName, l_option);
@@ -1002,6 +1016,20 @@ int CMenuOptionChooser::paint( bool selected )
 		// refresh
 		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 		
+		// paint help icon
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
+			
+		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
+			
+		// help text locale
+		const char * help_text = optionNameString.c_str();
+		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
+		
 		// vfd
 		char str[256];
 		snprintf(str, 255, "%s %s", optionNameString.c_str(), l_option);
@@ -1160,7 +1188,6 @@ int CMenuOptionStringChooser::paint( bool selected )
         
         // locale text
 	const char * l_optionName = g_Locale->getText(optionName);
-	//int optionwidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(l_optionName, true);
 	int stringstartposName = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET : 0);
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposName,   y+height, dx- (stringstartposName - x),  l_optionName, color, 0, true); // UTF-8
@@ -1175,7 +1202,21 @@ int CMenuOptionStringChooser::paint( bool selected )
 		//helpbar
 		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
 		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight - 2, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //FIXME: 2???
+		
+		// paint help icon
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
+			
+		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
+			
+		// help text locale
+		const char * help_text = g_Locale->getText(optionName);
+		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
 		
 		// vfd
 		char str[256];
@@ -1273,6 +1314,20 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
 		// refresh
 		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+		
+		// paint help icon
+		int icon_w = 0;
+		int icon_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
+			
+		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
+			
+		// help text locale
+		const char * help_text = optionValue;
+		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
 		
 		// vfd
 		CVFD::getInstance()->showMenuText(1, optionValue);
