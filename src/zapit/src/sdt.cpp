@@ -38,7 +38,7 @@
 
 #include <dmx_cs.h>
 
-#define SDT_SIZE 4192
+#define SDT_SIZE 4096
 
 
 extern CFrontend * getFE(int index);

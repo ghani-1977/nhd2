@@ -425,7 +425,8 @@ void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right,
 		{
 			for (int y=area_top; y<area_bottom; y++)
 		 		memset(((uint8_t*)surface_data)+y*surface_stride+area_left, color, area_width);
-		} else if (surface_bpp == 16)
+		} 
+		else if (surface_bpp == 16)
 		{
 			uint32_t icol;
 
@@ -434,7 +435,7 @@ void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right,
 				icol=(surface_clut.data[color].a<<24)|(surface_clut.data[color].r<<16)|(surface_clut.data[color].g<<8)|(surface_clut.data[color].b);
 			else
 #endif
-				icol=0x10101*color;
+			icol = 0x10101*color;
 #if BYTE_ORDER == LITTLE_ENDIAN
 			uint16_t col = bswap_16(((icol & 0xFF) >> 3) << 11 | ((icol & 0xFF00) >> 10) << 5 | (icol & 0xFF0000) >> 19);
 #else
@@ -447,7 +448,8 @@ void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right,
 				while (x--)
 					*dst++=col;
 			}
-		} else if (surface_bpp == 32)
+		} 
+		else if (surface_bpp == 32)
 		{
 			uint32_t col;
 
@@ -456,9 +458,9 @@ void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right,
 				col=(surface_clut.data[color].a<<24)|(surface_clut.data[color].r<<16)|(surface_clut.data[color].g<<8)|(surface_clut.data[color].b);
 			else
 #endif
-				col=0x10101*color;
+			col = 0x10101*color;
 			
-			col^=0xFF000000;
+			col ^= 0xFF000000;
 			
 #if 0
 			if (surface_data_phys && gAccel::getInstance())
@@ -473,8 +475,7 @@ void CLCDDisplay::surface_fill_rect(int area_left, int area_top, int area_right,
 				while (x--)
 					*dst++=col;
 			}
-		}	else
-			printf("[CLCDDisplay] couldn't fill %d bpp", surface_bpp);
+		}	
 }
 
 void CLCDDisplay::draw_point(const int x, const int y, const int state)

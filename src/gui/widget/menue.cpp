@@ -1800,7 +1800,8 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h)/2);
 			
 		// help text locale
-		const char * help_text = getHelpText();
+		//const char * help_text = getHelpText();	// use helptext locale
+		const char * help_text = getName();
 		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 			
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
