@@ -950,7 +950,22 @@ void CVFD::setFPTime(void)
 #ifdef __sh__
 	openDevice();
 	
-	if( ioctl(fd, VFDSETTIME) < 0)  
+	char timebuf[6];
+	time_t tnow = time(NULL);
+	
+	tm *now = localtime(&tnow);
+	timebuf[0]=1;
+	timebuf[1]=now->tm_min;
+	timebuf[2]=now->tm_hour;
+	timebuf[3]=now->tm_mday;
+	timebuf[4]=now->tm_mon+1;
+	timebuf[5]=now->tm_year % 100;
+	
+	struct vfd_ioctl_data data;
+	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+	memcpy(&data, timebuf, 6); 
+	
+	if( ioctl(fd, VFDSETTIME, &data) < 0)  
 		perror("VFDPWRLED");
 	
 	closeDevice();

@@ -72,9 +72,7 @@ void CTimerManager::Init(void)
 		dprintf(DEBUG_NORMAL, "[timermanager]  wakeup from standby: %s\n", wakeup ? "yes" : "no");
 
 		if(wakeup)
-		{
 			creat("/tmp/.wakeup", 0);
-		}
 	}
 
 	close(fd);	
@@ -749,13 +747,11 @@ bool CTimerManager::shutdown()
 		{
 			dprintf(DEBUG_NORMAL, "[timermanager]  wakeup in %d . min programmed\n", minutes);
 
-			//Set Wakeup Timer
+			//Set Wakeup Timer reason
 			FILE *fd = fopen("/proc/stb/fp/was_timer_wakeup", "w");
 	
 			if(fd == NULL)
-			{
 				dprintf(DEBUG_NORMAL, "[timermanager]  failed to open /proc/stb/fp/was_timer_wakeup\n");
-			}
 	
 			if(fwrite("1\n", 2, 1, fd) != 1)
 				printf("[timermanager]  failed to write to /proc/stb/fp/was_timer_wakeup\n");
@@ -764,44 +760,6 @@ bool CTimerManager::shutdown()
 			
 			status = true;
 		}		
-		
-#if vfd_support_wakeup
-		time_t wakeup_time;
-		char timebuf[6];
-		FILE *f = fopen("/proc/stb/fp/wakeup_time", "r");
-		
-		if (f)
-		{
-			int tmp;
-			if (fscanf(f, "%u", &tmp) != 1)
-				printf("read /proc/stb/fp/wakeup_time failed (%m)\n");
-			else
-				wakeup_time = tmp;
-			fclose(f);
-		}
-		
-		dprintf(DEBUG_NORMAL, "[timermanager] wakeup_time %d \n", wakeup_time); 
-		
-		tm *now=localtime(&wakeup_time);
-		timebuf[0]=1;
-		timebuf[1]=now->tm_min;
-		timebuf[2]=now->tm_hour;
-		timebuf[3]=now->tm_mday;
-		timebuf[4]=now->tm_mon+1;
-		timebuf[5]=now->tm_year % 100;
-
-		dprintf(DEBUG_NORMAL, "[timermanager] TIME_WAKEUP %d:%d:%d %d %d %d",timebuf[0],timebuf[1],timebuf[2],timebuf[3],timebuf[4],timebuf[5]); 
-
-		struct vfd_ioctl_data data;
-		memset(&data, 0, sizeof(struct vfd_ioctl_data));
-		memcpy(&data, timebuf, 6); 
-
-		int file_vfd = open ("/dev/vfd", O_WRONLY);
-		ioctl(file_vfd, VFDSETTIMERWAKEUP, &data);
-		close (file_vfd);
-		
-		status = true;
-#endif		
 	}
 
 	pthread_mutex_unlock(&tm_eventsMutex);
@@ -811,7 +769,7 @@ bool CTimerManager::shutdown()
 
 void CTimerManager::shutdownOnWakeup(int currEventID)
 {
-	time_t nextAnnounceTime=0;
+	time_t nextAnnounceTime = 0;
 
 	if(wakeup == 0)
 		return;
@@ -841,13 +799,15 @@ void CTimerManager::shutdownOnWakeup(int currEventID)
 
 	time_t now = time(NULL);
 
-	if((nextAnnounceTime-now) > 600 || nextAnnounceTime==0)
+	if((nextAnnounceTime - now) > 600 || nextAnnounceTime == 0)
 	{ 	
 		// in den naechsten 10 min steht nix an
 		dprintf(DEBUG_NORMAL, "[timermanager]  Programming shutdown event\n");
-		CTimerEvent_Shutdown* event = new CTimerEvent_Shutdown(now+120, now+180);
+		CTimerEvent_Shutdown *event = new CTimerEvent_Shutdown(now + 120, now + 180);
 		addEvent(event);
 	}
+	
+	//FIXME: clear fp timer???
 
 	pthread_mutex_unlock(&tm_eventsMutex);
 }

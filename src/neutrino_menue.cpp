@@ -2026,7 +2026,7 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 #endif
 
 	// vfd time //FIXME: not working with new driver seems like the ioctl is brocken :-(
-#if 0	
+#if 1	
 	lcdSettings.addItem(GenericMenuSeparatorLine);
 
 	lcdSettings.addItem( new CMenuForwarder(LOCALE_LCDMENU_SETFPTIME, true, NULL, this, "setfptime", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
