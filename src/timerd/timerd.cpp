@@ -39,18 +39,16 @@
 #include <system/debug.h>
 
 
-int timerd_debug = 0;
-
 bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 {
-//	CTimerEvent_NextProgram::EventMap::iterator it = NULL;
+	//CTimerEvent_NextProgram::EventMap::iterator it = NULL;
 	CTimerEventMap events;
 	CTimerdMsg::commandModifyTimer msgModifyTimer;
 	CTimerdMsg::responseGetSleeptimer rspGetSleeptimer;
 	CTimerEventMap::iterator pos;
+	
 	switch (rmsg.cmd)
 	{
-		
 		case CTimerdMsg::CMD_REGISTEREVENT :
 			CTimerManager::getInstance()->getEventServer()->registerEvent(connfd);
 			break;
@@ -175,8 +173,8 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 						lresp.epg_starttime = ev->eventInfo.epg_starttime;
 						lresp.channel_id = ev->eventInfo.channel_id;
 						lresp.apids = ev->eventInfo.apids;
-						strcpy(lresp.recordingDir, ev->recordingDir.substr(0,sizeof(lresp.recordingDir)-1).c_str());
-						strcpy(lresp.epgTitle, ev->epgTitle.substr(0,sizeof(lresp.epgTitle)-1).c_str());						
+						strcpy(lresp.recordingDir, ev->recordingDir.substr(0, sizeof(lresp.recordingDir)-1).c_str());
+						strcpy(lresp.epgTitle, ev->epgTitle.substr(0, sizeof(lresp.epgTitle)-1).c_str());						
 					}
 					else if(event->eventType == CTimerd::TIMER_ZAPTO)
 					{
@@ -185,7 +183,7 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 						lresp.epg_starttime = ev->eventInfo.epg_starttime;
 						lresp.channel_id = ev->eventInfo.channel_id;
 						lresp.apids = ev->eventInfo.apids;
-						strcpy(lresp.epgTitle, ev->epgTitle.substr(0,sizeof(lresp.epgTitle)-1).c_str());						
+						strcpy(lresp.epgTitle, ev->epgTitle.substr(0, sizeof(lresp.epgTitle)-1).c_str());						
 					}
 					else if(event->eventType == CTimerd::TIMER_REMIND)
 					{
@@ -195,7 +193,7 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					{
 						strcpy(lresp.pluginName, static_cast<CTimerEvent_ExecPlugin*>(event)->name);
 					}
-					CBasicServer::send_data(connfd, &resp, sizeof(CTimerd::responseGetTimer));
+					CBasicServer::send_data(connfd, &lresp, sizeof(CTimerd::responseGetTimer));
 				}
 			}
 			break;
