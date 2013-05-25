@@ -32,11 +32,6 @@
 #include <xmlinterface.h>
 
 
-enum {
-	WEBTV,
-	IPTV,
-};
-
 class CWebTV
 {
 	private:
@@ -50,11 +45,9 @@ class CWebTV
 		int mode;
 
 		xmlDocPtr parser;
-		bool readXml();
-		bool readIPTVlist();
+		bool readChannellist();
 		
 		std::vector<webtv_channels *> channels;
-		std::vector<webtv_channels *> IPTVChannels;
 		
 		/* gui */
 		CFrameBuffer * frameBuffer;
@@ -92,7 +85,7 @@ class CWebTV
 		void processTextToArray(std::string text);
 		
 	public:
-		CWebTV(int Mode = WEBTV);
+		CWebTV();
 		~CWebTV();
 		int exec();
 		

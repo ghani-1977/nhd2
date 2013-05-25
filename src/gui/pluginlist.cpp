@@ -108,17 +108,19 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 	if (parent)
 		parent->hide();
 
-	//scan4plugins here!
+	// clear pluginlist
 	for(unsigned int count = 0; count < pluginlist.size(); count++)
 	{
 		delete pluginlist[count];
 	}
 	pluginlist.clear();
 
+	// menu back
 	pluginitem * tmp = new pluginitem();
 	tmp->name = g_Locale->getText(LOCALE_MENU_BACK);
 	pluginlist.push_back(tmp);
 
+	// refill pluginlist items
 	for(unsigned int count = 0; count < (unsigned int)g_PluginList->getNumberOfPlugins(); count++)
 	{
 		if ((g_PluginList->getType(count) & pluginlisttype) && !g_PluginList->isHidden(count))
@@ -151,12 +153,12 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 
 		if ( ( msg == CRCInput::RC_timeout ) || ( msg == (neutrino_msg_t)g_settings.key_channelList_cancel ) )
 		{
-			loop=false;
+			loop = false;
 		}
 		else if ( msg == (neutrino_msg_t)g_settings.key_channelList_pageup )
 		{
-			if ((int(selected)-int(listmaxshow))<0)
-				selected=0;
+			if ((int(selected)-int(listmaxshow)) < 0)
+				selected = 0;
 			else
 				selected -= listmaxshow;
 			liststart = (selected/listmaxshow)*listmaxshow;
@@ -165,17 +167,17 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 		else if ( msg == (neutrino_msg_t)g_settings.key_channelList_pagedown )
 		{
 			selected+=listmaxshow;
-			if (selected>pluginlist.size()-1)
-				selected=pluginlist.size()-1;
+			if (selected>pluginlist.size() - 1)
+				selected=pluginlist.size() - 1;
 			liststart = (selected/listmaxshow)*listmaxshow;
 			paintItems();
 		}
 		else if ( msg == CRCInput::RC_up )
 		{
 			int prevselected=selected;
-			if(selected==0)
+			if(selected == 0)
 			{
-				selected = pluginlist.size()-1;
+				selected = pluginlist.size() - 1;
 			}
 			else
 				selected--;
@@ -225,7 +227,7 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 		else if( (msg== CRCInput::RC_red) || (msg==CRCInput::RC_green) || (msg==CRCInput::RC_yellow) || (msg==CRCInput::RC_blue)  || (CRCInput::isNumeric(msg)) )
 		{
 			g_RCInput->postMsg(msg, data);
-			loop=false;
+			loop = false;
 		}
 		else if ( CNeutrinoApp::getInstance()->handleMsg(msg, data) & messages_return::cancel_all )
 		{
@@ -245,7 +247,7 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 
 void CPluginList::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, width + 15, height + ((RADIUS_MID * 2) + 1));
+	frameBuffer->paintBackgroundBoxRel(x, y, width + 15, height + ((RADIUS_MID * 2) + 1));	//15:sb
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -254,7 +256,7 @@ void CPluginList::hide()
 
 void CPluginList::paintItem(int pos)
 {
-	int ypos = (y+theight) + pos*fheight;
+	int ypos = (y + theight) + pos*fheight;
 	int itemheight = fheight;
 
 	uint8_t    color   = COL_MENUCONTENT;
@@ -320,7 +322,7 @@ void CPluginList::paintHead()
 {
 	int sb_width = 0;
 	if(listmaxshow <= pluginlist.size()+1)
-		sb_width=15;
+		sb_width = 15;
 
 	frameBuffer->paintBoxRel(x, y + height - ((RADIUS_MID * 2) + 1) + (RADIUS_MID / 3 * 2), width + sb_width, ((RADIUS_MID * 2) + 1), COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	frameBuffer->paintBoxRel(x, y, width + sb_width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
@@ -352,8 +354,8 @@ void CPluginList::paint()
 	if(width>(g_settings.screen_EndX-g_settings.screen_StartX))
 		width=(g_settings.screen_EndX-g_settings.screen_StartX);
 	height = 526;
-	if((height+50)>(g_settings.screen_EndY-g_settings.screen_StartY))
-		height=(g_settings.screen_EndY-g_settings.screen_StartY) - 50; // 2*25 pixel frei
+	if((height + 50) > (g_settings.screen_EndY-g_settings.screen_StartY))
+		height = (g_settings.screen_EndY-g_settings.screen_StartY) - 50; // 2*25 pixel frei
 	listmaxshow = (height-theight-0)/fheight;
 	height = theight+0+listmaxshow*fheight; // recalc height
 	x=(((g_settings.screen_EndX- g_settings.screen_StartX)-width) / 2) + g_settings.screen_StartX;
@@ -373,10 +375,10 @@ void CPluginList::paintItems()
 	if(listmaxshow <= pluginlist.size()+1)
 	{
 		// Scrollbar
-		int nrOfPages = ((pluginlist.size()-1) / listmaxshow)+1; 
+		int nrOfPages = ((pluginlist.size() - 1) / listmaxshow) + 1; 
 		int currPage  = (liststart/listmaxshow) +1;
-		frameBuffer->paintBoxRel(x+width, y+theight, 15, height-theight,  COL_MENUCONTENT_PLUS_1);
-		frameBuffer->paintBoxRel(x+ width +2, y+theight+2+(currPage-1)*(height-theight-4)/nrOfPages, 11, (height-theight-4)/nrOfPages, COL_MENUCONTENT_PLUS_3 );
+		frameBuffer->paintBoxRel(x + width, y + theight, 15, height - theight,  COL_MENUCONTENT_PLUS_1);
+		frameBuffer->paintBoxRel(x + width + 2, y + theight + 2 + (currPage - 1)*(height - theight - 4)/nrOfPages, 11, (height - theight - 4)/nrOfPages, COL_MENUCONTENT_PLUS_3 );
 	}
 	
 	for(unsigned int count = 0; count < listmaxshow; count++)

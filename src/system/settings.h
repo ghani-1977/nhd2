@@ -217,6 +217,7 @@ struct SNeutrinoSettings
 	unsigned char menu_Foot_Text_blue;
 
 	char	font_file[100];
+	int 	contrast_fonts;
 
 #define TIMING_SETTING_COUNT 6
 	enum TIMING_SETTINGS {

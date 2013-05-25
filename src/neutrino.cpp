@@ -668,6 +668,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.menu_Foot_Text_blue = configfile.getInt32( "menu_Foot_Text_blue", 50 );
 
 	strcpy( g_settings.font_file, configfile.getString( "font_file", FONTDIR"/neutrino.ttf" ).c_str() );
+	
+	g_settings.contrast_fonts = configfile.getInt32("contrast_fonts", 0);
 
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
@@ -1143,6 +1145,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "screen_yres", g_settings.screen_yres);
 
 	configfile.setString("font_file", g_settings.font_file);
+	configfile.setInt32( "contrast_fonts", g_settings.contrast_fonts );
 
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
@@ -4931,8 +4934,8 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "setfptime")
 	{
-		//CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
-		//hintBox->paint();
+		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, (char *)"setting fp time..." );
+		hintBox->paint();
 
 #if !defined ENABLE_LCD
 #ifdef __sh__
@@ -4940,10 +4943,10 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 #endif
 #endif
 		
-		//sleep(2);
+		sleep(2);
 		
-		//hintBox->hide();
-		//delete hintBox;
+		hintBox->hide();
+		delete hintBox;
 
 		return menu_return::RETURN_REPAINT;	
 	}
@@ -4995,6 +4998,69 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 	else if (ARE_LOCALES_EQUAL(OptionName, LOCALE_LANGUAGESETUP_SELECT)) 
 	{
 		g_Locale->loadLocale(g_settings.language);
+		return true;
+	}
+	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT)) 
+	{
+		bool usedBackground = frameBuffer->getuseBackground();
+		
+		if (g_settings.radiotext_enable) 
+		{
+			// hide radiomode background pic
+			if (usedBackground) 
+			{
+				frameBuffer->saveBackgroundImage();
+				frameBuffer->ClearFrameBuffer();
+
+#if !defined USE_OPENGL
+				frameBuffer->blit();
+#endif
+			}
+			
+			//
+			if (g_Radiotext == NULL)
+				g_Radiotext = new CRadioText;
+			if (g_Radiotext && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio))
+				g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
+		} 
+		else 
+		{
+			// Restore previous background
+			if (usedBackground) 
+			{
+				frameBuffer->restoreBackgroundImage();
+				frameBuffer->useBackground(true);
+				frameBuffer->paintBackground();
+
+#if !defined USE_OPENGL
+				frameBuffer->blit();
+#endif
+			}
+			
+			if (g_Radiotext)
+				g_Radiotext->radiotext_stop();
+			delete g_Radiotext;
+			g_Radiotext = NULL;
+			
+			frameBuffer->loadBackgroundPic("radiomode.jpg");
+		}
+		
+		return true;
+	}
+	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_CHANNELLIST_MAKE_HDLIST)) 
+	{
+		channelsInit();
+		channelList->adjustToChannelID(live_channel_id);//FIXME what if deleted ?
+		
+		return true;
+	}
+	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_EXTRA_ZAPIT_MAKE_BOUQUET)) 
+	{
+		setZapitConfig(&zapitCfg);
+		
+		channelsInit();
+		channelList->adjustToChannelID(live_channel_id);//FIXME what if deleted ?
+		
 		return true;
 	}
 

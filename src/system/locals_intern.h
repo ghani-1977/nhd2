@@ -447,6 +447,7 @@ const char * locale_real_names[] = {
 	"fontmenu.scaling_x_hint2",
 	"fontmenu.scaling_y",
 	"fontmenu.scaling_y_hint2",
+	"fontmenu.font_contrast",
 	"gtxalpha.alpha1",
 	"gtxalpha.alpha2",
 	"infoviewer.epgnotload",

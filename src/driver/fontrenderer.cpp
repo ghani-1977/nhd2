@@ -37,6 +37,7 @@
 #include <driver/fontrenderer.h>
 
 #include <system/debug.h>
+#include <global.h>
 
 
 FT_Error FBFontRenderClass::myFTC_Face_Requester(FTC_FaceID  face_id,
@@ -430,7 +431,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	int pen1 = -1; // "pen" positions for kerning, pen2 is "x"
 
 	static fb_pixel_t oldbgcolor = 0, oldfgcolor = 0;
-	static fb_pixel_t colors[256];// = {0};
+	static fb_pixel_t colors[256] = {0};
 
 	fb_pixel_t bgcolor = frameBuffer->realcolor[color];
 	fb_pixel_t fgcolor = frameBuffer->realcolor[(((((int)color) + 2) | 7) - 2)];
@@ -464,6 +465,10 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				 (((fgg + deltag * i / 255) & ((1 << gl) - 1)) << go) |
 				 (((fgb + deltab * i / 255) & ((1 << bl) - 1)) << bo) |
 				 (((fgt + deltat * i / 255) & ((1 << tl) - 1)) << to));
+				 
+			/* FIXME must be better solution */
+			if(g_settings.contrast_fonts && ((255-i) > 128))
+				colors[255 - i] |=  0xFF << to;
 		}
 	}
 	

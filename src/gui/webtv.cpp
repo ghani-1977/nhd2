@@ -39,7 +39,7 @@
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
-#define DEFAULT_IPTV_FILE		CONFIGDIR "iptv.tv"
+#define DEFAULT_IPTV_FILE		CONFIGDIR "/iptv.tv"
 
 extern cVideo * videoDecoder;
 extern t_channel_id live_channel_id;		// zapit.cpp
@@ -49,7 +49,7 @@ extern CZapitChannel * live_channel;		// zapit.cpp
 
 extern CPictureViewer * g_PicViewer;
 
-CWebTV::CWebTV(int Mode)
+CWebTV::CWebTV()
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	
@@ -57,8 +57,6 @@ CWebTV::CWebTV(int Mode)
 	liststart = 0;
 	
 	parser = NULL;
-	
-	mode = Mode;
 }
 
 CWebTV::~CWebTV()
@@ -78,10 +76,7 @@ CWebTV::~CWebTV()
 
 int CWebTV::exec()
 {
-	if(mode == WEBTV)
-		readXml();
-	else if(mode == IPTV)
-		readIPTVlist();
+	readChannellist();
 	
 	return Show();
 }
@@ -95,18 +90,20 @@ CFile * CWebTV::getSelectedFile()
 }
 
 // readxml file
-bool CWebTV::readXml()
+bool CWebTV::readChannellist()
 {
 	CFile file;
 	
+	// clear channellist
 	for(unsigned int count = 0; count < channels.size(); count++)
 	{
 		delete channels[count];
 	}
 	channels.clear();
 	
-	webtv_channels * Channels_list = new webtv_channels();
+	webtv_channels * tmp = new webtv_channels();
 	
+	// parse webtv.xml
 	if (parser)
 	{
 		xmlFreeDoc(parser);
@@ -134,20 +131,22 @@ bool CWebTV::readXml()
 				bool ChLocked = locked ? (strcmp(locked, "1") == 0) : false;
 				
 				// fill webtv list
-				Channels_list = new webtv_channels();
+				tmp = new webtv_channels();
 				
-				Channels_list->title = title;
-				Channels_list->url = url;
-				Channels_list->description = description;
-				Channels_list->locked = locked;
+				tmp->title = title;
+				tmp->url = url;
+				tmp->description = description;
+				tmp->locked = locked;
 				
 				// parentallock
 				if ((g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_ONSIGNAL) && (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_CHANGETOLOCKED))
 					ChLocked = false;			
 			
+				// skip if locked
 				if(!ChLocked)
-					channels.push_back(Channels_list);
+					channels.push_back(tmp);
 				
+				// fill filelist
 				file.Url = url;
 				file.Name = title;
 				file.Description = description;
@@ -163,23 +162,8 @@ bool CWebTV::readXml()
 	
 	xmlFreeDoc(parser);
 	
-	return false;
-}
-
-//TODO:
-bool CWebTV::readIPTVlist()
-{
-	/* set our iptv list */
-	CFile file;
-	
-	for(unsigned int count = 0; count < IPTVChannels.size(); count++)
-	{
-		delete IPTVChannels[count];
-	}
-	IPTVChannels.clear();
-	
-	//webtv_channels * IPTVChannels_list = new webtv_channels();
-	
+	// parse iptv.tv
+	/*
 	std::string name, service, description;
 	
 	FILE * f = fopen(DEFAULT_IPTV_FILE, "r");
@@ -200,10 +184,10 @@ bool CWebTV::readIPTVlist()
 		if (len < 2)
 			continue;
 		
-		/* strip newline */
+		// strip newline
 		line[--len] = 0;
 		
-		/* strip carriage return (when found) */
+		// strip carriage return (when found)
 		if (line[len - 1] == '\r') 
 			line[--len] = 0;
 		
@@ -213,9 +197,26 @@ bool CWebTV::readIPTVlist()
 			service = line + 9;
 		else if (strncmp(line, "#DESCRIPTION ", 13) == 0)
 			description = line + 12;
+		
+		tmp = new webtv_channels();
+				
+		tmp->title = (char*)name.c_str();
+		tmp->url = (char *)service.c_str();
+		tmp->description = (char *)description.c_str();
+		//tmp->locked = locked;
+		
+		channels.push_back(tmp);
+				
+		// fill filelist
+		file.Url = service;
+		file.Name = name;
+		file.Description = description.c_str();
+				
+		filelist.push_back(file);
 	}
 	
 	fclose(f);
+	*/
 	
 	return false;
 }

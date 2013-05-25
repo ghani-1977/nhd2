@@ -327,9 +327,6 @@ bool COPKGManager::getPkgData(const int pkg_content_id)
 	char buffer[255];
 	sprintf(buffer, "/tmp/%s.list", cmd_names[pkg_content_id]);
 	
-	if(access(buffer, F_OK)) 
-		return false;
-	
 	output = fopen(buffer, "r");
 
 	if(output != NULL)
@@ -396,6 +393,8 @@ bool COPKGManager::getPkgData(const int pkg_content_id)
 	}
 	else
 		return false;
+	
+	unlink(buffer);
 	
 	switch (pkg_content_id) 
 	{
