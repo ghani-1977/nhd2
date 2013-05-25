@@ -213,16 +213,15 @@ class CTimerManager
 	//singleton
 	private:
 		void Init(void);
-		int					eventID;
+		int			eventID;
 		CEventServer		*eventServer;
 		CTimerEventMap		events;
-		pthread_t			thrTimer;
-		bool              m_saveEvents;
-		bool              m_isTimeSet;
-		int               m_extraTimeStart;
-		int               m_extraTimeEnd;
-		char 	wakeup;
-		//bool              timer_wakeup;
+		pthread_t		thrTimer;
+		bool              	m_saveEvents;
+		bool              	m_isTimeSet;
+		int               	m_extraTimeStart;
+		int               	m_extraTimeEnd;
+		bool              	wakeup;
 		
 		CTimerManager();
 		static void* timerThread(void *arg);

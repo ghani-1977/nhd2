@@ -73,7 +73,7 @@ class CTimerdClient:private CBasicClient
 		void removeTimerEvent( int evId);	// remove timer event
 		void stopTimerEvent( int evId);	// set timer state to stoped (rescedule on demand)
 
-		void getTimerList( CTimerd::TimerList &timerlist);		// returns the list of all timers
+		void getTimerList( CTimerd::TimerList &timerlist);				// returns the list of all timers
 		void getTimer( CTimerd::responseGetTimer &timer, unsigned timerID);		// returns specified timer
 
 		// modify existing timer event

@@ -291,7 +291,7 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 	}
 	else if (strcmp(key, "newtimer") == 0)
 	{
-		timerNew.announceTime=timerNew.alarmTime-60;
+		timerNew.announceTime = timerNew.alarmTime-60;
 		CTimerd::EventInfo eventinfo;
 		CTimerd::RecordingInfo recinfo;
 		eventinfo.epgID=0;
@@ -449,11 +449,9 @@ int CTimerList::show()
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
 
 		if( msg <= CRCInput::RC_MaxRC )
-			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings
-::TIMING_MENU]);
+			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
-		if( ( msg == CRCInput::RC_timeout ) ||
-			 ( msg == CRCInput::RC_home) )
+		if( ( msg == CRCInput::RC_timeout ) || ( msg == CRCInput::RC_home) )
 		{ //Exit after timeout or cancel key
 			loop=false;
 		}
@@ -524,8 +522,7 @@ int CTimerList::show()
 		{
 			update=true;
 		}
-		else if((msg==CRCInput::RC_blue)||
-				  (CRCInput::isNumeric(msg)) )
+		else if((msg==CRCInput::RC_blue)|| (CRCInput::isNumeric(msg)) )
 		{
 			//pushback key if...
 			g_RCInput->postMsg( msg, data );

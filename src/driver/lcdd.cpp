@@ -311,7 +311,8 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 	//reverse
 	if (inverse)
 		display.setInverted(CLCDDisplay::PIXEL_ON);
-	else		display.setInverted(CLCDDisplay::PIXEL_OFF);
+	else		
+		display.setInverted(CLCDDisplay::PIXEL_OFF);
 #endif
 }
 

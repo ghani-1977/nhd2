@@ -75,7 +75,7 @@ void CTimerManager::Init(void)
 			creat("/tmp/.wakeup", 0);
 	}
 
-	close(fd);	
+	close(fd);
 
 	loadRecordingSafety();
 
@@ -718,7 +718,7 @@ bool CTimerManager::shutdown()
 			// Wir wachen nur f�r Records und Zaptos wieder auf
 			if(event->announceTime < nextAnnounceTime || nextAnnounceTime==0)
 			{
-				nextAnnounceTime=event->announceTime;
+				nextAnnounceTime = event->announceTime;
 			}
 		}
 	}
@@ -806,8 +806,6 @@ void CTimerManager::shutdownOnWakeup(int currEventID)
 		CTimerEvent_Shutdown *event = new CTimerEvent_Shutdown(now + 120, now + 180);
 		addEvent(event);
 	}
-	
-	//FIXME: clear fp timer???
 
 	pthread_mutex_unlock(&tm_eventsMutex);
 }
