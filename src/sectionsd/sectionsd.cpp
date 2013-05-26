@@ -881,7 +881,8 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 #else
 			time_t now = time(NULL);
 			bool back = false;
-			if ((*lastEvent)->times.size() == 1)
+			//if ((*lastEvent)->times.size() == 1)
+			if (*lastEvent != NULL && (*lastEvent)->times.size() == 1)
 			{
 				if ((*lastEvent)->times.begin()->startzeit + (long)(*lastEvent)->times.begin()->dauer >= now - oldEventsAre)
 					back = true;
@@ -906,7 +907,9 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 			}
 			// else fprintf(stderr, ">");
 			unlockEvents();
-			deleteEvent((*lastEvent)->uniqueKey());
+			//deleteEvent((*lastEvent)->uniqueKey());
+			if(*lastEvent != NULL)
+				deleteEvent((*lastEvent)->uniqueKey());
 		}
 		else
 			unlockEvents();
@@ -8088,7 +8091,7 @@ void sectionsd_main_thread(void */*data*/)
 				//printf("[sectionsd] EIT update: len %d, %02X %02X %02X %02X %02X %02X version %02X\n", ret, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], ((SI_section_header*)buf)->version_number);
 
 				//printdate_ms(stdout);
-				printf("EIT Update Filter: new version 0x%x, Activate cnThread\n", ((SI_section_header*)buf)->version_number);
+				//printf("EIT Update Filter: new version 0x%x, Activate cnThread\n", ((SI_section_header*)buf)->version_number);
 				writeLockMessaging();
 				//						messaging_skipped_sections_ID[0].clear();
 				//						messaging_sections_max_ID[0] = -1;

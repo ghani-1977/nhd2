@@ -294,7 +294,7 @@ void CPlugins::startPlugin(const char * const name)
 {
 	int pluginnr = find_plugin(name);
 	if (pluginnr > -1)
-		startPlugin(pluginnr,0);
+		startPlugin(pluginnr, 0);
 	else
 		printf("[CPlugins] could not find %s\n", name);
 
@@ -334,6 +334,11 @@ void CPlugins::startPlugin(int number, int param)
 		g_RCInput->stopInput();
 
 		startScriptPlugin(number);
+		
+		frameBuffer->paintBackground();
+#if !defined USE_OPENGL
+		frameBuffer->blit();
+#endif			
 		
 		g_RCInput->restartInput();
 		g_RCInput->clearRCMsg();
