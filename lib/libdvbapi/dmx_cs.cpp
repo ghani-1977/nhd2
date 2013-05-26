@@ -181,7 +181,7 @@ int cDemux::Read(unsigned char * const buff, const size_t len, int Timeout)
 	ufds.events = POLLIN;
 	ufds.revents = 0;
 	
-	if (demux_fd < 0)
+	if (demux_fd < 0 || buff == NULL)
 		return -1;
 	
 	if (type == DMX_PSI_CHANNEL && Timeout <= 0)
