@@ -39,8 +39,6 @@ class cPlayback
 		bool Start(char * filename, unsigned short _vp = 0, int _vtype = 0, unsigned short _ap = 0, int _ac3 = 0, int _duration = 0);
 		
 		bool Play(void);
-		bool SyncAV(void);
-		
 		bool Stop(void);
 		bool SetAPid(unsigned short pid, int _ac = 0);
 
@@ -55,8 +53,7 @@ class cPlayback
 		void FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t *numpida, std::string *language);
 
 		cPlayback(int num = 0);
-		~cPlayback();
-		void getMeta();		
+		~cPlayback();	
 };
 
 #endif
