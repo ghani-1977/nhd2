@@ -1,6 +1,6 @@
 INCLUDES = -I$(srcdir)/xmltok
 
-lib_LIBRARIES = libtuxbox-xmltree.a
+noinst_LIBRARIES = libtuxbox-xmltree.a
 
 libtuxbox_xmltree_a_SOURCES = \
 	hashtab.c xmlparse.cpp xmlrole.c xmltok.c xmltree.cpp xmlinterface.cpp
