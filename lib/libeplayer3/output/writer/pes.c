@@ -153,5 +153,4 @@ int InsertPesHeader (unsigned char *data, int size, unsigned char stream_id, uns
     FlushBits(&ld2);
 
     return (ld2.Ptr - data);
-
 }
