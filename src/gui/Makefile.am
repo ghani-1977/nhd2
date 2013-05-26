@@ -61,7 +61,7 @@ if ENABLE_UPNP
 libneutrino_gui2_a_SOURCES += upnpbrowser.cpp
 endif
 
-if !BOXTYPE_COOLSTREAM
+if ENABLE_CI
 libneutrino_gui2_a_SOURCES += cam_menu.cpp
 endif
 

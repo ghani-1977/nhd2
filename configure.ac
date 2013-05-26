@@ -140,12 +140,32 @@ fi
 
 # standalone plugins
 AC_ARG_ENABLE(standaloneplugins,
-	AS_HELP_STRING(--enable-standaloneplugins,disable standaloneplugins support),
+	AS_HELP_STRING(--enable-standaloneplugins,enable standaloneplugins support),
 	,[enable_standaloneplugins=no])
 AM_CONDITIONAL(ENABLE_STANDALONEPLUGINS,test "$enable_standaloneplugins" = "yes")
 
 if test "$enable_standaloneplugins" = "yes"; then
 AC_DEFINE(ENABLE_STANDALONEPLUGINS,1,[include standaloneplugins support])
+fi
+
+# scart output
+AC_ARG_ENABLE(scart,
+	AS_HELP_STRING(--enable-scart,enable scart output),
+	,[enable_scart=no])
+AM_CONDITIONAL(ENABLE_SCART,test "$enable_scart" = "yes")
+
+if test "$enable_scart" = "yes"; then
+AC_DEFINE(ENABLE_SCART,1,[include scart output support])
+fi
+
+# ci-cam
+AC_ARG_ENABLE(ci,
+	AS_HELP_STRING(--enable-ci,enable ci cam),
+	,[enable_ci=no])
+AM_CONDITIONAL(ENABLE_CI,test "$enable_ci" = "yes")
+
+if test "$enable_ci" = "yes"; then
+AC_DEFINE(ENABLE_CI,1,[include ci cam support])
 fi
 
 AC_OUTPUT([

@@ -270,7 +270,7 @@ CRemoteControl 		* g_RemoteControl;
 SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 CMoviePlayerGui		* moviePlayerGui;
 CPictureViewer 		* g_PicViewer;
-#if !defined (PLATFORM_COOLSTREAM)
+#if defined (ENABLE_CI)
 CCAMMenuHandler 	* g_CamHandler;
 #endif
 
@@ -308,7 +308,7 @@ static void initGlobals(void)
 	g_EventList     = NULL;
 	g_Locale        = new CLocaleManager;
 	g_PluginList    = NULL;
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	g_CamHandler 	= NULL;
 #endif	
 
@@ -2206,7 +2206,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	g_volscale = new CProgressBar(200, 15, 50, 100, 80, true);
 
 	// Ci Cam handler
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	g_CamHandler = new CCAMMenuHandler();
 	g_CamHandler->init();	
 #endif	
@@ -2474,7 +2474,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	SHTDCNT::getInstance()->init();
 
 	// Cam-Ci
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	cDvbCi::getInstance()->SetHook(CISendMessage);	
 #endif	
 
@@ -3148,7 +3148,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	}
 
 	// we assume g_CamHandler free/delete data if needed
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	res = g_CamHandler->handleMsg(msg, data);
 	if( res != messages_return::unhandled ) 
 	{
@@ -3781,7 +3781,7 @@ skip_message:
 			lastMode = mode;
 			mode = mode_ts;
 		}
-	}
+	}	
 	else if( msg == NeutrinoMessages::VCR_ON ) 
 	{
 		if( mode != mode_scart ) 
@@ -3792,14 +3792,14 @@ skip_message:
 		{
 			CVFD::getInstance()->setMode(CVFD::MODE_SCART);
 		}
-	}
+	}	
 	else if( msg == NeutrinoMessages::VCR_OFF ) 
 	{
 		if( mode == mode_scart ) 
 		{
 			scartMode( false );
 		}
-	}
+	}	
 	else if (msg == NeutrinoMessages::EVT_START_PLUGIN) 
 	{
 		g_PluginList->startPlugin((const char *)data);
@@ -4661,7 +4661,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		radioMode();
 		returnval = menu_return::RETURN_EXIT_ALL;
-	}
+	}	
 	else if(actionKey=="scart") 
 	{
 		g_RCInput->postMsg( NeutrinoMessages::VCR_ON, 0 );

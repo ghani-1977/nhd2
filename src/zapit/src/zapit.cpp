@@ -67,7 +67,7 @@
 #include <dmx_cs.h>
 #include <audio_cs.h>
 #include <video_cs.h>
-#if !defined (PLATFORM_COOLSTREAM)
+#if defined (ENABLE_CI)
 #include <dvb-ci.h>
 #endif
 
@@ -77,8 +77,8 @@ int zapit_ready;
 int abort_zapit;
 
 /* ci */
-#if !defined (PLATFORM_COOLSTREAM)
-cDvbCi * ci; //FIXME: boxes without ci cam
+#if defined (ENABLE_CI)
+cDvbCi * ci;
 #endif
 
 /* audio conf */
@@ -818,7 +818,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	}
 	
 	// ci cam //FIXME: boxes without ci cam
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	ci->SendCaPMT(thischannel->getCaPmt(), fe->fenumber);
 #endif	
 }
@@ -1471,7 +1471,7 @@ void unsetRecordMode(void)
 	}
 	
 	// ci cam
-#if !defined (PLATFORM_COOLSTREAM)
+#if defined (ENABLE_CI)
 	if(live_fe != NULL)
 		ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
 #endif	
@@ -3925,8 +3925,7 @@ int zapit_main_thread(void *data)
 #endif	
 
 	//CI init
-	//FIXME: platform without ci cam
-#if !defined (PLATFORM_COOLSTREAM)	
+#if defined (ENABLE_CI)	
 	ci = cDvbCi::getInstance();
 #endif	
 	
