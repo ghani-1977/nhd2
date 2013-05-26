@@ -5000,6 +5000,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		g_Locale->loadLocale(g_settings.language);
 		return true;
 	}
+#if ENABLE_RADIOTEXT	
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT)) 
 	{
 		bool usedBackground = frameBuffer->getuseBackground();
@@ -5047,6 +5048,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		
 		return true;
 	}
+#endif	
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_CHANNELLIST_MAKE_HDLIST)) 
 	{
 		channelsInit();
