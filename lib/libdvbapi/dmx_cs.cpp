@@ -173,7 +173,7 @@ bool cDemux::Stop(void)
 	return true;
 }
 
-int cDemux::Read(unsigned char * const buff, const size_t len, int Timeout)
+int cDemux::Read(unsigned char * buff, int len, int Timeout)
 {
 	int rc;
 	struct pollfd ufds;

@@ -415,8 +415,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	if (satellitePosition != 0 && satellitePositions.size() ) 
 	{
 		// ChannelNumber (centered)
-		int ChanNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth("9999", true);
-		int stringstartposX = BoxStartX + 10 + (ChanWidth >> 1) - ( ChanNumWidth >> 1);
+		//int ChanNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getRenderWidth("9999", true);
+		int stringstartposX = BoxStartX + 10 /*+ (ChanWidth >> 1) - ( ChanNumWidth >> 1)*/;
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString( stringstartposX, ChanNameY + time_height, ChanWidth, strChanNum, col_NumBoxText);
 			
 		PIC_X = BoxStartX + ChanWidth;
@@ -1468,9 +1468,14 @@ void CInfoViewer::getEPG(const t_channel_id for_channel_id, CSectionsdClient::Cu
 void CInfoViewer::showSNR()
 { 
   	char percent[10];
-  	uint16_t ssig, ssnr;
-  	int sw, snr, sig, posx, posy;
-  	int height;
+  	uint16_t ssig = 0;
+	int ssnr = 0;
+  	int sw = 0;
+	int snr = 0;
+	int sig = 0;
+	int posx = 0;
+	int posy = 0;
+  	int height = 0;
   	int barwidth = BAR_WIDTH;
 	
   	if (g_settings.infobar_sat_display) 

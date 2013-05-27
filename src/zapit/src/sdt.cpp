@@ -38,8 +38,8 @@
 
 #include <dmx_cs.h>
 
-#define SDT_SIZE 4096
 
+#define SDT_SIZE 	MAX_SECTION_LENGTH
 
 extern CFrontend * getFE(int index);
 

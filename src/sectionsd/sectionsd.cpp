@@ -156,7 +156,7 @@ static unsigned int max_events;
 #define TIMEOUTS_EIT_VERSION_WAIT	(2 * CHECK_RESTART_DMX_AFTER_TIMEOUTS)
 
 // the maximum length of a section (0x0fff) + header (3)
-#define MAX_SECTION_LENGTH (0x0fff + 3)
+//#define MAX_SECTION_LENGTH (0x0fff + 3)
 
 // Wieviele Sekunden EPG gecached werden sollen
 static long secondsToCache;
@@ -6354,7 +6354,7 @@ int eit_set_update_filter(int *fd)
 #if defined (PLATFORM_COOLSTREAM)
 		eitDmx->Open(DMX_PSI_CHANNEL);
 #else
-		eitDmx->Open( DMX_PSI_CHANNEL, 4096, live_fe );
+		eitDmx->Open( DMX_PSI_CHANNEL, MAX_SECTION_LENGTH, live_fe );
 #endif		
 	}
 
@@ -6419,17 +6419,15 @@ static void *fseitThread(void *)
 
 	dmxFSEIT.addfilter(0x60, 0xfe); //other TS, scheduled, freesat epg is only broadcast using table_ids 0x60 (scheduled) and 0x61 (scheduled later)
 
-	//if (sections_debug) {
 	int policy;
 	struct sched_param parm;
 	int rc = pthread_getschedparam(pthread_self(), &policy, &parm);
 	dprintf(DEBUG_DEBUG, "freesatEitThread getschedparam: %d pol %d, prio %d\n", rc, policy, parm.sched_priority);
-	//}
 
 	dprintf(DEBUG_DEBUG, "[%sThread] pid %d (%lu) start\n", "fseit", getpid(), pthread_self());
 	
 	int timeoutsDMX = 0;
-	char *static_buf = new char[MAX_SECTION_LENGTH];
+	uint8_t *static_buf = new uint8_t[MAX_SECTION_LENGTH];
 	//rc;
 
 	if (static_buf == NULL)
@@ -6716,7 +6714,7 @@ static void *eitThread(void *)
 	dprintf(DEBUG_DEBUG, "[%sThread] pid %d (%lu) start\n", "eit", getpid(), pthread_self());
 	
 	int timeoutsDMX = 0;
-	char *static_buf = new char[MAX_SECTION_LENGTH];
+	uint8_t *static_buf = new uint8_t[MAX_SECTION_LENGTH];
 	//int rc;
 
 	if (static_buf == NULL)
@@ -7041,7 +7039,7 @@ static void *cnThread(void *)
 	
 	t_channel_id time_trigger_last = 0;
 	int timeoutsDMX = 0;
-	char *static_buf = new char[MAX_SECTION_LENGTH];
+	uint8_t *static_buf = new uint8_t[MAX_SECTION_LENGTH];
 	int rc;
 
 	if (static_buf == NULL)
@@ -8082,8 +8080,8 @@ void sectionsd_main_thread(void */*data*/)
 		
 		if (eit_update_fd != -1) 
 		{
-			unsigned char buf[4096];
-			int ret = eitDmx->Read(buf, 4095, 10);
+			unsigned char buf[MAX_SECTION_LENGTH];
+			int ret = eitDmx->Read(buf, MAX_SECTION_LENGTH, 10);
 
 			// dirty hack eitDmx read sucked always //FIXME???
 			if (ret > 0) 

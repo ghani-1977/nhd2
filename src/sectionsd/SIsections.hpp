@@ -30,6 +30,8 @@
 #include "SInetworks.hpp"
 #include "SIbouquets.hpp"
 #endif
+
+
 struct SI_section_SDT_header {
 	unsigned table_id			: 8;
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -255,53 +257,16 @@ class SIsection
 public:
 	SIsection(void) { buffer = 0; bufferLength = 0;}
 
-#if 0
-	// Kopierte den Puffer in eigenen Puffer
-	SIsection(const char *buf, unsigned bufLength) {
-		buffer = 0; bufferLength = 0;
-		if ((buf) && (bufLength >= sizeof(struct SI_section_header))) {
-			buffer = new char[bufLength];
-			if (buffer) {
-				bufferLength = bufLength;
-				memmove(buffer, buf, bufLength);
-			}
-		}
-	}
-#endif
-
 	// Benutzt den uebergebenen Puffer (sollte mit new char[n] allokiert sein)
-	SIsection(unsigned bufLength, char *buf) {
+	SIsection(unsigned bufLength, uint8_t *buf) 
+	{
 		buffer = 0; bufferLength = 0;
-		if ((buf) && (bufLength >= sizeof(struct SI_section_header))) {
+		if ((buf) && (bufLength >= sizeof(struct SI_section_header))) 
+		{
 			buffer = buf;
 			bufferLength = bufLength;
 		}
 	}
-
-#if 0
-	// Konstruktor um eine (leere) SIsection mit den fuer Vergleiche
-	// noetigen Inhalte (s. key) zu erstellen
-	SIsection(const struct SI_section_header *header) {
-		bufferLength = 0;
-		buffer = new char[sizeof(struct SI_section_header)];
-		if (buffer) {
-			memmove(buffer, header, sizeof(struct SI_section_header));
-			bufferLength = sizeof(struct SI_section_header);
-		}
-	}
-
-	// Std-Copy
-	SIsection(const SIsection &s) {
-		buffer = 0; bufferLength = 0;
-		if (s.buffer) {
-			buffer = new char[s.bufferLength];
-			if (buffer) {
-				bufferLength = s.bufferLength;
-				memmove(buffer, s.buffer, bufferLength);
-			}
-		}
-	}
-#endif
 
 	// Destruktor
 	virtual ~SIsection(void) {
@@ -431,7 +396,7 @@ public:
 	}
 
 protected:
-	char *buffer;
+	uint8_t *buffer;
 	unsigned bufferLength;
 };
 
@@ -477,7 +442,7 @@ public:
 	}
 
 	// Benutzt den uebergebenen Puffer (sollte mit new char[n] allokiert sein)
-	SIsectionEIT(unsigned bufLength, char *buf) : SIsection(bufLength, buf) {
+	SIsectionEIT(unsigned bufLength, uint8_t *buf) : SIsection(bufLength, buf) {
 		parsed = 0;
 		parse();
 	}
@@ -537,14 +502,14 @@ protected:
 	SIevents evts;
 	int parsed;
 	void parse(void);
-	void parseDescriptors(const char *desc, unsigned len, SIevent &e);
-	void parseShortEventDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parseExtendedEventDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parseContentDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parseComponentDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parseParentalRatingDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parseLinkageDescriptor(const char *buf, SIevent &e, unsigned maxlen);
-	void parsePDCDescriptor(const char *buf, SIevent &e, unsigned maxlen);
+	void parseDescriptors(const uint8_t *desc, unsigned len, SIevent &e);
+	void parseShortEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parseExtendedEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parseContentDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parseComponentDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parseParentalRatingDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parseLinkageDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
+	void parsePDCDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
 #ifdef ENABLE_FREESATEPG
 	std::string freesatHuffmanDecode(std::string input);
 #endif
@@ -662,7 +627,7 @@ struct printSIsectionEIT : public std::unary_function<SIsectionEIT, void>
 // Fuer for_each
 struct printSIsectionPPT : public std::unary_function<SIsectionPPT, void>
 {
-	void operator() (const SIsectionPPT &s) { s.dump();}
+	void operator() (const SIsectionPPT &s) {s.dump();}
 };
 #endif
 
@@ -718,7 +683,8 @@ public:
 class SIsectionSDT : public SIsection
 {
 public:
-	SIsectionSDT(const SIsection &s) : SIsection(s) {
+	SIsectionSDT(const SIsection &s) : SIsection(s) 
+	{
 		parsed = 0;
 		parse();
 	}
@@ -730,7 +696,7 @@ public:
 	}
 
 	// Benutzt den uebergebenen Puffer (sollte mit new char[n] allokiert sein)
-	SIsectionSDT(unsigned bufLength, char *buf) : SIsection(bufLength, buf) {
+	SIsectionSDT(unsigned bufLength, uint8_t *buf) : SIsection(bufLength, buf) {
 		parsed = 0;
 		parse();
 	}
@@ -778,10 +744,10 @@ private:
 	SIservices svs;
 	int parsed;
 	void parse(void);
-	void parseDescriptors(const char *desc, unsigned len, SIservice &s);
-	void parseServiceDescriptor(const char *buf, SIservice &s);
-	void parsePrivateDataDescriptor(const char *buf, SIservice &s);
-	void parseNVODreferenceDescriptor(const char *buf, SIservice &s);
+	void parseDescriptors(const uint8_t *desc, unsigned len, SIservice &s);
+	void parseServiceDescriptor(const uint8_t *buf, SIservice &s);
+	void parsePrivateDataDescriptor(const uint8_t *buf, SIservice &s);
+	void parseNVODreferenceDescriptor(const uint8_t *buf, SIservice &s);
 };
 
 #ifdef UPDATE_NETWORKS

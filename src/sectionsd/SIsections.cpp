@@ -48,9 +48,6 @@
 #include <dvbstring.h>
 #include <edvbstring.h>
 
-//#ifdef ENABLE_FREESATEPG
-//#include "FreesatTables.hpp"
-//#endif
 
 #define NOVA		0x3ffe
 #define CANALDIGITAAL	0x3fff
@@ -94,31 +91,7 @@ struct service_list_entry {
 	unsigned service_id_lo			: 8;
 	unsigned service_type			: 8;
 } __attribute__ ((packed)) ;
-#if 0
-struct digplus_order_entry {
-	unsigned service_id_hi			: 8;
-	unsigned service_id_lo			: 8;
-	unsigned channel_number_hi		: 8;
-	unsigned channel_number_lo		: 8;
-} __attribute__ ((packed)) ;
 
-struct bskyb_order_entry {
-	unsigned service_id_hi			: 8;
-	unsigned service_id_lo			: 8;
-	unsigned service_type			: 8;
-	unsigned unknown1			: 8;
-	unsigned unknown2			: 8;
-	unsigned channel_number_hi		: 8;
-	unsigned channel_number_lo		: 8;
-	unsigned unknown3			: 8;
-	unsigned unknown4			: 8;
-} __attribute__ ((packed)) ;
-
-struct bskyb_bid {
-	unsigned unknown1			: 8;
-	unsigned unknown2			: 8;
-} __attribute__ ((packed)) ;
-#endif
 struct private_data_specifier {
 	unsigned byte1				: 8;
 	unsigned byte2				: 8;
@@ -167,7 +140,7 @@ bool check_blacklisted(const t_original_network_id onid, const t_transport_strea
 // sollte hier alles ueberprueft werden.
 // Leider ist das noch nicht bei allen Descriptoren so.
 //-----------------------------------------------------------------------
-void SIsectionEIT::parseLinkageDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parseLinkageDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	if(maxlen>=sizeof(struct descr_linkage_header))
 	{
@@ -177,7 +150,7 @@ void SIsectionEIT::parseLinkageDescriptor(const char *buf, SIevent &e, unsigned 
 	}
 }
 
-void SIsectionEIT::parsePDCDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parsePDCDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	if (maxlen >= sizeof(struct descr_pdc_header))
 	{
@@ -201,215 +174,92 @@ void SIsectionEIT::parsePDCDescriptor(const char *buf, SIevent &e, unsigned maxl
 	}
 }
 
-void SIsectionEIT::parseComponentDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parseComponentDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	if(maxlen>=sizeof(struct descr_component_header))
 		e.components.insert(SIcomponent((const struct descr_component_header *)buf));
 }
 
-void SIsectionEIT::parseContentDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parseContentDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	struct descr_generic_header *cont=(struct descr_generic_header *)buf;
 	if(cont->descriptor_length+sizeof(struct descr_generic_header)>maxlen)
 		return; // defekt
-	const char *classification=buf+sizeof(struct descr_generic_header);
-	while(classification<=buf+sizeof(struct descr_generic_header)+cont->descriptor_length-2) {
-		e.contentClassification+=std::string(classification, 1);
+	const uint8_t *classification = buf + sizeof(struct descr_generic_header);
+	while(classification <= buf + sizeof(struct descr_generic_header) + cont->descriptor_length - 2) 
+	{
+		e.contentClassification += std::string((const char *)classification, 1);
 		// printf("Content: 0x%02hhx\n", *classification);
-		e.userClassification+=std::string(classification+1, 1);
+		e.userClassification += std::string((const char *)classification + 1, 1);
 		// printf("User: 0x%02hhx\n", *(classification+1));
 		classification+=2;
 	}
 }
 
-void SIsectionEIT::parseParentalRatingDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parseParentalRatingDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	struct descr_generic_header *cont=(struct descr_generic_header *)buf;
 	if(cont->descriptor_length+sizeof(struct descr_generic_header)>maxlen)
 		return; // defekt
-	const char *s=buf+sizeof(struct descr_generic_header);
-	while(s<buf+sizeof(struct descr_generic_header)+cont->descriptor_length-4) {
-		e.ratings.insert(SIparentalRating(std::string(s, 3), *(s+3)));
-		s+=4;
+	const uint8_t *s = buf + sizeof(struct descr_generic_header);
+	while(s<buf+sizeof(struct descr_generic_header)+cont->descriptor_length-4) 
+	{
+		e.ratings.insert(SIparentalRating(std::string((const char *)s, 3), *(s + 3)));
+		s += 4;
 	}
 }
 
-void SIsectionEIT::parseExtendedEventDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionEIT::parseExtendedEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	struct descr_extended_event_header *evt=(struct descr_extended_event_header *)buf;
-	if((evt->descriptor_length+sizeof(descr_generic_header)>maxlen) || (evt->descriptor_length<sizeof(struct descr_extended_event_header)-sizeof(descr_generic_header)))
+	if((evt->descriptor_length + sizeof(descr_generic_header)>maxlen) || (evt->descriptor_length<sizeof(struct descr_extended_event_header) - sizeof(descr_generic_header)))
 		return; // defekt
-	unsigned char *items=(unsigned char *)(buf+sizeof(struct descr_extended_event_header));
+	unsigned char *items = (unsigned char *)(buf + sizeof(struct descr_extended_event_header));
 	int tsidonid = (e.transport_stream_id << 16) | e.original_network_id;
 	int table = get_table(evt->iso_639_2_language_code_hi, evt->iso_639_2_language_code_mid, evt->iso_639_2_language_code_lo);
 
 	char lang[] = {tolower(evt->iso_639_2_language_code_hi), tolower(evt->iso_639_2_language_code_mid), tolower(evt->iso_639_2_language_code_lo), '\0'};
 	std::string language(lang);
 
-	while(items < (unsigned char *)(buf + sizeof(struct descr_extended_event_header) + evt->length_of_items)) {
+	while(items < (unsigned char *)(buf + sizeof(struct descr_extended_event_header) + evt->length_of_items)) 
+	{
 
 		// TODO What info should be in item & itemDescription?
 		// Should I make language filter those as well?  Arzka
 
-		if(*items) {
-#if 0
-			if(*(items+1) < 0x06) { // other code table
-				// 21.07.2005 - collect all extended events in one
-				// string, delimit multiple entries with a newline
-				e.itemDescription.append(std::string((const char *)(items+2), min(maxlen-((const char *)items+2-buf), (*items)-1)));
-				e.itemDescription.append("\n");
-			}
-			else
-#endif
-			{
-				// 21.07.2005 - collect all extended events in one
-				// string, delimit multiple entries with a newline
-				//e.itemDescription.append(std::string((const char *)(items+1), min(maxlen-((const char *)items+1-buf), *items)));
-				e.itemDescription.append(convertDVBUTF8((const char *)(items+1), min(maxlen-((const char *)items+1-buf), *items), table, tsidonid));
-				e.itemDescription.append("\n");
-			}
+		if(*items)
+		{
+			// 21.07.2005 - collect all extended events in one
+			// string, delimit multiple entries with a newline
+			//e.itemDescription.append(std::string((const char *)(items+1), min(maxlen-((const char *)items+1-buf), *items)));
+			e.itemDescription.append(convertDVBUTF8((const char *)(items+1), min(maxlen - ((const char *)items + 1 - (const char *)buf), *items), table, tsidonid));
+			e.itemDescription.append("\n");
 		}
-		items+=1+*items;
-		if(*items) {
+		items += 1 + *items;
+		if(*items) 
+		{
 			// 21.07.2005 - collect all extended events in one
 			// string, delimit multiple entries with a newline
 			//e.item.append(std::string((const char *)(items+0), min(maxlen-((const char *)items+1-buf), *items)));
-			e.item.append(convertDVBUTF8((const char *)(items+1), min(maxlen-((const char *)items+1-buf), *items), table, tsidonid));
+			e.item.append(convertDVBUTF8((const char *)(items+1), min(maxlen - ((const char *)items + 1 - (const char *)buf), *items), table, tsidonid));
 			e.item.append("\n");
 		}
 		items+=1+*items;
 	}
-//  if (0 != e.itemDescription.length()) {
-//	printf("Item Description: %s\n", e.itemDescription.c_str());
-//	printf("Item: %s\n", e.item.c_str());
-//  }
-	if(*items) {
-#if 0
-		if(*(items+1) < 0x06) { // other code table
-			e.appendExtendedText(language, std::string((const char *)(items+2), min(maxlen-((const char *)items+2-buf), (*items)-1)));
-		} else
-#endif
+
+	if(*items) 
+	{
 		{
 			//e.appendExtendedText(language, std::string((const char *)(items+1), min(maxlen-((const char *)items+1-buf), *items)));
-			e.appendExtendedText(language, convertDVBUTF8((const char *)(items+1), min(maxlen-((const char *)items+1-buf), (*items)), table, tsidonid));
-//			printf("Extended Text: %s\n", e.extendedText.c_str());
+			e.appendExtendedText(language, convertDVBUTF8((const char *)(items + 1), min(maxlen - ((const char *)items + 1 - (const char *)buf), (*items)), table, tsidonid));
+			//printf("Extended Text: %s\n", e.extendedText.c_str());
 		}
 	}
 }
 
-#if 0
-#ifdef ENABLE_FREESATEPG
-std::string SIsectionEIT::freesatHuffmanDecode(std::string input)
+void SIsectionEIT::parseShortEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
-	const char *src = input.c_str();
-	uint size = input.length();
-
-	if (src[1] == 1 || src[1] == 2)
-	{
-		std::string uncompressed(size * 3, ' ');
-		uint p = 0;
-		struct hufftab *table;
-		unsigned table_length;
-		if (src[1] == 1)
-		{
-			table = fsat_huffman1;
-			table_length = sizeof(fsat_huffman1) / sizeof(fsat_huffman1[0]);
-		}
-		else
-		{
-			table = fsat_huffman2;
-			table_length = sizeof(fsat_huffman2) / sizeof(fsat_huffman2[0]);
-		}
-		unsigned value = 0, byte = 2, bit = 0;
-		while (byte < 6 && byte < size)
-		{
-			value |= src[byte] << ((5-byte) * 8);
-			byte++;
-		}
-		char lastch = START;
-
-		do
-		{
-			bool found = false;
-			unsigned bitShift = 0;
-			if (lastch == ESCAPE)
-			{
-				found = true;
-				// Encoded in the next 8 bits.
-				// Terminated by the first ASCII character.
-				char nextCh = (value >> 24) & 0xff;
-				bitShift = 8;
-				if ((nextCh & 0x80) == 0)
-					lastch = nextCh;
-				if (p >= uncompressed.length())
-					uncompressed.resize(p+10);
-				uncompressed[p++] = nextCh;
-			}
-			else
-			{
-				for (unsigned j = 0; j < table_length; j++)
-				{
-					if (table[j].last == lastch)
-					{
-						unsigned mask = 0, maskbit = 0x80000000;
-						for (short kk = 0; kk < table[j].bits; kk++)
-						{
-							mask |= maskbit;
-							maskbit >>= 1;
-						}
-						if ((value & mask) == table[j].value)
-						{
-							char nextCh = table[j].next;
-							bitShift = table[j].bits;
-							if (nextCh != STOP && nextCh != ESCAPE)
-							{
-								if (p >= uncompressed.length())
-									uncompressed.resize(p+10);
-								uncompressed[p++] = nextCh;
-							}
-							found = true;
-							lastch = nextCh;
-							break;
-						}
-					}
-				}
-			}
-			if (found)
-			{
-				// Shift up by the number of bits.
-				for (unsigned b = 0; b < bitShift; b++)
-				{
-					value = (value << 1) & 0xfffffffe;
-					if (byte < size)
-						value |= (src[byte] >> (7-bit)) & 1;
-					if (bit == 7)
-					{
-						bit = 0;
-						byte++;
-					}
-					else bit++;
-				}
-			}
-			else
-			{
-				// Entry missing in table.
-				uncompressed.resize(p);
-				uncompressed.append("...");
-				return uncompressed;
-			}
-		} while (lastch != STOP && value != 0);
-
-		uncompressed.resize(p);
-		return uncompressed;
-	}
-	else return input;
-}
-#endif
-#endif
-
-void SIsectionEIT::parseShortEventDescriptor(const char *buf, SIevent &e, unsigned maxlen)
-{
-	struct descr_short_event_header *evt=(struct descr_short_event_header *)buf;
+	struct descr_short_event_header *evt = (struct descr_short_event_header *)buf;
 	if((evt->descriptor_length+sizeof(descr_generic_header)>maxlen) || (evt->descriptor_length<sizeof(struct descr_short_event_header)-sizeof(descr_generic_header)))
 		return; // defekt
 	int tsidonid = (e.transport_stream_id << 16) | e.original_network_id;
@@ -421,16 +271,16 @@ void SIsectionEIT::parseShortEventDescriptor(const char *buf, SIevent &e, unsign
 	buf += sizeof(struct descr_short_event_header);
 	
 	if(evt->event_name_length)
-		e.setName(language, convertDVBUTF8(buf, evt->event_name_length, table, tsidonid));
+		e.setName(language, convertDVBUTF8((const char *)buf, evt->event_name_length, table, tsidonid));
 
 	buf += evt->event_name_length;
-	unsigned char textlength=*((unsigned char *)buf);
+	unsigned char textlength = *((unsigned char *)buf);
 	
 	if(textlength > 2)
-		e.setText(language, convertDVBUTF8((++buf), textlength, table, tsidonid));
+		e.setText(language, convertDVBUTF8((const char *)(++buf), textlength, table, tsidonid));
 }
 
-void SIsectionEIT::parseDescriptors(const char *des, unsigned len, SIevent &e)
+void SIsectionEIT::parseDescriptors(const uint8_t *des, unsigned len, SIevent &e)
 {
 	struct descr_generic_header *desc;
 	/* we pass the buffer including the eit_event header, so we have to
@@ -443,19 +293,19 @@ void SIsectionEIT::parseDescriptors(const char *des, unsigned len, SIevent &e)
 		desc = (struct descr_generic_header *)des;
 		// printf("Type: %s\n", decode_descr(desc->descriptor_tag));
 		if(desc->descriptor_tag==0x4D)
-			parseShortEventDescriptor((const char *)desc, e, len);
+			parseShortEventDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x4E)
-			parseExtendedEventDescriptor((const char *)desc, e, len);
+			parseExtendedEventDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x54)
-			parseContentDescriptor((const char *)desc, e, len);
+			parseContentDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x50)
-			parseComponentDescriptor((const char *)desc, e, len);
+			parseComponentDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x55)
-			parseParentalRatingDescriptor((const char *)desc, e, len);
+			parseParentalRatingDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x4A)
-			parseLinkageDescriptor((const char *)desc, e, len);
+			parseLinkageDescriptor((const uint8_t *)desc, e, len);
 		else if(desc->descriptor_tag==0x69)
-			parsePDCDescriptor((const char *)desc, e, len);
+			parsePDCDescriptor((const uint8_t *)desc, e, len);
 		if((unsigned)(desc->descriptor_length+2)>len)
 			break;
 		len-=desc->descriptor_length+2;
@@ -466,8 +316,8 @@ void SIsectionEIT::parseDescriptors(const char *des, unsigned len, SIevent &e)
 // Die infos aus dem Puffer holen
 void SIsectionEIT::parse(void)
 {
-	const char *actPos;
-	const char *bufEnd;
+	const uint8_t *actPos;
+	const uint8_t *bufEnd;
 	struct eit_event *evt;
 	unsigned short descriptors_loop_length;
 
@@ -484,7 +334,8 @@ void SIsectionEIT::parse(void)
 	actPos = buffer + sizeof(SI_section_EIT_header);
 	bufEnd = buffer + bufferLength;
 
-	while (actPos < bufEnd - sizeof(struct eit_event)) {
+	while (actPos < bufEnd - sizeof(struct eit_event)) 
+	{
 		evt = (struct eit_event *) actPos;
 		SIevent e(evt);
 		e.service_id = service_id();
@@ -551,7 +402,7 @@ void SIsectionPPT::parseParentalRatingDescriptor(const char *buf, SIevent &e, un
 	}
 }
 
-void SIsectionPPT::parseExtendedEventDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionPPT::parseExtendedEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	struct descr_extended_event_header *evt=(struct descr_extended_event_header *)buf;
 	if((evt->descriptor_length+sizeof(descr_generic_header)>maxlen) || (evt->descriptor_length<sizeof(struct descr_extended_event_header)-sizeof(descr_generic_header)))
@@ -585,7 +436,7 @@ void SIsectionPPT::parseExtendedEventDescriptor(const char *buf, SIevent &e, uns
 	}
 }
 
-void SIsectionPPT::parseShortEventDescriptor(const char *buf, SIevent &e, unsigned maxlen)
+void SIsectionPPT::parseShortEventDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen)
 {
 	struct descr_short_event_header *evt=(struct descr_short_event_header *)buf;
 	if((evt->descriptor_length+sizeof(descr_generic_header)>maxlen) || (evt->descriptor_length<sizeof(struct descr_short_event_header)-sizeof(descr_generic_header)))
@@ -602,8 +453,8 @@ void SIsectionPPT::parseShortEventDescriptor(const char *buf, SIevent &e, unsign
 			e.setName(language, std::string(buf, evt->event_name_length));
 	}
 
-	buf+=evt->event_name_length;
-	unsigned char textlength=*((unsigned char *)buf);
+	buf += evt->event_name_length;
+	unsigned char textlength = *((unsigned char *)buf);
 	if(textlength > 2) {
 		if(*(buf+1) < 0x06) // other code table
 			e.setText(language, std::string((++buf)+1, textlength-1));
@@ -611,9 +462,8 @@ void SIsectionPPT::parseShortEventDescriptor(const char *buf, SIevent &e, unsign
 			e.setText(language, std::string(++buf, textlength));
 	}
 
-//  printf("Name: %s\n", e.name.c_str());
-//  printf("Text: %s\n", e.text.c_str());
-
+	//printf("Name: %s\n", e.name.c_str());
+	//printf("Text: %s\n", e.text.c_str());
 }
 
 void SIsectionPPT::parsePrivateContentOrderDescriptor(const char *buf, SIevent &e, unsigned maxlen)
@@ -696,7 +546,7 @@ void SIsectionPPT::parsePrivateContentTransmissionDescriptor(const char *buf, SI
 	e.linkage_descs.insert(e.linkage_descs.end(), l);
 }
 
-void SIsectionPPT::parseDescriptors(const char *des, unsigned len, SIevent &e)
+void SIsectionPPT::parseDescriptors(const uint8_t *des, unsigned len, SIevent &e)
 {
 	struct descr_generic_header *desc;
 	bool linkage_alreadyseen = false;
@@ -774,96 +624,106 @@ void SIsectionPPT::parse(void)
 #endif
 
 /********************/
-void SIsectionSDT::parseNVODreferenceDescriptor(const char *buf, SIservice &s)
+void SIsectionSDT::parseNVODreferenceDescriptor(const uint8_t *buf, SIservice &s)
 {
-	struct descr_generic_header *hdr=(struct descr_generic_header *)buf;
-	unsigned short *spointer=(unsigned short *)(buf+sizeof(struct descr_generic_header));
-	while((const char *)spointer<=buf+sizeof(struct descr_generic_header)+hdr->descriptor_length-2) {
-		unsigned short transportStreamID=*spointer++;
-		unsigned short originalNetworkID=*spointer++;
-		unsigned short sID=*spointer++;
+	struct descr_generic_header *hdr = (struct descr_generic_header *)buf;
+	unsigned short *spointer=(unsigned short *)(buf + sizeof(struct descr_generic_header));
+	while((const char *)spointer <= (const char *)buf + sizeof(struct descr_generic_header)+hdr->descriptor_length - 2) 
+	{
+		unsigned short transportStreamID = *spointer++;
+		unsigned short originalNetworkID = *spointer++;
+		unsigned short sID = *spointer++;
 		s.nvods.insert(SInvodReference(transportStreamID, originalNetworkID, sID));
 	}
 }
 
-void SIsectionSDT::parseServiceDescriptor(const char *buf, SIservice &s)
+void SIsectionSDT::parseServiceDescriptor(const uint8_t *buf, SIservice &s)
 {
 	bool is_blacklisted;
 
-	struct descr_service_header *sv=(struct descr_service_header *)buf;
+	struct descr_service_header *sv = (struct descr_service_header *)buf;
 	buf+=sizeof(struct descr_service_header);
-	s.serviceTyp=sv->service_typ;
+	s.serviceTyp = sv->service_typ;
 	is_blacklisted = check_blacklisted(s.original_network_id, s.transport_stream_id);
-	if(sv->service_provider_name_length) {
+	if(sv->service_provider_name_length) 
+	{
 		//if(*buf < 0x06) // other code table
-//      s.providerName=std::string(buf+1, sv->service_provider_name_length-1);
-//    else
-//      s.providerName=std::string(buf, sv->service_provider_name_length);
+			//s.providerName=std::string(buf+1, sv->service_provider_name_length-1);
+		//else
+			//s.providerName=std::string(buf, sv->service_provider_name_length);
 		if ((*buf > 0x05) && (is_blacklisted))
 			s.providerName  = CDVBString(("\x05" + std::string((const char *)(buf))).c_str(), sv->service_provider_name_length+1).getContent();
 		else
 			s.providerName  = CDVBString((const char *)(buf), sv->service_provider_name_length).getContent();
 	}
-	buf+=sv->service_provider_name_length;
-	unsigned char servicenamelength=*((unsigned char *)buf);
-	if(servicenamelength) {
-		if ((*buf+1 > 0x05) && (is_blacklisted))
-			s.serviceName  = CDVBString(("\x05" + std::string((const char *)(++buf))).c_str(), servicenamelength+1).getContent();
+	buf += sv->service_provider_name_length;
+	unsigned char servicenamelength = *((unsigned char *)buf);
+	if(servicenamelength) 
+	{
+		if ((*buf + 1 > 0x05) && (is_blacklisted))
+			s.serviceName = CDVBString(("\x05" + std::string((const char *)(++buf))).c_str(), servicenamelength+1).getContent();
 		else
-			s.serviceName  = CDVBString((const char *)(++buf), servicenamelength).getContent();
+			s.serviceName = CDVBString((const char *)(++buf), servicenamelength).getContent();
 	}
-//  printf("Provider-Name: %s\n", s.providerName.c_str());
-//  printf("Service-Name: %s\n", s.serviceName.c_str());
+	//printf("Provider-Name: %s\n", s.providerName.c_str());
+	//printf("Service-Name: %s\n", s.serviceName.c_str());
 }
 
-void SIsectionSDT::parsePrivateDataDescriptor(const char *buf, SIservice &s)
+void SIsectionSDT::parsePrivateDataDescriptor(const uint8_t *buf, SIservice &s)
 {
 	buf+=sizeof(struct descr_generic_header);
-	struct private_data_specifier *pds=(struct private_data_specifier *)buf;
+	struct private_data_specifier *pds = (struct private_data_specifier *)buf;
 	if ((((((pds->byte1 << 24) | (pds->byte2 << 16)) | (pds->byte3 << 8)) | pds->byte4) == 0x000000c0) && (s.serviceTyp == 0xc3))
 		s.serviceTyp = 0x01;
 }
 
-void SIsectionSDT::parseDescriptors(const char *des, unsigned len, SIservice &s)
+void SIsectionSDT::parseDescriptors(const uint8_t *des, unsigned len, SIservice &s)
 {
 	struct descr_generic_header *desc;
 	des += sizeof(struct sdt_service);
 	len -= sizeof(struct sdt_service);
-	while(len>=sizeof(struct descr_generic_header)) {
+	while(len>=sizeof(struct descr_generic_header)) 
+	{
 		desc=(struct descr_generic_header *)des;
-//    printf("Type: %s\n", decode_descr(desc->descriptor_tag));
-//    printf("Length: %hhu\n", desc->descriptor_length);
-		if(desc->descriptor_tag==0x48) {
-//      printf("Found service descriptor\n");
-			parseServiceDescriptor((const char *)desc, s);
+		//printf("Type: %s\n", decode_descr(desc->descriptor_tag));
+		//printf("Length: %hhu\n", desc->descriptor_length);
+		if(desc->descriptor_tag == 0x48) 
+		{
+			//printf("Found service descriptor\n");
+			parseServiceDescriptor((const uint8_t *)desc, s);
 		}
-		else if(desc->descriptor_tag==0x4b) {
-//      printf("Found NVOD reference descriptor\n");
-			parseNVODreferenceDescriptor((const char *)desc, s);
+		else if(desc->descriptor_tag == 0x4b) 
+		{
+			//printf("Found NVOD reference descriptor\n");
+			parseNVODreferenceDescriptor((const uint8_t *)desc, s);
 		}
-		else if(desc->descriptor_tag==0x5f) {
-//      printf("Found Private Data Specifier\n");
-			parsePrivateDataDescriptor((const char *)desc, s);
+		else if(desc->descriptor_tag == 0x5f) 
+		{
+			//printf("Found Private Data Specifier\n");
+			parsePrivateDataDescriptor((const uint8_t *)desc, s);
 		}
+		
 		// hotfix for ARD crash
-		if ((unsigned int) len<desc->descriptor_length+2) break;
-		len-=desc->descriptor_length+2;
-		des+=desc->descriptor_length+2;
+		if ((unsigned int) len < (unsigned)desc->descriptor_length + 2) 
+			break;
+		len -= desc->descriptor_length+2;
+		des += desc->descriptor_length+2;
 	}
 }
 
 // Die infos aus dem Puffer holen
 void SIsectionSDT::parse(void)
 {
-	const char *actPos;
-	const char *bufEnd;
+	const uint8_t *actPos;
+	const uint8_t *bufEnd;
 	struct sdt_service *sv;
 	unsigned short descriptors_loop_length;
 
 	if (!buffer || parsed)
 		return;
 
-	if (bufferLength < sizeof(SI_section_SDT_header) + sizeof(struct sdt_service)) {
+	if (bufferLength < sizeof(SI_section_SDT_header) + sizeof(struct sdt_service)) 
+	{
 		bufferLength=0;
 		return;
 	}
@@ -871,7 +731,8 @@ void SIsectionSDT::parse(void)
 	actPos = buffer + sizeof(SI_section_SDT_header);
 	bufEnd = buffer + bufferLength;
 
-	while (actPos <= bufEnd - sizeof(struct sdt_service)) {
+	while (actPos <= bufEnd - sizeof(struct sdt_service)) 
+	{
 		sv = (struct sdt_service *)actPos;
 		SIservice s(sv);
 		s.original_network_id = original_network_id();
@@ -1141,7 +1002,7 @@ void SIsectionNIT::copyDeliveryDescriptor(const char *buf, SInetwork &s)
 	//printf("Bouquet-Name: %s\n", s.bouquetName.c_str());
 }
 
-void SIsectionNIT::parseDescriptors(const char *des, unsigned len, SInetwork &s)
+void SIsectionNIT::parseDescriptors(const uint8_t *des, unsigned len, SInetwork &s)
 {
 //  struct satellite_delivery_descriptor *sdd;
 //  const char *ddp;

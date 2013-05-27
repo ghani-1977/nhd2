@@ -174,9 +174,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_stop = configfile.getInt32("key_stop", KEY_STOP);
 	key_timeshift = configfile.getInt32("key_timeshift", KEY_TIME);
 			
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE)
-	key_mode = configfile.getInt32("key_mode", 0x181);
-#elif defined (PLATFORM_DGS)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE) || defined (PLATFORM_DGS)
 	key_mode = configfile.getInt32("key_mode", 0x181);
 #else			
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);

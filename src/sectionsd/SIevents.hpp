@@ -391,36 +391,36 @@ public:
 	int runningStatus(void) const {
 		return running;
 	}
-    SIcomponents components;
-    SIparentalRatings ratings;
-    SIlinkage_descs linkage_descs;
-    SItimes times;
-    time_t vps;
-    unsigned char table_id;
-    unsigned char version;
-    // Der Operator zum sortieren
-    bool operator < (const SIevent& e) const {
-      return uniqueKey()<e.uniqueKey();
-    }
-    int saveXML(FILE *file) const { // saves the event
-      return saveXML0(file) || saveXML2(file);
-    }
-    int saveXML(FILE *file, const char *serviceName) const; // saves the event
-    void dump(void) const; // dumps the event to stdout
-    void dumpSmall(void) const; // dumps the event to stdout (not all information)
+	SIcomponents components;
+	SIparentalRatings ratings;
+	SIlinkage_descs linkage_descs;
+	SItimes times;
+	time_t vps;
+	unsigned char table_id;
+	unsigned char version;
+	// Der Operator zum sortieren
+	bool operator < (const SIevent& e) const {
+	  return uniqueKey()<e.uniqueKey();
+	}
+	int saveXML(FILE *file) const { // saves the event
+	  return saveXML0(file) || saveXML2(file);
+	}
+	int saveXML(FILE *file, const char *serviceName) const; // saves the event
+	void dump(void) const; // dumps the event to stdout
+	void dumpSmall(void) const; // dumps the event to stdout (not all information)
 #ifndef DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
-    // Liefert das aktuelle EPG des senders mit der uebergebenen serviceID,
-    // bei Fehler ist die serviceID des zurueckgelieferten Events 0
-    static SIevent readActualEvent(t_service_id serviceID, unsigned timeoutInSeconds=2);
+	// Liefert das aktuelle EPG des senders mit der uebergebenen serviceID,
+	// bei Fehler ist die serviceID des zurueckgelieferten Events 0
+	static SIevent readActualEvent(t_service_id serviceID, unsigned timeoutInSeconds = 2);
 #endif
-    char getFSK() const;
- protected:
-    int saveXML0(FILE *f) const;
-    int saveXML2(FILE *f) const;
- private:
-    std::map<std::string, std::string> langName;
-    std::map<std::string, std::string> langText;
-    std::map<std::string, std::string> langExtendedText;
+	char getFSK() const;
+    protected:
+	int saveXML0(FILE *f) const;
+	int saveXML2(FILE *f) const;
+    private:
+	std::map<std::string, std::string> langName;
+	std::map<std::string, std::string> langText;
+	std::map<std::string, std::string> langExtendedText;
 	int running;
 };
 

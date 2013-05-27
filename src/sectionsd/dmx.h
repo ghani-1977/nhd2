@@ -32,8 +32,6 @@
 
 #include <dmx_cs.h>
 
-//#define MAX_SECTION_LENGTH (0x0fff + 3)
-
 
 typedef uint64_t sections_id_t;
 typedef unsigned char version_number_t;
@@ -100,7 +98,7 @@ class DMX
 		void lock(void);
 		void unlock(void);
 
-		int getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts);
+		int getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeouts);
 		// section with size < 3 + 5 are skipped !
 		int setPid(const unsigned short new_pid);
 		int setCurrentService(int new_current_service);

@@ -226,7 +226,7 @@ bool DMX::check_complete(const unsigned char table_id, const unsigned short exte
 	return false;
 }
 
-int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
+int DMX::getSection(uint8_t *buf, const unsigned timeoutInMSeconds, int &timeouts)
 {
 	struct minimal_section_header {
 		unsigned table_id                 : 8;
@@ -287,8 +287,7 @@ int DMX::getSection(char *buf, const unsigned timeoutInMSeconds, int &timeouts)
 
 	lock();
 
-	//rc = read(buf, 4098, timeoutInMSeconds);
-	rc = dmx->Read((unsigned char *) buf, 4098, timeoutInMSeconds);
+	rc = dmx->Read(buf, MAX_SECTION_LENGTH, timeoutInMSeconds);
 
 	if (rc < 3)
 	{
