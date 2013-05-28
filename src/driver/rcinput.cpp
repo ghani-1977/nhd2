@@ -1861,7 +1861,7 @@ std::string CRCInput::getKeyName(const unsigned int key)
 /*
 * transforms the rc-key to generic - internal use only!
 */
-int CRCInput::translate(int code, int num)
+int CRCInput::translate(unsigned int code, int num)
 {
 	/* common */
 	if (code == key_standby) return RC_standby;

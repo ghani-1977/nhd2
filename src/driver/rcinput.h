@@ -184,7 +184,7 @@ class CRCInput
 
 		void open();
 		void close();
-		int translate(int code, int num);
+		int translate(unsigned int code, int num);
 
 		void calculateMaxFd(void);
 
