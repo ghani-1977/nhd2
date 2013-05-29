@@ -795,7 +795,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 
 	g_settings.audioplayer_display = configfile.getInt32("audioplayer_display",(int)CAudioPlayerGui::ARTIST_TITLE);
 	g_settings.audioplayer_follow  = configfile.getInt32("audioplayer_follow",0);
-	strcpy( g_settings.audioplayer_screensaver, configfile.getString( "audioplayer_screensaver", "1" ).c_str() );
+	strcpy( g_settings.audioplayer_screensaver, configfile.getString( "audioplayer_screensaver", "0" ).c_str() );
 	g_settings.audioplayer_highprio  = configfile.getInt32("audioplayer_highprio",0);
 	g_settings.audioplayer_select_title_by_name = configfile.getInt32("audioplayer_select_title_by_name",0);
 	g_settings.audioplayer_repeat_on = configfile.getInt32("audioplayer_repeat_on",0);
@@ -1721,14 +1721,26 @@ void CNeutrinoApp::SetupFonts()
 	else
 	{
 		font.filename = strdup(g_settings.font_file);
+		
+		// check??? (use only true type fonts or fallback to neutrino.ttf
+		if( !strstr(font.filename, ".ttf") )
+		{
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::SetupFonts: font file %s not ok falling back to neutrino.ttf\n", g_settings.font_file);
+			
+			if(!access(FONTDIR"/neutrino.ttf", F_OK))
+			{
+				font.filename = strdup(FONTDIR"/neutrino.ttf");
+				strcpy(g_settings.font_file, font.filename);
+			}
+			else
+			{
+				  fprintf( stderr,"CNeutrinoApp::SetupFonts: font file [%s] not found\n neutrino exit\n", FONTDIR"/neutrino.ttf");
+				  _exit(0);
+			}
+		}
 	}
 
 	style[0] = g_fontRenderer->AddFont(font.filename);
-	
-	//
-	if(style[0] == NULL)
-		return;
-	//
 
 	if(font.name != NULL)
 		free((void *)font.name);

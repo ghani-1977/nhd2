@@ -419,14 +419,17 @@ void CStreamInfo2::paint_signal_fe_box(int _x, int _y, int w, int h)
 
 void CStreamInfo2::paint_signal_fe(struct bitrate br, struct feSignal s)
 {
+	if(!live_fe)
+		return;
+	
 	int   x_now = sigBox_pos;
 	int   yt = sig_text_y;
 	int   yd;
 	static int old_x=0,old_y=0;
 	sigBox_pos = (++sigBox_pos) % sigBox_w;
 
-	frameBuffer->paintVLine(sigBox_x+sigBox_pos, sigBox_y, sigBox_y+sigBox_h, COL_WHITE);
-	frameBuffer->paintVLine(sigBox_x+x_now, sigBox_y, sigBox_y+sigBox_h+1, COL_BLACK);
+	frameBuffer->paintVLine(sigBox_x + sigBox_pos, sigBox_y, sigBox_y + sigBox_h, COL_WHITE);
+	frameBuffer->paintVLine(sigBox_x + x_now, sigBox_y, sigBox_y + sigBox_h + 1, COL_BLACK);
 
 	long value = (long) (br.short_average / 1000ULL);
 
@@ -457,8 +460,8 @@ void CStreamInfo2::paint_signal_fe(struct bitrate br, struct feSignal s)
 		SignalRenderStr(s.max_ber, sig_text_ber_x, yt - sheight - sheight);
 		SignalRenderStr(s.min_ber, sig_text_ber_x, yt);
 	}
-	yd = y_signal_fe (s.ber, 4000, sigBox_h);
-	frameBuffer->paintPixel(sigBox_x+x_now, sigBox_y+sigBox_h-yd, COL_RED); //red
+	yd = y_signal_fe(s.ber, 4000, sigBox_h);
+	frameBuffer->paintPixel(sigBox_x + x_now, sigBox_y + sigBox_h - yd, COL_RED); //red
 
 
 	if (s.sig != s.old_sig) 
