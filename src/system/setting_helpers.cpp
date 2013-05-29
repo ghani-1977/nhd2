@@ -818,9 +818,9 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_VTXT, LOCALE_USERMENU_ITEM_VTXT, NULL},
         {SNeutrinoSettings::ITEM_GAME, LOCALE_MAINMENU_GAMES, NULL},
         {SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER, NULL},
-#if ENABLE_GRAPHLCD        
+//#if ENABLE_GRAPHLCD        
         {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD, NULL},
-#endif
+//#endif
 	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS, NULL},
 	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD, NULL},
 };

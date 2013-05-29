@@ -188,7 +188,7 @@ int CHDDMenuHandler::hddMenu()
 	// noise
 	hddmenu->addItem( new CMenuOptionChooser(LOCALE_HDD_NOISE, &g_settings.hdd_noise, HDD_NOISE_OPTIONS, HDD_NOISE_OPTION_COUNT, true, NULL, /*CRCInput::RC_nokey, ""*/ CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, true ));
 
-	hddmenu->addItem( GenericMenuSeparatorLine );
+	//hddmenu->addItem( GenericMenuSeparatorLine );
 	
 	ret = stat("/", &s);
 	int drive_mask = 0xfff0;
@@ -356,6 +356,7 @@ int CHDDMenuHandler::hddMenu()
 		}
 		/* END check for Parts */
 		
+		hddmenu->addItem( GenericMenuSeparatorLine );
 		hddmenu->addItem(new CMenuForwarderNonLocalized(str, enabled, NULL, tempMenu[i]));
 
 		/* result */

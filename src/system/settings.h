@@ -358,9 +358,9 @@ struct SNeutrinoSettings
                 ITEM_VTXT = 14,
                 ITEM_GAME = 15,
                 ITEM_OPKG = 16,
-#if ENABLE_GRAPHLCD                
+//#if ENABLE_GRAPHLCD                
                 ITEM_GLCD = 17,
-#endif 
+//#endif 
 		ITEM_MOVIEPLAYER_TSMB = 18,
 		ITEM_WEBTV = 19,
                 ITEM_MAX   // MUST be always the last in the list

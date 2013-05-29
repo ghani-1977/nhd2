@@ -120,7 +120,7 @@ class CMovieInfoViewer
 	public:
 		CMovieInfoViewer();
 		~CMovieInfoViewer();
-		void show(int Position, bool show = true);
+		void show(int Position, bool lshow = true);
 		void updatePos(short runningPercent);
 		void hide();
 		bool IsVisible() {return visible;}

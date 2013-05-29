@@ -301,7 +301,7 @@ CMovieInfoViewer::~CMovieInfoViewer()
 	}
 }
 
-void CMovieInfoViewer::show(int Position, bool show)
+void CMovieInfoViewer::show(int Position, bool lshow)
 {	
 	// show / update
 	GetDimensions();
@@ -438,7 +438,7 @@ void CMovieInfoViewer::show(int Position, bool show)
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 	// duration
-	if(!isWebTV && !isVlc && show)
+	if(!isWebTV && !isVlc && lshow)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningTotal, COL_INFOBAR);
 	
 	updatePos(file_prozent);
@@ -2223,10 +2223,10 @@ void CMoviePlayerGui::PlayFile(void)
 					playback->SetPosition(startposition);			
 				
 				// get duration //NOTE: only duration is here needed
-				if(isVlc)
-					duration = VlcGetStreamLength();				
-				else
-					playback->GetPosition((int64_t &)position, (int64_t &)duration);				
+				//if(isVlc)
+				//	duration = VlcGetStreamLength();				
+				//else
+				//	playback->GetPosition((int64_t &)position, (int64_t &)duration);				
 				
 				// show movieinfoviewer at start
 				if(timeshift)
@@ -2246,9 +2246,9 @@ void CMoviePlayerGui::PlayFile(void)
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
-		{
-			if(!isVlc)
-			{
+		{	  
+			//if(!isVlc)
+			//{			  
 				
 				if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
 				{					
@@ -2263,8 +2263,8 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 				}
-			}
-			else
+			//}
+			/*else
 			{
 				duration = VlcGetStreamLength();
 				position = VlcGetStreamTime();
@@ -2272,6 +2272,7 @@ void CMoviePlayerGui::PlayFile(void)
 				if(duration > 100)
 					file_prozent = (unsigned char) (position / (duration / 100));
 			}
+			*/
 		}
 		
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 

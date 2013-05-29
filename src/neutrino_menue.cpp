@@ -2742,18 +2742,21 @@ bool CNeutrinoApp::showUserMenu(int button)
 
                                 break;
 				
-#if ENABLE_GRAPHLCD
 			case SNeutrinoSettings::ITEM_GLCD:
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_GLCD;
-                               
+#if ENABLE_GRAPHLCD                               
 				glcdMenu = new GLCD_Menu();
+#endif				
 				
                                 keyhelper.get(&key, &icon);
+#if ENABLE_GRAPHLCD				
                                 menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, glcdMenu, "-1", key, icon);
+#else
+				menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, false, NULL, NULL, "-1", key, icon);
+#endif
                                 menu->addItem(menu_item, false);
                                 break;
-#endif
 
 			case SNeutrinoSettings::ITEM_OPKG:
                                 menu_items++;
