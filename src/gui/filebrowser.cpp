@@ -1047,7 +1047,7 @@ bool CFileBrowser::exec(const char * const dirname)
 				{
 					recursiveDelete(filelist[selected].Name.c_str());
 					
-					if(".ts" ==(filelist[selected].getFileName().substr(filelist[selected].getFileName().length()-3,filelist[selected].getFileName().length())))//if bla.ts
+					if(".ts" ==(filelist[selected].getFileName().substr(filelist[selected].getFileName().length() - 3, filelist[selected].getFileName().length())))//if bla.ts
 					{
 						recursiveDelete((filelist[selected].Name.substr(0,filelist[selected].Name.length()-7)+".xml").c_str());//remove bla.xml von bla.ts
 					}
