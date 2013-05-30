@@ -3,8 +3,7 @@ INCLUDES = \
         -I$(top_srcdir)/lib \
 	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/lib/libconfigfile \
-        @FREETYPE_CFLAGS@ \
-        @VORBISIDEC_CFLAGS@
+        @FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
 INCLUDES += -I$(top_srcdir)/src/zapit/include \

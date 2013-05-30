@@ -68,7 +68,6 @@ neutrino_LDADD = \
 	@PNG_LIBS@ \
 	@MAD_LIBS@ \
 	@ID3TAG_LIBS@ \
-	@VORBISIDEC_LIBS@ \
 	-ljpeg -lungif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
 if !BOXTYPE_COOLSTREAM
