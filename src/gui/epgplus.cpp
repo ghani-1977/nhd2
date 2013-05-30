@@ -474,8 +474,7 @@ void EpgPlus::Footer::setBouquetChannelName (const std::string & newBouquetName,
 
 int EpgPlus::Footer::getUsedHeight ()
 {
-	return fontBouquetChannelName->getHeight () + fontEventDescription->getHeight ()
-		+ fontEventShortDescription->getHeight () + fontButtons->getHeight ();
+	return fontBouquetChannelName->getHeight() + fontEventDescription->getHeight() + fontEventShortDescription->getHeight() + fontButtons->getHeight();
 }
 
 void EpgPlus::Footer::paintEventDetails (const std::string & description, const std::string & shortDescription)
@@ -520,7 +519,7 @@ struct button_label buttonLabels[] = {
 	{NEUTRINO_ICON_BUTTON_BLUE, LOCALE_EPGPLUS_OPTIONS }
 };
 
-void EpgPlus::Footer::paintButtons (button_label * _buttonLabels, int numberOfButtons)
+void EpgPlus::Footer::paintButtons(button_label * _buttonLabels, int numberOfButtons)
 {
 	int yPos = this->y + this->getUsedHeight () - this->fontButtons->getHeight ();
 	
@@ -973,18 +972,7 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchSwapMode (this));
 				menuWidgetOptions.addItem (new MenuOptionChooserSwitchViewMode (this));
 
-				/*int result =*/ menuWidgetOptions.exec (NULL, "");
-
-				/*
-				if (result == menu_return::RETURN_REPAINT) 
-				{
-		  			this->refreshAll = true;
-				} 
-				else if (result == menu_return::RETURN_EXIT_ALL) 
-				{
-		  			this->refreshAll = true;
-				}
-				*/
+				menuWidgetOptions.exec (NULL, "");
 	  		} 
 			else if (CRCInput::isNumeric (msg)) 
 			{	//numeric zap
@@ -1280,7 +1268,7 @@ std::string EpgPlus::getTimeString (const time_t & time, const std::string & for
 	return tmpstr;
 }
 
-void EpgPlus::paint ()
+void EpgPlus::paint()
 {
 	// clear
 	this->frameBuffer->paintBackgroundBoxRel (this->channelsTableX, this->channelsTableY, this->usableScreenWidth, this->channelsTableHeight);
@@ -1321,7 +1309,7 @@ void EpgPlus::paint ()
 //  -- to be used for calls from Menue
 //  -- (2004-03-05 rasc)
 
-int CEPGplusHandler::exec (CMenuTarget * parent, const std::string &/*actionKey*/)
+int CEPGplusHandler::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_REPAINT /*EXIT_ALL*/;
 	EpgPlus *e;
