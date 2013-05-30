@@ -2546,7 +2546,7 @@ Note: this function is used recursive, do not add any return within the body due
 ************************************************************************/
 bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 {
-	dprintf(DEBUG_NORMAL, "[mb]->loadTsFileNamesFromDir %s\r\n", dirname.c_str());
+	dprintf(DEBUG_INFO, "[mb]->loadTsFileNamesFromDir %s\r\n", dirname.c_str());
 
 	static int recursive_counter = 0; // recursive counter to be used to avoid hanging
 	bool result = false;
@@ -2554,7 +2554,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 
 	if (recursive_counter > 10)
 	{
-		dprintf(DEBUG_NORMAL, "[mb]loadTsFileNamesFromDir: return->recursive error\r\n"); 
+		dprintf(DEBUG_INFO, "[mb]loadTsFileNamesFromDir: return->recursive error\r\n"); 
 		return (false); // do not go deeper than 10 directories
 	}
 
@@ -2565,7 +2565,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 		if(strcmp(m_dirNames[i].c_str(),dirname.c_str()) == 0)	
 		{
 			// string is identical to previous one
-			dprintf(DEBUG_NORMAL, "[mb]Dir already in list: %s\r\n",dirname.c_str()); 
+			dprintf(DEBUG_INFO, "[mb]Dir already in list: %s\r\n",dirname.c_str()); 
 			return (false); 
 		}
 	}
@@ -2987,7 +2987,7 @@ void CMovieBrowser::loadAllMovieInfo(void)
 {
 	dprintf(DEBUG_INFO, "[mb]->loadAllMovieInfo \r\n");
 
-	for(unsigned int i=0; i < m_vMovieInfo.size();i++)
+	for(unsigned int i = 0; i < m_vMovieInfo.size();i++)
 	{
 		m_movieInfo.loadMovieInfo( &(m_vMovieInfo[i]));
 	}
@@ -3139,7 +3139,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 
 	movieInfoMenu.exec(NULL,"");
 
-	for(int i3 =0 ; i3 < MI_MOVIE_BOOK_USER_MAX && i3 < MAX_NUMBER_OF_BOOKMARK_ITEMS; i3++ )
+	for(int i3 = 0 ; i3 < MI_MOVIE_BOOK_USER_MAX && i3 < MAX_NUMBER_OF_BOOKMARK_ITEMS; i3++ )
 	{
 		delete pBookNameInput[i3] ;
 		delete pBookPosIntInput[i3] ;
@@ -3192,7 +3192,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	COnOffNotifier *     notifier[MB_MAX_DIRS];
 	CMenuForwarder *     forwarder[MB_MAX_DIRS];
 	
-	for(i=0; i<MB_MAX_DIRS ;i++)
+	for(i = 0; i < MB_MAX_DIRS ;i++)
 	{
 		dirInput[i] =  new CFileChooser(&m_settings.storageDir[i]);
 		forwarder[i] = new CMenuForwarder(LOCALE_MOVIEBROWSER_DIR, m_settings.storageDirUsed[i], m_settings.storageDir[i], dirInput[i]);
@@ -3212,7 +3212,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	CIntInput browserRowNrIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_NR,          (int&) m_settings.browserRowNr,        1, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CIntInput* browserRowWidthIntInput[MB_MAX_ROWS];
 	
-	for(i=0; i<MB_MAX_ROWS ;i++)
+	for(i = 0; i < MB_MAX_ROWS ;i++)
 		browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
 	CMenuWidget optionsMenuBrowser(LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING);
@@ -3227,11 +3227,11 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	optionsMenuBrowser.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_BROWSER_ROW_NR,     true, browserRowNrIntInput.getValue(), &browserRowNrIntInput));
 	optionsMenuBrowser.addItem(GenericMenuSeparator);
 	
-	for(i=0; i<MB_MAX_ROWS; i++)
+	for(i = 0; i < MB_MAX_ROWS; i++)
 	{
 		optionsMenuBrowser.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_BROWSER_ROW_ITEM, (int*)(&m_settings.browserRowItem[i]), MESSAGEBOX_BROWSER_ROW_ITEM, MESSAGEBOX_BROWSER_ROW_ITEM_COUNT, true ));
 		optionsMenuBrowser.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,    true, browserRowWidthIntInput[i]->getValue(),      browserRowWidthIntInput[i]));
-		if(i<MB_MAX_ROWS-1)
+		if(i < MB_MAX_ROWS - 1)
 			optionsMenuBrowser.addItem(GenericMenuSeparator);
 	}
 
