@@ -8,6 +8,8 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libxmltree
 
 if BOXTYPE_COOLSTREAM
+AM_CPPFLAGS = -D DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
+
 INCLUDES += -I$(top_srcdir)/src/zapit/include \
 	-I$(top_srcdir)/lib/libcoolstream
 else

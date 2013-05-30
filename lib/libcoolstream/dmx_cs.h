@@ -23,6 +23,8 @@
 
 #define MAX_DMX_UNITS			4
 
+#define MAX_SECTION_LENGTH 		4098
+
 typedef enum {
 	DMX_VIDEO_CHANNEL  = 1,
 	DMX_AUDIO_CHANNEL,

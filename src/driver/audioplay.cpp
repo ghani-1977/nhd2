@@ -137,7 +137,11 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	int duration = 0;
 	
 	do {
-		if(!playback->GetPosition((int64_t &)position, (int64_t &)duration))
+#if defined (PLATFORM_COOLSTREAM)
+		if(!playback->GetPosition(position, duration))
+#else
+ 		if(!playback->GetPosition((int64_t &)position, (int64_t &)duration))
+#endif		
 		{
 			getInstance()->state = CBaseDec::STOP;
 			playback->Close();
@@ -202,12 +206,20 @@ bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
 	
 #if !defined (ENABLE_PCMDECODER)
 	playback->Close();
-		
+	
+#if defined (PLATFORM_COOLSTREAM)
+	if(! playback->Open(PLAYMODE_FILE))
+#else	
 	if(! playback->Open())
+#endif	  
 		ret = false;
-				
+	
+#if defined (PLATFORM_COOLSTREAM)
+	if(!playback->Start( (char *)file->Filename.c_str(), 0, 0, 0, 0, 0 ))
+#else		
 	if(!playback->Start( (char *)file->Filename.c_str() ))
 		ret = false;
+#endif	
 #endif		
 
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )

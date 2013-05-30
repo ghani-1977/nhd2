@@ -428,6 +428,7 @@ AC_ARG_WITH(boxtype,
 			BOXTYPE="technomate"
 			BOXMODEL="$withval"
 			;;
+
 		*)
 			AC_MSG_ERROR([unsupported value $withval for --with-boxtype])
 			;;
@@ -501,7 +502,7 @@ AC_ARG_WITH(boxmodel,
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 			fi
 			;;
-		vusolo|vuduo|vuuno|vuultimo)
+		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo)
 			if test "$BOXTYPE" = "vuplus"; then
 				BOXMODEL="$withval"
 			else
@@ -510,6 +511,27 @@ AC_ARG_WITH(boxmodel,
 			;;
 		tmtwin|tm2t|tmsingle)
 			if test "$BOXTYPE" = "technomate"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		coolstream)
+			if test "$BOXTYPE" = "coolstream"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		hypercube|su980)
+			if test "$BOXTYPE" = "hypercube"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		qemu*)
+			if test "$BOXTYPE" = "generic"; then
 				BOXMODEL="$withval"
 			else
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
@@ -597,6 +619,8 @@ AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
 
+AM_CONDITIONAL(BOXMODEL_VUSOLO2,test "$BOXMODEL" = "vusolo2")
+AM_CONDITIONAL(BOXMODEL_VUDUO2,test "$BOXMODEL" = "vuduo2")
 AM_CONDITIONAL(BOXMODEL_VUSOLO,test "$BOXMODEL" = "vusolo")
 AM_CONDITIONAL(BOXMODEL_VUDUO,test "$BOXMODEL" = "vuduo")
 AM_CONDITIONAL(BOXMODEL_VUUNO,test "$BOXMODEL" = "vuuno")
@@ -734,6 +758,10 @@ elif test "$BOXMODEL" = "atevio7500"; then
 elif test "$BOXMODEL" = "atevio7600"; then
 	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
 
+elif test "$BOXMODEL" = "vusolo2"; then
+	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
+elif test "$BOXMODEL" = "vuduo2"; then
+	AC_DEFINE(BOXMODEL_VUDUO2, 1, [vuplus duo2])
 elif test "$BOXMODEL" = "vusolo"; then
 	AC_DEFINE(BOXMODEL_VUSOLO, 1, [building for vuplus solo])
 elif test "$BOXMODEL" = "vuduo"; then

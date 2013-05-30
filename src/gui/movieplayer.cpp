@@ -1537,9 +1537,12 @@ void CMoviePlayerGui::PlayFile(void)
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
 			{				
-				playback->GetPosition((int64_t &)position, (int64_t &)duration);
+#if defined (PLATFORM_COOLSTREAM)
+				playback->GetPosition(position, duration);
+#else
+ 				playback->GetPosition((int64_t &)position, (int64_t &)duration);
+#endif				
 				
-
 				int play_sec = position / 1000;	// get current seconds from moviestart
 
 				if (play_sec + 10 < jump_not_until || play_sec > jump_not_until + 10)
@@ -2222,12 +2225,6 @@ void CMoviePlayerGui::PlayFile(void)
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition(startposition);			
 				
-				// get duration //NOTE: only duration is here needed
-				//if(isVlc)
-				//	duration = VlcGetStreamLength();				
-				//else
-				//	playback->GetPosition((int64_t &)position, (int64_t &)duration);				
-				
 				// show movieinfoviewer at start
 				if(timeshift)
 				{
@@ -2246,33 +2243,24 @@ void CMoviePlayerGui::PlayFile(void)
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
-		{	  
-			//if(!isVlc)
-			//{			  
-				
-				if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
-				{					
+		{	  	
+#if defined (PLATFORM_COOLSTREAM)
+			if( playback->GetPosition(position, duration) )
+#else
+ 			if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
+#endif			
+			{					
 					if(duration > 100)
 						file_prozent = (unsigned char) (position / (duration / 100));
 
 					playback->GetSpeed(speed);
 							
 					dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
-				}
-				else
-				{
-					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
-				}
-			//}
-			/*else
-			{
-				duration = VlcGetStreamLength();
-				position = VlcGetStreamTime();
-				
-				if(duration > 100)
-					file_prozent = (unsigned char) (position / (duration / 100));
 			}
-			*/
+			else
+			{
+					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
+			}
 		}
 		
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 
