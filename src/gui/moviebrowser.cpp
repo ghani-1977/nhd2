@@ -2157,7 +2157,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 		msg += "\r\n ";
 		if (movieSelectionHandler.file.Name.length() > 40)
 		{
-			msg += movieSelectionHandler.file.Name.substr(0,40);
+			msg += movieSelectionHandler.file.Name.substr(0, 40);
 			msg += "...";
 		}
 		else
@@ -2593,13 +2593,10 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				
 				if(Hide_records == false)
 				{
-					test = flist[i].getFileName().find(".ts") ;
-					/*
-					if ( flist[i].getFileName().substr(flist[i].getFileName().length() - 3) == ".ts" )
+					//if ( flist[i].getFileName().substr(flist[i].getFileName().length() - 3) == ".ts" )
 					{
 						test = flist[i].getFileName().find(".ts") ;
 					}
-					*/
 				}
 				else
 				{
@@ -2627,10 +2624,8 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
 						    (strcasecmp("vob", extension.c_str()) == 0) ||
 						    (strcasecmp("mp4", extension.c_str()) == 0) ||
-						    (strcasecmp("mov", extension.c_str()) == 0) ||
-#if !ENABLE_GSTREAMER					    
-						    (strcasecmp("flv", extension.c_str()) == 0) ||
-#endif					    
+						    (strcasecmp("mov", extension.c_str()) == 0) ||					    
+						    (strcasecmp("flv", extension.c_str()) == 0) ||					    
 						    (strcasecmp("dat", extension.c_str()) == 0) ||
 						    (strcasecmp("trp", extension.c_str()) == 0) ||
 						    (strcasecmp("vdr", extension.c_str()) == 0) ||

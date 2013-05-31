@@ -527,12 +527,10 @@ void EpgPlus::Footer::paintButtons(button_label * _buttonLabels, int numberOfBut
 	
 	int buttonHeight = 7 + std::min (16, this->fontButtons->getHeight ());
 	
-	//test
+	// paint foot box
 	this->frameBuffer->paintBoxRel (this->x, yPos, this->width, this->fontButtons->getHeight(), COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
 	::paintButtons (this->frameBuffer, this->fontButtons, g_Locale, this->x + 10, yPos + this->fontButtons->getHeight() - buttonHeight + 3, buttonWidth, numberOfButtons, _buttonLabels);
-	
-	this->frameBuffer->paintIcon (NEUTRINO_ICON_BUTTON_HELP, this->x + this->width - 30, yPos - this->fontButtons->getHeight ());
 }
 
 EpgPlus::EpgPlus ()

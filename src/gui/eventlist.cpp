@@ -53,7 +53,7 @@
 
 extern CBouquetList * bouquetList;
 extern t_channel_id live_channel_id;
-extern char recDir[255];// defined in neutrino.cpp
+extern char recDir[255];			// defined in neutrino.cpp
 
 #include <client/zapitclient.h> 		/* CZapitClient::Utf8_to_Latin1 */
 #include <driver/screen_max.h>
@@ -108,7 +108,6 @@ EventList::~EventList()
 
 void EventList::readEvents(const t_channel_id channel_id)
 {
-	//evtlist = g_Sectionsd->getEventsServiceKey(channel_id &0xFFFFFFFFFFFFULL);
 	evtlist.clear();
 	sectionsd_getEventsServiceKey(channel_id &0xFFFFFFFFFFFFULL, evtlist);
 	time_t azeit=time(NULL);
@@ -119,13 +118,10 @@ void EventList::readEvents(const t_channel_id channel_id)
 	{
 		CEPGData epgData;
 		// todo: what if there are more than one events in the Portal
-		//if (g_Sectionsd->getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData ))
 		if (sectionsd_getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData ))
 		{
-			//epgData.eventID;
-			//epgData.epg_times.startzeit;
 			CSectionsdClient::LinkageDescriptorList	linkedServices;
-			//if ( g_Sectionsd->getLinkageDescriptorsUniqueKey( epgData.eventID, linkedServices ) )
+
 			if ( sectionsd_getLinkageDescriptorsUniqueKey( epgData.eventID, linkedServices ) )
 			{
 				if ( linkedServices.size()> 1 )
@@ -133,16 +129,17 @@ void EventList::readEvents(const t_channel_id channel_id)
 					CChannelEventList evtlist2; // stores the temporary eventlist of the subchannel channelid
 					t_channel_id channel_id2;
 #if 0				
-					for (e=evtlist.begin(); e!=evtlist.end(); ++e )
+					for (e = evtlist.begin(); e!=evtlist.end(); ++e )
 					{
-						if ( e->startTime > azeit ) {
+						if ( e->startTime > azeit ) 
+						{
 							break;
 						}
 					}
 					// next line is to have a valid e
 					if (evtlist.end() == e) --e;
 #endif				
-					for (unsigned int i=0; i<linkedServices.size(); i++)
+					for (unsigned int i = 0; i < linkedServices.size(); i++)
 					{
 						channel_id2 = CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(
 								linkedServices[i].serviceId,
@@ -152,11 +149,10 @@ void EventList::readEvents(const t_channel_id channel_id)
 						// do not add parent events
 						if (channel_id != channel_id2) 
 						{
-							//evtlist2 = g_Sectionsd->getEventsServiceKey(channel_id2);
 							evtlist2.clear();
 							sectionsd_getEventsServiceKey(channel_id2 &0xFFFFFFFFFFFFULL, evtlist2);
 
-							for (unsigned int loop=0 ; loop<evtlist2.size(); loop++ )
+							for (unsigned int loop = 0 ; loop < evtlist2.size(); loop++ )
 							{
 								// check if event is in the range of the portal parent event
 #if 0								
@@ -176,14 +172,14 @@ void EventList::readEvents(const t_channel_id channel_id)
 		}
 		
 		// Houdini added for Private Premiere EPG, start sorted by start date/time
-		sort(evtlist.begin(),evtlist.end(),sortByDateTime);
+		sort(evtlist.begin(), evtlist.end(), sortByDateTime);
 		
   		// Houdini: dirty workaround for RTL double events, remove them
   		CChannelEventList::iterator e2;
   		for ( e=evtlist.begin(); e!=evtlist.end(); ++e )
   		{
-  			e2 = e+1;
-  			if ( e2!=evtlist.end() && (e->startTime == e2->startTime)) 
+  			e2 = e + 1;
+  			if ( e2 != evtlist.end() && (e->startTime == e2->startTime)) 
 			{
   				evtlist.erase(e2);
   			}
@@ -193,8 +189,8 @@ void EventList::readEvents(const t_channel_id channel_id)
 
 	}
 	
-	current_event = (unsigned int)-1;
-	for ( e=evtlist.begin(); e!=evtlist.end(); ++e )
+	current_event = (unsigned int) - 1;
+	for ( e = evtlist.begin(); e != evtlist.end(); ++e )
 	{
 		if ( e->startTime > azeit ) 
 		{
@@ -212,9 +208,9 @@ void EventList::readEvents(const t_channel_id channel_id)
 		evtlist.push_back(evt);
 
 	}
-	if (current_event == (unsigned int)-1)
+	if (current_event == (unsigned int) - 1)
 		current_event = 0;
-	selected= current_event;
+	selected = current_event;
 
 	return;
 }
@@ -334,8 +330,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				paintItem(selected - liststart, channel_id);
 		}
 
-		#if 1
-		//FIXME: ???
+		// sort
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_sort)
 		{
 			unsigned long long selected_id = evtlist[selected].eventID;
@@ -383,7 +378,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			paint(channel_id);
 			showFunctionBar(true);
 		}
-		#endif
+
 		//  -- I commented out the following part (code is working)
 		//  -- reason: this is a little bit confusing, because e.g. you can enter the function
 		//  -- with RED, but pressing RED doesn't leave - it triggers a record timer instead
@@ -402,12 +397,10 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				{
 					g_Timerd->removeTimerEvent(tID);
 					timerlist.clear();
-					g_Timerd->getTimerList (timerlist);
+					g_Timerd->getTimerList(timerlist);
 					paint(channel_id);
 					continue;
 				}
-				
-				//char * recDir = g_settings.network_nfs_recordingdir;
 				
 				if (recDir != NULL)
 				{
@@ -437,7 +430,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 					}
 				}
 				timerlist.clear();
-				g_Timerd->getTimerList (timerlist);
+				g_Timerd->getTimerList(timerlist);
 				
 				paint(channel_id);
 			}					
@@ -925,12 +918,12 @@ int EventList::findEvents(void)
 			box.hide();
 		}
 		
-		sort(evtlist.begin(),evtlist.end(),sortByDateTime);
+		sort(evtlist.begin(), evtlist.end(), sortByDateTime);
 		current_event = (unsigned int)-1;
 		time_t azeit=time(NULL);
 		
 		CChannelEventList::iterator e;
-		for ( e=evtlist.begin(); e!=evtlist.end(); ++e )
+		for ( e = evtlist.begin(); e != evtlist.end(); ++e )
 		{
 			if ( e->startTime > azeit ) 
 			{
@@ -938,6 +931,7 @@ int EventList::findEvents(void)
 			}
 			current_event++;
 		}
+		
 		if(evtlist.empty())
 		{
 			if ( evtlist.size() == 0 )
@@ -963,46 +957,21 @@ int EventList::findEvents(void)
 	showFunctionBar(true);
 	return(res);
 }
-
-/*
-class CSearchNotifier : public CChangeObserver
-{
-    private:
-        CMenuItem* menuItem;
-    public:
-        CSearchNotifier( CMenuItem* i){menuItem=i};
-        bool changeNotify(const neutrino_locale_t t, void * data)
-        {
-            int selected = *(int*)data;
-            menuItem->setActive(1);
-            menuItem
-		}
-};
-
-bool CEventFinderMenuHandler::changeNotify(const neutrino_locale_t OptionName, void *Data)
-{
-	if(OptionName == )
-	{
-	}
-
-	return true;
-}
-*/
   
 #define SEARCH_LIST_OPTION_COUNT 3
 const CMenuOptionChooser::keyval SEARCH_LIST_OPTIONS[SEARCH_LIST_OPTION_COUNT] =
 {
-	{ EventList::SEARCH_LIST_CHANNEL     , LOCALE_TIMERLIST_CHANNEL, NULL    },
-	{ EventList::SEARCH_LIST_BOUQUET     , LOCALE_BOUQUETLIST_HEAD, NULL     },
-	{ EventList::SEARCH_LIST_ALL         , LOCALE_CHANNELLIST_HEAD, NULL    }
+	{ EventList::SEARCH_LIST_CHANNEL     , LOCALE_TIMERLIST_CHANNEL, NULL },
+	{ EventList::SEARCH_LIST_BOUQUET     , LOCALE_BOUQUETLIST_HEAD, NULL },
+	{ EventList::SEARCH_LIST_ALL         , LOCALE_CHANNELLIST_HEAD, NULL }
 };
 
 #define SEARCH_EPG_OPTION_COUNT 3
 const CMenuOptionChooser::keyval SEARCH_EPG_OPTIONS[SEARCH_EPG_OPTION_COUNT] =
 {
-	{ EventList::SEARCH_EPG_TITLE       , LOCALE_FONTSIZE_EPG_TITLE, NULL    },
-	{ EventList::SEARCH_EPG_INFO1     	, LOCALE_FONTSIZE_EPG_INFO1, NULL     },
-	{ EventList::SEARCH_EPG_INFO2       , LOCALE_FONTSIZE_EPG_INFO2, NULL    }
+	{ EventList::SEARCH_EPG_TITLE       , LOCALE_FONTSIZE_EPG_TITLE, NULL },
+	{ EventList::SEARCH_EPG_INFO1     	, LOCALE_FONTSIZE_EPG_INFO1, NULL },
+	{ EventList::SEARCH_EPG_INFO2       , LOCALE_FONTSIZE_EPG_INFO2, NULL }
 };
 
 CEventFinderMenu::CEventFinderMenu(int* event, int* search_epg_item, std::string* search_keyword, int* search_list, t_channel_id* search_channel_id, t_bouquet_id * search_bouquet_id)
