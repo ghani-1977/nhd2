@@ -2451,10 +2451,12 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh)
 	else if(hh->ParamList["config"] == "yweb")
 		config_filename = YWEB_CONFIGFILE;
 
-	if(config_filename != ""){
+	if(config_filename != "")
+	{
 		Config->loadConfig(config_filename);
 
-		if(load){
+		if(load)
+		{
 			conf = Config->getConfigDataMap();
 			ConfigDataMap::iterator it;
 			for(it = conf.begin(); it != conf.end(); it++){
