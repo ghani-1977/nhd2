@@ -91,6 +91,7 @@
 #define HTTPD_STANDARD_PORT				80
 #define HTTPD_MAX_CONNECTIONS				10
 #define HTTPD_REQUEST_LOG 				"/tmp/httpd_log"
+#define HTTPD_CONFIGDIR					CONFIGDIR
 #define SSL_PEMFILE					HTTPD_CONFIGDIR "/server.pem"
 #define SSL_CA_FILE					HTTPD_CONFIGDIR "/cacert.pem"
 #define LOG_FILE					"/tmp/yhhtpd.log"
@@ -104,14 +105,14 @@
 #define HTTPD_DEFAULT_LANGUAGE 				"English"
 #define AUTHUSER					"root"
 
-#define HTTPD_CONFIGFILE 				CONFIGDIR "/nhttpd.conf"
-#define YWEB_CONFIGFILE 				CONFIGDIR "/Y-Web.conf"
+#define HTTPD_CONFIGFILE 				HTTPD_CONFIGDIR "/nhttpd.conf"
+#define YWEB_CONFIGFILE 				HTTPD_CONFIGDIR "/Y-Web.conf"
 #define PUBLICDOCUMENTROOT				"/var/httpd"
-#define NEUTRINO_CONFIGFILE				CONFIGDIR "/neutrino.conf"
+#define NEUTRINO_CONFIGFILE				HTTPD_CONFIGDIR "/neutrino.conf"
 #define HOSTEDDOCUMENTROOT				"/mnt/hosted"
 #define EXTRASDOCUMENTROOT				"/mnt/hosted/extras"
 #define EXTRASDOCUMENTURL				"/hosted/extras"
-#define ZAPITXMLPATH					CONFIGDIR "/zapit"
+#define ZAPITXMLPATH					HTTPD_CONFIGDIR "/zapit"
 #define TUXBOX_LOGOS_URL				"/var/tuxbox/icons/logos"
 
 // switch for Box differences
