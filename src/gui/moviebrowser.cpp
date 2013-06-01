@@ -2593,10 +2593,18 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				
 				if(Hide_records == false)
 				{
-					//if ( flist[i].getFileName().substr(flist[i].getFileName().length() - 3) == ".ts" )
+					//test = flist[i].getFileName().find(".ts") ;
+					int nameSize = flist[i].getFileName().size();
+					if ( flist[i].getFileName().substr(nameSize - 3) == ".ts" )
 					{
 						test = flist[i].getFileName().find(".ts") ;
 					}
+					/*
+					if ( flist[i].getFileName().substr(flist[i].getFileName().length() - 3) == ".ts" )
+					{
+						test = flist[i].getFileName().find(".ts") ;
+					}
+					*/
 				}
 				else
 				{
@@ -4353,7 +4361,8 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 	find_new_part(npart, dpart);
 	tt = time(0);
 	printf("\n********* new file %s expected size %lld, start time %s", dpart, newsize, ctime (&tt));
-	dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE);
+	//dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE);
+	dstfd = open (dpart, S_IRUSR|S_IWUSR, O_CREAT|O_TRUNC|O_WRONLY|O_LARGEFILE);
 	if(dstfd < 0) {
 		perror(dpart);
 		return 0;
@@ -4591,7 +4600,8 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 		}
 		if(!dst_done || !onefile) {
 			find_new_part(npart, dpart);
-			dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE);
+			//dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE);
+			dstfd = open(dpart, S_IRUSR|S_IWUSR, O_CREAT|O_TRUNC|O_WRONLY|O_LARGEFILE);
 			printf("copy: new file %s fd %d\n", dpart, dstfd);
 			if(dstfd < 0) {
 				printf("failed to open %s\n", dpart);
