@@ -215,8 +215,5 @@ src/timerd/Makefile
 src/zapit/Makefile
 src/zapit/lib/Makefile
 src/zapit/src/Makefile
-src/zapit/include/Makefile
-src/zapit/include/zapit/Makefile
-src/zapit/include/zapit/client/Makefile
 ])
 
