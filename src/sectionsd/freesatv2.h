@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+
 #define START   '\0' 
 #define STOP    '\0' 
 #define ESCAPE  '\1' 
@@ -41,5 +42,6 @@ public:
 	~freesatHuffmanDecoder();
 	std::string decode(const unsigned char *src, size_t size);
 };
+
 #endif
 

@@ -510,9 +510,6 @@ protected:
 	void parseParentalRatingDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
 	void parseLinkageDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
 	void parsePDCDescriptor(const uint8_t *buf, SIevent &e, unsigned maxlen);
-#ifdef ENABLE_FREESATEPG
-	std::string freesatHuffmanDecode(std::string input);
-#endif
 };
 
 #ifdef ENABLE_PPT
