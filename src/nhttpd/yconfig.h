@@ -73,11 +73,13 @@
 #define Y_CONFIG_USE_YPARSER y
 #define Y_CONFIG_USE_AUTHHOOK y
 #endif
+
 #ifdef Y_CONFIG_FEATURE_KEEP_ALIVE
 #define HTTP_PROTOCOL "HTTP/1.1"
 #else
 #define HTTP_PROTOCOL "HTTP/1.0"
 #endif
+
 //=============================================================================
 // Configurations for systems/OSs <configure!>
 //=============================================================================
@@ -123,6 +125,7 @@
 #define PRIVATEDOCUMENTROOT				DATADIR "/neutrino/httpd"
 #undef Y_CONFIG_BUILD_AS_DAEMON		// No Daemon
 #endif
+
 //-----------------------------------------------------------------------------
 // Aggregated definitions
 //-----------------------------------------------------------------------------

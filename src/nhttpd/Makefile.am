@@ -13,5 +13,6 @@ INCLUDES = \
 	@FREETYPE_CFLAGS@
 
 noinst_LIBRARIES = libnhttpd.a
+
 libnhttpd_a_SOURCES = yhttpd.cpp
 

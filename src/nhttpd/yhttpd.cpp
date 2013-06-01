@@ -437,16 +437,20 @@ void Cyhttpd::hooks_detach() {
 // Read Webserver Configurationfile
 // Call "Hooks_ReadConfig" so Hooks can read/write own Configuration Values
 //-----------------------------------------------------------------------------
-void Cyhttpd::ReadConfig(void) {
+void Cyhttpd::ReadConfig(void) 
+{
 	log_level_printf(3, "ReadConfig Start\n");
 	CConfigFile *Config = new CConfigFile(',');
 	bool have_config = false;
 	if (access(HTTPD_CONFIGFILE, 4) == 0)
 		have_config = true;
 	Config->loadConfig(HTTPD_CONFIGFILE);
+	
 	// convert old config files
-	if (have_config) {
-		if (Config->getInt32("configfile.version", 0) == 0) {
+	if (have_config) 
+	{
+		if (Config->getInt32("configfile.version", 0) == 0) 
+		{
 			CConfigFile OrgConfig = *Config;
 			Config->clear();
 
@@ -479,15 +483,19 @@ void Cyhttpd::ReadConfig(void) {
 			Config->saveConfig(HTTPD_CONFIGFILE);
 
 		}
+		
 		// Add Defaults for Version 2
-		if (Config->getInt32("configfile.version") < 2) {
+		if (Config->getInt32("configfile.version") < 2) 
+		{
 			Config->setString("mod_sendfile.mime_types", HTTPD_SENDFILE_EXT);
 			Config->setInt32("configfile.version", CONF_VERSION);
 			Config->setString("mod_sendfile.sendAll", "false");
 			Config->saveConfig(HTTPD_CONFIGFILE);
 		}
+		
 		// Add Defaults for Version 4
-		if (Config->getInt32("configfile.version") < 4) {
+		if (Config->getInt32("configfile.version") < 4) 
+		{
 			Config->setInt32("configfile.version", CONF_VERSION);
 			Config->setString("Language.selected", HTTPD_DEFAULT_LANGUAGE);
 			Config->setString("Language.directory", HTTPD_LANGUAGEDIR);
@@ -528,12 +536,15 @@ void Cyhttpd::ReadConfig(void) {
 			"WebsiteMain.hosted_directory", HOSTEDDOCUMENTROOT);
 
 	// Check location of logos
-	if (Config->getString("Tuxbox.LogosURL", "") == "") {
-		if (access(std::string(ConfigList["WebsiteMain.directory"] + "/logos").c_str(), 4) == 0) {
+	if (Config->getString("Tuxbox.LogosURL", "") == "") 
+	{
+		if (access(std::string(ConfigList["WebsiteMain.directory"] + "/logos").c_str(), 4) == 0) 
+		{
 			Config->setString("Tuxbox.LogosURL", ConfigList["WebsiteMain.directory"] + "/logos");
 			have_config = false; //save config
 		}
-		else if (access(std::string(ConfigList["WebsiteMain.override_directory"] ).c_str(), 4) == 0){
+		else if (access(std::string(ConfigList["WebsiteMain.override_directory"] ).c_str(), 4) == 0)
+		{
 			Config->setString("Tuxbox.LogosURL", ConfigList["WebsiteMain.override_directory"] + "/logos");
 			have_config = false; //save config
 		}
@@ -571,10 +582,12 @@ void Cyhttpd::ReadConfig(void) {
 	log_level_printf(3, "ReadConfig End\n");
 	delete Config;
 }
+
 //-----------------------------------------------------------------------------
 // Read Webserver Configurationfile for languages
 //-----------------------------------------------------------------------------
-void Cyhttpd::ReadLanguage(void) {
+void Cyhttpd::ReadLanguage(void) 
+{
 	// Init Class vars
 	CLanguage *lang = CLanguage::getInstance();
 	log_level_printf(3, "ReadLanguage:%s\n",
