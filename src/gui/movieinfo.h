@@ -165,6 +165,11 @@ typedef struct
 	int  epgVideoPid; 		// currently not used, we just do not want to loose this info if movie info is saved backed
 	int  VideoType;
 	int	 epgVTXPID;		// currently not used, we just do not want to loose this info if movie info is saved backed 
+	
+	// youtube
+	std::string tfile; // thumbnail/cover file name
+	std::string ytdate; // yt published
+	std::string ytid; // yt published
 }MI_MOVIE_INFO;
 
 

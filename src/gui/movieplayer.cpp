@@ -728,7 +728,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
+		moviebrowser->setMode(MB_SHOW_RECORDS);
+
 		PlayFile();
 	}
 	else if (actionKey == "moviebrowser") 
@@ -741,9 +742,27 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
+		moviebrowser->setMode(MB_SHOW_RECORDS);
 		
 		PlayFile();
 	}
+	// youtube
+	else if (actionKey == "ytplayback") 
+	{
+		isMovieBrowser = true;
+		moviebrowser->setMode(MB_SHOW_YT);
+		
+		timeshift = 0;
+		isWebTV = false;
+		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
+		isURL = false;
+		
+		PlayFile();
+ 	}
+
+	//
 	else if (actionKey == "fileplayback") 
 	{
 		isMovieBrowser = false;
@@ -1687,9 +1706,22 @@ void CMoviePlayerGui::PlayFile(void)
 					if ((file = moviebrowser->getSelectedFile()) != NULL) 
 					{
 						CFile::FileType ftype;
-						ftype = file->getType();						
+						ftype = file->getType();
+						
+						if (moviebrowser->getMode() == MB_SHOW_RECORDS) 
+						{
+							//filename = file->Name;
+							filename = file->Name.c_str();
+							//sel_filename = file->getFileName();
+						}
+						else if (moviebrowser->getMode() == MB_SHOW_YT) 
+						{
+							filename = file->Url.c_str();
+							//is_file_player = true;
+						}
 
-						filename = file->Name.c_str();
+
+						//filename = file->Name.c_str();
 						sel_filename = file->getFileName();
 
 						// get the movie info handle (to be used for e.g. bookmark handling)

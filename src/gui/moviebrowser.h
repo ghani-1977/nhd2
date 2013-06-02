@@ -80,12 +80,15 @@
 #include "driver/file.h"
 #include <driver/fb_window.h>
 #include "driver/pictureviewer/pictureviewer.h"
+#include <system/ytparser.h>
+
 
 #define MAX_NUMBER_OF_BOOKMARK_ITEMS MI_MOVIE_BOOK_USER_MAX // we just use the same size as used in Movie info (MAX_NUMBER_OF_BOOKMARK_ITEMS is used for the number of menu items)
 #define MOVIEBROWSER_SETTINGS_FILE          CONFIGDIR "/moviebrowser.conf"
 
 #define MIN_BROWSER_FRAME_HEIGHT 100
 #define MAX_BROWSER_FRAME_HEIGHT 400
+
 /* !!!! Do NOT change the order of the enum, just add items at the end !!!! */
 typedef enum
 {
@@ -176,6 +179,14 @@ typedef struct
     int* used;
 }MB_DIR;
 
+// youtube
+typedef enum
+{
+	MB_SHOW_RECORDS,
+	MB_SHOW_FILES,
+	MB_SHOW_YT
+} MB_SHOW_MODE;
+
 #define MB_MAX_ROWS 6
 #define MB_MAX_DIRS 10
 /* MB_SETTINGS to be stored in g_settings anytime ....*/
@@ -214,6 +225,13 @@ typedef struct
 	int lastRecordRowNr;
 	MB_INFO_ITEM lastRecordRow[MB_MAX_ROWS];
 	int lastRecordRowWidth[MB_MAX_ROWS];
+	
+	// youtube
+	int ytmode;
+	int ytresults;
+	std::string ytregion;
+	std::string ytvid;
+	std::string ytsearch;
 }MB_SETTINGS;
 
 // Priorities for Developmemt: P1: critical feature, P2: important feature, P3: for next release, P4: looks nice, lets see
@@ -295,6 +313,13 @@ class CMovieBrowser : public CMenuTarget
 		int movieInfoUpdateAllIfDestEmptyOnly;
 
 		//bool restart_mb_timeout;
+		
+		// youtube
+		cYTFeedParser ytparser;
+		int show_mode;
+		void loadYTitles(int mode, std::string search = "", std::string id = "");
+		bool showYTMenu(void);
+
 
 	public:  // Functions //////////////////////////////////////////////////////////7
 		CMovieBrowser(const char * path); //P1 
@@ -317,6 +342,10 @@ class CMovieBrowser : public CMenuTarget
 		bool delFile_vlc(CFile& file);
 		bool delFile_std(CFile& file);
 		
+		// youtube
+		int  getMode() { return show_mode; }
+		void  setMode(int mode) { show_mode = mode; }
+	
 	private: //Functions
 		///// MovieBrowser init /////////////// 
 		void init(void); //P1
@@ -390,6 +419,8 @@ class CMovieBrowser : public CMenuTarget
 		void updateFilterSelection(void);
 		void updateSerienames(void);
         	void autoFindSerie(void);
+		
+		neutrino_locale_t getFeedLocale(void);
 };
 
 // Class to show Moviebrowser Information, to be used by menu

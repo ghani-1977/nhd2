@@ -1607,5 +1607,25 @@ const char * locale_real_names[] = {
 	"audiomenu.volumebar_audiosteps",
 	
 	"webtv.head",
+	
+	// youtube
+	"menu.hint_ytplay",
+	"moviebrowser.yt_error",
+	"moviebrowser.yt_max_results",
+	"moviebrowser.yt_most_discussed",
+	"moviebrowser.yt_most_popular",
+	"moviebrowser.yt_most_resent",
+	"moviebrowser.yt_most_responded",
+	"moviebrowser.yt_most_shared",
+	"moviebrowser.yt_next_results",
+	"moviebrowser.yt_on_the_web",
+	"moviebrowser.yt_prev_results",
+	"moviebrowser.yt_recently_featured",
+	"moviebrowser.yt_region",
+	"moviebrowser.yt_related",
+	"moviebrowser.yt_search",
+	"moviebrowser.yt_top_favorites",
+	"moviebrowser.yt_top_rated",
+	"movieplayer.ytplayback",
 };
 #endif
