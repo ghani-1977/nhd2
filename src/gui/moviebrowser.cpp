@@ -3794,6 +3794,7 @@ void CMovieBrowser::autoFindSerie(void)
 void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 {
 	printf("CMovieBrowser::loadYTitles: parsed %d old mode %d new mode %d region %s\n", ytparser.Parsed(), ytparser.GetFeedMode(), m_settings.ytmode, m_settings.ytregion.c_str());
+	
 	if (m_settings.ytregion == "default")
 		ytparser.SetRegion("");
 	else
@@ -3801,10 +3802,14 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 
 	ytparser.SetMaxResults(m_settings.ytresults);
 
-	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) {
-		if (ytparser.ParseFeed((cYTFeedParser::yt_feed_mode_t)mode, search, id)) {
+	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) 
+	{
+		if (ytparser.ParseFeed((cYTFeedParser::yt_feed_mode_t)mode, search, id)) 
+		{
 			ytparser.DownloadThumbnails();
-		} else {
+		} 
+		else 
+		{
 			//FIXME show error
 			DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEBROWSER_YT_ERROR));
 			return;
@@ -3812,7 +3817,8 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 	}
 	m_vMovieInfo.clear();
 	yt_video_list_t &ylist = ytparser.GetVideoList();
-	for (unsigned i = 0; i < ylist.size(); i++) {
+	for (unsigned i = 0; i < ylist.size(); i++) 
+	{
 		MI_MOVIE_INFO movieInfo;
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 		movieInfo.epgChannel = ylist[i].author;

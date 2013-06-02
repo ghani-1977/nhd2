@@ -1710,18 +1710,13 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						if (moviebrowser->getMode() == MB_SHOW_RECORDS) 
 						{
-							//filename = file->Name;
 							filename = file->Name.c_str();
-							//sel_filename = file->getFileName();
 						}
 						else if (moviebrowser->getMode() == MB_SHOW_YT) 
 						{
 							filename = file->Url.c_str();
-							//is_file_player = true;
 						}
 
-
-						//filename = file->Name.c_str();
 						sel_filename = file->getFileName();
 
 						// get the movie info handle (to be used for e.g. bookmark handling)

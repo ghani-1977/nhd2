@@ -528,7 +528,8 @@ bool cYTFeedParser::ParseVideoInfo(cYTVideoInfo &vinfo)
 	estr.push_back("&el=vevo");
 	estr.push_back("&el=detailpage");
 
-	for (unsigned i = 0; i < estr.size(); i++) {
+	for (unsigned i = 0; i < estr.size(); i++) 
+	{
 		std::string vurl = "http://www.youtube.com/get_video_info?video_id=";
 		vurl += vinfo.id;
 		vurl += estr[i];
@@ -547,11 +548,13 @@ bool cYTFeedParser::ParseVideoInfo(cYTVideoInfo &vinfo)
 bool cYTFeedParser::DownloadThumbnails()
 {
 	bool ret = false;
-	if (mkdir(thumbnail_dir.c_str(), 0755)) {
+	if (mkdir(thumbnail_dir.c_str(), 0755)) 
+	{
 		perror(thumbnail_dir.c_str());
 		//return ret;
 	}
-	for (unsigned i = 0; i < videos.size(); i++) {
+	for (unsigned i = 0; i < videos.size(); i++) 
+	{
 		if (!videos[i].thumbnail.empty()) {
 			std::string fname = thumbnail_dir;
 			fname += "/";

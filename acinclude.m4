@@ -39,11 +39,11 @@ elif test "$TARGET" = "cdk"; then
 	AC_MSG_RESULT(cdk)
 
 	if test "$CC" = "" -a "$CXX" = ""; then
-		CC=sh4-linux-gcc CXX=sh4-linux-g++
+		CC=powerpc-tuxbox-linux-gnu-gcc CXX=powerpc-tuxbox-linux-gnu-g++
 	fi
 	if test "$CFLAGS" = "" -a "$CXXFLAGS" = ""; then
-		CFLAGS="-Wall -O2 -pipe $DEBUG_CFLAGS"
-		CXXFLAGS="-Wall -O2 -pipe $DEBUG_CFLAGS"
+		CFLAGS="-Wall -Os -mcpu=823 -pipe $DEBUG_CFLAGS"
+		CXXFLAGS="-Wall -Os -mcpu=823 -pipe $DEBUG_CFLAGS"
 	fi
 	if test "$prefix" = "NONE"; then
 		AC_MSG_ERROR(invalid prefix, you need to specify one in cdk mode)
@@ -53,7 +53,7 @@ elif test "$TARGET" = "cdk"; then
 	fi
 	if test "$host_alias" = ""; then
 		cross_compiling=yes
-		host_alias=sh4-linux
+		host_alias=powerpc-tuxbox-linux-gnu
 	fi
 else
 	AC_MSG_RESULT(none)
