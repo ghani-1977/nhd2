@@ -1229,7 +1229,7 @@ bool CFrameBuffer::savePictureFromMem(const std::string & filename, const fb_pix
 	header.height_hi = height >>    8;
 	header.transp    =              0;
 
-	_fd = open((iconBasePath + filename).c_str(), O_WRONLY | O_CREAT);
+	_fd = open((iconBasePath + filename).c_str(), O_WRONLY | O_CREAT, 0x644);
 
 	if (_fd==-1)
 	{
