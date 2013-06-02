@@ -2460,11 +2460,13 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 				videoDecoder->Stop();
 			}
 			
+#if !defined (PLATFORM_HYPERCUBE)			
 			if(audioDecoder)
 			{
 				audioDecoder->Resume();
 				audioDecoder->Stop();
 			}
+#endif			
 #endif				
 #endif			
 	
