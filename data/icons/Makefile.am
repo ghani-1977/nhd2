@@ -76,7 +76,7 @@ install_DATA += \
 
 # new
 install_DATA += \
-	picture.png plugin.png softupdate_small.png mark.png radiotextget.png radiotextoff.png radiotextwait.png
+	picture.png plugin.png softupdate_small.png mark.png radiotextget.png radiotextoff.png radiotextwait.png hint_ytplay.png
 
 
 
