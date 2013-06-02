@@ -2593,18 +2593,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				
 				if(Hide_records == false)
 				{
-					//test = flist[i].getFileName().find(".ts") ;
-					int nameSize = flist[i].getFileName().size();
-					if ( flist[i].getFileName().substr(nameSize - 3) == ".ts" )
-					{
-						test = flist[i].getFileName().find(".ts") ;
-					}
-					/*
-					if ( flist[i].getFileName().substr(flist[i].getFileName().length() - 3) == ".ts" )
-					{
-						test = flist[i].getFileName().find(".ts") ;
-					}
-					*/
+					test = flist[i].getFileName().find(".ts", flist[i].getFileName().length() - 3);
 				}
 				else
 				{
