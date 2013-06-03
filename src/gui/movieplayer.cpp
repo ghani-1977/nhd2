@@ -743,7 +743,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		PlayFile();
 	}
-	// youtube
 	else if (actionKey == "ytplayback") 
 	{
 		isMovieBrowser = true;
@@ -758,8 +757,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		PlayFile();
  	}
-
-	//
 	else if (actionKey == "fileplayback") 
 	{
 		isMovieBrowser = false;
@@ -1705,14 +1702,12 @@ void CMoviePlayerGui::PlayFile(void)
 						CFile::FileType ftype;
 						ftype = file->getType();
 						
-						if (moviebrowser->getMode() == MB_SHOW_RECORDS) 
-						{
-							filename = file->Name.c_str();
-						}
-						else if (moviebrowser->getMode() == MB_SHOW_YT) 
+						if (moviebrowser->getMode() == MB_SHOW_YT) 
 						{
 							filename = file->Url.c_str();
 						}
+						else
+							filename = file->Name.c_str();
 
 						sel_filename = file->getFileName();
 

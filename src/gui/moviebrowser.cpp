@@ -1276,19 +1276,8 @@ void CMovieBrowser::refreshMovieInfo(void)
 		} 
 		else 
 		{
-			//fname = getScreenshotName(m_movieSelectionHandler->file.Name);
-			//if((fname.empty()) && (m_movieSelectionHandler->file.Name.length() > 18)) 
-			//{
-			//	std::string cover = m_movieSelectionHandler->file.Name;
-			//	cover.replace((cover.length()-18),15,""); //covername without yyyymmdd_hhmmss
-			//	fname = getScreenshotName(cover);
-			//}
-			
 			fname = m_movieSelectionHandler->file.Name;
 		}
-		//
-
-		//std::string fname = m_movieSelectionHandler->file.Name;
 		
 		int ext_pos = 0;
 		ext_pos = fname.rfind('.');
@@ -1859,7 +1848,6 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		if (show_mode == MB_SHOW_YT)
 			showYTMenu();
 		else
-		//if(m_movieSelectionHandler != NULL);
 			showMenu(m_movieSelectionHandler);
 	}
 	else if (msg == CRCInput::RC_text) 
@@ -2644,7 +2632,8 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 	if(readDir(dirname, &flist) == true)
 	{
 		MI_MOVIE_INFO movieInfo;
-		//m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
+		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
+		
 		for(unsigned int i = 0; i < flist.size(); i++)
 		{
 			if( S_ISDIR(flist[i].Mode)) 
@@ -2675,7 +2664,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
 						
 						if( 
-						    (strcasecmp("ts", extension.c_str()) == 0) ||
 						    (strcasecmp("mpg", extension.c_str()) == 0) ||
 						    (strcasecmp("mpeg", extension.c_str()) == 0) ||
 						    (strcasecmp("divx", extension.c_str()) == 0) ||	    
@@ -2689,24 +2677,16 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
 						    (strcasecmp("vob", extension.c_str()) == 0) ||
 						    (strcasecmp("mp4", extension.c_str()) == 0) ||
-						    (strcasecmp("mov", extension.c_str()) == 0) ||					    
-						    (strcasecmp("flv", extension.c_str()) == 0) ||					    
+						    (strcasecmp("mov", extension.c_str()) == 0) ||
+						    (strcasecmp("flv", extension.c_str()) == 0) ||    
 						    (strcasecmp("dat", extension.c_str()) == 0) ||
 						    (strcasecmp("trp", extension.c_str()) == 0) ||
 						    (strcasecmp("vdr", extension.c_str()) == 0) ||
-						    (strcasecmp("mts", extension.c_str()) == 0) //||
-						    
-						    //(strcasecmp("wav", extension.c_str()) == 0) ||
-						    //(strcasecmp("flac", extension.c_str()) == 0) ||
-						    //(strcasecmp("mp3", extension.c_str()) == 0) ||
-						    //(strcasecmp("wmv", extension.c_str()) == 0) ||
-						    //(strcasecmp("wma", extension.c_str()) == 0) ||
-						    //(strcasecmp("ogg", extension.c_str()) == 0)
+						    (strcasecmp("mts", extension.c_str()) == 0)
 						    )
 							  test = 0;
 					}
 				}
-				//
 				
 				if( test == -1)
 				{
@@ -3870,7 +3850,8 @@ neutrino_locale_t CMovieBrowser::getFeedLocale(void)
 	if (m_settings.ytmode == cYTFeedParser::SEARCH)
 		return LOCALE_MOVIEBROWSER_YT_SEARCH;
 
-	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) {
+	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) 
+	{
 		if (m_settings.ytmode == YT_FEED_OPTIONS[i].key)
 			return YT_FEED_OPTIONS[i].value;
 	}
@@ -3881,7 +3862,7 @@ bool CMovieBrowser::showYTMenu()
 {
 	m_pcWindow->paintBackground();
 
-	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, /*NEUTRINO_ICON_MOVIEPLAYER*/NEUTRINO_ICON_MULTIMEDIA);
+	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_MULTIMEDIA);
 	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 
 	int select = -1;
@@ -3999,10 +3980,10 @@ bool CMovieBrowser::showYTMenu()
 CMenuSelector::CMenuSelector(const char * OptionName, const bool Active , char * OptionValue, int* ReturnInt ,int ReturnIntValue ) : CMenuItem()
 {
 	height     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	optionValueString = NULL;
+	optionValueString = 	NULL;
 	optionName = 		OptionName;
 	optionValue = 		OptionValue;
-	active = 			Active;
+	active = 		Active;
 	returnIntValue =	ReturnIntValue;
 	returnInt = 		ReturnInt;
 };
