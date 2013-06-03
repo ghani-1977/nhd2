@@ -918,7 +918,7 @@ void CRadioText::RassDecode(unsigned char *mtext, int len)
 				if (slideshow || (slidecan && Rass_Show == -1)) 
 				{
 					if (filetype == 1) 
-					{	// show only mpeg-still
+					{	
 						char *filepath;
 						asprintf(&filepath, "%s/%s", DataDir, "Rass_show.mpg");
 						if ((fd = fopen(filepath, "wb")) != NULL) 
@@ -1336,6 +1336,11 @@ void CRadioText::setPid(uint inPid)
 		// Rass ...
 		Rass_Show = -1;		// -1=No, 0=Yes, 1=display
 		Rass_Archiv = -1;	// -1=Off, 0=Index, 1000-9990=Slidenr.
+		
+		if (mkdir(DataDir, 0755)) 
+		{
+			perror(DataDir);
+		}
 #endif
 		RT_MsgShow = false; // clear entries from old channel
 
