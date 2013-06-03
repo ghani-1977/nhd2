@@ -99,7 +99,7 @@ int Rass_GalStart, Rass_GalEnd, Rass_GalCount, Rass_SlideFoto;
 #endif
 
 #define floor
-const char *DataDir = "/tmp";
+const char *DataDir = "/tmp/rass";
 //cRadioAudio *RadioAudio;
 //cRadioTextOsd *RadioTextOsd;
 //cRDSReceiver *RDSReceiver;
