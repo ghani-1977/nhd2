@@ -179,18 +179,6 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 		if(ret < 0)
 			perror("AUDIO_SET_MIXER");
 	}
-#if !defined (PLATFORM_GENERIC)
-	//HACK?
-	FILE *f;
-	if((f = fopen("/proc/stb/avs/0/volume", "wb")) == NULL) 
-	{
-		printf("cannot open /proc/stb/avs/0/volume(%m)\n");
-	}
-
-	fprintf(f, "%d", volume); /* in -1dB */
-
-	fclose(f);
-#endif	
 #endif
 	
 	return ret;

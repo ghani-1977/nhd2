@@ -452,8 +452,6 @@ void CMovieBrowser::init(void)
 	//restart_mb_timeout = 0;
 	m_file_info_stale = true;
 	m_seriename_stale = true;
-	
-	Hide_records = false;
 
 	m_pcWindow = CFrameBuffer::getInstance();
 	m_pcBrowser = NULL;
@@ -2661,11 +2659,11 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 			{
 				int test = -1;
 				
-				if(Hide_records == false)
+				if(show_mode == MB_SHOW_RECORDS)
 				{
 					test = flist[i].getFileName().find(".ts", flist[i].getFileName().length() - 3);
 				}
-				else
+				else if(show_mode == MB_SHOW_FILES)
 				{
 					// dirty way to use filter ;-8
 					int ext_pos = 0;
@@ -2677,7 +2675,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						extension = flist[i].getFileName().substr(ext_pos + 1, flist[i].getFileName().length() - ext_pos);
 						
 						if( 
-						    //(strcasecmp("ts", extension.c_str()) == 0) ||
+						    (strcasecmp("ts", extension.c_str()) == 0) ||
 						    (strcasecmp("mpg", extension.c_str()) == 0) ||
 						    (strcasecmp("mpeg", extension.c_str()) == 0) ||
 						    (strcasecmp("divx", extension.c_str()) == 0) ||	    
@@ -3019,17 +3017,22 @@ void CMovieBrowser::loadMovies(void)
 #if !defined USE_OPENGL
 	m_pcWindow->blit();
 #endif		
-		
-	CHintBox loadBox(LOCALE_MOVIEBROWSER_HEAD, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-	loadBox.paint();
 
 	// youtube
 	if (show_mode == MB_SHOW_YT) 
 	{
+		CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+		loadBox.paint();
+		
 		loadYTitles(m_settings.ytmode, m_settings.ytsearch, m_settings.ytvid);
+		
+		loadBox.hide();
 	} 
 	else 
 	{
+		CHintBox loadBox(LOCALE_MOVIEBROWSER_HEAD, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+		loadBox.paint();
+	
 		loadAllTsFileNamesFromStorage(); // P1
 
 		//m_file_info_stale = false;	//FIXME:???
@@ -3040,9 +3043,9 @@ void CMovieBrowser::loadMovies(void)
 		{
 			autoFindSerie();
 		}
+		
+		loadBox.hide();
 	}
-
-	loadBox.hide();
 
 	refreshBrowserList();	
 	refreshLastPlayList();	
@@ -3878,14 +3881,15 @@ bool CMovieBrowser::showYTMenu()
 {
 	m_pcWindow->paintBackground();
 
-	CMenuWidget mainMenu(LOCALE_MOVIEBROWSER_HEAD, /*NEUTRINO_ICON_MOVIEPLAYER*/NEUTRINO_ICON_MULTIMEDIA);
+	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, /*NEUTRINO_ICON_MOVIEPLAYER*/NEUTRINO_ICON_MULTIMEDIA);
 	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 
 	int select = -1;
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
 
 	char cnt[5];
-	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) {
+	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) 
+	{
 		sprintf(cnt, "%d", YT_FEED_OPTIONS[i].key);
 		mainMenu.addItem(new CMenuForwarder(YT_FEED_OPTIONS[i].value, true, NULL, selector, cnt, CRCInput::convertDigitToKey(i + 1)), m_settings.ytmode == (int) YT_FEED_OPTIONS[i].key);
 	}
@@ -3903,7 +3907,7 @@ bool CMovieBrowser::showYTMenu()
 	mainMenu.addItem(GenericMenuSeparatorLine);
 
 	std::string search = m_settings.ytsearch;
-	CStringInputSMS stringInput(LOCALE_MOVIEBROWSER_YT_SEARCH, &search, 20, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789");
+	CStringInputSMS stringInput(LOCALE_MOVIEBROWSER_YT_SEARCH, &search, MAX_INPUT_CHARS, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789!""§$%&/()=?-. ");
 	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_SEARCH, true, search, &stringInput, NULL, CRCInput::RC_nokey, ""));
 	sprintf(cnt, "%d", cYTFeedParser::SEARCH);
 	mainMenu.addItem(new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, selector, cnt, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
@@ -3931,20 +3935,25 @@ bool CMovieBrowser::showYTMenu()
 	bool reload = false;
 	printf("MovieBrowser::showYTMenu(): selected: %d\n", select);
 	int newmode = -1;
-	if (select >= 0) {
+	if (select >= 0) 
+	{
 		newmode = select;
-		if (newmode == cYTFeedParser::NEXT || newmode == cYTFeedParser::PREV) {
+		if (newmode == cYTFeedParser::NEXT || newmode == cYTFeedParser::PREV) 
+		{
 			reload = true;
 		}
-		else if (select == cYTFeedParser::RELATED) {
-			if (m_settings.ytvid != m_movieSelectionHandler->ytid) {
+		else if (select == cYTFeedParser::RELATED) 
+		{
+			if (m_settings.ytvid != m_movieSelectionHandler->ytid) 
+			{
 				printf("get related for: %s\n", m_movieSelectionHandler->ytid.c_str());
 				m_settings.ytvid = m_movieSelectionHandler->ytid;
 				m_settings.ytmode = newmode;
 				reload = true;
 			}
 		}
-		else if (select == cYTFeedParser::SEARCH) {
+		else if (select == cYTFeedParser::SEARCH) 
+		{
 			printf("search for: %s\n", search.c_str());
 			if (!search.empty()) {
 				reload = true;
@@ -3952,25 +3961,31 @@ bool CMovieBrowser::showYTMenu()
 				m_settings.ytmode = newmode;
 			}
 		}
-		else if (m_settings.ytmode != newmode) {
+		else if (m_settings.ytmode != newmode) 
+		{
 			m_settings.ytmode = newmode;
 			reload = true;
 		}
 	}
-	if(rstr != m_settings.ytregion) {
+	
+	if(rstr != m_settings.ytregion) 
+	{
 		m_settings.ytregion = rstr;
 		if (newmode < 0)
 			newmode = m_settings.ytmode;
 		reload = true;
 		printf("change region to %s\n", m_settings.ytregion.c_str());
 	}
-	if (reload) {
+	
+	if (reload) 
+	{
 		CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 		loadBox.paint();
 		ytparser.Cleanup();
 		loadYTitles(newmode, m_settings.ytsearch, m_settings.ytvid);
 		loadBox.hide();
 	}
+	
 	refreshBrowserList();
 	refreshLastPlayList();
 	refreshLastRecordList();

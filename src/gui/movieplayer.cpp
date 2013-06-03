@@ -532,7 +532,6 @@ void CMoviePlayerGui::Init(void)
 
 	filebrowser->Multi_Select = false;
 	filebrowser->Dirs_Selectable = false;
-	filebrowser->Hide_records = false;
 
 	// moviebrowser
 	moviebrowser = new CMovieBrowser();
@@ -721,7 +720,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	if (actionKey == "tsmoviebrowser") 
 	{
 		isMovieBrowser = true;
-		moviebrowser->Hide_records = false;
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
@@ -735,14 +733,13 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if (actionKey == "moviebrowser") 
 	{
 		isMovieBrowser = true;
-		moviebrowser->Hide_records = true;
 		timeshift = 0;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		moviebrowser->setMode(MB_SHOW_RECORDS);
+		moviebrowser->setMode(MB_SHOW_FILES);
 		
 		PlayFile();
 	}

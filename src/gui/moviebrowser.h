@@ -241,8 +241,6 @@ class CMovieBrowser : public CMenuTarget
 		int Multi_Select;    // for FileBrowser compatibility, not used in MovieBrowser
 		int Dirs_Selectable; // for FileBrowser compatibility, not used in MovieBrowser
 		
-		bool Hide_records;
-		
 	private: // Variables
 		CFrameBuffer * m_pcWindow;
 
