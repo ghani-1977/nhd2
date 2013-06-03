@@ -476,7 +476,7 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 	g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 #elif defined (ENABLE_LIBEPLAYER3)
 	//open file
-	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file.c_str()) >= 0) 
+	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, (char *)file.c_str()) >= 0) 
 	{
 		/* play it baby  */
 		if(player && player->output && player->playback) 
