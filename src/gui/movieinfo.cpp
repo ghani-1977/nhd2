@@ -663,9 +663,9 @@ int find_next_char(char to_find, char *text, int start_pos, int end_pos)
 void strReplace(std::string & orig, const char *fstr, const std::string rstr)
 {
 //      replace all occurrence of fstr with rstr and, and returns a reference to itself
-	unsigned int index = 0;
-	unsigned int fstrlen = strlen(fstr);
-	int rstrlen = rstr.size();
+	size_t index = 0;
+	size_t fstrlen = strlen(fstr);
+	size_t rstrlen = rstr.size();
 
 	while ((index = orig.find(fstr, index)) != std::string::npos) {
 		orig.replace(index, fstrlen, rstr);

@@ -387,7 +387,7 @@ bool cPlayback::Start(const char *filename, unsigned short /*_vp*/, int /*_vtype
 	mAudioStream = 0;
 	
 	//create playback path
-	char file[400] = {""};
+	std::string file("");
 	bool isHTTP = false;
 
 	if(!strncmp("http://", filename, 7))
@@ -415,9 +415,9 @@ bool cPlayback::Start(const char *filename, unsigned short /*_vp*/, int /*_vtype
 		isHTTP = true;
 	}
 	else
-		strcat(file, "file://");
+		file = "file://";
 	
-	strcat(file, filename);
+	file.append(filename);
 
 #if defined (ENABLE_GSTREAMER)
 	end_eof = false;
@@ -476,7 +476,7 @@ bool cPlayback::Start(const char *filename, unsigned short /*_vp*/, int /*_vtype
 	g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 #elif defined (ENABLE_LIBEPLAYER3)
 	//open file
-	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0) 
+	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file.c_str()) >= 0) 
 	{
 		/* play it baby  */
 		if(player && player->output && player->playback) 
@@ -598,10 +598,10 @@ void cPlayback::trickSeek(int ratio)
 #if defined (PLATFORM_GENERIC)	
 	bool validposition = false;
 	gint64 pos = 0;
-	int position;
-	int duration;
+	int64_t position;
+	int64_t duration;
 	
-	if( GetPosition((int64_t &)position, (int64_t &)duration) )
+	if( GetPosition(position, duration) )
 	{
 		validposition = true;
 		pos = position;
