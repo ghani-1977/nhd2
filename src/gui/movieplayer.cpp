@@ -2295,7 +2295,7 @@ void CMoviePlayerGui::PlayFile(void)
 				exit = true;
 			}
 
-			if (isMovieBrowser == true ) 
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
@@ -2942,7 +2942,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			dprintf(DEBUG_NORMAL, "[movieplayer] stop >\n");	
 
-			if (isMovieBrowser == true) 
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
