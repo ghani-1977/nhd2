@@ -119,8 +119,8 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			g_error_free(err);
 			
 			//
-			dprintf(DEBUG_NORMAL, "cPlayback::%s (ERROR)!!!!not playing!!!! <<< -1\n", __func__);
-			end_eof = true;
+			//dprintf(DEBUG_NORMAL, "cPlayback::%s (ERROR)!!!!not playing!!!! <<< -1\n", __func__);
+			//end_eof = true;
 			//
 			break;
 		}
