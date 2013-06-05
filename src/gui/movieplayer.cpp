@@ -1545,7 +1545,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		// movie infos (moviebrowser)
-		if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+		if (isMovieBrowser == true) 
 		{	  
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
@@ -1628,7 +1628,7 @@ void CMoviePlayerGui::PlayFile(void)
 										g_jumpseconds = g_jumpseconds + p_movie_info->bookmarks.user[book_nr].pos;
 
 										//playstate = CMoviePlayerGui::JPOS;	// bookmark  is of type loop, jump backward
-										playback->SetPosition(g_jumpseconds * 1000);
+										playback->SetPosition((int64_t)g_jumpseconds * 1000);
 									} 
 									else if (p_movie_info->bookmarks.user[book_nr].length > 0) 
 									{
@@ -1638,7 +1638,7 @@ void CMoviePlayerGui::PlayFile(void)
 										g_jumpseconds = g_jumpseconds + p_movie_info->bookmarks.user[book_nr].pos;
 
 										//playstate = CMoviePlayerGui::JPOS;	// bookmark  is of type loop, jump backward
-										playback->SetPosition(g_jumpseconds * 1000);
+										playback->SetPosition((int64_t)g_jumpseconds * 1000);
 									}
 									
 									dprintf(DEBUG_INFO, "[mp]  do jump %d sec\r\n", g_jumpseconds);
@@ -1668,7 +1668,7 @@ void CMoviePlayerGui::PlayFile(void)
 					}
 				}
 			}
-		}// isMovieBrowser == true		
+		}	
 
 		// setup all needed flags
 		if (open_filebrowser) 
@@ -1754,7 +1754,7 @@ void CMoviePlayerGui::PlayFile(void)
 						g_vpid = p_movie_info->epgVideoPid;
 						g_vtype = p_movie_info->VideoType;
 						
-						//
+						// needed for movies (not ts)
 						if(!p_movie_info->epgTitle.empty())
 							g_file_epg = p_movie_info->epgTitle;
 						else
@@ -2242,7 +2242,13 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
-					playback->SetPosition(startposition);			
+					playback->SetPosition((int64_t)startposition);
+				
+#if defined (PLATFORM_COOLSTREAM)
+				playback->GetPosition(position, duration);
+#else
+ 				playback->GetPosition((int64_t &)position, (int64_t &)duration);
+#endif	
 				
 				// show movieinfoviewer at start
 				if(timeshift)
@@ -2445,7 +2451,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 						
-			if(isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)
+			if(isMovieBrowser == true)
 			{
 				int pos_sec = position / 1000;
 
@@ -2770,7 +2776,7 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if ( msg == CRCInput::RC_2 || msg == CRCInput::RC_repeat )
 		{	// goto start
-			playback->SetPosition(startposition);
+			playback->SetPosition((int64_t)startposition);
 			
 			// time
 			if (!FileTime.IsVisible()) 
@@ -2787,7 +2793,7 @@ void CMoviePlayerGui::PlayFile(void)
 		else if (msg == CRCInput::RC_5) 
 		{	
 			// goto middle
-			playback->SetPosition(duration/2);
+			playback->SetPosition((int64_t)duration/2);
 			
 			// time
 			if (!FileTime.IsVisible()) 
@@ -2804,7 +2810,7 @@ void CMoviePlayerGui::PlayFile(void)
 		else if (msg == CRCInput::RC_8) 
 		{	
 			// goto end
-			playback->SetPosition(duration - 60 * 1000);
+			playback->SetPosition((int64_t)duration - 60 * 1000);
 			
 			//time
 			if (!FileTime.IsVisible()) 
@@ -2853,7 +2859,7 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if (msg == CRCInput::RC_0) 
 		{	// cancel bookmark jump
-			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+			if (isMovieBrowser == true) 
 			{
 				if (new_bookmark.pos != 0) 
 				{

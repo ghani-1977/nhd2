@@ -71,15 +71,13 @@
 #include <gui/pictureviewer.h>
 
 #include <system/debug.h>
-
 #include <driver/vcrcontrol.h>
+
 
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 52
 #define PIC_H 39
 static CProgressBar * timescale;
-
-
 
 #define my_scandir scandir64
 #define my_alphasort alphasort64
@@ -160,7 +158,6 @@ const CMenuOptionChooser::keyval MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS[MESSAGEBOX_
 #define TITLE_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUHEAD_PLUS_0)
 #define TITLE_FONT_COLOR ((CFBWindow::color_t)COL_MENUHEAD)
 
-//#define TEXT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU]
 #define TITLE_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
 #define FOOT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
 
@@ -195,18 +192,18 @@ const neutrino_locale_t m_localizedItemName[MB_INFO_MAX_NUMBER+1] =
 // default row size in pixel for any element
 #define	MB_ROW_WIDTH_FILENAME 		150
 #define	MB_ROW_WIDTH_FILEPATH		150
-#define	MB_ROW_WIDTH_TITLE		350/*300*/
-#define	MB_ROW_WIDTH_SERIE		150 /*100*/
-#define	MB_ROW_WIDTH_INFO1		150 /*100*/
-#define	MB_ROW_WIDTH_MAJOR_GENRE 	150 /*100*/
-#define	MB_ROW_WIDTH_MINOR_GENRE 	36 /*30*/
-#define	MB_ROW_WIDTH_INFO2 		36 /*30*/
-#define	MB_ROW_WIDTH_PARENTAL_LOCKAGE   25 
-#define	MB_ROW_WIDTH_CHANNEL		100 /*80*/
+#define	MB_ROW_WIDTH_TITLE		450
+#define	MB_ROW_WIDTH_SERIE		150 
+#define	MB_ROW_WIDTH_INFO1		250
+#define	MB_ROW_WIDTH_MAJOR_GENRE 	150
+#define	MB_ROW_WIDTH_MINOR_GENRE 	36
+#define	MB_ROW_WIDTH_INFO2 		36
+#define	MB_ROW_WIDTH_PARENTAL_LOCKAGE   45 
+#define	MB_ROW_WIDTH_CHANNEL		100
 #define	MB_ROW_WIDTH_BOOKMARK		50
-#define	MB_ROW_WIDTH_QUALITY 		36 /*25*/
+#define	MB_ROW_WIDTH_QUALITY 		80
 #define	MB_ROW_WIDTH_PREVPLAYDATE	80
-#define	MB_ROW_WIDTH_RECORDDATE 	80
+#define	MB_ROW_WIDTH_RECORDDATE 	100
 #define	MB_ROW_WIDTH_PRODDATE 		50
 #define	MB_ROW_WIDTH_COUNTRY 		50
 #define	MB_ROW_WIDTH_GEOMETRIE		50
@@ -2701,6 +2698,16 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					// load movie infos
 					m_movieInfo.loadMovieInfo(&movieInfo);
 					
+					//if(show_mode == MB_SHOW_FILES)
+					{
+						// info1
+						//if(movieInfo.epgInfo1.empty())
+						//	movieInfo.epgInfo1 = flist[i].Name;
+						// info2
+						if(movieInfo.epgInfo2.empty())
+							movieInfo.epgInfo2 = flist[i].Name;
+					}
+					
 					//
 					movieInfo.file.Mode = flist[i].Mode;
 					//movieInfo.file.Size = flist[i].Size;
@@ -2712,7 +2719,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						// first file in directory found, add directory to list 
 						m_dirNames.push_back(dirname);
 						file_found_in_dir = true;
-						//dprintf(DEBUG_INFO, "[mb] new dir: :%s\r\n",dirname);
 					}
 					movieInfo.dirItNr = m_dirNames.size()-1;
 					m_vMovieInfo.push_back(movieInfo);
@@ -3146,16 +3152,12 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 		snprintf(size,BUFFER_SIZE,"%5llu",movie_info->file.Size>>20);
 	}
 
-	//CStringInput titelUserInput(LOCALE_MOVIEBROWSER_INFO_TITLE,            &movie_info->epgTitle, MAX_STRING, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-.: ");
 	CStringInputSMS titelUserInput(LOCALE_MOVIEBROWSER_INFO_TITLE,       &movie_info->epgTitle, MAX_INPUT_CHARS, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789!""§$%&/()=?-. ");
-	//CStringInput channelUserInput(LOCALE_MOVIEBROWSER_INFO_CHANNEL,        &movie_info->epgChannel, 15, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-.: ");
 	CStringInputSMS channelUserInput(LOCALE_MOVIEBROWSER_INFO_CHANNEL,        &movie_info->epgChannel, MAX_INPUT_CHARS, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789!""§$%&/()=?-. ");
-	//CStringInput epgUserInput(LOCALE_MOVIEBROWSER_INFO_INFO1,              &movie_info->epgInfo1, 20, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-.: ");
 	CStringInputSMS epgUserInput(LOCALE_MOVIEBROWSER_INFO_INFO1,              &movie_info->epgInfo1, MAX_INPUT_CHARS, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789!""§$%&/()=?-. ");
 	CDateInput   dateUserDateInput(LOCALE_MOVIEBROWSER_INFO_LENGTH,        &movie_info->dateOfLastPlay, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CDateInput   recUserDateInput(LOCALE_MOVIEBROWSER_INFO_LENGTH,         &movie_info->file.Time, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CIntInput    lengthUserIntInput(LOCALE_MOVIEBROWSER_INFO_LENGTH,       (int&)movie_info->length, 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
-	//CStringInput countryUserInput(LOCALE_MOVIEBROWSER_INFO_PRODCOUNTRY,    &movie_info->productionCountry, 11, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "ABCDEFGHIJKLMNOPQRSTUVWXYZ ");
 	CStringInputSMS countryUserInput(LOCALE_MOVIEBROWSER_INFO_PRODCOUNTRY,    &movie_info->productionCountry, MAX_INPUT_CHARS, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "ABCDEFGHIJKLMNOPQRSTUVWXYZ ");
 	CIntInput    yearUserIntInput(LOCALE_MOVIEBROWSER_INFO_PRODYEAR,       (int&)movie_info->productionDate, 4, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 

@@ -119,8 +119,8 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			g_error_free(err);
 			
 			//
-			//dprintf(DEBUG_NORMAL, "cPlayback::%s (ERROR)!!!!not playing!!!! <<< -1\n", __func__);
-			//end_eof = true;
+			dprintf(DEBUG_NORMAL, "cPlayback::%s (ERROR)!!!!not playing!!!! <<< -1\n", __func__);
+			end_eof = true;
 			//
 			break;
 		}
@@ -849,7 +849,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 	return true;
 }
 
-bool cPlayback::SetPosition(int position)
+bool cPlayback::SetPosition(int64_t position)
 {
 	if(playing == false) 
 		return false;
