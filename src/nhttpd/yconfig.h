@@ -122,7 +122,7 @@
 #endif
 
 #ifdef CONFIG_SYSTEM_TUXBOX_COOLSTREAM
-#define AUTHPASSWORD					"relook"
+#define AUTHPASSWORD					"root"
 #define PRIVATEDOCUMENTROOT				DATADIR "/neutrino/httpd"
 #undef Y_CONFIG_BUILD_AS_DAEMON		// No Daemon
 #endif
