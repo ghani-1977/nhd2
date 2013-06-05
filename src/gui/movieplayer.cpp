@@ -1545,7 +1545,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 
 		// movie infos (moviebrowser)
-		if (isMovieBrowser == true) 
+		if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 		{	  
 			// do all moviebrowser stuff here ( like commercial jump etc.)
 			if (playstate == CMoviePlayerGui::PLAY) 
@@ -2451,7 +2451,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 						
-			if(isMovieBrowser == true)
+			if(isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)
 			{
 				int pos_sec = position / 1000;
 
@@ -2859,7 +2859,7 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if (msg == CRCInput::RC_0) 
 		{	// cancel bookmark jump
-			if (isMovieBrowser == true) 
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 			{
 				if (new_bookmark.pos != 0) 
 				{
