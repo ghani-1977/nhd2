@@ -54,11 +54,6 @@
 #include <vector>
 #include "driver/file.h"
 
-/************************************************************************/
-/************************************************************************/
-/***************** CMovieInfo ********************************/
-/************************************************************************/
-
 
 /* XML tags for xml file*/
 #define MI_XML_TAG_NEUTRINO 		"neutrino"
@@ -138,40 +133,39 @@ typedef struct
 
 typedef struct
 {
-	CFile file;					// not stored in xml
-	std::string productionCountry;	// user defined Country (not from EPG yet, but might be possible)
-	std::string epgTitle;		// plain movie name, usually filled by EPG
-	std::string epgInfo1;		// used for Genre (Premiere) or second title, usually filled by EPG
-	std::string epgInfo2;		// detailed movie content, usually filled by EPG
-	std::string epgChannel;		// Channel name, usually filled by EPG
-	std::string serieName;  	// user defines series name
+	CFile file;				// not stored in xml
+	std::string productionCountry;		// user defined Country (not from EPG yet, but might be possible)
+	std::string epgTitle;			// plain movie name, usually filled by EPG
+	std::string epgInfo1;			// used for Genre (Premiere) or second title, usually filled by EPG
+	std::string epgInfo2;			// detailed movie content, usually filled by EPG
+	std::string epgChannel;			// Channel name, usually filled by EPG
+	std::string serieName;  		// user defines series name
 
-	time_t dateOfLastPlay; 		// last play date of movie in seconds since 1970
+	time_t dateOfLastPlay; 			// last play date of movie in seconds since 1970
 	char dirItNr;  				// handle for quick directory path access only, this is not saved in xml, might be used by the owner of the movie info struct
-	int  genreMajor;            	// see showEPG class for more info, usually filled by EPG
+	int  genreMajor;            		// see showEPG class for more info, usually filled by EPG
 	char genreMinor;			// genreMinor not used so far			
-	int  length;                	// movie length in minutes, usually filled by EPG
-	int  quality;                 	// user classification (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
-	int  productionDate;         	// user defined Country (not from EPG yet, but might be possible)
-	int  parentalLockAge;        	// used for age rating(0:never,6,12,16,18 years,99:always), usually filled by EPG (if available)
-	char format;			// currently not used
-	char audio;			// currently not used
-	MI_MOVIE_BOOKMARKS bookmarks;	// bookmark collecton  for this movie
+	int  length;                		// movie length in minutes, usually filled by EPG
+	int  quality;                 		// user classification (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
+	int  productionDate;         		// user defined Country (not from EPG yet, but might be possible)
+	int  parentalLockAge;        		// used for age rating(0:never,6,12,16,18 years,99:always), usually filled by EPG (if available)
+	char format;				// currently not used
+	char audio;				// currently not used
+	MI_MOVIE_BOOKMARKS bookmarks;		// bookmark collecton  for this movie
 	std::vector<EPG_AUDIO_PIDS> audioPids; // available AudioPids, usually filled by VCR. Note: Vectors are easy to is also using the heap (memory fragmentation), might be changed to array  [MI_MAX_AUDIO_PIDS]
 
-	uint64_t  epgId;		// currently not used, we just do not want to loose this info if movie info is saved backed
-	uint64_t epgEpgId;		// off_t currently not used, we just do not want to loose this info if movie info is saved backed
-	int  epgMode;			// currently not used, we just do not want to loose this info if movie info is saved backed
-	int  epgVideoPid; 		// currently not used, we just do not want to loose this info if movie info is saved backed
+	uint64_t  epgId;			// currently not used, we just do not want to loose this info if movie info is saved backed
+	uint64_t epgEpgId;			// off_t currently not used, we just do not want to loose this info if movie info is saved backed
+	int  epgMode;				// currently not used, we just do not want to loose this info if movie info is saved backed
+	int  epgVideoPid; 			// currently not used, we just do not want to loose this info if movie info is saved backed
 	int  VideoType;
-	int	 epgVTXPID;		// currently not used, we just do not want to loose this info if movie info is saved backed 
+	int	 epgVTXPID;			// currently not used, we just do not want to loose this info if movie info is saved backed 
 	
 	// youtube
-	std::string tfile; // thumbnail/cover file name
-	std::string ytdate; // yt published
-	std::string ytid; // yt published
+	std::string tfile; 			// thumbnail/cover file name
+	std::string ytdate; 			// yt published
+	std::string ytid; 			// yt published
 }MI_MOVIE_INFO;
-
 
 class CMovieInfo
 {

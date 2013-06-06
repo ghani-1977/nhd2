@@ -2694,11 +2694,12 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					// load movie infos
 					m_movieInfo.loadMovieInfo(&movieInfo);
 					
-					//if(show_mode == MB_SHOW_FILES)
+					if(show_mode == MB_SHOW_FILES)
 					{
 						// info1
 						//if(movieInfo.epgInfo1.empty())
 						//	movieInfo.epgInfo1 = flist[i].Name;
+						
 						// info2
 						if(movieInfo.epgInfo2.empty())
 							movieInfo.epgInfo2 = flist[i].Name;
@@ -2721,6 +2722,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				}
 			}
 		}
+		
 		result = true;
 	}	
  	
@@ -2739,6 +2741,7 @@ bool CMovieBrowser::readDir(const std::string & dirname, CFileList * flist)
 	{
 		result = readDir_std(dirname, flist);
 	}
+	
 	return(result);
 }
 
