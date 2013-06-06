@@ -457,9 +457,6 @@ void CMovieBrowser::init(void)
 	m_pcInfo = NULL;
 	
 	m_windowFocus = MB_FOCUS_BROWSER;
-
-	m_pcFontFoot  = FOOT_FONT;
-	m_pcFontTitle = TITLE_FONT;
 	
 	m_textTitle = g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD);
 	
@@ -588,6 +585,9 @@ void CMovieBrowser::initGlobalSettings(void)
 void CMovieBrowser::initFrames(void)
 {
 	dprintf(DEBUG_NORMAL, "[mb]->initFrames\r\n");
+	
+	m_pcFontFoot  = FOOT_FONT;
+	m_pcFontTitle = TITLE_FONT;
 	
 	m_cBoxFrame.iX = 			g_settings.screen_StartX + 10;
 	m_cBoxFrame.iY = 			g_settings.screen_StartY + 10;
@@ -1144,10 +1144,6 @@ int CMovieBrowser::paint(void)
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));	
 
 	Font * font = NULL;
-	
-	//
-	m_pcFontTitle = TITLE_FONT;
-	m_pcFontFoot = FOOT_FONT;
 
 	m_pcBrowser = new CListFrame(&m_browserListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE, &m_cBoxFrameBrowserList);
 

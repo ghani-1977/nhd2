@@ -2077,6 +2077,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	
 	// font
 	font.name = NULL;
+	font.filename = NULL;
 
 	// load settings
 	int loadSettingsErg = loadSetup(NEUTRINO_SETTINGS_FILE);
