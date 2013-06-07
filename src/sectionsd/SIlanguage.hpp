@@ -39,24 +39,25 @@
 
 #include <sectionsdclient/sectionsdclient.h>
 
-#define LANGUAGEFILE "/var/tuxbox/config/epglanguages.conf"
+
+#define LANGUAGEFILE CONFIGDIR "/epglanguages.conf"
 
 class SIlanguage {
-public:
-	static void filter(const std::map<std::string, std::string>& s, int max, std::string& retval);
-	static bool loadLanguages();
-	static bool saveLanguages();
-	static void setLanguages(const std::vector<std::string>& newLanguages);
-	static std::vector<std::string> getLanguages();
-	static void setMode(CSectionsdClient::SIlanguageMode_t newMode);
-	static CSectionsdClient::SIlanguageMode_t getMode();
+	public:
+		static void filter(const std::map<std::string, std::string>& s, int max, std::string& retval);
+		static bool loadLanguages();
+		static bool saveLanguages();
+		static void setLanguages(const std::vector<std::string>& newLanguages);
+		static std::vector<std::string> getLanguages();
+		static void setMode(CSectionsdClient::SIlanguageMode_t newMode);
+		static CSectionsdClient::SIlanguageMode_t getMode();
 
-private:
-	SIlanguage();
-	~SIlanguage();
-	static std::vector<std::string> languages;
-	static pthread_mutex_t languages_lock;
-	static CSectionsdClient::SIlanguageMode_t mode;
+	private:
+		SIlanguage();
+		~SIlanguage();
+		static std::vector<std::string> languages;
+		static pthread_mutex_t languages_lock;
+		static CSectionsdClient::SIlanguageMode_t mode;
 };
 
 #endif
