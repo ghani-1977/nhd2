@@ -97,7 +97,8 @@ static void sig_catch(int msignal)
 #endif
 
 //-----------------------------------------------------------------------------
-void yhttpd_reload_config() {
+void yhttpd_reload_config() 
+{
 	if (yhttpd)
 		yhttpd->ReadConfig();
 }
@@ -112,9 +113,12 @@ void * nhttpd_main_thread(void *)
 	aprintf("Webserver %s tid %ld\n", WEBSERVERNAME, syscall(__NR_gettid));
 	
 	yhttpd = new Cyhttpd();
+	
 	//CLogging::getInstance()->setDebug(true);
 	//CLogging::getInstance()->LogLevel = 9;
-	if (!yhttpd) {
+	
+	if (!yhttpd) 
+	{
 		aprintf("Error initializing WebServer\n");
 		return (void *) EXIT_FAILURE;
 	}
@@ -122,7 +126,8 @@ void * nhttpd_main_thread(void *)
 
 	yhttpd->hooks_attach();
 	yhttpd->ReadConfig();
-	if (yhttpd->Configure()) {
+	if (yhttpd->Configure()) 
+	{
 		// Start Webserver: fork ist if not in debug mode
 		//aprintf("Webserver starting...\n");
 		//dprintf("Start in Debug-Mode\n"); // non forked debugging loop
@@ -317,8 +322,10 @@ bool Cyhttpd::Configure() {
 //-----------------------------------------------------------------------------
 // Main Webserver call
 //-----------------------------------------------------------------------------
-void Cyhttpd::run() {
-	if (webserver) {
+void Cyhttpd::run() 
+{
+	if (webserver) 
+	{
 		if (flag_threading_off)
 			webserver->is_threading = false;
 		webserver->run();
@@ -351,17 +358,21 @@ void Cyhttpd::usage(FILE *dest) {
 //-----------------------------------------------------------------------------
 // Stop WebServer
 //-----------------------------------------------------------------------------
-void Cyhttpd::stop_webserver() {
+void Cyhttpd::stop_webserver() 
+{
 	aprintf("stop requested......\n");
-	if (webserver) {
+	if (webserver) 
+	{
 		webserver->stop();
 		hooks_detach();
 	}
 }
+
 //-----------------------------------------------------------------------------
 // Attach hooks (use hook order carefully)
 //-----------------------------------------------------------------------------
-void Cyhttpd::hooks_attach() {
+void Cyhttpd::hooks_attach() 
+{
 #ifdef Y_CONFIG_USE_AUTHHOOK
 	// First Check Authentication
 	auth = new CmAuth();
@@ -400,7 +411,8 @@ void Cyhttpd::hooks_attach() {
 //-----------------------------------------------------------------------------
 // Detach hooks & Destroy
 //-----------------------------------------------------------------------------
-void Cyhttpd::hooks_detach() {
+void Cyhttpd::hooks_detach() 
+{
 #ifdef Y_CONFIG_USE_AUTHHOOK
 	CyhookHandler::detach(auth);
 	delete auth;
@@ -440,6 +452,7 @@ void Cyhttpd::hooks_detach() {
 void Cyhttpd::ReadConfig(void) 
 {
 	log_level_printf(3, "ReadConfig Start\n");
+	
 	CConfigFile *Config = new CConfigFile(',');
 	bool have_config = false;
 	if (access(HTTPD_CONFIGFILE, 4) == 0)
@@ -454,29 +467,19 @@ void Cyhttpd::ReadConfig(void)
 			CConfigFile OrgConfig = *Config;
 			Config->clear();
 
-			Config->setInt32("server.log.loglevel", OrgConfig.getInt32(
-					"LogLevel", 0));
+			Config->setInt32("server.log.loglevel", OrgConfig.getInt32("LogLevel", 0));
 			Config->setInt32("configfile.version", CONF_VERSION);
 			Config->setString("webserver.websites", "WebsiteMain");
-			Config->setBool("webserver.threading", OrgConfig.getBool("THREADS",
-					true));
-			Config->setInt32("WebsiteMain.port", OrgConfig.getInt32("Port",
-					HTTPD_STANDARD_PORT));
-			Config->setString("WebsiteMain.directory", OrgConfig.getString(
-					"PrivatDocRoot", PRIVATEDOCUMENTROOT));
+			Config->setBool("webserver.threading", OrgConfig.getBool("THREADS", true));
+			Config->setInt32("WebsiteMain.port", OrgConfig.getInt32("Port", HTTPD_STANDARD_PORT));
+			Config->setString("WebsiteMain.directory", OrgConfig.getString("PrivatDocRoot", PRIVATEDOCUMENTROOT));
 			if (OrgConfig.getString("PublicDocRoot", "") != "")
-				Config->setString("WebsiteMain.override_directory",
-						OrgConfig.getString("PublicDocRoot",
-								PRIVATEDOCUMENTROOT));
+				Config->setString("WebsiteMain.override_directory",OrgConfig.getString("PublicDocRoot", PRIVATEDOCUMENTROOT));
 			// mod_auth
-			Config->setString("mod_auth.username", OrgConfig.getString(
-					"AuthUser", AUTHUSER));
-			Config->setString("mod_auth.password", OrgConfig.getString(
-					"AuthPassword", AUTHPASSWORD));
-			Config->setString("mod_auth.no_auth_client", OrgConfig.getString(
-					"NoAuthClient", ""));
-			Config->setString("mod_auth.authenticate", OrgConfig.getString(
-					"Authenticate", "false"));
+			Config->setString("mod_auth.username", OrgConfig.getString("AuthUser", AUTHUSER));
+			Config->setString("mod_auth.password", OrgConfig.getString("AuthPassword", AUTHPASSWORD));
+			Config->setString("mod_auth.no_auth_client", OrgConfig.getString("NoAuthClient", ""));
+			Config->setString("mod_auth.authenticate", OrgConfig.getString("Authenticate", "false"));
 
 			Config->setString("mod_sendfile.mime_types", HTTPD_SENDFILE_EXT);
 
@@ -504,6 +507,7 @@ void Cyhttpd::ReadConfig(void)
 			Config->saveConfig(HTTPD_CONFIGFILE);
 		}
 	}
+	
 	// configure debugging & logging
 	if (CLogging::getInstance()->LogLevel == 0)
 		CLogging::getInstance()->LogLevel = Config->getInt32("server.log.loglevel", 0);
@@ -511,29 +515,19 @@ void Cyhttpd::ReadConfig(void)
 		CLogging::getInstance()->setDebug(true);
 
 	// get variables
-	webserver->init(Config->getInt32("WebsiteMain.port", HTTPD_STANDARD_PORT),
-			Config->getBool("webserver.threading", true));
+	webserver->init(Config->getInt32("WebsiteMain.port", HTTPD_STANDARD_PORT), Config->getBool("webserver.threading", true));
 	// informational use
-	ConfigList["WebsiteMain.port"] = itoa(Config->getInt32("WebsiteMain.port",
-			HTTPD_STANDARD_PORT));
-	ConfigList["webserver.threading"] = Config->getString(
-			"webserver.threading", "true");
-	ConfigList["configfile.version"] = Config->getInt32("configfile.version",
-			CONF_VERSION);
-	ConfigList["server.log.loglevel"] = itoa(Config->getInt32(
-			"server.log.loglevel", 0));
-	ConfigList["server.no_keep-alive_ips"] = Config->getString(
-			"server.no_keep-alive_ips", "");
-	webserver->conf_no_keep_alive_ips = Config->getStringVector(
-			"server.no_keep-alive_ips");
+	ConfigList["WebsiteMain.port"] = itoa(Config->getInt32("WebsiteMain.port", HTTPD_STANDARD_PORT));
+	ConfigList["webserver.threading"] = Config->getString("webserver.threading", "true");
+	ConfigList["configfile.version"] = Config->getInt32("configfile.version", CONF_VERSION);
+	ConfigList["server.log.loglevel"] = itoa(Config->getInt32("server.log.loglevel", 0));
+	ConfigList["server.no_keep-alive_ips"] = Config->getString("server.no_keep-alive_ips", "");
+	webserver->conf_no_keep_alive_ips = Config->getStringVector("server.no_keep-alive_ips");
 
 	// MainSite
-	ConfigList["WebsiteMain.directory"] = Config->getString(
-			"WebsiteMain.directory", PRIVATEDOCUMENTROOT);
-	ConfigList["WebsiteMain.override_directory"] = Config->getString(
-			"WebsiteMain.override_directory", PUBLICDOCUMENTROOT);
-	ConfigList["WebsiteMain.hosted_directory"] = Config->getString(
-			"WebsiteMain.hosted_directory", HOSTEDDOCUMENTROOT);
+	ConfigList["WebsiteMain.directory"] = Config->getString("WebsiteMain.directory", PRIVATEDOCUMENTROOT);
+	ConfigList["WebsiteMain.override_directory"] = Config->getString("WebsiteMain.override_directory", PUBLICDOCUMENTROOT);
+	ConfigList["WebsiteMain.hosted_directory"] = Config->getString("WebsiteMain.hosted_directory", HOSTEDDOCUMENTROOT);
 
 	// Check location of logos
 	if (Config->getString("Tuxbox.LogosURL", "") == "") 
@@ -567,10 +561,8 @@ void Cyhttpd::ReadConfig(void)
 	ConfigList["server.chroot"] = Config->getString("server.chroot", "");
 
 	// language
-	ConfigList["Language.directory"] = Config->getString("Language.directory",
-			HTTPD_LANGUAGEDIR);
-	ConfigList["Language.selected"] = Config->getString("Language.selected",
-			HTTPD_DEFAULT_LANGUAGE);
+	ConfigList["Language.directory"] = Config->getString("Language.directory", HTTPD_LANGUAGEDIR);
+	ConfigList["Language.selected"] = Config->getString("Language.selected", HTTPD_DEFAULT_LANGUAGE);
 	yhttpd->ReadLanguage();
 
 	// Read App specifig settings by Hook
@@ -580,6 +572,7 @@ void Cyhttpd::ReadConfig(void)
 	if (!have_config)
 		Config->saveConfig(HTTPD_CONFIGFILE);
 	log_level_printf(3, "ReadConfig End\n");
+	
 	delete Config;
 }
 
@@ -590,7 +583,6 @@ void Cyhttpd::ReadLanguage(void)
 {
 	// Init Class vars
 	CLanguage *lang = CLanguage::getInstance();
-	log_level_printf(3, "ReadLanguage:%s\n",
-			ConfigList["Language.selected"].c_str());
+	log_level_printf(3, "ReadLanguage:%s\n", ConfigList["Language.selected"].c_str());
 	lang->setLanguage(ConfigList["Language.selected"]);
 }

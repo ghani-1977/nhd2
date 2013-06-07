@@ -81,6 +81,7 @@ CControlAPI::CControlAPI(CNeutrinoAPI *_NeutrinoAPI)
 {
 	NeutrinoAPI = _NeutrinoAPI;
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::init(CyhookHandler *hh)
 {
@@ -112,6 +113,7 @@ THandleStatus CControlAPI::Hook_PrepareResponse(CyhookHandler *hh)
 	else
 		return HANDLED_NONE;
 }
+
 //-----------------------------------------------------------------------------
 // HOOK: response_hook Handler
 // This is the main dispatcher for this module
@@ -515,14 +517,14 @@ void CControlAPI::GetTimeCGI(CyhookHandler *hh)
 // send services.xml
 void CControlAPI::GetServicesxmlCGI(CyhookHandler *hh)
 {
-	hh->SendFile("/var/tuxbox/config/zapit/services.xml");
+	hh->SendFile(CONFIGDIR "/zapit/services.xml");
 }
 
 //-----------------------------------------------------------------------------
 // send bouquets.xml
 void CControlAPI::GetBouquetsxmlCGI(CyhookHandler *hh)
 {
-	hh->SendFile("/var/tuxbox/config/zapit/bouquets.xml");
+	hh->SendFile(CONFIGDIR "/zapit/bouquets.xml");
 }
 
 //-----------------------------------------------------------------------------
@@ -584,6 +586,7 @@ void CControlAPI::InfoCGI(CyhookHandler *hh)
 			hh->SendError();
 	}
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::ShutdownCGI(CyhookHandler *hh)
 {
@@ -801,11 +804,13 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::AspectRatioCGI(CyhookHandler *hh)
 {
 	hh->printf("%s",(NeutrinoAPI->getVideoAspectRatioAsString()).c_str());
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::VideoFormatCGI(CyhookHandler *hh)
 {
@@ -939,6 +944,7 @@ void CControlAPI::_GetBouquetWriteItem(CyhookHandler *hh, CZapitChannel * channe
 			channel->getName().c_str());
 	}
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::GetBouquetCGI(CyhookHandler *hh)
 {
@@ -1068,6 +1074,7 @@ void CControlAPI::GetBouquetsCGI(CyhookHandler *hh)
 	else if (hh->ParamList["format"] == "xml")
 		hh->WriteLn("</bouquets>");
 }
+
 //-----------------------------------------------------------------------------
 //	details EPG Information for channelid
 //-----------------------------------------------------------------------------
@@ -1588,6 +1595,7 @@ void CControlAPI::SendAllCurrentVAPid(CyhookHandler *hh)
 		hh->printf("%05u pmt\n",pids.PIDs.pmtpid);
 
 }
+
 //-----------------------------------------------------------------------------
 void CControlAPI::SendTimers(CyhookHandler *hh)
 {
@@ -1672,6 +1680,7 @@ void CControlAPI::_SendTime(CyhookHandler *hh, struct tm *Time, int digits){
 	hh->printf("\t\t\t\t\t<hour>%d</hour>\n",Time->tm_hour);
 	hh->printf("\t\t\t\t\t<min>%d</min>\n",Time->tm_min);
 }
+
 //-----------------------------------------------------------------------------
 // build xml for all timer data (needed for yWeb 3)
 //-----------------------------------------------------------------------------
@@ -1994,12 +2003,14 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 	}
 	return result;
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::doModifyTimer(CyhookHandler *hh)
 {
 	hh->ParamList["update"]="1";
 	doNewTimer(hh);
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::doNewTimer(CyhookHandler *hh)
 {
@@ -2228,6 +2239,7 @@ void CControlAPI::doNewTimer(CyhookHandler *hh)
 	NeutrinoAPI->Timerd->addTimerEvent(type,data,announceTimeT,alarmTimeT,stopTimeT,rep,repCount);
 	hh->SendOk();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::setBouquetCGI(CyhookHandler *hh)
 {
@@ -2246,6 +2258,7 @@ void CControlAPI::setBouquetCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::saveBouquetCGI(CyhookHandler *hh)
 {
@@ -2253,6 +2266,7 @@ void CControlAPI::saveBouquetCGI(CyhookHandler *hh)
 	NeutrinoAPI->UpdateBouquets();
 	hh->SendOk();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::moveBouquetCGI(CyhookHandler *hh)
 {
@@ -2273,6 +2287,7 @@ void CControlAPI::moveBouquetCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::deleteBouquetCGI(CyhookHandler *hh)
 {
@@ -2286,6 +2301,7 @@ void CControlAPI::deleteBouquetCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::addBouquetCGI(CyhookHandler *hh)
 {
@@ -2301,6 +2317,7 @@ void CControlAPI::addBouquetCGI(CyhookHandler *hh)
 			hh->SendError();
 	}
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::renameBouquetCGI(CyhookHandler *hh)
 {
@@ -2318,6 +2335,7 @@ void CControlAPI::renameBouquetCGI(CyhookHandler *hh)
 	}
 	hh->SendError();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::changeBouquetCGI(CyhookHandler *hh)
 {
@@ -2355,12 +2373,14 @@ void CControlAPI::changeBouquetCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::updateBouquetCGI(CyhookHandler *hh)
 {
 	NeutrinoAPI->UpdateBouquets();
 	hh->SendOk();
 }
+
 //-------------------------------------------------------------------------
 // audio_no : (optional) audio channel
 // host : (optional) ip of dbox
@@ -2421,6 +2441,7 @@ void CControlAPI::build_live_url(CyhookHandler *hh)
 		hh->Write(url);
 	}
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::logoCGI(CyhookHandler *hh)
 {
@@ -2430,6 +2451,7 @@ void CControlAPI::logoCGI(CyhookHandler *hh)
 		&channel_id);
 	hh->Write(NeutrinoAPI->getLogoFile(hh->WebserverConfigList["Tuxbox.LogosURL"], channel_id));
 }
+
 //-------------------------------------------------------------------------
 void CControlAPI::ConfigCGI(CyhookHandler *hh)
 {
