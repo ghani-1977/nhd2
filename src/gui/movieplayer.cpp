@@ -2562,6 +2562,17 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				if(!MovieInfoViewer.IsVisible())
 					MovieInfoViewer.show(position/1000);
+				else 
+				{
+					MovieInfoViewer.hide();
+					
+					if(isVlc)
+						showFileInfoVLC();
+					else if(isWebTV)
+						showFileInfoWebTV();
+					else if (p_movie_info != NULL)
+						cMovieInfo.showMovieInfo(*p_movie_info);
+				}
 			}
 			else if(timeshift)
 			{
