@@ -157,6 +157,10 @@
 
 #define NEUTRINO_ICON_BUTTON_MARK		"mark"
 
+#define NEUTRINO_ICON_RADIOTEXTOFF		"radiotextoff"
+#define NEUTRINO_ICON_RADIOTEXTGET		"radiotextget"
+#define NEUTRINO_ICON_RADIOTEXTWAIT		"radiotextwait"
+
 #define NEUTRINO_ICON_HINT_YTPLAY      		"hint_ytplay"
 
 // menuitem icons

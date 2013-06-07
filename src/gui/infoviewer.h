@@ -122,12 +122,7 @@ class CInfoViewer
 		void showFailure();
 		void showMotorMoving(int duration);
 		void showLcdPercentOver();
-		void showSNR();
-		
-#if ENABLE_RADIOTEXT		
-		//void showRadiotext();
-		//void killRadiotext();
-#endif		
+		void showSNR();		
 
 		CProgressBar *snrscale, *sigscale, *timescale;
 		char MoviePercent;

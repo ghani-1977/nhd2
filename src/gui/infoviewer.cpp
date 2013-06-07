@@ -76,12 +76,13 @@ void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventL
 void sectionsd_getCurrentNextServiceKey(t_channel_id uniqueServiceKey, CSectionsdClient::responseGetCurrentNextInfoChannelID& current_next );
 
 extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
-extern CPictureViewer * g_PicViewer;
+extern CPictureViewer * g_PicViewer;			// neutrino.cpp
 
-extern cVideo * videoDecoder;
-extern CFrontend * live_fe;
-extern fe_map_t femap;
-extern CFrontend * getFE(int index);
+extern cVideo * videoDecoder;				// libdvbapi
+extern CFrontend * live_fe;				// zapit.cpp
+extern fe_map_t femap;					// zapit.cpp
+extern CFrontend * getFE(int index);			// zapit.cpp
+extern int FrontendCount;				// defined in zapit.cpp
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -112,8 +113,6 @@ bool newfreq = true;
 char old_timestr[10];
 static event_id_t last_curr_id = 0, last_next_id = 0;
 
-extern int FrontendCount;
-
 extern CZapitClient::SatelliteList satList;
 static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
 {
@@ -128,17 +127,17 @@ extern uint32_t shift_timer;
 #define YELLOW_BAR 70
 #define GREEN_BAR 100
 #define BAR_BORDER 1
-#define BAR_WIDTH 72 //(68+BAR_BORDER*2)
-#define BAR_HEIGHT 12 //(13 + BAR_BORDER*2)
+#define BAR_WIDTH 72 		//(68+BAR_BORDER*2)
+#define BAR_HEIGHT 12 		//(13 + BAR_BORDER*2)
 #define TIME_BAR_HEIGHT 12
 // InfoViewer: H 63 W 27
 #define NUMBER_H 63
 #define NUMBER_W 27
 
 
-extern std::string ext_channel_name;
+extern std::string ext_channel_name;	// defined in vcrcontrol.cpp
 int m_CA_Status;
-extern bool timeset;
+extern bool timeset;			// defined in sectionsd.cpp
 
 static int icon_w_subt, icon_h_subt;
 static int icon_w_vtxt, icon_h_vtxt;
@@ -148,8 +147,10 @@ static int icon_w_sd, icon_h_sd;
 static int icon_w_reso, icon_h_reso;
 static int icon_w_ca, icon_h_ca;
 static int icon_w_rt, icon_h_rt;
+static int icon_w_rec, icon_h_rec;
 static int TunerNumWidth;
 
+// channel logo
 static int PIC_W = 120;
 static int PIC_H = 40;
 
@@ -165,9 +166,9 @@ void CInfoViewer::Init()
 	// get dimensions
 	BoxHeight = 160;
 	
-	BoxStartX = g_settings.screen_StartX + 10;
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
 	//
@@ -188,8 +189,10 @@ void CInfoViewer::Init()
 	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_sd, &icon_h_sd);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SUBT, &icon_w_subt, &icon_h_subt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
-	frameBuffer->getIconSize("ca2_gray", &icon_w_ca, &icon_h_ca);
-	frameBuffer->getIconSize("radiotextoff", &icon_w_rt, &icon_h_rt);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2_GREY, &icon_w_ca, &icon_h_ca);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RADIOTEXTOFF, &icon_w_rt, &icon_h_rt);
+	frameBuffer->getIconSize(NEUTRINO_ICON_REC, &icon_w_rec, &icon_h_rec);
+	
 	TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T9", true);
 	//
 }
@@ -258,14 +261,14 @@ void CInfoViewer::showRecordIcon(const bool show)
 			if(!autoshift && !shift_timer) 
 			{
 				// shadow
-				frameBuffer->paintBoxRel(BoxStartX + 28 + SHADOW_OFFSET, BoxStartY -30 + SHADOW_OFFSET, 300, 20, COL_INFOBAR_SHADOW_PLUS_0);
+				frameBuffer->paintBoxRel(BoxStartX + icon_w_rec + 5 + SHADOW_OFFSET, BoxStartY - 30 + SHADOW_OFFSET, 300, 20, COL_INFOBAR_SHADOW_PLUS_0);
 				
 				// rec info box
-				frameBuffer->paintBoxRel(BoxStartX + 28, BoxStartY - 30, 300, 20, COL_INFOBAR_PLUS_0);
+				frameBuffer->paintBoxRel(BoxStartX + icon_w_rec + 5, BoxStartY - 30, 300, 20, COL_INFOBAR_PLUS_0);
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (BoxStartX + 30, BoxStartY - 8, 300, ext_channel_name.c_str (), COL_INFOBAR, 0, true);
 			} 
 			else
-				frameBuffer->paintBackgroundBoxRel(BoxStartX + 28, BoxStartY - 30, 300 + SHADOW_OFFSET, 20 + SHADOW_OFFSET);
+				frameBuffer->paintBackgroundBoxRel(BoxStartX + icon_w_rec + 5, BoxStartY - 30, 300 + SHADOW_OFFSET, 20 + SHADOW_OFFSET);
 		} 
 		else 
 		{
@@ -289,30 +292,27 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	
 	newfreq = true;
 	
-	//
-	BoxStartX = g_settings.screen_StartX + 10;
+	// dimension
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
-	//
 	
-	//
+	// get all icons size
 	frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
 	frameBuffer->getIconSize(NEUTRINO_ICON_VTXT, &icon_w_vtxt, &icon_h_vtxt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_w_reso, &icon_h_reso);
 	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_sd, &icon_h_sd);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SUBT, &icon_w_subt, &icon_h_subt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
-	frameBuffer->getIconSize("ca2_gray", &icon_w_ca, &icon_h_ca);
-	frameBuffer->getIconSize("radiotextoff", &icon_w_rt, &icon_h_rt);
-	//
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2_GREY, &icon_w_ca, &icon_h_ca);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RADIOTEXTOFF, &icon_w_rt, &icon_h_rt);
 	
-	//
+	// init progressbar
 	sigscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	snrscale = new CProgressBar(BAR_WIDTH, 8, RED_BAR, GREEN_BAR, YELLOW_BAR);
 	timescale = new CProgressBar(BoxWidth - 10, 6, 30, GREEN_BAR, 70, true);	//5? see in code
-	//
 	
 	sigscale->reset(); 
 	snrscale->reset(); 
@@ -374,11 +374,9 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// infobar box
 	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_BOTH);
 	
-	// hline
-	int height = g_SignalFont->getHeight() - 1;
-	int HlineYPos = BoxStartY + ChanHeight + 4 - 2 * height;
+	// timescale position
 	int posx = BoxStartX + 5;
-	int posy = HlineYPos + 3;
+	int posy = BoxStartY + 30;
 	
 	// event progressbar bg
 	frameBuffer->paintBoxRel(posx, posy, BoxWidth - 10, 6, COL_INFOBAR_BUTTONS_BACKGROUND );
@@ -601,7 +599,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	{
 		if ((g_settings.radiotext_enable) && (!recordModeActive) && (!calledFromNumZap))
 			showRadiotext();
-			//showIcon_RadioText(g_Radiotext->haveRadiotext());
 		else
 			showIcon_RadioText(false);
 	}
@@ -640,7 +637,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			{
 				res = messages_return::cancel_info;
 			} 			
-			else if ( (msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id) ) //FIXME:sec_timer_id???
+			else if ( (msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id) )
 			{
 				showSNR();
 				
@@ -652,7 +649,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 #if ENABLE_RADIOTEXT				
 				if ((g_settings.radiotext_enable) && (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio))
 					showRadiotext();
-					//showIcon_RadioText(g_Radiotext->haveRadiotext());
 #endif				
 
 				showIcon_16_9();
@@ -865,12 +861,12 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 	if (showButtonBar)
 	{
 		int mode = CNeutrinoApp::getInstance()->getMode();
-		std::string rt_icon = "radiotextoff";
+		std::string rt_icon = NEUTRINO_ICON_RADIOTEXTOFF;
 		if ((!virtual_zap_mode) && (!recordModeActive) && (mode == NeutrinoMessages::mode_radio))
 		{
 			if (g_settings.radiotext_enable)
 			{
-				rt_icon = rt_available ? "radiotextget" : "radiotextwait";
+				rt_icon = rt_available ? NEUTRINO_ICON_RADIOTEXTGET : NEUTRINO_ICON_RADIOTEXTWAIT;
 			}
 		}
 		
@@ -1668,11 +1664,9 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					oldrunningPercent = runningPercent;
 				}
 
-				// hline
-				int lheight = g_SignalFont->getHeight() - 1;
-				int HlineYPos = BoxStartY + ChanHeight + 4 - 2*lheight;
+				// timescale position
 				int posx = BoxStartX + 5;
-				int posy = HlineYPos + 3;
+				int posy = BoxStartY + 30;
 				
 				timescale->paint(posx, posy, runningPercent);
 	  		} 
