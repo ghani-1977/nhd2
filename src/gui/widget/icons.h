@@ -162,6 +162,7 @@
 #define NEUTRINO_ICON_RADIOTEXTWAIT		"radiotextwait"
 
 #define NEUTRINO_ICON_HINT_YTPLAY      		"hint_ytplay"
+#define NEUTRINO_ICON_YOUTUBE			"youtube"
 
 // menuitem icons
 

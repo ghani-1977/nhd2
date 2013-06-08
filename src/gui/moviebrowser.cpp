@@ -1601,11 +1601,15 @@ void CMovieBrowser::refreshTitle(void)
 	
 	// title
 	std::string title = m_textTitle.c_str();
+	std::string mb_icon = NEUTRINO_ICON_MOVIE;
+	
 	if (show_mode == MB_SHOW_YT) 
 	{
 		title = g_Locale->getText(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 		title += " : ";
 		title += g_Locale->getText(getFeedLocale());
+		
+		mb_icon = NEUTRINO_ICON_YOUTUBE;
 	}
 
 	// head box
@@ -1613,8 +1617,8 @@ void CMovieBrowser::refreshTitle(void)
 	
 	// movie icon
 	int icon_w, icon_h;
-	m_pcWindow->getIconSize(NEUTRINO_ICON_MOVIE, &icon_w, &icon_h);
-	m_pcWindow->paintIcon(NEUTRINO_ICON_MOVIE, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + 10);
+	m_pcWindow->getIconSize(mb_icon.c_str(), &icon_w, &icon_h);
+	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + 10);
 	
 	// head title
 	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), /*m_textTitle.c_str()*/title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
@@ -3858,7 +3862,7 @@ bool CMovieBrowser::showYTMenu()
 {
 	m_pcWindow->paintBackground();
 
-	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_STREAMING);
+	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_YOUTUBE);
 	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 
 	int select = -1;
