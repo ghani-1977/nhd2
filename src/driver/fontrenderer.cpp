@@ -420,13 +420,13 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	// if boxheight is !=0, we further adjust y, so that text is y-centered in the box
 	if(boxheight)
 	{
-		if(boxheight>step_y)			// this is a real box (bigger than text)
-			y -= ((boxheight-step_y)>>1);
-		else if(boxheight<0)			// this normally would be wrong, so we just use it to define a "border"
+		if(boxheight > step_y)			// this is a real box (bigger than text)
+			y -= ((boxheight - step_y)>>1);
+		else if(boxheight < 0)			// this normally would be wrong, so we just use it to define a "border"
 			y += (boxheight>>1);		// half of border value at lower end, half at upper end
 	}
 
-	int lastindex=0; // 0 == missing glyph (never has kerning values)
+	int lastindex = 0; // 0 == missing glyph (never has kerning values)
 	FT_Vector kerning;
 	int pen1 = -1; // "pen" positions for kerning, pen2 is "x"
 
@@ -467,7 +467,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				 (((fgt + deltat * i / 255) & ((1 << tl) - 1)) << to));
 				 
 			/* FIXME must be better solution */
-			if(g_settings.contrast_fonts && ((255-i) > 128))
+			if(g_settings.contrast_fonts && ((255 - i) > 128))
 				colors[255 - i] |=  0xFF << to;
 		}
 	}

@@ -48,28 +48,32 @@ class CInfoViewer
 {
 	private:
 		void Init(void);
-		CFrameBuffer * frameBuffer;
+		CFrameBuffer *frameBuffer;
 		
-		bool           gotTime;
-		bool           recordModeActive;
-		bool           CA_Status;
-		bool           showButtonBar;
+		bool gotTime;
+		bool recordModeActive;
+		bool CA_Status;
+		bool showButtonBar;
 		
-		int            BoxEndX;
-		int            BoxEndY;
-		int            BoxStartX;
-		int            BoxStartY;
-		
-		int            ButtonWidth;
-
-		int            ChanWidth;
-		int            ChanHeight;
-		int            ChanInfoX;
+		int BoxEndX;
+		int BoxEndY;
+		int BoxStartX;
+		int BoxStartY;
 		
 		int BoxHeight;
 		int BoxWidth;
 		
+		int ButtonWidth;
+
+		int ChanNumberWidth;
+		int ChanNumberHeight;
+		int ChanInfoX;
+		
 		int satNameWidth;
+		int ChanNameWidth;
+		
+		int freqStartX;
+		int freqWidth;
 		
 		// dimensions of radiotext window
 #if ENABLE_RADIOTEXT		
