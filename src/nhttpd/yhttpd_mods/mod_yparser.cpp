@@ -564,8 +564,8 @@ void CyParser::YWeb_cgi_set_ini(CyhookHandler *, std::string filename, std::stri
 // The textblock starts with "start-block~<blockname>" and ends with
 // "end-block~<blockname>"
 //-------------------------------------------------------------------------
-std::string CyParser::YWeb_cgi_include_block(std::string filename,
-		std::string blockname, std::string ydefault) {
+std::string CyParser::YWeb_cgi_include_block(std::string filename, std::string blockname, std::string ydefault) 
+{
 	std::string ytmp, yfile, yresult;
 	struct stat attrib;
 	yresult = ydefault;
@@ -625,8 +625,8 @@ std::string CyParser::YWeb_cgi_include_block(std::string filename,
 }
 
 //-------------------------------------------------------------------------
-
-std::string CyParser::YexecuteScript(CyhookHandler *, std::string cmd) {
+std::string CyParser::YexecuteScript(CyhookHandler *, std::string cmd) 
+{
 	std::string script, para, result;
 	bool found = false;
 
@@ -692,7 +692,8 @@ const CyParser::TyFuncCall CyParser::yFuncCallList[] = {
 //-------------------------------------------------------------------------
 // y-func : dispatching and executing
 //-------------------------------------------------------------------------
-std::string CyParser::YWeb_cgi_func(CyhookHandler *hh, std::string ycmd) {
+std::string CyParser::YWeb_cgi_func(CyhookHandler *hh, std::string ycmd) 
+{
 	std::string func, para, yresult = "ycgi func not found";
 	bool found = false;
 	ySplitString(ycmd, " ", func, para);
@@ -712,7 +713,8 @@ std::string CyParser::YWeb_cgi_func(CyhookHandler *hh, std::string ycmd) {
 //-------------------------------------------------------------------------
 // y-func : get_request_data
 //-------------------------------------------------------------------------
-std::string CyParser::func_get_request_data(CyhookHandler *hh, std::string para) {
+std::string CyParser::func_get_request_data(CyhookHandler *hh, std::string para) 
+{
 	std::string yresult;
 	if (para == "client_addr")
 		yresult = hh->UrlData["clientaddr"]; //compatibility TODO in yhtms
@@ -720,26 +722,32 @@ std::string CyParser::func_get_request_data(CyhookHandler *hh, std::string para)
 		yresult = hh->UrlData[para];
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_header_data
 //-------------------------------------------------------------------------
-std::string CyParser::func_get_header_data(CyhookHandler *hh, std::string para) {
+std::string CyParser::func_get_header_data(CyhookHandler *hh, std::string para) 
+{
 	return hh->HeaderList[para];
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_header_data
 //-------------------------------------------------------------------------
-std::string CyParser::func_get_config_data(CyhookHandler *hh, std::string para) {
+std::string CyParser::func_get_config_data(CyhookHandler *hh, std::string para) 
+{
 	if (para != "mod_auth.username" && para != "mod_auth.password")
 		return hh->WebserverConfigList[para];
 	else
 		return "empty";
 }
+
 //-------------------------------------------------------------------------
 // y-func : Reload the httpd.conf
 //-------------------------------------------------------------------------
 extern void yhttpd_reload_config();
-std::string CyParser::func_do_reload_httpd_config(CyhookHandler *, std::string) {
+std::string CyParser::func_do_reload_httpd_config(CyhookHandler *, std::string) 
+{
 	log_level_printf(1, "func_do_reload_httpd_config: raise USR1 !!!\n");
 	//raise(SIGUSR1); // Send HUP-Signal to Reload Settings
 	yhttpd_reload_config();
@@ -749,7 +757,8 @@ std::string CyParser::func_do_reload_httpd_config(CyhookHandler *, std::string) 
 //-------------------------------------------------------------------------
 // y-func : Change httpd (process image) on the fly
 //-------------------------------------------------------------------------
-std::string CyParser::func_change_httpd(CyhookHandler *hh, std::string para) {
+std::string CyParser::func_change_httpd(CyhookHandler *hh, std::string para) 
+{
 	if (para != "" && access(para.c_str(), 4) == 0) {
 		hh->status = HANDLED_ABORT;
 		int err = execvp(para.c_str(), NULL); // no return if successful
@@ -757,11 +766,12 @@ std::string CyParser::func_change_httpd(CyhookHandler *hh, std::string para) {
 	} else
 		return "ERROR [change_httpd]: para has not path to a file";
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_header_data
 //-------------------------------------------------------------------------
-std::string CyParser::func_get_languages_as_dropdown(CyhookHandler *,
-		std::string para) {
+std::string CyParser::func_get_languages_as_dropdown(CyhookHandler *, std::string para) 
+{
 	std::string yresult, sel;
 	DIR *d;
 	struct dirent *dir;
@@ -784,10 +794,12 @@ std::string CyParser::func_get_languages_as_dropdown(CyhookHandler *,
 	}
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_header_data
 //-------------------------------------------------------------------------
-std::string CyParser::func_set_language(CyhookHandler *, std::string para) {
+std::string CyParser::func_set_language(CyhookHandler *, std::string para) 
+{
 	if (para != "") {
 		CConfigFile *Config = new CConfigFile(',');
 		Config->loadConfig(HTTPD_CONFIGFILE);

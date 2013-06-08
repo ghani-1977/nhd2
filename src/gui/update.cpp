@@ -69,7 +69,7 @@
 
 #include <system/debug.h>
 
-#define SOFTWARE_UPDATE_URLS			"/var/etc/update.urls"
+#define SOFTWARE_UPDATE_URLS			"/etc/update.urls"
 
 #define gTmpPath 				"/var/tmp/"
 #define gUserAgent 				"neutrino/softupdater 1.0"
