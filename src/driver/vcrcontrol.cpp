@@ -810,12 +810,8 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		strftime(&(filename[pos]), sizeof(filename) - pos - 1, "%Y%m%d_%H%M%S", localtime(&t));
 		
 		strcat(filename, ".jpg");
-		
-#ifdef __sh__		
+			
 		sprintf(cmd, "ffmpeg -itsoffset -4 -i `wget -q -O - \"http://127.0.0.1/control/build_live_url?vlc_link=true\"` -y -f image2 -sn -an -vframes 1 -s 320*240 %s", filename);
-#else
-		sprintf(cmd, "grab -v %s", filename);
-#endif
 	} 
 	else
 	{
@@ -835,12 +831,8 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 			extension = "." + extension;
 			strReplace(file_name, extension.c_str(), ".jpg");
 		}
-	
-#ifdef __sh__		
+		
 		sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 \"%s\"", fname, spos, (char *)file_name.c_str());
-#else
-		sprintf(cmd, "grab -v %s", (char *)file_name.c_str());
-#endif
 	}
 	
 	printf("Executing %s\n", cmd);
