@@ -40,17 +40,22 @@ std::string CyParser::yCached_blocks_content;
 //=============================================================================
 // Constructor & Destructor
 //=============================================================================
-CyParser::CyParser() {
+CyParser::CyParser() 
+{
 	yConfig = new CConfigFile(',');
 	yCached_blocks_attrib.st_mtime = 0;
 }
+
 //-----------------------------------------------------------------------------
-CyParser::~CyParser(void) {
+CyParser::~CyParser(void) 
+{
 	if (yConfig != NULL)
 		delete yConfig;
 }
+
 //-----------------------------------------------------------------------------
-void CyParser::init(CyhookHandler *hh) {
+void CyParser::init(CyhookHandler *hh) 
+{
 	if (HTML_DIRS[0] == "") {
 		CyParser::HTML_DIRS[0] = hh->WebserverConfigList["WebsiteMain.override_directory"];
 		HTML_DIRS[1] = hh->WebserverConfigList["WebsiteMain.directory"];
@@ -60,6 +65,7 @@ void CyParser::init(CyhookHandler *hh) {
 		PLUGIN_DIRS[3].append("/scripts");
 	}
 }
+
 //=============================================================================
 // Main Dispatcher / Call definitions for /y/<dispatch>
 //=============================================================================
@@ -68,12 +74,14 @@ const CyParser::TyCgiCall CyParser::yCgiCallList[] = {
 #ifdef Y_CONFIG_FEATURE_SHOW_SERVER_CONFIG
 			{ "server-config", 	&CyParser::cgi_server_config, 	"text/html"},
 #endif
-		};
+		
+};
 //-----------------------------------------------------------------------------
 // HOOK: response_hook Handler
 // This is the main dispatcher for this module
 //-----------------------------------------------------------------------------
-THandleStatus CyParser::Hook_SendResponse(CyhookHandler *hh) {
+THandleStatus CyParser::Hook_SendResponse(CyhookHandler *hh) 
+{
 	hh->status = HANDLED_NONE;
 
 	log_level_printf(4, "yparser hook start url:%s\n",
@@ -100,7 +108,8 @@ THandleStatus CyParser::Hook_SendResponse(CyhookHandler *hh) {
 //-----------------------------------------------------------------------------
 // URL Function Dispatching
 //-----------------------------------------------------------------------------
-void CyParser::Execute(CyhookHandler *hh) {
+void CyParser::Execute(CyhookHandler *hh) 
+{
 	int index = -1;
 	std::string filename = hh->UrlData["filename"];
 
@@ -155,7 +164,8 @@ void CyParser::Execute(CyhookHandler *hh) {
 //-----------------------------------------------------------------------------
 // mini cgi Engine (Entry for ycgi)
 //-----------------------------------------------------------------------------
-void CyParser::cgi(CyhookHandler *hh) {
+void CyParser::cgi(CyhookHandler *hh) 
+{
 	bool ydebug = false;
 	std::string htmlfilename, yresult, ycmd;
 
@@ -184,6 +194,7 @@ void CyParser::cgi(CyhookHandler *hh) {
 	else
 		hh->addResult(yresult, HANDLED_READY);
 }
+
 //-----------------------------------------------------------------------------
 // URL: server-config
 //-----------------------------------------------------------------------------
@@ -223,10 +234,12 @@ void CyParser::cgi_server_config(CyhookHandler *hh)
 	hh->SendHTMLFooter();
 }
 #endif
+
 //=============================================================================
 // y Parsing and sending .yhtm Files (Main ENTRY)
 //=============================================================================
-void CyParser::ParseAndSendFile(CyhookHandler *hh) {
+void CyParser::ParseAndSendFile(CyhookHandler *hh) 
+{
 	bool ydebug = false;
 	std::string yresult, ycmd;
 	log_level_printf(3, "yParser.ParseAndSendFile: File: %s\n",
@@ -265,14 +278,15 @@ void CyParser::ParseAndSendFile(CyhookHandler *hh) {
 //-----------------------------------------------------------------------------
 // mini cgi Engine (file parsing)
 //-----------------------------------------------------------------------------
-std::string CyParser::cgi_file_parsing(CyhookHandler *hh,
-		std::string htmlfilename, bool ydebug) {
+std::string CyParser::cgi_file_parsing(CyhookHandler *hh, std::string htmlfilename, bool ydebug) 
+{
 	bool found = false;
 	std::string htmlfullfilename, yresult, html_template;
 
 	char cwd[255];
 	getcwd(cwd, 254);
-	for (unsigned int i = 0; i < HTML_DIR_COUNT && !found; i++) {
+	for (unsigned int i = 0; i < HTML_DIR_COUNT && !found; i++) 
+	{
 		htmlfullfilename = HTML_DIRS[i] + "/" + htmlfilename;
 		std::fstream fin(htmlfullfilename.c_str(), std::fstream::in);
 		if (fin.good()) {
@@ -303,8 +317,8 @@ std::string CyParser::cgi_file_parsing(CyhookHandler *hh,
 //-----------------------------------------------------------------------------
 // main parsing (nested and recursive)
 //-----------------------------------------------------------------------------
-std::string CyParser::cgi_cmd_parsing(CyhookHandler *hh,
-		std::string html_template, bool ydebug) {
+std::string CyParser::cgi_cmd_parsing(CyhookHandler *hh, std::string html_template, bool ydebug) 
+{
 	std::string::size_type start, end;
 	unsigned int esc_len = strlen(YPARSER_ESCAPE_START);
 	bool is_cmd;
@@ -347,6 +361,7 @@ std::string CyParser::cgi_cmd_parsing(CyhookHandler *hh,
 	} while (is_cmd);
 	return html_template;
 }
+
 //=============================================================================
 // ycmd - Dispatching
 //=============================================================================
@@ -371,10 +386,12 @@ std::string CyParser::cgi_cmd_parsing(CyhookHandler *hh,
 //	L:<translation-id>
 //-----------------------------------------------------------------------------
 
-std::string CyParser::YWeb_cgi_cmd(CyhookHandler *hh, std::string ycmd) {
+std::string CyParser::YWeb_cgi_cmd(CyhookHandler *hh, std::string ycmd) 
+{
 	std::string ycmd_type, ycmd_name, yresult;
 
-	if (ySplitString(ycmd, ":", ycmd_type, ycmd_name)) {
+	if (ySplitString(ycmd, ":", ycmd_type, ycmd_name)) 
+	{
 		if (ycmd_type == "L")
 			yresult = CLanguage::getInstance()->getTranslation(ycmd_name);
 		else if (ycmd_type == "script")
@@ -498,14 +515,23 @@ std::string CyParser::YWeb_cgi_cmd(CyhookHandler *hh, std::string ycmd) {
 // Get Value from ini/conf-file (filename) for var (varname)
 // yaccess = open | cache
 //-------------------------------------------------------------------------
-std::string CyParser::YWeb_cgi_get_ini(CyhookHandler *, std::string filename,
-		std::string varname, std::string yaccess) {
+std::string CyParser::YWeb_cgi_get_ini(CyhookHandler *, std::string filename, std::string varname, std::string yaccess) 
+{
 	std::string result;
-	if ((yaccess == "open") || (yaccess == "")) {
+	
+	if (!filename.compare(0, 19, "/var/tuxbox/config/")) 
+	{
+		std::string filename_new = CONFIGDIR + filename.substr(18);
+		filename = filename_new;
+	}
+
+	if ((yaccess == "open") || (yaccess == "")) 
+	{
 		yConfig->clear();
 		yConfig->loadConfig(filename);
 	}
 	result = yConfig->getString(varname, "");
+	
 	return result;
 }
 
@@ -513,10 +539,18 @@ std::string CyParser::YWeb_cgi_get_ini(CyhookHandler *, std::string filename,
 // set Value from ini/conf-file (filename) for var (varname)
 // yaccess = open | cache | save
 //-------------------------------------------------------------------------
-void CyParser::YWeb_cgi_set_ini(CyhookHandler *, std::string filename,
-		std::string varname, std::string varvalue, std::string yaccess) {
+void CyParser::YWeb_cgi_set_ini(CyhookHandler *, std::string filename, std::string varname, std::string varvalue, std::string yaccess) 
+{
 	std::string result;
-	if ((yaccess == "open") || (yaccess == "")) {
+	
+	if (!filename.compare(0, 19, "/var/tuxbox/config/")) 
+	{
+		std::string filename_new = CONFIGDIR + filename.substr(18);
+		filename = filename_new;
+	}
+
+	if ((yaccess == "open") || (yaccess == "")) 
+	{
 		yConfig->clear();
 		yConfig->loadConfig(filename);
 	}
