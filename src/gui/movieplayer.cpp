@@ -78,16 +78,20 @@
 #include <poll.h>
 #include <sys/timeb.h>
 
+/* libdvbapi */
 #include <playback_cs.h>
-
 #include <video_cs.h>
 #include <audio_cs.h>
 
 /*zapit includes*/
 #include <channel.h>
 
+/* curl */
 #include <curl/curl.h>
 #include <curl/easy.h>
+
+
+static const char FILENAME[] = "movieplayer.cpp";
  
 // vlc
 static int streamtype;
@@ -115,18 +119,21 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 #define MP_TS_SIZE 262072				// ~0.5 sec
 
 extern char rec_filename[512];				// defined in stream2file.cpp
-extern bool autoshift;
 
 CMoviePlayerGui::state playstate;
 bool isMovieBrowser = false;
-
-static int file_prozent;
+bool isVlc = false;
+bool isWebTV = false;
+bool isDVD = false;
+bool isBlueRay = false;
+bool isURL = false;
 
 int speed = 1;
 int slow = 0;
 
-int position = 0;
-int duration = 0;
+static int position = 0;
+static int duration = 0;
+static int file_prozent;
 
 int startposition;
 int timeshift;
@@ -137,11 +144,8 @@ off64_t secondoffset;
 #error not using 64 bit file offsets
 #endif /* __USE_FILE__OFFSET64 */
 
-std::string startfilename;
-
-int jumpminutes = 1;
 static int g_jumpseconds = 0;
-int buffer_time = 0;
+
 unsigned short g_apids[10];
 unsigned short m_apids[10]; // needed to get language from mb
 unsigned short g_ac3flags[10];
@@ -159,13 +163,13 @@ std::string g_file_epg1;
 
 bool showaudioselectdialog = false;
 
-bool isVlc = false;
-bool isWebTV = false;
-bool isDVD = false;
-bool isBlueRay = false;
-bool isURL = false;
+#define TIMESHIFT_SECONDS 	3
 
-#define TIMESHIFT_SECONDS 3
+enum {
+	NO_TIMESHIFT,
+	TIMESHIFT,
+	P_TIMESHIFT
+};
 
 extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
 // aspect ratio
@@ -232,8 +236,6 @@ const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 };
 #endif
 
-static const char FILENAME[] = "movieplayer.cpp";
-
 bool get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_info, std::string * apidtitle)
 {
 	if (movie_info == NULL || apidtitle == NULL)
@@ -267,13 +269,14 @@ int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey
 	return menu_return::RETURN_EXIT;
 }
 
-//
-#define TIMEOSD_FONT 	SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME
-#define TIMEBARH 	38
-#define BARLEN 		200
-#define SHADOW_OFFSET	5
-#define LEFT_OFFSET 	5
-#define RIGHT_OFFSET 	5
+// MovieInfoViewer
+#define TIMEOSD_FONT 		SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME
+#define TIMEBARH 		38
+#define BARLEN 			200
+#define SHADOW_OFFSET		5
+#define LEFT_OFFSET 		5
+#define RIGHT_OFFSET 		5
+#define TIMESCALE_HEIGHT	6
 
 extern cVideo *videoDecoder;
 extern cAudio *audioDecoder;
@@ -287,7 +290,7 @@ CMovieInfoViewer::CMovieInfoViewer()
 	GetDimensions();
 
 	if(!timescale)
-		timescale = new CProgressBar( BoxWidth - 15, 6, 40, 100, 70, true );
+		timescale = new CProgressBar( BoxWidth - 15, TIMESCALE_HEIGHT, 40, 100, 70, true );
 }
 
 CMovieInfoViewer::~CMovieInfoViewer()
@@ -704,7 +707,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 #endif
 	}
 	
-	startfilename = "";
 	startposition = 0;
 
 	isMovieBrowser = false;
@@ -720,26 +722,28 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	if (actionKey == "tsmoviebrowser") 
 	{
 		isMovieBrowser = true;
-		timeshift = 0;
+		moviebrowser->setMode(MB_SHOW_RECORDS);
+		
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		moviebrowser->setMode(MB_SHOW_RECORDS);
 
 		PlayFile();
 	}
 	else if (actionKey == "moviebrowser") 
 	{
 		isMovieBrowser = true;
-		timeshift = 0;
+		moviebrowser->setMode(MB_SHOW_FILES);
+		
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		moviebrowser->setMode(MB_SHOW_FILES);
 		
 		PlayFile();
 	}
@@ -748,7 +752,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isMovieBrowser = true;
 		moviebrowser->setMode(MB_SHOW_YT);
 		
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
@@ -760,7 +764,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if (actionKey == "fileplayback") 
 	{
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
@@ -771,25 +775,21 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if (actionKey == "timeshift") 
 	{
-		timeshift = 1;
+		timeshift = TIMESHIFT;
 		PlayFile();
 	} 
 	else if (actionKey == "ptimeshift") 
 	{
-		timeshift = 2;
+		timeshift = P_TIMESHIFT;
 		PlayFile();
 	} 
-	else if (actionKey == "showtshelp")
-	{
-		showHelpTS();
-	}
 	else if ( actionKey == "vlcplayback" ) 
 	{
 		isVlc = true;
 		isWebTV = false;
 		streamtype = STREAMTYPE_FILE;
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
@@ -801,7 +801,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isVlc = false;
 		isWebTV = true;
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
@@ -811,7 +811,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if(actionKey == "dvdplayback")
 	{
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isBlueRay = false;
@@ -823,7 +823,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if(actionKey == "bluerayplayback")
 	{
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
@@ -835,7 +835,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if(actionKey == "urlplayback")
 	{
 		isMovieBrowser = false;
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
@@ -862,7 +862,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	if (timeshift) 
 	{
-		timeshift = 0;
+		timeshift = NO_TIMESHIFT;
 		return menu_return::RETURN_EXIT_ALL;
 	}
 	
@@ -875,6 +875,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	return menu_return::RETURN_REPAINT;
 }
 
+// vlc
 size_t CurlDummyWrite (void *ptr, size_t size, size_t nmemb, void *data)
 {
 	std::string* pStr = (std::string*) data;
@@ -1303,7 +1304,7 @@ void CMoviePlayerGui::PlayFile(void)
 	
 	// for playing
 	playstate = CMoviePlayerGui::STOPPED;
-	bool is_file_player = false;	//FIXME: for what???
+	bool is_file_player = false;
 	
 	// timeosd
 	bool time_forced = false;
@@ -1429,6 +1430,7 @@ void CMoviePlayerGui::PlayFile(void)
 #endif		
 	}
 
+	// bookmarks menu
 	timeb current_time;
 	CMovieInfo cMovieInfo;			// funktions to save and load movie info
 	MI_MOVIE_INFO * p_movie_info = NULL;	// movie info handle which comes from the MovieBrowser, if not NULL MoviePla yer is able to save new bookmarks
@@ -1466,6 +1468,7 @@ void CMoviePlayerGui::PlayFile(void)
 	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIESTART, true, NULL, &cSelectedMenuBookStart[3]));
 	bookStartMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_MOVIEEND, true, NULL, &cSelectedMenuBookStart[4]));
 
+	// play loop
  go_repeat:
 	do {
 		// vlc (generate mrl)
@@ -1482,6 +1485,7 @@ void CMoviePlayerGui::PlayFile(void)
 				char * tmp = curl_escape (mrl_str.c_str (), 0);
 				strncpy (mrl, tmp, sizeof (mrl) - 1);
 				curl_free (tmp);
+				
 				dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
  
 				update_lcd = true;
@@ -1540,6 +1544,7 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
+			// start timeosd
 			FileTime.SetMode(CTimeOSD::MODE_ASC);
 			FileTime.update(position/1000);
 		}
@@ -1764,7 +1769,6 @@ void CMoviePlayerGui::PlayFile(void)
 							g_file_epg1 = p_movie_info->epgInfo2;
 						else
 							g_file_epg1 = sel_filename;
-						//
 						
 						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
 						dprintf(DEBUG_NORMAL, "CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
@@ -1863,7 +1867,6 @@ void CMoviePlayerGui::PlayFile(void)
 					break;
 				}
 			}
-			//
 			else if(isDVD) // dvd
 			{
 				filename = NULL;
@@ -2163,6 +2166,7 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 		}
 		
+		// movieinfobar
 		if (MovieInfoViewer.IsVisible()) 
 			MovieInfoViewer.updatePos(file_prozent);
 
@@ -2318,7 +2322,7 @@ void CMoviePlayerGui::PlayFile(void)
 				//p_movie_info->fileInfoStale(); //TODO: we might to tell the Moviebrowser that the movie info has changed, but this could cause long reload times  when reentering the Moviebrowser
 			}
 			
-			if(timeshift == 1) //timeshift
+			if(timeshift == TIMESHIFT) //timeshift
 			{
 				CVCRControl::getInstance()->Stop();
 				
@@ -2329,7 +2333,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 			}
-			else if(timeshift == 2) //ptimeshift
+			else if(timeshift == P_TIMESHIFT) //ptimeshift
 				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
 
 			if (!was_file)

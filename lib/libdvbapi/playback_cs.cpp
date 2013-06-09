@@ -38,6 +38,9 @@
 
 static const char * FILENAME = "[playback_cs.cpp]";
 
+// global
+bool isTS = false;
+
 #if defined ENABLE_GSTREAMER
 #include <gst/gst.h>
 #include <gst/pbutils/missing-plugins.h>
@@ -49,7 +52,6 @@ GstElement * videoSink = NULL;
 gchar * uri = NULL;
 GstBus * bus = NULL;
 bool end_eof = false;
-bool isTS = false;
 #elif defined (ENABLE_LIBEPLAYER3)
 #include <common.h>
 #include <subtitle.h>
@@ -316,7 +318,6 @@ void cPlayback::Close(void)
 	
 #if ENABLE_GSTREAMER
 	end_eof = false;
-	isTS = false;
 	
 	// disconnect bus handler
 	if (m_gst_playbin)
@@ -385,6 +386,7 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 	//create playback path
 	std::string file("");
 	bool isHTTP = false;
+	isTS = false;
 
 	if(!strncmp("http://", filename, 7))
 	{
@@ -414,14 +416,12 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 		file = "file://";
 	
 	file.append(filename);
+	
+	if (file.rfind(".ts") == file.length() - 3 )
+		isTS = true;
 
 #if defined (ENABLE_GSTREAMER)
 	end_eof = false;
-	isTS = false;
-	
-	// check if ts file
-	if (strstr(filename, ".ts"))
-		isTS = true;
 	
 	int m_buffer_size = 5*1024*1024;
 	int flags = 0x47; //(GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO | GST_PLAY_FLAG_NATIVE_VIDEO | GST_PLAY_FLAG_TEXT);
@@ -471,6 +471,11 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 	// set buffer size
 	g_object_set(G_OBJECT(m_gst_playbin), "buffer-size", m_buffer_size, NULL);
 #elif defined (ENABLE_LIBEPLAYER3)
+	if(isTS && player && player->playback)
+		player->playback->noprobe = 1;
+	else
+		player->playback->noprobe = 0;
+		
 	//open file
 	if(player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, (char *)file.c_str()) >= 0) 
 	{

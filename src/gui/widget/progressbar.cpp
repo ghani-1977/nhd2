@@ -25,7 +25,7 @@
 
 CProgressBar::CProgressBar(int w, int h, int r, int g, int b, bool inv)
 {
-	frameBuffer = CFrameBuffer::getInstance ();
+	frameBuffer = CFrameBuffer::getInstance();
 	
 	double div;
 	width = w;
