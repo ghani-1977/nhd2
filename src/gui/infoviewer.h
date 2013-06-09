@@ -70,7 +70,6 @@ class CInfoViewer
 		int ChanInfoX;
 		
 		int satNameWidth;
-		int ChanNameWidth;
 		
 		int freqStartX;
 		int freqWidth;

@@ -192,8 +192,6 @@ class CMovieInfo
 		bool saveFile_std(const CFile& file, const char* text, const int text_size);
 		bool saveFile_vlc(const CFile& file, const char* text, const int text_sizet);
 		bool saveFile(const CFile& file, const char* text, const int text_size);
-		//void CMovieInfo::strReplace(std::string& orig, const char* fstr, const std::string rstr);
-	private:// variables
 };
 
 #endif /*MOVIEINFO_H_*/
