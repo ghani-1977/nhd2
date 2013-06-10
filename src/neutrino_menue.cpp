@@ -2745,22 +2745,18 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu->addItem(menu_item, false);
 
                                 break;
-				
+			
+#if ENABLE_GRAPHLCD				
 			case SNeutrinoSettings::ITEM_GLCD:
                                 menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_GLCD;
-#if ENABLE_GRAPHLCD                               
-				glcdMenu = new GLCD_Menu();
-#endif				
+                                menu_prev = SNeutrinoSettings::ITEM_GLCD;                              
+				glcdMenu = new GLCD_Menu();				
 				
-                                keyhelper.get(&key, &icon);
-#if ENABLE_GRAPHLCD				
+                                keyhelper.get(&key, &icon);				
                                 menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, glcdMenu, "-1", key, icon);
-#else
-				menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, false, NULL, NULL, "-1", key, icon);
-#endif
                                 menu->addItem(menu_item, false);
                                 break;
+#endif				
 
 			case SNeutrinoSettings::ITEM_OPKG:
                                 menu_items++;
@@ -2774,13 +2770,15 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 				
 			// webtv
+#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)			
 			case SNeutrinoSettings::ITEM_WEBTV:
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_WEBTV;
-                                keyhelper.get(&key, &icon);
+                                keyhelper.get(&key, &icon);	
 				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
+#endif				
 
                         default:
                                 printf("[neutrino] WARNING! menu wrong item!!\n");
