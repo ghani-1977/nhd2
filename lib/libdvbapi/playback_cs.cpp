@@ -267,6 +267,12 @@ bool cPlayback::Open()
 	mSpeed = 0;
 	playing = false;
 	
+	// zapit client dont close early av decoders, so increase them here to be sure
+	if(videoDecoder)
+		videoDecoder->Close();
+	if(audioDecoder)
+		audioDecoder->Close();
+	
 #if defined (ENABLE_GSTREAMER)
 	// create gst pipeline
 	m_gst_playbin = gst_element_factory_make("playbin2", "playbin");
@@ -373,6 +379,12 @@ void cPlayback::Close(void)
 	if(player != NULL)
 		player = NULL;
 #endif	
+
+	//NOTE: just tob sure
+	if(videoDecoder)
+		videoDecoder->Open();
+	if(audioDecoder)
+		audioDecoder->Open();
 }
 
 // start
