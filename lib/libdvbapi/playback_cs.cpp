@@ -35,8 +35,14 @@
 #include <driver/framebuffer.h>
 #include <system/debug.h>
 
+#include "audio_cs.h"
+#include "video_cs.h"
+
 
 static const char * FILENAME = "[playback_cs.cpp]";
+
+extern cVideo *videoDecoder;
+extern cAudio *audioDecoder;
 
 // global
 bool isTS = false;
