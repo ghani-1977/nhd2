@@ -544,10 +544,11 @@ void CMoviePlayerGui::Init(void)
 
 	// tsfilefilter
 	tsfilefilter.addFilter("ts");
+	
+#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	tsfilefilter.addFilter("mpg");
 	tsfilefilter.addFilter("mpeg");
 	tsfilefilter.addFilter("divx");
-	
 	tsfilefilter.addFilter("avi");
 	tsfilefilter.addFilter("mkv");
 	tsfilefilter.addFilter("asf");
@@ -559,25 +560,23 @@ void CMoviePlayerGui::Init(void)
 	tsfilefilter.addFilter("mp4");
 	tsfilefilter.addFilter("mov");	
 	tsfilefilter.addFilter("flv");	
-	
 	tsfilefilter.addFilter("dat");
 	tsfilefilter.addFilter("trp");
 	tsfilefilter.addFilter("vdr");
 	tsfilefilter.addFilter("mts");
-	
 	tsfilefilter.addFilter("wav");
 	tsfilefilter.addFilter("flac");
 	tsfilefilter.addFilter("mp3");
 	tsfilefilter.addFilter("wmv");
 	tsfilefilter.addFilter("wma");
 	tsfilefilter.addFilter("ogg");
+#endif	
 	
 	// vlcfilefilter
 	vlcfilefilter.addFilter ("ts");
 	vlcfilefilter.addFilter ("mpg");
 	vlcfilefilter.addFilter ("mpeg");
 	vlcfilefilter.addFilter ("divx");
-
 	vlcfilefilter.addFilter ("avi");
 	vlcfilefilter.addFilter ("mkv");
 	vlcfilefilter.addFilter ("asf");
@@ -589,7 +588,6 @@ void CMoviePlayerGui::Init(void)
 	vlcfilefilter.addFilter ("mov");
 	vlcfilefilter.addFilter ("flv");
 	vlcfilefilter.addFilter ("m2v");
-
 	vlcfilefilter.addFilter ("wmv");
 }
 
