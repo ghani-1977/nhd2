@@ -2115,10 +2115,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CVFD::getInstance()->init();
 #endif	
 
-	// VFD clear
-#if defined (PLATFORM_COOLSTREAM)	
-	CVFD::getInstance()->Clear();
-#endif	
+	// VFD clear	
+	CVFD::getInstance()->Clear();	
 
 	// show msg in vfd
 	CVFD::getInstance()->ShowText( (char *)"NHD2");	
@@ -5124,9 +5122,6 @@ void stop_daemons()
 	g_Zapit->shutdown();
 	pthread_join(zapit_thread, NULL);
 	dprintf(DEBUG_NORMAL, "stop_daemons: zapit shutdown done\n");	
-
-	// clear vfd
-	//CVFD::getInstance()->Clear();
 	
 #if defined (PLATFORM_COOLSTREAM)
 	CVFD::getInstance()->Clear();

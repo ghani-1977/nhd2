@@ -893,11 +893,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
 		return cERR_CONTAINER_FFMPEG_OPEN;
 	}
-
+	
 	avContext->flags = AVFMT_FLAG_GENPTS;
 	
-	if (context->playback->noprobe)
-		avContext->max_analyze_duration = 1;
+	//if ( strstr(filename, ".ts") )
+		//avContext->max_analyze_duration = 1;
 
 	ffmpeg_printf(20, "find_streaminfo\n");
 

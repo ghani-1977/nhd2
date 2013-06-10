@@ -318,10 +318,14 @@ static int writeData(void* _call)
 
         memcpy (NalData, call->data + VideoPosition, NalLengthBytes);
         VideoPosition += NalLengthBytes;
-        NalLength       = (NalLengthBytes == 1) ?  NalData[0] :
-                          (NalLengthBytes == 2) ? (NalData[0] <<  8) |  NalData[1] :
-                          (NalLengthBytes == 3) ? (NalData[0] << 16) | (NalData[1] <<  8) |  NalData[2] :
-                          (NalData[0] << 24) | (NalData[1] << 16) | (NalData[2] << 8) | NalData[3];
+	
+	switch(NalLengthBytes) 
+	{
+		case 1:  NalLength = (NalData[0]); break;
+		case 2:  NalLength = (NalData[0] <<  8) | (NalData[1]); break;
+		case 3:  NalLength = (NalData[0] << 16) | (NalData[1] <<  8) | (NalData[2]); break;
+		default: NalLength = (NalData[0] << 24) | (NalData[1] << 16) | (NalData[2] << 8) | (NalData[3]); break;
+	}
 
         h264_printf(20, "NalStart = %u + NalLength = %u > SampleSize = %u\n", NalStart, NalLength, SampleSize);
 
