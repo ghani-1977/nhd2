@@ -217,33 +217,33 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	
 	int shortcutMediaPlayer = 1;
 	
-
+#if defined (ENABLE_PCMDECODER) || defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	//Internet Radio
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_INETRADIO, true, NULL, new CAudioPlayerGui(true), NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, "internetradio", LOCALE_HELPTEXT_INTERNETRADIO ));
 
 	//AudioPlayer
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_AUDIOPLAYER, true, NULL, new CAudioPlayerGui(), NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, "audioplayer", LOCALE_HELPTEXT_AUDIOPLAYER ));
+#endif	
 	
 	// movieplayer
 	moviePlayerGui = new CMoviePlayerGui();
 	
+#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	// movieplayer ts browser
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_RECORDS, true, NULL, moviePlayerGui, "tsmoviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "tsmoviebrowser", LOCALE_HELPTEXT_TSMOVIEBROWSER ));
 	
-#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)		
 	// movieplayer movie browser
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_MOVIES, true, NULL, moviePlayerGui, "moviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "tsmoviebrowser", LOCALE_HELPTEXT_TSMOVIEBROWSER ));
 
 	// // movieplayer multiForamt
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "fileplayback", LOCALE_HELPTEXT_FILEPLAYBACK ));
-#endif	
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "fileplayback", LOCALE_HELPTEXT_FILEPLAYBACK ));	
 	
 	// movieplayer netstream
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "vlc", LOCALE_HELPTEXT_NETSTREAM ));
-#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)		
+	
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_YTPLAYBACK, true, NULL, moviePlayerGui, "ytplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "hint_ytplay", LOCALE_HELPTEXT_NETSTREAM ));
 	
 	//NOTE: buggy
@@ -254,10 +254,11 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	
 	// blueray player
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_BLUERAYPLAYBACK, true, NULL, moviePlayerGui, "bluerayplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, "dvd", LOCALE_HELPTEXT_BLUERAY ));
+	
+	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 #endif	
 
 	//PictureViewer
-	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_PICTUREVIEWER, true, NULL, new CPictureViewerGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "pictureviewer", LOCALE_HELPTEXT_PICTUREVIEWER ));
 
 	//UPNP Browser
