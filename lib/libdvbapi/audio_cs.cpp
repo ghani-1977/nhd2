@@ -151,7 +151,7 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 	volume = 63 - volume * 63/100;
 	
-#ifdef __sh__	
+#if !defined (PLATFORM_GENERIC) && !defined (PLATFORM_HYPERCUBE)
 	unsigned char vol = volume;
 	
 	char sVolume[4];
@@ -161,7 +161,9 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
 	write(fd, sVolume, strlen(sVolume));
 	close(fd);
-#else
+#endif	
+
+#if !defined (__sh__)
 	// convert to -1dB steps
 	left = 63 - left * 0.63;
 	right = 63 - right * 0.63;
@@ -178,21 +180,7 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	
 		if(ret < 0)
 			perror("AUDIO_SET_MIXER");
-	}
-
-#if !defined (PLATFORM_GENERIC) && defined (PLATFORM_HYPERCUBE)
- 	//HACK?
- 	FILE *f;
- 
- 	if((f = fopen("/proc/stb/avs/0/volume", "wb")) == NULL)
- 	{
- 		printf("cannot open /proc/stb/avs/0/volume(%m)\n");
- 	}
- 
- 	fprintf(f, "%d", volume); /* in -1dB */
- 
- 	fclose(f); 
-#endif	
+	}	
 #endif
 	
 	return ret;
