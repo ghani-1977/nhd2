@@ -778,7 +778,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		gint64 pts;
 		position = 0;
 		
-		if(audioSink)
+		if(audioSink && !isTS)
 		{
 			gchar *name = gst_element_get_name(audioSink);
 				
@@ -791,7 +791,7 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 			else
 				gst_element_query_position(m_gst_playbin, &fmt, &pts);
 		}
-		else if(videoSink)
+		else if(videoSink && !isTS)
 		{
 			gchar *name = gst_element_get_name(videoSink);
 				
