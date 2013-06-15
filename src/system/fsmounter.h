@@ -85,11 +85,7 @@ class CFSMounter
 		typedef std::vector<CFSMounter::MountInfo> MountInfos;
 
 	private:
-	/*
-		FS_Support m_nfs_sup;
-		FS_Support m_cifs_sup;
-		FS_Support m_lufs_sup;
-	*/
+	
 	public:
 		CFSMounter();
 		static bool isMounted(const char * const local_dir);

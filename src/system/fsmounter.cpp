@@ -49,6 +49,7 @@
 #include <sys/mount.h>
 #include <unistd.h>
 
+
 pthread_mutex_t g_mut;
 pthread_cond_t g_cond;
 pthread_t g_mnt;
@@ -115,6 +116,7 @@ bool remove_modules(const CFSMounter::FSType fstype)
 		return (system("rmmod lufs") == 0);
 	else if (fstype == CFSMounter::SMBFS)
 		return (system("rmmod smbfs") == 0);
+	
 	return false;
 }
 
@@ -284,7 +286,8 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 	timeout.tv_nsec = 0;
 	retcode = pthread_cond_timedwait(&g_cond, &g_mut, &timeout);
 	if (retcode == ETIMEDOUT) 
-	{  // timeout occurred
+	{  
+		// timeout occurred
 		pthread_cancel(g_mnt);
 	}
 	pthread_mutex_unlock(&g_mut);
@@ -294,6 +297,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 		printf("[CFSMounter] FS mount error: \"%s\"\n", cmdstr.c_str());
 		return (retcode == ETIMEDOUT) ? MRES_TIMEOUT : MRES_UNKNOWN;
 	}
+	
 	return MRES_OK;
 
 }
@@ -311,6 +315,7 @@ bool CFSMounter::automount()
 						       g_settings.network_nfs_mount_options2[i])) && res;
 		}
 	}
+	
 	return res;
 }
 
@@ -343,6 +348,7 @@ CFSMounter::UMountRes CFSMounter::umount(const char * const dir)
 			}
 		}
 	}
+	
 	if (nfs_mounted_once)
 		remove_modules(CFSMounter::NFS);
 	return res;

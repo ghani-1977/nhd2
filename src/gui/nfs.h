@@ -60,7 +60,6 @@ class CNFSMountGui : public CMenuTarget
 class CNFSUmountGui : public CMenuTarget
 {
 	private:
-
 		int menu();
 
 	public:
@@ -73,7 +72,7 @@ class CNFSSmallMenu : public CMenuTarget
 {
 	private:
 
-   public:
+	public:
 		CNFSSmallMenu(){};
 		~CNFSSmallMenu(){};
 		int exec( CMenuTarget* parent, const std::string & actionKey );
@@ -81,6 +80,5 @@ class CNFSSmallMenu : public CMenuTarget
 
 const char * mntRes2Str(CFSMounter::MountRes res);
 const char * mntRes2Str(CFSMounter::UMountRes res);
-
 
 #endif
