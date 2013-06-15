@@ -171,7 +171,6 @@ enum {
 
 int currentMode;
 bool playbackStopForced = false;
-//int waitForMotor = 0;
 
 /* list of near video on demand */
 tallchans nvodchannels;         	/* tallchans defined in "bouquets.h" */
@@ -817,7 +816,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 		cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
 	}
 	
-	// ci cam //FIXME: boxes without ci cam
+	// ci cam
 #if defined (ENABLE_CI)	
 	ci->SendCaPMT(thischannel->getCaPmt(), fe->fenumber);
 #endif	
