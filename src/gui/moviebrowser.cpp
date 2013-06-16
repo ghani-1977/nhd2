@@ -1791,12 +1791,14 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_minus) 
 	{
-		onSetGUIWindowPrev();
+		if (show_mode != MB_SHOW_YT)
+			onSetGUIWindowPrev();
 		//refreshMovieInfo();
 	}
 	else if (msg == CRCInput::RC_plus) 
 	{
-		onSetGUIWindowNext();
+		if (show_mode != MB_SHOW_YT)
+			onSetGUIWindowNext();
 		//refreshMovieInfo();
 	}
 	else if (msg == CRCInput::RC_green) 
@@ -2299,7 +2301,6 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 {
-	//
 	if (show_mode == MB_SHOW_YT)
 	{
 		switch(gui) 
