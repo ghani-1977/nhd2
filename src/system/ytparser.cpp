@@ -29,6 +29,7 @@
 #include <string>
 
 #include "ytparser.h"
+#include "debug.h"
 
 //#if LIBCURL_VERSION_NUM < 0x071507
 //#error
@@ -43,6 +44,7 @@ std::string cYTVideoUrl::GetUrl()
 	std::string fullurl = url;
 	fullurl += "&signature=";
 	fullurl += sig;
+	
 	return fullurl;
 }
 
@@ -94,6 +96,7 @@ size_t cYTFeedParser::CurlWriteToString(void *ptr, size_t size, size_t nmemb, vo
 {
         std::string* pStr = (std::string*) data;
         pStr->append((char*) ptr, nmemb);
+	
         return size*nmemb;
 }
 
@@ -110,14 +113,16 @@ bool cYTFeedParser::getUrl(std::string &url, std::string &answer)
 	char cerror[CURL_ERROR_SIZE];
 	curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, cerror);
 
-	printf("try to get [%s] ...\n", url.c_str());
+	dprintf(DEBUG_NORMAL, "try to get [%s] ...\n", url.c_str());
+	
 	CURLcode httpres = curl_easy_perform(curl_handle);
 
 	curl_easy_cleanup(curl_handle);
 
-	printf("http: res %d size %d\n", httpres, (int)answer.size());
+	dprintf(DEBUG_NORMAL, "http: res %d size %d\n", httpres, (int)answer.size());
 
-	if (httpres != 0 || answer.empty()) {
+	if (httpres != 0 || answer.empty()) 
+	{
 		printf("error: %s\n", cerror);
 		return false;
 	}
@@ -127,10 +132,12 @@ bool cYTFeedParser::getUrl(std::string &url, std::string &answer)
 bool cYTFeedParser::DownloadUrl(std::string &url, std::string &file)
 {
 	FILE * fp = fopen(file.c_str(), "wb");
-	if (fp == NULL) {
+	if (fp == NULL) 
+	{
 		perror(file.c_str());
 		return false;
 	}
+	
 	CURL * curl_handle = curl_easy_init();
 	curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl_handle, CURLOPT_FILE, fp);
@@ -141,7 +148,8 @@ bool cYTFeedParser::DownloadUrl(std::string &url, std::string &file)
 	char cerror[CURL_ERROR_SIZE];
 	curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, cerror);
 
-	printf("try to get [%s] ...\n", url.c_str());
+	dprintf(DEBUG_NORMAL, "try to get [%s] ...\n", url.c_str());
+	
 	CURLcode httpres = curl_easy_perform(curl_handle);
 
 	double dsize;
@@ -149,13 +157,15 @@ bool cYTFeedParser::DownloadUrl(std::string &url, std::string &file)
 	curl_easy_cleanup(curl_handle);
 	fclose(fp);
 
-	printf("http: res %d size %f.\n", httpres, dsize);
+	dprintf(DEBUG_NORMAL, "http: res %d size %f.\n", httpres, dsize);
 
-	if (httpres != 0) {
+	if (httpres != 0) 
+	{
 		printf("curl error: %s\n", cerror);
 		unlink(file.c_str());
 		return false;
 	}
+	
 	return true;
 }
 
@@ -164,8 +174,10 @@ void cYTFeedParser::decodeUrl(std::string &url)
 	CURL * curl_handle = curl_easy_init();
 	char * str = curl_easy_unescape(curl_handle, url.c_str(), 0, NULL);
 	curl_easy_cleanup(curl_handle);
+	
 	if(str)
 		url = str;
+	
 	curl_free(str);
 }
 
@@ -174,8 +186,10 @@ void cYTFeedParser::encodeUrl(std::string &txt)
 	CURL * curl_handle = curl_easy_init();
 	char * str = curl_easy_escape(curl_handle, txt.c_str(), txt.length());
 	curl_easy_cleanup(curl_handle);
+	
 	if(str)
 		txt = str;
+	
 	curl_free(str);
 }
 
@@ -183,7 +197,9 @@ void cYTFeedParser::splitString(std::string &str, std::string delim, std::vector
 {
 	strlist.clear();
 	int end = 0;
-	while ((end = str.find(delim, start)) != std::string::npos) {
+	
+	while ((end = str.find(delim, start)) != std::string::npos) 
+	{
 		strlist.push_back(str.substr(start, end - start));
 		start = end + delim.size();
 	}
@@ -193,7 +209,8 @@ void cYTFeedParser::splitString(std::string &str, std::string delim, std::vector
 void cYTFeedParser::splitString(std::string &str, std::string delim, std::map<std::string,std::string> &strmap, int start)
 {
 	int end = 0;
-	if ((end = str.find(delim, start)) != std::string::npos) {
+	if ((end = str.find(delim, start)) != std::string::npos) 
+	{
 		strmap[str.substr(start, end - start)] = str.substr(end - start + delim.size());
 	}
 }
@@ -201,12 +218,15 @@ void cYTFeedParser::splitString(std::string &str, std::string delim, std::map<st
 bool cYTFeedParser::saveToFile(const char * name, std::string str)
 {
 	FILE * fp = fopen(name, "w+");
-	if (fp) {
+	if (fp) 
+	{
 		fprintf(fp, "%s", str.c_str());
 		fclose(fp);
 		return false;
 	}
-	printf("cYTFeedParser::saveToFile: failed to open %s\n", name);
+	
+	dprintf(DEBUG_NORMAL, "cYTFeedParser::saveToFile: failed to open %s\n", name);
+	
 	return false;
 }
 
@@ -216,6 +236,7 @@ std::string cYTFeedParser::getXmlName(xmlNodePtr node)
 	char * name = xmlGetName(node);
 	if (name)
 		result = name;
+	
 	return result;
 }
 
@@ -225,6 +246,7 @@ std::string cYTFeedParser::getXmlAttr(xmlNodePtr node, const char * attr)
 	char * value = xmlGetAttribute(node, attr);
 	if (value)
 		result = value;
+	
 	return result;
 }
 
@@ -234,6 +256,7 @@ std::string cYTFeedParser::getXmlData(xmlNodePtr node)
 	char * value = xmlGetData(node);
 	if (value)
 		result = value;
+	
 	return result;
 }
 
@@ -243,7 +266,8 @@ bool cYTFeedParser::parseFeedXml(std::string &answer)
 	if (answer_parser == NULL)
 		answer_parser = parseXml(answer.c_str());
 
-	if (answer_parser == NULL) {
+	if (answer_parser == NULL) 
+	{
 		printf("failed to parse xml\n");
 		return false;
 	}
@@ -252,102 +276,125 @@ bool cYTFeedParser::parseFeedXml(std::string &answer)
 	total.clear();
 	start.clear();
 	xmlNodePtr entry = xmlDocGetRootElement(answer_parser)->xmlChildrenNode;
-	while (entry) {
+	
+	while (entry) 
+	{
 		std::string name = getXmlName(entry);
-#ifdef DEBUG_PARSER
-		printf("entry: %s\n", name.c_str());
-#endif
-		if (name == "openSearch:startIndex") {
+
+		dprintf(DEBUG_DEBUG, "entry: %s\n", name.c_str());
+
+		if (name == "openSearch:startIndex") 
+		{
 			start = getXmlData(entry);
-			printf("start %s\n", start.c_str());
-		} else if (name == "openSearch:totalResults") {
+			dprintf(DEBUG_NORMAL, "start %s\n", start.c_str());
+		} 
+		else if (name == "openSearch:totalResults") 
+		{
 			total = getXmlData(entry);
-			printf("total %s\n", total.c_str());
+			dprintf(DEBUG_NORMAL, "total %s\n", total.c_str());
 		}
-		else if (name == "link") {
+		else if (name == "link") 
+		{
 			std::string link = getXmlAttr(entry, "rel");
-			if (link == "next") {
+			if (link == "next") 
+			{
 				next = getXmlAttr(entry, "href");
-				printf("	next [%s]\n", next.c_str());
-			} else if (link == "previous") {
+				dprintf(DEBUG_NORMAL, "	next [%s]\n", next.c_str());
+			} 
+			else if (link == "previous") 
+			{
 				prev = getXmlAttr(entry, "href");
-				printf("	prev [%s]\n", prev.c_str());
+				dprintf(DEBUG_NORMAL, "	prev [%s]\n", prev.c_str());
 			}
 		}
-		else if (name != "entry") {
+		else if (name != "entry") 
+		{
 			entry = entry->xmlNextNode;
 			continue;
 		}
+		
 		xmlNodePtr node = entry->xmlChildrenNode;
 		cYTVideoInfo vinfo;
 		std::string thumbnail;
-		while (node) {
+		while (node) 
+		{
 			name = getXmlName(node);
-#ifdef DEBUG_PARSER
-			printf("	node: %s\n", name.c_str());
-#endif
-			if (name == "title") {
-#ifdef DEBUG_PARSER
-				printf("		title [%s]\n", getXmlData(node).c_str());
-#endif
+
+			dprintf(DEBUG_DEBUG, "	node: %s\n", name.c_str());
+
+			if (name == "title") 
+			{
+				dprintf(DEBUG_NORMAL, "		title [%s]\n", getXmlData(node).c_str());
+
 				vinfo.title = getXmlData(node);
 			}
-			else if (name == "published") {
+			else if (name == "published") 
+			{
 				vinfo.published = getXmlData(node).substr(0, 10);
 			}
-			else if (name == "author") {
+			else if (name == "author") 
+			{
 				xmlNodePtr author = node->xmlChildrenNode;
-				while(author) {
+				while(author) 
+				{
 					name = getXmlName(author);
-					if (name == "name") {
-#ifdef DEBUG_PARSER
-						printf("		author [%s]\n", getXmlData(author).c_str());
-#endif
+					if (name == "name") 
+					{
+						dprintf(DEBUG_NORMAL, "		author [%s]\n", getXmlData(author).c_str());
+
 						vinfo.author = getXmlData(author);
 					}
 					author = author->xmlNextNode;
 				}
 			}
-			else if (name == "media:group") {
+			else if (name == "media:group") 
+			{
 				xmlNodePtr media = node->xmlChildrenNode;
-				while (media) {
+				while (media) 
+				{
 					name = getXmlName(media);
-					if (name == "media:description") {
+					if (name == "media:description") 
+					{
 						vinfo.description = getXmlData(media).c_str();
 					}
-					else if (name == "media:category") {
+					else if (name == "media:category") 
+					{
 						if (vinfo.category.size() < 3)
 							vinfo.category = getXmlData(media).c_str();
 
 					}
-					else if (name == "yt:videoid") {
-#ifdef DEBUG_PARSER
-						printf("		id [%s]\n", getXmlData(media).c_str());
-#endif
+					else if (name == "yt:videoid") 
+					{
+						dprintf(DEBUG_NORMAL, "		id [%s]\n", getXmlData(media).c_str());
+
 						vinfo.id = getXmlData(media).c_str();
 					}
-					else if (name == "media:thumbnail") {
+					else if (name == "media:thumbnail") 
+					{
 						/* save first found */
 						if (thumbnail.empty())
 							thumbnail = getXmlAttr(media, "url");
 
 						/* check wanted quality */
-						if (tquality == getXmlAttr(media, "yt:name")) {
+						if (tquality == getXmlAttr(media, "yt:name")) 
+						{
 							vinfo.thumbnail = getXmlAttr(media, "url");
-#ifdef DEBUG_PARSER
-							printf("vinfo.thumbnail [%s]\n", vinfo.thumbnail.c_str());
-#endif
+
+							dprintf(DEBUG_NORMAL, "vinfo.thumbnail [%s]\n", vinfo.thumbnail.c_str());
 						}
 					}
-					else if (name == "yt:duration") {
+					else if (name == "yt:duration") 
+					{
 						vinfo.duration = atoi(getXmlAttr(media, "seconds").c_str());
 					}
 #if 0
-					else if (name == "media:player") {
+					else if (name == "media:player") 
+					{
 						std::string url = getXmlAttr(media, "url");
-						printf("		media:player [%s]\n", url.c_str());
+						dprintf(DEBUG_NORMAL, "		media:player [%s]\n", url.c_str());
 					}
-					else if (name == "media:title") {
+					else if (name == "media:title") 
+					{
 					}
 #endif
 					media = media->xmlNextNode;
@@ -355,7 +402,9 @@ bool cYTFeedParser::parseFeedXml(std::string &answer)
 			}
 			node = node->xmlNextNode;
 		}
-		if (!vinfo.id.empty()) {
+		
+		if (!vinfo.id.empty()) 
+		{
 			/* save first one, if wanted not found */
 			if (vinfo.thumbnail.empty())
 				vinfo.thumbnail = thumbnail;
@@ -364,8 +413,10 @@ bool cYTFeedParser::parseFeedXml(std::string &answer)
 		}
 		entry = entry->xmlNextNode;
 	}
+	
 	xmlFreeDoc(answer_parser);
 	parsed = !videos.empty();
+	
 	return parsed;
 }
 
@@ -373,6 +424,7 @@ bool cYTFeedParser::supportedFormat(int fmt)
 {
 	if((fmt == 37) || (fmt == 22) || (fmt == 18))
 		return true;
+	
 	return false;
 }
 
@@ -393,10 +445,12 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 	//FIXME check expire
 	std::vector<std::string> ulist;
 	unsigned fmt = answer.find("url_encoded_fmt_stream_map=");
-	if (fmt != std::string::npos) {
+	if (fmt != std::string::npos) 
+	{
 		fmt = answer.find("=", fmt);
 		splitString(answer, ",", ulist, fmt+1);
-		for (unsigned i = 0; i < ulist.size(); i++) {
+		for (unsigned i = 0; i < ulist.size(); i++) 
+		{
 #if 0 // to decode all params
 			decodeUrl(ulist[i]);
 			printf("URL: %s\n", ulist[i].c_str());
@@ -406,21 +460,21 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 			splitString(ulist[i], "&", uparams);
 			if (uparams.size() < 3)
 				continue;
-			for (unsigned j = 0; j < uparams.size(); j++) {
+			for (unsigned j = 0; j < uparams.size(); j++) 
+			{
 				decodeUrl(uparams[j]);
-#ifdef DEBUG_PARSER
-				printf("	param: %s\n", uparams[j].c_str());
-#endif
+
+				dprintf(DEBUG_NORMAL, "	param: %s\n", uparams[j].c_str());
+
 				splitString(uparams[j], "=", smap);
 			}
-#ifdef DEBUG_PARSER
-			printf("=========================================================\n");
-#endif
+
 			cYTVideoUrl yurl;
 			yurl.url = smap["url"];
 			yurl.sig = smap["sig"];
 			int id = atoi(smap["itag"].c_str());
-			if (supportedFormat(id) && !yurl.url.empty() && !yurl.sig.empty()) {
+			if (supportedFormat(id) && !yurl.url.empty() && !yurl.sig.empty()) 
+			{
 				yurl.quality = smap["quality"];
 				yurl.type = smap["type"];
 				vinfo.formats.insert(yt_urlmap_pair_t(id, yurl));
@@ -428,6 +482,7 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 			}
 		}
 	}
+	
 	return ret;
 }
 
@@ -454,8 +509,11 @@ bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::stri
 {
 	std::string url = "http://gdata.youtube.com/feeds/api/standardfeeds/";
 	bool append_res = true;
-	if (mode < FEED_LAST) {
-		switch(mode) {
+	
+	if (mode < FEED_LAST) 
+	{
+		switch(mode) 
+		{
 			case TOP_RATED:
 				curfeed = "top_rated";
 				break;
@@ -485,33 +543,39 @@ bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::stri
 				curfeed = "on_the_web";
 				break;
 		}
-		if (!region.empty()) {
+		
+		if (!region.empty()) 
+		{
 			url += region;
 			url += "/";
 		}
 		url += curfeed;
 		url += "?";
 	}
-	else if (mode == NEXT) {
+	else if (mode == NEXT) 
+	{
 		if (next.empty())
 			return false;
 		url = next;
 		append_res = false;
 	}
-	else if (mode == PREV) {
+	else if (mode == PREV) 
+	{
 		if (prev.empty())
 			return false;
 		url = prev;
 		append_res = false;
 	}
-	else if (mode == RELATED) {
+	else if (mode == RELATED) 
+	{
 		if (vid.empty())
 			return false;
 		url = "http://gdata.youtube.com/feeds/api/videos/";
 		url += vid;
 		url += "/related?";
 	}
-	else if (mode == SEARCH) {
+	else if (mode == SEARCH) 
+	{
 		if (search.empty())
 			return false;
 		encodeUrl(search);
@@ -521,7 +585,8 @@ bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::stri
 	}
 
 	feedmode = mode;
-	if (append_res) {
+	if (append_res) 
+	{
 		url += "v=2&max-results=";
 		char res[10];
 		sprintf(res, "%d", max_results);
@@ -545,7 +610,9 @@ bool cYTFeedParser::ParseVideoInfo(cYTVideoInfo &vinfo)
 		vurl += vinfo.id;
 		vurl += estr[i];
 		vurl += "&ps=default&eurl=&gl=US&hl=en";
-		printf("cYTFeedParser::ParseVideoInfo: get [%s]\n", vurl.c_str());
+		
+		dprintf(DEBUG_NORMAL, "cYTFeedParser::ParseVideoInfo: get [%s]\n", vurl.c_str());
+		
 		std::string answer;
 		if (!getUrl(vurl, answer))
 			continue;
@@ -553,6 +620,7 @@ bool cYTFeedParser::ParseVideoInfo(cYTVideoInfo &vinfo)
 		if (ret)
 			break;
 	}
+	
 	return ret;
 }
 
@@ -564,9 +632,11 @@ bool cYTFeedParser::DownloadThumbnails()
 		perror(thumbnail_dir.c_str());
 		//return ret;
 	}
+	
 	for (unsigned i = 0; i < videos.size(); i++) 
 	{
-		if (!videos[i].thumbnail.empty()) {
+		if (!videos[i].thumbnail.empty()) 
+		{
 			std::string fname = thumbnail_dir;
 			fname += "/";
 			fname += videos[i].id;
@@ -579,23 +649,29 @@ bool cYTFeedParser::DownloadThumbnails()
 			ret |= found;
 		}
 	}
+	
 	return ret;
 }
 
 bool cYTFeedParser::GetVideoUrls()
 {
 	bool ret = false;
-	for (unsigned i = 0; i < videos.size(); i++) {
+	for (unsigned i = 0; i < videos.size(); i++) 
+	{
 		ret |= ParseVideoInfo(videos[i]);
 	}
+	
 	return ret;
 }
 
 void cYTFeedParser::Cleanup(bool delete_thumbnails)
 {
-	printf("cYTFeedParser::Cleanup: %d videos\n", (int)videos.size());
-	if (delete_thumbnails) {
-		for (unsigned i = 0; i < videos.size(); i++) {
+	dprintf(DEBUG_NORMAL, "cYTFeedParser::Cleanup: %d videos\n", (int)videos.size());
+	
+	if (delete_thumbnails) 
+	{
+		for (unsigned i = 0; i < videos.size(); i++) 
+		{
 			unlink(videos[i].tfile.c_str());
 		}
 	}
@@ -607,7 +683,8 @@ void cYTFeedParser::Cleanup(bool delete_thumbnails)
 
 void cYTFeedParser::Dump()
 {
-	printf("feed: %d videos\n", (int)videos.size());
+	dprintf(DEBUG_NORMAL, "feed: %d videos\n", (int)videos.size());
+	
 	for (unsigned i = 0; i < videos.size(); i++)
 		videos[i].Dump();
 }

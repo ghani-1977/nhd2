@@ -72,12 +72,12 @@ class cYTFeedParser
 		std::string thumbnail_dir;
 		std::string curfeed;
 		std::string curfeedfile;
-		std::string tquality; // thumbnail size
-		std::string region; // more results
-		std::string next; // next results
-		std::string prev; // prev results
-		std::string start; // start index
-		std::string total; // total results
+		std::string tquality; 	// thumbnail size
+		std::string region; 	// more results
+		std::string next; 	// next results
+		std::string prev; 	// prev results
+		std::string start; 	// start index
+		std::string total; 	// total results
 
 		int feedmode;
 		int max_results;
@@ -119,6 +119,7 @@ class cYTFeedParser
 			SEARCH,
 			MODE_LAST
 		};
+		
 		cYTFeedParser();
 		~cYTFeedParser();
 
