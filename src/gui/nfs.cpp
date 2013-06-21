@@ -63,23 +63,24 @@ class CNFSMountGuiNotifier : public CChangeObserver
 		int *m_type;
 		
 	public:
-		CNFSMountGuiNotifier( CMenuForwarder* a3, CMenuForwarder* a4 , int* type)
+		CNFSMountGuiNotifier( CMenuForwarder *a3, CMenuForwarder *a4 , int *type)
 		{
 			m_user = a3;
 			m_pass = a4;
 			m_type = type;
 		}
+		
 		bool changeNotify(const neutrino_locale_t /*OptionName*/, void *)
 		{
 			if(*m_type == (int)CFSMounter::NFS)
 			{
-				m_user->setActive (false);
-				m_pass->setActive (false);
+				m_user->setActive(false);
+				m_pass->setActive(false);
 			}
 			else
 			{
-				m_user->setActive (true);
-				m_pass->setActive (true);
+				m_user->setActive(true);
+				m_pass->setActive(true);
 			}
 			
 			return true;
@@ -248,8 +249,8 @@ int CNFSMountGui::menuEntry(int nr)
 	options2 = g_settings.network_nfs_mount_options2[nr];
 	mac = g_settings.network_nfs_mac[nr];
 
-	sprintf(cmd,"domount%d",nr);
-	sprintf(cmd2,"dir%d",nr);
+	sprintf(cmd, "domount%d", nr);
+	sprintf(cmd2, "dir%d", nr);
 	
 	/* rewrite fstype in new entries */
 	if(strlen(local_dir) == 0)
@@ -287,22 +288,18 @@ int CNFSMountGui::menuEntry(int nr)
 	CMenuOptionChooser *automountInput= new CMenuOptionChooser(LOCALE_NFS_AUTOMOUNT, automount, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true);
 	
 	// option1
-	//CStringInputSMS options1Input(LOCALE_NFS_MOUNT_OPTIONS, options1, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-_=.,:|!?/ ");
 	CStringInputSMS options1Input(LOCALE_NFS_MOUNT_OPTIONS, options1);
 	CMenuForwarder *options1_fwd = new CMenuForwarder(LOCALE_NFS_MOUNT_OPTIONS, true, options1, &options1Input);
 	
 	// option2
-	//CStringInputSMS options2Input(LOCALE_NFS_MOUNT_OPTIONS, options2, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-_=.,:|!?/ ");
 	CStringInputSMS options2Input(LOCALE_NFS_MOUNT_OPTIONS, options2);
 	CMenuForwarder *options2_fwd = new CMenuForwarder(LOCALE_NFS_MOUNT_OPTIONS, true, options2, &options2Input);
 	
 	// username
-	//CStringInputSMS userInput(LOCALE_NFS_USERNAME, username, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-_.,:|!?/ ");
 	CStringInputSMS userInput(LOCALE_NFS_USERNAME, username);
 	CMenuForwarder *username_fwd = new CMenuForwarder(LOCALE_NFS_USERNAME, (*type==CFSMounter::CIFS || CFSMounter::LUFS), username, &userInput);
 	
 	// password
-	//CStringInputSMS passInput(LOCALE_NFS_PASSWORD, password, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-_.,:|!?/ ");
 	CStringInputSMS passInput(LOCALE_NFS_PASSWORD, password);
 	CMenuForwarder *password_fwd = new CMenuForwarder(LOCALE_NFS_PASSWORD, (*type==CFSMounter::CIFS || CFSMounter::LUFS), NULL, &passInput);
 	
@@ -331,6 +328,7 @@ int CNFSMountGui::menuEntry(int nr)
 int CNFSUmountGui::exec( CMenuTarget *parent, const std::string &actionKey )
 {
 	//printf("ac: %s\n", actionKey.c_str());
+	
 	int returnval;
 
 	if (actionKey.empty())

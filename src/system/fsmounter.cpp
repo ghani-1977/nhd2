@@ -284,7 +284,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 	}
 	
 	// has to be declared after building the string
-	const std::string& cmdstr = cmd.str();
+	const std::string &cmdstr = cmd.str();
  	
 	pthread_create(&g_mnt, 0, mount_thread, (void *) cmdstr.c_str());
 	
