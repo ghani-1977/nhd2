@@ -92,6 +92,7 @@ bool in_proc_filesystems(const char * const fsname)
 
 bool insert_modules(const CFSMounter::FSType fstype)
 {
+	/*
 	if (fstype == CFSMounter::NFS)
 		return (system("modprobe nfs") == 0);
 	else if (fstype == CFSMounter::CIFS)
@@ -100,6 +101,15 @@ bool insert_modules(const CFSMounter::FSType fstype)
 		return (system("modprobe lufs") == 0);
 	else if (fstype == CFSMounter::SMBFS)
 		return (system("modprobe smbfs") == 0);
+	*/
+	if (fstype == CFSMounter::NFS)
+	{
+		return ((system("insmod sunrpc") == 0) && (system("insmod lockd") == 0) && (system("insmod nfs") == 0));
+	}
+	else if (fstype == CFSMounter::CIFS)
+		return (system("insmod cifs") == 0);
+	else if (fstype == CFSMounter::LUFS)
+		return (system("insmod lufs") == 0);
 
 	return false;
 }

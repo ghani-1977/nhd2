@@ -380,7 +380,7 @@ void CExtendedInput_Item_Char::paint(int x, int y, bool focusGained )
 	text[1] = 0;
 	int xfpos = startx + 1 + ((idx- g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth( text ))>>1);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(xfpos,starty+idy, idx, text, color);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(xfpos,starty + idy, idx, text, color);
 }
 
 bool CExtendedInput_Item_Char::isAllowedChar( char ch )

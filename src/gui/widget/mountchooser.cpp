@@ -41,16 +41,17 @@
 #include <driver/fontrenderer.h>
 #include <driver/rcinput.h>
 
+
 CMountChooser::CMountChooser(const neutrino_locale_t Name, const std::string & Icon, int * chosenIndex, char * chosenLocalDir, const char * const selectedLocalDir, const int mwidth, const int mheight)
 	: CMenuWidget(Name, Icon,mwidth,mheight), index(chosenIndex), localDir(chosenLocalDir)
 {
 	char indexStr[2];
-	for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++)
+	for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++)
 	{
 		if (g_settings.network_nfs_local_dir[i] != NULL &&
 		    strcmp(g_settings.network_nfs_local_dir[i],"") != 0 &&
-		    (strstr(g_settings.network_nfs_mount_options1[i],"rw") != NULL ||
-		     strstr(g_settings.network_nfs_mount_options2[i],"rw") != NULL))
+		    (strstr(g_settings.network_nfs_mount_options1[i], "rw") != NULL ||
+		     strstr(g_settings.network_nfs_mount_options2[i], "rw") != NULL))
 		{
 			std::string s(g_settings.network_nfs_local_dir[i]);
 			s += " (";
@@ -81,7 +82,8 @@ int CMountChooser::exec(CMenuTarget* parent, const std::string & actionKey)
 		}
 		hide();
 		return menu_return::RETURN_EXIT;
-	} else 
+	} 
+	else 
 	{
 		return CMenuWidget::exec(parent, actionKey);
 	}

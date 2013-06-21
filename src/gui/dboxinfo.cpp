@@ -141,7 +141,7 @@ void CDBoxInfoWidget::paint()
 	
 	// title
 	int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth("Box info", true); // UTF-8
-	int stringstartposX = x +(width >> 1) - (neededWidth >> 1);
+	int stringstartposX = x + (width >> 1) - (neededWidth >> 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, ypos + hheight + 1, width - (stringstartposX - x) , "Box info", COL_MENUHEAD, 0, true); // UTF-8
 
 	// foot

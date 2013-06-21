@@ -249,7 +249,7 @@ void CHintBoxExt::refresh(bool paintBg)
 		m_window->paintIcon(m_iconfile.c_str(), 8, 15);
 	}
 	
-	int stringstartposX = 10 + (m_width >> 1) - (neededWidth >> 1);
+	int stringstartposX = (m_width >> 1) - (neededWidth >> 1);
 	m_window->RenderString( g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE], stringstartposX, m_theight, m_width - (stringstartposX) , g_Locale->getText(m_caption), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 
 	// menu text panel

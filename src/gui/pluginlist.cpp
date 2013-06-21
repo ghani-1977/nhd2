@@ -334,7 +334,7 @@ void CPluginList::paintHead()
 		frameBuffer->paintIcon(NEUTRINO_ICON_GAMES, x + 8, y + 5);
 
 		int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(g_Locale->getText(name), true); // UTF-8
-		int stringstartposX = x +(width >> 1) - (neededWidth >> 1);
+		int stringstartposX = x + (width >> 1) - (neededWidth >> 1);
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + theight, width - (stringstartposX- x) , g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
 	} 
 	else

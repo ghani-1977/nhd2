@@ -1692,7 +1692,7 @@ void CAudioPlayerGui::paintHead()
 	
 	//head title
 	int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(strCaption, true); // UTF-8
-	int stringstartposX = m_x +(m_width >> 1) - (neededWidth >> 1);
+	int stringstartposX = m_x + (m_width >> 1) - (neededWidth >> 1);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, m_y + m_theight+m_title_height, m_width - (stringstartposX - m_x) , strCaption, COL_MENUHEAD, 0, true); // UTF-8
 	
 	int ypos = m_y + m_title_height;

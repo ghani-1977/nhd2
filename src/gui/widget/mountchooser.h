@@ -39,14 +39,6 @@
 
 #include <string>
 
-/*
-class CMountChooserTarget : CMenuTarget
-{
-public:
-	
-	int CMountChooser::exec(CMenuTarget* parent, const std::string & actionKey);
-};
-*/
 
 class CMountChooser : public CMenuWidget
 {
@@ -59,7 +51,6 @@ class CMountChooser : public CMenuWidget
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 		void setSelectedItem(int selection);
 };
-
 
 #endif
 
