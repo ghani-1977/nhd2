@@ -36,10 +36,10 @@
 /* zapit includes */
 #include <channel.h>
 #include <gui/pictureviewer.h>
+#include <system/debug.h>
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
-#define DEFAULT_IPTV_FILE		CONFIGDIR "/iptv.tv"
 
 extern cVideo * videoDecoder;
 extern t_channel_id live_channel_id;		// zapit.cpp
@@ -55,6 +55,7 @@ CWebTV::CWebTV()
 	
 	selected = 0;
 	liststart = 0;
+	qZap = false;
 	
 	parser = NULL;
 }
@@ -78,7 +79,14 @@ int CWebTV::exec()
 {
 	readChannellist();
 	
-	return Show();
+	//qZap = false;
+	if(qZap == true)
+	{	
+		qZap = false;
+		return true;
+	}
+	else
+		return Show();
 }
 
 CFile * CWebTV::getSelectedFile()
@@ -162,62 +170,6 @@ bool CWebTV::readChannellist()
 	
 	xmlFreeDoc(parser);
 	
-	// parse iptv.tv
-	/*
-	std::string name, service, description;
-	
-	FILE * f = fopen(DEFAULT_IPTV_FILE, "r");
-	if (!f)
-	{
-		return false;
-	}
-	
-	while (1)
-	{
-		char line[1024];
-		if (!fgets(line, 1024, f))
-			break;
-		
-		size_t len = strlen(line);
-		
-		// skip lines with less than one char
-		if (len < 2)
-			continue;
-		
-		// strip newline
-		line[--len] = 0;
-		
-		// strip carriage return (when found)
-		if (line[len - 1] == '\r') 
-			line[--len] = 0;
-		
-		if (!strncmp(line, "#NAME ", 6))
-			name = line + 6;
-		else if (strncmp(line, "#SERVICE ", 9) == 0)
-			service = line + 9;
-		else if (strncmp(line, "#DESCRIPTION ", 13) == 0)
-			description = line + 12;
-		
-		tmp = new webtv_channels();
-				
-		tmp->title = (char*)name.c_str();
-		tmp->url = (char *)service.c_str();
-		tmp->description = (char *)description.c_str();
-		//tmp->locked = locked;
-		
-		channels.push_back(tmp);
-				
-		// fill filelist
-		file.Url = service;
-		file.Name = name;
-		file.Description = description.c_str();
-				
-		filelist.push_back(file);
-	}
-	
-	fclose(f);
-	*/
-	
 	return false;
 }
 
@@ -262,14 +214,17 @@ int CWebTV::Show()
 		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 	}
 	
+	//if(qZap == false)
+	{
 	// head
 	paintHead();
-	
+		
 	if(g_settings.mini_tv)
 		paintMiniTV();
-	
+		
 	// paint all
 	paint();
+	}
 		
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -365,6 +320,33 @@ int CWebTV::Show()
 	hide();
 			
 	return (res);
+}
+
+void CWebTV::quickZap(int key)
+{
+	if(channels.size() == 0)
+                return;
+	
+	qZap = true;
+
+	if (key == g_settings.key_quickzap_down)
+	{
+                if(selected == 0)
+                        selected = channels.size() - 1;
+                else
+                        selected--;
+        }
+	else if (key == g_settings.key_quickzap_up)
+	{
+                selected = (selected+1)%channels.size();
+        }
+
+	dprintf(DEBUG_NORMAL, "CWebTV::quickZap: quick zap selected = %d\n", selected);
+	
+	//g_RCInput->postMsg(CRCInput::RC_ok, 0 );
+	filelist[selected].Url = channels[selected]->url;
+	filelist[selected].Name = channels[selected]->title;
+	filelist[selected].Description = channels[selected]->description;
 }
 
 void CWebTV::hide()

@@ -49,6 +49,8 @@
 #include <sys/mount.h>
 #include <unistd.h>
 
+#include "debug.h"
+
 
 pthread_mutex_t g_mut;
 pthread_cond_t g_cond;
@@ -87,12 +89,12 @@ bool in_proc_filesystems(const char * const fsname)
 		}
 	}
 	in.close();
+	
 	return false;
 }
 
 bool insert_modules(const CFSMounter::FSType fstype)
 {
-	/*
 	if (fstype == CFSMounter::NFS)
 		return (system("modprobe nfs") == 0);
 	else if (fstype == CFSMounter::CIFS)
@@ -101,15 +103,6 @@ bool insert_modules(const CFSMounter::FSType fstype)
 		return (system("modprobe lufs") == 0);
 	else if (fstype == CFSMounter::SMBFS)
 		return (system("modprobe smbfs") == 0);
-	*/
-	if (fstype == CFSMounter::NFS)
-	{
-		return ((system("insmod sunrpc") == 0) && (system("insmod lockd") == 0) && (system("insmod nfs") == 0));
-	}
-	else if (fstype == CFSMounter::CIFS)
-		return (system("insmod cifs") == 0);
-	else if (fstype == CFSMounter::LUFS)
-		return (system("insmod lufs") == 0);
 
 	return false;
 }
@@ -163,6 +156,7 @@ CFSMounter::FS_Support CFSMounter::fsSupported(const CFSMounter::FSType fstype, 
 			return CFSMounter::FS_NEEDS_MODULES;
 		}
 	}
+	
 	remove_modules(fstype);
 	
 	return CFSMounter::FS_UNSUPPORTED;
@@ -185,7 +179,7 @@ bool CFSMounter::isMounted(const char * const local_dir)
 	char mount_point[path_max];
 	if (realpath(local_dir, mount_point) == NULL) 
 	{
-		printf("[CFSMounter] could not resolve dir: %s: %s\n",local_dir, strerror(errno));
+		dprintf(DEBUG_NORMAL, "[CFSMounter] could not resolve dir: %s: %s\n",local_dir, strerror(errno));
 		return false;
 	}
 	
@@ -200,6 +194,7 @@ bool CFSMounter::isMounted(const char * const local_dir)
 		}
 		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
+	
 	return false;
 }
 
@@ -216,15 +211,15 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 
 	if (sup == CFSMounter::FS_UNSUPPORTED)
 	{
-		printf("[CFSMounter] FS type %d not supported\n", (int) fstype);
+		dprintf(DEBUG_NORMAL, "[CFSMounter] FS type %d not supported\n", (int) fstype);
 		return MRES_FS_NOT_SUPPORTED;
 	}
 
-	printf("[CFSMounter] Mount(%d) %s:%s -> %s\n", (int) fstype, ip, dir, local_dir);
+	dprintf(DEBUG_NORMAL, "[CFSMounter] Mount(%d) %s:%s -> %s\n", (int) fstype, ip, dir, local_dir);
 	
 	if (isMounted(local_dir))
 	{
-		printf("[CFSMounter] FS mount error %s already mounted\n", local_dir);
+		dprintf(DEBUG_NORMAL, "[CFSMounter] FS mount error %s already mounted\n", local_dir);
 		return MRES_FS_ALREADY_MOUNTED;
 	}
 
@@ -304,7 +299,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 
 	if ( g_mntstatus != 0 )
 	{
-		printf("[CFSMounter] FS mount error: \"%s\"\n", cmdstr.c_str());
+		dprintf(DEBUG_NORMAL, "[CFSMounter] FS mount error: \"%s\"\n", cmdstr.c_str());
 		return (retcode == ETIMEDOUT) ? MRES_TIMEOUT : MRES_UNKNOWN;
 	}
 	
@@ -348,11 +343,11 @@ CFSMounter::UMountRes CFSMounter::umount(const char * const dir)
 			in >> mi.device >> mi.mountPoint >> mi.type;
 			in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-			if(strcmp(mi.type.c_str(),"nfs")==0 && strcmp(mi.mountPoint.c_str(),"/")==0)
+			if(strcmp(mi.type.c_str(), "nfs") == 0 && strcmp(mi.mountPoint.c_str(), "/") == 0)
 			{
-				if (umount2(mi.mountPoint.c_str(),MNT_FORCE) != 0)
+				if (umount2(mi.mountPoint.c_str(), MNT_FORCE) != 0)
 				{
-					printf("[CFSMounter] Error umounting %s\n",mi.device.c_str());
+					dprintf(DEBUG_NORMAL, "[CFSMounter] Error umounting %s\n",mi.device.c_str());
 					res = UMRES_ERR;
 				}
 			}
@@ -361,6 +356,7 @@ CFSMounter::UMountRes CFSMounter::umount(const char * const dir)
 	
 	if (nfs_mounted_once)
 		remove_modules(CFSMounter::NFS);
+	
 	return res;
 }
 
@@ -380,7 +376,7 @@ void CFSMounter::getMountedFS(MountInfos& info)
 		    mi.type == "smbfs")
 		{
 			info.push_back(mi);
-			printf("[CFSMounter] mounted fs: dev: %s, mp: %s, type: %s\n", mi.device.c_str(),mi.mountPoint.c_str(),mi.type.c_str());
+			dprintf(DEBUG_NORMAL, "[CFSMounter] mounted fs: dev: %s, mp: %s, type: %s\n", mi.device.c_str(), mi.mountPoint.c_str(), mi.type.c_str());
 		}
 	}
 }

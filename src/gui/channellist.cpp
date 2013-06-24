@@ -1197,7 +1197,7 @@ int CChannelList::numericZap(int key)
 		t_channel_id channel_id = lastChList.getlast(1);
 		if(channel_id) 
 		{
-			lastChList.clear_storedelay (); // ignore store delay
+			lastChList.clear_storedelay(); // ignore store delay
 			zapTo_ChannelID(channel_id);
 		}
 		
@@ -1234,6 +1234,7 @@ int CChannelList::numericZap(int key)
 #endif
 				res = channelList->exec();
 			}
+			
 			delete channelList;
 			return res;
 		}
@@ -1576,7 +1577,7 @@ void CChannelList::quickZap(int key, bool cycle)
                 selected = (selected+1)%chanlist.size();
         }
 
-	printf("[neutrino] quick zap selected = %d getActiveBouquetNumber %d\n", selected, bouquetList->getActiveBouquetNumber());
+	printf("CChannelList::quickZap: quick zap selected = %d getActiveBouquetNumber %d\n", selected, bouquetList->getActiveBouquetNumber());
 
 	if(cycle)
 		bouquetList->orgChannelList->zapTo(bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->getKey(selected)-1);

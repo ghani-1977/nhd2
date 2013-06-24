@@ -41,8 +41,6 @@ class CWebTV
 			char * description;
 			char * locked;		// for parentallock
 		} ;
-		
-		int mode;
 
 		xmlDocPtr parser;
 		bool readChannellist();
@@ -84,6 +82,8 @@ class CWebTV
 		void addTextToArray( const std::string & text );
 		void processTextToArray(std::string text);
 		
+		bool qZap;
+		
 	public:
 		CWebTV();
 		~CWebTV();
@@ -95,5 +95,6 @@ class CWebTV
 		CFile * getSelectedFile();
 		
 		void paintMiniTV();
+		void quickZap(int key);
 };
 #endif

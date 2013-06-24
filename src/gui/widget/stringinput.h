@@ -42,7 +42,7 @@
 #include <string>
 
 
-#define MAX_INPUT_CHARS		30
+#define MAX_INPUT_CHARS		40
 
 class CStringInput : public CMenuTarget
 {

@@ -2927,6 +2927,15 @@ void CMoviePlayerGui::PlayFile(void)
 			if(isWebTV)
 				open_filebrowser = true;
 		}
+		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
+		{
+			if(isWebTV)
+			{
+				//exit = true;
+				open_filebrowser = true;
+				webtv->quickZap(msg);
+			}
+		}
 		else if (msg == CRCInput::RC_timeout) 
 		{
 			// nothing
