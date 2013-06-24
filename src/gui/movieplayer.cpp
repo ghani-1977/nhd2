@@ -2277,15 +2277,21 @@ void CMoviePlayerGui::PlayFile(void)
  			if( playback->GetPosition((int64_t &)position, (int64_t &)duration) )
 #endif			
 			{					
-					if(duration > 100)
-						file_prozent = (unsigned char) (position / (duration / 100));
+				if(duration > 100)
+					file_prozent = (unsigned char) (position / (duration / 100));
 
-					playback->GetSpeed(speed);
+				playback->GetSpeed(speed);
 							
-					dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
+				dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
 			}
 			else
 			{
+				if(isWebTV)
+				{
+					// hint
+					ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText (LOCALE_INFOVIEWER_NOTAVAILABLE), 430);	// UTF-8
+				}
+				else
 					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 			}
 		}
