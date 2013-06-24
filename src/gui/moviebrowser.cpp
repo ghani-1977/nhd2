@@ -444,6 +444,8 @@ void CMovieBrowser::init(void)
 	dprintf(DEBUG_NORMAL, "[mb]->init\r\n");
 	
 	initGlobalSettings();
+	
+	// load settings
 	loadSettings(&m_settings);
 		
 	//restart_mb_timeout = 0;
@@ -681,7 +683,7 @@ void CMovieBrowser::initDevelopment(void)
 	//addDir(name);	
 }
 
-void CMovieBrowser::defaultSettings(MB_SETTINGS* settings)
+void CMovieBrowser::defaultSettings(MB_SETTINGS *settings)
 {
 	CFile file;
 	file.Name = MOVIEBROWSER_SETTINGS_FILE;
@@ -690,32 +692,33 @@ void CMovieBrowser::defaultSettings(MB_SETTINGS* settings)
 	loadSettings(settings);
 }
 
-bool CMovieBrowser::loadSettings(MB_SETTINGS* settings)
+bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 {
 	bool result = true;
-	dprintf(DEBUG_NORMAL, "CMovieBrowser::loadSettings\r\n"); 
+	
+	dprintf(DEBUG_NORMAL, "CMovieBrowser::loadSettings\r\n");
 	
 	if(configfile.loadConfig(MOVIEBROWSER_SETTINGS_FILE))
 	{
-        	settings->lastPlayMaxItems = configfile.getInt32("mb_lastPlayMaxItems", NUMBER_OF_MOVIES_LAST);
-        	settings->lastRecordMaxItems = configfile.getInt32("mb_lastRecordMaxItems", NUMBER_OF_MOVIES_LAST);
-        	settings->browser_serie_mode = configfile.getInt32("mb_browser_serie_mode", 0);
-        	settings->serie_auto_create = configfile.getInt32("mb_serie_auto_create", 0);
+		settings->lastPlayMaxItems = configfile.getInt32("mb_lastPlayMaxItems", NUMBER_OF_MOVIES_LAST);
+		settings->lastRecordMaxItems = configfile.getInt32("mb_lastRecordMaxItems", NUMBER_OF_MOVIES_LAST);
+		settings->browser_serie_mode = configfile.getInt32("mb_browser_serie_mode", 0);
+		settings->serie_auto_create = configfile.getInt32("mb_serie_auto_create", 0);
 
 		settings->gui = (MB_GUI)configfile.getInt32("mb_gui", MB_GUI_MOVIE_INFO);
-		
+			
 		settings->sorting.item = (MB_INFO_ITEM)configfile.getInt32("mb_sorting_item", MB_INFO_TITLE);
 		settings->sorting.direction = (MB_DIRECTION)configfile.getInt32("mb_sorting_direction", MB_DIRECTION_UP);
-		
+			
 		settings->filter.item = (MB_INFO_ITEM)configfile.getInt32("mb_filter_item", MB_INFO_INFO1);
 		settings->filter.optionString = configfile.getString("mb_filter_optionString", "");
 		settings->filter.optionVar = configfile.getInt32("mb_filter_optionVar", 0);
-		
+			
 		settings->parentalLockAge = (MI_PARENTAL_LOCKAGE)configfile.getInt32("mb_parentalLockAge", MI_PARENTAL_OVER18);
 		settings->parentalLock = (MB_PARENTAL_LOCK)configfile.getInt32("mb_parentalLock", MB_PARENTAL_LOCK_ACTIVE);
-	
-        	settings->storageDirRecUsed = (bool)configfile.getInt32("mb_storageDir_rec", true );
-        	settings->storageDirMovieUsed = (bool)configfile.getInt32("mb_storageDir_movie", true );
+		
+		settings->storageDirRecUsed = (bool)configfile.getInt32("mb_storageDir_rec", true );
+		settings->storageDirMovieUsed = (bool)configfile.getInt32("mb_storageDir_movie", true );
 
 		settings->reload = (bool)configfile.getInt32("mb_reload", false );
 		settings->remount = (bool)configfile.getInt32("mb_remount", false );
@@ -726,8 +729,9 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS* settings)
 			sprintf(cfg_key, "mb_dir_%d", i);
 			settings->storageDir[i] = configfile.getString( cfg_key, "" );
 			sprintf(cfg_key, "mb_dir_used%d", i);
-			settings->storageDirUsed[i] = configfile.getInt32( cfg_key,false );
+			settings->storageDirUsed[i] = configfile.getInt32( cfg_key, false );
 		}
+		
 		/* these variables are used for the listframes */	
 		settings->browserFrameHeight  = configfile.getInt32("mb_browserFrameHeight", 250);
 		settings->browserRowNr  = configfile.getInt32("mb_browserRowNr", 0);
@@ -813,7 +817,6 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	configfile.setString("mb_ytvid", settings->ytvid);
  
  	if (configfile.getModifiedFlag())
-	//
 		configfile.saveConfig(MOVIEBROWSER_SETTINGS_FILE);
 	
 	return (result);
@@ -951,7 +954,10 @@ int CMovieBrowser::exec(const char * path)
 
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));
 	
+	// load settings
 	loadSettings(&m_settings);
+	
+	// init frames
 	initFrames();
 
 	// Clear all, to avoid 'jump' in screen 
@@ -3298,7 +3304,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	CIntInput recMaxUserIntInput(LOCALE_MOVIEBROWSER_LAST_RECORD_MAX_ITEMS,     (int&) m_settings.lastRecordMaxItems,  3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CIntInput browserFrameUserIntInput(LOCALE_MOVIEBROWSER_BROWSER_FRAME_HIGH,  (int&) m_settings.browserFrameHeight,  4, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 	CIntInput browserRowNrIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_NR,          (int&) m_settings.browserRowNr,        1, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
-	CIntInput* browserRowWidthIntInput[MB_MAX_ROWS];
+	CIntInput *browserRowWidthIntInput[MB_MAX_ROWS];
 	
 	for(i = 0; i < MB_MAX_ROWS ;i++)
 		browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
