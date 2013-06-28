@@ -2876,7 +2876,7 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 			}
 		} 
-		else if (msg == CRCInput::RC_0) 
+		else if (msg == CRCInput::RC_0 && !isWebTV) 
 		{	// cancel bookmark jump
 			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 			{
@@ -2933,7 +2933,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(isWebTV)
 				open_filebrowser = true;
 		}
-		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
+		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) || (msg == (neutrino_msg_t) g_settings.key_lastchannel))
 		{
 			if(isWebTV)
 			{

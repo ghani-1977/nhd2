@@ -64,6 +64,8 @@ class CWebTV
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
 		int 		info_height;
+		unsigned int 	selected_playing;
+		unsigned int oldselected;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();

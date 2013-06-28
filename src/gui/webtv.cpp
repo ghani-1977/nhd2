@@ -57,6 +57,8 @@ CWebTV::CWebTV()
 	liststart = 0;
 	qZap = false;
 	
+	selected_playing = 0;
+	
 	parser = NULL;
 }
 
@@ -214,8 +216,6 @@ int CWebTV::Show()
 		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 	}
 	
-	//if(qZap == false)
-	{
 	// head
 	paintHead();
 		
@@ -224,13 +224,12 @@ int CWebTV::Show()
 		
 	// paint all
 	paint();
-	}
 		
 #if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif
 
-	int oldselected = selected;
+	oldselected = selected;
 
 	// loop control
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
@@ -299,6 +298,8 @@ int CWebTV::Show()
 			filelist[selected].Name = channels[selected]->title;
 			filelist[selected].Description = channels[selected]->description;
 			
+			selected_playing = selected;
+			
 			res = true;
 		
 			loop = false;
@@ -340,6 +341,10 @@ void CWebTV::quickZap(int key)
 	{
                 selected = (selected+1)%channels.size();
         }
+        else if (key == g_settings.key_lastchannel) // -- quickzap "0" (recall) to last seen channel...
+	{
+		selected = oldselected;
+	}
 
 	dprintf(DEBUG_NORMAL, "CWebTV::quickZap: quick zap selected = %d\n", selected);
 	

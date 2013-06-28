@@ -756,7 +756,6 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 	settings->ytregion = configfile.getString("mb_ytregion", "default");
 	settings->ytsearch = configfile.getString("mb_ytsearch", "");
 	settings->ytvid = configfile.getString("mb_ytvid", "");
-	//
 	
 	return (result);
 }

@@ -241,7 +241,8 @@ t_channel_id CNeutrinoAPI::ChannelNameToChannelId(std::string search_channel_nam
 	//int mode = Zapit->getMode();
 	t_channel_id channel_id = (t_channel_id)-1;
 	CStringArray channel_names = ySplitStringVector(search_channel_name, ",");
-	for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++) {
+	for (tallchans_iterator it = allchans.begin(); it != allchans.end(); it++) 
+	{
 		std::string channel_name = it->second.getName();
 		for(unsigned int j=0;j<channel_names.size();j++)
 		{
@@ -276,16 +277,16 @@ bool CNeutrinoAPI::GetStreamInfo(int bitInfo[10])
 		return false;
 	}
 
-	fgets(buf,35,fd);//dummy
+	fgets(buf, 35, fd);//dummy
 	while(!feof(fd))
 	{
 		if(fgets(buf,35,fd)!=NULL)
 		{
-			buf[strlen(buf)-1]=0;
-			tmpptr=buf;
-			key=strsep(&tmpptr,":");
-			value=strtoul(tmpptr,NULL,0);
-			bitInfo[pos]= value;
+			buf[strlen(buf)-1] = 0;
+			tmpptr = buf;
+			key = strsep(&tmpptr,":");
+			value = strtoul(tmpptr,NULL,0);
+			bitInfo[pos] = value;
 			pos++;
 		}
 	}
@@ -328,7 +329,7 @@ CZapitClient::BouquetChannelList *CNeutrinoAPI::GetBouquet(unsigned int, int)
 
 CZapitClient::BouquetChannelList *CNeutrinoAPI::GetChannelList(int)
 {
-//FIXME
+	//FIXME
 	printf("CNeutrinoAPI::GetChannelList still used !\n");
 	return NULL;
 }
@@ -346,34 +347,35 @@ void CNeutrinoAPI::UpdateChannelList(void)
 std::string CNeutrinoAPI::timerEventType2Str(CTimerd::CTimerEventTypes type)
 {
 	std::string result;
-	switch (type) {
-	case CTimerd::TIMER_SHUTDOWN:
-		result = "Shutdown";
-		break;
-	case CTimerd::TIMER_NEXTPROGRAM:
-		result = "Next program";
-		break;
-	case CTimerd::TIMER_ZAPTO:
-		result = "Zap to";
-		break;
-	case CTimerd::TIMER_STANDBY:
-		result = "Standby";
-		break;
-	case CTimerd::TIMER_RECORD:
-		result = "Record";
-		break;
-	case CTimerd::TIMER_REMIND:
-		result = "Reminder";
-		break;
-	case CTimerd::TIMER_EXEC_PLUGIN:
-		result = "Execute plugin";
-		break;
-	case CTimerd::TIMER_SLEEPTIMER:
-		result = "Sleeptimer";
-		break;
-	default:
-		result = "Unknown";
-		break;
+	switch (type) 
+	{
+		case CTimerd::TIMER_SHUTDOWN:
+			result = "Shutdown";
+			break;
+		case CTimerd::TIMER_NEXTPROGRAM:
+			result = "Next program";
+			break;
+		case CTimerd::TIMER_ZAPTO:
+			result = "Zap to";
+			break;
+		case CTimerd::TIMER_STANDBY:
+			result = "Standby";
+			break;
+		case CTimerd::TIMER_RECORD:
+			result = "Record";
+			break;
+		case CTimerd::TIMER_REMIND:
+			result = "Reminder";
+			break;
+		case CTimerd::TIMER_EXEC_PLUGIN:
+			result = "Execute plugin";
+			break;
+		case CTimerd::TIMER_SLEEPTIMER:
+			result = "Sleeptimer";
+			break;
+		default:
+			result = "Unknown";
+			break;
 	}
 	return result;
 }
@@ -381,52 +383,54 @@ std::string CNeutrinoAPI::timerEventType2Str(CTimerd::CTimerEventTypes type)
 std::string CNeutrinoAPI::timerEventRepeat2Str(CTimerd::CTimerEventRepeat rep)
 {
 	std::string result;
-	switch (rep) {
-	case CTimerd::TIMERREPEAT_ONCE:
-		result = "once";
-		break;
-	case CTimerd::TIMERREPEAT_DAILY:
-		result = "daily";
-		break;
-	case CTimerd::TIMERREPEAT_WEEKLY:
-		result = "weekly";
-		break;
-	case CTimerd::TIMERREPEAT_BIWEEKLY:
-		result = "2-weekly";
-		break;
-	case CTimerd::TIMERREPEAT_FOURWEEKLY:
-		result = "4-weekly";
-		break;
-	case CTimerd::TIMERREPEAT_MONTHLY:
-		result = "monthly";
-		break;
-	case CTimerd::TIMERREPEAT_BYEVENTDESCRIPTION:
-		result = "event";
-		break;
-	case CTimerd::TIMERREPEAT_WEEKDAYS:
-		result = "weekdays";
-		break;
-	default:
-		if (rep > CTimerd::TIMERREPEAT_WEEKDAYS)
-		{
-			if (rep & 0x0200)
-				result += "Mo ";
-			if (rep & 0x0400)
-				result += "Tu ";
-			if (rep & 0x0800)
-				result += "We ";
-			if (rep & 0x1000)
-				result += "Th ";
-			if (rep & 0x2000)
-				result += "Fr ";
-			if (rep & 0x4000)
-				result += "Sa ";
-			if (rep & 0x8000)
-				result += "Su ";
-		}
-		else
-			result = "Unknown";
+	switch (rep) 
+	{
+		case CTimerd::TIMERREPEAT_ONCE:
+			result = "once";
+			break;
+		case CTimerd::TIMERREPEAT_DAILY:
+			result = "daily";
+			break;
+		case CTimerd::TIMERREPEAT_WEEKLY:
+			result = "weekly";
+			break;
+		case CTimerd::TIMERREPEAT_BIWEEKLY:
+			result = "2-weekly";
+			break;
+		case CTimerd::TIMERREPEAT_FOURWEEKLY:
+			result = "4-weekly";
+			break;
+		case CTimerd::TIMERREPEAT_MONTHLY:
+			result = "monthly";
+			break;
+		case CTimerd::TIMERREPEAT_BYEVENTDESCRIPTION:
+			result = "event";
+			break;
+		case CTimerd::TIMERREPEAT_WEEKDAYS:
+			result = "weekdays";
+			break;
+		default:
+			if (rep > CTimerd::TIMERREPEAT_WEEKDAYS)
+			{
+				if (rep & 0x0200)
+					result += "Mo ";
+				if (rep & 0x0400)
+					result += "Tu ";
+				if (rep & 0x0800)
+					result += "We ";
+				if (rep & 0x1000)
+					result += "Th ";
+				if (rep & 0x2000)
+					result += "Fr ";
+				if (rep & 0x4000)
+					result += "Sa ";
+				if (rep & 0x8000)
+					result += "Su ";
+			}
+			else
+				result = "Unknown";
 	}
+	
 	return result;
 }
 
@@ -440,24 +444,31 @@ std::string CNeutrinoAPI::getVideoAspectRatioAsString(void)
 		return "unknown";
 }
 
-int CNeutrinoAPI::setVideoAspectRatioAsString(std::string newRatioString) {
+int CNeutrinoAPI::setVideoAspectRatioAsString(std::string newRatioString) 
+{
 	int newRatioInt = -1;
-	for(int i=0;i<(int)sizeof(videoformat_names);i++)
-		if( videoformat_names[i] == newRatioString){
+	for(int i = 0; i < (int)sizeof(videoformat_names); i++)
+	{
+		if( videoformat_names[i] == newRatioString)
+		{
 			newRatioInt = i;
 			break;
 		}
+	}
+	
 	if(newRatioInt != -1)		
 		videoDecoder->setAspectRatio(newRatioInt, -1);
 
 	return newRatioInt;
 }
 
-std::string CNeutrinoAPI::getVideoResolutionAsString(void) {
+std::string CNeutrinoAPI::getVideoResolutionAsString(void) 
+{
 	int xres, yres, framerate;
 	videoDecoder->getPictureInfo(xres, yres, framerate);
 	std::stringstream out;
 	out << xres << "x" << yres;
+	
 	return out.str();
 }
 
@@ -510,9 +521,9 @@ std::string CNeutrinoAPI::getCryptInfoAsString(void)
 	//std::string casys[11]={"Irdeto:","Betacrypt:","Seca:","Viaccess:","Nagra:","Conax: ","Cryptoworks:","Videoguard:","EBU:","XCrypt:","PowerVU:"};
 	std::string casys[11]={"Irdeto:", "Betacrypt:", "Seca:","Viaccess:","Nagra:","Conax: ","Cryptoworks:","Videoguard:","EBU:","XCrypt:","PowerVU:"};
 
-	//for(i=0;i<4;i++)
+	//for(i = 0; i < 4; i++)
 	{
-		for(j=0;j<11;j++)
+		for(j = 0; j < 11; j++)
 		{
 			if(pmt_caids[j])
 			{
@@ -524,10 +535,11 @@ std::string CNeutrinoAPI::getCryptInfoAsString(void)
 	return out.str();
 }
 
-std::string CNeutrinoAPI::getLogoFile(std::string _logoURL, t_channel_id channelId) {
+std::string CNeutrinoAPI::getLogoFile(std::string _logoURL, t_channel_id channelId) 
+{
 	std::string channelIdAsString = string_printf( PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS , channelId & 0xFFFFFFFFFFFFULL);
 	std::string channelName = GetServiceName(channelId);
-//	replace(channelName, " ", "_");
+	//replace(channelName, " ", "_");
 	_logoURL+="/";
 	if(access((_logoURL + channelIdAsString + ".jpg").c_str(), 4) == 0)
 		return _logoURL + channelIdAsString + ".jpg";
