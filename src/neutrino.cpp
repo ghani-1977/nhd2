@@ -3876,8 +3876,6 @@ void CNeutrinoApp::ExitRun(int retcode)
 		if(g_settings.epg_save ) 
 			saveEpg();
 		
-		mode = mode_off;
-		
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::ExitRun: entering off state (retcode:%d)\n", retcode);
 			
 		stop_daemons();

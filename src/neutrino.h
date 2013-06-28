@@ -97,7 +97,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 			mode_audio = 5,		/* Audio Mode */
 			mode_pic = 6,		/* Pic Mode */
 			mode_ts = 7,		/* ??? */
-			mode_off = 8,		/**/
+			mode_iptv = 8,		/**/
 			mode_mask = 0xFF,	/**/
 			norezap = 0x100		/**/
 		};
