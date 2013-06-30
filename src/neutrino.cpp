@@ -737,6 +737,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_filebrowser = configfile.getInt32( "key_filebrowser", CRCInput::RC_nokey );
 	g_settings.key_webtv = configfile.getInt32( "key_webtv", CRCInput::RC_nokey );
 	
+	g_settings.key_screenshot = configfile.getInt32( "key_screenshot", CRCInput::RC_record );
+	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
@@ -1201,6 +1203,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_moviebrowser", g_settings.key_moviebrowser );
 	configfile.setInt32( "key_filebrowser", g_settings.key_filebrowser );
 	configfile.setInt32( "key_webtv", g_settings.key_webtv );
+	
+	configfile.setInt32( "key_screenshot", g_settings.key_screenshot );
 	
 
         // USERMENU
@@ -2160,7 +2164,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// wss
 	videoSetupNotifier->changeNotify(LOCALE_VIDEOMENU_WSS, NULL);
 	
-	// A/V sync */
+	// Audio
 	audioSetupNotifier = new CAudioSetupNotifier;
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_AVSYNC, NULL);
 	audioSetupNotifier->changeNotify(LOCALE_AUDIOMENU_HDMI_DD, NULL);

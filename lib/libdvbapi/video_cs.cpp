@@ -56,6 +56,13 @@ cVideo::cVideo()
 	video_fd = -1;
 
 	playstate = VIDEO_STOPPED;
+	
+#if defined (__sh__)
+	StreamType = STREAM_TYPE_TRANSPORT;
+	EncodingType = VIDEO_ENCODING_AUTO;
+#else	
+	StreamType = VIDEO_STREAMTYPE_MPEG2;
+#endif	
 }
 
 cVideo::~cVideo(void)
@@ -65,9 +72,9 @@ cVideo::~cVideo(void)
 	Close();
 }
 
-bool cVideo::Open(int /*num*/)
+bool cVideo::Open(int num)
 { 
-	video_num = 0; // eventually always 0
+	video_num = num; // eventually always 0
 	
 	char devname[32];
 
@@ -100,8 +107,8 @@ bool cVideo::Close()
 	
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
-	//if(video_fd >= 0)
-	close(video_fd);
+	if(video_fd >= 0)
+		close(video_fd);
 	video_fd = -1;	
 
 	return true;
@@ -575,7 +582,9 @@ void cVideo::SetStreamType(VIDEO_FORMAT type)
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aVIDEOFORMAT[type]);
 
 	if (ioctl( video_fd, VIDEO_SET_STREAMTYPE, type) < 0)
-		perror("VIDEO_SET_STREAMTYPE");	
+		perror("VIDEO_SET_STREAMTYPE");
+	
+	StreamType = type;
 }
 #endif
 
@@ -583,7 +592,7 @@ void cVideo::SetStreamType(VIDEO_FORMAT type)
 void cVideo::SetSyncMode(int mode)
 {
 #ifdef __sh__  
-        int clock=0;
+        int clock = 0;
 	
 	const char *aAVSYNCTYPE[] = {
 		"AVSYNC_DISABLED",
@@ -902,14 +911,16 @@ int cVideo::showSinglePic(const char *filename)
 			
 			// setsource
 			setSource(VIDEO_SOURCE_MEMORY);
+			
 #if defined (__sh__)
 			// set streamtype
-			//videoDecoder->SetStreamType(STREAM_TYPE_PROGRAM);
+			//SetStreamType(STREAM_TYPE_PROGRAM);
 			
 			// set encoding
 			//SetEncoding(VIDEO_ENCODING_MPEG2);
 			
 #else
+			// set streamtype
 			//SetStreamType(VIDEO_STREAMTYPE_MPEG2);
 #endif			  
 			

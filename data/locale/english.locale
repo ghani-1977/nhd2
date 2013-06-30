@@ -1587,6 +1587,7 @@ keybinding.key_inetradio Internet Radio
 keybinding.key_moviebrowser Movies Browser
 keybinding.key_filebrowser files Browser
 keybinding.key_webtv WebTV
+keybinding.key_screenshot Screenshot
 keybinding.savekeymap save Keymap
 keybinding.savekeymap_hint Saving keymap, please wait...
 

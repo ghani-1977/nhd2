@@ -227,12 +227,12 @@ class cVideo
 
 		video_play_state_t playstate;
 
-#ifdef __sh__		
-		// encoding
-		video_encoding_t EncodingType;
-		
+#ifdef __sh__	
 		// streamtype
 		stream_type_t StreamType;
+		
+		// encoding
+		video_encoding_t EncodingType;
 #else
 		VIDEO_FORMAT StreamType;
 #endif		
@@ -278,7 +278,10 @@ class cVideo
 #ifdef __sh__		
 		int SetStreamType(stream_type_t type);
 		int SetEncoding(video_encoding_t type);
-		stream_type_t GetStreamType(void) { return StreamType; };
+		
+		
+		stream_type_t getStreamType(void) { return StreamType; };
+		video_encoding_t getEncodingType(void) { return EncodingType; };
 #else
 		void SetStreamType(VIDEO_FORMAT type);
 		VIDEO_FORMAT GetStreamType(void) { return StreamType; };

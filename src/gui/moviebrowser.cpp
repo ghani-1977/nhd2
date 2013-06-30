@@ -1984,7 +1984,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
           	}
 	}
-	else if ( msg == CRCInput::RC_record ) 
+	else if ( msg == (neutrino_msg_t)g_settings.key_screenshot ) 
 	{
           	if (m_movieSelectionHandler != NULL) 
 		{

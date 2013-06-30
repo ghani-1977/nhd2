@@ -62,8 +62,8 @@ enum {
 
 // ac3
 enum {
-	AC3_PASSTHROUGH,
-	AC3_DOWNMIX
+	AC3_DOWNMIX,
+	AC3_PASSTHROUGH
 };
 
 
@@ -83,8 +83,8 @@ class cAudio
 		
 		bool Muted;
 #ifdef __sh__
-		audio_encoding_t EncodingType;		
 		stream_type_t StreamType;
+		audio_encoding_t EncodingType;	
 #else
 		AUDIO_FORMAT StreamType;
 #endif
@@ -115,7 +115,8 @@ class cAudio
 		void SetStreamType(stream_type_t type);
 		void SetEncoding(audio_encoding_t type);
 				
-		audio_encoding_t GetStreamType(void) { return EncodingType; }
+		stream_type_t getStreamType(void) { return StreamType; }
+		audio_encoding_t getEncodingType(void) { return EncodingType; }
 #else
 		void SetStreamType(AUDIO_FORMAT type);
 		AUDIO_FORMAT GetStreamType(void) { return StreamType; }

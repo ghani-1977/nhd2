@@ -47,7 +47,10 @@ cAudio::cAudio()
 	
 	audio_fd = -1;	
 	
-#ifndef __sh__
+#if defined (__sh__)
+	StreamType = STREAM_TYPE_TRANSPORT;
+	EncodingType = AUDIO_ENCODING_AUTO;
+#else	
 	StreamType = AUDIO_STREAMTYPE_MPEG;
 #endif
 
@@ -64,9 +67,9 @@ cAudio::~cAudio(void)
 	Close();
 }
 
-bool cAudio::Open(int /*num*/)
+bool cAudio::Open(int num)
 {  
-	audio_num = 0; //always 0
+	audio_num = num; //always 0
 	
 	char devname[32];
 
@@ -98,8 +101,8 @@ bool cAudio::Close()
 	  
 	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);	
 
-	//if (audio_fd >= 0)
-	close(audio_fd);
+	if (audio_fd >= 0)
+		close(audio_fd);
 	audio_fd = -1;	
 	
 	return true;
@@ -253,12 +256,12 @@ bool cAudio::Resume()
 	return true;
 }
 
+#ifdef __sh__
 /* set streamtype */
 /*
- * List of possible container types - used to select demux..  If stream_source is VIDEO_SOURCE_DEMUX
- * then default is TRANSPORT, if stream_source is VIDEO_SOURCE_MEMORY then default is PES
+ * List of possible container types - used to select demux..  If stream_source is AUDIO_SOURCE_DEMUX
+ * then default is TRANSPORT, if stream_source is AUDIO_SOURCE_MEMORY then default is PES
  */
-#ifdef __sh__
 void cAudio::SetStreamType(stream_type_t type)
 { 
 	const char * aSTREAMTYPE[] = {
@@ -355,7 +358,7 @@ void cAudio::SetSyncMode(int Mode)
 	
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
 	
-	if (::ioctl(audio_fd, AUDIO_SET_AV_SYNC, Mode) < 0)
+	if (ioctl(audio_fd, AUDIO_SET_AV_SYNC, Mode) < 0)
 	{
 		perror("AUDIO_SET_AV_SYNC");
 		return;
@@ -652,16 +655,18 @@ int cAudio::StopClip()
 void cAudio::SetHdmiDD(int ac3)
 {
 	const char *aHDMIDD[] = {
-		"passthrough",
 		"downmix",
+		"passthrough"
 	};
 	
 	dprintf(DEBUG_NORMAL, "%s:%s %s\n", FILENAME, __FUNCTION__, aHDMIDD[ac3]);	
 
 #ifdef __sh__
 	const char *aHDMIDDSOURCE[] = {
-		"spdif",
 		"pcm",
+		"spdif",
+		"8ch",
+		"none"
 	};
 	
 	int fd = open("/proc/stb/hdmi/audio_source", O_RDWR);

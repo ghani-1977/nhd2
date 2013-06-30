@@ -135,7 +135,8 @@ static int prepareClipPlay(int uNoOfChannels, int uSampleRate, int uBitsPerSampl
 
 	//figure out size of subframe
 	//and set up sample rate
-	switch(uSampleRate) {
+	switch(uSampleRate) 
+	{
 		case 48000:             SubFrameLen = 40;
 				                break;
 		case 96000:             lpcm_prv[8] |= 0x10;
@@ -169,7 +170,8 @@ static int prepareClipPlay(int uNoOfChannels, int uSampleRate, int uBitsPerSampl
 	//set number of channels
 	lpcm_prv[10]  = uNoOfChannels - 1;
 
-	switch(uBitsPerSample) {
+	switch(uBitsPerSample) 
+	{
 		case    16: break;
 		case    24: lpcm_prv[7] |= 0x20;
 				        break;
@@ -177,62 +179,61 @@ static int prepareClipPlay(int uNoOfChannels, int uSampleRate, int uBitsPerSampl
 				        return 1;
 	}
 
-    return 0;
+	return 0;
 }
 
 static int reset()
 {
-    initialHeader = 1;
-    return 0;
+	initialHeader = 1;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-    pcm_printf(10, "\n");
+	pcm_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        pcm_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+	    pcm_err("call data is NULL...\n");
+	    return 0;
+	}
 
-    pcm_printf(10, "AudioPts %lld\n", call->Pts);
+	pcm_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        pcm_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+	    pcm_err("parsing NULL Data. ignoring...\n");
+	    return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        pcm_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+	    pcm_err("file pointer < 0. ignoring ...\n");
+	    return 0;
+	}
 
-    pcmPrivateData_t*         pcmPrivateData          = (pcmPrivateData_t*)call->private_data;
+	pcmPrivateData_t*         pcmPrivateData          = (pcmPrivateData_t*)call->private_data;
 
-    if (initialHeader) 
-    {
-        initialHeader = 0;
-        prepareClipPlay(pcmPrivateData->uNoOfChannels, pcmPrivateData->uSampleRate, 
-            pcmPrivateData->uBitsPerSample, pcmPrivateData->bLittleEndian);
-    }
+	if (initialHeader) 
+	{
+		initialHeader = 0;
+		prepareClipPlay(pcmPrivateData->uNoOfChannels, pcmPrivateData->uSampleRate, pcmPrivateData->uBitsPerSample, pcmPrivateData->bLittleEndian);
+	}
 
-    unsigned char * buffer = call->data;
-    int size = call->len;
-        //printf("PCM %d size SubFrameLen=%d\n", size, SubFrameLen);
+	unsigned char * buffer = call->data;
+	int size = call->len;
+	//printf("PCM %d size SubFrameLen=%d\n", size, SubFrameLen);
 
-    unsigned int qty;
+	unsigned int qty;
 	unsigned int n;
 	unsigned int injectBufferSize = sizeof(lpcm_pes) + sizeof(lpcm_prv) + SubFrameLen;
 	unsigned char * injectBuffer = (unsigned char *)malloc(sizeof(unsigned char)*injectBufferSize);
 	unsigned char * injectBufferDataPointer = &injectBuffer[sizeof(lpcm_pes)+sizeof(lpcm_prv)];
-    int pos;
+	int pos;
 
 	for(pos = 0; pos < size; )
 	{
@@ -265,16 +266,20 @@ static int writeData(void* _call)
 		memcpy(&injectBuffer[sizeof(lpcm_pes)], lpcm_prv, sizeof(lpcm_prv));
 
 		//write the PCM data
-		if(pcmPrivateData->uBitsPerSample == 16) {
+		if(pcmPrivateData->uBitsPerSample == 16) 
+		{
 			for(n=0; n<SubFrameLen; n+=2) {
 				unsigned char tmp;
 				tmp=injectBufferDataPointer[n];
 				injectBufferDataPointer[n]=injectBufferDataPointer[n+1];
 				injectBufferDataPointer[n+1]=tmp;
 			}
-		} else {
-		//A1cA1bA1a-B1cB1bB1a-A2cA2bA2a-B2cB2bB2a to A1aA1bB1aB1b.A2aA2bB2aB2b-A1cB1cA2cB2c
-			for(n=0; n<SubFrameLen; n+=12) {
+		} 
+		else 
+		{
+			//A1cA1bA1a-B1cB1bB1a-A2cA2bA2a-B2cB2bB2a to A1aA1bB1aB1b.A2aA2bB2aB2b-A1cB1cA2cB2c
+			for(n=0; n<SubFrameLen; n+=12) 
+			{
 				unsigned char tmp[12];
 				tmp[ 0]=injectBufferDataPointer[n+2];
 				tmp[ 1]=injectBufferDataPointer[n+1];
@@ -305,12 +310,12 @@ static int writeData(void* _call)
 
 
 		write(call->fd, injectBuffer, injectBufferSize);
-        //printf("PCM %d bytes injected\n", injectBufferSize);
-        //Hexdump(injectBuffer, 126);
+		//printf("PCM %d bytes injected\n", injectBufferSize);
+		//Hexdump(injectBuffer, 126);
 	}
 	free(injectBuffer);
 
-    return size;
+	return size;
 }
 
 /* ***************************** */
@@ -318,38 +323,38 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps_pcm = {
-    "pcm",
-    eAudio,
-    "A_PCM",
+	"pcm",
+	eAudio,
+	"A_PCM",
 #ifdef __sh__    
-    AUDIO_ENCODING_LPCMA,
+	AUDIO_ENCODING_LPCMA,
 #else
-    AUDIO_STREAMTYPE_LPCMDVD,
+	AUDIO_STREAMTYPE_LPCMDVD,
 #endif
 };
 
 struct Writer_s WriterAudioPCM = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_pcm,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_pcm
 };
 
 static WriterCaps_t caps_ipcm = {
-    "ipcm",
-    eAudio,
-    "A_IPCM",
+	"ipcm",
+	eAudio,
+	"A_IPCM",
 #ifdef __sh__    
-    AUDIO_ENCODING_LPCMA,
+	AUDIO_ENCODING_LPCMA,
 #else
-    AUDIO_STREAMTYPE_LPCMDVD,
+	AUDIO_STREAMTYPE_LPCMDVD,
 #endif
 };
 
 struct Writer_s WriterAudioIPCM = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_ipcm,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_ipcm
 };
 

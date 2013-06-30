@@ -685,8 +685,8 @@ const CMenuOptionChooser::keyval AUDIOMENU_AVSYNC_OPTIONS[AUDIOMENU_AVSYNC_OPTIO
 #define AC3_OPTION_COUNT 2
 const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 {
-	{ AC3_PASSTHROUGH, NONEXISTANT_LOCALE, "passthrough" },
-	{ AC3_DOWNMIX, NONEXISTANT_LOCALE, "downmix" }
+	{ AC3_DOWNMIX, NONEXISTANT_LOCALE, "downmix" },
+	{ AC3_PASSTHROUGH, NONEXISTANT_LOCALE, "passthrough" }
 };
 
 #define AUDIODELAY_OPTION_COUNT 9
@@ -700,7 +700,7 @@ const CMenuOptionChooser::keyval AUDIODELAY_OPTIONS[AUDIODELAY_OPTION_COUNT] =
 	{ 250, NONEXISTANT_LOCALE, "250" },
 	{ 500, NONEXISTANT_LOCALE, "500" },
 	{ 750, NONEXISTANT_LOCALE, "750" },
-	{ 1000, NONEXISTANT_LOCALE, "1000" },
+	{ 1000, NONEXISTANT_LOCALE, "1000" }
 };
 #endif
 
@@ -2014,8 +2014,8 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	lcdSettings.addItem(oj_dumppng);
 #else	
 	
+#if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_SPARK)
 	//scroll text ein/aus (250hd has only 4 digits)
-#if /* !defined (PLATFORM_GIGABLUE) &&*/ !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_SPARK)
 	//lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_SCROLLTEXT, &g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, this, CRCInput::convertDigitToKey(shortcutVFD++) ));
 
 	//
@@ -2035,14 +2035,14 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	// lcd controller
 	lcdSettings.addItem(GenericMenuSeparatorLine);
 	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
-//#elif defined (PLATFORM_GIGABLUE)
+
 	// led color
 	lcdSettings.addItem(new CMenuOptionChooser(LOCALE_LCDMENU_LEDCOLOR, &g_settings.lcd_ledcolor, LCDMENU_LEDCOLOR_OPTIONS, LCDMENU_LEDCOLOR_OPTION_COUNT, true, lcdnotifier, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #endif	
 #endif
 
 	// vfd time //FIXME: not working with new driver seems like the ioctl is brocken :-(
-#if 1	
+#if 0	
 	lcdSettings.addItem(GenericMenuSeparatorLine);
 
 	lcdSettings.addItem( new CMenuForwarder(LOCALE_LCDMENU_SETFPTIME, true, NULL, this, "setfptime", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
@@ -2093,9 +2093,10 @@ enum keynames {
 	KEY_EXTRAS_MOVIEBROWSER,
 	KEY_EXTRAS_FILEBROWSER,
 	KEY_EXTRAS_WEBTV,
+	KEY_EXTRAS_SCREENSHOT
 };
 
-#define KEYBINDS_COUNT 37
+#define KEYBINDS_COUNT 38
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2140,6 +2141,7 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
+	LOCALE_KEYBINDINGMENU_SCREENSHOT
 };
 
 const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
@@ -2186,6 +2188,7 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
+	LOCALE_KEYBINDINGMENU_SCREENSHOT
 };
 
 void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSettings)
@@ -2263,6 +2266,9 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_moviebrowser,
 		&g_settings.key_filebrowser,
 		&g_settings.key_webtv,
+		
+		// misc
+		&g_settings.key_screenshot
 	};
 
 	CKeyChooser * keychooser[KEYBINDS_COUNT];
@@ -2301,6 +2307,9 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 
 	// misc
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINSETTINGS_MISC));
+	
+	// screenshot key
+	bindSettings.addItem(new CMenuForwarder(keydescription[KEY_EXTRAS_SCREENSHOT], true, NULL, keychooser[KEY_EXTRAS_SCREENSHOT]));
 	
 	// save keymap
 	bindSettings.addItem(new CMenuForwarder(LOCALE_KEYBINDINGMENU_SAVEKEYMAP, true, NULL, this, "savekeymap" ) );

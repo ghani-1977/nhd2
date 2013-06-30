@@ -321,6 +321,8 @@ struct SNeutrinoSettings
 	int key_moviebrowser;
 	int key_filebrowser;
 	int key_webtv;
+	
+	int key_screenshot;
 	// END KEYBINDING
 
 	// USERMENU
