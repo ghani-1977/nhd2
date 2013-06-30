@@ -38,7 +38,6 @@ void CLastChannel::clear (void)
 // -- Store a channelnumber in Buffer
 // -- Store only if channel != last channel...
 // -- and time store delay is large enough
-
 void CLastChannel::store (int channel, t_channel_id channel_id, bool forceStoreToLastChannels)
 {
 	struct timeval  tv;
@@ -56,8 +55,7 @@ void CLastChannel::store (int channel, t_channel_id channel_id, bool forceStoreT
 		lastTimestamp  = this->lastChannels.front().timestamp;
 	}
 
-	if (((forceStoreToLastChannels || (tv.tv_sec - lastTimestamp) > secs_diff_before_store))
-			&& (lastChannel != channel) )
+	if (((forceStoreToLastChannels || (tv.tv_sec - lastTimestamp) > secs_diff_before_store)) && (lastChannel != channel) )
 	{
 		if (this->shallRemoveEqualChannel && (this->lastChannels.size() > 1))
 		{
@@ -118,19 +116,14 @@ void CLastChannel::clear_storedelay (void)
 
 t_channel_id CLastChannel::getlast (int n)
 {
-	if ( (n < int(this->lastChannels.size()))
-			&&(n > -1)
-			&&(!this->lastChannels.empty())
-	   )
+	if ( (n < int(this->lastChannels.size())) &&(n > -1) &&(!this->lastChannels.empty()) )
 	{
 		std::list<_LastCh>::const_iterator It = this->lastChannels.begin();
 		std::advance(It, n);
 
-		//return It->channel;
 		return It->channel_id;
 	}
 
-	//return -1;
 	return 0;
 }
 
@@ -144,7 +137,6 @@ void CLastChannel::set_store_difftime (int secs)
 }
 
 int CLastChannel::get_store_difftime (void) const
-
 {
 	return    secs_diff_before_store;
 }
