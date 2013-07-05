@@ -781,7 +781,6 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 
 		pos = strlen(filename);
 
-		//if (g_Sectionsd->getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData))
 		if(sectionsd_getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData));
 			epgid = epgData.eventID;
 
@@ -810,8 +809,12 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		strftime(&(filename[pos]), sizeof(filename) - pos - 1, "%Y%m%d_%H%M%S", localtime(&t));
 		
 		strcat(filename, ".jpg");
-			
+		
+#if defined (__sh__)		
 		sprintf(cmd, "ffmpeg -itsoffset -4 -i `wget -q -O - \"http://127.0.0.1/control/build_live_url?vlc_link=true\"` -y -f image2 -sn -an -vframes 1 -s 320*240 %s", filename);
+#else
+		sprintf(cmd, "grab -v %s", filename);
+#endif
 	} 
 	else
 	{
@@ -820,8 +823,6 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 
 		std::string file_name = fname; // UTF-8
 		
-		//strReplace(file_name, ".ts", ".jpg");
-		///
 		int ext_pos = 0;
 		ext_pos = file_name.rfind('.');
 		if( ext_pos > 0)
@@ -832,7 +833,12 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 			strReplace(file_name, extension.c_str(), ".jpg");
 		}
 		
-		sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 \"%s\"", fname, spos, (char *)file_name.c_str());
+#if defined (__sh__)		
+		//sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 \"%s\"", fname, spos, (char *)file_name.c_str());
+		sprintf(cmd, "ffmpeg -ss %d -y -i \"%s\" -y -f image2 -vframes 1 -s 320*240 \"%s\"", spos, fname, (char *)file_name.c_str());	//FIXME: dbo dont work here this cmd line
+#else
+		sprintf(cmd, "grab -v %s", (char *)file_name.c_str());
+#endif
 	}
 	
 	printf("Executing %s\n", cmd);

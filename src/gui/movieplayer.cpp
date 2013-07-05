@@ -2942,6 +2942,15 @@ void CMoviePlayerGui::PlayFile(void)
 				webtv->quickZap(msg);
 			}
 		}
+		//
+		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)
+		{
+         		if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_ANNOUNCE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
+			{
+				CVCRControl::getInstance()->Screenshot(0, (char *)filename, position / 1000);
+			}
+		}
+		//
 		else if (msg == CRCInput::RC_timeout) 
 		{
 			// nothing
