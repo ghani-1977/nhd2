@@ -1986,7 +1986,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if ( msg == (neutrino_msg_t)g_settings.key_screenshot ) 
 	{
-          	if (m_movieSelectionHandler != NULL) 
+          	if (m_movieSelectionHandler != NULL && show_mode != MB_SHOW_YT) 
 		{
                 	if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_ANNOUNCE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 			{
