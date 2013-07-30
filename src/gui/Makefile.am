@@ -44,7 +44,7 @@ noinst_LIBRARIES = libtimerlist.a libneutrino_gui.a libneutrino_gui2.a
 
 libneutrino_gui_a_SOURCES = \
 	bouquetlist.cpp channellist.cpp eventlist.cpp pluginlist.cpp \
-	favorites.cpp sleeptimer.cpp screensetup.cpp \
+	sleeptimer.cpp screensetup.cpp \
 	epgview.cpp infoviewer.cpp scan.cpp update.cpp \
 	filebrowser.cpp audioplayer.cpp nfs.cpp pictureviewer.cpp \
 	movieplayer.cpp rc_lock.cpp \

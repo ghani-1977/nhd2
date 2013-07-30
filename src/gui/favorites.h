@@ -36,12 +36,9 @@
 //
 class CFavorites : public CMenuTarget
 {
-
 	public:
-
 		int  addChannelToFavorites (bool show_list);
 		int  exec(CMenuTarget* parent, const std::string & actionKey);
 };
-
 
 #endif

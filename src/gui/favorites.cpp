@@ -64,7 +64,6 @@ int CFavorites::addChannelToFavorites(bool show_list)
 	//const char * fav_bouquetname;
 	int          status = 0;
 
-
 	// no bouquet-List?  do nothing
 	if (!bouquetList) 
 		return status;
@@ -74,7 +73,9 @@ int CFavorites::addChannelToFavorites(bool show_list)
 		bouquet_id = bouquetList->exec(false);
 		if (bouquet_id < 0)
 			return bouquet_id;
+		
 		printf("[favorites] bouquet name %s\n", bouquetList->Bouquets[bouquet_id]->channelList->getName());
+		
 		bouquet_id = g_Zapit->existsBouquet(bouquetList->Bouquets[bouquet_id]->channelList->getName());
 		if (bouquet_id == -1)
 			return bouquet_id;
@@ -175,8 +176,6 @@ int CFavorites::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		ShowMsgUTF(LOCALE_FAVORITES_BOUQUETNAME, str, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO); // UTF-8
 	}
-
-
 
 	//if (status) 
 	//{

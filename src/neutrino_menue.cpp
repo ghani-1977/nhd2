@@ -95,7 +95,6 @@
 #include "gui/epg_menu.h"
 #include "gui/update.h"
 #include "gui/scan.h"
-#include "gui/favorites.h"
 #include "gui/sleeptimer.h"
 #include "gui/rc_lock.h"
 #include "gui/timerlist.h"

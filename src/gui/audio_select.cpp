@@ -88,7 +88,7 @@ const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 
 int CAudioSelectMenuHandler::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
-	int res = menu_return::RETURN_EXIT_ALL;
+	int res = menu_return::RETURN_REPAINT;
 
 	if (parent) 
 		parent->hide();

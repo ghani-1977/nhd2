@@ -118,7 +118,7 @@ int CStreamInfo2::exec()
 		
 	hide();
 
-	return menu_return::RETURN_EXIT_ALL;
+	return menu_return::RETURN_REPAINT;
 }
 
 int CStreamInfo2::exec(CMenuTarget * parent, const std::string &)
@@ -134,7 +134,7 @@ int CStreamInfo2::exec(CMenuTarget * parent, const std::string &)
 	CFrameBuffer::getInstance()->blit();
 #endif
 
-	hide ();
+	hide();
 	
 	return menu_return::RETURN_REPAINT;
 }
@@ -781,7 +781,7 @@ void CStreamInfo2::paint_techinfo(int xpos, int ypos)
 
 int CStreamInfo2Handler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
-	int res = menu_return::RETURN_EXIT_ALL;
+	int res = menu_return::RETURN_REPAINT;
 	
 	if (parent)
 		parent->hide();
