@@ -176,7 +176,7 @@ static bool dvb_time_update = false;
 //NTP-Config
 #define CONF_FILE CONFIGDIR "/neutrino.conf"
 
-std::string ntp_system_cmd_prefix = "/sbin/ntpdate ";
+std::string ntp_system_cmd_prefix = "ntpdate ";
 
 std::string ntp_system_cmd;
 CConfigFile ntp_config(',');
@@ -3833,10 +3833,10 @@ static void commandSetConfig(int connfd, char *data, const unsigned /*dataLength
 		ntpserver = (std::string)&data[sizeof(struct sectionsd::commandSetConfig)];
 		dprintf(DEBUG_DEBUG, "new network_ntpserver = %s\n", ntpserver.c_str());
 		
-		static const char * ntp_system = "/sbin/rdate";
+		static const char * ntp_system = "rdate";
 	
 		if(!access(ntp_system, F_OK)) 
-			ntp_system_cmd_prefix = "/sbin/rdate -s ";
+			ntp_system_cmd_prefix = "rdate -s ";
 		ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 	}
 
@@ -7965,10 +7965,10 @@ void sectionsd_main_thread(void */*data*/)
 	ntpenable = ntp_config.getBool("network_ntpenable", false);
 	
 	// ntp server
-	static const char * ntp_system = "/sbin/rdate";
+	static const char * ntp_system = "rdate";
 	
 	if(!access(ntp_system, F_OK)) 
-		ntp_system_cmd_prefix = "/sbin/rdate -s ";
+		ntp_system_cmd_prefix = "rdate -s ";
 	
 	ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 
@@ -7990,7 +7990,8 @@ void sectionsd_main_thread(void */*data*/)
 #endif
 	readEncodingFile();
 
-	if (!sectionsd_server.prepare(SECTIONSD_UDS_NAME)) {
+	if (!sectionsd_server.prepare(SECTIONSD_UDS_NAME)) 
+	{
 		fprintf(stderr, "[sectionsd] failed to prepare basic server\n");
 		return;
 	}
@@ -8000,7 +8001,8 @@ void sectionsd_main_thread(void */*data*/)
 	// time-Thread starten
 	rc = pthread_create(&threadTOT, 0, timeThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create time-thread (rc=%d)\n", rc);
 		return;
 	}
@@ -8008,7 +8010,8 @@ void sectionsd_main_thread(void */*data*/)
 	// EIT-Thread starten
 	rc = pthread_create(&threadEIT, 0, eitThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
 		return;
 	}
@@ -8016,7 +8019,8 @@ void sectionsd_main_thread(void */*data*/)
 	// EIT-Thread2 starten
 	rc = pthread_create(&threadCN, 0, cnThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
 		return;
 	}
@@ -8035,16 +8039,19 @@ void sectionsd_main_thread(void */*data*/)
 	// premiere private epg -Thread starten
 	rc = pthread_create(&threadPPT, 0, pptThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create ppt-thread (rc=%d)\n", rc);
 		return;
 	}
 #endif
+
 #ifdef UPDATE_NETWORKS
 	// NIT-Thread starten
 	rc = pthread_create(&threadNIT, 0, nitThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create nit-thread (rc=%d)\n", rc);
 		return;
 	}
@@ -8052,7 +8059,8 @@ void sectionsd_main_thread(void */*data*/)
 	// SDT-Thread starten
 	rc = pthread_create(&threadSDT, 0, sdtThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create sdt-thread (rc=%d)\n", rc);
 		return;
 	}
@@ -8061,16 +8069,15 @@ void sectionsd_main_thread(void */*data*/)
 	// housekeeping-Thread starten
 	rc = pthread_create(&threadHouseKeeping, 0, houseKeepingThread, 0);
 
-	if (rc) {
+	if (rc) 
+	{
 		fprintf(stderr, "[sectionsd] failed to create housekeeping-thread (rc=%d)\n", rc);
 		return;
 	}
 
-	//if (sections_debug) {
 	int policy;
 	rc = pthread_getschedparam(pthread_self(), &policy, &parm);
 	dprintf(DEBUG_DEBUG, "mainloop getschedparam %d policy %d prio %d\n", rc, policy, parm.sched_priority);
-	//}
 	
 	sectionsd_ready = true;
 
@@ -8091,9 +8098,9 @@ void sectionsd_main_thread(void */*data*/)
 				//printdate_ms(stdout);
 				//printf("EIT Update Filter: new version 0x%x, Activate cnThread\n", ((SI_section_header*)buf)->version_number);
 				writeLockMessaging();
-				//						messaging_skipped_sections_ID[0].clear();
-				//						messaging_sections_max_ID[0] = -1;
-				//						messaging_sections_got_all[0] = false;
+				//messaging_skipped_sections_ID[0].clear();
+				//messaging_sections_max_ID[0] = -1;
+				//messaging_sections_got_all[0] = false;
 				messaging_have_CN = 0x00;
 				messaging_got_CN = 0x00;
 				messaging_last_requested = time_monotonic();
@@ -8108,8 +8115,10 @@ void sectionsd_main_thread(void */*data*/)
 			break;
 
 		sched_yield();
-		/* 10 ms is the minimal timeslice anyway (HZ = 100), so let's
-		wait 20 ms at least to lower the CPU load */
+		/* 
+		10 ms is the minimal timeslice anyway (HZ = 100), so let's
+		wait 20 ms at least to lower the CPU load 
+		*/
 		usleep(20000);
 	}
 

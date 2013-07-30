@@ -138,7 +138,7 @@ void* CTimerManager::timerThread(void *arg)
 			pthread_mutex_lock(&tm_eventsMutex);
 
 			CTimerEventMap::iterator pos = timerManager->events.begin();
-			for(;pos != timerManager->events.end();pos++)
+			for(;pos != timerManager->events.end(); pos++)
 			{
 				event = pos->second;
 				dprintf(DEBUG_DEBUG, "[timermanager] checking event: %03d\n", event->eventID);
@@ -146,6 +146,7 @@ void* CTimerManager::timerThread(void *arg)
 				event->printEvent();
 
 				if(event->announceTime > 0 && event->eventState == CTimerd::TIMERSTATE_SCHEDULED ) // if event wants to be announced
+				{
 					if( event->announceTime <= now )	// check if event announcetime has come
 					{
 						event->setState(CTimerd::TIMERSTATE_PREANNOUNCE);
@@ -153,8 +154,10 @@ void* CTimerManager::timerThread(void *arg)
 						event->announceEvent();							// event specific announce handler
 						timerManager->m_saveEvents = true;
 					}
+				}
 
 				if(event->alarmTime > 0 && (event->eventState == CTimerd::TIMERSTATE_SCHEDULED || event->eventState == CTimerd::TIMERSTATE_PREANNOUNCE) )	// if event wants to be fired
+				{
 					if( event->alarmTime <= now )	// check if event alarmtime has come
 					{
 						event->setState(CTimerd::TIMERSTATE_ISRUNNING);
@@ -164,8 +167,10 @@ void* CTimerManager::timerThread(void *arg)
 							event->setState(CTimerd::TIMERSTATE_HASFINISHED);
 						timerManager->m_saveEvents = true;
 					}
+				}
 
 				if(event->stopTime > 0 && event->eventState == CTimerd::TIMERSTATE_ISRUNNING  )		// check if stopevent is wanted
+				{
 					if( event->stopTime <= now ) // check if event stoptime has come
 					{
 						dprintf(DEBUG_DEBUG, "[timermanager] stopping event\n");
@@ -173,6 +178,7 @@ void* CTimerManager::timerThread(void *arg)
 						event->setState(CTimerd::TIMERSTATE_HASFINISHED); 
 						timerManager->m_saveEvents = true;
 					}
+				}
 
 				if(event->eventState == CTimerd::TIMERSTATE_HASFINISHED)
 				{
@@ -214,6 +220,7 @@ void* CTimerManager::timerThread(void *arg)
 			pthread_cond_timedwait(&dummy_cond, &dummy_mutex, &wait);
 		}
 	}
+	
 	return 0;
 }
 
@@ -222,7 +229,7 @@ CTimerEvent * CTimerManager::getNextEvent()
 	pthread_mutex_lock(&tm_eventsMutex);
 	CTimerEvent *erg = events[0];
 	CTimerEventMap::iterator pos = events.begin();
-	for(;pos!=events.end();pos++)
+	for(;pos != events.end(); pos++)
 	{
 		if(pos->second <= erg)
 		{
