@@ -149,7 +149,7 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 			break;	
 		}
 		getInstance()->m_played_time = position/1000;	// in sec				  
-	}while(getInstance()->state != CBaseDec::STOP_REQ);	//(playback->GetPosition(position, duration));
+	}while(getInstance()->state != CBaseDec::STOP_REQ);
 #else	
 	// Decode stdin to stdout.
 	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
