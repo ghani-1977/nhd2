@@ -705,7 +705,7 @@ int CAudioPlayerGui::show()
 				{
 					static int old_select = 0;
 					char cnt[5];
-					CMenuWidget InputSelector(LOCALE_AUDIOPLAYER_LOAD_RADIO_STATIONS, NEUTRINO_ICON_AUDIO, 400);
+					CMenuWidget InputSelector(LOCALE_AUDIOPLAYER_LOAD_RADIO_STATIONS, NEUTRINO_ICON_AUDIO);
 					int count = 0;
 					int select = -1;
 					
@@ -2286,8 +2286,10 @@ void CAudioPlayerGui::updateMetaData()
 		info.precision(3);
 
 		if ( meta.bitrate > 0 )
-		{		  
+		{
+#if defined (ENABLE_PCMDECODER)		  
 			info << " / ";
+#endif			
 			
 			if ( meta.vbr )
 			{
