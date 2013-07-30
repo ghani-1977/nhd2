@@ -2617,7 +2617,7 @@ void CMovieBrowser::loadAllTsFileNamesFromStorage(void)
 	updateDir();
 
 	size = m_dir.size();
-	for(i=0; i < size;i++)
+	for(i = 0; i < size; i++)
 	{
 		if(*m_dir[i].used == true )
 			result = loadTsFileNamesFromDir(m_dir[i].name);
@@ -3838,8 +3838,10 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 			return;
 		}
 	}
+	
 	m_vMovieInfo.clear();
 	yt_video_list_t &ylist = ytparser.GetVideoList();
+	
 	for (unsigned i = 0; i < ylist.size(); i++) 
 	{
 		MI_MOVIE_INFO movieInfo;
@@ -3855,6 +3857,7 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 
 		movieInfo.file.Name = ylist[i].title;
 		movieInfo.file.Url = ylist[i].GetUrl();
+		
 		m_vMovieInfo.push_back(movieInfo);
 	}
 	m_currentBrowserSelection = 0;
