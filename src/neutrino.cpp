@@ -2477,7 +2477,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 
 	CVFD::getInstance()->setPower(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER]);
 	CVFD::getInstance()->setlcdparameter();
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) && !defined (ENABLE_LCD)
 	CVFD::getInstance()->vfd_led(g_settings.lcd_ledcolor);
 #endif	
 	

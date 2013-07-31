@@ -43,6 +43,15 @@
 #error "no BYTE_ORDER defined!"
 #endif
 
+#ifndef max
+#define max(a,b)(((a)<(b)) ? (b) : (a))
+#endif
+
+#ifndef min
+#define min(a,b)(((a)<(b)) ? (a) : (b))
+#endif
+
+
 void CLCDDisplay::setSize(int w, int h, int b)
 {
 	xres = w;
@@ -50,22 +59,29 @@ void CLCDDisplay::setSize(int w, int h, int b)
 	bpp = 8;
 	bypp = 1;
 	surface_bpp = b;
+	
+	real_offset = 0;
+	real_yres = yres;
+	if (yres == 32)
+		real_offset = 16;
+	if (yres < 64)
+		yres = 48;
 
 	switch (surface_bpp)
 	{
-	case 8:
-		surface_bypp = 1;
-		break;
-	case 15:
-	case 16:
-		surface_bypp = 2;
-		break;
-	case 24:		// never use 24bit mode
-	case 32:
-		surface_bypp = 4;
-		break;
-	default:
-		surface_bypp = (bpp+7)/8;
+		case 8:
+			surface_bypp = 1;
+			break;
+		case 15:
+		case 16:
+			surface_bypp = 2;
+			break;
+		case 24:		// never use 24bit mode
+		case 32:
+			surface_bypp = 4;
+			break;
+		default:
+			surface_bypp = (bpp+7)/8;
 	}
 
 	surface_stride = xres*surface_bypp;
@@ -380,7 +396,20 @@ void CLCDDisplay::update()
 			}
 			else
 			{
-				write(fd, surface_data, surface_stride * yres);
+				//write(fd, surface_data, surface_stride * yres);
+				//
+#ifdef PLATFORM_GIGABLUE
+				unsigned char gb_buffer[surface_stride * yres];
+				for (int offset = 0; offset < surface_stride * yres; offset += 2)
+				{
+					gb_buffer[offset] = (surface_data[offset] & 0x1F) | ((surface_data[offset + 1] << 3) & 0xE0);
+					gb_buffer[offset + 1] = ((surface_data[offset + 1] >> 5) & 0x03) | ((surface_data[offset] >> 3) & 0x1C) | ((_buffer[offset + 1] << 5) & 0x60);
+				}
+				write(fd, gb_buffer, surface_stride * yres);
+#else
+				write(fd, surface_data + surface_stride * real_offset, surface_stride * real_yres);
+#endif				
+				//
 			}
 		}
 		else /* is_oled == 1 */
@@ -697,9 +726,14 @@ void CLCDDisplay::load_screen_element(const raw_lcd_element_t * element, int lef
 {
 	unsigned int i;
 
-	if (element->buffer)
-		for (i = 0; i < element->header.height; i++)	
-			memmove(_buffer+((top+i) * xres)+left, element->buffer+(i * element->header.width), element->header.width);
+	//if (element->buffer)
+	//	for (i = 0; i < element->header.height; i++)	
+	//		memmove(_buffer+((top+i) * xres)+left, element->buffer+(i * element->header.width), element->header.width);
+	//
+	if ((element->buffer) && (element->header.height <= yres-top))
+		for (i = 0; i < min(element->header.height, yres-top); i++)	
+			memmove(_buffer+((top+i) * xres)+left, element->buffer+(i * element->header.width), min(element->header.width, xres-left));
+	//
 }
 
 void CLCDDisplay::load_screen(const raw_display_t * const screen) 

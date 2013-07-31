@@ -293,7 +293,7 @@ void CLCD::displayUpdate()
 
 void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const int inverse, const int bias)
 {
-#if defined (PLATFORM_DREAMBOX) //@scp kannst dies checken ob es geht ?
+//#if defined (PLATFORM_DREAMBOX) //@scp kannst dies checken ob es geht ?
 	if (!display.isAvailable())
 		return;
 	int fd;
@@ -313,7 +313,7 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 		display.setInverted(CLCDDisplay::PIXEL_ON);
 	else		
 		display.setInverted(CLCDDisplay::PIXEL_OFF);
-#endif
+//#endif
 }
 
 void CLCD::setlcdparameter(void)
@@ -428,6 +428,9 @@ void CLCD::showTextScreen(const std::string & big, const std::string & small, co
 
 	// one nameline => 2 eventlines, 2 namelines => 1 eventline
 	int maxeventlines = 4 - (namelines * 3 + 1) / 2;
+	
+	if (lcd_height < 64)
+		maxeventlines = 2 - (namelines * 1 + 1) / 2;
 
 	if ((showmode & 2) && !small.empty())
 	{
@@ -455,7 +458,13 @@ void CLCD::showTextScreen(const std::string & big, const std::string & small, co
 	}
 
 	/* this values were determined empirically */
-	int y = 8 + (41 - namelines*14 - eventlines*10)/2;
+	//int y = 8 + (41 - namelines*14 - eventlines*10)/2;
+	//
+	int t_h = 41;
+	if (lcd_height < 64)
+		t_h = t_h*lcd_height/64;
+	int y = 8 + (t_h - namelines*14 - eventlines*10)/2;
+	//
 	int x = 1;
 	for (int i = 0; i < namelines; i++) {
 		y += 14;

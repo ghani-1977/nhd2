@@ -1465,6 +1465,15 @@ void CControlAPI::LCDAction(CyhookHandler *hh)
 	if (hh->ParamList["shotpng"] != "")
 		if(! NeutrinoAPI->LcdAPI->ShotPng((char*)hh->ParamList["shotpng"].c_str()))
 			error=1;
+#ifdef ENABLE_GRAPHLCD
+	if (hh->ParamList["ngpng"] != "")
+		if(! NeutrinoAPI->LcdAPI->ShowNgPng((char*)hh->ParamList["ngpng"].c_str()))
+			error=1;
+
+	if (hh->ParamList["shotngpng"] != "")
+		if(! NeutrinoAPI->LcdAPI->ShotNgPng((char*)hh->ParamList["shotngpng"].c_str()))
+			error=1;
+#endif		
 #endif
 
 	if(error) 	

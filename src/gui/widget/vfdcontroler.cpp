@@ -47,7 +47,11 @@
 
 #include <math.h>
 
+#if defined(ENABLE_LCD) && (defined(PLATFORM_DREAMBOX) || defined(PLATFORM_GIGABLUE) || defined(PLATFORM_VUPLUS))
+#define BRIGHTNESSFACTOR 2.55 // 0 - 255
+#else
 #define BRIGHTNESSFACTOR 0.07 // 0 - 7
+#endif
 
 
 CVfdControler::CVfdControler(const neutrino_locale_t Name, CChangeObserver* Observer)

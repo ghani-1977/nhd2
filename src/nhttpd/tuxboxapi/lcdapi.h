@@ -57,6 +57,11 @@ public:
 #endif
 	void Clear(void);
 	bool ShotPng(char *filename);
+	
+#ifdef ENABLE_GRAPHLCD
+	bool ShowNgPng(char *filename);
+	bool ShotNgPng(char *filename);
+#endif
 };
 
 #endif /* __nhttpd_lcdapi_h__ */

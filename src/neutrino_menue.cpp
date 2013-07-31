@@ -1927,7 +1927,7 @@ void CNeutrinoApp::InitColorSettingsTiming(CMenuWidget &colorSettings_timing)
 	colorSettings_timing.addItem(new CMenuForwarder(LOCALE_OPTIONS_DEFAULT, true, NULL, this, "osd.def"));
 }
 
-#if defined (PLATFORM_DREAMBOX)
+#if defined (ENABLE_LCD)
 /* for lcd settings menu*/
 #define LCDMENU_STATUSLINE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval LCDMENU_STATUSLINE_OPTIONS[LCDMENU_STATUSLINE_OPTION_COUNT] =
@@ -2011,6 +2011,13 @@ void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)
 	//dump to png
 	CMenuOptionChooser* oj_dumppng = new CMenuOptionChooser(LOCALE_LCDMENU_DUMP_PNG, &g_settings.lcd_setting[SNeutrinoSettings::LCD_DUMP_PNG], OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true);
 	lcdSettings.addItem(oj_dumppng);
+	
+	//
+	CVfdControler * lcdsliders = new CVfdControler(LOCALE_LCDMENU_HEAD, NULL);
+
+	// lcd controller
+	lcdSettings.addItem(GenericMenuSeparatorLine);
+	lcdSettings.addItem(new CMenuForwarder(LOCALE_LCDMENU_LCDCONTROLER, true, NULL, lcdsliders, NULL, CRCInput::convertDigitToKey(shortcutVFD++) ));
 #else	
 	
 #if !defined (PLATFORM_CUBEREVO_250HD) && !defined (PLATFORM_SPARK)

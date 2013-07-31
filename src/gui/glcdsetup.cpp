@@ -26,7 +26,7 @@
 #include <global.h>
 #include <neutrino.h>
 
-/*zapit includes*/
+/* zapit includes */
 #include <channel.h>
 
 #include <driver/fontrenderer.h>
@@ -44,22 +44,54 @@
 #define KEY_GLCD_MAGENTA		5
 #define KEY_GLCD_CYAN			6
 #define KEY_GLCD_YELLOW			7
-#define GLCD_COLOR_OPTION_COUNT 	8
+#define KEY_GLCD_ORANGE		 	8
+#define KEY_GLCD_LIGHT_GRAY		9
+#define KEY_GLCD_GRAY			10
+#define KEY_GLCD_DARK_GRAY		11
+#define KEY_GLCD_DARK_RED		12
+#define KEY_GLCD_DARK_GREEN		13
+#define KEY_GLCD_DARK_BLUE		14
+#define KEY_GLCD_PURPLE			15
+#define KEY_GLCD_MINT			16
+#define KEY_GLCD_GOLDEN			17
 
+#define GLCD_COLOR_OPTION_COUNT 	18
+
+const uint32_t GLCD_EXTRA_COLOR_Orange           = 0xFFFF4000;
+const uint32_t GLCD_EXTRA_COLOR_LIGHT_Gray       = 0xFFBFBFBF;
+const uint32_t GLCD_EXTRA_COLOR_Gray             = 0xFF7F7F7F;
+const uint32_t GLCD_EXTRA_COLOR_DARK_Gray        = 0xFF3F3F3F;
+const uint32_t GLCD_EXTRA_COLOR_DARK_Red         = 0xFF7F0000;
+const uint32_t GLCD_EXTRA_COLOR_DARK_Green       = 0xFF00FF00;
+const uint32_t GLCD_EXTRA_COLOR_DARK_Blue        = 0xFF00007F;
+const uint32_t GLCD_EXTRA_COLOR_Purple           = 0xFF7F007F;
+const uint32_t GLCD_EXTRA_COLOR_Mint             = 0xFF007F7F;
+const uint32_t GLCD_EXTRA_COLOR_Golden           = 0xFF7F7F00;
 
 static const CMenuOptionChooser::keyval GLCD_COLOR_OPTIONS[GLCD_COLOR_OPTION_COUNT] =
 {
-	  { KEY_GLCD_BLACK,	LOCALE_GLCD_COLOR_BLACK }
-	, { KEY_GLCD_WHITE,	LOCALE_GLCD_COLOR_WHITE }
-	, { KEY_GLCD_RED,	LOCALE_GLCD_COLOR_RED }
-	, { KEY_GLCD_GREEN,	LOCALE_GLCD_COLOR_GREEN }
-	, { KEY_GLCD_BLUE,	LOCALE_GLCD_COLOR_BLUE }
-	, { KEY_GLCD_MAGENTA,	LOCALE_GLCD_COLOR_MAGENTA }
-	, { KEY_GLCD_CYAN,	LOCALE_GLCD_COLOR_CYAN }
-	, { KEY_GLCD_YELLOW,	LOCALE_GLCD_COLOR_YELLOW }
+	{ KEY_GLCD_BLACK,	LOCALE_GLCD_COLOR_BLACK },
+	{ KEY_GLCD_WHITE,	LOCALE_GLCD_COLOR_WHITE },
+	{ KEY_GLCD_RED,		LOCALE_GLCD_COLOR_RED },
+	{ KEY_GLCD_GREEN,	LOCALE_GLCD_COLOR_GREEN },
+	{ KEY_GLCD_BLUE,	LOCALE_GLCD_COLOR_BLUE },
+	{ KEY_GLCD_MAGENTA,	LOCALE_GLCD_COLOR_MAGENTA },
+	{ KEY_GLCD_CYAN,	LOCALE_GLCD_COLOR_CYAN },
+	{ KEY_GLCD_YELLOW,	LOCALE_GLCD_COLOR_YELLOW },
+	{ KEY_GLCD_ORANGE,	LOCALE_GLCD_COLOR_ORANGE },
+	{ KEY_GLCD_LIGHT_GRAY,	LOCALE_GLCD_COLOR_LIGHT_GRAY },
+	{ KEY_GLCD_GRAY,	LOCALE_GLCD_COLOR_GRAY },
+	{ KEY_GLCD_DARK_GRAY,	LOCALE_GLCD_COLOR_DARK_GRAY },
+	{ KEY_GLCD_DARK_RED,	LOCALE_GLCD_COLOR_DARK_RED },
+	{ KEY_GLCD_DARK_GREEN,	LOCALE_GLCD_COLOR_DARK_GREEN },
+	{ KEY_GLCD_DARK_BLUE,	LOCALE_GLCD_COLOR_DARK_BLUE },
+	{ KEY_GLCD_PURPLE,	LOCALE_GLCD_COLOR_PURPLE },
+	{ KEY_GLCD_MINT,	LOCALE_GLCD_COLOR_MINT },
+	{ KEY_GLCD_GOLDEN,	LOCALE_GLCD_COLOR_GOLDEN },
 };
 
-int GLCD_Menu::color2index(uint32_t color) {
+int GLCD_Menu::color2index(uint32_t color) 
+{
 	if (color == GLCD::cColor::Black)
 		return KEY_GLCD_BLACK;
 	if (color == GLCD::cColor::White)
@@ -76,28 +108,70 @@ int GLCD_Menu::color2index(uint32_t color) {
 		return KEY_GLCD_CYAN;
 	if (color == GLCD::cColor::Yellow)
 		return KEY_GLCD_YELLOW;
+	if (color == GLCD_EXTRA_COLOR_Orange)
+		return KEY_GLCD_ORANGE;
+	if (color == GLCD_EXTRA_COLOR_LIGHT_Gray)
+		return KEY_GLCD_LIGHT_GRAY;
+	if (color == GLCD_EXTRA_COLOR_Gray)
+		return KEY_GLCD_GRAY;
+	if (color == GLCD_EXTRA_COLOR_DARK_Gray)
+		return KEY_GLCD_DARK_GRAY;
+	if (color == GLCD_EXTRA_COLOR_DARK_Red)
+		return KEY_GLCD_DARK_RED;
+	if (color == GLCD_EXTRA_COLOR_DARK_Green)
+		return KEY_GLCD_DARK_GREEN;
+	if (color == GLCD_EXTRA_COLOR_DARK_Blue)
+		return KEY_GLCD_DARK_BLUE;
+	if (color == GLCD_EXTRA_COLOR_Purple)
+		return KEY_GLCD_PURPLE;
+	if (color == GLCD_EXTRA_COLOR_Mint)
+		return KEY_GLCD_MINT;
+	if (color == GLCD_EXTRA_COLOR_Golden)
+		return KEY_GLCD_GOLDEN;
 	
 	return KEY_GLCD_BLACK;
 }
 
-uint32_t GLCD_Menu::index2color(int i) {
-	switch(i) {
-	case KEY_GLCD_BLACK:
-		return GLCD::cColor::Black;
-	case KEY_GLCD_WHITE:
-		return GLCD::cColor::White;
-	case KEY_GLCD_RED:
-		return GLCD::cColor::Red;
-	case KEY_GLCD_GREEN:
-		return GLCD::cColor::Green;
-	case KEY_GLCD_BLUE:
-		return GLCD::cColor::Blue;
-	case KEY_GLCD_MAGENTA:
-		return GLCD::cColor::Magenta;
-	case KEY_GLCD_CYAN:
-		return GLCD::cColor::Cyan;
-	case KEY_GLCD_YELLOW:
-		return GLCD::cColor::Yellow;
+uint32_t GLCD_Menu::index2color(int i) 
+{
+	switch(i) 
+	{
+		case KEY_GLCD_BLACK:
+			return GLCD::cColor::Black;
+		case KEY_GLCD_WHITE:
+			return GLCD::cColor::White;
+		case KEY_GLCD_RED:
+			return GLCD::cColor::Red;
+		case KEY_GLCD_GREEN:
+			return GLCD::cColor::Green;
+		case KEY_GLCD_BLUE:
+			return GLCD::cColor::Blue;
+		case KEY_GLCD_MAGENTA:
+			return GLCD::cColor::Magenta;
+		case KEY_GLCD_CYAN:
+			return GLCD::cColor::Cyan;
+		case KEY_GLCD_YELLOW:
+			return GLCD::cColor::Yellow;
+		case KEY_GLCD_ORANGE:
+			return GLCD_EXTRA_COLOR_Orange;
+		case KEY_GLCD_LIGHT_GRAY:
+			return GLCD_EXTRA_COLOR_LIGHT_Gray;
+		case KEY_GLCD_GRAY:
+			return GLCD_EXTRA_COLOR_Gray;
+		case KEY_GLCD_DARK_GRAY:
+			return GLCD_EXTRA_COLOR_DARK_Gray;
+		case KEY_GLCD_DARK_RED:
+			return GLCD_EXTRA_COLOR_DARK_Red;
+		case KEY_GLCD_DARK_GREEN:
+			return GLCD_EXTRA_COLOR_DARK_Green;
+		case KEY_GLCD_DARK_BLUE:
+			return GLCD_EXTRA_COLOR_DARK_Blue;
+		case KEY_GLCD_PURPLE:
+			return GLCD_EXTRA_COLOR_Purple;
+		case KEY_GLCD_MINT:
+			return GLCD_EXTRA_COLOR_Mint;
+		case KEY_GLCD_GOLDEN:
+			return GLCD_EXTRA_COLOR_Golden;
 	}
 	
 	return GLCD::cColor::ERRCOL;

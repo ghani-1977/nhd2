@@ -383,9 +383,9 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,technomate,coolstream,hypercube],
+	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox, technomate,coolstream,hypercube],
 	[case "${withval}" in
-		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|technomate|coolstream|hypercube)
+		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube)
 			BOXTYPE="$withval"
 			;;
 		cu*)
@@ -424,6 +424,10 @@ AC_ARG_WITH(boxtype,
 			BOXTYPE="vuplus"
 			BOXMODEL="$withval"
 			;;
+		az*)
+			BOXTYPE="azbox"
+			BOXMODEL="$withval"
+			;;
 		tm*)
 			BOXTYPE="technomate"
 			BOXMODEL="$withval"
@@ -444,7 +448,8 @@ AC_ARG_WITH(boxmodel,
 				valid for ipbox: ipbox55, ipbox99, ipbox9900
 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo
-				valid for technomate: tmtwin,tm2t,tmsingle],
+				valid for azbox: azboxhd,azboxme,azboxminime
+				valid for technomate: tmtwin,tm2t,tmsingle,tmnano],
 	[case "${withval}" in
 		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd)
 			if test "$BOXTYPE" = "dgs"; then
@@ -509,7 +514,14 @@ AC_ARG_WITH(boxmodel,
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 			fi
 			;;
-		tmtwin|tm2t|tmsingle)
+		azboxhd|azboxme|azboxminime)
+			if test "$BOXTYPE" = "azbox"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		tmtwin|tm2t|tmsingle|tmnano)
 			if test "$BOXTYPE" = "technomate"; then
 				BOXMODEL="$withval"
 			else
@@ -565,6 +577,7 @@ AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
 AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
 AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
 AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
+AM_CONDITIONAL(BOXTYPE_AZBOX, test "$BOXTYPE" = "azbox")
 AM_CONDITIONAL(BOXTYPE_TECHNOMATE, test "$BOXTYPE" = "technomate")
 AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
 AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
@@ -626,9 +639,14 @@ AM_CONDITIONAL(BOXMODEL_VUDUO,test "$BOXMODEL" = "vuduo")
 AM_CONDITIONAL(BOXMODEL_VUUNO,test "$BOXMODEL" = "vuuno")
 AM_CONDITIONAL(BOXMODEL_VUULTIMO,test "$BOXMODEL" = "vuultimo")
 
+AM_CONDITIONAL(BOXMODEL_AZBOXHD,test "$BOXMODEL" = "azboxhd")
+AM_CONDITIONAL(BOXMODEL_AZBOXME,test "$BOXMODEL" = "azboxme")
+AM_CONDITIONAL(BOXMODEL_AZBOXMINIME,test "$BOXMODEL" = "azboxminime")
+
 AM_CONDITIONAL(BOXMODEL_TMTWIN,test "$BOXMODEL" = "tmtwin")
 AM_CONDITIONAL(BOXMODEL_TM2T,test "$BOXMODEL" = "tm2t")
 AM_CONDITIONAL(BOXMODEL_TMSINGLE,test "$BOXMODEL" = "tmsingle")
+AM_CONDITIONAL(BOXMODEL_TMNANO,test "$BOXMODEL" = "tmnano")
 
 if test "$BOXTYPE" = "generic"; then
 	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
@@ -664,6 +682,8 @@ elif test "$BOXTYPE" = "homecast"; then
 	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for a homecast])
 elif test "$BOXTYPE" = "vuplus"; then
 	AC_DEFINE(PLATFORM_VUPLUS, 1, [building for a vuplus])
+elif test "$BOXTYPE" = "azbox"; then
+	AC_DEFINE(PLATFORM_AZBOX, 1, [building for a azbox])
 elif test "$BOXTYPE" = "technomate"; then
 	AC_DEFINE(PLATFORM_TECHNOMATE, 1, [building for a technomate])
 elif test "$BOXTYPE" = "coolstream"; then
@@ -771,12 +791,21 @@ elif test "$BOXMODEL" = "vuuno"; then
 elif test "$BOXMODEL" = "vuultimo"; then
 	AC_DEFINE(BOXMODEL_VUULTIMO, 1, [building for vuplus ultimo])
 
+elif test "$BOXMODEL" = "azboxhd"; then
+	AC_DEFINE(BOXMODEL_AZBOXHD, 1, [building for azbox hd])
+elif test "$BOXMODEL" = "azboxme"; then
+	AC_DEFINE(BOXMODEL_AZBOXME, 1, [building for azbox me])
+elif test "$BOXMODEL" = "azboxminime"; then
+	AC_DEFINE(BOXMODEL_AZBOXMINIME, 1, [building for azbox minime])
+
 elif test "$BOXMODEL" = "tmtwin"; then
 	AC_DEFINE(BOXMODEL_TMTWIN, 1, [building for technomate twin])
 elif test "$BOXMODEL" = "tm2t"; then
 	AC_DEFINE(BOXMODEL_TM2T, 1, [building for technomate 2t])
 elif test "$BOXMODEL" = "tmsingle"; then
 	AC_DEFINE(BOXMODEL_TMSINGLE, 1, [building for technomate single])
+elif test "$BOXMODEL" = "tmnano"; then
+	AC_DEFINE(BOXMODEL_TMNANO, 1, [building for technomate nano])
 fi
 ])
 

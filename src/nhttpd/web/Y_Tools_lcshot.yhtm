@@ -18,6 +18,7 @@ function do_lcshot(){
 }
 function do_lcshot2(){
 	var _shot = document.getElementById("shot");
+	var _shotng = document.getElementById("shotng");
 	var filename = id("file").value;
 	var color = document.getElementById("colorBox").value;
 	color = " -c "+color;
@@ -35,6 +36,10 @@ function do_lcshot2(){
 	show_waitbox(false);
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".png?"+Math.random();
+	loadSyncURL("/control/lcd?shotngpng=" + "/tmp/"+"ng"+filename+".png");
+	show_waitbox(false);
+	show_obj("shotng", true);
+	_shotng.src = "/tmp/"+"ng"+filename+".png?"+Math.random();
 }
 function do_clearshot(){
 	window.setTimeout("do_clearshot2()", 500);
@@ -121,6 +126,12 @@ document.write('</tr>\n');
 	    </tr>
 		<tr>
 		  <td colspan="3"><img src="" id="shot" style="visibility:hidden;" alt="" /></td>
+	    </tr>
+		<tr>
+		  <td colspan="3">&nbsp;</td>
+	    </tr>
+		<tr>
+		  <td colspan="3"><img src="" id="shotng" style="visibility:hidden;" alt="" /></td>
 	    </tr>
 		<tr>
 		  <td colspan="3">&nbsp;</td>

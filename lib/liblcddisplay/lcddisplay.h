@@ -86,6 +86,8 @@ class CLCDDisplay
 		int surface_stride;
 		int surface_bpp, surface_bypp;
 		int surface_buffer_size;
+		int real_offset;
+		int real_yres;
 	
 	public:
 		enum

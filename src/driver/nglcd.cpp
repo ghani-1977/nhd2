@@ -25,6 +25,8 @@
 #include <config.h>
 #endif
 
+#include <png.h>
+
 #include <unistd.h>
 
 #include <global.h>
@@ -48,6 +50,7 @@ void sectionsd_getCurrentNextServiceKey(t_channel_id uniqueServiceKey, CSections
 nGLCD::nGLCD() 
 {
 	lcd = NULL;
+	ChannelID = -1;
 	Channel = "NeutrinoHD";
 	Epg = "NeutrinoHD2";
 	scrollChannel = "NeutrinoHD";
@@ -138,9 +141,16 @@ void nGLCD::Exec()
 	}
 
 	int off = 0;
+	
+	raw_nglcd_element_t channel_logo;
+	channel_logo.header.width = 0;
+	channel_logo.header.height = 0;
+	channel_logo.buffer_size = 0;
+	channel_logo.buffer = NULL;
 
 	if (percent_channel) 
 	{
+		/*
 		off += percent_space;
 		int fw = font_channel.Width(scrollChannel);
 		if (fw && !doStandbyTime)
@@ -151,8 +161,86 @@ void nGLCD::Exec()
 		off += percent_space;
 		if (scrollChannel.length() > Channel.length())
 			scrollChannel = scrollChannel.substr(1);
+		*/
+		//
+		char fname[255];
+		bool logo_ok = false;
+
+		// first png, then jpg, then gif
+		std::string strLogoExt[3] = { ".png", ".jpg" , ".gif" };
+	
+		// check for logo
+		for (int i = 0; i < 3; i++)
+		{
+			sprintf(fname, "%s/%llx%s", g_settings.logos_dir.c_str(), ChannelID & 0xFFFFFFFFFFFFULL, strLogoExt[i].c_str());
+			if(!access(fname, F_OK)) 
+			{
+				logo_ok = true;
+				break;
+			}
+		}
+	
+		if(logo_ok)
+			logo_ok = load_png_element(fname, &channel_logo);
+
+		if(logo_ok)
+		{
+			off += percent_space;
+			if (!doStandbyTime)
+			{
+				int logo_top = 0;
+				int logo_max_height = 0;
+				if ((channel_logo.header.width*2 < bitmap->Width()) && (channel_logo.header.height*2 <= (percent_space*2+percent_channel) * bitmap->Height()/100))
+				{
+					logo_top = (off-percent_space) * bitmap->Height()/100;
+					logo_max_height = (percent_space*2+percent_channel) * bitmap->Height()/100;
+					logo_top = logo_top + (logo_max_height-channel_logo.header.height*2)/2;
+					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width*2)/2, 
+						logo_top, true);
+				}
+				else
+				{
+					logo_top = (off-percent_space/2) * bitmap->Height()/100;
+					logo_max_height = (percent_space+percent_channel) * bitmap->Height()/100;
+					logo_top = logo_top + (logo_max_height-channel_logo.header.height)/2;
+					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width)/2, 
+						logo_top, false);
+				}
+			}
+			if (channel_logo.buffer)
+			{
+				free(channel_logo.buffer);
+				channel_logo.buffer = NULL;
+			}
+			off += percent_channel;
+			off += percent_space;
+			if (scrollChannel.length() > Channel.length())
+			{
+				while (scrollChannel.length() > Channel.length())
+					scrollChannel = scrollChannel.substr(1);
+			}
+			else
+				doScrollChannel = false;
+		}
+		//
 		else
-			doScrollChannel = false;
+			//doScrollChannel = false;
+		//
+		{
+			off += percent_space;
+			int fw = font_channel.Width(scrollChannel);
+			if (fw && !doStandbyTime)
+				bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2),
+					off * bitmap->Height()/100, bitmap->Width() - 4, scrollChannel,
+					&font_channel, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
+			off += percent_channel;
+			off += percent_space;
+			if (scrollChannel.length() > Channel.length())
+				scrollChannel = scrollChannel.substr(1);
+			else
+				doScrollChannel = false;
+		}
+		//
 	}
 
 	if (percent_epg) 
@@ -371,15 +459,19 @@ void* nGLCD::Run(void *)
 				int lcd_width = nglcd->bitmap->Width();
 				int lcd_height = nglcd->bitmap->Height();
 				uint32_t *fbp = fb->getFrameBufferPointer();
+				unsigned int fb_stride = fb->getStride()/4;
+
+#ifdef GLCD_DEBUG
+				printf("%s:%s(%d) fb_stride: %d, fb_width: %d, fb_height: %d\n", __FILE__, __FUNCTION__, __LINE__, fb_stride, fb_width, fb_height);
+#endif
 
 				// determine OSD frame geometry
-
 				int y_min = 0;
 				for (int y = 0; y < fb_height && !y_min; y++) 
 				{
 					for (int x = 0; x < fb_width; x++) 
 					{
-						if (*(fbp + fb_width * y + x)) 
+						if (*(fbp + fb_stride * y + x)) 
 						{
 							y_min = y;
 							break;
@@ -391,7 +483,7 @@ void* nGLCD::Run(void *)
 				{
 					for (int x = 0; x < fb_width; x++) 
 					{
-						if (*(fbp + fb_width * y + x)) 
+						if (*(fbp + fb_stride * y + x)) 
 						{ 
 							y_max = y;
 							break;
@@ -403,9 +495,18 @@ void* nGLCD::Run(void *)
 				{
 					for (int x = 0; x < fb_width; x++) 
 					{
-						if (*(fbp + fb_width * y + x) && x < x_min) 
+						//if (*(fbp + fb_width * y + x) && x < x_min) 
+						//
+						uint32_t cl = *(fbp + fb_stride * y + x);
+						if (cl && x < x_min) 
+						//
 						{
 							x_min = x;
+							
+#ifdef GLCD_DEBUG
+							printf("%s:%s(%d) x_min: %d, x: %d, y: %d, cl: %x\n", __FILE__, __FUNCTION__, __LINE__, x_min, x, y, cl);
+#endif
+
 							break;
 						}
 					}
@@ -415,9 +516,18 @@ void* nGLCD::Run(void *)
 				{
 					for (int x = fb_width - 1; x > x_min; x--) 
 					{
-						if (*(fbp + fb_width * y + x) && x > x_max) 
+						//if (*(fbp + fb_width * y + x) && x > x_max) 
+						//
+						uint32_t cl = *(fbp + fb_stride * y + x);
+						if (cl && x > x_max) 
+						//
 						{
-							x_max= x;
+							x_max = x;
+							
+#ifdef GLCD_DEBUG
+							printf("%s:%s(%d) x_max: %d, x: %d, y: %d, cl: %x\n", __FILE__, __FUNCTION__, __LINE__, x_max, x, y, cl);
+#endif
+
 							break;
 						}
 					}
@@ -425,8 +535,16 @@ void* nGLCD::Run(void *)
 
 				int fb_w = x_max - x_min;
 				int fb_h = y_max - y_min;
+				
+#ifdef GLCD_DEBUG
+				printf("%s:%s(%d) x_min: %d, x_max: %d, fb_w: %d, y_min: %d, y_max: %d, fb_h: %d \n", __FILE__, __FUNCTION__, __LINE__, x_min, x_max, fb_w, y_min, y_max, fb_h);
+#endif				
 
-				if (!fb_w || !fb_w) 
+				//if (!fb_w || !fb_w) 
+				//
+				// Skip empty and infobar
+				if (!fb_w || !fb_w || (y_min*100/fb_height > 66)) 
+				//
 				{
 					usleep(500000);
 					continue;
@@ -450,15 +568,27 @@ void* nGLCD::Run(void *)
 					x_min = 0;
 				if (y_min < 0)
 					y_min = 0;
+				
+#ifdef GLCD_DEBUG
+				printf("%s:%s(%d) x_min: %d, x_max: %d, fb_w: %d, y_min: %d, y_max: %d, fb_h: %d \n", __FILE__, __FUNCTION__, __LINE__, x_min, x_max, fb_w, y_min, y_max, fb_h);
+#endif				
 
 				for (int y = 0; y < lcd_height; y++) 
 				{
-					int ystride = y_min * fb_width;
+					//int ystride = y_min * fb_width;
+					//
+					int ystride = y_min * fb_stride;
+					uint32_t *rp = fbp + ystride + (y * fb_h / lcd_height) * fb_stride;
+					uint32_t cl = 0;
+					//
 					for (int x = 0; x < lcd_width; x++) 
 					{
 						// FIXME: There might be some oscure bug somewhere that invalidate the address of bitmap->DrawPixel()
-						nglcd->bitmap->DrawPixel(x, y, *(fbp + ystride + (y * fb_h / lcd_height) * fb_width
-										 + x_min + (x * fb_w / lcd_width)));
+						//nglcd->bitmap->DrawPixel(x, y, *(fbp + ystride + (y * fb_h / lcd_height) * fb_width + x_min + (x * fb_w / lcd_width)));
+						//
+						cl = *(rp + x_min + (x * fb_w / lcd_width));
++						nglcd->bitmap->DrawPixel(x, y, cl);
+						//
 					}
 				}
 
@@ -541,6 +671,7 @@ void* nGLCD::Run(void *)
 
 				if ((new_channel_id != channel_id)) 
 				{
+					nglcd->ChannelID = new_channel_id;
 					nglcd->Channel = channelList->getActiveChannelName ();
 					nglcd->Epg = "";
 					nglcd->Scale = 0;
@@ -736,3 +867,273 @@ void nGLCD::unlockChannel(void)
 		nglcd->Update();
 	}
 }
+
+//
+bool nGLCD::load_png_element(const char * const filename, raw_nglcd_element_t * element)
+{
+	png_structp  png_ptr;
+	png_infop    info_ptr;
+	unsigned int i;
+	unsigned int pass;
+	unsigned int number_passes;
+	int          bit_depth;
+	int          color_type;
+	int          interlace_type;
+	png_uint_32  width;
+	png_uint_32  height;
+	png_byte *   fbptr;
+	FILE *       fh;
+	bool         ret_value = false;
+
+	if ((fh = fopen(filename, "rb")))
+	{
+		if ((png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)))
+		{
+			if (!(info_ptr = png_create_info_struct(png_ptr)))
+				png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+			else
+			{
+#if (PNG_LIBPNG_VER < 10500)
+				if (!(setjmp(png_ptr->jmpbuf)))
+#else
+				if (!setjmp(png_jmpbuf(png_ptr)))
+#endif
+				{
+					unsigned int lcd_height = bitmap->Height();
+					unsigned int lcd_width = bitmap->Width();
+
+					png_init_io(png_ptr,fh);
+					
+					png_read_info(png_ptr, info_ptr);
+					png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
+					
+					if (
+						(width      <= lcd_width             ) &&
+						(height     <= lcd_height            )
+						)
+					{
+						printf("[nGLCD] %s %s %dx%dx%d, type %d\n", __FUNCTION__, filename, width, height, bit_depth, color_type);
+						element->header.width = width;
+						element->header.height = height;
+						element->header.bpp = bit_depth;
+						if (!element->buffer)
+						{
+							element->buffer_size = width*height*4;
+							element->buffer = new unsigned char[element->buffer_size];
+							lcd_width = width;
+							lcd_height = height;
+						}
+						
+						memset(element->buffer, 0, element->buffer_size);
+
+						png_set_packing(png_ptr); /* expand to 1 byte blocks */
+						
+						if ((color_type == PNG_COLOR_TYPE_PALETTE) || (bit_depth < 24))
+						      png_set_expand(png_ptr);
+
+						if ((color_type & PNG_COLOR_MASK_COLOR) == PNG_COLOR_TYPE_GRAY)
+#if (PNG_LIBPNG_VER < 10200)
+							png_set_gray_to_rgb(png_ptr);
+#else
+							png_set_gray_to_rgb(png_ptr);
+#endif
+						
+						number_passes = png_set_interlace_handling(png_ptr);
+						png_read_update_info(png_ptr,info_ptr);
+						
+						png_uint_32 rb = png_get_rowbytes(png_ptr, info_ptr);
+						if (width*4 == rb)
+						{
+							printf("[nGLCD] %s read data\n", __FUNCTION__);
+							ret_value = true;
+							
+							for (pass = 0; pass < number_passes; pass++)
+							{
+								fbptr = (png_byte *)element->buffer;
+								for (i = 0; i < element->header.height; i++)
+								{
+									//fbptr = row_pointers[i];
+									//png_read_rows(png_ptr, &fbptr, NULL, 1);
+
+									png_read_row(png_ptr, fbptr, NULL);
+									/* if the PNG is smaller, than the display width... */
+									if (width < lcd_width)	/* clear the area right of the PNG */
+										memset(fbptr + width*4, 0, (lcd_width - width)*4);
+									fbptr += lcd_width*4;
+								}
+							}
+							png_read_end(png_ptr, info_ptr);
+						}
+						else
+						{
+							printf("[nGLCD] %s %d != %d\n", __FUNCTION__, width*4, rb);
+						}
+					}
+				}
+				png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+			}
+		}
+		fclose(fh);
+	}
+	return ret_value;
+}
+
+void nGLCD::draw_screen_element(const raw_nglcd_element_t * element, int x, int y, bool upscale)
+{
+	printf("%s:%s(%d) '%03d' x '%03d' \n", __FILE__, __FUNCTION__, __LINE__, x, y);
+
+	uint32_t cl = 0;
+	const uint8_t * data = element->buffer;
+
+	int xt, yt;
+	uint32_t alpha;
+
+	if (data)
+	{
+		for (yt = 0; yt < element->header.height; yt++)
+		{
+			uint8_t * rp = data+(yt * element->header.width)*4;
+			for (xt = 0; xt < element->header.width; xt++)
+			{
+				cl = (rp[3] << 24) | (rp[0] << 16) | (rp[1] << 8) | rp[2];
+				if (cl & 0xFF000000) // only draw if alpha > 0
+				{
+					if (upscale)
+					{
+						bitmap->DrawPixel(xt*2+0+x, yt*2+0+y, cl);
+						bitmap->DrawPixel(xt*2+0+x, yt*2+1+y, cl);
+						bitmap->DrawPixel(xt*2+1+x, yt*2+0+y, cl);
+						bitmap->DrawPixel(xt*2+1+x, yt*2+1+y, cl);
+					}
+					else
+						bitmap->DrawPixel(xt+x, yt+y, cl);
+				}
+				rp += 4;
+			}
+		}
+	}
+}
+
+bool nGLCD::dump_png_element(const char * const filename, raw_nglcd_element_t * element)
+{
+	png_structp  png_ptr;
+	png_infop    info_ptr;
+	unsigned int i,j;
+	png_byte *   fbptr;
+	FILE *       fp;
+	bool         ret_value = false;
+ 
+        /* create file */
+        fp = fopen(filename, "wb");
+        if (!fp)
+                printf("[nGLCD] File %s could not be opened for writing\n", filename);
+	else
+	{
+	        /* initialize stuff */
+        	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	        if (!png_ptr)
+        	        printf("[nGLCD] png_create_write_struct failed\n");
+		else
+		{
+		        info_ptr = png_create_info_struct(png_ptr);
+		        if (!info_ptr)
+				printf("[nGLCD] png_create_info_struct failed\n");
+			else
+			{
+			        if (setjmp(png_jmpbuf(png_ptr)))
+			                printf("[nGLCD] Error during init_io\n");
+				else
+				{
+					unsigned int lcd_height = bitmap->Height();
+					unsigned int lcd_width = bitmap->Width();
+					unsigned int png_bpp = element->header.bpp;
+					if (png_bpp > 8)
+						png_bpp = 8;
+
+        				png_init_io(png_ptr, fp);
+
+
+        				/* write header */
+        				if (setjmp(png_jmpbuf(png_ptr)))
+        				        printf("[nGLCD] Error during writing header\n");
+
+        				png_set_IHDR(png_ptr, info_ptr, element->header.width, element->header.height,
+        				             png_bpp, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+        				             PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+        				png_color_8 sBIT;
+        				sBIT.gray = 0;
+        				sBIT.red = 8;
+        				sBIT.green = 8;
+        				sBIT.blue = 8;
+        				sBIT.alpha = 0;
+        				png_set_sBIT(png_ptr, info_ptr, &sBIT);
+
+        				png_write_info(png_ptr, info_ptr);
+
+
+        				/* write bytes */
+					if (setjmp(png_jmpbuf(png_ptr)))
+					{
+        				        printf("[nGLCD] Error during writing bytes\n");
+						return ret_value;
+					}
+
+					ret_value = true;
+
+					fbptr = (png_byte *)element->buffer;
+					png_bytep row = (png_bytep) malloc(3 * element->header.width * sizeof(png_byte));
+					for (i = 0; i < element->header.height; i++)
+					{
+						for (j = 0; j < element->header.width; j++)
+						{
+							row[j*3+0] = fbptr[2];
+							row[j*3+1] = fbptr[1];
+							row[j*3+2] = fbptr[0];
+							fbptr += 4;
+						}
+						png_write_row(png_ptr, row);
+					}
+
+					/* end write */
+        				if (setjmp(png_jmpbuf(png_ptr)))
+					{
+						printf("[nGLCD] Error during end of write\n");
+						return ret_value;
+					}
+
+        				png_write_end(png_ptr, NULL);
+				}
+			}
+		}
+        	fclose(fp);
+	}
+
+	return ret_value;
+}
+
+bool nGLCD::dump_png(const char * const filename)
+{
+	raw_nglcd_element_t element;
+	element.buffer_size = bitmap->Width()*bitmap->Height()*4;
+	element.buffer = (raw_ngdisplay_t)bitmap->Data();
+	element.header.width = bitmap->Width();
+	element.header.height = bitmap->Height();
+	element.header.bpp = 32;
+	return dump_png_element(filename, &element);
+}
+
+bool nGLCD::ShowPng(char *filename)
+{
+	//return display.load_png(filename);
+	return false;
+}
+
+bool nGLCD::DumpPng(char *filename)
+{
+	return dump_png(filename);
+}
+//
+
+

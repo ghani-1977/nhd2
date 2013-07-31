@@ -37,6 +37,22 @@
 #include <glcddrivers/drivers.h>
 
 
+typedef unsigned char * raw_ngdisplay_t;
+ 
+struct raw_nglcd_element_header_t
+{
+	uint16_t width;
+	uint16_t height;
+	uint8_t bpp;
+} __attribute__ ((packed));
+
+struct raw_nglcd_element_t
+{
+	raw_nglcd_element_header_t header;
+	int buffer_size;
+	raw_ngdisplay_t buffer;
+};
+
 class nGLCD
 {
 	private:
@@ -53,6 +69,7 @@ class nGLCD
 		int percent_bar;
 		int percent_space;
 		GLCD::cBitmap * bitmap;
+		t_channel_id ChannelID;
 		std::string Channel;
 		std::string Epg;
 		std::string stagingChannel;
@@ -98,6 +115,12 @@ class nGLCD
 		static void Exit();
 		void Rescan();
 		sem_t sem;
+		bool load_png_element(const char * const filename, raw_nglcd_element_t * element);
+		void draw_screen_element(const raw_nglcd_element_t * element, int x, int y, bool upscale);
+		bool dump_png_element(const char * const filename, raw_nglcd_element_t * element);
+		bool dump_png(const char * const filename);
+		bool ShowPng(char *filename);
+		bool DumpPng(char *filename);
 };
 
 #endif

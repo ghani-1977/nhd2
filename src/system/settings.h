@@ -511,8 +511,13 @@ extern const int               default_timing     [TIMING_SETTING_COUNT];
 extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 
 // lcdd
+#if defined(ENABLE_LCD) && (defined(PLATFORM_DREAMBOX) || defined(PLATFORM_GIGABLUE) || defined(PLATFORM_VUPLUS))
+#define DEFAULT_LCD_BRIGHTNESS			0xFF
+#define DEFAULT_LCD_STANDBYBRIGHTNESS		0x7F
+#else
 #define DEFAULT_LCD_BRIGHTNESS			0x07
 #define DEFAULT_LCD_STANDBYBRIGHTNESS		0x07
+#endif
 #define DEFAULT_LCD_CONTRAST			0x0F
 #define DEFAULT_LCD_POWER			0x01
 #define DEFAULT_LCD_INVERSE			0x00
