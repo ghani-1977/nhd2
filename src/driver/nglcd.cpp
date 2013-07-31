@@ -587,7 +587,7 @@ void* nGLCD::Run(void *)
 						//nglcd->bitmap->DrawPixel(x, y, *(fbp + ystride + (y * fb_h / lcd_height) * fb_width + x_min + (x * fb_w / lcd_width)));
 						//
 						cl = *(rp + x_min + (x * fb_w / lcd_width));
-+						nglcd->bitmap->DrawPixel(x, y, cl);
+						nglcd->bitmap->DrawPixel(x, y, cl);
 						//
 					}
 				}
@@ -983,7 +983,7 @@ void nGLCD::draw_screen_element(const raw_nglcd_element_t * element, int x, int 
 	printf("%s:%s(%d) '%03d' x '%03d' \n", __FILE__, __FUNCTION__, __LINE__, x, y);
 
 	uint32_t cl = 0;
-	const uint8_t * data = element->buffer;
+	/*const*/ uint8_t * data = element->buffer;
 
 	int xt, yt;
 	uint32_t alpha;
@@ -992,7 +992,7 @@ void nGLCD::draw_screen_element(const raw_nglcd_element_t * element, int x, int 
 	{
 		for (yt = 0; yt < element->header.height; yt++)
 		{
-			uint8_t * rp = data+(yt * element->header.width)*4;
+			uint8_t * rp = data + (yt * element->header.width)*4;
 			for (xt = 0; xt < element->header.width; xt++)
 			{
 				cl = (rp[3] << 24) | (rp[0] << 16) | (rp[1] << 8) | rp[2];
