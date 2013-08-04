@@ -367,6 +367,7 @@ EpgPlus::ChannelEntry::~ChannelEntry()
 	{
 		delete *It;
 	}
+	
 	this->channelEventEntries.clear();
 }
 
@@ -389,7 +390,7 @@ void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 		// get logo size	
 		g_PicViewer->getLogoSize(this->channel->getChannelID(), &logo_w, &logo_h, &logo_bpp);
 		
-		// paint logo
+		// paint logo (png with alpha channel)
 		if(logo_bpp == 4)
 			logo_ok = g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2, true);
 	}

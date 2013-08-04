@@ -114,13 +114,13 @@ void* CTimerManager::timerThread(void *arg)
 			// time not set yet
 			if (timeset)
 			{
-				dprintf(DEBUG_INFO, "[timermanager] sectionsd says \"time ok\"\n");
+				dprintf(DEBUG_DEBUG, "[timermanager] sectionsd says \"time ok\"\n");
 				timerManager->m_isTimeSet=true;
 				timerManager->loadEventsFromConfig();
 			}
 			else
 			{
-				dprintf(DEBUG_INFO, "[timermanager] waiting for time to be set\n");
+				dprintf(DEBUG_DEBUG, "[timermanager] waiting for time to be set\n");
 				wait.tv_sec = time(NULL) + 5 ;
 				wait.tv_nsec = 0;
 				pthread_cond_timedwait(&dummy_cond, &dummy_mutex, &wait);

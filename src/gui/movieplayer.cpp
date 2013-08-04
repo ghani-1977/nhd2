@@ -2282,7 +2282,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 				playback->GetSpeed(speed);
 							
-				dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
+				dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
 			}
 			else
 			{
