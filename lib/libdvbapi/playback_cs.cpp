@@ -606,7 +606,7 @@ bool cPlayback::SetAPid(unsigned short pid, int /*_ac3*/)
 }
 
 #if ENABLE_GSTREAMER
-void cPlayback::trickSeek(int ratio)
+void cPlayback::trickSeek(double ratio)
 {
 	//FIXME: brocken
 #if defined (PLATFORM_GENERIC)	
@@ -615,10 +615,17 @@ void cPlayback::trickSeek(int ratio)
 	int64_t position;
 	int64_t duration;
 	
+	// pause
+	if (ratio > -0.01 && ratio < 0.01)
+	{
+		gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
+		return;
+	}
+	
 	if( GetPosition(position, duration) )
 	{
 		validposition = true;
-		pos = position;
+		pos = position*1000000;
 	}
 
 	gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
@@ -643,27 +650,13 @@ bool cPlayback::SetSpeed(int speed)
 
 #if defined (ENABLE_GSTREAMER)
 	if(m_gst_playbin)
-	{	
-		// pause
+	{
 		if(speed == 0)
-		{
-			gst_element_set_state(m_gst_playbin, GST_STATE_PAUSED);
-		}
-		// play/continue
+			trickSeek(0.0);
 		else if(speed == 1)
-		{
-			gst_element_set_state(m_gst_playbin, GST_STATE_PLAYING);
-		}
-		//ff
-		else if(speed > 1)
-		{
+			trickSeek(1.0);
+		else
 			trickSeek(speed);
-		}
-		//rf
-		else if(speed < 0)
-		{
-			trickSeek(speed);
-		}
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	int speedmap = 0;

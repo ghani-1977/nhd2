@@ -43,7 +43,7 @@ class cPlayback
 		bool SetAPid(unsigned short pid, int _ac = 0);
 
 #if ENABLE_GSTREAMER
-		void trickSeek(int ratio);
+		void trickSeek(double ratio);
 #endif		
 		bool SetSpeed(int speed);
 		bool SetSlow(int slow);
