@@ -588,7 +588,7 @@ std::string CBEBouquetWidget::inputName(const char * const defaultName, const ne
 
 	strncpy(Name, defaultName, 30);
 
-	CStringInputSMS * nameInput = new CStringInputSMS(caption, Name, 29, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789-.,:|!?/ ");
+	CStringInputSMS * nameInput = new CStringInputSMS(caption, Name);
 	nameInput->exec(this, "");
 	delete nameInput;
 
