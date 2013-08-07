@@ -3833,9 +3833,8 @@ static void commandSetConfig(int connfd, char *data, const unsigned /*dataLength
 		ntpserver = (std::string)&data[sizeof(struct sectionsd::commandSetConfig)];
 		dprintf(DEBUG_DEBUG, "new network_ntpserver = %s\n", ntpserver.c_str());
 		
-		static const char * ntp_system = "rdate";
-	
-		if(!access(ntp_system, F_OK)) 
+		// check for rdate
+		if( !access("/bin/rdate", F_OK) || !access("/sbin/rdate", F_OK) || !access("/usr/bin/rdate", F_OK) || !access("/usr/sbin/rdate", F_OK)) 
 			ntp_system_cmd_prefix = "rdate -s ";
 		ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
 	}
@@ -7964,10 +7963,8 @@ void sectionsd_main_thread(void */*data*/)
 	ntprefresh = atoi(ntp_config.getString("network_ntprefresh","30").c_str() );
 	ntpenable = ntp_config.getBool("network_ntpenable", false);
 	
-	// ntp server
-	static const char * ntp_system = "rdate";
-	
-	if(!access(ntp_system, F_OK)) 
+	// check for rdate
+	if( !access("/bin/rdate", F_OK) || !access("/sbin/rdate", F_OK) || !access("/usr/bin/rdate", F_OK) || !access("/usr/sbin/rdate", F_OK)) 
 		ntp_system_cmd_prefix = "rdate -s ";
 	
 	ntp_system_cmd = ntp_system_cmd_prefix + ntpserver;
