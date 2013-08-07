@@ -1371,7 +1371,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	}
 }
 
-// firstChannel, get the initial channe
+// firstChannel, get the initial channel
 void CNeutrinoApp::firstChannel()
 {
 	g_Zapit->getLastChannel(firstchannel.channelNumber, firstchannel.mode);
