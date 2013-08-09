@@ -515,9 +515,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	for(int i = 0; i < 3; i++) 
 	{
 		sprintf(cfg_key, "pref_lang_%d", i);
-		strncpy(g_settings.pref_lang[i], configfile.getString(cfg_key, "").c_str(), 30);
+		strncpy(g_settings.pref_lang[i], configfile.getString(cfg_key, "German").c_str(), 30);
 		sprintf(cfg_key, "pref_subs_%d", i);
-		strncpy(g_settings.pref_subs[i], configfile.getString(cfg_key, "").c_str(), 30);
+		strncpy(g_settings.pref_subs[i], configfile.getString(cfg_key, "German").c_str(), 30);
 	}
 	// end audio
 

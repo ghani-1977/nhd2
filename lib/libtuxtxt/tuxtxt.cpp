@@ -2604,7 +2604,7 @@ int GetTeletextPIDs(int source)
 	res = dmx->Read(bufPAT, sizeof(bufPAT));
 	dmx->Stop();
 	if(res <= 0) {
-		dprintf(DEBUG_NORMAL, "TuxTxt <read PAT> failed");
+		dprintf(DEBUG_NORMAL, "TuxTxt <read PAT> failed\n");
 		delete dmx;
 		return 0;
 	}

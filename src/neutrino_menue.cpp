@@ -753,6 +753,7 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	{
 		audioepglangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_LANG, g_settings.pref_lang[i], g_settings.auto_lang, langNotifier, CRCInput::RC_nokey, "", true);
 		
+		audioepglangSelect[i]->addOption("");
 		std::map<std::string, std::string>::const_iterator it;
 		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
 			audioepglangSelect[i]->addOption(it->first.c_str());
@@ -779,10 +780,9 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 		sublangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_SUBS, g_settings.pref_subs[i], g_settings.auto_subs, NULL, CRCInput::RC_nokey, "", true);
 		std::map<std::string, std::string>::const_iterator it;
 		
+		sublangSelect[i]->addOption("");
 		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
 			sublangSelect[i]->addOption(it->first.c_str());
-
-		//audioSettings.addItem(sublangSelect[i]);
 	}
 	
 	CSubLangSelectNotifier * subLangSelectNotifier = new CSubLangSelectNotifier(sublangSelect[0], sublangSelect[1], sublangSelect[2]);
