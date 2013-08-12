@@ -125,6 +125,11 @@ CPSISetup::CPSISetup(const neutrino_locale_t Name, unsigned char *Contrast, unsi
 	saturation = Saturation;
 	brightness = Brightness;
 	tint = Tint;
+	
+	setContrast(*contrast);
+	setSaturation(*saturation);
+	setBrightness(*brightness);
+	setTint(*tint);
 }
 
 int CPSISetup::exec(CMenuTarget * parent, const std::string &)
@@ -145,9 +150,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	int res = menu_return::RETURN_REPAINT;
 	
 	if (parent)
-	{
 		parent->hide();
-	}
 	
 	unsigned char contrast_old = *contrast;
 	unsigned char saturation_old = *saturation;

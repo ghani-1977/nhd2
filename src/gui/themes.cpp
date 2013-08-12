@@ -162,7 +162,7 @@ int CThemes::Show()
 	
 	readThemes(themes);
 
-	CStringInputSMS nameInput(LOCALE_COLORTHEMEMENU_NAME, &file_name, 30, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "abcdefghijklmnopqrstuvwxyz0123456789- ");
+	CStringInputSMS nameInput(LOCALE_COLORTHEMEMENU_NAME, &file_name);
 	CMenuForwarder * m1 = new CMenuForwarder(LOCALE_COLORTHEMEMENU_SAVE, true , NULL, &nameInput, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED);
 
 	// Don't show SAVE if UserDir does'nt exist

@@ -71,6 +71,7 @@
 #include <channel.h>
 #include <bouquets.h>
 
+
 extern CBouquetManager *g_bouquetManager;
 extern char recDir[255];			// defined in neutrino.cpp
 
