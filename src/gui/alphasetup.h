@@ -57,7 +57,7 @@ class CAlphaSetup : public CMenuTarget
 	
 		neutrino_locale_t name;
 
-		CChangeObserver* observer;
+		CChangeObserver *observer;
 
 		void paint();
 		void setAlpha();

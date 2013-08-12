@@ -394,13 +394,6 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 				*saturation = saturation_old;
 				*brightness = brightness_old;
 				*tint = tint_old;
-				
-				#if 1
-				setContrast(*contrast);
-				setSaturation(*saturation);
-				setBrightness(*brightness);
-				setTint(*tint);
-				#endif
 
 			case CRCInput::RC_timeout:
 			case CRCInput::RC_ok:
