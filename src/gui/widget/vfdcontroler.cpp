@@ -85,9 +85,7 @@ int CVfdControler::exec(CMenuTarget* parent, const std::string &)
 	unsigned int brightness_alt, brightnessstandby_alt;
 
 	if (parent)
-	{
 		parent->hide();
-	}
 	
 	brightness_alt = CVFD::getInstance()->getBrightness();
 	brightnessstandby_alt = CVFD::getInstance()->getBrightnessStandby();

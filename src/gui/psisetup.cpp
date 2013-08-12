@@ -169,7 +169,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 #endif	
 
 	int selected = 0;
-	int max = 3;
+	int max = 4;
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
@@ -186,7 +186,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 			case CRCInput::RC_down:
 			case CRCInput::RC_vfddown:
 				{
-					if(selected<max)
+					if(selected < max)
 					{
 						paintSlider(x + 10, y + hheight, contrast, LOCALE_PSISETUP_CONTRAST, NEUTRINO_ICON_VOLUMESLIDER2, false);
 						paintSlider(x + 10, y + hheight + mheight, saturation, LOCALE_PSISETUP_SATURATION, NEUTRINO_ICON_VOLUMESLIDER2     , false);
