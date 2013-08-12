@@ -973,5 +973,73 @@ void cVideo::finishShowSinglePic()
 	}
 }
 
+void cVideo::setContrast(int Contrast)
+{
+	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Contrast);
+	
+	FILE *fd;
+#ifdef __sh__
+	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_contrast", "w");
+#endif
+	if(fd > 0)
+	{
+		fprintf(fd, "%d", Contrast);
+		fclose(fd);
+	}
+}
+
+void cVideo::setSaturation(int Saturation)
+{
+	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Saturation);
+	
+	FILE *fd;
+#ifdef __sh__
+	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_saturation", "w");
+#endif
+	if(fd > 0)
+	{
+		fprintf(fd, "%d", Saturation);
+		fclose(fd);
+	}
+}
+
+void cVideo::setBrightness(int Brightness)
+{
+	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Brightness);
+	
+	FILE *fd;
+#ifdef __sh__
+	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_brightness", "w");
+#endif
+	if(fd > 0)
+	{
+		fprintf(fd, "%d", Brightness);
+		fclose(fd);
+	}
+}
+
+void cVideo::setTint(int Tint)
+{
+	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Tint);
+	
+	FILE *fd;
+#ifdef __sh__
+	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
+#else
+	fd = fopen("/proc/stb/vmpeg/0/pep_hue", "w");
+#endif
+	if(fd > 0)
+	{
+		fprintf(fd, "%d", Tint);
+		fclose(fd);
+	}
+}
+
 
 

@@ -63,11 +63,6 @@ class CPSISetup : public CMenuTarget
 		CChangeObserver *observer;
 
 		void paint();
-
-		void setContrast(int contrast);
-		void setSaturation(int saturation);
-		void setBrightness(int brightness);
-		void setTint(int tint);
 		
 		void paintSlider(const int x, const int y, const unsigned char * const spos, const neutrino_locale_t text, const char * const iconname, const bool selected);
 

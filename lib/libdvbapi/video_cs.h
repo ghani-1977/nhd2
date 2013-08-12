@@ -306,7 +306,13 @@ class cVideo
 		// single pic
 		int showSinglePic(const char *filename);
 		void finishShowSinglePic();
+		
+		
 		//
+		void setContrast(int contrast);
+		void setSaturation(int saturation);
+		void setBrightness(int brightness);
+		void setTint(int tint);
 };
 
 #endif

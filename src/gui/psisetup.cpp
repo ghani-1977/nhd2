@@ -60,60 +60,10 @@
 
 #include <video_cs.h>
 
+
 #define PSI_STEP	5
 
-
-void CPSISetup::setContrast(int Contrast)
-{
-	FILE* fd;
-#ifdef __sh__
-	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
-#else
-	fd = fopen("/proc/stb/vmpeg/0/pep_contrast", "w");
-#endif
-	if(fd > 0)
-		fprintf(fd, "%d", Contrast);
-	fclose(fd);
-}
-
-void CPSISetup::setSaturation(int Saturation)
-{
-	FILE* fd;
-#ifdef __sh__
-	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
-#else
-	fd = fopen("/proc/stb/vmpeg/0/pep_saturation", "w");
-#endif
-	if(fd > 0)
-		fprintf(fd, "%d", Saturation);
-	fclose(fd);
-}
-
-void CPSISetup::setBrightness(int Brightness)
-{
-	FILE* fd;
-#ifdef __sh__
-	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
-#else
-	fd = fopen("/proc/stb/vmpeg/0/pep_brightness", "w");
-#endif
-	if(fd > 0)
-		fprintf(fd, "%d", Brightness);
-	fclose(fd);
-}
-
-void CPSISetup::setTint(int Tint)
-{
-	FILE* fd;
-#ifdef __sh__
-	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
-#else
-	fd = fopen("/proc/stb/vmpeg/0/pep_hue", "w");
-#endif
-	if(fd > 0)
-		fprintf(fd, "%d", Tint);
-	fclose(fd);
-}
+extern cVideo * videoDecoder;
 
 CPSISetup::CPSISetup(const neutrino_locale_t Name, unsigned char *Contrast, unsigned char *Saturation, unsigned char *Brightness, unsigned char *Tint, CChangeObserver *Observer)
 {
@@ -126,10 +76,10 @@ CPSISetup::CPSISetup(const neutrino_locale_t Name, unsigned char *Contrast, unsi
 	brightness = Brightness;
 	tint = Tint;
 	
-	setContrast(*contrast);
-	setSaturation(*saturation);
-	setBrightness(*brightness);
-	setTint(*tint);
+	videoDecoder->setContrast(*contrast);
+	videoDecoder->setSaturation(*saturation);
+	videoDecoder->setBrightness(*brightness);
+	videoDecoder->setTint(*tint);
 }
 
 int CPSISetup::exec(CMenuTarget * parent, const std::string &)
@@ -157,10 +107,10 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	unsigned char brightness_old = *brightness;
 	unsigned char tint_old = *tint;
 
-	setContrast(*contrast);
-	setSaturation(*saturation);
-	setBrightness(*brightness);
-	setTint(*tint);
+	videoDecoder->setContrast(*contrast);
+	videoDecoder->setSaturation(*saturation);
+	videoDecoder->setBrightness(*brightness);
+	videoDecoder->setTint(*tint);
 	
 	paint();
 	
@@ -266,7 +216,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 						
 								paintSlider(x + 10, y + hheight, contrast, LOCALE_PSISETUP_CONTRAST, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setContrast(*contrast);
+								videoDecoder->setContrast(*contrast);
 							}
 							break;
 							
@@ -280,7 +230,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + mheight, saturation, LOCALE_PSISETUP_SATURATION, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setSaturation(*saturation);
+								videoDecoder->setSaturation(*saturation);
 							}
 							break;
 							
@@ -294,7 +244,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + 2*mheight, brightness, LOCALE_PSISETUP_BRIGHTNESS, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setBrightness(*brightness);
+								videoDecoder->setBrightness(*brightness);
 							}
 							break;
 							
@@ -308,7 +258,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + 3*mheight, tint, LOCALE_PSISETUP_TINT, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setTint(*tint);
+								videoDecoder->setTint(*tint);
 							}
 							break;
 					}
@@ -330,7 +280,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 						
 								paintSlider(x + 10, y + hheight, contrast, LOCALE_PSISETUP_CONTRAST, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setContrast(*contrast);
+								videoDecoder->setContrast(*contrast);
 							}
 							break;
 							
@@ -344,7 +294,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + mheight, saturation, LOCALE_PSISETUP_SATURATION, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setSaturation(*saturation);
+								videoDecoder->setSaturation(*saturation);
 							}
 							break;
 							
@@ -358,7 +308,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + 2*mheight, brightness, LOCALE_PSISETUP_BRIGHTNESS, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setBrightness(*brightness);
+								videoDecoder->setBrightness(*brightness);
 							}
 							break;
 							
@@ -372,7 +322,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 								
 								paintSlider(x + 10, y + hheight + 3*mheight, tint, LOCALE_PSISETUP_TINT, NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 									
-								setTint(*tint);
+								videoDecoder->setTint(*tint);
 							}
 							break;
 					}
