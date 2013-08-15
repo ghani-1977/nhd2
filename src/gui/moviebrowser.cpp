@@ -3069,6 +3069,8 @@ void CMovieBrowser::loadMovies(void)
 		}
 	}
 	
+	m_file_info_stale = false;	//FIXME:???
+	
 	loadBox.hide();
 
 	refreshBrowserList();	
