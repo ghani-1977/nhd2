@@ -1674,6 +1674,12 @@ void CMovieBrowser::refreshFoot(void)
 	sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
+	//if (show_mode == MB_SHOW_YT) 
+	//{
+	//	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS);
+	//	std::string sort_text = g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS);
+	//}
+	
 	// draw the background first
 	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight + 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM );
 
@@ -1703,6 +1709,9 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, m_cBoxFrame.iX + xpos1, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//1
+		if (show_mode == MB_SHOW_YT) 
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
+		else
 		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
@@ -1713,6 +1722,9 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, m_cBoxFrame.iX + xpos2, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//2
+		if (show_mode == MB_SHOW_YT) 
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
+		else
 		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
@@ -1734,10 +1746,13 @@ void CMovieBrowser::refreshFoot(void)
 	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, ok_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 
 	//DELETE ICON
-	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_w, &icon_h);
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
+	if (show_mode != MB_SHOW_YT) 
+	{
+		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_w, &icon_h);
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
 
-	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), (CFBWindow::color_t)color, 0, true); // UTF-8
+	}
 }
 
 bool CMovieBrowser::onButtonPress(neutrino_msg_t msg)
@@ -1808,7 +1823,33 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_green) 
 	{
-		if(m_settings.gui == MB_GUI_MOVIE_INFO)
+		if (show_mode == MB_SHOW_YT)
+		{
+			if(ytparser.HaveNext())
+			{
+				//
+				m_pcWindow->paintBackground();
+				
+				//
+				CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+				loadBox.paint();
+				
+				// yt clean up
+				ytparser.Cleanup();
+				
+				loadYTitles(cYTFeedParser::NEXT, m_settings.ytsearch, m_settings.ytvid);
+				
+				loadBox.hide();
+				
+				refreshBrowserList();
+				refreshLastPlayList();
+				refreshLastRecordList();
+				refreshFilterList();
+				//refreshMovieInfo();
+				refresh();
+			}
+		}
+		else if(m_settings.gui == MB_GUI_MOVIE_INFO)
 			onSetGUIWindow(MB_GUI_FILTER);
 		else if(m_settings.gui == MB_GUI_FILTER)
 			onSetGUIWindow(MB_GUI_MOVIE_INFO);
@@ -1829,7 +1870,36 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_red ) 
 	{
-		if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
+		if (show_mode == MB_SHOW_YT)
+		{
+			if(ytparser.HavePrev())
+			{
+				//
+				m_pcWindow->paintBackground();
+				
+				//
+				CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+				loadBox.paint();
+				
+				// yt clean up
+				ytparser.Cleanup();
+		
+				// yt reload
+				loadYTitles(cYTFeedParser::PREV, m_settings.ytsearch, m_settings.ytvid);
+				
+				loadBox.hide();
+				
+				// refresh
+				refreshBrowserList();
+				refreshLastPlayList();
+				refreshLastRecordList();
+				refreshFilterList();
+				//refreshMovieInfo();
+				refresh();
+			}
+		}
+		
+		else if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 		{
 			// sorting is not avialable for last play and record
 			do
@@ -3900,6 +3970,7 @@ neutrino_locale_t CMovieBrowser::getFeedLocale(void)
 		if (m_settings.ytmode == YT_FEED_OPTIONS[i].key)
 			return YT_FEED_OPTIONS[i].value;
 	}
+	
 	return ret;
 }
 
@@ -4019,6 +4090,7 @@ bool CMovieBrowser::showYTMenu()
 	refreshFilterList();
 	//refreshMovieInfo();
 	refresh();
+	
 	return true;
 }
 //
