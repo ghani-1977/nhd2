@@ -341,10 +341,6 @@ void CWebTV::quickZap(int key)
 	{
                 selected = (selected+1)%channels.size();
         }
-        else if (key == g_settings.key_lastchannel) // -- quickzap "0" (recall) to last seen channel...
-	{
-		selected = oldselected;
-	}
 
 	dprintf(DEBUG_NORMAL, "CWebTV::quickZap: quick zap selected = %d\n", selected);
 	

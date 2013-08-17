@@ -2933,7 +2933,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(isWebTV)
 				open_filebrowser = true;
 		}
-		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) || (msg == (neutrino_msg_t) g_settings.key_lastchannel))
+		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
 		{
 			if(isWebTV)
 			{
