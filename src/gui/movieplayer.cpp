@@ -207,7 +207,7 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFO
 	{ 3, LOCALE_VIDEOMENU_PANSCAN2, NULL }
 };
 #else
-// giga
+// giga/generic
 /*
 letterbox 
 panscan 
@@ -423,8 +423,9 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	// infos
 	// duration
 	char runningTotal[32]; // %d can be 10 digits max...	
-	sprintf(runningTotal, "%d / %d min", Position/60, (duration + 30000) / 60000 );	
-	//sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
+	//sprintf(runningTotal, "%d / %d min", Position/60, (duration + 30000) / 60000 );	
+	sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
+	
 		
 	int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal);
 	int durationTextPos = BoxEndX - durationWidth - 15;
