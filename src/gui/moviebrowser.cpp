@@ -1674,35 +1674,21 @@ void CMovieBrowser::refreshFoot(void)
 	sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
-	//if (show_mode == MB_SHOW_YT) 
-	//{
-	//	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS);
-	//	std::string sort_text = g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS);
-	//}
-	
 	// draw the background first
 	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight + 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM );
 
 	int width = m_cBoxFrameFootRel.iWidth>>2;
-	
 	int xpos1 = m_cBoxFrameFootRel.iX + 10;
-	//int width1 = width;
-
 	int xpos2 = xpos1 + width;
-	//int width2 = width*2;
-
 	int xpos3 = xpos2 + width;
-	//int width3 = width*3;
-
 	int xpos4 = xpos3 + width;
-	//int width4 = width*4;
 	
 	int icon_w = 0;
 	int icon_h = 0;
 	
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 
-	//RED
+	// red
 	if (m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 	{
 		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
@@ -1715,7 +1701,7 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
-	//GREEN
+	// green
 	if (m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 	{
 		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
@@ -1728,8 +1714,7 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
-	//OK
-	//std::string ok_text;
+	// yellow/ok
 	if(m_settings.gui == MB_GUI_FILTER && m_windowFocus == MB_FOCUS_FILTER)
 	{
 		ok_text = "select";
@@ -1739,14 +1724,28 @@ void CMovieBrowser::refreshFoot(void)
 		ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	}
 
-	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &icon_w, &icon_h);
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
+	//if (show_mode == MB_SHOW_YT) 
+	//{
+	//	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+	//	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_YELLO, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
+	//}
+	//else
+	{
+		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &icon_w, &icon_h);
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
+	}
 
-	//4
 	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, ok_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
 
-	//DELETE ICON
-	if (show_mode != MB_SHOW_YT) 
+	// refresh/delete
+	if (show_mode == MB_SHOW_YT) 
+	{
+		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
+
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES), (CFBWindow::color_t)color, 0, true); // UTF-8
+	}
+	else
 	{
 		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_w, &icon_h);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
@@ -1857,7 +1856,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_yellow) 
 	{
-		onSetFocusNext();
+		if (show_mode != MB_SHOW_YT)
+			onSetFocusNext();
 	}
 	else if (msg == CRCInput::RC_blue) 
 	{
