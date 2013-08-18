@@ -39,9 +39,7 @@
 
 
 extern CBouquetList * bouquetList;
-//extern Zapit_config zapitCfg;	//defined in neutrino.cpp
-//void setZapitConfig(Zapit_config * Cfg);
-//void getZapitConfig(Zapit_config *Cfg);
+extern CBouquetManager * g_bouquetManager;
 
 //option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -150,7 +148,7 @@ CSelectChannelWidget::~CSelectChannelWidget()
 
 }
 
-int CSelectChannelWidget::exec(CMenuTarget * parent, const std::string& actionKey)
+int CSelectChannelWidget::exec(CMenuTarget *parent, const std::string &actionKey)
 {
 	int   res = menu_return::RETURN_REPAINT;
 

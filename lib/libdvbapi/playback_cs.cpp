@@ -903,7 +903,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 		for (i = 0; i < n_audio; i++)
 		{
 			// apids
-			apids[i]=i;
+			apids[i] = i;
 			
 			GstPad * pad = 0;
 			g_signal_emit_by_name (m_gst_playbin, "get-audio-pad", i, &pad);
@@ -915,8 +915,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 			//const gchar *g_type = gst_structure_get_name(structure);
 		
 			//if (!structure)
-				//return atUnknown;
-			//ac3flags[0] = 0;
+				//ac3flags[0] = 0;
 
 			// ac3flags
 			if ( gst_structure_has_name (structure, "audio/mpeg"))
@@ -925,7 +924,6 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 				//gint layer = -1;
 				
 				if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
-					//return atUnknown;
 					ac3flags[i] = 0;
 
 				switch (mpegversion) 
@@ -935,7 +933,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 						{
 							gst_structure_get_int (structure, "layer", &layer);
 							if ( layer == 3 )
-								return atMP3;
+								ac3flags[i] = 4;
 							else
 								return atMPEG;
 								ac3flags[0] = 4;
@@ -943,32 +941,30 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 						}
 						*/
 						ac3flags[i] = 4;
+						break;
 					case 2:
-						//return atAAC;
 						ac3flags[i] = 5;
+						break;
 					case 4:
-						//return atAAC;
 						ac3flags[i] = 5;
+						break;
 					default:
-						//return atUnknown;
 						ac3flags[i] = 0;
+						break;
 				}
 			}
 			else if ( gst_structure_has_name (structure, "audio/x-ac3") || gst_structure_has_name (structure, "audio/ac3") )
-				//return atAC3;
 				ac3flags[i] = 1;
 			else if ( gst_structure_has_name (structure, "audio/x-dts") || gst_structure_has_name (structure, "audio/dts") )
-				//return atDTS;
 				ac3flags[i] = 6;
 			else if ( gst_structure_has_name (structure, "audio/x-raw-int") )
-				//return atPCM;
 				ac3flags[i] = 0;
 			
 			gst_caps_unref(caps);
 		}
 		
 		// numpids
-		*numpida=i;
+		*numpida = i;
 	}
 #elif defined (ENABLE_LIBEPLAYER3)
 	// audio pids
@@ -985,7 +981,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 			for (i = 0, j=0; TrackList[i] != NULL; i+=2,j++) 
 			{
 				printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-				apids[j]=j;
+				apids[j] = j;
 
 				// atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC
 
@@ -1012,7 +1008,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 				free(TrackList[i+1]);
 			}
 			free(TrackList);
-			*numpida=j;
+			*numpida = j;
 		}
 	}
 #endif	
