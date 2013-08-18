@@ -1,5 +1,5 @@
 /*
- * $Id: cam.cpp,v 1.33 2004/04/04 20:20:45 obi Exp $
+ * $Id: cam.cpp,v 1.34 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002 by Andreas Oberritter <obi@tuxbox.org>,
  *             thegoodguy         <thegoodguy@berlios.de>

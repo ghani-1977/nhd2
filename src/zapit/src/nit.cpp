@@ -1,5 +1,5 @@
 /*
- * $Id: nit.cpp,v 1.36 2004/04/17 19:44:04 derget Exp $
+ * $Id: nit.cpp,v 1.37 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002 by Andreas Oberritter <obi@tuxbox.org>
  *

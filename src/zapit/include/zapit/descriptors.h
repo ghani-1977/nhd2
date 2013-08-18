@@ -1,5 +1,5 @@
 /*
- * $Id: descriptors.h,v 1.19 2004/02/17 16:26:04 thegoodguy Exp $
+ * $Id: descriptors.h,v 1.20 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

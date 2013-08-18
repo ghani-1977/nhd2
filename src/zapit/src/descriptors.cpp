@@ -1,5 +1,5 @@
 /*
- * $Id: descriptors.cpp,v 1.65 2004/02/17 16:26:07 thegoodguy Exp $
+ * $Id: descriptors.cpp,v 1.66 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: getservices.h,v 1.51.2.7 2003/06/10 12:37:19 digi_casi Exp $
+ * $Id: getservices.h,v 1.52 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002 by Andreas Oberritter <obi@tuxbox.org>
  *

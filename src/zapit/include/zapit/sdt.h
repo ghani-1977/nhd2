@@ -1,5 +1,5 @@
 /*
- * $Id: sdt.h,v 1.17 2003/03/14 07:31:50 obi Exp $
+ * $Id: sdt.h,v 1.18 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002, 2003 by Andreas Oberritter <obi@tuxbox.org>
  *

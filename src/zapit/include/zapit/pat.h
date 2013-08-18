@@ -1,5 +1,5 @@
 /*
- * $Id: pat.h,v 1.18 2003/01/30 17:21:16 obi Exp $
+ * $Id: pat.h,v 1.19 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

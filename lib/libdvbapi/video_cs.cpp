@@ -1,7 +1,7 @@
 /*
  * 	video_cs.c
  *
- * 	from TDT adapted by mohousch
+ * 	$Id: video.cpp,v 1.0 2013/08/18 11:23:30 mohousch Exp $
 
  *
  * 	Copyright (C) 2011 duckbox project

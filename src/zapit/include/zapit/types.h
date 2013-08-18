@@ -1,5 +1,5 @@
 /*
- * $Header: /cvsroot/tuxbox/apps/dvb/zapit/include/zapit/types.h,v 1.4 2002/10/12 20:19:44 obi Exp $
+ * $Header: /cvsroot/tuxbox/apps/dvb/zapit/include/zapit/types.h,v 1.5 2013/08/18 11:23:30 mohousch Exp $
  *
  * zapit's types - d-box2 linux project
  * these types are used by the clientlib and zapit itself

@@ -1,5 +1,5 @@
 /*
- * $Id: pat.cpp,v 1.44 2003/01/30 17:21:17 obi Exp $
+ * $Id: pat.cpp,v 1.45 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002 by Andreas Oberritter <obi@tuxbox.org>
  *

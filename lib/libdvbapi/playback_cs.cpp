@@ -1,5 +1,7 @@
 /*
  *
+ * $Id: audio_cs.h,v 1.0 2013/08/18 11:23:30 mohousch Exp $
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -255,7 +257,7 @@ cPlayback::cPlayback(int /*num*/)
 #if ENABLE_GSTREAMER
 	gst_init(NULL, NULL);
 	
-	dprintf(DEBUG_NORMAL, "gst initialized\n");
+	dprintf(DEBUG_NORMAL, "%s:%s gst initialized\n", FILENAME, __FUNCTION__);
 #endif	
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: zapit.cpp,v 1.290.2.50 2011/05/13 23:16:14 mohousch Exp $
+ * $Id: zapit.cpp,v 1.3 2013/08/18 11:23:30 mohousch Exp $
  *
  * zapit - d-box2 linux project
  *

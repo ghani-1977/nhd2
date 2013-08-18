@@ -1,5 +1,5 @@
 /*
- * $Id: frontend.cpp,v 1.55 2004/04/20 14:47:15 derget Exp $
+ * $Id: frontend.cpp,v 1.56 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

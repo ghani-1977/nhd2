@@ -1,5 +1,5 @@
 //
-//  $Id: sectionsd.cpp,v 1.305 2009/07/30 12:41:39 seife Exp $
+//  $Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp Exp $
 //
 //    sectionsd.cpp (network daemon for SI-sections)
 //    (dbox-II-project)
@@ -2312,7 +2312,7 @@ static void commandDumpStatusInformation(int /*connfd*/, char* /*data*/, const u
 	char stati[MAX_SIZE_STATI];
 
 	snprintf(stati, MAX_SIZE_STATI,
-		 "$Id: sectionsd.cpp,v 1.305 2009/07/30 12:41:39 seife Exp $\n"
+		 "$Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp $\n"
 		 "Current time: %s"
 		 "Hours to cache: %ld\n"
 		 "Hours to cache extended text: %ld\n"
@@ -7932,7 +7932,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	struct sched_param parm;
 
-	printf("$Id: sectionsd.cpp,v 1.305 2009/07/30 12:41:39 seife Exp $\n");
+	printf("$Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp Exp $\n");
 	
 	/* "export NO_SLOW_ADDEVENT=true" to disable this */
 	slow_addevent = (getenv("NO_SLOW_ADDEVENT") == NULL);

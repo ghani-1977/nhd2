@@ -1,5 +1,5 @@
 /*
- * $Id: scan.cpp,v 1.134 2004/02/10 21:01:14 metallica Exp $
+ * $Id: scan.cpp,v 1.14 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

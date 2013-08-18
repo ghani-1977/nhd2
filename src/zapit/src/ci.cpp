@@ -1,5 +1,5 @@
 /*
- * $Id: ci.cpp,v 1.12 2003/02/09 19:22:08 thegoodguy Exp $
+ * $Id: ci.cpp,v 1.13 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002 by Andreas Oberritter <obi@tuxbox.org>
  *

@@ -1,5 +1,5 @@
 /*
- * $Header: /cvs/tuxbox/apps/dvb/zapit/include/zapit/settings.h,v 1.8.2.6 2003/06/14 06:46:22 digi_casi Exp $
+ * $Header: /cvs/tuxbox/apps/dvb/zapit/include/zapit/settings.h,v 1.9 2013/08/18 11:23:30 mohousch Exp $
  *
  * zapit's settings - d-box2 linux project
  *
@@ -26,7 +26,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include                "config.h"
+#include                		"config.h"
 #else
 #define CONFIGDIR       		"/var/tuxbox/config"
 #endif

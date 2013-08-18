@@ -1,5 +1,5 @@
 /*
- * $Id: frontend.h,v 1.30 2004/06/10 19:56:12 rasc Exp $
+ * $Id: frontend.h,v 1.31 2013/08/18 11:23:30 mohousch Exp $
  *
  * (C) 2002-2003 Andreas Oberritter <obi@tuxbox.org>
  *

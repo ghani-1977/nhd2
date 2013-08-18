@@ -3,7 +3,7 @@
 
  	Homepage: http://dbox.cyberphoria.org/
 
-	$Id: moviebrowser.cpp,v 1.10 2006/09/11 21:11:35 guenther Exp $
+	$Id: moviebrowser.cpp,v 1.10 2013/08/18 11:23:30 mohousch Exp $
 
 	Kommentar:
 
@@ -375,7 +375,7 @@ CMovieBrowser::CMovieBrowser(const char* path): configfile ('\t')
 
 CMovieBrowser::CMovieBrowser(): configfile ('\t')
 {
-	dprintf(DEBUG_NORMAL, "$Id: moviebrowser.cpp,v 1.10 2006/09/11 21:11:35 guenther Exp $\r\n");
+	dprintf(DEBUG_NORMAL, "$Id: moviebrowser.cpp,v 1.10 2013/08/18 11:23:30 mohousch Exp $\r\n");
 	init();
 }
 
