@@ -422,12 +422,18 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 		
 	// infos
 	// duration
-	char runningTotal[32]; // %d can be 10 digits max...	
+	//char runningTotal[32]; // %d can be 10 digits max...	
 	//sprintf(runningTotal, "%d / %d min", Position/60, (duration + 30000) / 60000 );	
-	sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
+	//sprintf(runningTotal, "%d min", (duration + 30000) / 60000 );	
+	
+	//
+	time_t tDisplayTime = duration/1000;
+	char cDisplayTime[8 + 1];
+	strftime(cDisplayTime, 9, "%T", gmtime(&tDisplayTime));
+	//
 	
 		
-	int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal);
+	int durationWidth = /*g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal)*/g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00:00");;
 	int durationTextPos = BoxEndX - durationWidth - 15;
 		
 	int speedWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("-8");
@@ -443,7 +449,7 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 
 	// duration
 	if(!isWebTV && !isVlc && lshow)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, runningTotal, COL_INFOBAR);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, /*runningTotal*/cDisplayTime, COL_INFOBAR);
 	
 	updatePos(file_prozent);
 
