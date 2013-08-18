@@ -331,7 +331,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	g_Sectionsd->setPauseScanning(false);
 
 	//last mode
-	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );
+	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE, m_LastMode );
 	
 	//show infobar
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );

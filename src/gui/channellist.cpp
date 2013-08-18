@@ -1115,7 +1115,8 @@ void CChannelList::zapTo(int pos, bool /*forceStoreToLastChannels*/)
 	// show emty channellist error msg
 	if (chanlist.empty()) 
 	{
-		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+		if (FrontendCount >= 1) 
+			DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
 		return;
 	}
 
@@ -1187,7 +1188,9 @@ int CChannelList::numericZap(int key)
 
 	if (chanlist.empty()) 
 	{
-		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+		if (FrontendCount >= 1) 
+			DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+			
 		return res;
 	}
 
@@ -1452,7 +1455,9 @@ void CChannelList::virtual_zap_mode(bool up)
 
         if (chanlist.empty()) 
 	{
-                DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+		if (FrontendCount >= 1) 
+			DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+			
                 return;
         }
 

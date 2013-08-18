@@ -1664,6 +1664,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		{
 			CZapitMessages::commandSetMode msgSetMode;
 			CBasicServer::receive_data(connfd, &msgSetMode, sizeof(msgSetMode));
+			
 			if (msgSetMode.mode == CZapitClient::MODE_TV)
 				setTVMode();
 			else if (msgSetMode.mode == CZapitClient::MODE_RADIO)

@@ -4398,6 +4398,7 @@ void CDirMenu::show(void)
 
 }
 
+//
 off64_t get_full_len(char * startname)
 {
         off64_t fulllength=0;
@@ -4410,6 +4411,7 @@ off64_t get_full_len(char * startname)
                 fulllength +=s.st_size;
                 sprintf(spart, "%s.%03d", startname, ++part);
         } while (!stat64(spart, &s));
+	
         return fulllength;
 }
 
@@ -4466,6 +4468,7 @@ static off64_t truncate_movie(MI_MOVIE_INFO * minfo)
 		}
 		sprintf(spart, "%s.%03d", name, ++part);
 	}
+	
 	if(found) 
 	{
 		if(tpart)
@@ -4690,6 +4693,7 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 			printf("cut: start bookmark %d at %lld len %lld\n", bcount, books[bcount].pos, books[bcount].len);
 			bcount++;
 	}
+	
 	for(int book_nr = 0; book_nr < MI_MOVIE_BOOK_USER_MAX; book_nr++) {
 		if( minfo->bookmarks.user[book_nr].pos != 0 && minfo->bookmarks.user[book_nr].length > 0 ) {
 			books[bcount].pos = (minfo->bookmarks.user[book_nr].pos * secsize)/188 * 188;
@@ -4701,6 +4705,7 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 			bcount++;
 		}
 	}
+	
 	if(minfo->bookmarks.end != 0) {
 			books[bcount].pos = ((off64_t) minfo->bookmarks.end * secsize)/188 * 188;
 			books[bcount].len = size - books[bcount].pos;
