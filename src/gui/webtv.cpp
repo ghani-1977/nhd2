@@ -30,6 +30,7 @@
 #include "movieplayer.h"
 #include "webtv.h"
 #include <gui/widget/buttons.h>
+#include <gui/widget/messagebox.h>
 
 #include <video_cs.h>
 
@@ -57,8 +58,6 @@ CWebTV::CWebTV()
 	liststart = 0;
 	qZap = false;
 	
-	selected_playing = 0;
-	
 	parser = NULL;
 }
 
@@ -81,7 +80,6 @@ int CWebTV::exec()
 {
 	readChannellist();
 	
-	//qZap = false;
 	if(qZap == true)
 	{	
 		qZap = false;
@@ -178,6 +176,12 @@ bool CWebTV::readChannellist()
 int CWebTV::Show()
 {
 	bool res = false;
+	
+	if(channels.size() == 0)
+	{
+		DisplayErrorMessage(g_Locale->getText(LOCALE_WEBTVCHANNELLIST_NONEFOUND)); // UTF-8
+		return res;
+	}
 	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -292,19 +296,17 @@ int CWebTV::Show()
                         else
                                 paintItem(selected - liststart);
                 }
-                else if ( msg == CRCInput::RC_red || msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
+                else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{	  
 			filelist[selected].Url = channels[selected]->url;
 			filelist[selected].Name = channels[selected]->title;
 			filelist[selected].Description = channels[selected]->description;
 			
-			selected_playing = selected;
-			
 			res = true;
 		
 			loop = false;
 		}
-		else if ( msg == CRCInput::RC_green || msg == CRCInput::RC_home) 
+		else if ( msg == CRCInput::RC_home) 
 		{
 			loop = false;
 		}
@@ -325,9 +327,6 @@ int CWebTV::Show()
 
 void CWebTV::quickZap(int key)
 {
-	if(channels.size() == 0)
-                return;
-	
 	qZap = true;
 
 	if (key == g_settings.key_quickzap_down)

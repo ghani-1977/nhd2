@@ -173,7 +173,7 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	return NULL;
 }
 
-bool CAudioPlayer::play(const CAudiofile* file, const bool highPrio)
+bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 {
 	if (state != CBaseDec::STOP)
 		stop();

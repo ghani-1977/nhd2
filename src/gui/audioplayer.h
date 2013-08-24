@@ -249,7 +249,7 @@ class CAudioPlayerGui : public CMenuTarget
 		CAudioPlayerGui(bool inetmode = false);
 		~CAudioPlayerGui();
 		int show();
-		int exec(CMenuTarget* parent, const std::string & actionKey);
+		int exec(CMenuTarget *parent, const std::string &actionKey);
 };
 
 

@@ -328,12 +328,19 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	// mp icon
 	int m_icon_w = 0;
 	int m_icon_h = 0;
-		
-	frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
+	
+	if(isWebTV)
+		frameBuffer->getIconSize("iptv", &m_icon_w, &m_icon_h);
+	else
+		frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
 
 	int m_icon_x = BoxStartX + 5;
 	int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
-	frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
+	
+	if(isWebTV)
+		frameBuffer->paintIcon("iptv", m_icon_x, m_icon_y);
+	else
+		frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
 		
 	// paint buttons
 	// red
@@ -380,12 +387,15 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
 	
 	/* mp keys */
-	frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
-	frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-	frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	if(!isWebTV)
+	{
+		frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
+		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	}
 		
 	//playstate
 	const char *icon = "mp_play";
@@ -433,7 +443,7 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	//
 	
 		
-	int durationWidth = /*g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningTotal)*/g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00:00");;
+	int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00:00");;
 	int durationTextPos = BoxEndX - durationWidth - 15;
 		
 	int speedWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("-8");
@@ -2297,7 +2307,7 @@ void CMoviePlayerGui::PlayFile(void)
 				if(isWebTV)
 				{
 					// hint
-					ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText (LOCALE_INFOVIEWER_NOTAVAILABLE), 430);	// UTF-8
+					ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText (LOCALE_INFOVIEWER_NOTAVAILABLE), 450);	// UTF-8
 				}
 				else
 					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);

@@ -1605,6 +1605,7 @@ keybinding.savekeymap_hint keymap wird gespeichert, bitte warten...
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 
 webtv.head WebTV
+webtvchannellist.nonefound Es wurden keine WebTV Kanäle gefunden!
 
 menu.hint_ytplay Wiedergabe von ausgewählten Youtube Feeds
 moviebrowser.yt_error Fehler beim laden des Youtube Feed
