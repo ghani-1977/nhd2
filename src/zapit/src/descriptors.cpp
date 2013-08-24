@@ -982,7 +982,7 @@ int terrestrial_delivery_system_descriptor(const unsigned char * const buffer, t
 	/* trans */
 	feparams.u.ofdm.transmission_mode = (fe_transmit_mode_t)((buffer[8] >> 1) & 0x03);
 
-	freq = feparams.frequency/1000;
+	freq = feparams.frequency/1000000;
 
 	TsidOnid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
 

@@ -151,11 +151,11 @@ bool CZapitChannel::isHD()
 	switch(serviceType) 
 	{
 		case ST_MPEG_2_HD_TELEVISION_SERVICE: 
-		case ST_MPEG_4_HD_TELEVISION_SERVICE:
+		case /*ST_MPEG_4_HD_TELEVISION_SERVICE*/ST_AVC_HD_DIGITAL_TV_SERVICE:
 			return true;
 			
 		case ST_DIGITAL_TELEVISION_SERVICE: 
-		case ST_MPEG_4_SD_TELEVISION_SERVICE:
+		case /*ST_MPEG_4_SD_TELEVISION_SERVICE*/ST_AVC_SD_DIGITAL_TV_SERVICE:
 		{
 				char * temp = (char *) name.c_str();
 				int len = name.size();

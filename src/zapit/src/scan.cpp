@@ -147,8 +147,10 @@ int add_to_scan(transponder_id_t TsidOnid, FrontendParameters *feparams, uint8_t
 
 	if(getFE(feindex)->getInfo()->type == FE_QAM)
 		freq = feparams->frequency / 100;
-	else
+	else if(getFE(feindex)->getInfo()->type == FE_QPSK)
 		freq = feparams->frequency / 1000;
+	else if(getFE(feindex)->getInfo()->type == FE_OFDM)
+		freq = feparams->frequency / 1000000;
 
 	uint8_t poltmp1 = polarity & 1;
 	uint8_t poltmp2;
@@ -239,8 +241,10 @@ _repeat:
 		/* msg to neutrino */
 		if( getFE(feindex)->getInfo()->type == FE_QAM)
 			actual_freq = tI->second.feparams.frequency;
-		else
+		else if( getFE(feindex)->getInfo()->type == FE_QPSK)
 			actual_freq = tI->second.feparams.frequency/1000;
+		else if( getFE(feindex)->getInfo()->type == FE_OFDM)
+			actual_freq = tI->second.feparams.frequency/1000000;
 
 		processed_transponders++;
 		
@@ -271,8 +275,10 @@ _repeat:
 
 		if( getFE(feindex)->getInfo()->type == FE_QAM)
 			freq = tI->second.feparams.frequency/100;
-		else
+		else if( getFE(feindex)->getInfo()->type == FE_QPSK)
 			freq = tI->second.feparams.frequency/1000;
+		else if( getFE(feindex)->getInfo()->type == FE_OFDM)
+			freq = tI->second.feparams.frequency/1000000;
 			
 		// parse sdt
 		dprintf(DEBUG_INFO, "parsing SDT (tsid:onid %04x:%04x)\n", tI->second.transport_stream_id, tI->second.original_network_id);
@@ -350,8 +356,10 @@ int scan_transponder(xmlNodePtr transponder, uint8_t diseqc_pos, t_satellite_pos
 
 	if( getFE(feindex)->getInfo()->type == FE_QAM)
 		freq = feparams.frequency/100;
-	else
+	else if( getFE(feindex)->getInfo()->type == FE_QPSK)
 		freq = feparams.frequency/1000;
+	else if( getFE(feindex)->getInfo()->type == FE_OFDM)
+		freq = feparams.frequency/1000000;
 		
 	if( getFE(feindex)->getInfo()->type == FE_QAM)	//DVB-C
 	{
@@ -704,8 +712,10 @@ void * scan_transponder(void * arg)
 
 	if( getFE(ScanTP.feindex)->getInfo()->type == FE_QAM)
 		freq = TP->feparams.frequency/100;
-	else
+	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_QPSK)
 		freq = TP->feparams.frequency/1000;
+	else if( getFE(ScanTP.feindex)->getInfo()->type == FE_OFDM)
+		freq = TP->feparams.frequency/1000000;
 
 	/* read network information table */
 	fake_tid++; 

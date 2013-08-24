@@ -1854,6 +1854,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = webtv->getSelectedFile()) != NULL) 
 					{
+
 						filename = file->Url.c_str();
 						sel_filename = file->Name.c_str();
 						

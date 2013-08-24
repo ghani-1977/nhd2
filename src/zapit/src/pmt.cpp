@@ -35,10 +35,6 @@
 #include <pmt.h>
 #include <dmx_cs.h>
 
-//#if !defined (PLATFORM_COOLSTREAM)
-//#include <dvb-ci.h>
-//#endif
-
 #include <linux/dvb/dmx.h>
 
 #include <frontend_c.h>
@@ -232,7 +228,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0xC2: /* User Private descriptor - Canal+ */
-#if 0
+#if 1
 				printf("0xC2 dump:");
 				for (i = 0; i < descriptor_length; i++) 
 				{
@@ -259,7 +255,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 			default:
 				dprintf(DEBUG_INFO, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
-#if 0
+#if 1
 				printf("0x%2X dump:\n", descriptor_tag);
 				for (i = 0; i < descriptor_length; i++) 
 				{
@@ -280,7 +276,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			channel->setVideoPid(esInfo->elementary_PID);
 			descramble = true;
 			channel->type = (esInfo->stream_type == 0x1b); //FIXME
-			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: vpid 0x%x stream %d type %d\n", esInfo->elementary_PID, esInfo->stream_type, channel->type);
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: vpid 0x%x stream 0x%02x type 0x%02x\n", esInfo->elementary_PID, esInfo->stream_type, channel->type);
 			break;
 
 		case 0x03:
@@ -419,7 +415,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			break;
 
 		default:
-			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: stream_type: %02x\n", esInfo->stream_type);
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: stream_type: 0x%02x\n", esInfo->stream_type);
 			break;
 	}
 

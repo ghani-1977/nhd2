@@ -266,9 +266,12 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 #endif
 
 	// vcr-scart
-#if defined (ENABLE_SCART)
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SCARTMODE, true, NULL, this, "scart", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "scart", LOCALE_HELPTEXT_SCART ));
-#endif
+//#if defined (ENABLE_SCART)
+//	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SCARTMODE, true, NULL, this, "scart", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "scart", LOCALE_HELPTEXT_SCART ));
+//#endif
+
+	// webtv
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "webtv", LOCALE_HELPTEXT_SCART) );
 	
 	//Main Setting Menu
 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );

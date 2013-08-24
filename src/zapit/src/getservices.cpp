@@ -118,8 +118,10 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 
 		if(Source == DVB_C)
 			freq = feparams.frequency/100;
-		else
+		else if(Source == DVB_S)
 			freq = feparams.frequency/1000;
+		else if(Source == DVB_T)
+			freq = feparams.frequency/1000000;
 
 		/* add current transponder to list */
 		transponder_id_t tid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id);
@@ -375,8 +377,10 @@ void ParseSatTransponders(fe_type_t frontendType, xmlNodePtr search, t_satellite
 		
 		if (frontendType == FE_QAM) 
 			freq = feparams.frequency/100;
-		else
+		else if(frontendType == FE_QPSK)
 			freq = feparams.frequency/1000;
+		else if(frontendType == FE_OFDM)
+			freq = feparams.frequency/1000000;
 			
 		transponder_id_t tid = CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, fake_nid, fake_tid);
 

@@ -52,7 +52,7 @@ extern cAudio *audioDecoder;
 struct WavHeader
 {
 	char  ChunkID[4];
-   int   ChunkSize;
+	int   ChunkSize;
 	char  Format[4];
 	char  Subchunk1ID[4];
 	int   Subchunk1Size;

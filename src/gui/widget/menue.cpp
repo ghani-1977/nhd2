@@ -1781,7 +1781,7 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 			int sp_height = 5;
 	
 			if( ((HEIGHT - (hheight + fheight + 2*sp_height)) >= 100) && (icon_w >= 100 || icon_h >= 100) )
-				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - ITEM_ICON_W/2), ( frameBuffer->getScreenHeight(true) - ITEM_ICON_H)/2);  //25:foot height
+				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - /*ITEM_ICON_W*/icon_w/2), ( frameBuffer->getScreenHeight(true) - /*ITEM_ICON_H*/icon_h)/2);  //25:foot height
 		}
 		
 		// help bar
