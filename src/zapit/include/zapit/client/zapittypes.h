@@ -133,6 +133,7 @@ typedef enum {
 	ST_MPEG_2_HD_TELEVISION_SERVICE = 0x11, 	//0x11
 	
 	/* 0x12 to 0x15: reserved for future use */
+	
 	ST_AVC_SD_DIGITAL_TV_SERVICE 		= 0x16,
 	ST_AVC_SD_NVOD_TIME_SHIFTED_SERVICE 	= 0x17,
 	ST_AVC_SD_NVOD_REFERENCE_SERVICE 	= 0x18,
@@ -140,13 +141,13 @@ typedef enum {
 	ST_AVC_HD_NVOD_TIME_SHIFTED_SERVICE 	= 0x1A,
 	ST_AVC_HD_NVOD_REFERENCE_SERVICE 	= 0x1B,
 	
-	//0x1A, 0x1B ???
-	
+	/* 3DTV */
 	ST_3DTV1_TELEVISION_SERVICE = 0x1C,
 	ST_3DTV2_TELEVISION_SERVICE = 0x1D,
 	ST_3DTV3_TELEVISION_SERVICE = 0x1E,
 	
 	ST_MULTIFEED				= 0x69
+	
 	/* 0x80 - 0xFE: user defined*/
 	/* 0xFF: reserved for future use*/
 } service_type_t;
