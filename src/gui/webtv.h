@@ -98,5 +98,7 @@ class CWebTV
 		
 		void paintMiniTV();
 		void quickZap(int key);
+		
+		void showFileInfoWebTV();
 };
 #endif

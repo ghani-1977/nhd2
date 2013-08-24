@@ -1605,6 +1605,7 @@ audiomenu.volumebar_audiosteps Volume Step Size
 
 webtv.head WebTV
 webtvchannellist.nonefound No WebTV channels were found!
+webtvchannellist.info Info
 
 menu.hint_ytplay Play selected youtube feeds
 moviebrowser.yt_error Failed to load youtube feed

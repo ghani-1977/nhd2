@@ -31,6 +31,7 @@
 #include "webtv.h"
 #include <gui/widget/buttons.h>
 #include <gui/widget/messagebox.h>
+#include <gui/widget/helpbox.h>
 
 #include <video_cs.h>
 
@@ -220,6 +221,8 @@ int CWebTV::Show()
 		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 	}
 	
+showList:	
+	
 	// head
 	paintHead();
 		
@@ -305,6 +308,12 @@ int CWebTV::Show()
 			res = true;
 		
 			loop = false;
+		}
+		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
+		{
+			showFileInfoWebTV();
+			
+			goto showList;
 		}
 		else if ( msg == CRCInput::RC_home) 
 		{
@@ -432,11 +441,11 @@ void CWebTV::paintItem(int pos)
 	}
 }
 
-#define NUM_LIST_BUTTONS 2
+#define NUM_LIST_BUTTONS 1
 struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 {
-	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_AUDIOPLAYER_PLAY},
-	{ NEUTRINO_ICON_BUTTON_GREEN, LOCALE_MENU_EXIT},
+	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_WEBTV_INFO},
+	//{ NEUTRINO_ICON_BUTTON_GREEN, LOCALE_MENU_EXIT},
 };
 
 // paint head
@@ -800,3 +809,13 @@ void CWebTV::processTextToArray(std::string text) // UTF-8
 	addTextToArray( aktLine + aktWord );
 }
 
+void CWebTV::showFileInfoWebTV()
+{
+	Helpbox helpbox;
+	
+	helpbox.addLine(channels[selected]->title);
+	helpbox.addLine(channels[selected]->description);
+	
+	hide();
+	helpbox.show(LOCALE_MESSAGEBOX_INFO);
+}
