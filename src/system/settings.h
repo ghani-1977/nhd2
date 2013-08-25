@@ -457,6 +457,7 @@ struct SNeutrinoSettings
 	char softupdate_proxyserver[MAX_INPUT_CHARS + 1];
 	char softupdate_proxyusername[MAX_INPUT_CHARS + 1];
 	char softupdate_proxypassword[MAX_INPUT_CHARS + 1];
+	char softupdate_url_file[MAX_INPUT_CHARS + 1];
 	// END UPDATE
 
 	// VFD

@@ -69,7 +69,6 @@
 
 #include <system/debug.h>
 
-#define SOFTWARE_UPDATE_URLS			"/etc/update.urls"
 
 #define gTmpPath 				"/var/tmp/"
 #define gUserAgent 				"neutrino/softupdater 1.0"
@@ -169,9 +168,9 @@ bool CFlashUpdate::selectHttpImage(void)
 	//SelectionWidget.addItem(GenericMenuSeparator);
 	SelectionWidget.addItem(GenericMenuBack);
 
-	std::ifstream urlFile(SOFTWARE_UPDATE_URLS);
+	std::ifstream urlFile(g_settings.softupdate_url_file);
 
-	dprintf(DEBUG_NORMAL, "[update] file %s\n", SOFTWARE_UPDATE_URLS);
+	dprintf(DEBUG_NORMAL, "[update] file %s\n", g_settings.softupdate_url_file);
 
 	unsigned int i = 0;
 	while (urlFile >> url)
