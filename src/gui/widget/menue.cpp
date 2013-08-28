@@ -1780,8 +1780,8 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 			int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 			int sp_height = 5;
 	
-			if( ((HEIGHT - (hheight + fheight + 2*sp_height)) >= 100) && (icon_w >= 100 || icon_h >= 100) )
-				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - /*ITEM_ICON_W*/icon_w/2), ( frameBuffer->getScreenHeight(true) - /*ITEM_ICON_H*/icon_h)/2);  //25:foot height
+			if( ((FULL_HEIGHT - (hheight + fheight + 2*sp_height)) >= (ITEM_ICON_H) ) && (icon_w >= 100 || icon_h >= 100) )
+				frameBuffer->paintIcon(itemIcon.c_str(), x + BORDER_LEFT + (dx/3)*2 + ((( dx - (dx/3)*2 - BORDER_RIGHT)/2) - icon_w/2), ( frameBuffer->getScreenHeight(true) - icon_h)/2);  //25:foot height
 		}
 		
 		// help bar

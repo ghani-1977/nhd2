@@ -560,9 +560,9 @@ void CMoviePlayerGui::Init(void)
 	webtv = new CWebTV();
 
 	// tsfilefilter
+
+#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)
 	tsfilefilter.addFilter("ts");
-	
-#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	tsfilefilter.addFilter("mpg");
 	tsfilefilter.addFilter("mpeg");
 	tsfilefilter.addFilter("divx");
