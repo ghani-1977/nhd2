@@ -610,8 +610,17 @@ void CMoviePlayerGui::Init(void)
 
 CMoviePlayerGui::~CMoviePlayerGui()
 {
-	if(playback)
+	if (playback)
 		delete playback;
+	
+	if (filebrowser)
+		delete filebrowser;
+	
+	//if (moviebrowser)
+	//	delete moviebrowser;
+	
+	if (webtv)
+		delete webtv;
 }
 
 void CMoviePlayerGui::cutNeutrino()
