@@ -476,7 +476,10 @@ static int PlaybackContinue(Context_t  *context)
 	playback_printf(10, "\n");
 
 	if (context->playback->isPlaying &&
-		(context->playback->isPaused || context->playback->isForwarding || context->playback->BackWard || context->playback->SlowMotion)) {
+		(context->playback->isPaused || context->playback->isForwarding || context->playback->BackWard || context->playback->SlowMotion)) 
+	{
+		//FIXME: Dirty
+		PlaybackPause(context);
 
 		if(context->playback->SlowMotion)
 			context->output->Command(context, OUTPUT_CLEAR, NULL);
