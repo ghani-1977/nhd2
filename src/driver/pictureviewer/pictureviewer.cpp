@@ -621,7 +621,6 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 			ret = DisplayImage(fname, center_x?posx + (width - logo_w)/2 : posx, center_y?posy + (height - logo_h)/2 : posy, logo_w, logo_h);
 		}
         }
-        //
 
 	return ret;
 }

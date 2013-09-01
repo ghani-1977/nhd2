@@ -59,8 +59,7 @@ class CSelectChannelWidget : public CMenuWidget
 	public:
 		CSelectChannelWidget();
 		~CSelectChannelWidget();
-		int exec(CMenuTarget* parent, const std::string & actionKey);
-
+		int exec(CMenuTarget *parent, const std::string & actionKey);
 };
 
 #endif

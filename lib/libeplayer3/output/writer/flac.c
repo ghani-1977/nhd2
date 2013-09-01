@@ -87,50 +87,50 @@ if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); 
 
 static int reset()
 {
-    return 0;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-    flac_printf(10, "\n");
+	flac_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        flac_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		flac_err("call data is NULL...\n");
+		return 0;
+	}
 
-    flac_printf(10, "AudioPts %lld\n", call->Pts);
+	flac_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        flac_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		flac_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        flac_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		flac_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    int HeaderLength = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
+	int HeaderLength = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
 
-    unsigned char* PacketStart = malloc(call->len + HeaderLength);
+	unsigned char* PacketStart = malloc(call->len + HeaderLength);
 
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, call->data, call->len);
+	memcpy (PacketStart, PesHeader, HeaderLength);
+	memcpy (PacketStart + HeaderLength, call->data, call->len);
 
-    int len = write(call->fd, PacketStart, call->len + HeaderLength);
+	int len = write(call->fd, PacketStart, call->len + HeaderLength);
 
-    free(PacketStart);
+	free(PacketStart);
 
-    flac_printf(10, "flac_Write-< len=%d\n", len);
-    return len;
+	flac_printf(10, "flac_Write-< len=%d\n", len);
+	return len;
 }
 
 /* ***************************** */
@@ -138,16 +138,20 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps_flac = {
-    "flac",
-    eAudio,
-    "A_FLAC",
-    AUDIO_ENCODING_LPCM, //AUDIO_ENCODING_FLAC,
+	"flac",
+	eAudio,
+	"A_FLAC",
+#if defined (__sh__)	
+	AUDIO_ENCODING_LPCM 	//AUDIO_ENCODING_FLAC
+#else
+	AUDIO_STREAMTYPE_LPCMDVD
+#endif
 };
 
 struct Writer_s WriterAudioFLAC = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_flac,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_flac,
 };
 

@@ -79,6 +79,8 @@ extern char recDir[255];			// defined in neutrino.cpp
 
 #define info_height 60
 
+std::string timerNew_channel_name;
+t_channel_id chan_id;
 
 class CTimerListNewNotifier : public CChangeObserver
 {
@@ -309,16 +311,20 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 		eventinfo.apids = TIMERD_APIDS_CONF;
 		eventinfo.recordingSafety = false;
 		timerNew.standby_on = (timerNew_standby_on == 1);
-		void *data=NULL;
+		void *data = NULL;
 		if(timerNew.eventType == CTimerd::TIMER_STANDBY)
 			data = &(timerNew.standby_on);
 		else if(timerNew.eventType==CTimerd::TIMER_NEXTPROGRAM ||
 			timerNew.eventType==CTimerd::TIMER_ZAPTO ||
 			timerNew.eventType==CTimerd::TIMER_RECORD)
 		{
-			if (strcmp(timerNew_channel_name, "---")==0)
+			if (strcmp((char *)timerNew_channel_name.c_str(), "---") == 0)
 				return menu_return::RETURN_REPAINT;
-			if (timerNew.eventType==CTimerd::TIMER_RECORD)
+			else
+
+				timerNew.channel_id = chan_id;
+			
+			if (timerNew.eventType == CTimerd::TIMER_RECORD)
 			{
 				recinfo.epgID = 0;
 				recinfo.epg_starttime = 0;
@@ -357,20 +363,6 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 		
 		return menu_return::RETURN_EXIT;
 	}
-	else if (strncmp(key, "SC:", 3) == 0)
-	{
-		int delta;
-		sscanf(&(key[3]),
-		       SCANF_CHANNEL_ID_TYPE
-		       "%n",
-		       &timerNew.channel_id,
-		       &delta);
-		strncpy(timerNew_channel_name, &(key[3 + delta + 1]), 30);
-		g_RCInput->postMsg(CRCInput::RC_timeout, 0); // leave underlying menu also
-		g_RCInput->postMsg(CRCInput::RC_timeout, 0); // leave underlying menu also
-		
-		return menu_return::RETURN_EXIT;
-	}
 
 	if(parent)
 		parent->hide();
@@ -378,22 +370,6 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 	int ret = show();
 
 	return ret;
-	
-	/*
-	if( ret > -1)
-	{
-		return menu_return::RETURN_REPAINT;
-	}
-	else if( ret == -1)
-	{
-		// -1 bedeutet nur REPAINT
-		return menu_return::RETURN_REPAINT;
-	}
-	else
-	{
-		// -2 bedeutet EXIT_ALL
-		return menu_return::RETURN_EXIT_ALL;
-	}*/
 }
 
 void CTimerList::updateEvents(void)
@@ -775,11 +751,6 @@ void CTimerList::paintHead()
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+35,y+theight+0, width- 45, g_Locale->getText(LOCALE_TIMERLIST_NAME), COL_MENUHEAD, 0, true); // UTF-8
 
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 30, y+ 5 );
-	
-	/*	
-	if (bouquetList != NULL)
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x + width - 60, y+ 5 );
-	*/
 }
 
 const struct button_label TimerListButtons[3] =
@@ -793,7 +764,6 @@ void CTimerList::paintFoot()
 {
 	int ButtonWidth = (width - 20) / 4;
 	frameBuffer->paintBoxRel(x, y + height, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
-	//frameBuffer->paintHLine(x, x+width,  y, COL_INFOBAR_SHADOW_PLUS_0);
 
 	if (timerlist.empty())
 		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + ButtonWidth + 10, y + height + 4, ButtonWidth, 2, &(TimerListButtons[1]));
@@ -999,18 +969,17 @@ int CTimerList::modifyTimer()
 	//printf("TIMER: rec dir %s len %s\n", timer->recordingDir, strlen(timer->recordingDir));
 
 	if(!strlen(timer->recordingDir))
-		strncpy(timer->recordingDir,g_settings.network_nfs_recordingdir,sizeof(timer->recordingDir));
+		strncpy(timer->recordingDir, g_settings.network_nfs_recordingdir, sizeof(timer->recordingDir));
 
-	CMountChooser recDirs(LOCALE_TIMERLIST_RECORDING_DIR,NEUTRINO_ICON_SETTINGS,NULL,
-		timer->recordingDir, g_settings.network_nfs_recordingdir);
+	CMountChooser recDirs(LOCALE_TIMERLIST_RECORDING_DIR,NEUTRINO_ICON_SETTINGS,NULL, timer->recordingDir, g_settings.network_nfs_recordingdir);
 
 	if (!recDirs.hasItem())
 	{
 		printf("[CTimerList] warning: no network devices available\n");
 	}
 	
-	bool recDirEnabled = recDirs.hasItem() && (timer->eventType == CTimerd::TIMER_RECORD) && /*(g_settings.recording_type == RECORDING_FILE)*/(recDir != NULL);
-	CMenuForwarder* m6 = new CMenuForwarder(LOCALE_TIMERLIST_RECORDING_DIR,recDirEnabled,timer->recordingDir, &recDirs);
+	bool recDirEnabled = recDirs.hasItem() && (timer->eventType == CTimerd::TIMER_RECORD) && (recDir != NULL);
+	CMenuForwarder *m6 = new CMenuForwarder(LOCALE_TIMERLIST_RECORDING_DIR, recDirEnabled, timer->recordingDir, &recDirs);
 
 	timerSettings.addItem(GenericMenuSeparatorLine);
 	timerSettings.addItem(m3);
@@ -1047,7 +1016,6 @@ int CTimerList::modifyTimer()
 
 int CTimerList::newTimer()
 {
-	std::vector<CMenuWidget *> toDelete;
 	// Defaults
 	timerNew.eventType = CTimerd::TIMER_RECORD ;
 	timerNew.eventRepeat = CTimerd::TIMERREPEAT_ONCE ;
@@ -1056,8 +1024,8 @@ int CTimerList::newTimer()
 	timerNew.stopTime = (time(NULL)/60)*60;
 	timerNew.channel_id = 0;
 	strcpy(timerNew.message, "");
-	timerNew_standby_on =false;
-	strncpy(timerNew.recordingDir,g_settings.network_nfs_recordingdir,sizeof(timerNew.recordingDir));
+	timerNew_standby_on = false;
+	strncpy(timerNew.recordingDir, g_settings.network_nfs_recordingdir, sizeof(timerNew.recordingDir));
 
 
 	CMenuWidget timerSettings(LOCALE_TIMERLIST_MENUNEW, NEUTRINO_ICON_SETTINGS);
@@ -1087,56 +1055,20 @@ int CTimerList::newTimer()
 	strcpy(m_weekdaysStr,"-------");
 	CMenuOptionChooser* m3 = new CMenuOptionChooser(LOCALE_TIMERLIST_REPEAT, (int *)&timerNew.eventRepeat, TIMERLIST_REPEAT_OPTIONS, TIMERLIST_REPEAT_OPTION_COUNT, true, &notifier);
 
+	//CMenuWidget mm(LOCALE_TIMERLIST_MODESELECT, NEUTRINO_ICON_SETTINGS);
+	//mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODETV, (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv) ? true : false, NULL, new CSelectChannel(), "tv"));
+	//mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODERADIO, (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio) ? true : false, NULL, new CSelectChannel(), "radio"));
+	strcpy((char *)timerNew_channel_name.c_str(), "---");
+	//CMenuForwarder *m6 = new CMenuForwarder(LOCALE_TIMERLIST_CHANNEL, true, timerNew_channel_name, &mm);
+	
+	CMenuForwarder *m6 = new CMenuForwarder(LOCALE_TIMERLIST_CHANNEL, true, timerNew_channel_name, new CSelectChannel(), CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv? "tv" : "radio");
 
-	CMenuWidget mctv(LOCALE_TIMERLIST_BOUQUETSELECT, NEUTRINO_ICON_SETTINGS);
-	CMenuWidget mcradio(LOCALE_TIMERLIST_BOUQUETSELECT, NEUTRINO_ICON_SETTINGS);
-
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
-	{
-                if (!g_bouquetManager->Bouquets[i]->bHidden) 
-		{
-			CMenuWidget* mwtv = new CMenuWidget(LOCALE_TIMERLIST_CHANNELSELECT, NEUTRINO_ICON_SETTINGS);
-			toDelete.push_back(mwtv);
-			
-			CMenuWidget* mwradio = new CMenuWidget(LOCALE_TIMERLIST_CHANNELSELECT, NEUTRINO_ICON_SETTINGS);
-			toDelete.push_back(mwradio);
-
-			ZapitChannelList* channels = &(g_bouquetManager->Bouquets[i]->tvChannels);
-			
-			for(int j = 0; j < (int) channels->size(); j++) 
-			{
-				char cChannelId[3+16+1+1];
-				sprintf(cChannelId, "SC:" PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS ",", (*channels)[j]->channel_id);
-				mwtv->addItem(new CMenuForwarderNonLocalized((*channels)[j]->getName().c_str(), true, NULL, this, (std::string(cChannelId) + (*channels)[j]->getName()).c_str()));
-                        }
-			if (!channels->empty())
-				mctv.addItem(new CMenuForwarderNonLocalized(g_bouquetManager->Bouquets[i]->Name.c_str(), true, NULL, mwtv));
-
-
-			channels = &(g_bouquetManager->Bouquets[i]->radioChannels);
-			for(int j = 0; j < (int) channels->size(); j++) 
-			{
-				char cChannelId[3+16+1+1];
-				sprintf(cChannelId, "SC:" PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS ",", (*channels)[j]->channel_id);
-				mwradio->addItem(new CMenuForwarderNonLocalized((*channels)[j]->getName().c_str(), true, NULL, this, (std::string(cChannelId) + (*channels)[j]->getName()).c_str()));
-                        }
-			if (!channels->empty())
-				mcradio.addItem(new CMenuForwarderNonLocalized(g_bouquetManager->Bouquets[i]->Name.c_str(), true, NULL, mwtv));
-		}
-	}
-
-	CMenuWidget mm(LOCALE_TIMERLIST_MODESELECT, NEUTRINO_ICON_SETTINGS);
-	mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODETV, true, NULL, &mctv));
-	mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODERADIO, true, NULL, &mcradio));
-	strcpy(timerNew_channel_name,"---");
-	CMenuForwarder* m6 = new CMenuForwarder(LOCALE_TIMERLIST_CHANNEL, true, timerNew_channel_name, &mm);
-
-	CMountChooser recDirs(LOCALE_TIMERLIST_RECORDING_DIR,NEUTRINO_ICON_SETTINGS,NULL,timerNew.recordingDir,g_settings.network_nfs_recordingdir);
+	CMountChooser recDirs(LOCALE_TIMERLIST_RECORDING_DIR,NEUTRINO_ICON_SETTINGS, NULL, timerNew.recordingDir, g_settings.network_nfs_recordingdir);
 	if (!recDirs.hasItem())
 	{
 		printf("[CTimerList] warning: no network devices available\n");
 	}
-	CMenuForwarder* m7 = new CMenuForwarder(LOCALE_TIMERLIST_RECORDING_DIR, recDirs.hasItem(),timerNew.recordingDir, &recDirs);
+	CMenuForwarder* m7 = new CMenuForwarder(LOCALE_TIMERLIST_RECORDING_DIR, recDirs.hasItem(), timerNew.recordingDir, &recDirs);
 
 	CMenuOptionChooser* m8 = new CMenuOptionChooser(LOCALE_TIMERLIST_STANDBY, &timerNew_standby_on, TIMERLIST_STANDBY_OPTIONS, TIMERLIST_STANDBY_OPTION_COUNT, false);
 
@@ -1151,7 +1083,7 @@ int CTimerList::newTimer()
 	CTimerListNewNotifier notifier2((int *)&timerNew.eventType,
 					&timerNew.stopTime,m2,m6,m8,m9,m10,m7,
 					timerSettings_stopTime.getValue());
-	CMenuOptionChooser* m0 = new CMenuOptionChooser(LOCALE_TIMERLIST_TYPE, (int *)&timerNew.eventType, TIMERLIST_TYPE_OPTIONS, TIMERLIST_TYPE_OPTION_COUNT, true, &notifier2);
+	CMenuOptionChooser *m0 = new CMenuOptionChooser(LOCALE_TIMERLIST_TYPE, (int *)&timerNew.eventType, TIMERLIST_TYPE_OPTIONS, TIMERLIST_TYPE_OPTION_COUNT, true, &notifier2);
 
 	timerSettings.addItem( m0);
 	timerSettings.addItem( m1);
@@ -1167,14 +1099,7 @@ int CTimerList::newTimer()
 	timerSettings.addItem( m9);
 	timerSettings.addItem( m10);
 
-	int ret=timerSettings.exec(this,"");
-
-	// delete dynamic created objects
-	for(unsigned int count=0;count<toDelete.size();count++)
-	{
-		delete toDelete[count];
-	}
-	toDelete.clear();
+	int ret = timerSettings.exec(this, "");
 
 	return ret;
 }
@@ -1196,7 +1121,7 @@ bool askUserOnTimerConflict(time_t announceTime, time_t stopTime)
 		if(it->epgID != 0)
 		{
 			CEPGData epgdata;
-			//if (g_Sectionsd->getEPGid(it->epgID, it->epg_starttime, &epgdata))
+
 			if (sectionsd_getEPGid(it->epgID, it->epg_starttime, &epgdata))
 			{
 				timerbuf += ":";
@@ -1231,3 +1156,73 @@ bool askUserOnTimerConflict(time_t announceTime, time_t stopTime)
 
 	return (ShowMsgUTF(LOCALE_MESSAGEBOX_INFO,timerbuf,CMessageBox::mbrNo,CMessageBox::mbNo|CMessageBox::mbYes) == CMessageBox::mbrYes);
 }
+
+#include "gui/bouquetlist.h"
+extern CBouquetList * bouquetList;
+//CSelectChannelmenu
+CSelectChannel::CSelectChannel()
+{
+
+}
+
+CSelectChannel::~CSelectChannel()
+{
+
+}
+
+int CSelectChannel::exec(CMenuTarget * parent, const std::string& actionKey)
+{
+	int res = menu_return::RETURN_REPAINT;
+
+	if (parent)
+		parent->hide();
+
+	if(actionKey == "tv")
+	{
+		// set tv mode
+		InitChannelHelper(CZapitClient::MODE_TV);
+		return res;
+	}
+	else if(actionKey == "radio")
+	{
+		// set radio mode
+		InitChannelHelper(CZapitClient::MODE_RADIO);
+		return res;
+	}
+
+	return res;
+}
+
+void CSelectChannel::InitChannelHelper(CZapitClient::channelsMode mode)
+{
+	// set mode
+	if(mode == CZapitClient::MODE_TV)
+		g_Zapit->setMode( CZapitClient::MODE_TV );
+	else if(mode == CZapitClient::MODE_RADIO)
+		g_Zapit->setMode( CZapitClient::MODE_RADIO );
+		  
+	int nNewChannel;
+	int nNewBouquet;
+	
+	nNewBouquet = bouquetList->show();
+			
+	if (nNewBouquet > -1)
+	{
+		nNewChannel = bouquetList->Bouquets[nNewBouquet]->channelList->show();
+		
+		//printf("nNewChannel %d\n",nNewChannel);
+		
+		if (nNewChannel > -1)
+		{
+			chan_id = bouquetList->Bouquets[nNewBouquet]->channelList->getActiveChannel_ChannelID();
+			timerNew_channel_name = g_Zapit->getChannelName(chan_id);
+		}
+	}
+	
+	if( (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv) && (mode == CZapitClient::MODE_RADIO) )
+		g_Zapit->setMode( CZapitClient::MODE_TV );
+	else if( (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio) && (mode == CZapitClient::MODE_TV) )
+		g_Zapit->setMode( CZapitClient::MODE_RADIO );
+}
+
+

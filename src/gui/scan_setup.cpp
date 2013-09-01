@@ -637,7 +637,28 @@ void CScanSetup::showScanService()
 	manualScan->addItem(new CMenuForwarder(LOCALE_SCANTS_SELECT_TP, true, NULL, tpSelect, "test", CRCInput::RC_nokey ));
 		
 	// frequency
-	int freq_length = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? 8 : 6;
+	int freq_length = 8;
+
+	switch (getFE(feindex)->getInfo()->type)
+	{
+		case FE_QPSK:
+		freq_length = 8;
+		break;
+		
+		case FE_QAM:
+		freq_length = 6;
+		break;
+		
+		case FE_OFDM:
+		freq_length = 9;
+		break;
+		
+		default:
+		freq_length = 8;
+		break;
+	}
+	
+	//int freq_length = ( getFE(feindex)->getInfo()->type == FE_QPSK) ? 8 : 6;
 	CStringInput * freq = new CStringInput(LOCALE_EXTRA_FREQ, (char *) scanSettings->TP_freq, freq_length, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789");
 	CMenuForwarder * Freq = new CMenuForwarder(LOCALE_EXTRA_FREQ, true, scanSettings->TP_freq, freq, "", CRCInput::RC_nokey );
 		

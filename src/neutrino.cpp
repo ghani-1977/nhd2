@@ -880,6 +880,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// epgplus logos
 	g_settings.epgplus_show_logo = configfile.getBool("epgplus_show_logo", false);
 	
+	// infobar show channel name
+	g_settings.show_channelname = configfile.getBool("show_channelname", false);
+	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.current_volume = configfile.getInt32("current_volume", 25);
@@ -1319,6 +1322,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	// epgplus logos
 	configfile.setBool("epgplus_show_logo", g_settings.epgplus_show_logo);
+	
+	// infobar show channelname
+	configfile.setBool("show_channelname", g_settings.show_channelname);
 	
 	// vol
 	configfile.setInt32( "volume_pos", g_settings.volume_pos);

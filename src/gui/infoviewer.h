@@ -63,7 +63,7 @@ class CInfoViewer
 		int BoxHeight;
 		int BoxWidth;
 		
-		int ButtonWidth;
+		//int ButtonWidth;
 
 		int ChanNumberWidth;
 		int ChanNumberHeight;

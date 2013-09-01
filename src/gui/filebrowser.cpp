@@ -873,8 +873,14 @@ bool CFileBrowser::exec(const char * const dirname)
 	std::replace(name.begin(), name.end(), '\\', '/');
 
 	paintHead();
-	ChangeDir(name);
-	paint();
+	//ChangeDir(name);
+	//paint();
+	int selection = -1;
+	if (name == Path)
+		selection = selected;
+		
+	ChangeDir(name, selection);
+
 	paintFoot();
 		
 #if !defined USE_OPENGL
@@ -938,10 +944,10 @@ bool CFileBrowser::exec(const char * const dirname)
 		}
 		else if (msg_repeatok == CRCInput::RC_up)
 		{
-			int prevselected=selected;
-			if(selected==0)
+			int prevselected = selected;
+			if(selected == 0)
 			{
-				selected = filelist.size()-1;
+				selected = filelist.size() - 1;
 			}
 			else
 				selected--;
@@ -961,7 +967,7 @@ bool CFileBrowser::exec(const char * const dirname)
 		{
 			if (!(filelist.empty()))
 			{
-				int prevselected=selected;
+				int prevselected = selected;
 				selected = (selected + 1) % filelist.size();
 				paintItem(prevselected - liststart);
 				unsigned int oldliststart = liststart;
@@ -975,7 +981,7 @@ bool CFileBrowser::exec(const char * const dirname)
 		else if ( ( msg == CRCInput::RC_timeout ) )
 		{
 			selected = oldselected;
-			loop=false;
+			loop = false;
 		}
 		else if ( msg == CRCInput::RC_right )
 		{
@@ -983,11 +989,14 @@ bool CFileBrowser::exec(const char * const dirname)
 			{
 				if (S_ISDIR(filelist[selected].Mode))
 				{
-					if (m_Mode == ModeSC) {
-						ChangeDir(filelist[selected].Url);
-					} else 
+					if (m_Mode == ModeSC) 
 					{
-	 					if (filelist[selected].getFileName() != "..") {
+						ChangeDir(filelist[selected].Url);
+					} 
+					else 
+					{
+	 					if (filelist[selected].getFileName() != "..") 
+						{
 							selections.push_back(selected);
 							ChangeDir(filelist[selected].Name);
 						}
@@ -999,8 +1008,10 @@ bool CFileBrowser::exec(const char * const dirname)
 		{
 			if (m_Mode == ModeSC)
 			{
-				for(unsigned int i = 0; i < filelist.size();i++) {
-					if (S_ISDIR(filelist[i].Mode) && filelist[i].getFileName() == "..") {
+				for(unsigned int i = 0; i < filelist.size();i++) 
+				{
+					if (S_ISDIR(filelist[i].Mode) && filelist[i].getFileName() == "..") 
+					{
 						ChangeDir(filelist[i].Url);
 						break;
 					}
@@ -1074,10 +1085,12 @@ bool CFileBrowser::exec(const char * const dirname)
 						else
 						{
 							std::string::size_type pos = Path.substr(0,Path.length()-1).rfind('/');
-							if (pos != std::string::npos) {
+							if (pos != std::string::npos) 
+							{
 								ChangeDir("..");
 							}
-							else {
+							else 
+							{
 								loop = false;
 								res = true;
 								filelist[selected].Name = "/";
@@ -1095,7 +1108,10 @@ bool CFileBrowser::exec(const char * const dirname)
 							if (m_Mode == ModeSC)
 								ChangeDir(filelist[selected].Url);
 							else
+							{
+								selections.push_back(selected);
 								ChangeDir(filelist[selected].Name);
+							}
 						}
 						else
 						{
@@ -1144,7 +1160,9 @@ bool CFileBrowser::exec(const char * const dirname)
 		CProgressWindow * progress = new CProgressWindow();
 		progress->setTitle(LOCALE_FILEBROWSER_SCAN);
 		progress->exec(NULL,"");
-		for(unsigned int i = 0; i < filelist.size();i++)
+		
+		for(unsigned int i = 0; i < filelist.size(); i++)
+		{
 			if(filelist[i].Marked)
 			{
 				if(S_ISDIR(filelist[i].Mode)) 
@@ -1156,6 +1174,8 @@ bool CFileBrowser::exec(const char * const dirname)
 				} else
 					selected_filelist.push_back(filelist[i]);
 			}
+		}
+		
 		progress->hide();
 		delete progress;
 	}

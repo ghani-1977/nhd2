@@ -48,6 +48,9 @@
 #include <algorithm>
 #include <sstream>
 
+#include <gui/pictureviewer.h>
+extern CPictureViewer * g_PicViewer;
+
 #define COL_MENUCONTENT_P1                 254-8*4+1
 #define COL_MENUCONTENT_P2                 254-8*4+2
 extern CBouquetList *bouquetList;
@@ -371,8 +374,6 @@ EpgPlus::ChannelEntry::~ChannelEntry()
 	this->channelEventEntries.clear();
 }
 
-#include <gui/pictureviewer.h>
-extern CPictureViewer * g_PicViewer;
 void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 {
 	this->frameBuffer->paintBoxRel(this->x, this->y, this->width, this->font->getHeight(), isSelected ? COL_MENUCONTENTSELECTED_PLUS_0 : COL_MENUCONTENT_PLUS_0);
@@ -387,12 +388,20 @@ void EpgPlus::ChannelEntry::paint (bool isSelected, time_t selectedTime)
 		int logo_h = this->font->getHeight() - 2;
 		int logo_bpp = 0;
 		
-		// get logo size	
-		g_PicViewer->getLogoSize(this->channel->getChannelID(), &logo_w, &logo_h, &logo_bpp);
+		// check logo
+		logo_ok = g_PicViewer->checkLogo(this->channel->getChannelID());
 		
-		// paint logo (png with alpha channel)
-		if(logo_bpp == 4)
-			logo_ok = g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2, true);
+		if(logo_ok)
+		{
+			// get logo size	
+			g_PicViewer->getLogoSize(this->channel->getChannelID(), &logo_w, &logo_h, &logo_bpp);
+		
+			// paint logo (png with alpha channel)
+			if(logo_bpp == 4)
+				g_PicViewer->DisplayLogo(this->channel->getChannelID(), this->x + 1, this->y + 1, this->width -2, this->font->getHeight() - 2, true);
+			else
+				logo_ok = false;
+		}
 	}
 	
 	if(!logo_ok)

@@ -327,9 +327,9 @@ static WriterCaps_t caps_pcm = {
 	eAudio,
 	"A_PCM",
 #ifdef __sh__    
-	AUDIO_ENCODING_LPCMA,
+	AUDIO_ENCODING_LPCMA
 #else
-	AUDIO_STREAMTYPE_LPCMDVD,
+	AUDIO_STREAMTYPE_LPCMDVD
 #endif
 };
 
@@ -345,9 +345,9 @@ static WriterCaps_t caps_ipcm = {
 	eAudio,
 	"A_IPCM",
 #ifdef __sh__    
-	AUDIO_ENCODING_LPCMA,
+	AUDIO_ENCODING_LPCMA
 #else
-	AUDIO_STREAMTYPE_LPCMDVD,
+	AUDIO_STREAMTYPE_LPCMDVD
 #endif
 };
 

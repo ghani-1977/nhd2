@@ -87,48 +87,48 @@ if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); 
 
 static int reset()
 {
-    return 0;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    ac3_printf(10, "\n");
+	ac3_printf(10, "\n");
 
-    unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-    if (call == NULL)
-    {
-        ac3_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		ac3_err("call data is NULL...\n");
+		return 0;
+	}
 
-    ac3_printf(10, "AudioPts %lld\n", call->Pts);
+	ac3_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        ac3_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		ac3_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        ac3_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		ac3_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    int HeaderLength = InsertPesHeader (PesHeader, call->len, PRIVATE_STREAM_1_PES_START_CODE, call->Pts, 0);
+	int HeaderLength = InsertPesHeader (PesHeader, call->len, PRIVATE_STREAM_1_PES_START_CODE, call->Pts, 0);
 
-    unsigned char* PacketStart = malloc(call->len + HeaderLength);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, call->data, call->len);
+	unsigned char* PacketStart = malloc(call->len + HeaderLength);
+	memcpy (PacketStart, PesHeader, HeaderLength);
+	memcpy (PacketStart + HeaderLength, call->data, call->len);
 
-    int len = write(call->fd, PacketStart, call->len + HeaderLength);
+	int len = write(call->fd, PacketStart, call->len + HeaderLength);
 
-    free(PacketStart);
+	free(PacketStart);
 
-    return len;
+	return len;
 }
 
 /* ***************************** */
@@ -136,20 +136,20 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps_ac3 = {
-    "ac3",
-    eAudio,
-    "A_AC3",
+	"ac3",
+	eAudio,
+	"A_AC3",
 #ifdef __sh__    
-    AUDIO_ENCODING_AC3,
+	AUDIO_ENCODING_AC3
 #else
-    AUDIO_STREAMTYPE_AC3,
+	AUDIO_STREAMTYPE_AC3
 #endif
 };
 
 struct Writer_s WriterAudioAC3 = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_ac3,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_ac3,
 };
 

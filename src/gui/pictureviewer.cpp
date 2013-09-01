@@ -511,11 +511,8 @@ int CPictureViewerGui::show()
 				CNFSSmallMenu nfsMenu;
 				nfsMenu.exec(this, "");
 				update = true;
-//#if defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_GIGABLUE) || defined (PLATFORM_XTREND)
-//				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-//#else
-				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_PICTUREVIEWER_HEAD));
-//#endif				
+
+				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_PICTUREVIEWER_HEAD));				
 			}
 		}
 		else if(msg == NeutrinoMessages::CHANGEMODE)

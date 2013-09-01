@@ -57,8 +57,8 @@
 #include <global.h>
 #include <neutrino.h>
 
-#define ALPHA_SETUP_ICON_DESELECTED      "volumeslider2"
-#define ALPHA_SETUP_ICON_ALPHA1_SELECTED "volumeslider2red"
+//#define ALPHA_SETUP_ICON_DESELECTED      "volumeslider2"
+//#define ALPHA_SETUP_ICON_ALPHA1_SELECTED "volumeslider2red"
 
 
 CAlphaSetup::CAlphaSetup(const neutrino_locale_t Name, unsigned char * Alpha, CChangeObserver * Observer)
@@ -120,12 +120,12 @@ int CAlphaSetup::exec(CMenuTarget * parent, const std::string &)
 				{
 					if(selected < max)
 					{
-						paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_DESELECTED, false);
+						paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_DESELECTED*/NEUTRINO_ICON_VOLUMESLIDER2, false);
 						
 						selected++;
 
 						if(selected == 0)
-							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );
+							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_ALPHA1_SELECTED*/NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 					}
 					break;
 				}
@@ -134,12 +134,12 @@ int CAlphaSetup::exec(CMenuTarget * parent, const std::string &)
 				{
 					if (selected > 0)
 					{
-						paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_DESELECTED, false);
+						paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_DESELECTED*/NEUTRINO_ICON_VOLUMESLIDER2, false);
 
 						selected--;
 
 						if(selected == 0)
-							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );
+							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_ALPHA1_SELECTED*/NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 					}
 					break;
 				}
@@ -155,7 +155,7 @@ int CAlphaSetup::exec(CMenuTarget * parent, const std::string &)
 							else
 								*alpha = 255;
 								
-							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );
+							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_ALPHA1_SELECTED*/NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 							frameBuffer->setBlendLevel(*alpha);
 						}
 					
@@ -174,7 +174,7 @@ int CAlphaSetup::exec(CMenuTarget * parent, const std::string &)
 							else
 								*alpha = 0;
 								
-							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );
+							paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_ALPHA1_SELECTED*/NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 							frameBuffer->setBlendLevel(*alpha);
 						}
 					}
@@ -240,7 +240,7 @@ void CAlphaSetup::paint()
 	frameBuffer->paintBoxRel(x, y + hheight, width, height - hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 
 	// slider
-	paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, ALPHA_SETUP_ICON_ALPHA1_SELECTED, true );
+	paintSlider(x + 10, y + hheight, alpha, LOCALE_GTXALPHA_ALPHA1, /*ALPHA_SETUP_ICON_ALPHA1_SELECTED*/NEUTRINO_ICON_VOLUMESLIDER2RED, true );
 }
 
 void CAlphaSetup::paintSlider(const int _x, const int _y, const unsigned char * const spos, const neutrino_locale_t text, const char * const iconname, const bool /*selected*/) // UTF-8

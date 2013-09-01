@@ -769,6 +769,7 @@ miscsettings.head Diverse Einstellungen
 miscsettings.hwsections HW-Sections verwenden
 miscsettings.infobar_sat_display Infobar Satellitenanzeige
 miscsettings.infobar_colored_events Sendung farbig
+miscsettings.infobar_show_channelname Kanal Name
 miscsettings.infobar_showca Infobar Cryptanzeige
 miscsettings.infobar_radiotext Radio Text
 miscsettings.infobar_hddvar_display HDD Anzeige

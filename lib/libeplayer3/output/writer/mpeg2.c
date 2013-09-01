@@ -86,101 +86,102 @@ if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); 
 
 static int reset()
 {
-    return 0;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char               PesHeader[PES_MAX_HEADER_SIZE];
-    int len = 0;
-    int Position = 0;
+	unsigned char               PesHeader[PES_MAX_HEADER_SIZE];
+	int len = 0;
+	int Position = 0;
 
-    mpeg2_printf(10, "\n");
+	mpeg2_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        mpeg2_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		mpeg2_err("call data is NULL...\n");
+		return 0;
+	}
 
-    mpeg2_printf(10, "VideoPts %lld\n", call->Pts);
+	mpeg2_printf(10, "VideoPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        mpeg2_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		mpeg2_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        mpeg2_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		mpeg2_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    while(1) {
-        int PacketLength = (call->len - Position) <= MAX_PES_PACKET_SIZE ?
-                           (call->len - Position) : MAX_PES_PACKET_SIZE;
+	while(1) 
+	{
+		int PacketLength = (call->len - Position) <= MAX_PES_PACKET_SIZE ?
+				  (call->len - Position) : MAX_PES_PACKET_SIZE;
 
-        int Remaining = call->len - Position - PacketLength;
+		int Remaining = call->len - Position - PacketLength;
 
-        mpeg2_printf(20, "PacketLength=%d, Remaining=%d, Position=%d\n", PacketLength, Remaining, Position);
+		mpeg2_printf(20, "PacketLength=%d, Remaining=%d, Position=%d\n", PacketLength, Remaining, Position);
 
-        int HeaderLength = InsertPesHeader (PesHeader, PacketLength, 0xe0, call->Pts, 0);
-        unsigned char* PacketStart = malloc(PacketLength + HeaderLength);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, call->data + Position, PacketLength);
+		int HeaderLength = InsertPesHeader (PesHeader, PacketLength, 0xe0, call->Pts, 0);
+		unsigned char* PacketStart = malloc(PacketLength + HeaderLength);
+		memcpy (PacketStart, PesHeader, HeaderLength);
+		memcpy (PacketStart + HeaderLength, call->data + Position, PacketLength);
 
-        len = write(call->fd, PacketStart, PacketLength + HeaderLength);
-        free(PacketStart);
+		len = write(call->fd, PacketStart, PacketLength + HeaderLength);
+		free(PacketStart);
 
-        Position += PacketLength;
-        call->Pts = INVALID_PTS_VALUE;
+		Position += PacketLength;
+		call->Pts = INVALID_PTS_VALUE;
 
-        if (Position == call->len)
-            break;
-    }
+		if (Position == call->len)
+			break;
+	}
 
-    mpeg2_printf(10, "< len %d\n", len);
-    return len;
+	mpeg2_printf(10, "< len %d\n", len);
+	return len;
 }
 
 /* ***************************** */
 /* Writer  Definition            */
 /* ***************************** */
 static WriterCaps_t caps = {
-    "mpeg2",
-    eVideo,
-    "V_MPEG2",
+	"mpeg2",
+	eVideo,
+	"V_MPEG2",
 #ifdef __sh__    
-    VIDEO_ENCODING_AUTO,
+	VIDEO_ENCODING_AUTO,
 #else
-    VIDEO_STREAMTYPE_MPEG2,
+	VIDEO_STREAMTYPE_MPEG2,
 #endif
 };
 
 struct Writer_s WriterVideoMPEG2 = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps,
+	&reset,
+	&writeData,
+	NULL,
+	&caps
 };
 
 static WriterCaps_t h264_caps = {
-    "mpges_h264",
-    eVideo,
-    "V_MPEG2/H264",
+	"mpges_h264",
+	eVideo,
+	"V_MPEG2/H264",
 #ifdef __sh__    
-    VIDEO_ENCODING_H264,
+	VIDEO_ENCODING_H264
 #else
-    VIDEO_STREAMTYPE_MPEG4_H264,
+	VIDEO_STREAMTYPE_MPEG4_H264
 #endif
 };
 
 struct Writer_s WriterVideoMPEGH264 = {
-    &reset,
-    &writeData,
-    NULL,
-    &h264_caps,
+	&reset,
+	&writeData,
+	NULL,
+	&h264_caps
 };

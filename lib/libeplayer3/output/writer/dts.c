@@ -89,64 +89,64 @@ if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); 
 /* ***************************** */
 static int reset()
 {
-    return 0;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    int             i = 0;
-    unsigned char   PesHeader[PES_AUDIO_HEADER_SIZE];
-    unsigned char * Data = 0;
+	int             i = 0;
+	unsigned char   PesHeader[PES_AUDIO_HEADER_SIZE];
+	unsigned char * Data = 0;
 
-    dts_printf(10, "\n");
+	dts_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        dts_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		dts_err("call data is NULL...\n");
+		return 0;
+	}
 
-    dts_printf(10, "AudioPts %lld\n", call->Pts);
+	dts_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        dts_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		dts_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        dts_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		dts_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    memset (PesHeader, '0', PES_AUDIO_HEADER_SIZE);
+	memset (PesHeader, '0', PES_AUDIO_HEADER_SIZE);
 
-    Data = (unsigned char *) malloc(call->len);
-    memcpy(Data, call->data, call->len);
+	Data = (unsigned char *) malloc(call->len);
+	memcpy(Data, call->data, call->len);
 
-    /* 16-bit byte swap all data before injecting it */
-    for (i=0; i< call->len; i+=2)
-    {
-        unsigned char Tmp = Data[i];
-        Data[i] = Data[i+1];
-        Data[i+1] = Tmp;
-    }
+	/* 16-bit byte swap all data before injecting it */
+	for (i=0; i< call->len; i+=2)
+	{
+		unsigned char Tmp = Data[i];
+		Data[i] = Data[i+1];
+		Data[i+1] = Tmp;
+	}
 
-    int HeaderLength    = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE/*PRIVATE_STREAM_1_PES_START_CODE*/, call->Pts, 0);
-    unsigned char* PacketStart = malloc(call->len + HeaderLength);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, call->data, call->len);
+	int HeaderLength    = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE/*PRIVATE_STREAM_1_PES_START_CODE*/, call->Pts, 0);
+	unsigned char* PacketStart = malloc(call->len + HeaderLength);
+	memcpy (PacketStart, PesHeader, HeaderLength);
+	memcpy (PacketStart + HeaderLength, call->data, call->len);
 
-    int len = write(call->fd,PacketStart,call->len + HeaderLength);
+	int len = write(call->fd,PacketStart,call->len + HeaderLength);
 
-    free(PacketStart);
-    free(Data);
+	free(PacketStart);
+	free(Data);
 
-    dts_printf(10, "< len %d\n", len);
-    return len;
+	dts_printf(10, "< len %d\n", len);
+	return len;
 }
 
 /* ***************************** */
@@ -154,19 +154,19 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps = {
-    "dts",
-    eAudio,
-    "A_DTS",
+	"dts",
+	eAudio,
+	"A_DTS",
 #ifdef __sh__    
-    AUDIO_ENCODING_DTS,
+	AUDIO_ENCODING_DTS
 #else
-    AUDIO_STREAMTYPE_DTS,
+	AUDIO_STREAMTYPE_DTS
 #endif
 };
 
 struct Writer_s WriterAudioDTS = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps,
+	&reset,
+	&writeData,
+	NULL,
+	&caps
 };

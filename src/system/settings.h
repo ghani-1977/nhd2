@@ -406,6 +406,7 @@ struct SNeutrinoSettings
 	
 	std::string logos_dir;
 	int epgplus_show_logo;
+	int show_channelname;
 
 	// channellist
 	int zap_cycle;

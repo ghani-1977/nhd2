@@ -52,7 +52,7 @@
 /* Makros/Constants              */
 /* ***************************** */
 
-//#define FFMPEG_DEBUG
+#define FFMPEG_DEBUG
 
 #ifdef FFMPEG_DEBUG
 
@@ -98,7 +98,7 @@ static pthread_mutex_t mutex;
 static pthread_t PlayThread;
 static int hasPlayThreadStarted = 0;
 
-static AVFormatContext*   avContext = NULL;
+static AVFormatContext *avContext = NULL;
 
 static unsigned char isContainerRunning = 0;
 
@@ -139,7 +139,7 @@ static char *Codec2Encoding(enum CodecID id, int* version)
 			return "V_MPEG1";
 			
 		case CODEC_ID_MPEG2VIDEO:
-			return "V_MPEG1";
+			return "V_MPEG2";
 			
 		case CODEC_ID_H263:
 		case CODEC_ID_H263P:
@@ -894,19 +894,21 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 		return cERR_CONTAINER_FFMPEG_OPEN;
 	}
 	
-	avContext->flags = AVFMT_FLAG_GENPTS;
+	avContext->flags |= AVFMT_FLAG_GENPTS;
 	
 	// FIXME:set max probe duration for ts files to 1
-	if ( strstr(filename, ".ts") )
-		avContext->max_analyze_duration = 1;
+	//if ( strstr(filename, ".ts") )
+	//	avContext->max_analyze_duration = 1;
 
 	ffmpeg_printf(20, "find_streaminfo\n");
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
-	if (av_find_stream_info(avContext) < 0) {
+	if (av_find_stream_info(avContext) < 0) 
+	{
 		ffmpeg_err("Error av_find_stream_info\n");
 #else
-	if (avformat_find_stream_info(avContext, NULL) < 0) {
+	if (avformat_find_stream_info(avContext, NULL) < 0) 
+	{
 		ffmpeg_err("Error avformat_find_stream_info\n");
 #endif
 
@@ -942,8 +944,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 		if (encoding != NULL)
 			ffmpeg_printf(1, "%d. encoding = %s - version %d\n", n, encoding, version);
 
-		/* some values in track are unset and therefor copyTrack segfaults.
-		* so set it by default to NULL!
+		/* 
+		some values in track are unset and therefor copyTrack segfaults.
+		so set it by default to NULL!
 		*/
 		memset(&track, 0, sizeof(track));
 

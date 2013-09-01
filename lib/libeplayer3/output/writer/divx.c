@@ -86,86 +86,88 @@ static int initialHeader = 1;
 /* ***************************** */
 static int reset()
 {
-    initialHeader = 1;
-    return 0;
+	initialHeader = 1;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
-    unsigned char  FakeHeaders[64]; // 64bytes should be enough to make the fake headers
-    unsigned int   FakeHeaderLength;
-    unsigned int   ExtraLength = 0;
-    unsigned char  Version             = 5;
-    unsigned int   FakeStartCode       = (Version << 8) | PES_VERSION_FAKE_START_CODE;
-    unsigned int   HeaderLength = 0;
-    unsigned int   usecPerFrame = 41708; /* Hellmaster1024: default value */
-    BitPacker_t ld = {FakeHeaders, 0, 32};
+	unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	unsigned char  FakeHeaders[64]; // 64bytes should be enough to make the fake headers
+	unsigned int   FakeHeaderLength;
+	unsigned int   ExtraLength = 0;
+	unsigned char  Version             = 5;
+	unsigned int   FakeStartCode       = (Version << 8) | PES_VERSION_FAKE_START_CODE;
+	unsigned int   HeaderLength = 0;
+	unsigned int   usecPerFrame = 41708; /* Hellmaster1024: default value */
+	BitPacker_t ld = {FakeHeaders, 0, 32};
 
-    divx_printf(10, "\n");
+	divx_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        divx_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		divx_err("call data is NULL...\n");
+		return 0;
+	}
 
-    divx_printf(10, "AudioPts %lld\n", call->Pts);
+	divx_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        divx_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		divx_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        divx_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		divx_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    usecPerFrame = 1000000000 / call->FrameRate;
-    divx_printf(10, "Microsecends per frame = %d\n", usecPerFrame);
+	usecPerFrame = 1000000000 / call->FrameRate;
+	divx_printf(10, "Microsecends per frame = %d\n", usecPerFrame);
 
-    memset(FakeHeaders, 0, sizeof(FakeHeaders));
+	memset(FakeHeaders, 0, sizeof(FakeHeaders));
 
-    /* Create info record for frame parser */
-    /* divx4 & 5
-       VOS
-       PutBits(&ld, 0x0, 8);
-       PutBits(&ld, 0x0, 8);
-     */
-    PutBits(&ld, 0x1b0, 32);      // startcode
-    PutBits(&ld, 0, 8);           // profile = reserved
-    PutBits(&ld, 0x1b2, 32);      // startcode (user data)
-    PutBits(&ld, 0x53545443, 32); // STTC - an embedded ST timecode from an avi file
-    PutBits(&ld, usecPerFrame , 32);
-    // microseconds per frame
-    FlushBits(&ld);
+	/* Create info record for frame parser */
+	/* divx4 & 5
+	  VOS
+	  PutBits(&ld, 0x0, 8);
+	  PutBits(&ld, 0x0, 8);
+	*/
+	PutBits(&ld, 0x1b0, 32);      // startcode
+	PutBits(&ld, 0, 8);           // profile = reserved
+	PutBits(&ld, 0x1b2, 32);      // startcode (user data)
+	PutBits(&ld, 0x53545443, 32); // STTC - an embedded ST timecode from an avi file
+	PutBits(&ld, usecPerFrame , 32);
+	// microseconds per frame
+	FlushBits(&ld);
 
-    FakeHeaderLength    = (ld.Ptr - (FakeHeaders));
+	FakeHeaderLength    = (ld.Ptr - (FakeHeaders));
 
-    if (initialHeader) ExtraLength = call->private_size;
+	if (initialHeader) ExtraLength = call->private_size;
 
-    HeaderLength        = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
-    unsigned char* PacketStart = malloc(call->len + HeaderLength + FakeHeaderLength + ExtraLength);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, FakeHeaders, FakeHeaderLength);
-    if (initialHeader) {
-        memcpy (PacketStart + HeaderLength + FakeHeaderLength, call->private_data, call->private_size);
-        initialHeader = 0;
-    }
-    memcpy (PacketStart + HeaderLength + FakeHeaderLength + ExtraLength, call->data, call->len);
+	HeaderLength        = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
+	unsigned char* PacketStart = malloc(call->len + HeaderLength + FakeHeaderLength + ExtraLength);
+	memcpy (PacketStart, PesHeader, HeaderLength);
+	memcpy (PacketStart + HeaderLength, FakeHeaders, FakeHeaderLength);
+	
+	if (initialHeader) 
+	{
+		memcpy (PacketStart + HeaderLength + FakeHeaderLength, call->private_data, call->private_size);
+		initialHeader = 0;
+	}
+	memcpy (PacketStart + HeaderLength + FakeHeaderLength + ExtraLength, call->data, call->len);
 
-    int len = write(call->fd, PacketStart ,call->len + HeaderLength + FakeHeaderLength + ExtraLength);
+	int len = write(call->fd, PacketStart ,call->len + HeaderLength + FakeHeaderLength + ExtraLength);
 
-    free(PacketStart);
+	free(PacketStart);
 
-    divx_printf(10, "xvid_Write < len=%d\n", len);
+	divx_printf(10, "xvid_Write < len=%d\n", len);
 
-    return len;
+	return len;
 }
 
 /* ***************************** */
@@ -173,21 +175,21 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t mpeg4p2_caps = {
-    "mscomp",
-    eVideo,
-    "V_MSCOMP",
+	"mscomp",
+	eVideo,
+	"V_MSCOMP",
 #ifdef __sh__
-    VIDEO_ENCODING_MPEG4P2,
+	VIDEO_ENCODING_MPEG4P2
 #else
-    VIDEO_STREAMTYPE_DIVX311,
+	VIDEO_STREAMTYPE_DIVX311
 #endif
 };
 
 struct Writer_s WriterVideoMSCOMP = {
-    &reset,
-    &writeData,
-    NULL,
-    &mpeg4p2_caps,
+	&reset,
+	&writeData,
+	NULL,
+	&mpeg4p2_caps,
 };
 
 static WriterCaps_t fourcc_caps = {

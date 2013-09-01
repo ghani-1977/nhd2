@@ -135,7 +135,7 @@ static int position = 0;
 static int duration = 0;
 static int file_prozent;
 
-int startposition;
+static int startposition;
 int timeshift;
 off64_t minuteoffset;
 off64_t secondoffset;

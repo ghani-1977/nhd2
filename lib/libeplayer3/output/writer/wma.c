@@ -88,80 +88,81 @@ static int initialHeader = 1;
 
 static int reset()
 {
-    initialHeader = 1;
-    return 0;
+	initialHeader = 1;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    int len = 0;
+	int len = 0;
 
-    wma_printf(10, "\n");
+	wma_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        wma_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		wma_err("call data is NULL...\n");
+		return 0;
+	}
 
-    wma_printf(10, "AudioPts %lld\n", call->Pts);
+	wma_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        wma_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		wma_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        wma_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		wma_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    if (initialHeader) {
+	if (initialHeader) 
+	{
 
-        unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
-        int HeaderLength;
+		unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+		int HeaderLength;
 
-        if ((call->private_size <= 0) || (call->private_data == NULL))
-        {
-            wma_err("private NULL.\n");
-            return -1;
-        }
+		if ((call->private_size <= 0) || (call->private_data == NULL))
+		{
+			wma_err("private NULL.\n");
+			return -1;
+		}
 
-        HeaderLength = InsertPesHeader (PesHeader, call->private_size, MPEG_AUDIO_PES_START_CODE, 0, 0);
+		HeaderLength = InsertPesHeader (PesHeader, call->private_size, MPEG_AUDIO_PES_START_CODE, 0, 0);
 
-        unsigned char* PacketStart = malloc(call->private_size + HeaderLength);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, call->private_data, call->private_size);
+		unsigned char* PacketStart = malloc(call->private_size + HeaderLength);
+		memcpy (PacketStart, PesHeader, HeaderLength);
+		memcpy (PacketStart + HeaderLength, call->private_data, call->private_size);
 
-        len = write(call->fd, PacketStart, call->private_size + HeaderLength);
+		len = write(call->fd, PacketStart, call->private_size + HeaderLength);
 
-        free(PacketStart);
+		free(PacketStart);
 
-        initialHeader = 0;
-    }
+		initialHeader = 0;
+	}
 
-    if (call->len > 0 && call->data)
-    {
-        unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	if (call->len > 0 && call->data)
+	{
+		unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-        int HeaderLength = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
+		int HeaderLength = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
 
-        unsigned char* PacketStart = malloc(call->len + HeaderLength);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, call->data, call->len);
+		unsigned char* PacketStart = malloc(call->len + HeaderLength);
+		memcpy (PacketStart, PesHeader, HeaderLength);
+		memcpy (PacketStart + HeaderLength, call->data, call->len);
 
-        len = write(call->fd, PacketStart, call->len + HeaderLength);
+		len = write(call->fd, PacketStart, call->len + HeaderLength);
 
-        free(PacketStart);
-    }
+		free(PacketStart);
+	}
 
-    wma_printf(10, "wma < %d\n", len);
+	wma_printf(10, "wma < %d\n", len);
 
-    return len;
+	return len;
 }
 
 /* ***************************** */
@@ -169,15 +170,19 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps = {
-    "wma",
-    eAudio,
-    "A_WMA",
-    AUDIO_ENCODING_WMA
+	"wma",
+	eAudio,
+	"A_WMA",
+#if defined (__sh__)	
+	AUDIO_ENCODING_WMA
+#else
+	AUDIO_STREAMTYPE_MPEG
+#endif
 };
 
 struct Writer_s WriterAudioWMA = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps
+	&reset,
+	&writeData,
+	NULL,
+	&caps
 };

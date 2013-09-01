@@ -87,50 +87,50 @@ if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); 
 
 static int reset()
 {
-    return 0;
+	return 0;
 }
 
 static int writeData(void* _call)
 {
-    WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
+	WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
+	unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-    mp3_printf(10, "\n");
+	mp3_printf(10, "\n");
 
-    if (call == NULL)
-    {
-        mp3_err("call data is NULL...\n");
-        return 0;
-    }
+	if (call == NULL)
+	{
+		mp3_err("call data is NULL...\n");
+		return 0;
+	}
 
-    mp3_printf(10, "AudioPts %lld\n", call->Pts);
+	mp3_printf(10, "AudioPts %lld\n", call->Pts);
 
-    if ((call->data == NULL) || (call->len <= 0))
-    {
-        mp3_err("parsing NULL Data. ignoring...\n");
-        return 0;
-    }
+	if ((call->data == NULL) || (call->len <= 0))
+	{
+		mp3_err("parsing NULL Data. ignoring...\n");
+		return 0;
+	}
 
-    if (call->fd < 0)
-    {
-        mp3_err("file pointer < 0. ignoring ...\n");
-        return 0;
-    }
+	if (call->fd < 0)
+	{
+		mp3_err("file pointer < 0. ignoring ...\n");
+		return 0;
+	}
 
-    int HeaderLength = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
+	int HeaderLength = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
 
-    unsigned char* PacketStart = malloc(call->len + HeaderLength);
+	unsigned char* PacketStart = malloc(call->len + HeaderLength);
 
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, call->data, call->len);
+	memcpy (PacketStart, PesHeader, HeaderLength);
+	memcpy (PacketStart + HeaderLength, call->data, call->len);
 
-    int len = write(call->fd, PacketStart, call->len + HeaderLength);
+	int len = write(call->fd, PacketStart, call->len + HeaderLength);
 
-    free(PacketStart);
+	free(PacketStart);
 
-    mp3_printf(10, "mp3_Write-< len=%d\n", len);
-    return len;
+	mp3_printf(10, "mp3_Write-< len=%d\n", len);
+	return len;
 }
 
 /* ***************************** */
@@ -138,37 +138,37 @@ static int writeData(void* _call)
 /* ***************************** */
 
 static WriterCaps_t caps_mp3 = {
-    "mp3",
-    eAudio,
-    "A_MP3",
+	"mp3",
+	eAudio,
+	"A_MP3",
 #ifdef __sh__    
-    AUDIO_ENCODING_MP3,
+	AUDIO_ENCODING_MP3
 #else
-    AUDIO_STREAMTYPE_MP3,
+	AUDIO_STREAMTYPE_MP3
 #endif
 };
 
 struct Writer_s WriterAudioMP3 = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_mp3,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_mp3
 };
 
 static WriterCaps_t caps_mpegl3 = {
-    "mpeg/l3",
-    eAudio,
-    "A_MPEG/L3",
+	"mpeg/l3",
+	eAudio,
+	"A_MPEG/L3",
 #ifdef __sh__    
-    AUDIO_ENCODING_MPEG2,
+	AUDIO_ENCODING_MPEG2
 #else
-    AUDIO_STREAMTYPE_MPEG,
+	AUDIO_STREAMTYPE_MPEG
 #endif
 };
 
 struct Writer_s WriterAudioMPEGL3 = {
-    &reset,
-    &writeData,
-    NULL,
-    &caps_mpegl3,
+	&reset,
+	&writeData,
+	NULL,
+	&caps_mpegl3,
 };
