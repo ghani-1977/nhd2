@@ -305,6 +305,7 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 		timerNew.announceTime = timerNew.alarmTime - 60;
 		CTimerd::EventInfo eventinfo;
 		CTimerd::RecordingInfo recinfo;
+		
 		eventinfo.epgID = 0;
 		eventinfo.epg_starttime = 0;
 		eventinfo.channel_id = timerNew.channel_id;
@@ -312,16 +313,16 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 		eventinfo.recordingSafety = false;
 		timerNew.standby_on = (timerNew_standby_on == 1);
 		void *data = NULL;
+		
 		if(timerNew.eventType == CTimerd::TIMER_STANDBY)
 			data = &(timerNew.standby_on);
-		else if(timerNew.eventType==CTimerd::TIMER_NEXTPROGRAM ||
-			timerNew.eventType==CTimerd::TIMER_ZAPTO ||
-			timerNew.eventType==CTimerd::TIMER_RECORD)
+		else if(timerNew.eventType == CTimerd::TIMER_NEXTPROGRAM ||
+			timerNew.eventType == CTimerd::TIMER_ZAPTO ||
+			timerNew.eventType == CTimerd::TIMER_RECORD)
 		{
 			if (strcmp((char *)timerNew_channel_name.c_str(), "---") == 0)
 				return menu_return::RETURN_REPAINT;
 			else
-
 				timerNew.channel_id = chan_id;
 			
 			if (timerNew.eventType == CTimerd::TIMER_RECORD)
@@ -337,14 +338,23 @@ int CTimerList::exec(CMenuTarget *parent, const std::string &actionKey)
 				data = &recinfo;
 			} 
 			else
+			{
+				eventinfo.epgID = 0;
+				eventinfo.epg_starttime = 0;
+				eventinfo.channel_id = timerNew.channel_id;
+				//eventinfo.apids = TIMERD_APIDS_CONF;
+				//eventinfo.recordingSafety = false;
+		
 				data = &eventinfo;
+			}
 		}
 		else if(timerNew.eventType == CTimerd::TIMER_REMIND)
-			data= timerNew.message;
+			data = timerNew.message;
 		else if (timerNew.eventType == CTimerd::TIMER_EXEC_PLUGIN)
 		{
 			if (strcmp(timerNew.pluginName, "---") == 0)
 				return menu_return::RETURN_REPAINT;
+			
 			data = timerNew.pluginName;
 		}
 		
@@ -790,16 +800,17 @@ void CTimerList::paint()
 		paintItem(count);
 	}
 
-	if(timerlist.size()>listmaxshow)
+	if(timerlist.size() > listmaxshow)
 	{
-		int ypos = y+ theight;
-		int sb = 2*fheight* listmaxshow;
-		frameBuffer->paintBoxRel(x+ width- 15,ypos, 15, sb, COL_MENUCONTENT_PLUS_1);
+		int ypos = y + theight;
+		int sb = 2*fheight*listmaxshow;
+		
+		frameBuffer->paintBoxRel(x + width- 15, ypos, 15, sb, COL_MENUCONTENT_PLUS_1);
 
-		int sbc= ((timerlist.size()- 1)/ listmaxshow)+ 1;
-		float sbh= (sb- 4)/ sbc;
+		int sbc = ((timerlist.size()- 1)/listmaxshow)+ 1;
+		float sbh = (sb- 4)/ sbc;
 
-		frameBuffer->paintBoxRel(x+ width- 13, ypos+ 2+ int(page_nr * sbh) , 11, int(sbh), COL_MENUCONTENT_PLUS_3);
+		frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + int(page_nr * sbh) , 11, int(sbh), COL_MENUCONTENT_PLUS_3);
 	}
 
 	paintFoot();
@@ -1027,7 +1038,6 @@ int CTimerList::newTimer()
 	timerNew_standby_on = false;
 	strncpy(timerNew.recordingDir, g_settings.network_nfs_recordingdir, sizeof(timerNew.recordingDir));
 
-
 	CMenuWidget timerSettings(LOCALE_TIMERLIST_MENUNEW, NEUTRINO_ICON_SETTINGS);
 	
 	// intros
@@ -1075,7 +1085,7 @@ int CTimerList::newTimer()
 	CStringInputSMS timerSettings_msg(LOCALE_TIMERLIST_MESSAGE, timerNew.message);
 	CMenuForwarder *m9 = new CMenuForwarder(LOCALE_TIMERLIST_MESSAGE, false, timerNew.message, &timerSettings_msg );
 
-	strcpy(timerNew.pluginName,"---");
+	strcpy(timerNew.pluginName, "---");
 	CPluginChooser plugin_chooser(LOCALE_TIMERLIST_PLUGIN, CPlugins::P_TYPE_SCRIPT | CPlugins::P_TYPE_TOOL, timerNew.pluginName);
 	CMenuForwarder *m10 = new CMenuForwarder(LOCALE_TIMERLIST_PLUGIN, false, timerNew.pluginName, &plugin_chooser);
 
@@ -1108,12 +1118,12 @@ bool askUserOnTimerConflict(time_t announceTime, time_t stopTime)
 {
 	CTimerdClient Timer;
 	CTimerd::TimerList overlappingTimers = Timer.getOverlappingTimers(announceTime,stopTime);
+	
 	//printf("[CTimerdClient] attention\n%d\t%d\t%d conflicts with:\n",timerNew.announceTime,timerNew.alarmTime,timerNew.stopTime);
 
 	std::string timerbuf = g_Locale->getText(LOCALE_TIMERLIST_OVERLAPPING_TIMER);
 	timerbuf += "\n";
-	for (CTimerd::TimerList::iterator it = overlappingTimers.begin();
-	     it != overlappingTimers.end();it++)
+	for (CTimerd::TimerList::iterator it = overlappingTimers.begin(); it != overlappingTimers.end(); it++)
 	{
 		timerbuf += CTimerList::convertTimerType2String(it->eventType);
 		timerbuf += " (";
