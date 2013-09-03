@@ -75,10 +75,8 @@ typedef uint64_t t_channel_id;
 
 #define SAME_TRANSPONDER(id1, id2) ((id1 >> 16) == (id2 >> 16))
 
-
 typedef uint64_t transponder_id_t;
 typedef uint16_t freq_id_t;
-
 
 #define PRINTF_TRANSPONDER_ID_TYPE "%12llx"
 #define TRANSPONDER_ID_NOT_TUNED 0
