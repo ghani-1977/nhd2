@@ -438,7 +438,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
 		
 			// display logo
-			g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, (logo_bpp == 4 && !g_settings.show_channelname)? logo_w : PIC_W, (logo_bpp == 4 && !g_settings.show_channelname)? logo_h : PIC_H, (logo_bpp == 4 && !g_settings.show_channelname && logo_h > PIC_H)? true : false, false, true);
+			g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, (logo_bpp == 4 && !g_settings.show_channelname)? logo_w : PIC_W, (logo_bpp == 4 && !g_settings.show_channelname && logo_h > PIC_H)? PIC_H : logo_h, (logo_bpp == 4 && !g_settings.show_channelname && logo_h > PIC_H)? true : false, false, true);
 
 			// recalculate ChanNameWidth
 			ChanNameWidth = BoxWidth - (time_width + ChanNumberWidth + PIC_W+ g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));

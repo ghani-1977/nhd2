@@ -1,5 +1,13 @@
 /*
-	WebTV 
+	$Id: webtv.h 2013/09/03 10:45:30 mohousch Exp $
+
+	Kommentar:
+
+	Diese GUI wurde von Grund auf neu programmiert und sollte nun vom
+	Aufbau und auch den Ausbaumoeglichkeiten gut aussehen. Neutrino basiert
+	auf der Client-Server Idee, diese GUI ist also von der direkten DBox-
+	Steuerung getrennt. Diese wird dann von Daemons uebernommen.
+
 
 	License: GPL
 
@@ -10,7 +18,7 @@
 
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License

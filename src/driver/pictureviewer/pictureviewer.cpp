@@ -496,6 +496,8 @@ void CPictureViewer::getSize(const std::string &name, int * width, int * height,
 			*nbpp = bpp;
 			*width = x;
 			*height = y;
+			
+			//dprintf(DEBUG_INFO, "%s logo: %s (%dx%d)\n", __FUNCTION__, name.c_str(), *width, *height);
 		} 
 	}
 }
@@ -516,6 +518,7 @@ bool CPictureViewer::checkLogo(uint64_t channel_id)
 		if(!access(fname, F_OK)) 
 		{
 			logo_ok = true;
+			dprintf(DEBUG_INFO, "%s found logo: %s\n", __FUNCTION__, fname);
 			break;
 		}
 	}
@@ -544,10 +547,10 @@ void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height,
 	
 	if(logo_ok)
 	{
-		//std::string logo_name = fname; // UTF-8
-		
 		// get logo real size
 		getSize(fname, width, height, bpp);
+		
+		dprintf(DEBUG_INFO, "%s logo: %s (%dx%d) %dbpp\n", __FUNCTION__, fname, *width, *height, *bpp);
 	}
 }
 

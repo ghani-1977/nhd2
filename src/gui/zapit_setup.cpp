@@ -1,9 +1,6 @@
 /*
-	zapit_setup settings menu - Neutrino-GUI
-
-	Copyright (C) 2001 Steffen Hehn 'McClean'
-	and some other guys
-	Homepage: http://dbox.cyberphoria.org/
+	* $Id: zapit_setup.cpp 2013/08/18 11:23:30 mohousch Exp $
+	
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify
