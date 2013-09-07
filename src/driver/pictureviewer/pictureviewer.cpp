@@ -555,8 +555,6 @@ void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height,
 }
 
 // display logos
-//#define PIC_W 	65
-//#define PIC_H		40
 bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale, bool center_x, bool center_y)
 {	
         char fname[255];
@@ -593,10 +591,7 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 		{
 			// upscale
 			if(upscale)
-			{
-				// get logo real size
-				//getSize(fname, &logo_w, &logo_h, &logo_bpp);
-					
+			{	
 				//rescale logo image
 				float aspect = (float)(logo_w) / (float)(logo_h);
 					
@@ -611,25 +606,12 @@ bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int wi
 					logo_w = (int)(height * aspect);
 				}
 			}
-			/*
-			else
-			{
-				logo_w = width;
-				logo_h = height;
-			}
-			*/
 			
 			ret = DisplayImage(fname, center_x?posx + (width - logo_w)/2 : posx, center_y?posy + (height - logo_h)/2 : posy, logo_w, logo_h, true);
 		}
 		else
 		{
-			//logo_w = PIC_W;
-			//logo_h = PIC_H;
-			
-			logo_w = width;
-			logo_h = height;
-			
-			ret = DisplayImage(fname, center_x?posx + (width - logo_w)/2 : posx, center_y?posy + (height - logo_h)/2 : posy, logo_w, logo_h);
+			ret = DisplayImage(fname, posx, posy, width, height);
 		}
         }
 

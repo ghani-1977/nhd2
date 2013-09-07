@@ -72,6 +72,14 @@
 #include <video_cs.h>
 
 
+#define OFFSET_LEFT	10
+static int icon_w_h;
+static int icon_h_h;
+static int icon_w_s;
+static int icon_h_s;
+static int icon_w_z;
+static int icon_h_z;
+
 extern CBouquetList * bouquetList;      		/* neutrino.cpp */
 extern CRemoteControl * g_RemoteControl; 		/* neutrino.cpp */
 extern SMSKeyInput * c_SMSKeyInput;			// defined in neutrino
@@ -1746,7 +1754,7 @@ void CChannelList::paintItem(int pos)
 	fb_pixel_t bgcolor;
 	bool iscurrent = true;
 	unsigned int curr = liststart + pos;
-	//bool logo_ok = false;
+	bool logo_ok = false;
 
 	if(curr < chanlist.size())
 		iscurrent = canZap(chanlist[curr]);
@@ -1763,10 +1771,22 @@ void CChannelList::paintItem(int pos)
 		paintDetails(curr);
 
 		// refresh logo box
-		frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel(x + width - /*90*/(OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 		// paint logo
-		/*logo_ok =*/ g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight, true);
+		int PIC_W_1 = theight*1.67;
+		int logo_w = PIC_W; 
+		int logo_h = theight;
+		int logo_bpp = 0;
+		
+		// check for logo
+		logo_ok = g_PicViewer->checkLogo(chanlist[selected]->channel_id);
+		
+		// get logo size	
+		g_PicViewer->getLogoSize(chanlist[selected]->channel_id, &logo_w, &logo_h, &logo_bpp);
+	
+		//g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight, true);
+		g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - /*90*/(OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W + ((logo_bpp == 4)? 0 : (PIC_W - 2 - PIC_W_1)/2), y, (logo_bpp == 4)? PIC_W : PIC_W_1, theight, true);
 
 		// infobox
 		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
@@ -1964,12 +1984,12 @@ void CChannelList::paintHead()
 	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);
 
 	// help icon
-	int icon_w_h, icon_h_h;
+	//int icon_w_h, icon_h_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w_h, &icon_h_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - 10 - icon_w_h , y + (theight - icon_h_h)/2 );
 
 	// setup icon
-	int icon_w_s, icon_h_s;
+	//int icon_w_s, icon_h_s;
 	if (bouquetList != NULL)
 	{
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w_s, &icon_h_s);
@@ -1977,7 +1997,7 @@ void CChannelList::paintHead()
 	}
 
 	// mute zap
-	int icon_w_z, icon_h_z;
+	//int icon_w_z, icon_h_z;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_ZAP_ACTIVE, &icon_w_z, &icon_h_z);
 	frameBuffer->paintIcon(new_mode_active ? NEUTRINO_ICON_BUTTON_MUTE_ZAP_ACTIVE : NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE, x + width - 10 - icon_w_h - 2 - icon_w_s - 2 - icon_w_z, y + (theight - icon_h_z)/2);
 	

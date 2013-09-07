@@ -52,11 +52,11 @@
 #include <gui/pictureviewer.h>
 
 extern CPictureViewer * g_PicViewer;
-#define PIC_W 78
+#define PIC_W 		78
 
 static CProgressBar * timescale;
 
-#define ICON_LARGE_WIDTH 26
+//#define ICON_LARGE_WIDTH 26
 
 
 int findItem(std::string strItem, std::vector<std::string> & vecItems) 
@@ -501,13 +501,36 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	frameBuffer->paintBoxRel(sx, sy - toph, ox, toph, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
 	
 	//channel logo
+	int PIC_W_1 = topboxheight*1.67;
+	int logo_w = PIC_W_1; 
+	int logo_h = topboxheight;
+	int logo_bpp = 0;
 	bool logo_ok = false;
-	logo_ok = g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight, true, false, true); //upscale, dont center x, center y
-
-	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 +(logo_ok? PIC_W + 10 : 0), sy - toph + topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5 : 0), text1, COL_MENUHEAD, 0, true);
 	
-	if (!(text2.empty()))
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W + 10 : 0), sy - toph + 2*topheight + 3, ox - 15 - (logo_ok ? PIC_W + 5 : 0), text2, COL_MENUHEAD, 0, true);
+	// check for logo
+	logo_ok = g_PicViewer->checkLogo(channel_id);
+		
+	if(logo_ok)
+	{
+		// get logo size	
+		g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
+		
+		// display logo
+		//g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight, true, false, true); //upscale, dont center x, center y
+		g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, (logo_bpp == 4 && logo_w > PIC_W)?  PIC_W: PIC_W_1, topboxheight, (logo_h > topboxheight)? true : false, false, true);
+		
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10 + ( (logo_bpp == 4)? logo_w : PIC_W_1) + 5, sy - toph + topheight + 3, ox - 15 - ( (logo_bpp == 4)? logo_w : PIC_W_1), text1, COL_MENUHEAD, 0, true);
+		
+		if (!(text2.empty()))
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W + 10 : 0), sy - toph + 2*topheight + 3, ox - 10 - (logo_ok ? PIC_W + 5 : 0), text2, COL_MENUHEAD, 0, true);
+	}
+	else
+	{
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10, sy - toph + topheight + 3, ox - 10, text1, COL_MENUHEAD, 0, true);
+	
+		if (!(text2.empty()))
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10, sy - toph + 2*topheight + 3, ox - 10, text2, COL_MENUHEAD, 0, true);
+	}
 
 }
 
