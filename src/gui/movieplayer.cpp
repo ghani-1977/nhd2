@@ -177,16 +177,16 @@ extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
 #define VIDEOMENU_VIDEORATIO_OPTION_COUNT 2
 const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
 {
-	{ 0, LOCALE_VIDEOMENU_VIDEORATIO_43 },
-	{ 1, LOCALE_VIDEOMENU_VIDEORATIO_169 }
+	{ ASPECTRATIO_43, LOCALE_VIDEOMENU_VIDEORATIO_43 },
+	{ ASPECTRATIO_169, LOCALE_VIDEOMENU_VIDEORATIO_169 }
 };
 #else
 #define VIDEOMENU_VIDEORATIO_OPTION_COUNT 3
 const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
 {
-	{ 0, LOCALE_VIDEOMENU_VIDEORATIO_43, NULL },
-	{ 1, LOCALE_VIDEOMENU_VIDEORATIO_169, NULL },
-	{ 2, NONEXISTANT_LOCALE, "Auto" }
+	{ ASPECTRATIO_43, LOCALE_VIDEOMENU_VIDEORATIO_43, NULL },
+	{ ASPECTRATIO_169, LOCALE_VIDEOMENU_VIDEORATIO_169, NULL },
+	{ ASPECTRATIO_AUTO, NONEXISTANT_LOCALE, "Auto" }
 };
 #endif
 
@@ -379,7 +379,8 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	// 4:3/16:9
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
 				
-	if(videoDecoder->getAspectRatio() == 1)
+	//if(videoDecoder->getAspectRatio() == ASPECTRATIO_169)
+	if(g_settings.video_Ratio == ASPECTRATIO_169)
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	int icon_w_aspect, icon_h_aspect;

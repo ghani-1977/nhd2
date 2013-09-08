@@ -236,7 +236,10 @@ class cVideo
 		video_encoding_t EncodingType;
 #else
 		VIDEO_FORMAT StreamType;
-#endif		
+#endif	
+
+		//int Ratio;
+		//int Policy;
 
 	public:
 		/* constructor & destructor */
@@ -246,7 +249,11 @@ class cVideo
 		/* aspect ratio */
 		int getAspectRatio(void);
 		void getPictureInfo(int &width, int &height, int &rate);
-		int setAspectRatio(int ratio, int format);		
+		int setAspectRatio(int ratio, int format);
+		
+		//
+		//int getAspectRatioGlobal(void) {return Ratio;};
+		//int getAspectPolicy(void) {return Policy;};
 
 		/* blank on freeze */
 		int getBlank(void);

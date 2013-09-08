@@ -62,7 +62,10 @@ cVideo::cVideo()
 	EncodingType = VIDEO_ENCODING_AUTO;
 #else	
 	StreamType = VIDEO_STREAMTYPE_MPEG2;
-#endif	
+#endif
+
+	//Ratio = ASPECTRATIO_169;
+	//Policy = VIDEOFORMAT_PANSCAN2;
 }
 
 cVideo::~cVideo(void)
@@ -116,7 +119,7 @@ bool cVideo::Close()
 
 int cVideo::getAspectRatio(void) 
 {  
-	int ratio = 0; // 0 = 4:3, 1 = 16:9
+	int ratio = ASPECTRATIO_43; // 0 = 4:3, 1 = 16:9
 	 
 #if !defined (PLATFORM_GENERIC)	 
 	unsigned char buffer[2];
@@ -135,20 +138,25 @@ int cVideo::getAspectRatio(void)
 	
 	switch (ratio) 
 	{
-		case 0:
+		case ASPECTRATIO_43:
 			sprintf ((char *) buf, "4:3");
 			break;
 		
-		case 1:
+		case ASPECTRATIO_169:
 			sprintf ((char *) buf, "16:9");
 			break;
-		case 2:
-			sprintf ((char *) buf, "14:9");
+			
+		case ASPECTRATIO_AUTO:
+			sprintf ((char *) buf, "auto");
 			break;
+			
+		//case 3:
+		//	sprintf ((char *) buf, "14:9");
+		//	break;
 	
-		case 3:
-			sprintf ((char *) buf, "20:9");
-			break;
+		//case 4:
+		//	sprintf ((char *) buf, "20:9");
+		//	break;
 			
 		default:
 			strncpy (buf, "unknow", sizeof (buf));
@@ -214,6 +222,9 @@ int cVideo::setAspectRatio(int ratio, int format)
 
 	close(fd);
 #endif	
+
+	//Ratio = ratio;
+	//Policy = format;
 
     	return 0; 
 }
