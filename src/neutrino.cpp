@@ -881,7 +881,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.epgplus_show_logo = configfile.getBool("epgplus_show_logo", false);
 	
 	// infobar show channel name
-	g_settings.show_channelname = configfile.getBool("show_channelname", false);
+	g_settings.show_channelname = configfile.getBool("show_channelname", true);
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
