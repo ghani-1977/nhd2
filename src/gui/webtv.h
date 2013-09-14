@@ -83,15 +83,6 @@ class CWebTV
 		void paintHead();
 		void hide();
 		
-		int medlineheight;
-		int medlinecount;
-		
-		// live channel
-		std::vector<std::string> epgText;
-		int emptyLineCount;
-		void addTextToArray( const std::string & text );
-		void processTextToArray(std::string text);
-		
 		bool qZap;
 		
 	public:
@@ -104,7 +95,6 @@ class CWebTV
 		CFileList filelist;
 		CFile * getSelectedFile();
 		
-		void paintMiniTV();
 		void quickZap(int key);
 		
 		void showFileInfoWebTV();

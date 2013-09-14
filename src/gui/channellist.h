@@ -87,15 +87,6 @@ class CChannelList
 		void paint();
 		void paintHead();
 		void hide();
-		
-		// minitv
-		int medlineheight;
-		int medlinecount;
-		
-		std::vector<std::string> epgText;
-		int emptyLineCount;
-		void addTextToArray( const std::string & text );
-		void processTextToArray(std::string text);
 
 	public:
 		CChannelList(const char * const Name, bool _historyMode = false, bool _vlist = false );
@@ -142,8 +133,6 @@ class CChannelList
 		void ClearList(void);
 		
 		bool canZap(CZapitChannel * channel = NULL);
-		
-		void paintMiniTV();
 };
 
 #endif

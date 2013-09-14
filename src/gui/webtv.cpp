@@ -44,16 +44,18 @@
 #include <video_cs.h>
 
 /* zapit includes */
-#include <channel.h>
-#include <gui/pictureviewer.h>
+//#include <channel.h>
+//#include <gui/pictureviewer.h>
 #include <system/debug.h>
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
 
 extern cVideo * videoDecoder;
-extern t_channel_id live_channel_id;		// zapit.cpp
-extern CZapitChannel * live_channel;		// zapit.cpp
+
+// live channel
+//extern t_channel_id live_channel_id;		// zapit.cpp
+//extern CZapitChannel * live_channel;		// zapit.cpp
 
 #define PIC_W 78
 
@@ -196,16 +198,8 @@ int CWebTV::Show()
 	neutrino_msg_data_t data;
 	
 	// windows size
-	if(g_settings.mini_tv)
-	{
-		width  = 755;
-		height = 600;
-	}
-	else
-	{
-		width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
-		height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
-	}
+	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
+	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	// display channame in vfd	
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );
@@ -218,24 +212,13 @@ int CWebTV::Show()
 	height = theight + buttonHeight + listmaxshow * fheight;
 	info_height = fheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
 	
-	if(g_settings.mini_tv)
-	{
-		x = frameBuffer->getScreenX() + 10;
-		y = frameBuffer->getScreenY() + 10;
-	}
-	else
-	{
-		x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
-		y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
-	}
+	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
+	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 	
 showList:	
 	
 	// head
 	paintHead();
-		
-	if(g_settings.mini_tv)
-		paintMiniTV();
 		
 	// paint all
 	paint();
@@ -372,19 +355,9 @@ void CWebTV::hide()
 			
         clearItem2DetailsLine();
 	
-	//
-	if(g_settings.mini_tv)
-		frameBuffer->paintBackgroundBoxRel(830, y, 400, 660);
-	//
-	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
 #endif	
-
-	//
-	if(g_settings.mini_tv)
-		videoDecoder->Pig(-1, -1, -1, -1);
-	//
 }
 
 void CWebTV::paintItem(int pos)
@@ -582,14 +555,6 @@ void CWebTV::paint()
 	// channelslist body
 	frameBuffer->paintBoxRel(x, y + theight, width, height - buttonHeight - theight, COL_MENUCONTENT_PLUS_0);
 	
-	// paint pig
-	if(g_settings.mini_tv)
-	{
-		frameBuffer->paintBackgroundBoxRel(835, y + theight + 5, 390, 225);	
-		videoDecoder->Pig(835, y + theight + 5, 390, 225);
-	}
-	//
-	
 	// paint item
 	for(unsigned int count = 0; count < listmaxshow; count++) 
 	{
@@ -606,215 +571,6 @@ void CWebTV::paint()
 	int sbs = (selected/listmaxshow);
 
 	frameBuffer->paintBoxRel(x + width- 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
-}
-
-void CWebTV::paintMiniTV()
-{
-	// head for minitv
-	frameBuffer->paintBoxRel(830, y, 400, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
-	
-	// pig body
-	frameBuffer->paintBoxRel(830, y + theight, 400, 225 + theight/2, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
-	
-	//info head
-	frameBuffer->paintBoxRel(830, y + theight + 255 + theight/2 + 5, 400, theight, /*COL_MENUHEAD_PLUS_0*/ COL_MENUCONTENTDARK_PLUS_0);
-	
-	// info body
-	frameBuffer->paintBoxRel(830, y + theight + 255 + theight/2 + 5 + theight, 400, 660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height, COL_MENUCONTENT_PLUS_0);
-	
-	int channelname_len = 0;
-	if (channels.size() && CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_ts)
-	{
-		if(strlen(channels[selected]->title) != 0)
-			channelname_len = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(channels[selected]->title, true); // UTF-8
-		
-		// title (channelname)
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 5, y + theight, 400 - 5 - channelname_len, channels[selected]->title, COL_MENUHEAD, 0, true); // UTF-8
-	
-		// name/description (minitv)
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight, 390 - 30, channels[selected]->title, COL_MENUCONTENTDARK, 0, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + fheight, 390 - 30, channels[selected]->description, COL_MENUCONTENTDARK, 0, true); // UTF-8
-	}
-	else
-	{
-		if(live_channel)
-		{
-			std::string liveChanName = g_Zapit->getChannelName(live_channel_id);
-			if(!liveChanName.empty())
-				channelname_len = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(liveChanName.c_str(), true); // UTF-8
-				
-			// live channel name
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(830 + 10, y + theight, (channelname_len > 390? 390 : channelname_len), liveChanName.c_str(), COL_MENUHEAD, 0, true); // UTF-8
-			
-			// FIXME: paint logo ??? channelname else channel logo
-			bool logo_ok = false;
-			if( 390 - channelname_len >= PIC_W)
-				logo_ok = g_PicViewer->DisplayLogo(live_channel_id, 830 + 5 + channelname_len + 5, y, PIC_W, theight);
-			
-			//CChannelEvent * p_event = NULL;
-			//p_event = &live_channel->currentEvent;
-			
-			//if (!p_event->description.empty()) 
-			if (!live_channel->currentEvent.description.empty()) 
-			{
-				char cNoch[50]; // UTF-8
-				char cSeit[50]; // UTF-8
-
-				//struct tm * pStartZeit = localtime(&p_event->startTime);
-				struct tm * pStartZeit = localtime(&live_channel->currentEvent.startTime);
-				//unsigned seit = ( time(NULL) - p_event->startTime ) / 60;
-				unsigned seit = ( time(NULL) - live_channel->currentEvent.startTime ) / 60;
-
-				sprintf(cSeit, g_Locale->getText(LOCALE_CHANNELLIST_SINCE), pStartZeit->tm_hour, pStartZeit->tm_min);
-				//int noch = (p_event->startTime + p_event->duration - time(NULL)) / 60;
-				int noch = (live_channel->currentEvent.startTime + live_channel->currentEvent.duration - time(NULL)) / 60;
-				if ((noch < 0) || (noch >= 10000))
-					noch = 0;
-				sprintf(cNoch, "(%d / %d min)", seit, noch);
-				
-				int seit_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getRenderWidth(cSeit, true); // UTF-8
-				int noch_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(cNoch, true); // UTF-8
-
-				//std::string text1 = p_event->description;
-				//std::string text2 = p_event->text;
-				std::string text1 = live_channel->currentEvent.description;
-				std::string text2 = live_channel->currentEvent.text;
-
-				// description
-				int descr_len = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth((char *)text1.c_str(), true); // UTF-8
-
-				// description
-				std::string text3 = "";
-				
-				if (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390)
-				{
-					// zu breit, Umbruch versuchen...
-					int pos;
-					do 
-					{
-						pos = text1.find_last_of("[ -.]+");
-					
-						if ( pos != -1 )
-							text1 = text1.substr( 0, pos );
-					} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > 390) );
-
-					//text3 = p_event->description.substr(text1.length() + 1);
-					text3 = live_channel->currentEvent.description.substr(text1.length() + 1);
-
-					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 +theight + /*2**/fheight, 390, text3, COL_MENUCONTENTDARK, 0, true);
-				}
-				
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(830 + 5, y + theight + 255 + theight/2 + 5 + theight, (descr_len > 390? 390 : descr_len), text1, COL_MENUCONTENTDARK, 0, true);
-					
-				// since
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (830 + 5, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-					
-				// rest/duration
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(830 + 390 - 5 - noch_len, y + theight + 255 + theight/2 + 5 + theight + (text3.empty()? fheight : 2*fheight)/*fheight*/, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
-				
-				// text
-				epgText.clear();
-				emptyLineCount = 0;
-						
-				if (!(text2.empty())) 
-				{
-					processTextToArray(text2);
-							
-					// recalculate
-					medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
-					medlinecount = (660 - (y + theight + 255 + theight/2 + 5 + theight) - theight + info_height -fheight)/medlineheight;
-
-					int textCount = epgText.size();
-					int ypos = y + theight + 255 + theight/2 + 5 +theight + (text3.empty()? 2*fheight : 3*fheight);
-
-					for(int i = 0; i < textCount && i < medlinecount; i++, ypos += medlineheight)
-					{
-						if ( i < (int)epgText.size() )
-							g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
-						else
-							g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->RenderString(835, ypos + medlineheight, 390, epgText[i], COL_MENUCONTENTDARK, 0, true); // UTF-8
-					}
-				}
-			}
-		}
-	}
-	//
-}
-
-void CWebTV::addTextToArray(const std::string & text) // UTF-8
-{
-	//printf("line: >%s<\n", text.c_str() );
-	
-	if (text==" ")
-	{
-		emptyLineCount ++;
-		if(emptyLineCount<2)
-		{
-			epgText.push_back(text);
-		}
-	}
-	else
-	{
-		emptyLineCount = 0;
-		epgText.push_back(text);
-	}
-}
-
-void CWebTV::processTextToArray(std::string text) // UTF-8
-{
-	std::string	aktLine = "";
-	std::string	aktWord = "";
-	int	aktWidth = 0;
-	text += ' ';
-	char* text_= (char*) text.c_str();
-
-	while(*text_!=0)
-	{
-		if ( (*text_==' ') || (*text_=='\n') || (*text_=='-') || (*text_=='.') )
-		{
-			// Houdini: if there is a newline (especially in the Premiere Portal EPGs) do not forget to add aktWord to aktLine 
-			// after width check, if width check failes do newline, add aktWord to next line 
-			// and "reinsert" i.e. reloop for the \n
-			if(*text_!='\n')
-				aktWord += *text_;
-
-			// check the wordwidth - add to this line if size ok
-			int aktWordWidth = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]->getRenderWidth(aktWord, true);
-			if((aktWordWidth+aktWidth) < (390))
-			{
-				//space ok, add
-				aktWidth += aktWordWidth;
-				aktLine += aktWord;
-			
-				if(*text_=='\n')
-				{	//enter-handler
-					addTextToArray( aktLine );
-					aktLine = "";
-					aktWidth= 0;
-				}	
-				aktWord = "";
-			}
-			else
-			{
-				//new line needed
-				addTextToArray( aktLine );
-				aktLine = aktWord;
-				aktWidth = aktWordWidth;
-				aktWord = "";
-				// Houdini: in this case where we skipped \n and space is too low, exec newline and rescan \n 
-				// otherwise next word comes direct after aktLine
-				if(*text_=='\n')
-					continue;
-			}
-		}
-		else
-		{
-			aktWord += *text_;
-		}
-		text_++;
-	}
-	//add the rest
-	addTextToArray( aktLine + aktWord );
 }
 
 void CWebTV::showFileInfoWebTV()

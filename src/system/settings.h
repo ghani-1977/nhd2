@@ -414,7 +414,6 @@ struct SNeutrinoSettings
 	int virtual_zap_mode;
 	int channellist_ca;
 	int make_hd_list;
-	int mini_tv; 
 
 	// epg
 	int epg_save;

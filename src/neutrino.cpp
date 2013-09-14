@@ -857,8 +857,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	//crypticon on channellist
 	g_settings.channellist_ca = configfile.getInt32("channellist_ca", 1);
-	
-	g_settings.mini_tv = configfile.getBool("mini_tv", false);
 	//
 
 	//Filebrowser
@@ -1270,7 +1268,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32("channellist_ca", g_settings.channellist_ca);
 
 	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
-	configfile.setBool("mini_tv", g_settings.mini_tv);
 	//
 
 	configfile.setString("timezone", g_settings.timezone);
