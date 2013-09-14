@@ -1633,7 +1633,11 @@ void CMovieBrowser::refreshTitle(void)
 	{
 		title = g_Locale->getText(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 		title += " : ";
-		title += g_Locale->getText(getFeedLocale());
+		//title += g_Locale->getText(getFeedLocale());
+		neutrino_locale_t loc = getFeedLocale();
+		title += g_Locale->getText(loc);
+		if (loc == LOCALE_MOVIEBROWSER_YT_RELATED || loc == LOCALE_MOVIEBROWSER_YT_SEARCH)
+			title += " \"" + m_settings.ytsearch + "\"";
 		
 		mb_icon = NEUTRINO_ICON_YOUTUBE;
 	}
