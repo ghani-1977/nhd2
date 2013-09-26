@@ -344,7 +344,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 				if(!(g_bouquetManager->existsChannelInBouquet(dest, Bouquets[0]->tvChannels[i]->getChannelID()))) 
 				{
 					bouquet->addService(Bouquets[0]->tvChannels[i]);
-					//Bouquets[0]->tvChannels[i]->pname = (char *) bouquet->Name.c_str();
+
 					dprintf(DEBUG_DEBUG, "save Bouquets: adding channel %s\n", Bouquets[0]->tvChannels[i]->getName().c_str());
 				}
 			}
@@ -355,7 +355,7 @@ void CBouquetManager::saveBouquets(const CZapitClient::bouquetMode bouquetMode, 
 				if(!(g_bouquetManager->existsChannelInBouquet(dest, Bouquets[0]->radioChannels[i]->getChannelID()))) 
 				{
 					bouquet->addService(Bouquets[0]->radioChannels[i]);
-					//Bouquets[0]->tvChannels[i]->pname = (char *) bouquet->Name.c_str();
+
 					dprintf(DEBUG_DEBUG, "save Bouquets: adding channel %s\n", Bouquets[0]->radioChannels[i]->getName().c_str());
 				}
 			}
@@ -643,9 +643,7 @@ void CBouquetManager::deleteBouquet(const CZapitBouquet* bouquet)
 // -- Return: Bouqet-ID (found: 0..n)  or -1 (Bouquet does not exist)
 int CBouquetManager::existsBouquet(char const * const name)
 {
-	unsigned int i;
-
-	for (i = 0; i < Bouquets.size(); i++) 
+	for (unsigned int i = 0; i < Bouquets.size(); i++) 
 	{
 		if (Bouquets[i]->Name == name)
 			return (int)i;

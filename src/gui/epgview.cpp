@@ -268,7 +268,7 @@ void CEpgData::showText( int startPos, int ypos )
 
 	int sbc= ((_textCount - 1)/ medlinecount) + 1;
 	float sbh = (sb - 4)/ sbc;
-	int sbs= (startPos + 1)/ medlinecount;
+	int sbs = (startPos + 1)/ medlinecount;
 
 	frameBuffer->paintBoxRel(sx + ox - 13, ypos + 2 + int(sbs*sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 }
@@ -729,7 +729,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 	//show progressbar
 	if ( epg_done!= -1 )
 	{
-		int pbx = sx + 10 + widthl + 10 + ((ox-104-widthr-widthl-10-10-20)>>1);
+		int pbx = sx + 10 + widthl + 10 + ((ox - 104 - widthr - widthl - 10 - 10 - 20)>>1);
 		timescale->reset();
 		timescale->paint(pbx+2, sy+oy-height+2, epg_done);
 	}
@@ -776,9 +776,9 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 						GetEPGData(channel_id, id, &startzeit );
 						if ( epg_done!= -1 ) 
 						{
-							int pbx = sx + 10 + widthl + 10 + ((ox-104-widthr-widthl-10-10-20)>>1);
+							int pbx = sx + 10 + widthl + 10 + ((ox - 104 - widthr - widthl - 10 - 10 - 20)>>1);
 							timescale->reset();
-							timescale->paint(pbx+2, sy+oy-height+2, epg_done);
+							timescale->paint(pbx + 2, sy + oy - height + 2, epg_done);
 						}
 					}
 					CNeutrinoApp::getInstance()->handleMsg(msg, data);
@@ -788,7 +788,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					if (/* !id &&*/ ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL))) 
 					{
 						show(channel_id);
-						showPos=0;
+						showPos = 0;
 					}
 					CNeutrinoApp::getInstance()->handleMsg(msg, data);
 					break;
@@ -812,7 +812,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 				case CRCInput::RC_right:
 					if (next_id != 0)
 					{
-						frameBuffer->paintBoxRel(sx+ ox- botboxheight + 8 - 5, sy + oy- botboxheight + 4, botboxheight- 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
+						frameBuffer->paintBoxRel(sx + ox- botboxheight + 8 - 5, sy + oy- botboxheight + 4, botboxheight- 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
 						
 #if !defined USE_OPENGL
 						frameBuffer->blit();
@@ -821,7 +821,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 						g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ ox- botboxheight+ 8, sy+ oy- 3, widthr, ">", COL_MENUCONTENT + 1);
 
 						show(channel_id, next_id, &next_zeit, false);
-						showPos=0;
+						showPos = 0;
 					}
 					break;
 
@@ -845,51 +845,11 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 				case CRCInput::RC_red:
 					if (recDir != NULL)
 					{
-						//CTimerdClient timerdclient;
 						if(g_Timerd->isTimerdAvailable())
 						{
 							bool doRecord = true;
-							//char *recDir = g_settings.network_nfs_recordingdir;
 							strcpy(recDir, g_settings.network_nfs_recordingdir);
 							
-							// not used
-							/*
-							if (g_settings.recording_choose_direct_rec_dir == 2) 
-							{
-								CFileBrowser b;
-								b.Dir_Mode=true;
-								hide();
-								if (b.exec(g_settings.network_nfs_recordingdir)) 
-								{
-									strcpy(recDir, b.getSelectedFile()->Name.c_str());
-								} 
-								else
-									doRecord = false;
-								
-								show(channel_id,epgData.eventID,&epgData.epg_times.startzeit,false);
-							}
-							else if (g_settings.recording_choose_direct_rec_dir == 1)
-							{
-								int id = -1;
-								CMountChooser recDirs(LOCALE_TIMERLIST_RECORDING_DIR,NEUTRINO_ICON_SETTINGS,&id,NULL,g_settings.network_nfs_recordingdir);
-								if (recDirs.hasItem()) 
-								{
-									hide();
-									recDirs.exec(NULL,"");
-									show(channel_id,epgData.eventID,&epgData.epg_times.startzeit,false);
-								} else
-								{
-									printf("no network devices available\n");					
-								}
-								if (id != -1)
-									strcpy(recDir, g_settings.network_nfs_local_dir[id]);
-									//recDir = g_settings.network_nfs_local_dir[id];
-								//else 
-									//recDir = NULL;
-							}
-							*/
-							
-							//if (recDir != NULL)
 							if (doRecord)
 							{
 								if (g_Timerd->addRecordTimerEvent(channel_id,
@@ -1075,8 +1035,8 @@ void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, 
 
 void CEpgData::GetPrevNextEPGData( unsigned long long id, time_t* startzeit )
 {
-        prev_id= 0;
-        next_id= 0;
+        prev_id = 0;
+        next_id = 0;
         unsigned int i;
 
         for ( i= 0; i< evtlist.size(); i++ )
@@ -1179,7 +1139,7 @@ int CEpgData::FollowScreenings (const t_channel_id /*channel_id*/, const std::st
 // -- 2002-05-13 rasc
 //
 
-void CEpgData::showTimerEventBar (bool _show)
+void CEpgData::showTimerEventBar(bool _show)
 {
 	int  x, y, w, h;
 	int  cellwidth;		// 4 cells

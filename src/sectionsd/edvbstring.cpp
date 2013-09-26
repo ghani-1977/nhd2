@@ -197,366 +197,367 @@ static inline unsigned int doVideoTexSuppl(unsigned char c1, unsigned char c2)
 	case 0xC1: // grave
 		switch (c2)
 		{
-		case 0x61:
-			return 224;
-		case 0x41:
-			return 192;
-		case 0x65:
-			return 232;
-		case 0x45:
-			return 200;
-		case 0x69:
-			return 236;
-		case 0x49:
-			return 204;
-		case 0x6f:
-			return 242;
-		case 0x4f:
-			return 210;
-		case 0x75:
-			return 249;
-		case 0x55:
-			return 217;
-		default:
-			return 0;
+			case 0x61:
+				return 224;
+			case 0x41:
+				return 192;
+			case 0x65:
+				return 232;
+			case 0x45:
+				return 200;
+			case 0x69:
+				return 236;
+			case 0x49:
+				return 204;
+			case 0x6f:
+				return 242;
+			case 0x4f:
+				return 210;
+			case 0x75:
+				return 249;
+			case 0x55:
+				return 217;
+			default:
+				return 0;
 		}
 	case 0xC2: // acute
 		switch (c2)
 		{
-		case 0x61:
-			return 225;
-		case 0x41:
-			return 193;
-		case 0x65:
-			return 233;
-		case 0x45:
-			return 201;
-		case 0x69:
-			return 237;
-		case 0x49:
-			return 205;
-		case 0x6f:
-			return 243;
-		case 0x4f:
-			return 211;
-		case 0x75:
-			return 250;
-		case 0x55:
-			return 218;
-		case 0x79:
-			return 253;
-		case 0x59:
-			return 221;
-		case 0x63:
-			return 263;
-		case 0x43:
-			return 262;
-		case 0x6c:
-			return 314;
-		case 0x4c:
-			return 313;
-		case 0x6e:
-			return 324;
-		case 0x4e:
-			return 323;
-		case 0x72:
-			return 341;
-		case 0x52:
-			return 340;
-		case 0x73:
-			return 347;
-		case 0x53:
-			return 346;
-		case 0x7a:
-			return 378;
-		case 0x5a:
-			return 377;
-		default:
-			return 0;
+			case 0x61:
+				return 225;
+			case 0x41:
+				return 193;
+			case 0x65:
+				return 233;
+			case 0x45:
+				return 201;
+			case 0x69:
+				return 237;
+			case 0x49:
+				return 205;
+			case 0x6f:
+				return 243;
+			case 0x4f:
+				return 211;
+			case 0x75:
+				return 250;
+			case 0x55:
+				return 218;
+			case 0x79:
+				return 253;
+			case 0x59:
+				return 221;
+			case 0x63:
+				return 263;
+			case 0x43:
+				return 262;
+			case 0x6c:
+				return 314;
+			case 0x4c:
+				return 313;
+			case 0x6e:
+				return 324;
+			case 0x4e:
+				return 323;
+			case 0x72:
+				return 341;
+			case 0x52:
+				return 340;
+			case 0x73:
+				return 347;
+			case 0x53:
+				return 346;
+			case 0x7a:
+				return 378;
+			case 0x5a:
+				return 377;
+			default:
+				return 0;
 		}
 	case 0xC3: // cedilla
 		switch (c2)
 		{
-		case 0x61:
-			return 226;
-		case 0x41:
-			return 194;
-		case 0x65:
-			return 234;
-		case 0x45:
-			return 202;
-		case 0x69:
-			return 238;
-		case 0x49:
-			return 206;
-		case 0x6f:
-			return 244;
-		case 0x4f:
-			return 212;
-		case 0x75:
-			return 251;
-		case 0x55:
-			return 219;
-		case 0x79:
-			return 375;
-		case 0x59:
-			return 374;
-		case 0x63:
-			return 265;
-		case 0x43:
-			return 264;
-		case 0x67:
-			return 285;
-		case 0x47:
-			return 284;
-		case 0x68:
-			return 293;
-		case 0x48:
-			return 292;
-		case 0x6a:
-			return 309;
-		case 0x4a:
-			return 308;
-		case 0x73:
-			return 349;
-		case 0x53:
-			return 348;
-		case 0x77:
-			return 373;
-		case 0x57:
-			return 372;
-		default:
-			return 0;
+			case 0x61:
+				return 226;
+			case 0x41:
+				return 194;
+			case 0x65:
+				return 234;
+			case 0x45:
+				return 202;
+			case 0x69:
+				return 238;
+			case 0x49:
+				return 206;
+			case 0x6f:
+				return 244;
+			case 0x4f:
+				return 212;
+			case 0x75:
+				return 251;
+			case 0x55:
+				return 219;
+			case 0x79:
+				return 375;
+			case 0x59:
+				return 374;
+			case 0x63:
+				return 265;
+			case 0x43:
+				return 264;
+			case 0x67:
+				return 285;
+			case 0x47:
+				return 284;
+			case 0x68:
+				return 293;
+			case 0x48:
+				return 292;
+			case 0x6a:
+				return 309;
+			case 0x4a:
+				return 308;
+			case 0x73:
+				return 349;
+			case 0x53:
+				return 348;
+			case 0x77:
+				return 373;
+			case 0x57:
+				return 372;
+			default:
+				return 0;
 		}
 	case 0xC4: // tilde
 		switch (c2)
 		{
-		case 0x61:
-			return 227;
-		case 0x41:
-			return 195;
-		case 0x6e:
-			return 241;
-		case 0x4e:
-			return 209;
-		case 0x69:
-			return 297;
-		case 0x49:
-			return 296;
-		case 0x6f:
-			return 245;
-		case 0x4f:
-			return 213;
-		case 0x75:
-			return 361;
-		case 0x55:
-			return 360;
-		default:
-			return 0;
+			case 0x61:
+				return 227;
+			case 0x41:
+				return 195;
+			case 0x6e:
+				return 241;
+			case 0x4e:
+				return 209;
+			case 0x69:
+				return 297;
+			case 0x49:
+				return 296;
+			case 0x6f:
+				return 245;
+			case 0x4f:
+				return 213;
+			case 0x75:
+				return 361;
+			case 0x55:
+				return 360;
+			default:
+				return 0;
 		}
 	case 0xC6: // breve
 		switch (c2)
 		{
-		case 0x61:
-			return 259;
-		case 0x41:
-			return 258;
-		case 0x67:
-			return 287;
-		case 0x47:
-			return 286;
-		case 0x75:
-			return 365;
-		case 0x55:
-			return 364;
-		default:
-			return 0;
+			case 0x61:
+				return 259;
+			case 0x41:
+				return 258;
+			case 0x67:
+				return 287;
+			case 0x47:
+				return 286;
+			case 0x75:
+				return 365;
+			case 0x55:
+				return 364;
+			default:
+				return 0;
 		}
 	case 0xC7: // dot above
 		switch (c2)
 		{
-		case 0x63:
-			return 267;
-		case 0x43:
-			return 266;
-		case 0x65:
-			return 279;
-		case 0x45:
-			return 278;
-		case 0x67:
-			return 289;
-		case 0x47:
-			return 288;
-		case 0x49:
-			return 304;
-		case 0x7a:
-			return 380;
-		case 0x5a:
-			return 379;
-		default:
-			return 0;
+			case 0x63:
+				return 267;
+			case 0x43:
+				return 266;
+			case 0x65:
+				return 279;
+			case 0x45:
+				return 278;
+			case 0x67:
+				return 289;
+			case 0x47:
+				return 288;
+			case 0x49:
+				return 304;
+			case 0x7a:
+				return 380;
+			case 0x5a:
+				return 379;
+			default:
+				return 0;
 		}
 	case 0xC8: // diaeresis
 		switch (c2)
 		{
-		case 0x61:
-			return 228;
-		case 0x41:
-			return 196;
-		case 0x65:
-			return 235;
-		case 0x45:
-			return 203;
-		case 0x69:
-			return 239;
-		case 0x49:
-			return 207;
-		case 0x6f:
-			return 246;
-		case 0x4f:
-			return 214;
-		case 0x75:
-			return 252;
-		case 0x55:
-			return 220;
-		case 0x79:
-			return 255;
-		case 0x59:
-			return 376;
-		default:
-			return 0;
+			case 0x61:
+				return 228;
+			case 0x41:
+				return 196;
+			case 0x65:
+				return 235;
+			case 0x45:
+				return 203;
+			case 0x69:
+				return 239;
+			case 0x49:
+				return 207;
+			case 0x6f:
+				return 246;
+			case 0x4f:
+				return 214;
+			case 0x75:
+				return 252;
+			case 0x55:
+				return 220;
+			case 0x79:
+				return 255;
+			case 0x59:
+				return 376;
+			default:
+				return 0;
 		}
 	case 0xCA: // ring above
 		switch (c2)
 		{
-		case 0x61:
-			return 229;
-		case 0x41:
-			return 197;
-		case 0x75:
-			return 367;
-		case 0x55:
-			return 366;
-		default:
-			return 0;
+			case 0x61:
+				return 229;
+			case 0x41:
+				return 197;
+			case 0x75:
+				return 367;
+			case 0x55:
+				return 366;
+			default:
+				return 0;
 		}
 	case 0xCB: // cedilla
 		switch (c2)
 		{
-		case 0x63:
-			return 231;
-		case 0x43:
-			return 199;
-		case 0x67:
-			return 291;
-		case 0x47:
-			return 290;
-		case 0x6b:
-			return 311;
-		case 0x4b:
-			return 310;
-		case 0x6c:
-			return 316;
-		case 0x4c:
-			return 315;
-		case 0x6e:
-			return 326;
-		case 0x4e:
-			return 325;
-		case 0x72:
-			return 343;
-		case 0x52:
-			return 342;
-		case 0x73:
-			return 351;
-		case 0x53:
-			return 350;
-		case 0x74:
-			return 355;
-		case 0x54:
-			return 354;
-		default:
-			return 0;
+			case 0x63:
+				return 231;
+			case 0x43:
+				return 199;
+			case 0x67:
+				return 291;
+			case 0x47:
+				return 290;
+			case 0x6b:
+				return 311;
+			case 0x4b:
+				return 310;
+			case 0x6c:
+				return 316;
+			case 0x4c:
+				return 315;
+			case 0x6e:
+				return 326;
+			case 0x4e:
+				return 325;
+			case 0x72:
+				return 343;
+			case 0x52:
+				return 342;
+			case 0x73:
+				return 351;
+			case 0x53:
+				return 350;
+			case 0x74:
+				return 355;
+			case 0x54:
+				return 354;
+			default:
+				return 0;
 		}
 	case 0xCD: // double acute accent
 		switch (c2)
 		{
-		case 0x6f:
-			return 337;
-		case 0x4f:
-			return 336;
-		case 0x75:
-			return 369;
-		case 0x55:
-			return 368;
-		default:
-			return 0;
+			case 0x6f:
+				return 337;
+			case 0x4f:
+				return 336;
+			case 0x75:
+				return 369;
+			case 0x55:
+				return 368;
+			default:
+				return 0;
 		}
 	case 0xCE: // ogonek
 		switch (c2)
 		{
-		case 0x61:
-			return 261;
-		case 0x41:
-			return 260;
-		case 0x65:
-			return 281;
-		case 0x45:
-			return 280;
-		case 0x69:
-			return 303;
-		case 0x49:
-			return 302;
-		case 0x75:
-			return 371;
-		case 0x55:
-			return 370;
-		default:
-			return 0;
+			case 0x61:
+				return 261;
+			case 0x41:
+				return 260;
+			case 0x65:
+				return 281;
+			case 0x45:
+				return 280;
+			case 0x69:
+				return 303;
+			case 0x49:
+				return 302;
+			case 0x75:
+				return 371;
+			case 0x55:
+				return 370;
+			default:
+				return 0;
 		}
 	case 0xCF: // caron
 		switch (c2)
 		{
-		case 0x63:
-			return 269;
-		case 0x43:
-			return 268;
-		case 0x64:
-			return 271;
-		case 0x44:
-			return 270;
-		case 0x65:
-			return 283;
-		case 0x45:
-			return 282;
-		case 0x6c:
-			return 318;
-		case 0x4c:
-			return 317;
-		case 0x6e:
-			return 328;
-		case 0x4e:
-			return 327;
-		case 0x72:
-			return 345;
-		case 0x52:
-			return 344;
-		case 0x73:
-			return 353;
-		case 0x53:
-			return 352;
-		case 0x74:
-			return 357;
-		case 0x54:
-			return 356;
-		case 0x7a:
-			return 382;
-		case 0x5a:
-			return 381;
-		default:
-			return 0;
+			case 0x63:
+				return 269;
+			case 0x43:
+				return 268;
+			case 0x64:
+				return 271;
+			case 0x44:
+				return 270;
+			case 0x65:
+				return 283;
+			case 0x45:
+				return 282;
+			case 0x6c:
+				return 318;
+			case 0x4c:
+				return 317;
+			case 0x6e:
+				return 328;
+			case 0x4e:
+				return 327;
+			case 0x72:
+				return 345;
+			case 0x52:
+				return 344;
+			case 0x73:
+				return 353;
+			case 0x53:
+				return 352;
+			case 0x74:
+				return 357;
+			case 0x54:
+				return 356;
+			case 0x7a:
+				return 382;
+			case 0x5a:
+				return 381;
+			default:
+				return 0;
 		}
 	}
+	
 	return 0;
 }
 
@@ -703,9 +704,9 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 	unsigned char res[2048];
 	while (i < len)
 	{
-		unsigned long code=0;
+		unsigned long code = 0;
 
-		if ( i+1 < len && twochar && (code=doVideoTexSuppl(data[i], data[i+1])) ) {
+		if ( i+1 < len && twochar && (code = doVideoTexSuppl(data[i], data[i+1])) ) {
 			i+=2;
 		}
 

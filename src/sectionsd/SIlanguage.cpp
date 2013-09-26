@@ -61,7 +61,7 @@ FIRST_ALL = Show first found language from list. If not found show all available
 ALL_FIRST = Show all wanted languages if possible. If not found show first of av ailable language
 ALL_ALL = Show all wanted languages if possible. If not found show all available languages.
 */
-//CSectionsdClient::SIlanguageMode_t SIlanguage::mode = CSectionsdClient::ALL;
+
 CSectionsdClient::SIlanguageMode_t SIlanguage::mode = CSectionsdClient::FIRST_ALL;
 
 void SIlanguage::filter(const std::map<std::string, std::string>& s, int max, std::string& retval)
@@ -71,36 +71,44 @@ void SIlanguage::filter(const std::map<std::string, std::string>& s, int max, st
 	// if another thread is updating it simultaneously
 	int count = max;
 
-	if (mode != CSectionsdClient::ALL) {
-		for (std::vector<std::string>::const_iterator it = languages.begin() ;
-				it != languages.end() ; ++it) {
+	if (mode != CSectionsdClient::ALL) 
+	{
+		for (std::vector<std::string>::const_iterator it = languages.begin(); it != languages.end() ; ++it) 
+		{
 			std::map<std::string,std::string>::const_iterator text;
-			if ((text = s.find(*it)) != s.end()) {
-				if (count != max) {
+			if ((text = s.find(*it)) != s.end()) 
+			{
+				if (count != max) 
+				{
 					retval.append(" \n");
 				}
 				retval.append(text->second);
-				if (--count == 0) break;
-				if (mode == CSectionsdClient::FIRST_FIRST ||
-						mode == CSectionsdClient::FIRST_ALL) {
+				if (--count == 0) 
+					break;
+				if (mode == CSectionsdClient::FIRST_FIRST || mode == CSectionsdClient::FIRST_ALL) 
+				{
 					break;
 				}
 			}
 		}
 	}
 
-	if (retval.length() == 0) {
+	if (retval.length() == 0) 
+	{
 		// return all available languages
-		if (s.begin() != s.end()) {
-			for (std::map<std::string, std::string>::const_iterator it = s.begin() ;
-					it != s.end() ; ++it) {
-				if (it != s.begin()) {
+		if (s.begin() != s.end()) 
+		{
+			for (std::map<std::string, std::string>::const_iterator it = s.begin(); it != s.end() ; ++it) 
+			{
+				if (it != s.begin()) 
+				{
 					retval.append(" \n");
 				}
 				retval.append(it->second);
-				if (--max == 0) break;
-				if (mode == CSectionsdClient::FIRST_FIRST ||
-						mode == CSectionsdClient::ALL_FIRST) {
+				if (--max == 0) 
+					break;
+				if (mode == CSectionsdClient::FIRST_FIRST || mode == CSectionsdClient::ALL_FIRST) 
+				{
 					break;
 				}
 			}
@@ -118,26 +126,39 @@ bool SIlanguage::loadLanguages()
 	CSectionsdClient::SIlanguageMode_t tmpMode = CSectionsdClient::FIRST_ALL;
 	std::vector<std::string> tmpLang;
 
-	if (!(file >> word)) goto error;
-	if (word == "FIRST_FIRST") {
+	if (!(file >> word)) 
+		goto error;
+	if (word == "FIRST_FIRST") 
+	{
 		tmpMode = CSectionsdClient::FIRST_FIRST;
-	} else if (word == "FIRST_ALL") {
+	} 
+	else if (word == "FIRST_ALL") 
+	{
 		tmpMode = CSectionsdClient::FIRST_ALL;
-	} else if (word == "ALL_FIRST") {
+	} 
+	else if (word == "ALL_FIRST") 
+	{
 		tmpMode = CSectionsdClient::ALL_FIRST;
-	} else if (word == "ALL_ALL") {
+	} 
+	else if (word == "ALL_ALL") 
+	{
 		tmpMode = CSectionsdClient::ALL_ALL;
-	} else if (word == "OFF") {
+	} 
+	else if (word == "OFF") 
+	{
 		tmpMode = CSectionsdClient::LANGUAGE_MODE_OFF;
 	}
 
-	while (!file.eof()) {
-		if ((file >> word)) {
+	while (!file.eof()) 
+	{
+		if ((file >> word)) 
+		{
 			tmpLang.push_back(word);
 		}
 	}
 
-	if (tmpLang.empty()) tmpLang.push_back("OFF");
+	if (tmpLang.empty()) 
+		tmpLang.push_back("OFF");
 	languages = tmpLang;
 	mode = tmpMode;
 	pthread_mutex_unlock(&languages_lock);
@@ -155,36 +176,40 @@ bool SIlanguage::saveLanguages()
 {
 	pthread_mutex_lock(&languages_lock);
 	std::ofstream file(LANGUAGEFILE);
-	switch(mode) {
-	case CSectionsdClient::ALL:
-		file << "ALL\n";
-		break;
-	case CSectionsdClient::FIRST_FIRST:
-		file << "FIRST_FIRST\n";
-		break;
-	case CSectionsdClient::FIRST_ALL:
-		file << "FIRST_ALL\n";
-		break;
-	case CSectionsdClient::ALL_FIRST:
-		file << "ALL_FIRST\n";
-		break;
-	case CSectionsdClient::ALL_ALL:
-		file << "ALL_ALL\n";
-		break;
-	case CSectionsdClient::LANGUAGE_MODE_OFF:
-		file << "OFF\n";
-		break;
+	
+	switch(mode) 
+	{
+		case CSectionsdClient::ALL:
+			file << "ALL\n";
+			break;
+		case CSectionsdClient::FIRST_FIRST:
+			file << "FIRST_FIRST\n";
+			break;
+		case CSectionsdClient::FIRST_ALL:
+			file << "FIRST_ALL\n";
+			break;
+		case CSectionsdClient::ALL_FIRST:
+			file << "ALL_FIRST\n";
+			break;
+		case CSectionsdClient::ALL_ALL:
+			file << "ALL_ALL\n";
+			break;
+		case CSectionsdClient::LANGUAGE_MODE_OFF:
+			file << "OFF\n";
+			break;
 	}
 
-	for (std::vector<std::string>::iterator it = languages.begin() ;
-			it != languages.end() ; ++it) {
+	for (std::vector<std::string>::iterator it = languages.begin(); it != languages.end() ; ++it) 
+	{
 		file << *it;
 		file << "\n";
-		if (file.fail()) goto error;
+		if (file.fail()) 
+			goto error;
 	}
 
 	file.close();
-	if (file.fail()) goto error;
+	if (file.fail()) 
+		goto error;
 
 	pthread_mutex_unlock(&languages_lock);
 	return true;

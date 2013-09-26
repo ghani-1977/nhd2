@@ -146,6 +146,7 @@ char SIevent::getFSK() const
 				return (it->rating == 0 ? 0 : 18); // return FSK 18 for : 0x10 to 0xFF defined by the broadcaster
 		}
 	}
+	
 	if (!ratings.empty())
 	{
 		if ((ratings.begin()->rating >= 0x01) && (ratings.begin()->rating <= 0x0F))
@@ -233,10 +234,11 @@ void SIevent::setName(const std::string &lang, const std::string &name)
 {
 	std::string tmp = name;
 	std::replace(tmp.begin(), tmp.end(), '\n', ' ');
-//printf("setName: lang %s text %s\n", lang.c_str(), name.c_str());
+	//printf("setName: lang %s text %s\n", lang.c_str(), name.c_str());
 	if (CSectionsdClient::LANGUAGE_MODE_OFF == SIlanguage::getMode()) {
 		langName[languangeOFF] = tmp; //name;
-	} else {
+	} 
+	else {
 		langName[lang] = tmp; //name;
 	}
 }
@@ -256,7 +258,7 @@ std::string SIevent::getText() const
 
 void SIevent::setText(const std::string &lang, const std::string &text)
 {
-//printf("setText: lang %s text %s\n", lang.c_str(), text.c_str());
+	//printf("setText: lang %s text %s\n", lang.c_str(), text.c_str());
 	if (CSectionsdClient::LANGUAGE_MODE_OFF == SIlanguage::getMode()) {
 		langText[languangeOFF] = text;
 	} else {
@@ -288,7 +290,7 @@ void SIevent::appendExtendedText(const std::string &lang, const std::string &tex
 
 void SIevent::setExtendedText(const std::string &lang, const std::string &text)
 {
-//printf("setExtendedText: lang %s text %s\n", lang.c_str(), text.c_str());
+	//printf("setExtendedText: lang %s text %s\n", lang.c_str(), text.c_str());
 	if (CSectionsdClient::LANGUAGE_MODE_OFF == SIlanguage::getMode()) {
 		langExtendedText[languangeOFF] = text;
 	} else {

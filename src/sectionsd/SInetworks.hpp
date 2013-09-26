@@ -71,25 +71,25 @@ struct satellite_delivery_descriptor {
 	unsigned frequency_4			: 8;
 	unsigned orbital_pos_hi			: 8;
 	unsigned orbital_pos_lo			: 8;
-	#if __BYTE_ORDER == __BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 	unsigned west_east_flag			: 1;
 	unsigned polarization			: 2;
 	unsigned modulation			: 5;
-	#else
+#else
 	unsigned modulation			: 5;
 	unsigned polarization			: 2;
 	unsigned west_east_flag			: 1;	
-	#endif
+#endif
 	unsigned symbol_rate_1			: 8;
 	unsigned symbol_rate_2			: 8;
 	unsigned symbol_rate_3			: 8;
-	#if __BYTE_ORDER == __BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 	unsigned symbol_rate_4			: 4;
 	unsigned fec_inner			: 4;
-	#else
+#else
 	unsigned fec_inner			: 4;
 	unsigned symbol_rate_4			: 4;	
-	#endif
+#endif
 } __attribute__ ((packed)) ; // 11 Bytes
 
 struct cable_delivery_descriptor {
@@ -98,75 +98,75 @@ struct cable_delivery_descriptor {
 	unsigned frequency_3			: 8;
 	unsigned frequency_4			: 8;
 	unsigned reserved_hi			: 8;
-	#if __BYTE_ORDER == __BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 	unsigned reserved_lo			: 4;
 	unsigned fec_outer			: 4;
-	#else
+#else
 	unsigned fec_outer			: 4;	
 	unsigned reserved_lo			: 4;
-	#endif
+#endif
 	unsigned modulation			: 8;
 	unsigned symbol_rate_1			: 8;
 	unsigned symbol_rate_2			: 8;
 	unsigned symbol_rate_3			: 8;
-	#if __BYTE_ORDER == __BIG_ENDIAN
+#if __BYTE_ORDER == __BIG_ENDIAN
 	unsigned symbol_rate_4			: 4;
 	unsigned fec_inner			: 4;
-	#else
+#else
 	unsigned fec_inner			: 4;
 	unsigned symbol_rate_4			: 4;	
-	#endif
+#endif
 } __attribute__ ((packed)) ; // 11 Bytes
 
 class SInetwork {
-public:
-	SInetwork(const struct nit_transponder *s) {
+	public:
+		SInetwork(const struct nit_transponder *s) {
+			
+			network_id		= 0;
+			transport_stream_id	= 0;
+			original_network_id	= 0;
+			delivery_type		= 0;
+			is_actual		= false;
+		}
 		
-		network_id		= 0;
-		transport_stream_id	= 0;
-		original_network_id	= 0;
-		delivery_type		= 0;
-		is_actual		= false;
-	}
-	
-	// Um einen service zum Suchen zu erstellen
-	SInetwork(const t_network_id _network_id, const t_original_network_id _original_network_id, const t_transport_stream_id _transport_stream_id)
-	{
-		network_id		= _network_id;
-		original_network_id	= _original_network_id;
-		transport_stream_id	= _transport_stream_id;
-	}
-	// Std-Copy
-	SInetwork(const SInetwork &s) {
-	
-		network_id		= s.network_id;
-		original_network_id	= s.original_network_id;
-		transport_stream_id 	= s.transport_stream_id;
-		delivery_type		= s.delivery_type;
-		is_actual		= s.is_actual;
-		memmove(delivery_descriptor, s.delivery_descriptor, sizeof(struct satellite_delivery_descriptor));
-	}
-	
-	t_network_id network_id;
-	t_original_network_id original_network_id;
-	t_transport_stream_id transport_stream_id;
-	unsigned short delivery_type;
-	bool is_actual;
-	char delivery_descriptor[sizeof(struct satellite_delivery_descriptor)];
-	
-	bool operator < (const SInetwork& s) const {
-		return uniqueKey() < s.uniqueKey();
-	}
+		// Um einen service zum Suchen zu erstellen
+		SInetwork(const t_network_id _network_id, const t_original_network_id _original_network_id, const t_transport_stream_id _transport_stream_id)
+		{
+			network_id		= _network_id;
+			original_network_id	= _original_network_id;
+			transport_stream_id	= _transport_stream_id;
+		}
+		// Std-Copy
+		SInetwork(const SInetwork &s) {
+		
+			network_id		= s.network_id;
+			original_network_id	= s.original_network_id;
+			transport_stream_id 	= s.transport_stream_id;
+			delivery_type		= s.delivery_type;
+			is_actual		= s.is_actual;
+			memmove(delivery_descriptor, s.delivery_descriptor, sizeof(struct satellite_delivery_descriptor));
+		}
+		
+		t_network_id network_id;
+		t_original_network_id original_network_id;
+		t_transport_stream_id transport_stream_id;
+		unsigned short delivery_type;
+		bool is_actual;
+		char delivery_descriptor[sizeof(struct satellite_delivery_descriptor)];
+		
+		bool operator < (const SInetwork& s) const {
+			return uniqueKey() < s.uniqueKey();
+		}
 
-	t_transponder_id uniqueKey(void) const {
-		return CREATE_TRANSPONDER_ID_FROM_ORIGINALNETWORK_TRANSPORTSTREAM_ID(original_network_id, transport_stream_id);
-	}
+		t_transponder_id uniqueKey(void) const {
+			return CREATE_TRANSPONDER_ID_FROM_ORIGINALNETWORK_TRANSPORTSTREAM_ID(original_network_id, transport_stream_id);
+		}
 
-	void dump(void) const {
-	
-		printf("Original-Network-ID: %hu\n", original_network_id);
-		printf("Transport-Stream-ID: %hu\n", transport_stream_id);
-	}
+		void dump(void) const {
+		
+			printf("Original-Network-ID: %hu\n", original_network_id);
+			printf("Transport-Stream-ID: %hu\n", transport_stream_id);
+		}
 };
 
 // Fuer for_each
