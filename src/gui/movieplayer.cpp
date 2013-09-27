@@ -2990,7 +2990,30 @@ void CMoviePlayerGui::PlayFile(void)
 				MovieInfoViewer.hide();
 			
 			if (was_file) 
+			{
+				was_file = false;
 				exit = true;
+			}
+		}
+		else if(msg == CRCInput::RC_left || msg == CRCInput::RC_prev)
+		{
+			if(!_filelist.empty() && selected > 0 && playstate == CMoviePlayerGui::PLAY) 
+			{
+				selected--;
+				filename = _filelist[selected].Name.c_str();
+				sel_filename = _filelist[selected].getFileName();
+				start_play = true;
+			}
+		}
+		else if(msg == CRCInput::RC_right || msg == CRCInput::RC_next)
+		{
+			if(!_filelist.empty() && selected + 1 < _filelist.size() && playstate == CMoviePlayerGui::PLAY) 
+			{
+				selected++;
+				filename = _filelist[selected].Name.c_str();
+				sel_filename = _filelist[selected].getFileName();
+				start_play = true;
+			}
 		}
 		else if(msg == CRCInput::RC_ok)
 		{
