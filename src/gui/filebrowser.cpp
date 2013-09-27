@@ -67,6 +67,7 @@
 #include <driver/encoding.h>
 
 #include <xmlinterface.h>
+#include <system/debug.h>
 
 #ifdef __USE_FILE_OFFSET64
 typedef struct dirent64 dirent_struct;
@@ -1190,21 +1191,23 @@ void CFileBrowser::addRecursiveDir(CFileList * re_filelist, std::string rpath, b
 
 	int n;
 
-	//printf("addRecursiveDir %s\n",rpath.c_str());
+	dprintf(DEBUG_INFO, "addRecursiveDir %s\n", rpath.c_str());
 
-	if (bRootCall) bCancel=false;
+	if (bRootCall) 
+		bCancel=false;
 
 	g_RCInput->getMsg_us(&msg, &data, 1);
-	if (msg==CRCInput::RC_home)
+	if (msg == CRCInput::RC_home)
 	{
 		// home key cancel scan
-		bCancel=true;
+		bCancel = true;
 	}
-	else if (msg!=CRCInput::RC_timeout)
+	else if (msg != CRCInput::RC_timeout)
 	{
 		// other event, save to low priority queue
 		g_RCInput->postMsg( msg, data, false );
 	}
+	
 	if(bCancel)
 		return;
 
@@ -1216,7 +1219,7 @@ void CFileBrowser::addRecursiveDir(CFileList * re_filelist, std::string rpath, b
 	CFileList tmplist;
 	if(!readDir(rpath, &tmplist))
 	{
-		perror(("Recursive scandir: "+rpath).c_str());
+		perror(("Recursive scandir: " + rpath).c_str());
 	}
 	else
 	{
@@ -1225,6 +1228,7 @@ void CFileBrowser::addRecursiveDir(CFileList * re_filelist, std::string rpath, b
 		{
 			progress->showStatusMessageUTF(FILESYSTEM_ENCODING_TO_UTF8_STRING(rpath));
 		}
+		
 		for(int i = 0; i < n;i++)
 		{
 			if(progress)
@@ -1406,7 +1410,7 @@ void CFileBrowser::paintItem(unsigned int pos)
 		}
 	}
 	else
-		frameBuffer->paintBoxRel(x,ypos, width- 15, fheight, COL_MENUCONTENT_PLUS_0 );
+		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, COL_MENUCONTENT_PLUS_0 );
 }
 
 void CFileBrowser::paintHead()

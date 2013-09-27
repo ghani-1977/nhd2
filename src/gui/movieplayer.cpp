@@ -123,6 +123,7 @@ extern char rec_filename[512];				// defined in stream2file.cpp
 CMoviePlayerGui::state playstate;
 bool isMovieBrowser = false;
 bool isVlc = false;
+bool cdDvd = false;
 bool isWebTV = false;
 bool isDVD = false;
 bool isBlueRay = false;
@@ -551,7 +552,8 @@ void CMoviePlayerGui::Init(void)
 	else
 		filebrowser = new CFileBrowser();
 
-	filebrowser->Multi_Select = false;
+	filebrowser->Multi_Select = true;
+	
 	filebrowser->Dirs_Selectable = false;
 
 	// moviebrowser
@@ -561,7 +563,6 @@ void CMoviePlayerGui::Init(void)
 	webtv = new CWebTV();
 
 	// tsfilefilter
-
 #if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)
 	tsfilefilter.addFilter("ts");
 	tsfilefilter.addFilter("mpg");
@@ -1325,7 +1326,7 @@ void CMoviePlayerGui::PlayFile(void)
 	bool open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
 	bool start_play = false;
 	bool exit = false;
-	bool was_file = false; // needed to reopen browser after playing
+	bool was_file = false; 
 	
 	// for playing
 	playstate = CMoviePlayerGui::STOPPED;
@@ -1339,12 +1340,11 @@ void CMoviePlayerGui::PlayFile(void)
 	
 	// vlc
 	std::string stream_url;
-	bool aborted = false;
 	char mrl[200];
 	CFileList _filelist;
 	unsigned int selected = 0;
 	std::string title = "";
-	bool cdDvd = false;
+	//bool cdDvd = false;
 
 	// vlc
 	if (isVlc == true)
@@ -1377,6 +1377,10 @@ void CMoviePlayerGui::PlayFile(void)
 			open_filebrowser = false;
 			cdDvd = true;
 		}
+		
+		//
+		//if(!cdDvd)
+		//	filebrowser->Multi_Select = true;
 							
 		sel_filename = "VLC Player";
 		
@@ -1497,14 +1501,18 @@ void CMoviePlayerGui::PlayFile(void)
  go_repeat:
 	do {
 		// vlc (generate mrl)
-		if (playstate == CMoviePlayerGui::STOPPED && isVlc && !cdDvd) 
+		if (playstate == CMoviePlayerGui::STOPPED /*&& isVlc && !cdDvd*/ && was_file) 
 		{
-			if(selected + 1 < _filelist.size() && !aborted) 
+			if(selected + 1 < _filelist.size() ) 
 			{
 				selected++;
 				filename = _filelist[selected].Name.c_str();
 				sel_filename = _filelist[selected].getFileName();
+				
 				//printf ("[movieplayer.cpp] sel_filename: %s\n", filename);
+				
+				if(isVlc)
+				{
 				int namepos = _filelist[selected].Name.rfind("vlc://");
 				std::string mrl_str = _filelist[selected].Name.substr(namepos + 6);
 				char * tmp = curl_escape (mrl_str.c_str (), 0);
@@ -1512,6 +1520,7 @@ void CMoviePlayerGui::PlayFile(void)
 				curl_free (tmp);
 				
 				dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
+				}
  
 				update_lcd = true;
 				start_play = true;
@@ -1519,7 +1528,6 @@ void CMoviePlayerGui::PlayFile(void)
 			else 
 			{
 				open_filebrowser = true;
-				aborted = false;
 			}
 		}
 
@@ -1535,7 +1543,7 @@ void CMoviePlayerGui::PlayFile(void)
 				skt = -1;
 			}
 			
-			dprintf(DEBUG_NORMAL, "[movieplayer] stop >>\n");			
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop (1)\n");
 			playstate = CMoviePlayerGui::STOPPED;
 			break;
 		}
@@ -1803,7 +1811,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 						update_lcd = true;
 						start_play = true;
-						was_file = true;
+						was_file = false;
 					}
 				} 
 				else if (playstate == CMoviePlayerGui::STOPPED) 
@@ -1828,16 +1836,18 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					Path_vlc = filebrowser->getCurrentDir();
 
-					CFile * file = filebrowser->getSelectedFile();
-					_filelist.clear();
-					_filelist.push_back(*file);
+					//CFile * file = filebrowser->getSelectedFile();
+					//_filelist.clear();
+					//_filelist.push_back(*file);
+					
+					_filelist = filebrowser->getSelectedFiles();
 
 					if(!_filelist.empty())
 					{
-						filename = _filelist[0].Name.c_str();
-						sel_filename = _filelist[0].getFileName();
+						filename = _filelist[selected].Name.c_str();
+						sel_filename = _filelist[selected].getFileName();
 						
-						int namepos = _filelist[0].Name.rfind("vlc://");
+						int namepos = _filelist[selected].Name.rfind("vlc://");
 						std::string mrl_str = "";
 						
 						if (g_settings.streaming_vlc10 > 1)
@@ -1847,7 +1857,7 @@ void CMoviePlayerGui::PlayFile(void)
 								mrl_str += "/";
 						}
 						
-						mrl_str += _filelist[0].Name.substr(namepos + 6);
+						mrl_str += _filelist[selected].Name.substr(namepos + 6);
 						char * tmp = curl_escape(mrl_str.c_str (), 0);
 						strncpy (mrl, tmp, sizeof (mrl) - 1);
 						curl_free (tmp);
@@ -1883,7 +1893,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = true;
+						was_file = false;
 						is_file_player = true;
 					}
 				}
@@ -1925,7 +1935,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = true;
+						was_file = false;
 						is_file_player = true;
 					}
 				}
@@ -1969,7 +1979,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = true;
+						was_file = false;
 						is_file_player = true;
 					}
 				}
@@ -1987,6 +1997,8 @@ void CMoviePlayerGui::PlayFile(void)
 				if (filebrowser->exec(Path_local.c_str()) == true) 
 				{
 					Path_local = filebrowser->getCurrentDir();
+					
+					/*
 					CFile * file;
 
 					if ((file = filebrowser->getSelectedFile()) != NULL) 
@@ -2005,6 +2017,29 @@ void CMoviePlayerGui::PlayFile(void)
 						was_file = true;
 						is_file_player = true;
 					}
+					*/
+					
+					//
+					//CFile * file = filebrowser->getSelectedFile();
+					//_filelist.clear();
+					//_filelist.push_back(*file);
+					_filelist = filebrowser->getSelectedFiles();
+
+					if(!_filelist.empty())
+					{
+						filename = _filelist[selected].Name.c_str();
+						sel_filename = _filelist[selected].getFileName();
+						
+						g_file_epg = sel_filename;
+						g_file_epg1 = sel_filename;
+
+						update_lcd = true;
+						start_play = true;
+						was_file = true;
+						is_file_player = true;
+						selected = 0;
+					}
+					//
 				}
 				else if (playstate == CMoviePlayerGui::STOPPED) 
 				{
@@ -2298,7 +2333,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
-		{	  	
+		{
 #if defined (PLATFORM_COOLSTREAM)
 			if( playback->GetPosition(position, duration) )
 #else
@@ -2328,8 +2363,6 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			//exit play
 			playstate = CMoviePlayerGui::STOPPED;
-			
-			aborted = true;
 			
 			if (cdDvd) 
 			{
@@ -2955,6 +2988,9 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if (MovieInfoViewer.IsVisible()) 
 				MovieInfoViewer.hide();
+			
+			if (was_file) 
+				exit = true;
 		}
 		else if(msg == CRCInput::RC_ok)
 		{
@@ -3009,7 +3045,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 		if (exit) 
 		{
-			dprintf(DEBUG_NORMAL, "[movieplayer] stop >\n");	
+			dprintf(DEBUG_NORMAL, "[movieplayer] stop (3)\n");	
 
 			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 			{
@@ -3030,7 +3066,7 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 	} while (playstate >= CMoviePlayerGui::PLAY);
 	
-	dprintf(DEBUG_NORMAL, "[movieplayer] stop >>\n");	
+	dprintf(DEBUG_NORMAL, "[movieplayer] stop (2)\n");	
 
 	if(FileTime.IsVisible())
 		FileTime.hide();
@@ -3045,8 +3081,9 @@ void CMoviePlayerGui::PlayFile(void)
 
 	if (was_file) 
 	{
-		restoreNeutrino();
-		open_filebrowser = true;
+		sleep(1);
+		//restoreNeutrino();
+		open_filebrowser = false;
 		start_play = true;
 		goto go_repeat;
 	}
