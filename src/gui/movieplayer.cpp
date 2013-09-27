@@ -1501,7 +1501,7 @@ void CMoviePlayerGui::PlayFile(void)
  go_repeat:
 	do {
 		// vlc (generate mrl)
-		if (playstate == CMoviePlayerGui::STOPPED /*&& isVlc && !cdDvd*/ && was_file) 
+		if (playstate == CMoviePlayerGui::STOPPED && was_file) 
 		{
 			if(selected + 1 < _filelist.size() ) 
 			{
@@ -1513,13 +1513,18 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				if(isVlc)
 				{
-				int namepos = _filelist[selected].Name.rfind("vlc://");
-				std::string mrl_str = _filelist[selected].Name.substr(namepos + 6);
-				char * tmp = curl_escape (mrl_str.c_str (), 0);
-				strncpy (mrl, tmp, sizeof (mrl) - 1);
-				curl_free (tmp);
-				
-				dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
+					int namepos = _filelist[selected].Name.rfind("vlc://");
+					std::string mrl_str = _filelist[selected].Name.substr(namepos + 6);
+					char * tmp = curl_escape (mrl_str.c_str (), 0);
+					strncpy (mrl, tmp, sizeof (mrl) - 1);
+					curl_free (tmp);
+					
+					dprintf(DEBUG_NORMAL, "[movieplayer.cpp] Generated FILE MRL: %s\n", mrl);
+				}
+				else
+				{
+					g_file_epg = sel_filename;
+					g_file_epg1 = sel_filename;
 				}
  
 				update_lcd = true;
