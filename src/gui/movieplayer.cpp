@@ -3007,6 +3007,9 @@ void CMoviePlayerGui::PlayFile(void)
 				selected--;
 				filename = _filelist[selected].Name.c_str();
 				sel_filename = _filelist[selected].getFileName();
+				g_file_epg = sel_filename;
+				g_file_epg1 = sel_filename;
+				update_lcd = true;
 				start_play = true;
 			}
 		}
@@ -3017,6 +3020,9 @@ void CMoviePlayerGui::PlayFile(void)
 				selected++;
 				filename = _filelist[selected].Name.c_str();
 				sel_filename = _filelist[selected].getFileName();
+				g_file_epg = sel_filename;
+				g_file_epg1 = sel_filename;
+				update_lcd = true;
 				start_play = true;
 			}
 		}
