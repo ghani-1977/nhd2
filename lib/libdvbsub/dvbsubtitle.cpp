@@ -114,8 +114,8 @@ void cDvbSubtitleBitmaps::Draw(int &min_x, int &min_y, int &max_x, int &max_y)
 	int wd = CFrameBuffer::getInstance()->getScreenWidth();
 	int xstart = CFrameBuffer::getInstance()->getScreenX();
 	int yend = CFrameBuffer::getInstance()->getScreenY() + CFrameBuffer::getInstance()->getScreenHeight();
-	int ystart = CFrameBuffer::getInstance()->getScreenY();
-	uint32_t *sublfb = CFrameBuffer::getInstance()->getFrameBufferPointer();
+	//int ystart = CFrameBuffer::getInstance()->getScreenY();
+	//uint32_t *sublfb = CFrameBuffer::getInstance()->getFrameBufferPointer();
 
 	dbgconverter("cDvbSubtitleBitmaps::Draw: %d bitmaps, x= %d, width= %d yend=%d stride %d\n", Count(), xstart, wd, yend, stride);
 
