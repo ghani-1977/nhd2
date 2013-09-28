@@ -336,7 +336,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	//show infobar
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
 
-	//always exit all
+	//always repaint
 	return menu_return::RETURN_REPAINT;
 }
 
