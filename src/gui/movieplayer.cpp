@@ -1344,7 +1344,6 @@ void CMoviePlayerGui::PlayFile(void)
 	CFileList _filelist;
 	unsigned int selected = 0;
 	std::string title = "";
-	//bool cdDvd = false;
 
 	// vlc
 	if (isVlc == true)
@@ -1377,10 +1376,6 @@ void CMoviePlayerGui::PlayFile(void)
 			open_filebrowser = false;
 			cdDvd = true;
 		}
-		
-		//
-		//if(!cdDvd)
-		//	filebrowser->Multi_Select = true;
 							
 		sel_filename = "VLC Player";
 		
@@ -1503,7 +1498,7 @@ void CMoviePlayerGui::PlayFile(void)
 		// vlc (generate mrl)
 		if (playstate == CMoviePlayerGui::STOPPED && was_file) 
 		{
-			if(selected + 1 < _filelist.size() ) 
+			if(selected + 1 < _filelist.size()) 
 			{
 				selected++;
 				filename = _filelist[selected].Name.c_str();
@@ -1816,7 +1811,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 						update_lcd = true;
 						start_play = true;
-						was_file = false;
+						was_file = true;
 					}
 				} 
 				else if (playstate == CMoviePlayerGui::STOPPED) 
@@ -1898,7 +1893,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = false;
+						was_file = true;
 						is_file_player = true;
 					}
 				}
@@ -1940,7 +1935,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = false;
+						was_file = true;
 						is_file_player = true;
 					}
 				}
@@ -1984,7 +1979,7 @@ void CMoviePlayerGui::PlayFile(void)
 						
 						update_lcd = true;
 						start_play = true;
-						was_file = false;
+						was_file = true;
 						is_file_player = true;
 					}
 				}
@@ -2003,31 +1998,6 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					Path_local = filebrowser->getCurrentDir();
 					
-					/*
-					CFile * file;
-
-					if ((file = filebrowser->getSelectedFile()) != NULL) 
-					{
-						CFile::FileType ftype;
-						ftype = file->getType();
-
-						filename = file->Name.c_str();
-						sel_filename = filebrowser->getSelectedFile()->getFileName();
-						
-						g_file_epg = sel_filename;
-						g_file_epg1 = sel_filename;
-						
-						update_lcd = true;
-						start_play = true;
-						was_file = true;
-						is_file_player = true;
-					}
-					*/
-					
-					//
-					//CFile * file = filebrowser->getSelectedFile();
-					//_filelist.clear();
-					//_filelist.push_back(*file);
 					_filelist = filebrowser->getSelectedFiles();
 
 					if(!_filelist.empty())
@@ -3115,8 +3085,7 @@ void CMoviePlayerGui::PlayFile(void)
 
 	if (was_file) 
 	{
-		sleep(1);
-		//restoreNeutrino();
+		usleep(3000);
 		open_filebrowser = false;
 		start_play = true;
 		goto go_repeat;
@@ -3126,22 +3095,21 @@ void CMoviePlayerGui::PlayFile(void)
 void CMoviePlayerGui::showHelpTS()
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1)*/ (char *)"Movie info");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP2));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP3));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP4));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_HELP, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
-	
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP13));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP14));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, (char *)"jump backward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, (char *)"goto start"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, (char *)"jump forward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, (char *)"jump backward 5 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, (char *)"goto middle"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, (char *)"jump forward 5 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, (char *)"jump backward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10)*/);
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, (char *)"goto end"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, (char *)"jump forward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11)*/ );
 	//helpbox.addLine(g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12));
 	//helpbox.addLine("Version: $Revision: 1.97 $");
 	//helpbox.addLine("Movieplayer (c) 2003, 2004 by gagga");
