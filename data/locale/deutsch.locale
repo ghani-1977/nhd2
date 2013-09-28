@@ -953,10 +953,12 @@ movieplayer.nostreamingserver Es konnte keine Verbindung\nzum Streamingserver he
 movieplayer.pesplayback PES Abspielen (Experimentell)
 movieplayer.pleasewait Bitte warten Sie.\nDie Verbindung zum Streamingserver wird hergestellt.
 movieplayer.toomanybookmarks Sie haben bereits zu viele Bookmarks angelegt.\nEs muß erst ein anderes gelöscht werden.
-movieplayer.tshelp1 Stop
+movieplayer.tshelp1 Movie Info
 movieplayer.tshelp10 ca. 10 Minuten zurück
 movieplayer.tshelp11 ca. 10 Minuten vor
-movieplayer.tshelp12 Hilfe: http://www.giggo.de/dbox2/movieplayer.html\n
+movieplayer.tshelp12 goto start
+movieplayer.tshelp13 goto middle
+movieplayer.tshelp14 goto end
 movieplayer.tshelp2 Auswahl der Tonspur
 movieplayer.tshelp3 Hilfe
 movieplayer.tshelp4 Bookmark setzen

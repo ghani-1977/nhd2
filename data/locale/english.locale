@@ -953,10 +953,12 @@ movieplayer.nostreamingserver The streaming server could not be reached.
 movieplayer.pesplayback Play PES (Experimental)
 movieplayer.pleasewait Please wait.\nConnecting to the streaming server...
 movieplayer.toomanybookmarks There are too many bookmarks.\nYou need to delete one of them first.
-movieplayer.tshelp1 Stop
+movieplayer.tshelp1 Movie info
 movieplayer.tshelp10 approx. 10 minutes back
 movieplayer.tshelp11 skip approx. 10 minutes
-movieplayer.tshelp12 Help: http://www.giggo.de/dbox2/movieplayer.html\n
+movieplayer.tshelp12 goto start
+movieplayer.tshelp13 goto middle
+movieplayer.tshelp14 goto end
 movieplayer.tshelp2 Select audio track
 movieplayer.tshelp3 Help
 movieplayer.tshelp4 Create bookmark

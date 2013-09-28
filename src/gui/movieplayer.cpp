@@ -3126,21 +3126,22 @@ void CMoviePlayerGui::PlayFile(void)
 void CMoviePlayerGui::showHelpTS()
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1)*/ (char *)"Movie info");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP2));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP3));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP4));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_HELP, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, (char *)"jump backward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, (char *)"goto start"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, (char *)"jump forward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, (char *)"jump backward 5 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, (char *)"goto middle"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, (char *)"jump forward 5 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, (char *)"jump backward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10)*/);
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, (char *)"goto end"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, (char *)"jump forward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11)*/ );
+	
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP13));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP14));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11));
 	//helpbox.addLine(g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12));
 	//helpbox.addLine("Version: $Revision: 1.97 $");
 	//helpbox.addLine("Movieplayer (c) 2003, 2004 by gagga");
