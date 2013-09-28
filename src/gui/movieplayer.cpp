@@ -349,8 +349,8 @@ void CMovieInfoViewer::show(int Position, bool lshow)
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + RIGHT_OFFSET, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
-	//if( isMovieBrowser || isVlc )
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	if( isMovieBrowser || isVlc || isWebTV)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
 	// audio
