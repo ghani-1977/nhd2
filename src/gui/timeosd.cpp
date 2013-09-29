@@ -37,8 +37,8 @@
 #define TIMEBARH 		38
 #define SHADOW_OFFSET		5
 
-extern bool isWebTV;
-extern bool isVlc;
+//extern bool isWebTV;
+//extern bool isVlc;
 
 
 CTimeOSD::CTimeOSD()
@@ -59,7 +59,7 @@ void CTimeOSD::show(int /*Position*/)
 	// show / update
 	GetDimensions();
 	
-	if(!isWebTV && !isVlc)
+	//if(!isWebTV && !isVlc)
 		visible = true;
 }
 

@@ -87,13 +87,6 @@ extern int FrontendCount;				// defined in zapit.cpp
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
 #define COL_INFOBAR_BUTTONS_BACKGROUND (COL_INFOBAR_SHADOW_PLUS_1)
 
-//#define ICON_LARGE_WIDTH 26
-//#define ICON_SMALL_WIDTH 16
-//#define ICON_LARGE 30
-//#define ICON_SMALL 18
-
-//#define ICON_OFFSET (2 + ICON_LARGE_WIDTH + 2 + ICON_LARGE_WIDTH + 2 + ICON_SMALL_WIDTH + 2)
-
 #define SHADOW_OFFSET 6
 #define borderwidth 4
 #define LEFT_OFFSET 5
@@ -109,7 +102,7 @@ bool newfreq = true;
 char old_timestr[10];
 static event_id_t last_curr_id = 0, last_next_id = 0;
 
-static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
+static bool sortByDateTime(const CChannelEvent& a, const CChannelEvent& b)
 {
         return a.startTime < b.startTime;
 }
@@ -154,7 +147,7 @@ static int TunerNumWidth;
 int PIC_W = CHANNAME_HEIGHT*1.67;
 int PIC_H = CHANNAME_HEIGHT;
 
-CInfoViewer::CInfoViewer ()
+CInfoViewer::CInfoViewer()
 {
   	Init();
 }
@@ -175,6 +168,7 @@ void CInfoViewer::Init()
 	//
 	recordModeActive = false;
 	is_visible = false;
+	m_visible = false;
 
 	showButtonBar = false;
 
@@ -205,7 +199,7 @@ void CInfoViewer::start()
 	lcdUpdateTimer = g_RCInput->addTimer(LCD_UPDATE_TIME_TV_MODE, false, true);
 }
 
-void CInfoViewer::paintTime (bool show_dot, bool firstPaint)
+void CInfoViewer::paintTime(bool show_dot, bool firstPaint)
 {
 	if (gotTime) 
 	{
@@ -316,6 +310,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	snrscale->reset(); 
 	timescale->reset();
 
+	// time dimension
 	time_height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight() + 5; //FIXME
 	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(widest_number);
 	time_dot_width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(":");
@@ -359,6 +354,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		channel_id = new_channel_id;
 	}
 
+	// chan name/info dimension
 	int ChanNameX = BoxStartX + ChanNumberWidth + 10;
 	int ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
 	
@@ -733,9 +729,260 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	}
 }
 
+//
+#define TIMESCALE_HEIGHT	6
+#define RIGHT_OFFSET 		5
+#define TIMEBARH 		38
+extern CMoviePlayerGui::state playstate;
+extern bool isMovieBrowser;
+extern bool isVlc;
+extern bool cdDvd;
+extern bool isWebTV;
+extern bool isDVD;
+extern bool isBlueRay;
+extern bool isURL;
+
+extern int speed;
+extern int slow;
+
+extern int position;
+extern int duration;
+extern int file_prozent;
+extern unsigned int ac3state;
+
+extern std::string g_file_epg;
+extern std::string g_file_epg1;
+
+void CInfoViewer::showMovieInfo(bool lshow)
+{
+	//bool show_dot = true;
+	m_visible = true;
+	
+	// get dimension
+	BoxEndX = g_settings.screen_EndX - 10;
+	BoxStartX = g_settings.screen_StartX + 10;
+	BoxHeight = TIMEBARH * 3;
+	BoxStartY = g_settings.screen_EndY - BoxHeight - 10;
+	BoxEndY = BoxStartY + BoxHeight;
+	BoxWidth = BoxEndX - BoxStartX;
+	
+	// init progressbar
+	moviescale = new CProgressBar( BoxWidth - 15, TIMESCALE_HEIGHT, 40, 100, 70, true );
+	
+	moviescale->reset();
+	
+	// paint shadow
+	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH );
+		
+	// paint info box
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_BOTH); 
+		
+	// timescale bg
+	frameBuffer->paintBoxRel(BoxStartX + 10, BoxStartY + 15, BoxWidth - 20, 6, COL_INFOBAR_SHADOW_PLUS_1 ); 
+		
+	// bottum bar
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, CORNER_BOTTOM); 
+		
+	
+	// mp icon
+	int m_icon_w = 0;
+	int m_icon_h = 0;
+	
+	if(isWebTV)
+		frameBuffer->getIconSize("iptv", &m_icon_w, &m_icon_h);
+	else
+		frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
+
+	int m_icon_x = BoxStartX + 5;
+	int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
+	
+	if(isWebTV)
+		frameBuffer->paintIcon("iptv", m_icon_x, m_icon_y);
+	else
+		frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
+	
+	// paint buttons
+	// red
+	// movie info
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + RIGHT_OFFSET, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	if( isMovieBrowser || isVlc || isWebTV)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"Movie Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+	// green
+	// audio
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+	// yellow
+	// help
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	if( !isWebTV)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+		
+	// blue
+	// bookmark
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	if(isMovieBrowser)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		
+	// ac3
+	int icon_w_ac3, icon_h_ac3;
+	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_ac3, &icon_h_ac3);
+	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3, BoxStartY + BoxHeight - 20 + (20 - icon_h_ac3)/2);
+		
+	// 4:3/16:9
+	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
+				
+	if(g_settings.video_Ratio == ASPECTRATIO_169)
+		aspect_icon = NEUTRINO_ICON_16_9;
+	
+	int icon_w_aspect, icon_h_aspect;
+	frameBuffer->getIconSize(aspect_icon, &icon_w_aspect, &icon_h_aspect);
+	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
+	
+	/* mp keys */
+	if(!isWebTV)
+	{
+		frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
+		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+	}
+		
+	//playstate
+	const char *icon = "mp_play";
+		
+	switch(playstate)
+	{
+		case CMoviePlayerGui::PAUSE: icon = "mp_pause"; break;
+		case CMoviePlayerGui::PLAY: icon = "mp_play"; break;
+		case CMoviePlayerGui::REW: icon = "mp_b-skip"; break;
+		case CMoviePlayerGui::FF: icon = "mp_f-skip"; break;
+		case CMoviePlayerGui::SOFTRESET: break;
+		case CMoviePlayerGui::SLOW: break;
+		case CMoviePlayerGui::STOPPED: break;
+	}
+
+	// get icon size	
+	frameBuffer->getIconSize(icon, &icon_w, &icon_h);
+
+	//int icon_x = BoxStartX + 60 + 5;
+	int icon_x = BoxStartX + 5 + m_icon_w + 10;
+	int icon_y = BoxStartY + (BoxHeight - icon_h) / 2;
+		
+
+	frameBuffer->paintIcon(icon, icon_x, icon_y);
+		
+	// paint speed
+	char strSpeed[4];
+	if( playstate == CMoviePlayerGui::FF || playstate == CMoviePlayerGui::REW )
+	{
+		sprintf(strSpeed, "%d", speed);
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_COLORED_EVENTS_INFOBAR ); // UTF-8
+	}
+	
+	time_t tDisplayTime = duration/1000;
+	char cDisplayTime[8 + 1];
+	strftime(cDisplayTime, 9, "%T", gmtime(&tDisplayTime));
+	
+	int durationWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("00:00:00");;
+	int durationTextPos = BoxEndX - durationWidth - 15;
+		
+	int speedWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth("-8");
+		
+	int InfoStartX = BoxStartX + 5 + m_icon_w + 10 + icon_w + 5 + speedWidth + 20;
+	int InfoWidth = durationTextPos - InfoStartX;
+		
+	//Title 1
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, g_file_epg, COL_INFOBAR, 0, true);
+
+	//Title2
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
+
+	// duration
+	if(!isWebTV && !isVlc && lshow)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, cDisplayTime, COL_INFOBAR);
+	
+	// add sec timer
+	sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
+		
+	// show data
+	char runningPercent = 0;
+  	static char oldrunningPercent = 255;
+	
+	runningPercent = file_prozent;
+	if(runningPercent > 100)
+		runningPercent = 100;
+	else if(runningPercent < 0)
+		runningPercent = 0;
+	
+	if(oldrunningPercent != runningPercent) 
+		oldrunningPercent = runningPercent;
+	
+	//if(lshow)
+	//moviescale->paint(posx, posy, runningPercent);
+	moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
+	
+#if !defined USE_OPENGL
+	frameBuffer->blit();
+#endif		
+	
+	// loop msg
+	neutrino_msg_t msg;
+	neutrino_msg_data_t data;
+	bool hideIt = true;
+	CNeutrinoApp * neutrino = CNeutrinoApp::getInstance();
+
+	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd (g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR]);
+
+	int res = messages_return::none;
+
+	while (!(res & (messages_return::cancel_info | messages_return::cancel_all))) 
+	{
+		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
+		
+		if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) 
+		{
+				res = messages_return::cancel_info;
+		} 
+		else 
+		{
+			if (msg == CRCInput::RC_standby) 
+			{
+				g_RCInput->killTimer (sec_timer_id);
+			}
+					
+			res = neutrino->handleMsg (msg, data);
+					
+			if (res & messages_return::unhandled) 
+			{
+				// raus hier und im Hauptfenster behandeln...
+				g_RCInput->postMsg (msg, data);
+				res = messages_return::cancel_info;
+			}
+		}
+#if !defined USE_OPENGL
+		frameBuffer->blit();
+#endif			
+	}
+	
+	if (hideIt)
+		killTitle();
+	//
+	g_RCInput->killTimer(sec_timer_id);
+	sec_timer_id = 0;
+}
+
 void CInfoViewer::showSubchan()
 {
-  	//CFrameBuffer *frameBuffer = CFrameBuffer::getInstance();
   	CNeutrinoApp *neutrino = CNeutrinoApp::getInstance();
 
   	std::string subChannelName;	// holds the name of the subchannel/audio channel
@@ -1899,6 +2146,23 @@ void CInfoViewer::killTitle()
 		{
 			delete timescale;
 			timescale = 0;
+		}
+  	}
+  	
+  	if (m_visible) 
+	{
+		m_visible = false;
+
+		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET );
+				
+#if !defined USE_OPENGL
+		frameBuffer->blit();
+#endif
+		
+		if(moviescale)
+		{
+			delete moviescale;
+			moviescale = 0;
 		}
   	}
 }

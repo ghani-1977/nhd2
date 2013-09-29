@@ -64,8 +64,6 @@ class CInfoViewer
 		
 		int BoxHeight;
 		int BoxWidth;
-		
-		//int ButtonWidth;
 
 		int ChanNumberWidth;
 		int ChanNumberHeight;
@@ -96,7 +94,7 @@ class CInfoViewer
 
 		char           aspectRatio;
 		
-		uint32_t           sec_timer_id;
+		uint32_t       sec_timer_id;
 		
 		bool           virtual_zap_mode;
 		
@@ -130,14 +128,14 @@ class CInfoViewer
 		void showSNR();		
 
 		CProgressBar *snrscale, *sigscale, *timescale;
-		char MoviePercent;
+		//char MoviePercent;
 		std::string eventname;
 
  public:
-		bool chanready;
-		bool	is_visible;
+		bool 		chanready;
+		bool		is_visible;
 
-		uint32_t    lcdUpdateTimer;
+		uint32_t    	lcdUpdateTimer;
 
 		CInfoViewer();
 
@@ -153,23 +151,28 @@ class CInfoViewer
 		};
 
 		void lookAheadEPG(const int ChanNum, const std::string & Channel, const t_channel_id new_channel_id = 0, const bool calledFromNumZap = false); //alpha: fix for nvod subchannel update
-		void	killTitle();
+		void killTitle();
 		
-		void	getEPG(const t_channel_id for_channel_id, CSectionsdClient::CurrentNextInfo &info);
+		void getEPG(const t_channel_id for_channel_id, CSectionsdClient::CurrentNextInfo &info);
 		CSectionsdClient::CurrentNextInfo getCurrentNextInfo() { return info_CurrentNext; }
 	
-		void	showSubchan();
-		void	Set_CA_Status(int Status);
+		void showSubchan();
+		void Set_CA_Status(int Status);
 	
-		int     handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
-		void    clearVirtualZapMode() {virtual_zap_mode = false;}
+		int handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data);
+		void clearVirtualZapMode() {virtual_zap_mode = false;}
 		
-		void	showEpgInfo();
+		void showEpgInfo();
 		
 #if ENABLE_RADIOTEXT		
 		void showRadiotext();
 		void killRadiotext();
 #endif
+
+		// movie infoviewer
+		CProgressBar *moviescale;
+		bool m_visible;
+		void showMovieInfo(bool lshow = true);
 };
 
 class CInfoViewerHandler : public CMenuTarget
