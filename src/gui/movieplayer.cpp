@@ -1080,7 +1080,8 @@ void CMoviePlayerGui::PlayFile(void)
 	bool open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
 	bool start_play = false;
 	bool exit = false;
-	bool was_file = false; 
+	bool was_file = false;
+	bool m_loop = false;
 	
 	// for playing
 	playstate = CMoviePlayerGui::STOPPED;
@@ -1249,7 +1250,7 @@ void CMoviePlayerGui::PlayFile(void)
 	// play loop
  go_repeat:
 	do {
-		// vlc (generate mrl)
+		// multi select
 		if (playstate == CMoviePlayerGui::STOPPED && was_file) 
 		{
 			if(selected + 1 < _filelist.size()) 
@@ -1279,12 +1280,23 @@ void CMoviePlayerGui::PlayFile(void)
 				update_lcd = true;
 				start_play = true;
 			} 
+			else if(m_loop)
+			{
+				filename = filename;
+				sel_filename = sel_filename;
+				
+				g_file_epg = sel_filename;
+				g_file_epg1 = sel_filename;
+ 
+				update_lcd = true;
+				start_play = true;
+			}
 			else 
 			{
 				open_filebrowser = true;
 			}
 		}
-
+		
 		// exit
 		if (exit) 
 		{	  
@@ -2571,7 +2583,7 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 			}
 		} 
-		else if ( msg == CRCInput::RC_2 || msg == CRCInput::RC_repeat )
+		else if ( msg == CRCInput::RC_2 )
 		{	// goto start
 			playback->SetPosition((int64_t)startposition);
 			
@@ -2586,6 +2598,10 @@ void CMoviePlayerGui::PlayFile(void)
 					time_forced = true;
 				}
 			}
+		} 
+		else if ( msg == CRCInput::RC_repeat )
+		{	
+			m_loop = true;
 		} 
 		else if (msg == CRCInput::RC_5) 
 		{	
@@ -2706,9 +2722,10 @@ void CMoviePlayerGui::PlayFile(void)
 			if(g_InfoViewer->m_visible);
 				  g_InfoViewer->killTitle();
 			
-			if (was_file && !isMovieBrowser) 
+			if ( (was_file && !isMovieBrowser) || m_loop) 
 			{
 				was_file = false;
+				m_loop = false;
 				exit = true;
 			}
 		}
@@ -2816,7 +2833,7 @@ void CMoviePlayerGui::PlayFile(void)
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
 
-	if (was_file) 
+	if (was_file || m_loop) 
 	{
 		usleep(3000);
 		open_filebrowser = false;
