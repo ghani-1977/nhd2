@@ -873,15 +873,17 @@ bool CFileBrowser::exec(const char * const dirname)
 	name = dirname;
 	std::replace(name.begin(), name.end(), '\\', '/');
 
-	paintHead();
+	//paintHead();
 	//ChangeDir(name);
 	//paint();
+	
 	int selection = -1;
 	if (name == Path)
 		selection = selected;
 		
 	ChangeDir(name, selection);
 
+	paintHead();
 	paintFoot();
 		
 #if !defined USE_OPENGL
@@ -892,7 +894,7 @@ bool CFileBrowser::exec(const char * const dirname)
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_FILEBROWSER]);
 
-	bool loop=true;
+	bool loop = true;
 	while (loop)
 	{
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );

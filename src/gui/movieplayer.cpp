@@ -1589,10 +1589,6 @@ void CMoviePlayerGui::PlayFile(void)
 				if(filebrowser->exec(Path_vlc.c_str()))
 				{
 					Path_vlc = filebrowser->getCurrentDir();
-
-					//CFile * file = filebrowser->getSelectedFile();
-					//_filelist.clear();
-					//_filelist.push_back(*file);
 					
 					_filelist = filebrowser->getSelectedFiles();
 
@@ -2710,7 +2706,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(g_InfoViewer->m_visible);
 				  g_InfoViewer->killTitle();
 			
-			if (was_file) 
+			if (was_file && !isMovieBrowser) 
 			{
 				was_file = false;
 				exit = true;
