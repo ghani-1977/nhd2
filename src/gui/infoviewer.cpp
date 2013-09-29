@@ -156,15 +156,6 @@ void CInfoViewer::Init()
 {
 	frameBuffer = CFrameBuffer::getInstance ();
 	
-	// get dimensions
-	BoxHeight = 160;
-	
-	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
-	BoxStartX = g_settings.screen_StartX + 10;
-	BoxStartY = BoxEndY - BoxHeight;
-	BoxWidth = BoxEndX - BoxStartX;
-	
 	//
 	recordModeActive = false;
 	is_visible = false;
@@ -284,7 +275,9 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	
 	newfreq = true;
 	
-	// dimension
+	// get dimensions
+	BoxHeight = 160;
+	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
 	BoxStartX = g_settings.screen_StartX + 10;
