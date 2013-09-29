@@ -2600,8 +2600,9 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 		} 
 		else if ( msg == CRCInput::RC_repeat )
-		{	
-			m_loop = true;
+		{
+			if(!isWebTV)
+				m_loop = true;
 		} 
 		else if (msg == CRCInput::RC_5) 
 		{	
@@ -2670,20 +2671,24 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 			}
 		} 
-		else if (msg == CRCInput::RC_0 && !isWebTV) 
-		{	// cancel bookmark jump
-			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+		else if (msg == CRCInput::RC_0) 
+		{
+			if(!isWebTV)
 			{
-				if (new_bookmark.pos != 0) 
+				// cancel bookmark jump
+				if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
 				{
-					new_bookmark.pos = 0;	// stop current bookmark activity, TODO:  might bemoved to another key
-					newLoopHintBox.hide();	// hide hint box if any
-					newComHintBox.hide();
-				}
-				jump_not_until = (position / 1000) + 10;	// avoid bookmark jumping for the next 10 seconds, , TODO:  might be moved to another key
-			} 
-			else if (playstate != CMoviePlayerGui::PAUSE)
-				playstate = CMoviePlayerGui::SOFTRESET;
+					if (new_bookmark.pos != 0) 
+					{
+						new_bookmark.pos = 0;	// stop current bookmark activity, TODO:  might bemoved to another key
+						newLoopHintBox.hide();	// hide hint box if any
+						newComHintBox.hide();
+					}
+					jump_not_until = (position / 1000) + 10;	// avoid bookmark jumping for the next 10 seconds, , TODO:  might be moved to another key
+				} 
+				else if (playstate != CMoviePlayerGui::PAUSE)
+					playstate = CMoviePlayerGui::SOFTRESET;
+			}
 		} 
 #if !defined (PLATFORM_COOLSTREAM)		
 		else if (msg == CRCInput::RC_slow) 
