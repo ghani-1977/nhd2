@@ -793,7 +793,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	ca_mask = 1;
 
 #else
-	ca_mask |= 1 << fe->fenumber;
+	ca_mask |= 1 << demux_index;
 #endif	
 
 	//cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
@@ -1450,8 +1450,7 @@ void unsetRecordMode(void)
 	ca_mask = 1;
 
 #else
-	if(live_fe != NULL)
-		ca_mask |= 1 << live_fe->fenumber;
+		ca_mask |= 1 << demux_index;
 #endif	
 	
 	if(standby)
@@ -3308,8 +3307,7 @@ int stopPlayBack( bool sendPmt)
 			ca_mask = 1;
 
 #else
-			if(record_fe != NULL)
-				ca_mask |= 1 << record_fe->fenumber;
+				ca_mask |= 1 << demux_index;
 #endif	
 
 			if(live_channel_id == rec_channel_id)
