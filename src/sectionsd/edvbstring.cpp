@@ -189,7 +189,6 @@ static unsigned long iso6937[96]={
 
 // Two Char Mapping ( many polish services and UPC Direct/HBO services)
 // get from http://mitglied.lycos.de/buran/charsets/videotex-suppl.html
-//static inline unsigned int doVideoTexSuppl(int c1, int c2)
 static inline unsigned int doVideoTexSuppl(unsigned char c1, unsigned char c2)
 {
 	switch (c1)
@@ -696,35 +695,45 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 
 	if(!table)
 		table = newtable;
-	if(table == 64 && (newtable !=0 )){//for ISO6937
+	if(table == 64 && (newtable !=0 ))
+	{
+		//for ISO6937
 		table = newtable;
 	}
 
 	//printf("recode:::: tsidonid %X table %d two-char %d len %d\n", tsidonid, table, twochar, len);
+	
 	unsigned char res[2048];
 	while (i < len)
 	{
 		unsigned long code = 0;
 
-		if ( i+1 < len && twochar && (code = doVideoTexSuppl(data[i], data[i+1])) ) {
-			i+=2;
+		if ( i+1 < len && twochar && (code = doVideoTexSuppl(data[i], data[i+1])) ) 
+		{
+			i += 2;
 		}
 
-		if (!code) {
-			if (table == 65) { // unicode
-				if (i+1 < len) {
-					code=(data[i] << 8) | data[i+1];
+		if (!code) 
+		{
+			if (table == 65) 
+			{ 
+				// unicode
+				if (i+1 < len) 
+				{
+					code = (data[i] << 8) | data[i+1];
 					i += 2;
 				}
 			}
 			else
-				code=recode(data[i++], table);
+				code = recode(data[i++], table);
 		}
+		
 		if (!code)
 			continue;
+		
 		// Unicode->UTF8 encoding
 		if (code < 0x80) // identity ascii <-> utf8 mapping
-			res[t++]=char(code);
+			res[t++] = char(code);
 		else if((table == 5) && (code == 0x8A))
 			res[t++]= 0x20;
 		else if ((code == 0x8A))
@@ -735,20 +744,23 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 #endif
 		else if (code < 0x800) // two byte mapping
 		{
-			res[t++]=(code>>6)|0xC0;
-			res[t++]=(code&0x3F)|0x80;
-		} else if (code < 0x10000) // three bytes mapping
+			res[t++] = (code>>6)|0xC0;
+			res[t++] = (code&0x3F)|0x80;
+		} 
+		else if (code < 0x10000) // three bytes mapping
 		{
-			res[t++]=(code>>12)|0xE0;
-			res[t++]=((code>>6)&0x3F)|0x80;
-			res[t++]=(code&0x3F)|0x80;
-		} else
+			res[t++] = (code>>12)|0xE0;
+			res[t++] = ((code>>6)&0x3F)|0x80;
+			res[t++] = (code&0x3F)|0x80;
+		} 
+		else
 		{
-			res[t++]=(code>>18)|0xF0;
-			res[t++]=((code>>12)&0x3F)|0x80;
-			res[t++]=((code>>6)&0x3F)|0x80;
-			res[t++]=(code&0x3F)|0x80;
+			res[t++] = (code>>18)|0xF0;
+			res[t++] = ((code>>12)&0x3F)|0x80;
+			res[t++] = ((code>>6)&0x3F)|0x80;
+			res[t++] = (code&0x3F)|0x80;
 		}
+		
 		if (t+4 > 2047)
 		{
 			{} //eDebug("convertDVBUTF8 buffer to small.. break now");
@@ -760,46 +772,50 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 
 const std::string convertLatin1UTF8(const std::string &string)
 {
-	unsigned int t=0, i=0, len=string.size();
+	unsigned int t = 0, i = 0, len = string.size();
 
 	unsigned char res[2048];
 
 	while (i < len)
 	{
-		unsigned long code=string[i++];
+		unsigned long code = string[i++];
 		// Unicode->UTF8 encoding
 		if (code < 0x80) // identity latin <-> utf8 mapping
-			res[t++]=char(code);
+			res[t++] = char(code);
 		else if (code < 0x800) // two byte mapping
 		{
-			res[t++]=(code>>6)|0xC0;
-			res[t++]=(code&0x3F)|0x80;
-		} else if (code < 0x10000) // three bytes mapping
+			res[t++] = (code>>6)|0xC0;
+			res[t++] = (code&0x3F)|0x80;
+		} 
+		else if (code < 0x10000) // three bytes mapping
 		{
-			res[t++]=(code>>12)|0xE0;
-			res[t++]=((code>>6)&0x3F)|0x80;
-			res[t++]=(code&0x3F)|0x80;
-		} else
+			res[t++] = (code>>12)|0xE0;
+			res[t++] = ((code>>6)&0x3F)|0x80;
+			res[t++] = (code&0x3F)|0x80;
+		} 
+		else
 		{
-			res[t++]=(code>>18)|0xF0;
-			res[t++]=((code>>12)&0x3F)|0x80;
-			res[t++]=((code>>6)&0x3F)|0x80;
-			res[t++]=(code&0x3F)|0x80;
+			res[t++] = (code>>18)|0xF0;
+			res[t++] = ((code>>12)&0x3F)|0x80;
+			res[t++] = ((code>>6)&0x3F)|0x80;
+			res[t++] = (code&0x3F)|0x80;
 		}
+		
 		if (t+4 > 2047)
 		{
 			{} //eDebug("convertLatin1UTF8 buffer to small.. break now");
 			break;
 		}
 	}
+	
 	return std::string((char*)res, t);
 }
 
 int isUTF8(const std::string &string)
 {
-	unsigned int len=string.size();
+	unsigned int len = string.size();
 
-	for (unsigned int i=0; i < len; ++i)
+	for (unsigned int i = 0; i < len; ++i)
 	{
 		if (!(string[i]&0x80)) // normal ASCII
 			continue;
@@ -811,7 +827,8 @@ int isUTF8(const std::string &string)
 			i++;
 			if ((string[i]&0xC0) != 0x80)
 				return 0; // no, not UTF-8.
-		} else if ((string[i] & 0xF0) == 0xE0)
+		} 
+		else if ((string[i] & 0xF0) == 0xE0)
 		{
 			if ((i+1) >= len)
 				return 0;
@@ -823,6 +840,7 @@ int isUTF8(const std::string &string)
 				return 0;
 		}
 	}
+	
 	return 1; // can be UTF8 (or pure ASCII, at least no non-UTF-8 8bit characters)
 }
 
