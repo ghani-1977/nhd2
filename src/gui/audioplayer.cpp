@@ -183,10 +183,15 @@ void CAudioPlayerGui::Init(void)
 
 	m_select_title_by_name = g_settings.audioplayer_select_title_by_name == 1;
 
-	if(strlen(g_settings.network_nfs_audioplayerdir) != 0)
-		m_Path = g_settings.network_nfs_audioplayerdir;
+	if(m_inetmode)
+		m_Path = CONFIGDIR "/";
 	else
-		m_Path = "/";
+	{
+		if(strlen(g_settings.network_nfs_audioplayerdir) != 0)
+			m_Path = g_settings.network_nfs_audioplayerdir;
+		else
+			m_Path = "/";
+	}
 
 	audiofilefilter.Clear();
 	
@@ -628,7 +633,7 @@ int CAudioPlayerGui::show()
 			if (m_key_level == 0)
 			{
 				openFilebrowser();
-				update=true;
+				update = true;
 			}
 			else if (m_key_level == 1)
 			{

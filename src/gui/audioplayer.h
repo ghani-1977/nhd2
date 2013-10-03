@@ -160,8 +160,8 @@ class CAudioPlayerGui : public CMenuTarget
 		void play(unsigned int pos);
 		void stop();
 		void pause();
-		void ff(unsigned int seconds=0);
-		void rev(unsigned int seconds=0);
+		void ff(unsigned int seconds = 0);
+		void rev(unsigned int seconds = 0);
 		int getNext();
 		void GetMetaData(CAudiofileExt &File);
 		void updateMetaData();

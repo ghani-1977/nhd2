@@ -516,7 +516,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	{
 		if (new_chan) 
 		{
-			for ( eli=evtlist.begin(); eli!=evtlist.end(); ++eli ) 
+			for ( eli = evtlist.begin(); eli!=evtlist.end(); ++eli ) 
 			{
 				if ((uint)eli->startTime >= info_CurrentNext.current_zeit.startzeit + info_CurrentNext.current_zeit.dauer)
 					break;
@@ -748,7 +748,6 @@ extern std::string g_file_epg1;
 
 void CInfoViewer::showMovieInfo(bool lshow)
 {
-	//bool show_dot = true;
 	m_visible = true;
 	
 	// get dimension
@@ -905,7 +904,7 @@ void CInfoViewer::showMovieInfo(bool lshow)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, cDisplayTime, COL_INFOBAR);
 	
 	// add sec timer
-	sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
+	//sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
 		
 	// show data
 	char runningPercent = 0;
@@ -920,8 +919,7 @@ void CInfoViewer::showMovieInfo(bool lshow)
 	if(oldrunningPercent != runningPercent) 
 		oldrunningPercent = runningPercent;
 	
-	//if(lshow)
-	//moviescale->paint(posx, posy, runningPercent);
+	// progressbar
 	moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 	
 #if !defined USE_OPENGL
@@ -948,10 +946,12 @@ void CInfoViewer::showMovieInfo(bool lshow)
 		} 
 		else 
 		{
+			/*
 			if (msg == CRCInput::RC_standby) 
 			{
 				g_RCInput->killTimer (sec_timer_id);
 			}
+			*/
 					
 			res = neutrino->handleMsg (msg, data);
 					
@@ -970,8 +970,8 @@ void CInfoViewer::showMovieInfo(bool lshow)
 	if (hideIt)
 		killTitle();
 	//
-	g_RCInput->killTimer(sec_timer_id);
-	sec_timer_id = 0;
+	//g_RCInput->killTimer(sec_timer_id);
+	//sec_timer_id = 0;
 }
 
 void CInfoViewer::showSubchan()
@@ -1044,12 +1044,12 @@ void CInfoViewer::showSubchan()
 		frameBuffer->SaveScreen (x - borderwidth, y - borderwidth, dx + 2 * borderwidth, dy + 2 * borderwidth, pixbuf);		
 
 		// clear border
-		frameBuffer->paintBackgroundBoxRel (x - borderwidth, y - borderwidth, dx + 2 * borderwidth, borderwidth);
-		frameBuffer->paintBackgroundBoxRel (x - borderwidth, y + dy, dx + 2 * borderwidth, borderwidth);
-		frameBuffer->paintBackgroundBoxRel (x - borderwidth, y, borderwidth, dy);
-		frameBuffer->paintBackgroundBoxRel (x + dx, y, borderwidth, dy);
+		frameBuffer->paintBackgroundBoxRel(x - borderwidth, y - borderwidth, dx + 2 * borderwidth, borderwidth);
+		frameBuffer->paintBackgroundBoxRel(x - borderwidth, y + dy, dx + 2 * borderwidth, borderwidth);
+		frameBuffer->paintBackgroundBoxRel(x - borderwidth, y, borderwidth, dy);
+		frameBuffer->paintBackgroundBoxRel(x + dx, y, borderwidth, dy);
 
-		frameBuffer->paintBoxRel (x, y, dx, dy, COL_MENUCONTENT_PLUS_0);
+		frameBuffer->paintBoxRel(x, y, dx, dy, COL_MENUCONTENT_PLUS_0);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (x + 10, y + 30, dx - 20, text, COL_MENUCONTENT);
 
 		if (g_RemoteControl->director_mode) 
@@ -1067,7 +1067,7 @@ void CInfoViewer::showSubchan()
 		frameBuffer->blit();
 #endif		
 
-		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd (2);
+		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(2);
 		int res = messages_return::none;
 
 		neutrino_msg_t msg;
@@ -1103,7 +1103,7 @@ void CInfoViewer::showSubchan()
 	} 
 	else 
 	{
-		g_RCInput->postMsg (NeutrinoMessages::SHOW_INFOBAR, 0);
+		g_RCInput->postMsg(NeutrinoMessages::SHOW_INFOBAR, 0);
   	}
 }
 
@@ -1132,14 +1132,14 @@ void CInfoViewer::showIcon_16_9()
 {			
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
 			
-	if(videoDecoder->getAspectRatio() == 1)
+	if(videoDecoder->getAspectRatio() == ASPECTRATIO_169)
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	if (is_visible)
 		frameBuffer->paintIcon(aspect_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), BoxEndY - BUTTON_BAR_HEIGHT + (BUTTON_BAR_HEIGHT - icon_h_aspect)/2 );
 }
 
-void CInfoViewer::showIcon_VTXT () const
+void CInfoViewer::showIcon_VTXT() const
 {
 	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt), BoxEndY - BUTTON_BAR_HEIGHT + (BUTTON_BAR_HEIGHT - icon_h_vtxt)/2 );
 }
@@ -1346,7 +1346,7 @@ void CInfoViewer::showRadiotext()
 					sprintf(stext[0], g_Radiotext->RT_PTY == 0 ? "%s %s%s" : "%s (%s)%s", tr("Radiotext"), g_Radiotext->RT_PTY == 0 ? g_Radiotext->RDS_PTYN : g_Radiotext->ptynr2string(g_Radiotext->RT_PTY), ":");
 					
 					// shadow
-					frameBuffer->paintBoxRel(rt_x+SHADOW_OFFSET, rt_y+SHADOW_OFFSET, rt_dx, rt_dy, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
+					frameBuffer->paintBoxRel(rt_x + SHADOW_OFFSET, rt_y + SHADOW_OFFSET, rt_dx, rt_dy, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_TOP);
 					frameBuffer->paintBoxRel(rt_x, rt_y, rt_dx, rt_dy, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(rt_x + 10, rt_y + 30, rt_dx - 20, stext[0], COL_INFOBAR, 0, RTisIsUTF); // UTF-8
 					
@@ -1356,28 +1356,6 @@ void CInfoViewer::showRadiotext()
 				}
 				yoff = 17;
 				ii = 1;
-#if 0
-				// RDS- or Rass-Symbol, ARec-Symbol or Bitrate
-				int inloff = (ftitel->Height() + 9 - 20) / 2;
-				if (Rass_Flags[0][0]) 
-				{
-					osd->DrawBitmap(Setup.OSDWidth-51, inloff, rass, bcolor, fcolor);
-					if (ARec_Record)
-						osd->DrawBitmap(Setup.OSDWidth-107, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
-					else
-						inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
-					osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-59, ftext->Height(), taRight);
-				}
-				else 
-				{
-					osd->DrawBitmap(Setup.OSDWidth-84, inloff, rds, bcolor, fcolor);
-					if (ARec_Record)
-						osd->DrawBitmap(Setup.OSDWidth-140, inloff, arec, bcolor, 0xFFFC1414);	// FG=Red
-					else
-						inloff = (ftitel->Height() + 9 - ftext->Height()) / 2;
-					osd->DrawText(4, inloff, RadioAudio->bitrate, fcolor, clrTransparent, ftext, Setup.OSDWidth-92, ftext->Height(), taRight);
-				}
-#endif
 			}
 			// Body
 			if (lines) 
@@ -1412,37 +1390,6 @@ void CInfoViewer::showRadiotext()
 					frameBuffer->blit();
 #endif				
 			}
-#if 0
-			// + RT-Plus or PS-Text = 2 rows
-			if ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2) 
-			{
-				if (!RDS_PSShow || !strstr(RTP_Title, "---") || !strstr(RTP_Artist, "---")) 
-				{
-					sprintf(stext[1], "> %s  %s", tr("Title  :"), RTP_Title);
-					sprintf(stext[2], "> %s  %s", tr("Artist :"), RTP_Artist);
-					osd->DrawText(4, 6+yoff+fheight*(ii++), stext[1], fcolor, clrTransparent, ftext, Setup.OSDWidth-4, ftext->Height());
-					osd->DrawText(4, 3+yoff+fheight*(ii++), stext[2], fcolor, clrTransparent, ftext, Setup.OSDWidth-4, ftext->Height());
-				}
-				else 
-				{
-					char *temp = "";
-					int ind = (RDS_PSIndex == 0) ? 11 : RDS_PSIndex - 1;
-					for (int i = ind+1; i < 12; i++)
-						asprintf(&temp, "%s%s ", temp, RDS_PSText[i]);
-					for (int i = 0; i <= ind; i++)
-						asprintf(&temp, "%s%s ", temp, RDS_PSText[i]);
-					snprintf(stext[1], 6*9, "%s", temp);
-					snprintf(stext[2], 6*9, "%s", temp+(6*9));
-					free(temp);
-					osd->DrawText(6, 6+yoff+fheight*ii, "[", fcolor, clrTransparent, ftext, 12, ftext->Height());
-					osd->DrawText(Setup.OSDWidth-12, 6+yoff+fheight*ii, "]", fcolor, clrTransparent, ftext, Setup.OSDWidth-6, ftext->Height());
-					osd->DrawText(16, 6+yoff+fheight*(ii++), stext[1], fcolor, clrTransparent, ftext, Setup.OSDWidth-16, ftext->Height(), taCenter);
-					osd->DrawText(6, 3+yoff+fheight*ii, "[", fcolor, clrTransparent, ftext, 12, ftext->Height());
-					osd->DrawText(Setup.OSDWidth-12, 3+yoff+fheight*ii, "]", fcolor, clrTransparent, ftext, Setup.OSDWidth-6, ftext->Height());
-					osd->DrawText(16, 3+yoff+fheight*(ii++), stext[2], fcolor, clrTransparent, ftext, Setup.OSDWidth-16, ftext->Height(), taCenter);
-				}
-			}
-#endif
 		}
 	}
 	
@@ -1579,7 +1526,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		showFailure();
 
 #if ENABLE_LCD		
-		CVFD::getInstance()->showPercentOver (255);
+		CVFD::getInstance()->showPercentOver(255);
 #endif		
 
 		return messages_return::handled;
@@ -1615,9 +1562,8 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_MODECHANGED) 
 	{
-		//aspectRatio = data;
 		if ( is_visible && showButtonBar )
-	  		showIcon_16_9 ();
+	  		showIcon_16_9();
 
 		return messages_return::handled;
   	} 
@@ -1628,17 +1574,17 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_ZAP_CA_CLEAR) 
 	{
-		Set_CA_Status (false);
+		Set_CA_Status(false);
 		return messages_return::handled;
   	} 
 	else if (msg == NeutrinoMessages::EVT_ZAP_CA_LOCK) 
 	{
-		Set_CA_Status (true);
+		Set_CA_Status(true);
 		return messages_return::handled;
   	} 
 	else if (msg == NeutrinoMessages::EVT_ZAP_CA_FTA) 
 	{
-		Set_CA_Status (false);
+		Set_CA_Status(false);
 		return messages_return::handled;
   	}
 	else if (msg == NeutrinoMessages::EVT_ZAP_CA_ID) 
@@ -2160,7 +2106,7 @@ void CInfoViewer::killTitle()
   	}
 }
 
-void CInfoViewer::Set_CA_Status (int Status)
+void CInfoViewer::Set_CA_Status(int Status)
 {
 	CA_Status = Status;
 	m_CA_Status = Status;
@@ -2201,7 +2147,7 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 	{
 		bool fta = true;
 			
-		for(i=0; i < (int)(sizeof(caids)/sizeof(int)); i++) 
+		for(i = 0; i < (int)(sizeof(caids)/sizeof(int)); i++) 
 		{
 			if (pmt_caids[i]) 
 			{
@@ -2226,16 +2172,8 @@ void CInfoViewer::showEpgInfo()   //message on event change
 	if ((eventname != info_CurrentNext.current_name) && (mode == NeutrinoMessages::mode_tv || mode == NeutrinoMessages::mode_radio))
 	{
 		eventname = info_CurrentNext.current_name;
-		//if (g_settings.infobar_show)
+		
 		g_RCInput->postMsg(NeutrinoMessages::SHOW_INFOBAR , 0);
-#if 0
-		/* let's check if this is still needed */
-		else
-			/* don't show anything, but update the LCD
-			   TODO: we should not have to update the LCD from the _infoviewer_.
-				 they have nothing to do with each other */
-			showLcdPercentOver();
-#endif
 	}
 }
 

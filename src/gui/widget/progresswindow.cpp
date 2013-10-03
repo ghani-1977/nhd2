@@ -80,12 +80,12 @@ void CProgressWindow::showGlobalStatus(const unsigned int prog)
 		if (global_progress > 100)
 			global_progress = 100;
 
-		pos += int( float(width-20)/100.0 * global_progress);
+		pos += int( float(width - 20)/100.0 * global_progress);
 		//vordergrund
-		frameBuffer->paintBox(x+10, globalstatusY,pos, globalstatusY+10, COL_MENUCONTENT_PLUS_7);
+		frameBuffer->paintBox(x + 10, globalstatusY,pos, globalstatusY + 10, COL_MENUCONTENT_PLUS_7);
 	}
 	//hintergrund
-	frameBuffer->paintBox(pos, globalstatusY, x+width-10, globalstatusY+10, COL_MENUCONTENT_PLUS_2);
+	frameBuffer->paintBox(pos, globalstatusY, x+width-10, globalstatusY + 10, COL_MENUCONTENT_PLUS_2);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -110,13 +110,14 @@ void CProgressWindow::showLocalStatus(const unsigned int prog)
 		if (local_progress > 100)
 			local_progress = 100;
 
-		pos += int( float(width-20)/100.0 * local_progress);
+		pos += int( float(width - 20)/100.0 * local_progress);
+		
 		//vordergrund
-		frameBuffer->paintBox(x+10, localstatusY, pos, localstatusY + 10, COL_MENUCONTENT_PLUS_7);
+		frameBuffer->paintBox(x + 10, localstatusY, pos, localstatusY + 10, COL_MENUCONTENT_PLUS_7);
 	}
 	
 	//hintergrund
-	frameBuffer->paintBox(pos, localstatusY, x + width-10, localstatusY + 10, COL_MENUCONTENT_PLUS_2);
+	frameBuffer->paintBox(pos, localstatusY, x + width - 10, localstatusY + 10, COL_MENUCONTENT_PLUS_2);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -184,11 +185,11 @@ void CProgressWindow::paint()
 
 	// local status
 	ypos+= mheight;
-	localstatusY = ypos+ mheight-20;
+	localstatusY = ypos + mheight - 20;
 	showLocalStatus(0);
-	ypos+= mheight+10;
+	ypos += mheight +10;
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos+ mheight, width- 10, g_Locale->getText(LOCALE_FLASHUPDATE_GLOBALPROGRESS), COL_MENUCONTENT, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width - 10, g_Locale->getText(LOCALE_FLASHUPDATE_GLOBALPROGRESS), COL_MENUCONTENT, 0, true); // UTF-8
 	ypos+= mheight;
 
 	// global status
