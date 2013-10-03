@@ -2727,7 +2727,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(g_InfoViewer->m_visible);
 				  g_InfoViewer->killTitle();
 			
-			if ( (was_file && !isMovieBrowser) || m_loop) 
+			if ( (was_file && !isMovieBrowser && !isWebTV) || m_loop) 
 			{
 				was_file = false;
 				m_loop = false;
