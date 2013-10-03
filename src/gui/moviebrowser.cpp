@@ -1508,7 +1508,8 @@ void CMovieBrowser::refreshLastRecordList(void) //P2
 	}
 	m_vHandleRecordList.clear();
 
-	if(m_vMovieInfo.size() <= 0) {
+	if(m_vMovieInfo.size() <= 0) 
+	{
 		if(m_pcLastRecord != NULL)
 			m_pcLastRecord->setLines(&m_recordListLines);
 		return; // exit here if nothing else is to do
@@ -1979,11 +1980,6 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_audio) 
 	{
-#if 0
-		if((m_movieSelectionHandler == playing_info) && (NeutrinoMessages::mode_ts == CNeutrinoApp::getInstance()->getMode()))
-			ShowMsgUTF(LOCALE_MESSAGEBOX_ERROR, "Impossible to cut playing movie.", CMessageBox::mbrCancel, CMessageBox::mbCancel, "error.raw");
-		else 
-#endif
 		if( (show_mode == MB_SHOW_RECORDS) &&
 			ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, "Cut jumps from movie ?", CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 		{
@@ -2699,14 +2695,6 @@ void CMovieBrowser::loadAllTsFileNamesFromStorage(void)
 	}
 
 	dprintf(DEBUG_NORMAL, "[mb] Dir%d, Files:%d \r\n",m_dirNames.size(),m_vMovieInfo.size());
-	
-	/*
-	if(m_vMovieInfo.size() == 0)
-	{
-		std::string msg = g_Locale->getText(LOCALE_MOVIEBROWSER_ERROR_NO_MOVIES);
-		DisplayErrorMessage(msg.c_str());
-	}
-	*/
 }
 
 /************************************************************************
@@ -3176,10 +3164,12 @@ void CMovieBrowser::showHelp(void)
 #define MAX_STRING 30
 void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 {
+	//first clear screen */
+	m_pcWindow->paintBackground();
+	
 	unsigned int i = 0;
 
 	// MovieInfo menu
-
 	// bookmark
 	CStringInputSMS * pBookNameInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
 	CIntInput * pBookPosIntInput[MAX_NUMBER_OF_BOOKMARK_ITEMS];
@@ -3193,7 +3183,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	CIntInput bookEndIntInput (LOCALE_MOVIEBROWSER_EDIT_BOOK,   (int&)movie_info->bookmarks.end,          5, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO1, LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO2);
 
 	CMenuWidget bookmarkMenu(LOCALE_MOVIEBROWSER_BOOK_HEAD, NEUTRINO_ICON_STREAMING);
-	bookmarkMenu.enableSaveScreen(true);
+	//bookmarkMenu.enableSaveScreen(true);
 
 	// intros
 	//bookmarkMenu.addItem(GenericMenuSeparator);
@@ -3211,7 +3201,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 		pBookTypeIntInput[i1] = new CIntInput (LOCALE_MOVIEBROWSER_EDIT_BOOK, (int&) movie_info->bookmarks.user[i1].length, 20, LOCALE_MOVIEBROWSER_EDIT_BOOK_TYPE_INFO1, LOCALE_MOVIEBROWSER_EDIT_BOOK_TYPE_INFO2);
 
 		pBookItemMenu[i1] = new CMenuWidget(LOCALE_MOVIEBROWSER_BOOK_HEAD, NEUTRINO_ICON_STREAMING);
-		pBookItemMenu[i1]->enableSaveScreen(true);
+		//pBookItemMenu[i1]->enableSaveScreen(true);
 		
 		// intros
 		//pBookItemMenu[i]->addItem(GenericMenuSeparator);
@@ -3226,7 +3216,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	CStringInputSMS serieUserInput(LOCALE_MOVIEBROWSER_EDIT_SERIE, &movie_info->serieName);
 
 	CMenuWidget serieMenu(LOCALE_MOVIEBROWSER_SERIE_HEAD, NEUTRINO_ICON_STREAMING);
-	serieMenu.enableSaveScreen(true);
+	//serieMenu.enableSaveScreen(true);
 	
 	// intros
 	//serieMenu.addItem(GenericMenuSeparator);
@@ -3243,7 +3233,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
         movieInfoUpdateAllIfDestEmptyOnly = true;
 
         CMenuWidget movieInfoMenuUpdate(LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE, NEUTRINO_ICON_STREAMING);
-	movieInfoMenuUpdate.enableSaveScreen(true);
+	//movieInfoMenuUpdate.enableSaveScreen(true);
 	
 	// intros
         //movieInfoMenuUpdate.addItem(GenericMenuSeparator);
@@ -3282,7 +3272,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	CIntInput    yearUserIntInput(LOCALE_MOVIEBROWSER_INFO_PRODYEAR,       (int&)movie_info->productionDate, 4, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
 	CMenuWidget movieInfoMenu(LOCALE_MOVIEBROWSER_INFO_HEAD, NEUTRINO_ICON_STREAMING, m_cBoxFrame.iWidth);
-	movieInfoMenu.enableSaveScreen(true);
+	//movieInfoMenu.enableSaveScreen(true);
 
 	// intros
 	//movieInfoMenu.addItem(GenericMenuSeparator);
@@ -3307,7 +3297,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_RECORDDATE,     false, recUserDateInput.getValue()));//LOCALE_FLASHUPDATE_CURRENTVERSIONDATE
 	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_SIZE,           false, size,     NULL));
 
-	movieInfoMenu.exec(NULL,"");
+	movieInfoMenu.exec(NULL, "");
 
 	for(int i3 = 0 ; i3 < MI_MOVIE_BOOK_USER_MAX && i3 < MAX_NUMBER_OF_BOOKMARK_ITEMS; i3++ )
 	{
@@ -3336,7 +3326,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	// parental lock
 	CMenuWidget parentalMenu(LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD , NEUTRINO_ICON_STREAMING);
-	parentalMenu.enableSaveScreen(true);
+	//parentalMenu.enableSaveScreen(true);
 	
 	// intros
 	//parentalMenu.addItem(GenericMenuSeparator);
@@ -3345,7 +3335,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	// optionsVerzeichnisse 
 	CMenuWidget optionsMenuDir(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING);
-	optionsMenuDir.enableSaveScreen(true);
+	//optionsMenuDir.enableSaveScreen(true);
 	
 	// intros
 	//optionsMenuDir.addItem(GenericMenuSeparator);
@@ -3386,7 +3376,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 		browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
 	CMenuWidget optionsMenuBrowser(LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING);
-	optionsMenuBrowser.enableSaveScreen(true);
+	//optionsMenuBrowser.enableSaveScreen(true);
 	
 	// intros
 	//optionsMenuBrowser.addItem(GenericMenuSeparator);
@@ -3413,9 +3403,9 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	//optionsMenu.addItem(GenericMenuSeparator);
 	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_SAVE, true, NULL, this, "save_options",              CRCInput::RC_red,  NEUTRINO_ICON_BUTTON_RED));
 	optionsMenu.addItem(GenericMenuSeparatorLine);
-	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_LOAD_DEFAULT, true, NULL, this, "loaddefault",              CRCInput::RC_green/*blue*/,  NEUTRINO_ICON_BUTTON_GREEN/*BLUE*/));
-	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_OPTION_BROWSER, true, NULL, &optionsMenuBrowser,NULL,       CRCInput::RC_yellow/*green*/, NEUTRINO_ICON_BUTTON_YELLOW/*GREEN*/));
-	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD, true, NULL, &optionsMenuDir,NULL,    CRCInput::RC_blue/*yellow*/, NEUTRINO_ICON_BUTTON_BLUE/*YELLOW*/));
+	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_LOAD_DEFAULT, true, NULL, this, "loaddefault",              CRCInput::RC_green,  NEUTRINO_ICON_BUTTON_GREEN));
+	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_OPTION_BROWSER, true, NULL, &optionsMenuBrowser,NULL,       CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
+	optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD, true, NULL, &optionsMenuDir,NULL,    CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
 	optionsMenu.addItem(GenericMenuSeparatorLine);
 	
 	if(m_parentalLock != MB_PARENTAL_LOCK_OFF)
@@ -3444,8 +3434,8 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	mainMenu.addItem(GenericMenuSeparatorLine);
 	mainMenu.addItem( new CMenuForwarder(LOCALE_EPGPLUS_OPTIONS,                    true, NULL, &optionsMenu,NULL,                                  CRCInput::RC_green,  NEUTRINO_ICON_BUTTON_GREEN));
 	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD, true, NULL, &dirMenu,    NULL,                                  CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
-	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES,       true, NULL, this,        "reload_movie_info",                   CRCInput::RC_blue,   NEUTRINO_ICON_BUTTON_BLUE));
-	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_NFS_HEAD,       true, NULL, nfs,         NULL,                                    CRCInput::RC_setup,  NEUTRINO_ICON_BUTTON_DBOX_SMALL));
+	//mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES,       true, NULL, this,        "reload_movie_info",                   CRCInput::RC_blue,   NEUTRINO_ICON_BUTTON_BLUE));
+	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_NFS_HEAD,       true, NULL, nfs,         NULL,                                    CRCInput::RC_setup,  NEUTRINO_ICON_BUTTON_BLUE));
 	mainMenu.addItem(GenericMenuSeparatorLine);
 	mainMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_HELP_HEAD,        true, NULL, movieHelp,   NULL,                                  CRCInput::RC_info,   NEUTRINO_ICON_BUTTON_HELP_SMALL));
 	//mainMenu.addItem(GenericMenuSeparator);
@@ -4098,7 +4088,6 @@ bool CMovieBrowser::showYTMenu()
 	
 	return true;
 }
-//
 
 CMenuSelector::CMenuSelector(const char * OptionName, const bool Active , char * OptionValue, int* ReturnInt ,int ReturnIntValue ) : CMenuItem()
 {
@@ -5015,19 +5004,24 @@ next_file:
 		lseek64 (srcfd, bpos, SEEK_SET);
 		sdone = bpos;
 		off64_t until = bpos + bskip;
+		
 		printf("copy: read from %lld to %lld read size %d want gop %d\n", bpos, until, BUF_SIZE, need_gop);
-		while(sdone < until) {
+		
+		while(sdone < until) 
+		{
 			size_t toread = (until-sdone) > BUF_SIZE ? BUF_SIZE : until - sdone;
 			bool stop;
 			int msg = get_input(&stop);
 			was_cancel = msg & 2;
-			if(stop) {
+			if(stop) 
+			{
 				close(srcfd);
 				close(dstfd);
 				unlink(dpart);
 				retval = 1;
 				goto ret_err;
 			}
+			
 			if(msg) 
 			{
 				frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
@@ -5062,20 +5056,25 @@ next_file:
 				timescale->paint(x + 41, y + 12, percent);
 #if REAL_CUT
 				int wr = write(dstfd, &buf[wptr], r-wptr);
-				if(wr < (r-wptr)) {
+				if(wr < (r-wptr)) 
+				{
 					printf("write to %s failed\n", dpart);
 					close(srcfd);
 					close(dstfd);
 					goto ret_err;
 				}
 #endif
-			} else if(sdone < s.st_size) {
+			} 
+			else if(sdone < s.st_size) 
+			{
 				/* read error ? */
 				printf("%s: read failed\n", spart);
 				close(srcfd);
 				close(dstfd);
 				goto ret_err;
-			} else {
+			} 
+			else 
+			{
 				printf("copy: -> next file, file pos %lld written %lld left %lld\n", sdone, spos, bskip);
 				bpos = 0;
 				close(srcfd);
@@ -5092,6 +5091,7 @@ next_file:
 			printf("copy: ********* %s: total written %lld took %ld secs\n", dpart, spos, tt1-tt);
 		}
 	} /* for all books */
+	
 	if(onefile) {
 		close(dstfd);
 		save_info(cmovie, minfo, dpart, spos, secsize);
