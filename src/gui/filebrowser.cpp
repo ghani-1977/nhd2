@@ -872,10 +872,6 @@ bool CFileBrowser::exec(const char * const dirname)
 
 	name = dirname;
 	std::replace(name.begin(), name.end(), '\\', '/');
-
-	//paintHead();
-	//ChangeDir(name);
-	//paint();
 	
 	int selection = -1;
 	if (name == Path)
