@@ -863,7 +863,10 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 		int select = -1;
 		char cnt[5];
 		CMenuWidget * menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
-		menu->move(20, 0);
+		
+		if(parent)
+			menu->move(20, 0);
+		
 		menu->enableSaveScreen(true);
 		
 		CMenuSelectorTarget *selector = new CMenuSelectorTarget(&select);
@@ -1087,8 +1090,9 @@ int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 		
 		CMenuWidget * menu = new CMenuWidget(optionName, NEUTRINO_ICON_SETTINGS);
 		
-		//if(parent) 
-		//	menu->move(20, 0);
+		if(parent) 
+			menu->move(20, 0);
+		
 		menu->enableSaveScreen(true);
 		
 		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
