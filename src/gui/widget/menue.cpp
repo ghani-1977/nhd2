@@ -819,8 +819,8 @@ CMenuOptionChooser::CMenuOptionChooser(const neutrino_locale_t OptionName, int *
 	observ            = Observ;
 	directKey         = DirectKey;
 	iconName          = IconName;
-	can_arrow	= true;
-	pulldown = Pulldown;
+	can_arrow	  = true;
+	pulldown          = Pulldown;
 }
 
 CMenuOptionChooser::CMenuOptionChooser(const char *OptionName, int *const OptionValue, const struct keyval *const Options, const unsigned Number_Of_Options, const bool Active, CChangeObserver * const Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
@@ -835,8 +835,8 @@ CMenuOptionChooser::CMenuOptionChooser(const char *OptionName, int *const Option
 	observ            = Observ;
 	directKey         = DirectKey;
 	iconName          = IconName;
-	can_arrow	= true;
-	pulldown = Pulldown;
+	can_arrow	  = true;
+	pulldown          = Pulldown;
 }
 
 void CMenuOptionChooser::setOptionValue(const int newvalue)
@@ -864,8 +864,8 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 		char cnt[5];
 		CMenuWidget * menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
 		
-		if(parent)
-			menu->move(20, 0);
+		//if(parent)
+		//	menu->move(20, 0);
 		
 		menu->enableSaveScreen(true);
 		
@@ -895,9 +895,7 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 		ret = menu_return::RETURN_REPAINT;
 		
 		if(select >= 0) 
-		{
 			*optionValue = options[select].key;
-		}
 		
 		delete menu;
 		delete selector;
@@ -922,7 +920,8 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 		}
 	}
 	
-	paint(true);
+	if(parent)
+		paint(true);
 	
 	if(observ)
 		wantsRepaint = observ->changeNotify(optionName, optionValue);
@@ -1090,8 +1089,8 @@ int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 		
 		CMenuWidget * menu = new CMenuWidget(optionName, NEUTRINO_ICON_SETTINGS);
 		
-		if(parent) 
-			menu->move(20, 0);
+		//if(parent) 
+		//	menu->move(20, 0);
 		
 		menu->enableSaveScreen(true);
 		
@@ -1110,8 +1109,10 @@ int CMenuOptionStringChooser::exec(CMenuTarget * parent)
 		}
 		menu->exec(NULL, "");
 		ret = menu_return::RETURN_REPAINT;
+		
 		if(select >= 0)
 			strcpy(optionValue, options[select].c_str());
+		
 		delete menu;
 		delete selector;
 	} 
