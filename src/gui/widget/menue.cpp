@@ -862,7 +862,7 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 	{
 		int select = -1;
 		char cnt[5];
-		CMenuWidget * menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
+		CMenuWidget *menu = new CMenuWidget(optionNameString.c_str(), NEUTRINO_ICON_SETTINGS);
 		
 		//if(parent)
 		//	menu->move(20, 0);
@@ -915,6 +915,8 @@ int CMenuOptionChooser::exec(CMenuTarget *parent)
 				} 
 				else
 					*optionValue = options[(count+1) % number_of_options].key;
+				
+				wantsRepaint = true;
 				break;
 			}
 		}
