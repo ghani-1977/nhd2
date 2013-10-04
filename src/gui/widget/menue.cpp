@@ -807,7 +807,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 }
 
 // CMenuOptionChooser
-CMenuOptionChooser::CMenuOptionChooser(const neutrino_locale_t OptionName, int * const OptionValue, const struct keyval * const Options, const unsigned Number_Of_Options, const bool Active, CChangeObserver * const Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
+CMenuOptionChooser::CMenuOptionChooser(const neutrino_locale_t OptionName, int *const OptionValue, const struct keyval *const Options, const unsigned Number_Of_Options, const bool Active, CChangeObserver * const Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
 {
 	height            = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	optionNameString  = g_Locale->getText(OptionName);
@@ -823,7 +823,7 @@ CMenuOptionChooser::CMenuOptionChooser(const neutrino_locale_t OptionName, int *
 	pulldown = Pulldown;
 }
 
-CMenuOptionChooser::CMenuOptionChooser(const char* OptionName, int * const OptionValue, const struct keyval * const Options, const unsigned Number_Of_Options, const bool Active, CChangeObserver * const Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
+CMenuOptionChooser::CMenuOptionChooser(const char *OptionName, int *const OptionValue, const struct keyval *const Options, const unsigned Number_Of_Options, const bool Active, CChangeObserver * const Observ, const neutrino_msg_t DirectKey, const std::string & IconName, bool Pulldown)
 {
 	height            = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
 	optionNameString  = OptionName;
@@ -849,10 +849,13 @@ int CMenuOptionChooser::getOptionValue(void) const
 	return *optionValue;
 }
 
-int CMenuOptionChooser::exec(CMenuTarget * parent)
+int CMenuOptionChooser::exec(CMenuTarget *parent)
 {
 	bool wantsRepaint = false;
 	int ret = menu_return::RETURN_NONE;
+	
+	if (parent)
+		parent->hide();
 
 	// pulldown
 	if( (!parent || msg == CRCInput::RC_ok) && pulldown ) 
@@ -863,7 +866,7 @@ int CMenuOptionChooser::exec(CMenuTarget * parent)
 		menu->move(20, 0);
 		menu->enableSaveScreen(true);
 		
-		CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
+		CMenuSelectorTarget *selector = new CMenuSelectorTarget(&select);
 		
 		// intros
 		//menu->addItem(GenericMenuSeparator);
@@ -871,7 +874,7 @@ int CMenuOptionChooser::exec(CMenuTarget * parent)
 		for(unsigned int count = 0; count < number_of_options; count++) 
 		{
 			bool selected = false;
-			const char * l_option;
+			const char *l_option;
 			
 			if (options[count].key == (*optionValue))
 				selected = true;
@@ -1016,6 +1019,7 @@ int CMenuOptionChooser::paint( bool selected )
 	{
 		//helpbar
 		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
+		
 		// refresh
 		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 		
