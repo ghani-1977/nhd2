@@ -63,9 +63,6 @@ cVideo::cVideo()
 #else	
 	StreamType = VIDEO_STREAMTYPE_MPEG2;
 #endif
-
-	//Ratio = ASPECTRATIO_169;
-	//Policy = VIDEOFORMAT_PANSCAN2;
 }
 
 cVideo::~cVideo(void)
@@ -690,10 +687,10 @@ void cVideo::SetInput(int val)
 }
 
 /* Pig */
-void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h)
+void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h, int num)
 { 
 	//ugly we just resize the video display
-	dprintf(DEBUG_INFO, "%s:%s - x=%d y=%d w=%d h=%d\n", FILENAME, __FUNCTION__, x, y, w, h);
+	dprintf(DEBUG_INFO, "%s:%s - x=%d y=%d w=%d h=%d (video_num=%d)\n", FILENAME, __FUNCTION__, x, y, w, h, num);
 	
 	int _x, _y, _w, _h;
 	/* the target "coordinates" seem to be in a PAL sized plane
@@ -718,20 +715,36 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h)
 	
 #if !defined (PLATFORM_GENERIC)	
 	FILE* fd;
-
-	fd = fopen("/proc/stb/vmpeg/0/dst_left", "w");
+	char vmpeg_left[100];
+	char vmpeg_top[100];
+	char vmpeg_width[100];
+	char vmpeg_height[100];
+	
+	// left
+	sprintf(vmpeg_left, "/proc/stb/vmpeg/%d/dst_left", num);
+	
+	fd = fopen(vmpeg_left, "w");
 	fprintf(fd, "%x", _x);
 	fclose(fd);
 
-	fd = fopen("/proc/stb/vmpeg/0/dst_top", "w");
+	// top
+	sprintf(vmpeg_top, "/proc/stb/vmpeg/%d/dst_top", num);
+	
+	fd = fopen(vmpeg_top, "w");
 	fprintf(fd, "%x", _y);
 	fclose(fd);
 
-	fd = fopen("/proc/stb/vmpeg/0/dst_width", "w");
+	// width
+	sprintf(vmpeg_width, "/proc/stb/vmpeg/%d/dst_width", num);
+	
+	fd = fopen(vmpeg_width, "w");
 	fprintf(fd, "%x", _w);
 	fclose(fd);
 
-	fd = fopen("/proc/stb/vmpeg/0/dst_height", "w");
+	// height
+	sprintf(vmpeg_height, "/proc/stb/vmpeg/%d/dst_height", num);
+	
+	fd = fopen(vmpeg_height, "w");
 	fprintf(fd, "%x", _h);
 	fclose(fd);
 #endif	

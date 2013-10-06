@@ -1949,7 +1949,7 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 		}
 
-		/* Time */
+		// timeosd
 		if (FileTime.IsVisible()) 
 		{
 			if (FileTime.GetMode() == CTimeOSD::MODE_ASC) 
@@ -1963,6 +1963,11 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.show(position / 1000);
 			}
 		}
+		
+		// infoviwer /barprogress
+		if (g_InfoViewer->m_visible)
+			//g_InfoViewer->showMovieInfo();
+			g_RCInput->postMsg((neutrino_msg_t)CRCInput::RC_info, 0);
 
 		// start playing
 		if (start_play) 
@@ -2390,8 +2395,6 @@ void CMoviePlayerGui::PlayFile(void)
 					{
 						FileTime.SetMode(CTimeOSD::MODE_DESC);
 						FileTime.update((duration - position) / 1000);
-						//FileTime.show(position / 1000);
-						//FileTime.updatePos(file_prozent);
 					} 
 					else 
 					{
@@ -2402,7 +2405,6 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					FileTime.SetMode(CTimeOSD::MODE_ASC);
 					FileTime.show(position / 1000);
-					//FileTime.updatePos(file_prozent);
 				}
 			}
 			else

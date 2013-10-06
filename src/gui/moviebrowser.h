@@ -228,6 +228,7 @@ typedef struct
 	
 	// youtube
 	int ytmode;
+	int ytorderby;
 	int ytresults;
 	std::string ytregion;
 	std::string ytvid;

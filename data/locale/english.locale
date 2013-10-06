@@ -1628,3 +1628,9 @@ moviebrowser.yt_search Search keyword
 moviebrowser.yt_top_favorites Top favorites
 moviebrowser.yt_top_rated Top rated
 movieplayer.ytplayback Youtube player
+moviebrowser.yt_orderby Order by
+moviebrowser.yt_orderby.published publishing date
+moviebrowser.yt_orderby.rating rating
+moviebrowser.yt_orderby.relevance relevance
+moviebrowser.yt_orderby.viewcount view count
+

@@ -305,20 +305,14 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 					resources.push_back(resource);
 				}
 				int pref=0;
-				preferred=-1;
-				for (i=0; i<resources.size(); i++)
+				preferred = -1;
+				
+				for (i = 0; i < resources.size(); i++)
 				{
-					protocol=resources[i].protocol;
+					protocol = resources[i].protocol;
 					splitProtocol(protocol, prot, network, mime, additional);
 					if (prot != "http-get")
 						continue;
-
-					/*
-					if (mime.substr(0,6) == "image/" && pref < 1)
-					{
-						preferred = i;
-					}
-					*/
 					
 					if (mime == "image/jpeg" && pref < 1)
 					{
@@ -333,7 +327,7 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 
 					if (mime == "audio/mpeg" && pref < 3)
 					{
-						preferred=i;
+						preferred = i;
 						pref = 3;
 					}
 					
@@ -346,7 +340,7 @@ std::vector<UPnPEntry> *CUpnpBrowserGui::decodeResult(std::string result)
 					//
 					if (mime.substr(0,6) == "video/" && pref < 5)
 					{
-						preferred=i;
+						preferred = i;
 						pref = 5;
 					}
 					
@@ -570,16 +564,6 @@ void CUpnpBrowserGui::playnext(void)
 				std::string protocol, prot, network, mime, additional;
 				protocol=(*entries)[0].resources[preferred].protocol;
 				splitProtocol(protocol, prot, network, mime, additional);
-				
-				/*
-				if (mime.substr(0, 6) != "image/") 
-				{
-					m_frameBuffer->ClearFrameBuffer();
-#if !defined USE_OPENGL
-					m_frameBuffer->blit();
-#endif					
-				}
-				*/
 				
 				if (mime == "audio/mpeg")
 				{
@@ -1018,6 +1002,7 @@ void CUpnpBrowserGui::paintItemPos(std::vector<UPnPEntry> *entry, unsigned int p
 		if (preferred != -1)
 		{
 			info = (*entry)[pos].resources[preferred].duration;
+			//FIXME
 			fileicon = NEUTRINO_ICON_MP3;
 		}
 		else
@@ -1086,18 +1071,6 @@ void CUpnpBrowserGui::paintDevice()
 	ypos = m_y + m_title_height;
 	if(m_theight > 26)
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
-	
-	//m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
-#if 0
-	if( CNeutrinoApp::getInstance()->isMuted() )
-	{
-		xpos = m_x + m_width - 75;
-		ypos = m_y + m_title_height;
-		if(m_theight > 32)
-			ypos = (m_theight - 32) / 2 + m_y + m_title_height;
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, xpos, ypos);
-	}
-#endif
 
 	// Items
 	for (unsigned int count=0;count<m_listmaxshow;count++)
@@ -1207,17 +1180,6 @@ void CUpnpBrowserGui::paintItem(std::vector<UPnPEntry> *entry, unsigned int sele
 	ypos = m_y + m_title_height;
 	if(m_theight > 26)
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
-	//m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
-#if 0
-	if( CNeutrinoApp::getInstance()->isMuted() )
-	{
-		xpos = m_x + m_width - 75;
-		ypos = m_y + m_title_height;
-		if(m_theight > 32)
-			ypos = (m_theight - 32) / 2 + m_y + m_title_height;
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, xpos, ypos);
-	}
-#endif
 
 	// Items
 	for (unsigned int count=0;count<m_listmaxshow;count++)

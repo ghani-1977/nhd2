@@ -1629,4 +1629,10 @@ moviebrowser.yt_search Suche nach Stichwort
 moviebrowser.yt_top_favorites Top Favoriten
 moviebrowser.yt_top_rated Am besten bewertet
 movieplayer.ytplayback Youtube Player
+moviebrowser.yt_orderby Sortierung nach
+moviebrowser.yt_orderby.published Veröffentlichungszeitpunkt
+moviebrowser.yt_orderby.rating Bewertung
+moviebrowser.yt_orderby.relevance Relevanz
+moviebrowser.yt_orderby.viewcount Zahl der Views
+
 

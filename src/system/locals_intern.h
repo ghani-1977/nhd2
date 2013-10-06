@@ -1642,5 +1642,10 @@ const char * locale_real_names[] = {
 	"moviebrowser.yt_top_favorites",
 	"moviebrowser.yt_top_rated",
 	"movieplayer.ytplayback",
+	"moviebrowser.yt_orderby",
+	"moviebrowser.yt_orderby.published",
+	"moviebrowser.yt_orderby.rating",
+	"moviebrowser.yt_orderby.relevance",
+	"moviebrowser.yt_orderby.viewcount"
 };
 #endif

@@ -3759,7 +3759,8 @@ skip_message:
 					radioMode(false);
 				else
 					radioMode(true);
-#if ENABLE_RADIOTEXT				
+#if ENABLE_RADIOTEXT	
+				//FIXME: this sucks when no DVB device is present
 				if (g_settings.radiotext_enable)
 					g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
 #endif				

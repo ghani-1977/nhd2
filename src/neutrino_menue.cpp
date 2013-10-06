@@ -167,11 +167,11 @@ static CTimingSettingsNotifier timingsettingsnotifier;
 extern int FrontendCount;			// defined in zapit.cpp
 CFrontend * getFE(int index);
 
-extern Zapit_config zapitCfg;	//defined in neutrino.cpp
+extern Zapit_config zapitCfg;			//defined in neutrino.cpp
 //void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config *Cfg);
 
-extern char recDir[255];// defined in neutrino.cpp
+extern char recDir[255];			// defined in neutrino.cpp
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -265,11 +265,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_UPNPBROWSER_HEAD, true, NULL, new CUpnpBrowserGui(), NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "upnpbrowser", LOCALE_HELPTEXT_UPNPBROWSER ));
 #endif
 
-	// vcr-scart
-//#if defined (ENABLE_SCART)
-//	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SCARTMODE, true, NULL, this, "scart", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "scart", LOCALE_HELPTEXT_SCART ));
-//#endif
-
 	// webtv
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "webtv", LOCALE_HELPTEXT_SCART) );
 	
@@ -306,8 +301,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	// main settings
 	int shortcutMainSettings = 1;
-
-	//mainSettings.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::EMPTY) );
 
 	// video settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_VIDEO, true, NULL, &videoSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "videosettings", LOCALE_HELPTEXT_VIDEOSETTINGS ));
@@ -463,7 +456,6 @@ const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFO
 	{ DISPLAY_AR_MODE_PANSCAN2, LOCALE_VIDEOMENU_PANSCAN2, NULL },
 	{ DISPLAY_AR_MODE_LETTERBOX, LOCALE_VIDEOMENU_LETTERBOX, NULL },
 	{ DISPLAY_AR_MODE_NONE, LOCALE_VIDEOMENU_FULLSCREEN, NULL }
-	//{ 2, LOCALE_VIDEOMENU_AUTO } // whatever is this auto mode, it seems its totally broken
 };
 #else
 // giga
