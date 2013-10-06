@@ -774,7 +774,6 @@ void CInfoViewer::showMovieInfo(bool lshow)
 		
 	// bottum bar
 	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + (BoxHeight - 20), BoxWidth, 20, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, CORNER_BOTTOM); 
-		
 	
 	// mp icon
 	int m_icon_w = 0;
@@ -902,22 +901,15 @@ void CInfoViewer::showMovieInfo(bool lshow)
 	// duration
 	if(!isWebTV && !isVlc && lshow)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, cDisplayTime, COL_INFOBAR);
-	
-	// add sec timer
-	//sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
 		
 	// show data
 	char runningPercent = 0;
-  	static char oldrunningPercent = 255;
 	
 	runningPercent = file_prozent;
 	if(runningPercent > 100)
 		runningPercent = 100;
 	else if(runningPercent < 0)
 		runningPercent = 0;
-	
-	if(oldrunningPercent != runningPercent) 
-		oldrunningPercent = runningPercent;
 	
 	// progressbar
 	moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
@@ -945,15 +937,11 @@ void CInfoViewer::showMovieInfo(bool lshow)
 				res = messages_return::cancel_info;
 		} 
 		else 
-		{
-			/*
-			if (msg == CRCInput::RC_standby) 
-			{
-				g_RCInput->killTimer (sec_timer_id);
-			}
-			*/
-					
+		{		
 			res = neutrino->handleMsg (msg, data);
+			
+			// progressbar
+			moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 					
 			if (res & messages_return::unhandled) 
 			{
@@ -962,6 +950,7 @@ void CInfoViewer::showMovieInfo(bool lshow)
 				res = messages_return::cancel_info;
 			}
 		}
+	
 #if !defined USE_OPENGL
 		frameBuffer->blit();
 #endif			
@@ -969,9 +958,6 @@ void CInfoViewer::showMovieInfo(bool lshow)
 	
 	if (hideIt)
 		killTitle();
-	//
-	//g_RCInput->killTimer(sec_timer_id);
-	//sec_timer_id = 0;
 }
 
 void CInfoViewer::showSubchan()

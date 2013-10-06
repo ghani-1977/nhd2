@@ -201,8 +201,6 @@ bool CPictureViewer::DisplayNextImage ()
   	if (m_NextPic_Buffer != NULL)
 		CFrameBuffer::getInstance()->displayRGB(m_NextPic_Buffer, m_NextPic_X, m_NextPic_Y, m_NextPic_XPan, m_NextPic_YPan, m_NextPic_XPos, m_NextPic_YPos);
 	
-	//printf("DisplayNextImage fb_disp done\n");
-	
   	m_CurrentPic_Buffer = m_NextPic_Buffer;
   	m_NextPic_Buffer = NULL;
   	m_CurrentPic_Name = m_NextPic_Name;
@@ -220,7 +218,7 @@ void CPictureViewer::Zoom(float factor)
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::Zoom %f\n",factor);
 	
-	showBusy (m_startx + 3, m_starty + 3, 10, 0xff, 0xff, 00);
+	showBusy(m_startx + 3, m_starty + 3, 10, 0xff, 0xff, 00);
 	
 	int oldx = m_CurrentPic_X;
 	int oldy = m_CurrentPic_Y;
