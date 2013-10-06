@@ -1330,7 +1330,7 @@ void CNeutrinoApp::InitLanguageSettings(CMenuWidget &languageSettings)
 		
 		if(n > 0)
 		{
-			for(int count=0;count<n;count++) 
+			for(int count = 0; count < n; count++) 
 			{
 				char * locale = strdup(namelist[count]->d_name);
 				char * pos = strstr(locale, ".locale");
@@ -1805,7 +1805,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	colorSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_VIDEOMENU_OSD));
 	
 	// select font
-	//colorSettings.addItem(new CMenuForwarder(LOCALE_COLORMENU_FONT, true, NULL, this, "select_font", CRCInput::convertDigitToKey(shortcutOSD++) ));
 	colorSettings.addItem( new CMenuForwarder(LOCALE_EPGPLUS_SELECT_FONT_NAME, true, NULL, this, "select_font", CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
 	//font scaling
@@ -1823,7 +1822,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	// sceensetup
 	colorSettings.addItem(new CMenuForwarder(LOCALE_VIDEOMENU_SCREENSETUP, true, NULL, ScreenSetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
-#if !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_DREAMBOX) && !defined (PLATFORM_XTREND) && !defined (PLATFORM_VUPLUS) && !defined (PLATFORM_TECHNOMATE) && !defined (PLATFORM_GENERIC)
+#if defined (__sh__)
 	colorSettings.addItem(GenericMenuSeparatorLine);
 
 	// alpha setup

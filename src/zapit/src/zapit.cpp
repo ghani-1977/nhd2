@@ -796,7 +796,6 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	ca_mask |= 1 << demux_index;
 #endif	
 
-	//cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
 	if(currentMode & RECORD_MODE) 
 	{
 		if(rec_channel_id != live_channel_id) 
@@ -2718,10 +2717,12 @@ void addChannelToBouquet(const unsigned int bouquet, const t_channel_id channel_
 	CZapitChannel * chan = g_bouquetManager->findChannelByChannelID(channel_id);
 
 	if (chan != NULL)
+	{
 		if (bouquet < g_bouquetManager->Bouquets.size())
 			g_bouquetManager->Bouquets[bouquet]->addService(chan);
 		else
 			printf("bouquet not found\n");
+	}
 	else
 		printf("channel_id not found in channellist\n");
 }
@@ -2894,7 +2895,6 @@ void sendRecordSubPIDs(int connfd)
 		}
 	}
 }
-//
 
 void internalSendChannels(int connfd, ZapitChannelList* channels, const unsigned int first_channel_nr, bool nonames)
 {
@@ -2938,7 +2938,9 @@ void internalSendChannels(int connfd, ZapitChannelList* channels, const unsigned
 			CZapitClient::responseGetBouquetChannels response;
 			strncpy(response.name, ((*channels)[i]->getName()).c_str(), CHANNEL_NAME_SIZE);
 			response.name[CHANNEL_NAME_SIZE-1] = 0;
+			
 			//printf("internalSendChannels: name %s\n", response.name);
+			
 			response.satellitePosition = (*channels)[i]->getSatellitePosition();
 			response.channel_id = (*channels)[i]->getChannelID();
 			response.nr = first_channel_nr + i;
@@ -2962,6 +2964,7 @@ void sendBouquets(int connfd, const bool emptyBouquetsToo, CZapitClient::channel
 {
 	CZapitClient::responseGetBouquets msgBouquet;
         int curMode;
+	
         switch(mode) 
 	{
                 case CZapitClient::MODE_TV:

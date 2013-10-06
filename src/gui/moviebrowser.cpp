@@ -3125,7 +3125,6 @@ void CMovieBrowser::loadMovies(void)
 	{
 		loadAllTsFileNamesFromStorage(); // P1
 
-		//m_file_info_stale = false;	//FIXME:???
 		m_seriename_stale = true; // we reloaded the movie info, so make sure the other list are  updated later on as well
 		updateSerienames();
 		
@@ -3223,7 +3222,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	
 	// intros
 	//serieMenu.addItem(GenericMenuSeparator);
-	serieMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_SERIE_NAME,   true, movie_info->serieName, &serieUserInput));
+	serieMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_SERIE_NAME, true, movie_info->serieName, &serieUserInput));
 	serieMenu.addItem(GenericMenuSeparatorLine);
 	
 	for(unsigned int i2 = 0; i2 < m_vHandleSerienames.size(); i2++)
@@ -3284,7 +3283,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_BOOK_HEAD,           true, NULL,      &bookmarkMenu, NULL,                                    CRCInput::RC_blue,  NEUTRINO_ICON_BUTTON_BLUE));
 	movieInfoMenu.addItem(GenericMenuSeparatorLine);
 	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_TITLE,          true, movie_info->epgTitle,  &titelUserInput,NULL,                       CRCInput::RC_1, NEUTRINO_ICON_BUTTON_1));
-	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_SERIE,          true, movie_info->serieName, &serieMenu,NULL,                            CRCInput::RC_2, NEUTRINO_ICON_BUTTON_2));
+	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_SERIE,          true, movie_info->serieName, &serieMenu, NULL,                            CRCInput::RC_2, NEUTRINO_ICON_BUTTON_2));
 	movieInfoMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_INFO_INFO1,          (movie_info->epgInfo1.size() <= MAX_STRING) /*true*/, movie_info->epgInfo1,      &epgUserInput,NULL,                     CRCInput::RC_3, NEUTRINO_ICON_BUTTON_3));
 	movieInfoMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_INFO_GENRE_MAJOR, &movie_info->genreMajor, GENRE_ALL, GENRE_ALL_COUNT, true,NULL,         CRCInput::RC_4, NEUTRINO_ICON_BUTTON_4));
 	movieInfoMenu.addItem(GenericMenuSeparatorLine);
@@ -3843,15 +3842,18 @@ void CMovieBrowser::updateSerienames(void)
 			bool found = false;
 			for(unsigned int t = 0; t < m_vHandleSerienames.size() && found == false; t++)
 			{
-				if(strcmp(m_vHandleSerienames[t]->serieName.c_str(),m_vMovieInfo[i].serieName.c_str()) == 0)
+				if(strcmp(m_vHandleSerienames[t]->serieName.c_str(), m_vMovieInfo[i].serieName.c_str()) == 0)
 					found = true;
 			}
+			
 			if(found == false)
-			m_vHandleSerienames.push_back(&m_vMovieInfo[i]);
+				m_vHandleSerienames.push_back(&m_vMovieInfo[i]);
 		}
 	}
+	
 	//dprintf(DEBUG_NORMAL, "[mb]->updateSerienames: %d\r\n",m_vHandleSerienames.size());
 	// TODO sort(m_serienames.begin(), m_serienames.end(), my_alphasort);
+	
 	m_seriename_stale = false;
 }	
 
@@ -3860,6 +3862,7 @@ void CMovieBrowser::autoFindSerie(void)
 	dprintf(DEBUG_INFO, "autoFindSerie\n");
 	updateSerienames(); // we have to make sure that the seriename array is up to date, otherwise this does not work
 			    // if the array is not stale, the function is left immediately
+			    
 	for(unsigned int i = 0; i < m_vMovieInfo.size(); i++)
 	{
 		// For all movie infos, which do not have a seriename, we try to find one.
@@ -3868,7 +3871,7 @@ void CMovieBrowser::autoFindSerie(void)
 		//dprintf(DEBUG_NORMAL, "%s ",m_vMovieInfo[i].serieName);
 		if( m_vMovieInfo[i].serieName.empty())
 		{
-			for(unsigned int t=0; t < m_vHandleSerienames.size();t++)
+			for(unsigned int t = 0; t < m_vHandleSerienames.size(); t++)
 			{
 				//dprintf(DEBUG_NORMAL, "%s ",m_vHandleSerienames[i].serieName);
 				if(m_vMovieInfo[i].epgTitle == m_vHandleSerienames[t]->epgTitle )
@@ -3956,10 +3959,10 @@ const CMenuOptionChooser::keyval YT_FEED_OPTIONS[] =
 
 const CMenuOptionChooser::keyval YT_ORDERBY_OPTIONS[] =
 {
-        { cYTFeedParser::ORDERBY_PUBLISHED, LOCALE_MOVIEBROWSER_YT_ORDERBY_PUBLISHED },
-        { cYTFeedParser::ORDERBY_RELEVANCE, LOCALE_MOVIEBROWSER_YT_ORDERBY_RELEVANCE },
-        { cYTFeedParser::ORDERBY_VIEWCOUNT, LOCALE_MOVIEBROWSER_YT_ORDERBY_VIEWCOUNT },
-        { cYTFeedParser::ORDERBY_RATING, LOCALE_MOVIEBROWSER_YT_ORDERBY_RATING },
+        { cYTFeedParser::ORDERBY_PUBLISHED, LOCALE_MOVIEBROWSER_YT_ORDERBY_PUBLISHED, NULL },
+        { cYTFeedParser::ORDERBY_RELEVANCE, LOCALE_MOVIEBROWSER_YT_ORDERBY_RELEVANCE, NULL },
+        { cYTFeedParser::ORDERBY_VIEWCOUNT, LOCALE_MOVIEBROWSER_YT_ORDERBY_VIEWCOUNT, NULL },
+        { cYTFeedParser::ORDERBY_RATING, LOCALE_MOVIEBROWSER_YT_ORDERBY_RATING, NULL },
 };
 
 #define YT_ORDERBY_OPTION_COUNT (sizeof(YT_ORDERBY_OPTIONS)/sizeof(CMenuOptionChooser::keyval))

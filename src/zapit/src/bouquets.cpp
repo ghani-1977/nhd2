@@ -111,7 +111,7 @@ void CZapitBouquet::sortBouquet(void)
 	sort(radioChannels.begin(), radioChannels.end(), CmpChannelByChName());
 }
 
-void CZapitBouquet::addService(CZapitChannel * newChannel)
+void CZapitBouquet::addService(CZapitChannel *newChannel)
 {
 	switch (newChannel->getServiceType())
 	{
@@ -712,7 +712,7 @@ void CBouquetManager::clearAll()
 	remainChannels = NULL;
 }
 
-CZapitChannel* CBouquetManager::findChannelByChannelID(const t_channel_id channel_id)
+CZapitChannel *CBouquetManager::findChannelByChannelID(const t_channel_id channel_id)
 {
 	tallchans_iterator itChannel = allchans.find(channel_id);
 	if (itChannel != allchans.end())

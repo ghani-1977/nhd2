@@ -151,11 +151,11 @@ bool CZapitChannel::isHD()
 	switch(serviceType) 
 	{
 		case ST_MPEG_2_HD_TELEVISION_SERVICE: 
-		case /*ST_MPEG_4_HD_TELEVISION_SERVICE*/ST_AVC_HD_DIGITAL_TV_SERVICE:
+		case ST_AVC_HD_DIGITAL_TV_SERVICE:
 			return true;
 			
 		case ST_DIGITAL_TELEVISION_SERVICE: 
-		case /*ST_MPEG_4_SD_TELEVISION_SERVICE*/ST_AVC_SD_DIGITAL_TV_SERVICE:
+		case ST_AVC_SD_DIGITAL_TV_SERVICE:
 		{
 				char * temp = (char *) name.c_str();
 				int len = name.size();
@@ -223,11 +223,11 @@ void CZapitChannel::addTTXSubtitle(const unsigned int pid, const std::string lan
 		channelSubs.push_back(tmpSub);
 	}
 	
-	tmpSub->pId=pid;
-	tmpSub->ISO639_language_code=langCode;
-	tmpSub->teletext_magazine_number=mag_nr;
-	tmpSub->teletext_page_number=page_number;
-	tmpSub->hearingImpaired=impaired;
+	tmpSub->pId = pid;
+	tmpSub->ISO639_language_code = langCode;
+	tmpSub->teletext_magazine_number = mag_nr;
+	tmpSub->teletext_page_number = page_number;
+	tmpSub->hearingImpaired = impaired;
 
 	//setPidsUpdated();
 }
