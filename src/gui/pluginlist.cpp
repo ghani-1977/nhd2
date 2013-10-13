@@ -304,7 +304,7 @@ void CPluginList::paintItem(int pos)
 			
 			frameBuffer->getIconSize(NEUTRINO_ICON_PLUGIN, &icon_w, &icon_h);
 			
-			if (!(actplugin->icon.empty()))
+			if (!actplugin->icon.empty() && (!access(IconName.c_str(), F_OK)))
 				frameBuffer->paintIcon(IconName.c_str(), x + 8, ypos + 5 );
 			else
 				frameBuffer->paintIcon( NEUTRINO_ICON_PLUGIN, x + 8, ypos + 5 );
