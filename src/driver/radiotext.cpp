@@ -1,5 +1,5 @@
 /*
-	$Id: radiotext.cpp,v 1.7 2009/10/31 10:11:02 seife Exp $
+	$Id: radiotext.cpp 2013/10/12 mohousch Exp $
 	
 	Neutrino-GUI  -   DBoxII-Project
 
@@ -100,9 +100,6 @@ int Rass_GalStart, Rass_GalEnd, Rass_GalCount, Rass_SlideFoto;
 
 #define floor
 const char *DataDir = "/tmp/rass";
-//cRadioAudio *RadioAudio;
-//cRadioTextOsd *RadioTextOsd;
-//cRDSReceiver *RDSReceiver;
 
 // RDS-Chartranslation: 0x80..0xff
 unsigned char rds_addchar[128] = {
@@ -758,14 +755,14 @@ void CRadioText::RadioStatusMsg(void)
 		int ind = (RT_Index == 0) ? S_RtOsdRows - 1 : RT_Index - 1;
 		strcpy(temp, RT_Text[ind]);
 		printf("RadioStatusMsg = %s\n", temp);
-//		cStatus::MsgOsdTextItem(rtrim(temp), false);
+		//cStatus::MsgOsdTextItem(rtrim(temp), false);
 	}
 
 	if ((S_RtMsgItems == 1 || S_RtMsgItems >= 3) && ((S_RtOsdTags == 1 && RT_PlusShow) || S_RtOsdTags >= 2)) 
 	{
-//		struct tm tm_store;
-//		struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
-//		cStatus::MsgOsdProgramme(mktime(ts), RTP_Title, RTP_Artist, 0, NULL, NULL);
+		//struct tm tm_store;
+		//struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
+		//cStatus::MsgOsdProgramme(mktime(ts), RTP_Title, RTP_Artist, 0, NULL, NULL);
 		printf("RTP_Title = %s, RTP_Artist = %s\n", RTP_Title, RTP_Artist);
 	}
 }
@@ -1115,6 +1112,7 @@ void *RadioTextThread(void *data)
 	CRadioText *rt = ((CRadioText::s_rt_thread*)data)->rt_object;
 	//int fd = ((CRadioText::s_rt_thread*)data)->fd;
 	cDemux *RTaudioDemux = rt->audioDemux;
+	
 	//printf("in RadioTextThread fd = %d\n", fd);
 
 	bool ret = false;

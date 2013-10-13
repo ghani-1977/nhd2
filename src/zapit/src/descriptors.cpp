@@ -462,7 +462,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 			break;
 			
 		case CZapitClient::ST_ALL:
-			service_wr=true;
+			service_wr = true;
 			break;
 	}
 
@@ -699,7 +699,7 @@ void service_descriptor(const unsigned char * const buffer, const t_service_id s
 				lastServiceName = serviceName;
 				eventServer->sendEvent(CZapitClient::EVT_SCAN_SERVICENAME, CEventServer::INITID_ZAPIT, (void *) lastServiceName.c_str(), lastServiceName.length() + 1);
 
-				CZapitChannel* chan = scanBouquetManager->findChannelByChannelID(channel_id);
+				CZapitChannel *chan = scanBouquetManager->findChannelByChannelID(channel_id);
 				if(chan)
 					bouquet->addService(chan);
 
@@ -746,32 +746,9 @@ void current_service_descriptor(const unsigned char * const buffer, const t_serv
 
 	if(service_type == 0x11 || service_type == 0x19)
 		service_type = 1;
-#if 0
-        switch ( scanType ) 
-	{
-            case CZapitClient::ST_TVRADIO:
-                   if ( (service_type == 1 ) || (service_type == 2) )
-                           service_wr=true;
-                   break;
-		   
-            case CZapitClient::ST_TV:
-                   if ( service_type == 1 )
-                           service_wr=true;
-                   break;
-		   
-            case CZapitClient::ST_RADIO:
-                   if ( service_type == 2 )
-                           service_wr=true;
-                   break;
-		   
-            case CZapitClient::ST_ALL:
-                   service_wr=true;
-                   break;
-        }
-#endif
 
 	if ( (service_type == 1 ) || (service_type == 2) )
-		service_wr=true;
+		service_wr = true;
 
         if ( !service_wr )
 		return;

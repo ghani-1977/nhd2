@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: framebuffer.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2001 Steffen Hehn 'McClean'
                       2003 thegoodguy

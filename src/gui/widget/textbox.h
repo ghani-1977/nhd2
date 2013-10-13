@@ -1,6 +1,8 @@
 
 /***************************************************************************
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: textbox.h 2013/10/12 mohousch Exp $
 
 	Homepage: http://dbox.cyberphoria.org/
 

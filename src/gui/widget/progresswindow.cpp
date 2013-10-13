@@ -1,7 +1,7 @@
 /*
-	$Id: progresswindow.cpp,v 1.16 2007/02/25 21:32:58 guenther Exp $
-
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: progresswindow.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2001 Steffen Hehn 'McClean'
 	Homepage: http://dbox.cyberphoria.org/

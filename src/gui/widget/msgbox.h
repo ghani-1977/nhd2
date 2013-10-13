@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: msgbox.h 2013/10/12 mohousch Exp $
 
  	Homepage: http://dbox.cyberphoria.org/
 

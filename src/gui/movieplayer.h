@@ -1,5 +1,7 @@
 /*
   Neutrino-GUI  -   DBoxII-Project
+  
+  $Id: movieplayer.h 2013/10/12 mohousch Exp $
 
   Copyright (C) 2003,2004 gagga
   Homepage: http://www.giggo.de/dbox

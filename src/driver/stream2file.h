@@ -1,5 +1,5 @@
 /*
- * $Id: stream2file.h,v 1.10 2005/01/12 20:40:22 chakazulu Exp $
+ * $Id: stream2file.h 2013/10/12 mohousch Exp $
  *
  * (C) 2004 by thegoodguy <thegoodguy@berlios.de>
  *

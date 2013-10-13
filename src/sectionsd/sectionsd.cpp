@@ -1,5 +1,5 @@
 //
-//  $Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp Exp $
+//  $Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp $
 //
 //    sectionsd.cpp (network daemon for SI-sections)
 //    (dbox-II-project)

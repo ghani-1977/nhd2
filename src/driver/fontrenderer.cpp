@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: fontrenderer.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2001 Steffen Hehn 'McClean'
         Copyright (C) 2003 thegoodguy
@@ -84,6 +86,7 @@ FBFontRenderClass::FBFontRenderClass(const int xr, const int yr)
 		dprintf(DEBUG_NORMAL, "[FONT] sbit failed!\n");
 		return;
 	}
+	
 	#if 0
 	if (FTC_ImageCache_New(cacheManager, &imageCache))
 	{

@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: hintboxext.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2001 Steffen Hehn 'McClean'
 	Homepage: http://dbox.cyberphoria.org/
@@ -54,6 +56,7 @@ CHintBoxExt::CHintBoxExt(const neutrino_locale_t Caption, const char * const Tex
 	char *begin   = m_message;
 
 	begin = strtok(m_message, "\n");
+	
 	while (begin != NULL)
 	{
 		std::vector<Drawable*> oneLine;

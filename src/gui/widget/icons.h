@@ -2,7 +2,7 @@
 #define __gui_widget_icons_h__
 
 /*
- * $Header: /cvs/tuxbox/apps/tuxbox/neutrino/src/gui/widget/icons.h,v 1.21 2009/12/15 09:51:23 dbt Exp $
+ * $Id: icons.h 2013/10/12 mohousch Exp $
  *
  * (C) 2003 by thegoodguy <thegoodguy@berlios.de>
  *

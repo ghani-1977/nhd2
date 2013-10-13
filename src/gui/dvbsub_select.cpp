@@ -1,8 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
 
-	Copyright (C) 2001 Steffen Hehn 'McClean'
-	Homepage: http://dbox.cyberphoria.org/
+	$Id: dvbsub_select.cpp 2011/11/11 11:23:30 mohousch Exp $
 
 	Kommentar:
 
@@ -62,11 +61,9 @@ int CDVBSubSelectMenuHandler::exec(CMenuTarget * parent, const std::string &/*ac
 	int res = menu_return::RETURN_EXIT_ALL;
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
-	doMenu ();
+	doMenu();
 
 	return res;
 }

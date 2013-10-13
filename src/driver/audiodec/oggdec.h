@@ -1,10 +1,12 @@
 /*
-	Neutrino-GUI  -   __sh__II-Project
+	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: oggdec.h 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2002,2003,2004 Sania,Zwen
 	
 	ogg vorbis audio decoder
-	Homepage: http://www.__sh__2.info/
+	Homepage: http://www.dbox2.info/
 
 	Kommentar:
 

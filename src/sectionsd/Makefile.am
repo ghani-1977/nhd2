@@ -18,7 +18,7 @@ endif
 
 noinst_LIBRARIES = libsectionsd.a
 
-libsectionsd_a_SOURCES = abstime.c sectionsd.cpp dmxapi.cpp debug.cpp dmx.cpp SIsections.cpp SIevents.cpp SIutils.cpp SIlanguage.cpp edvbstring.cpp
+libsectionsd_a_SOURCES = abstime.c sectionsd.cpp dmxapi.cpp dmx.cpp SIsections.cpp SIevents.cpp SIutils.cpp SIlanguage.cpp edvbstring.cpp
 
 if ENABLE_FREESATEPG
 libsectionsd_a_SOURCES += \

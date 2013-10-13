@@ -1,7 +1,8 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
 
-
+	$Id: imageinfo.cpp 2013/10/12 mohousch Exp $
+	
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify

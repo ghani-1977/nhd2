@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: msgbox.cpp 2013/10/12 mohousch Exp $
 
  	Homepage: http://dbox.cyberphoria.org/
 
@@ -29,14 +31,14 @@
 
 	***********************************************************
 
-    Module Name: msgbox.cpp: .
+	Module Name: msgbox.cpp: .
 
 	Description: Implementation of the CMsgBox class
 				 This class provides a  message box using CTextBox.
 
   	Date:	Nov 2005
 
-	Author: Gnther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	Revision History:
@@ -89,29 +91,26 @@ CMsgBox::CMsgBox(  const char * text,
 				   int return_button , 
 				   const result_ default_result)
 {
-	//TRACE("->CMsgBox::CMsgBox\r\n");
 	initVar();
 
-	if(title != NULL)		m_cTitle = title;
-	if(fontTitle != NULL)	m_pcFontTitle = fontTitle;
-	if(icon != NULL)		m_cIcon = icon;
-	if(position != NULL)	m_cBoxFrame	= *position;
+	if(title != NULL)		
+		m_cTitle = title;
+	
+	if(fontTitle != NULL)	
+		m_pcFontTitle = fontTitle;
+	
+	if(icon != NULL)		
+		m_cIcon = icon;
+	
+	if(position != NULL)	
+		m_cBoxFrame	= *position;
+	
 	m_nMode	= _mode;
-	//TRACE(" CMsgBox::cText: %d ,m_cTitle %d,m_nMode %d\t\r\n",strlen(text),m_cTitle.size(),m_nMode);
 
 	if(m_nMode & BORDER)
 		m_nWindowFrameBorderWidth = WINDOW_FRAME_BORDER_WIDTH;
 	else
 		m_nWindowFrameBorderWidth = 0;
-
-	//TRACE("  Mode: ");
-	//if(_mode & BORDER) TRACE("BORDER ");
-	//if(_mode & TITLE) TRACE("TITLE ");
-	//if(_mode & FOOT) TRACE("FOOT ");
-	//if(_mode & CENTER) TRACE("CENTER");
-	//TRACE("\r\n");
-
-	//TRACE_1(" m_nWindowFrameBorderWidth: \t%d\r\n",m_nWindowFrameBorderWidth);
 
 
 	/* Initialise the window frames first */
@@ -285,31 +284,7 @@ void CMsgBox::initFramesRel(void)
 	m_cBoxFrameText.iY		= m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight;
 	m_cBoxFrameText.iX		= m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX;
 	m_cBoxFrameText.iHeight	= m_cBoxFrame.iHeight - m_cBoxFrameTitleRel.iHeight - m_cBoxFrameFootRel.iHeight - m_nWindowFrameBorderWidth;
-	m_cBoxFrameText.iWidth	= m_cBoxFrame.iWidth  - m_nWindowFrameBorderWidth;
-#if 0
-	TRACE_1("Frames\r\n\tScren:\t%3d,%3d,%3d,%3d\r\n\tMain:\t%3d,%3d,%3d,%3d\r\n\tText:\t%3d,%3d,%3d,%3d \r\n\tTitle:\t%3d,%3d,%3d,%3d \r\n\tFoot:\t%3d,%3d,%3d,%3d\r\n\r\n",
-		g_settings.screen_StartX,
-		g_settings.screen_StartY,
-		g_settings.screen_EndX,
-		g_settings.screen_EndY,
-		m_cBoxFrame.iX,
-		m_cBoxFrame.iY,
-		m_cBoxFrame.iWidth,
-		m_cBoxFrame.iHeight,
-		m_cBoxFrameText.iX,
-		m_cBoxFrameText.iY,
-		m_cBoxFrameText.iWidth,
-		m_cBoxFrameText.iHeight,
-		m_cBoxFrameTitleRel.iX,
-		m_cBoxFrameTitleRel.iY,
-		m_cBoxFrameTitleRel.iWidth,
-		m_cBoxFrameTitleRel.iHeight,
-		m_cBoxFrameFootRel.iX,
-		m_cBoxFrameFootRel.iY,
-		m_cBoxFrameFootRel.iWidth,
-		m_cBoxFrameFootRel.iHeight
-		);
-#endif		
+	m_cBoxFrameText.iWidth	= m_cBoxFrame.iWidth  - m_nWindowFrameBorderWidth;		
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -332,7 +307,7 @@ void CMsgBox::refreshFoot(void)
 								m_cBoxFrameFootRel.iHeight,  
 								(CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
 
-	//const char* text;
+	//const char *text;
 
 	int MaxButtonTextWidth = m_pcFontFoot->getRenderWidth(g_Locale->getText(LOCALE_MESSAGEBOX_CANCEL), true); // UTF-8
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth;
@@ -414,7 +389,8 @@ void CMsgBox::refreshFoot(void)
 void CMsgBox::refreshTitle(void)
 {
 	// first check if title is configured
-	if(	!(m_nMode & TITLE)) return;
+	if(	!(m_nMode & TITLE)) 
+		return;
 
 	// draw the background
 	m_pcWindow->paintBoxRel(	m_cBoxFrameTitleRel.iX+m_cBoxFrame.iX, 
@@ -462,7 +438,8 @@ void CMsgBox::refreshTitle(void)
 //////////////////////////////////////////////////////////////////////
 void CMsgBox::refreshBorder(void)
 {
-	if(	!(m_nMode & BORDER && m_nWindowFrameBorderWidth > 0)) return;
+	if(	!(m_nMode & BORDER && m_nWindowFrameBorderWidth > 0))
+		return;
 
 	//draw bottom shadow
 	m_pcWindow->paintBoxRel(	m_nWindowFrameBorderWidth+m_cBoxFrame.iX, 
@@ -725,7 +702,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 		}
 
 #if !defined USE_OPENGL
-	m_pcWindow->blit();
+		m_pcWindow->blit();
 #endif
 	}
 

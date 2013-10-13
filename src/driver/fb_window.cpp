@@ -1,5 +1,5 @@
 /*
- * $Header: /cvs/tuxbox/apps/tuxbox/neutrino/src/driver/fb_window.cpp,v 1.6 2004/03/14 22:28:13 thegoodguy Exp $
+ * $Id: fb_window.cpp 2013/10/12 mohousch Exp $
  *
  * abstract fb_window class - d-box2 linux project
  *

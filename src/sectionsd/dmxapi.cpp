@@ -1,5 +1,5 @@
 /*
- * $Header: /cvs/tuxbox/apps/tuxbox/neutrino/daemons/sectionsd/dmxapi.cpp,v 1.5 2005/01/13 10:48:02 diemade Exp $
+ * $Id: dmxapi.cpp 2013/10/12 mohousch Exp $
  *
  * DMX low level functions (sectionsd) - d-box2 linux project
  *

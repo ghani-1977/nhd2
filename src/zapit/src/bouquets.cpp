@@ -453,20 +453,22 @@ void CBouquetManager::makeBouquetfromCurrentservices(const xmlNodePtr root)
 		
 		xmlNodePtr transponder = provider->xmlChildrenNode;
 		
-		while (xmlGetNextOccurence(transponder, "transponder") != NULL) {
+		while (xmlGetNextOccurence(transponder, "transponder") != NULL) 
+		{
 			
 			xmlNodePtr channel_node = transponder->xmlChildrenNode;
 			
-			while (xmlGetNextOccurence(channel_node, "channel") != NULL) {
+			while (xmlGetNextOccurence(channel_node, "channel") != NULL) 
+			{
 				
-				if (strncmp(xmlGetAttribute(channel_node, "action"), "remove", 6)) {
-					
+				if (strncmp(xmlGetAttribute(channel_node, "action"), "remove", 6)) 
+				{
 					GET_ATTR(provider, "position", SCANF_SATELLITE_POSITION_TYPE, satellitePosition);
 					GET_ATTR(transponder, "onid", SCANF_ORIGINAL_NETWORK_ID_TYPE, original_network_id);
 					GET_ATTR(transponder, "id", SCANF_TRANSPORT_STREAM_ID_TYPE, transport_stream_id);
 					GET_ATTR(channel_node, "service_id", SCANF_SERVICE_ID_TYPE, service_id);
 								
-					CZapitChannel* chan = findChannelByChannelID(CREATE_CHANNEL_ID);
+					CZapitChannel *chan = findChannelByChannelID(CREATE_CHANNEL_ID);
 
 					if (chan != NULL)
 						newBouquet->addService(chan);

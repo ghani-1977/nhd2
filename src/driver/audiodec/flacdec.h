@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: flacdec.h 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2002,2003,2004 Sania,Zwen
 	

@@ -1,8 +1,9 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: neutrino_menu.cpp 2013/10/12 11:23:30 mohousch Exp $
 
-	Copyright (C) 2001 Steffen Hehn 'McClean'
-							 and some other guys
+	Copyright (C) 2001 Steffen Hehn 'McClean' and some other guys
 	Homepage: http://dbox.cyberphoria.org/
 
 	Kommentar:

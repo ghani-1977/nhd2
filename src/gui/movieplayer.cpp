@@ -1,5 +1,7 @@
 /*
   Neutrino-GUI  -   DBoxII-Project
+  
+  $Id: movieplayer.cpp 2013/10/12 mohousch Exp $
 
   Movieplayer (c) 2003, 2004 by gagga
   Based on code by Dirch, obi and the Metzler Bros. Thanks.

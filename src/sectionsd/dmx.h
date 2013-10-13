@@ -1,5 +1,5 @@
 /*
- * $Header: /cvs/tuxbox/apps/tuxbox/neutrino/daemons/sectionsd/dmx.h,v 1.17 2009/05/23 16:50:12 seife Exp $
+ * $Id: dmx.h 2013/10/12 mohousch Exp $
  *
  * DMX class (sectionsd) - d-box2 linux project
  *

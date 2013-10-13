@@ -39,6 +39,7 @@ std::string Latin1_to_UTF8(const std::string & s)
 			d = 0x80 | (c & 0x3f);
 			r += d;
 		}
-	}		
+	}
+	
 	return r;
 }

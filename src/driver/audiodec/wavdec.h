@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: wavdec.h 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2004 Zwen
 	
@@ -32,6 +34,7 @@
 #include <stdio.h>
 #include <driver/audiodec/basedec.h>
 
+
 class CWavDec : public CBaseDec
 {
 
@@ -48,7 +51,6 @@ protected:
 	int mChannels;
 	int header_size;
 };
-
 
 #endif
 

@@ -102,6 +102,7 @@ CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int _mode, cons
 
 	if(font_text != NULL)	
 		m_pcFontList = font_text;
+	
 	if(font_text != NULL)	
 		m_pcFontHeaderList = font_text;
 
@@ -113,14 +114,6 @@ CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int _mode, cons
 	}
 
 	m_nMode	= _mode;
-
-#if 0
-	TRACE("  Mode: ");
-	if(mode & SCROLL) TRACE("SCROLL ");
-	if(mode & AUTO_WIDTH) TRACE("AUTO_WIDTH ");
-	if(mode & AUTO_HIGH) TRACE("AUTO_HIGH");
-	TRACE("\r\n");
-#endif
 
 	if(font_title != NULL) 
 		m_pcFontTitle = font_title;
@@ -150,6 +143,7 @@ CListFrame::CListFrame(	LF_LINES* lines)
  	{
 		m_pLines = lines;
 		m_nNrOfRows = lines->rows;
+		
 		if(m_nNrOfRows > LF_MAX_ROWS)
 			m_nNrOfRows = LF_MAX_ROWS;
 	}
@@ -218,8 +212,11 @@ void CListFrame::reSizeMainFrameWidth(int textWidth)
 
 	int iNewWindowWidth =	textWidth  + m_cFrameScrollRel.iWidth   + 2*TEXT_BORDER_WIDTH;
 
-	if( iNewWindowWidth > m_nMaxWidth) iNewWindowWidth = m_nMaxWidth;
-	if((unsigned int) iNewWindowWidth < MIN_WINDOW_WIDTH) iNewWindowWidth = MIN_WINDOW_WIDTH;
+	if( iNewWindowWidth > m_nMaxWidth) 
+		iNewWindowWidth = m_nMaxWidth;
+	
+	if((unsigned int) iNewWindowWidth < MIN_WINDOW_WIDTH) 
+		iNewWindowWidth = MIN_WINDOW_WIDTH;
 
 	m_cFrame.iWidth	= iNewWindowWidth;
 
@@ -233,8 +230,11 @@ void CListFrame::reSizeMainFrameHeight(int textHeight)
 
 	int iNewWindowHeight =	textHeight + 2*TEXT_BORDER_WIDTH;
 
-	if( iNewWindowHeight > m_nMaxHeight) iNewWindowHeight = m_nMaxHeight;
-	if( iNewWindowHeight < MIN_WINDOW_HEIGHT) iNewWindowHeight = MIN_WINDOW_HEIGHT;
+	if( iNewWindowHeight > m_nMaxHeight) 
+		iNewWindowHeight = m_nMaxHeight;
+	
+	if( iNewWindowHeight < MIN_WINDOW_HEIGHT) 
+		iNewWindowHeight = MIN_WINDOW_HEIGHT;
 
 	m_cFrame.iHeight	= iNewWindowHeight;
 
@@ -336,6 +336,7 @@ void CListFrame::onNewLineArray(void)
 			m_nCurrentPage = m_nNrOfPages - 1;
 			m_nCurrentLine = m_nCurrentPage * m_nLinesPerPage;
 		}
+		
 		if(m_nSelectedLine >= m_nNrOfLines)
 		{
 			m_nSelectedLine = m_nCurrentLine;
@@ -349,14 +350,6 @@ void CListFrame::onNewLineArray(void)
 		m_nLinesPerPage = 1;
 		m_nNrOfPages = 0;
 	}
-
-//	TRACE_1(" m_nNrOfPages:     %d\r\n",m_nNrOfPages);
-//	TRACE_1(" m_nNrOfLines:     %d\r\n",m_nNrOfLines);
-//	TRACE_1(" maxTextWidth:  %d\r\n",maxTextWidth);
-//	TRACE_1(" m_nLinesPerPage:  %d\r\n",m_nLinesPerPage);
-//	TRACE_1(" m_nFontTextHeight:%d\r\n",m_nFontListHeight);
-	//TRACE_1(" m_nCurrentPage:   %d\r\n",m_nCurrentPage);
-	//TRACE_1(" m_nCurrentLine:   %d\r\n",m_nCurrentLine);
 }
 
 void CListFrame::refreshTitle(void)
@@ -456,8 +449,7 @@ void CListFrame::refreshLine(int line)
 	else
 	{
 		color = LIST_FONT_COLOR;
-		frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, 
-				m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR);
+		frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR);
 	}
 	int width;
 	int x = m_cFrameListRel.iX + TEXT_BORDER_WIDTH;

@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: mp3dec.h 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2002 Bjoern Kalkbrenner <terminar@cyberphoria.org>
 	Copyright (C) 2002,2003 Dirch
@@ -72,7 +74,6 @@ class CMP3Dec : public CBaseDec
 		bool SaveCover(FILE*);
 		CMP3Dec(){};
 };
-
 
 #endif
 

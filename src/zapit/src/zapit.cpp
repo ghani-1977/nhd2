@@ -3635,7 +3635,7 @@ void * sdt_thread(void */*arg*/)
 			bool tpdone = 0;
 			//bool satfound = 0;
 			//FIXME: writing current services is brocken ;(
-			//NOTE: think about nulti services
+			//NOTE: think about multi services
 
 			tI = transponders.find(tpid);
 			if(tI == transponders.end()) 
@@ -3653,7 +3653,7 @@ void * sdt_thread(void */*arg*/)
 
 			if(live_channel) 
 			{
-				if( parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe/*->fenumber*/ ) < 0 )
+				if( parse_current_sdt(transport_stream_id, original_network_id, satellitePosition, freq, live_fe) < 0 )
 					continue;
 			}
 

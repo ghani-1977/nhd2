@@ -143,9 +143,11 @@ int parse_sdt(t_transport_stream_id *p_transport_stream_id,t_original_network_id
 						ISO_639_language_descriptor(buffer + pos2);
 						break;
 	
-						/*case 0x40:
+					/*
+					case 0x40:
 						network_name_descriptor(buffer + pos2);
-						break;*/
+						break;
+					*/
 
 					case 0x42:
 						stuffing_descriptor(buffer + pos2);
@@ -288,6 +290,8 @@ int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const 
 	unsigned char mask[DMX_FILTER_SIZE];
 
 	curchans.clear();
+	
+	//
 	filter[0] = 0x42;
 	filter[1] = (p_transport_stream_id >> 8) & 0xff;
 	filter[2] = p_transport_stream_id & 0xff;
@@ -335,6 +339,7 @@ int parse_current_sdt( const t_transport_stream_id p_transport_stream_id, const 
 			for (pos2 = pos + 5; pos2 < pos + descriptors_loop_length + 5; pos2 += buffer[pos2 + 1] + 2) 
 			{
 				//printf("[sdt] descriptor %X\n", buffer[pos2]);
+				
 				switch (buffer[pos2]) 
 				{
 					case 0x48:

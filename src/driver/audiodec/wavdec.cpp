@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: wavdec.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2004 Zwen
 	

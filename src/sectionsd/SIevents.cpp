@@ -1,5 +1,5 @@
 //
-// $Id: SIevents.cpp,v 1.35 2008/08/16 19:23:18 seife Exp $
+// $Id: SIEvent.cpp.cpp 2013/10/12 mohousch Exp $
 //
 // classes SIevent and SIevents (dbox-II-project)
 //

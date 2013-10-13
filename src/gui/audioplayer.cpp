@@ -1,6 +1,7 @@
 /*
-  $Id: audioplayer.cpp,v 1.80 2009/10/18 14:38:03 dbt Exp $
   Neutrino-GUI  -   DBoxII-Project
+  
+  $Id: audioplayer.cpp 2013/10/12 mohousch Exp $
 
   AudioPlayer by Dirch,Zwen
 

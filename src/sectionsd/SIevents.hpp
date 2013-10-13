@@ -1,7 +1,7 @@
 #ifndef SIEVENTS_HPP
 #define SIEVENTS_HPP
 //
-// $Id: SIevents.hpp,v 1.29 2008/08/16 19:23:18 seife Exp $
+// $Id: SIEvent.h 2013/10/12 mohousch Exp $
 //
 // classes SIevent and SIevents (dbox-II-project)
 //

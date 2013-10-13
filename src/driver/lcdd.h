@@ -1,5 +1,5 @@
 /*
-	$Id$
+	$Id: lcdd.h 2013/10/12 mohousch Exp $
 
 	LCD-Daemon  -   DBoxII-Project
 

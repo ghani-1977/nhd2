@@ -1,7 +1,7 @@
 #ifndef __fb_window_h__
 #define __fb_window_h__
 /*
- * $Header: /cvs/tuxbox/apps/tuxbox/neutrino/src/driver/fb_window.h,v 1.3 2004/03/13 12:45:41 thegoodguy Exp $
+ * $Id: fb_window.h 2013/10/12 mohousch Exp $
  *
  * abstract fb_window class - d-box2 linux project
  *

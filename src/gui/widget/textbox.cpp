@@ -1,5 +1,7 @@
 /***************************************************************************
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: textbox.cpp 2013/10/12 mohousch Exp $
 
 	Homepage: http://dbox.cyberphoria.org/
 
@@ -100,15 +102,6 @@ CTextBox::CTextBox(const char * text, Font * font_text, const int _mode, const C
 		m_nMode = m_nMode & ~AUTO_WIDTH; /* delete any AUTO_WIDTH*/
 	}
 
-#if 0
-	TRACE("  Mode: ");
-	if(mode & SCROLL) TRACE("SCROLL ");
-	if(mode & NO_AUTO_LINEBREAK) TRACE("NO_AUTO_LINEBREAK ");
-	if(mode & AUTO_WIDTH) TRACE("AUTO_WIDTH ");
-	if(mode & AUTO_HIGH) TRACE("AUTO_HIGH");
-	TRACE("\r\n");
-
-#endif
 	dprintf(DEBUG_DEBUG, " CTextBox::m_cText: %d, m_nMode %d\t\r\n", m_cText.size(), m_nMode);
 
 	m_textBackgroundColor = textBackgroundColor;
@@ -241,27 +234,6 @@ void CTextBox::initFramesRel(void)
 	m_cFrameTextRel.iWidth	= m_cFrame.iWidth - m_cFrameScrollRel.iWidth;
 
 	m_nLinesPerPage = (m_cFrameTextRel.iHeight - (2*TEXT_BORDER_WIDTH)) / m_nFontTextHeight;
-
-#if 0
-	TRACE_1("Frames\r\n\tScren:\t%3d,%3d,%3d,%3d\r\n\tMain:\t%3d,%3d,%3d,%3d\r\n\tText:\t%3d,%3d,%3d,%3d \r\n\tScroll:\t%3d,%3d,%3d,%3d \r\n",
-		g_settings.screen_StartX,
-		g_settings.screen_StartY,
-		g_settings.screen_EndX,
-		g_settings.screen_EndY,
-		m_cFrame.iX,
-		m_cFrame.iY,
-		m_cFrame.iWidth,
-		m_cFrame.iHeight,
-		m_cFrameTextRel.iX,
-		m_cFrameTextRel.iY,
-		m_cFrameTextRel.iWidth,
-		m_cFrameTextRel.iHeight,
-		m_cFrameScrollRel.iX,
-		m_cFrameScrollRel.iY,
-		m_cFrameScrollRel.iWidth,
-		m_cFrameScrollRel.iHeight
-		);
-#endif
 }
 
 void CTextBox::refreshTextLineArray(void)
@@ -396,16 +368,6 @@ void CTextBox::refreshTextLineArray(void)
 		m_nCurrentLine = 0;
 		m_nLinesPerPage = 1;
 	}
-#if 0	
-	TRACE_1(" m_nNrOfPages:     %d\r\n",m_nNrOfPages);
-	TRACE_1(" m_nNrOfLines:     %d\r\n",m_nNrOfLines);
-	TRACE_1(" m_nNrOfNewLine:   %d\r\n",m_nNrOfNewLine);
-	TRACE_1(" maxTextWidth:  %d\r\n",maxTextWidth);
-	TRACE_1(" m_nLinesPerPage:  %d\r\n",m_nLinesPerPage);
-	TRACE_1(" m_nFontTextHeight:%d\r\n",m_nFontTextHeight);
-	TRACE_1(" m_nCurrentPage:   %d\r\n",m_nCurrentPage);
-	TRACE_1(" m_nCurrentLine:   %d\r\n",m_nCurrentLine);
-#endif
 }
 
 void CTextBox::refreshScroll(void)

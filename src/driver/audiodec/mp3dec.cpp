@@ -1,8 +1,10 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: mp3dec.cpp 2013/10/12 mohousch Exp $
 
 	Copyright (C) 2002 Bjoern Kalkbrenner <terminar@cyberphoria.org>
-   (C) 2002,2003,2004 Zwen <Zwen@tuxbox.org>
+	(C) 2002,2003,2004 Zwen <Zwen@tuxbox.org>
    
 	libmad MP3 low-level core
 	Homepage: http://www.cyberphoria.org/

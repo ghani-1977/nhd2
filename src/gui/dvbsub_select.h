@@ -1,7 +1,8 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
 
-
+	$Id: dvbsub_select.h 2011/11/22 11:23:30 mohousch Exp $
+	
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,7 @@
 /*
 	Neutrino-GUI  -   DBoxII-Project
+	
+	$Id: audioplay.h 2013/10/12 mohousch Exp $
 
 	Homepage: http://www.dbox2.info/
 
@@ -31,6 +33,7 @@
 #include <driver/audiofile.h>
 #include <driver/audiometadata.h>
 #include <string>
+
 
 class CAudioPlayer
 {
@@ -68,7 +71,6 @@ class CAudioPlayer
 		CAudioPlayer();
 		~CAudioPlayer();
 };
-
 
 #endif
 

@@ -1,6 +1,7 @@
 /*
-  $Id: audioplayer.h,v 1.24 2009/10/03 10:36:29 seife Exp $
   Neutrino-GUI  -   DBoxII-Project
+  
+  $Id: audioplayer.h 2013/10/12 mohousch Exp $
 
   Copyright (C) 2001 Steffen Hehn 'McClean'
   Homepage: http://dbox.cyberphoria.org/
