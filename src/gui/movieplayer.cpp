@@ -131,12 +131,12 @@ bool isDVD = false;
 bool isBlueRay = false;
 bool isURL = false;
 
-int speed = 1;
-int slow = 0;
+static int speed = 1;
+static int slow = 0;
 
-int position = 0;
-int duration = 0;
-int file_prozent;
+static int position = 0;
+static int duration = 0;
+static int file_prozent;
 
 static int startposition;
 int timeshift;
@@ -2057,7 +2057,8 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				else
 				{
-					g_InfoViewer->showMovieInfo(false);
+					//g_InfoViewer->showMovieInfo(false);
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
 				}
 			}
 		}
@@ -2190,7 +2191,8 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				
 				if(!g_InfoViewer->m_visible)
-					g_InfoViewer->showMovieInfo();
+					//g_InfoViewer->showMovieInfo();
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 			}
 		} 
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_pause) 
@@ -2240,7 +2242,8 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				
 				if(!g_InfoViewer->m_visible)
-					g_InfoViewer->showMovieInfo();
+					//g_InfoViewer->showMovieInfo();
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 			}
 		} 
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_bookmark) 
@@ -2358,7 +2361,8 @@ void CMoviePlayerGui::PlayFile(void)
 					FileTime.hide();
 				
 				if( !g_InfoViewer->m_visible )
-					g_InfoViewer->showMovieInfo();
+					//g_InfoViewer->showMovieInfo();
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 				else 
 				{
 					g_InfoViewer->killTitle();
@@ -2444,7 +2448,8 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			
 			if(!g_InfoViewer->m_visible)
-				g_InfoViewer->showMovieInfo();
+				//g_InfoViewer->showMovieInfo();
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 		}
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_forward) 
 		{	// fast-forward
@@ -2479,7 +2484,8 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			
 			if(!g_InfoViewer->m_visible)
-				g_InfoViewer->showMovieInfo();
+				//g_InfoViewer->showMovieInfo();
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 		} 
 		else if (msg == CRCInput::RC_1) 
 		{	// Jump Backwards 1 minute

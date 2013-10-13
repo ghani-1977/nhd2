@@ -89,9 +89,10 @@ extern int FrontendCount;				// defined in zapit.cpp
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
 #define COL_INFOBAR_BUTTONS_BACKGROUND (COL_INFOBAR_SHADOW_PLUS_1)
 
-#define SHADOW_OFFSET 6
-#define borderwidth 4
-#define LEFT_OFFSET 5
+#define SHADOW_OFFSET 	6
+#define borderwidth 	4
+#define LEFT_OFFSET 	5
+#define RIGHT_OFFSET	5
 
 // in us
 #define LCD_UPDATE_TIME_TV_MODE (60 * 1000 * 1000)
@@ -129,6 +130,8 @@ extern uint32_t shift_timer;
 
 #define BUTTON_BAR_HEIGHT	20
 #define CHANNAME_HEIGHT		40
+
+#define MOVIE_TIMEBAR_H		40
 
 extern std::string ext_channel_name;	// defined in vcrcontrol.cpp
 int m_CA_Status;
@@ -724,11 +727,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	}
 }
 
-//
-#define TIMESCALE_HEIGHT	6
-#define RIGHT_OFFSET 		5
-#define TIMEBARH 		38
-extern CMoviePlayerGui::state playstate;
+//showMovieInfo
 extern bool isMovieBrowser;
 extern bool isVlc;
 extern bool cdDvd;
@@ -737,31 +736,20 @@ extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
 
-extern int speed;
-extern int slow;
-
-extern int position;
-extern int duration;
-extern int file_prozent;
-extern unsigned int ac3state;
-
-extern std::string g_file_epg;
-extern std::string g_file_epg1;
-
-void CInfoViewer::showMovieInfo(bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
 {
 	m_visible = true;
 	
 	// get dimension
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxStartX = g_settings.screen_StartX + 10;
-	BoxHeight = TIMEBARH * 3;
+	BoxHeight = MOVIE_TIMEBAR_H * 3;
 	BoxStartY = g_settings.screen_EndY - BoxHeight - 10;
 	BoxEndY = BoxStartY + BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
 	
 	// init progressbar
-	moviescale = new CProgressBar( BoxWidth - 15, TIMESCALE_HEIGHT, 40, 100, 70, true );
+	moviescale = new CProgressBar( BoxWidth - 15, TIMESCALE_BAR_HEIGHT, 40, 100, 70, true );
 	
 	moviescale->reset();
 	
@@ -1047,7 +1035,7 @@ void CInfoViewer::showSubchan()
 		
 			frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	
-	  		frameBuffer->paintIcon (NEUTRINO_ICON_BUTTON_YELLOW, x + 8, y + dy - 20);
+	  		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x + 8, y + dy - 20);
 	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30 - icon_w + icon_w, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
 		}
 		
