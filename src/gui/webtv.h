@@ -48,7 +48,7 @@ class CWebTV
 			char * url;
 			char * description;
 			char * locked;		// for parentallock
-		} ;
+		};
 
 		xmlDocPtr parser;
 		bool readChannellist();

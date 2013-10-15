@@ -375,8 +375,8 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	if (filebrowser)
 		delete filebrowser;
 	
-	//if (moviebrowser)
-	//	delete moviebrowser;
+	if (moviebrowser)
+		delete moviebrowser;
 	
 	if (webtv)
 		delete webtv;

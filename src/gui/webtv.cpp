@@ -42,23 +42,12 @@
 #include <gui/widget/helpbox.h>
 
 #include <video_cs.h>
-
-/* zapit includes */
-//#include <channel.h>
-//#include <gui/pictureviewer.h>
 #include <system/debug.h>
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
 
 extern cVideo * videoDecoder;
-
-// live channel
-//extern t_channel_id live_channel_id;		// zapit.cpp
-//extern CZapitChannel * live_channel;		// zapit.cpp
-
-#define PIC_W 78
-
 extern CPictureViewer * g_PicViewer;
 
 CWebTV::CWebTV()
