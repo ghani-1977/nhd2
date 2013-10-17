@@ -1080,12 +1080,12 @@ bool CFileBrowser::exec(const char * const dirname)
 					{
 						if (selections.size() > 0)
 						{
-							ChangeDir("..",selections.back());
+							ChangeDir("..", selections.back());
 							selections.pop_back();
 						} 
 						else
 						{
-							std::string::size_type pos = Path.substr(0,Path.length()-1).rfind('/');
+							std::string::size_type pos = Path.substr(0, Path.length()-1).rfind('/');
 							if (pos != std::string::npos) 
 							{
 								ChangeDir("..");

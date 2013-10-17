@@ -523,9 +523,10 @@ void CListFrame::scrollLineDown(const int lines)
 	} 
 	else 
 	{
-		m_nCurrentPage = 0;
-		m_nCurrentLine = m_nSelectedLine = 0;
-		refreshList();
+		//m_nCurrentPage = 0;
+		//m_nCurrentLine = m_nSelectedLine = 0;
+		//refreshList();
+		setSelectedLine(0);
 	}
 	
 }
@@ -536,7 +537,8 @@ void CListFrame::scrollLineUp(const int lines)
 	if( !(m_nMode & SCROLL)) return;
 	if( m_nNrOfLines <= 1) return;
 
-	if(m_nSelectedLine > 0) {
+	if(m_nSelectedLine > 0) 
+	{
 		m_nSelectedLine--;
 		// check if the cursor moves out of the window
 		if(m_nSelectedLine < m_nCurrentLine ) 
@@ -547,7 +549,7 @@ void CListFrame::scrollLineUp(const int lines)
 		} 
 		else 
 		{
-			refreshLine(m_nSelectedLine+lines);
+			refreshLine(m_nSelectedLine + lines);
 			refreshLine(m_nSelectedLine);
 		}
 	} 
@@ -580,11 +582,13 @@ void CListFrame::scrollPageDown(const int pages)
 	}
 	
 	m_nCurrentLine = m_nCurrentPage * m_nLinesPerPage; 
-	if(m_nSelectedLine < m_nCurrentLine || m_nSelectedLine -m_nCurrentLine >= m_nLinesPerPage )
+	if(m_nSelectedLine < m_nCurrentLine || m_nSelectedLine - m_nCurrentLine >= m_nLinesPerPage )
 	{
 		m_nSelectedLine = m_nCurrentLine;
 	}
+	
 	dprintf(DEBUG_DEBUG, "[CListFrame]  m_nCurrentLine: %d, m_nCurrentPage: %d \r\n",m_nCurrentLine,m_nCurrentPage);
+	
 	refresh();
 };
 
@@ -670,7 +674,7 @@ bool CListFrame::setSelectedLine(int selection)
 		refreshList();
 		refreshScroll();  //NEW
 		result = true;
-		dprintf(DEBUG_DEBUG, " selected line: %d,%d,%d \r\n",m_nSelectedLine,m_nCurrentPage,m_nCurrentLine);
+		dprintf(DEBUG_DEBUG, " selected line: %d,%d,%d \r\n",m_nSelectedLine, m_nCurrentPage, m_nCurrentLine);
 	}
 	
 	return (result);

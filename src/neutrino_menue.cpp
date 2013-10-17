@@ -2745,7 +2745,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 				{
 					menu_item++;
 					menu_prev = SNeutrinoSettings::ITEM_PLUGIN;
-					keyhelper.get(&key, &icon);
+					keyhelper.get(&key, &icon, CRCInput::RC_blue);
 					menu_item = new CMenuForwarder( LOCALE_USERMENU_ITEM_PLUGINS, true, "", new CPluginList( LOCALE_USERMENU_ITEM_PLUGINS, CPlugins::P_TYPE_TOOL | CPlugins::P_TYPE_SCRIPT ), "", key, icon );
 					menu->addItem(menu_item, false);
                                 }

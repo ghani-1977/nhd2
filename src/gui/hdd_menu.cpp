@@ -238,7 +238,6 @@ int CHDDMenuHandler::hddMenu()
 				isroot = true;
 			}
 		}
-		//
                 
                 close(fd);
 
@@ -442,7 +441,6 @@ int CHDDInit::exec(CMenuTarget * /*parent*/, const std::string& actionKey)
 	progress->showStatusMessageUTF("HDD init");
 	progress->showGlobalStatus(0);
 	
-	//sprintf(cmd, "init_hdd.sh /dev/%s", actionKey.c_str());
 	const char init[]= "init_hdd.sh";
 	sprintf(cmd, "%s /dev/%s > /tmp/%s.txt", init, actionKey.c_str(), init);
 	printf("CHDDInit: executing %s\n", cmd);
@@ -664,7 +662,6 @@ int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 		// can not parse mtab, fallback to /media/sda%
 		if(!mountPoint)
 			sprintf((char *)dst, "/media/%s", actionKey.c_str());
-		//
 		
 		/* umount /media/sda%n */
 		res = umount(dst);
@@ -703,7 +700,6 @@ int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	//format part ext3
 	const char fmt[] = "mkfs.ext3";
 	//NOTE: on some arch popen is not working, so dump output of system to /tmp
-	//sprintf(cmd, "mkfs.ext3 -T largefile -m0 %s", src);
 	sprintf(cmd, "%s -T largefile -m0 %s > /tmp/%s.txt", fmt, src, fmt);
 
 	printf("CHDDFmtExec: executing %s\n", cmd);
@@ -843,7 +839,6 @@ int CHDDChkExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 		// can not parse mtab, fallback to /media/sda%
 		if(!mountPoint)
 			sprintf((char *)dst, "/media/%s", actionKey.c_str());
-		//
 		
 		// unmout /media/sda%
 		res = umount(dst);

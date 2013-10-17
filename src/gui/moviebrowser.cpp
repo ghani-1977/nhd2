@@ -385,7 +385,7 @@ CMovieBrowser::~CMovieBrowser()
 	
 	//saveSettings(&m_settings);
 	
-	hide();
+	//hide();
 	
 	m_dir.clear();
 
@@ -1160,10 +1160,9 @@ void CMovieBrowser::hide(void)
 	}
 	
 	if (m_pcInfo != NULL) 
-	{
 		delete m_pcInfo;
-		m_pcInfo = NULL;
-	}
+	
+	m_pcInfo = NULL;
 }
 
 int CMovieBrowser::paint(void)
@@ -1488,6 +1487,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 	m_pcLastPlay->setLines(&m_playListLines);
 
 	m_currentPlaySelection = m_pcLastPlay->getSelectedLine();
+	
 	// update selected movie if browser is in the focus
 	if (m_windowFocus == MB_FOCUS_LAST_PLAY)
 	{
@@ -2228,6 +2228,7 @@ bool CMovieBrowser::onButtonPressFilterList(neutrino_msg_t msg)
 	else if (msg == CRCInput::RC_ok)
 	{
 		int selected_line = m_pcFilter->getSelectedLine();
+		
 		if(m_settings.filter.item == MB_INFO_MAX_NUMBER)
 		{
 			if(selected_line == 0) m_settings.filter.item = MB_INFO_MAJOR_GENRE;

@@ -24,7 +24,7 @@ audiomenu.spdif_dd DD über SPDIF
 audiomenu.stereo Stereo
 audiomenu.ac3_delay AC3 Delay
 audiomenu.pcm_delay PCM Delay
-audiomenu.volume_adjust Volume Anpassung (in %)
+audiomenu.volume_adjust Lautstärkeanpassung (in %)
 audiomenu.auto_lang Tonwahl automatisch
 audiomenu.auto_subs Untertitel automatisch
 audiomenu.pref_lang Sprache
@@ -34,7 +34,7 @@ audiomenu.pref_subs Sprache
 audiomenu.pref_subs_head Untertitelwahl
 audioplayer.add Hinzufügen
 audioplayer.add_ic Icecast
-audioplayer.add_loc Lokale Radioliste
+audioplayer.add_loc lokale Radioliste
 audioplayer.add_sc Shoutcast
 audioplayer.artist_title Interpret, Titel
 audioplayer.building_search_index Erstelle Suchindex
@@ -133,7 +133,7 @@ colorchooser.red rot
 colormenu.background Hintergrundfarbe
 colormenu.fade Menüs ausblenden
 colormenu.font Schriftgröße
-colormenu.blendmode Transparenz mode
+colormenu.blendmode Transparenz Modus
 colormenu.gtx_alpha Transparenz
 colormenu.gain Farbe
 colormenu.head Farb-Einstellungen
@@ -313,14 +313,14 @@ extra.north Norden
 extra.record_time Timeshift max. in Std.
 extra.rotor_swap Rotor dreht Ost/West
 servicemenu.tuner_to_scan Tuner zum scannen
-extra.mbpreview Moviebrowser Preview
+extra.mbpreview Moviebrowser Vorschau
 extra.savecolors Speichere Farben als
 extra.saveconfig Speichere Einstellungen als
 extra.savekeys Speichere Tastenbelegung als
 extra.scan_fast Schnell
 extra.scan_full Vollständig
 extra.scan_mode Scan Modus
-extra.sms_channel Sms-Modus Kanal
+extra.sms_channel sms-Modus Kanal
 extra.south Süden
 extra.spts_mode SPTS Modus
 extra.start_tostandby Starten zum Standby
@@ -374,7 +374,7 @@ favorites.chadded Der aktuelle Kanal wurde Ihren Favoriten hinzugefügt...\n
 favorites.chalreadyinbq Der aktuelle Kanal ist bereits in Ihren Favoriten...\n
 favorites.copy Kopiere Bouquet zu Favoriten
 favorites.finalhint \nHinzugefügte Kanäle können mit\nder Bouquetverwaltung korrigiert werden.\n
-favorites.menueadd Kanal meine Favoriten hinzufügen
+favorites.menueadd Kanal "meine Favoriten" hinzufügen
 favorites.nobouquets Favoriten sind nur mit aktivierten Bouquets möglich.
 filebrowser.delete Löschen
 filebrowser.denydirectoryleave Startverzeichnis absolut
@@ -460,7 +460,7 @@ flashupdate.installfailed Package installieren fehlgeschlagen.
 fontmenu.channellist Kanalliste
 fontmenu.epg EPG
 fontmenu.eventlist Eventlist
-fontmenu.gamelist Gameliste
+fontmenu.gamelist Spieleliste
 fontmenu.head Schriftgrössen Einstellungen
 fontmenu.infobar Infobar
 fontmenu.scaling Schriftgrössenfaktor
@@ -585,7 +585,7 @@ hdd_format Formatiere HDD
 hdd_format_failed HDD formatieren fehlgeschlagen !
 hdd_format_warn Möchten Sie wirklich formatieren ? Sie verlieren alle Daten !
 hdd_fs Dateisystem
-hdd_manage Verwalten
+hdd_manage verwalten
 hdd_middle Mitte
 hdd_noise HDD-Speed
 hdd_not_found Keine HDD gefunden
@@ -611,7 +611,7 @@ imageinfo.type Type:
 inetradio.name Internetradio
 infoviewer.epgnotload Informationen noch nicht geladen...
 infoviewer.epgwait Warte auf EPG-Informationen...
-infoviewer.eventlist Event-list
+infoviewer.eventlist Event-liste
 infoviewer.languages Tonwahl
 infoviewer.motor_moving Antennenpositionierung
 infoviewer.next später
