@@ -61,6 +61,10 @@ cDemux::cDemux(int /*num*/)
 {  
 	// dmx file descriptor
 	demux_fd = -1;
+	
+	demux_adapter = 0;
+	demux_num = 0;
+	demux_source = 0;
 }
 
 cDemux::~cDemux()
@@ -72,23 +76,11 @@ cDemux::~cDemux()
 
 bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, CFrontend * fe)
 {
-	//NOTE: if fe is null pointer fallback to adapter0/frontend0/demux0 needed for builtinplayer and dont crashes if frontend isnt present
 	if(fe)
 	{
-#if defined (PLATFORM_GENERIC)
 		demux_adapter = fe->fe_adapter;
-#else		
-		demux_adapter = 0;
-#endif
 		demux_num = fe->fenumber;
-		
 		demux_source = fe->fenumber;
-	}
-	else
-	{
-		demux_adapter = 0;
-		demux_num = 0;
-		demux_source = 0;
 	}
 	
 	int flags = O_RDWR;
@@ -99,9 +91,7 @@ bool cDemux::Open(DMX_CHANNEL_TYPE Type, int uBufferSize, CFrontend * fe)
 	
 	// close device
 	if (demux_fd > -1) 
-	{
 		close(demux_fd);
-	}
 	
 	char devname[256];
 

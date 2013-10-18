@@ -384,7 +384,6 @@ CMovieBrowser::~CMovieBrowser()
 	dprintf(DEBUG_NORMAL, "[mb] del\r\n");
 	
 	//saveSettings(&m_settings);
-	
 	//hide();
 	
 	m_dir.clear();
@@ -1134,7 +1133,7 @@ void CMovieBrowser::hide(void)
 	if (m_pcFilter != NULL)
 	{
 		m_currentFilterSelection  = m_pcFilter->getSelectedLine();
-		delete m_pcFilter;
+		delete [] m_pcFilter;
 		m_pcFilter = NULL;
 	}
 	
@@ -1160,9 +1159,10 @@ void CMovieBrowser::hide(void)
 	}
 	
 	if (m_pcInfo != NULL) 
+	{
 		delete m_pcInfo;
-	
-	m_pcInfo = NULL;
+		m_pcInfo = NULL;
+	}
 }
 
 int CMovieBrowser::paint(void)
@@ -1174,13 +1174,9 @@ int CMovieBrowser::paint(void)
 	Font * font = NULL;
 
 	m_pcBrowser = new CListFrame(&m_browserListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE, &m_cBoxFrameBrowserList);
-
 	m_pcLastPlay = new CListFrame(&m_playListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE | CListFrame::TITLE, &m_cBoxFrameLastPlayList, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD_PLAYLIST), g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]);
-
 	m_pcLastRecord = new CListFrame(&m_recordListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE | CListFrame::TITLE, &m_cBoxFrameLastRecordList, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD_RECORDLIST), g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]);
-
 	m_pcFilter = new CListFrame(&m_FilterLines, font, CListFrame::SCROLL | CListFrame::TITLE, &m_cBoxFrameFilter, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD_FILTER), g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]);
-
 	m_pcInfo = new CTextBox(" ", NULL, CTextBox::SCROLL, &m_cBoxFrameInfo);	
 
 	if(m_pcBrowser == NULL || m_pcLastPlay == NULL || m_pcLastRecord == NULL || m_pcInfo == NULL || m_pcFilter == NULL)
@@ -3262,7 +3258,7 @@ void CMovieBrowser::showMovieInfoMenu(MI_MOVIE_INFO * movie_info)
 	if(movie_info != NULL)
 	{
 		strncpy(dirItNr, m_dirNames[movie_info->dirItNr].c_str(),BUFFER_SIZE);
-		snprintf(size,BUFFER_SIZE,"%5llu",movie_info->file.Size>>20);
+		snprintf(size, BUFFER_SIZE, "%5llu", movie_info->file.Size>>20);
 	}
 
 	CStringInputSMS titelUserInput(LOCALE_MOVIEBROWSER_INFO_TITLE,       &movie_info->epgTitle);

@@ -71,7 +71,7 @@
 #include <xmlinterface.h>
 #include <system/debug.h>
 
-#ifdef __USE_FILE_OFFSET64
+#if defined (__USE_FILE_OFFSET64) || defined (_DARWIN_USE_64_BIT_INODE)
 typedef struct dirent64 dirent_struct;
 #define my_alphasort alphasort64
 #define my_scandir scandir64

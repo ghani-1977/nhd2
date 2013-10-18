@@ -143,7 +143,7 @@ int timeshift;
 off64_t minuteoffset;
 off64_t secondoffset;
 
-#ifndef __USE_FILE_OFFSET64
+#if !defined (__USE_FILE_OFFSET64) && !defined (_DARWIN_USE_64_BIT_INODE)
 #error not using 64 bit file offsets
 #endif /* __USE_FILE__OFFSET64 */
 
