@@ -1133,7 +1133,7 @@ void CMovieBrowser::hide(void)
 	if (m_pcFilter != NULL)
 	{
 		m_currentFilterSelection  = m_pcFilter->getSelectedLine();
-		delete [] m_pcFilter;
+		delete m_pcFilter;
 		m_pcFilter = NULL;
 	}
 	

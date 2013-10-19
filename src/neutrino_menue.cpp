@@ -303,11 +303,13 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	// main settings
 	int shortcutMainSettings = 1;
 
+#if !defined USE_OPENGL	
 	// video settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_VIDEO, true, NULL, &videoSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "videosettings", LOCALE_HELPTEXT_VIDEOSETTINGS ));
 
 	//Audio Settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_AUDIO, true, NULL, &audioSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "audiosettings", LOCALE_HELPTEXT_AUDIOSETTINGS ));
+#endif
 
 	//Parentallock
 	if(g_settings.parentallock_prompt)
