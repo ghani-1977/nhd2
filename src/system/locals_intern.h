@@ -1622,6 +1622,9 @@ const char * locale_real_names[] = {
 	"webtv.head",
 	"webtvchannellist.nonefound",
 	"webtvchannellist.info",
+	"webtv.netzkino",
+	"webtv.divers",
+	"webtv.bouquets",
 	
 	// youtube
 	"menu.hint_ytplay",

@@ -1659,7 +1659,7 @@ void CMovieBrowser::refreshTitle(void)
 	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + (m_cBoxFrameTitleRel.iHeight - icon_h)/2);
 	
 	// head title
-	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), /*m_textTitle.c_str()*/title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
+	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
 
 	// icon
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);

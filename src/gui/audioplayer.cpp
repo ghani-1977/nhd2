@@ -756,7 +756,7 @@ int CAudioPlayerGui::show()
 						default: break;
 					}
 					
-					update=true;
+					update = true;
 				}
 				else if ( shufflePlaylist() )
 				{
@@ -1084,7 +1084,7 @@ void CAudioPlayerGui::processPlaylistUrl(const char *url, const char *name, cons
 	*/
 
 	long res_code;
-	if (curl_easy_getinfo(curl_handle, CURLINFO_HTTP_CODE/*CURLINFO_RESPONSE_CODE*/, &res_code ) ==  CURLE_OK) 
+	if (curl_easy_getinfo(curl_handle, CURLINFO_HTTP_CODE, &res_code ) ==  CURLE_OK) 
 	{
 		if (200 == res_code) 
 		{

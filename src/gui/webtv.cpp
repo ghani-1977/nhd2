@@ -41,11 +41,14 @@
 #include <gui/widget/messagebox.h>
 #include <gui/widget/helpbox.h>
 
+#include <gui/filebrowser.h>
+
 #include <video_cs.h>
 #include <system/debug.h>
 
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
+#define NETZKINO_XMLFILE		CONFIGDIR "/netzkino.xml"
 
 extern cVideo * videoDecoder;
 extern CPictureViewer * g_PicViewer;
@@ -59,6 +62,7 @@ CWebTV::CWebTV()
 	qZap = false;
 	
 	parser = NULL;
+	mode = WEBTV;
 }
 
 CWebTV::~CWebTV()
@@ -78,7 +82,23 @@ CWebTV::~CWebTV()
 
 int CWebTV::exec()
 {
-	readChannellist();
+	switch(mode)
+	{
+		case WEBTV:
+			readChannellist(DEFAULT_WEBTV_XMLFILE);
+			break;
+			
+		case NETZKINO:
+			readChannellist(NETZKINO_XMLFILE);
+			break;
+			
+		case DIVERS:
+			readChannellist(g_settings.webtv_settings);
+			break;
+			
+		default:
+			break;	
+	}
 	
 	if(qZap == true)
 	{	
@@ -98,7 +118,7 @@ CFile * CWebTV::getSelectedFile()
 }
 
 // readxml file
-bool CWebTV::readChannellist()
+bool CWebTV::readChannellist(std::string filename)
 {
 	CFile file;
 	
@@ -118,7 +138,7 @@ bool CWebTV::readChannellist()
 		parser = NULL;
 	}
 	
-	parser = parseXmlFile(DEFAULT_WEBTV_XMLFILE);
+	parser = parseXmlFile(filename.c_str());
 	
 	if (parser) 
 	{
@@ -295,6 +315,57 @@ showList:
 			
 			goto showList;
 		}
+		else if(msg == CRCInput::RC_blue)
+		{
+			static int old_select = 0;
+			char cnt[5];
+			CMenuWidget InputSelector(LOCALE_WEBTV_HEAD, NEUTRINO_ICON_STREAMING);
+			int count = 0;
+			int select = -1;
+					
+			CMenuSelectorTarget *WebTVInputChanger = new CMenuSelectorTarget(&select);
+			
+			// webtv
+			sprintf(cnt, "%d", count);
+			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+	
+			// netzkino
+			sprintf(cnt, "%d", ++count);
+			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_NETZKINO, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+			
+			// divers
+			sprintf(cnt, "%d", ++count);
+			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_DIVERS, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+
+			hide();
+			InputSelector.exec(NULL, "");
+			delete WebTVInputChanger;
+					
+			if(select >= 0)
+				old_select = select;
+					
+			switch (select) 
+			{
+				case WEBTV:	
+					mode = WEBTV;
+					readChannellist(DEFAULT_WEBTV_XMLFILE); 	
+					break;
+							
+				case NETZKINO:	
+					mode = NETZKINO;
+					readChannellist(NETZKINO_XMLFILE);
+					break;
+					
+				case DIVERS:
+					mode = DIVERS;
+					readChannellist(g_settings.webtv_settings);
+					break;
+					
+				default: break;
+			}
+			
+			goto showList;
+		}
 		else if ( msg == CRCInput::RC_home) 
 		{
 			loop = false;
@@ -411,11 +482,11 @@ void CWebTV::paintItem(int pos)
 	}
 }
 
-#define NUM_LIST_BUTTONS 1
+#define NUM_LIST_BUTTONS 2
 struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 {
 	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_WEBTV_INFO},
-	//{ NEUTRINO_ICON_BUTTON_GREEN, LOCALE_MENU_EXIT},
+	{ NEUTRINO_ICON_BUTTON_BLUE, LOCALE_WEBTV_BOUQUETS}
 };
 
 // paint head
@@ -429,7 +500,7 @@ void CWebTV::paintHead()
 	
 	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth*3, NUM_LIST_BUTTONS, CWebTVButtons);
 	
 	// head icon
 	int icon_w, icon_h;
@@ -454,7 +525,27 @@ void CWebTV::paintHead()
 	}
 	
 	//head title
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10 + icon_w + 10, y + theight, width - 20 - icon_w - timestr_len, g_Locale->getText(LOCALE_WEBTV_HEAD), COL_MENUHEAD, 0, true); // UTF-8
+	std::string title = g_Locale->getText(LOCALE_WEBTV_HEAD);
+	
+	switch(mode)
+	{
+		case WEBTV:
+			title = g_Locale->getText(LOCALE_WEBTV_HEAD);
+			break;
+			
+		case NETZKINO:
+			title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
+			break;
+			
+		case DIVERS:
+			title = g_Locale->getText(LOCALE_WEBTV_DIVERS);
+			break;
+			
+		default:
+			break;	
+	}
+	
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10 + icon_w + 10, y + theight, width - 20 - icon_w - timestr_len, title.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 }
 
 // infos

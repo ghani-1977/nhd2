@@ -43,6 +43,13 @@
 class CWebTV
 {
 	private:
+		enum {
+			WEBTV,
+			NETZKINO,
+			IPTV,
+			DIVERS = 255
+		}MODES;
+		
 		struct webtv_channels {
 			char * title;
 			char * url;
@@ -51,7 +58,7 @@ class CWebTV
 		};
 
 		xmlDocPtr parser;
-		bool readChannellist();
+		bool readChannellist(std::string filename);
 		
 		std::vector<webtv_channels *> channels;
 		
@@ -74,6 +81,7 @@ class CWebTV
 		int 		info_height;
 		unsigned int 	selected_playing;
 		unsigned int oldselected;
+		unsigned int mode;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();

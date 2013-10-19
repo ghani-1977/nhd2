@@ -1,4 +1,4 @@
 installdir = $(CONFIGDIR)
 
 install_DATA = \
-	webtv.xml
+	webtv.xml netzkino.xml

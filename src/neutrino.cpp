@@ -740,6 +740,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	g_settings.key_screenshot = configfile.getInt32( "key_screenshot", CRCInput::RC_record );
 	
+	// webtv
+	strcpy( g_settings.webtv_settings, configfile.getString( "webtv_settings", CONFIGDIR "/webtv.xml").c_str() );
+	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
         // this is as the current neutrino usermen
@@ -1209,7 +1212,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	configfile.setInt32( "key_screenshot", g_settings.key_screenshot );
 	
-
+	// webtv
+	configfile.setString("webtv_settings", g_settings.webtv_settings);
+	
         // USERMENU
         char txt1[81];
         char txt2[81];
@@ -4996,6 +5001,21 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		StartSubtitles();
 				
 		return menu_return::RETURN_REPAINT;	
+	}
+	else if(actionKey == "webtv_settings")
+	{
+		CFileBrowser fileBrowser;
+		CFileFilter fileFilter;
+		fileFilter.addFilter("xml");
+		fileBrowser.Filter = &fileFilter;
+						
+		if (fileBrowser.exec(CONFIGDIR) == true)
+		{
+			strcpy(g_settings.webtv_settings, fileBrowser.getSelectedFile()->Name.c_str());
+			printf("[webtv] webtv settings file %s\n", fileBrowser.getSelectedFile()->Name.c_str());
+		}
+		
+		return menu_return::RETURN_REPAINT;
 	}
 
 	return returnval;

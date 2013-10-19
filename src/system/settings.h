@@ -324,6 +324,9 @@ struct SNeutrinoSettings
 	
 	int key_screenshot;
 	// END KEYBINDING
+	
+	// webtv
+	char webtv_settings[255];
 
 	// USERMENU
         typedef enum
