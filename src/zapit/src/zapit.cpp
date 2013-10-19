@@ -750,7 +750,7 @@ void loadZapitSettings()
 	
 	makeRemainingChannelsBouquet = config.getBool("makeRemainingChannelsBouquet", false);
 	
-	scanSDT = config.getInt32("scanSDT", 1);
+	scanSDT = config.getInt32("scanSDT", 0);
 
 	//load audio map
 	loadAudioMap();

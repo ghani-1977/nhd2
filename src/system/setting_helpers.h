@@ -240,12 +240,8 @@ class CAutoAudioNotifier : public CChangeObserver
 
 // language select notifier
 class CLangSelectNotifier : public CChangeObserver
-{
-	//private:
-	//	CMenuItem * toDisable[4];
-		
+{	
 	public:
-	//	CLangSelectNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3, CMenuItem * item4);
 		bool changeNotify(const neutrino_locale_t, void * /*data*/);
 };
 
@@ -271,7 +267,7 @@ class CScanSetupNotifier : public CChangeObserver
 		int feindex;
 	public:
 		CScanSetupNotifier(int num = 0);
-		void addItem(int list , CMenuItem* item);
+		void addItem(int list , CMenuItem *item);
 		bool changeNotify(const neutrino_locale_t, void * Data);
 };
 
@@ -283,7 +279,6 @@ class CAudioSetupNotifierVolPercent : public CChangeObserver
 	public:
 		bool changeNotify(const neutrino_locale_t OptionName, void *);
 };
-//
 
 int safe_mkdir(char * path);
 int check_dir(const char * newdir);

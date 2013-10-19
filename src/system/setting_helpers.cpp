@@ -1118,7 +1118,7 @@ bool CScanSetupNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	return true;
 }
 
-void CScanSetupNotifier::addItem(int list, CMenuItem* item)
+void CScanSetupNotifier::addItem(int list, CMenuItem *item)
 {
 	switch(list) 
 	{
@@ -1170,8 +1170,7 @@ int safe_mkdir(char * path)
 // check fs
 int check_dir(const char * newdir)
 {
-  
-  	struct statfs s;
+	struct statfs s;
 	
 	if (::statfs(newdir, &s) == 0) 
 	{

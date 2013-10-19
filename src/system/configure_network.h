@@ -73,7 +73,7 @@ class CNetworkConfig
 		CNetworkConfig(void);
 		~CNetworkConfig();
 		
-		static CNetworkConfig* getInstance();
+		static CNetworkConfig *getInstance();
 
 		void readConfig(std::string iname);
 		void commitConfig(void);
