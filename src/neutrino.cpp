@@ -2429,6 +2429,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 		// setup languages
 		int ret = languageSettings.exec(NULL, "");
 
+#if !defined USE_OPENGL		
 		// video setup wizard
 		if(ret != menu_return::RETURN_EXIT_ALL)
 			videoSettings.exec(NULL, "");
@@ -2436,6 +2437,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 		 // audio setup wizard
 		if(ret != menu_return::RETURN_EXIT_ALL)
 			audioSettings.exec(NULL, "");
+#endif		
 
 		// setup color
 		if(ret != menu_return::RETURN_EXIT_ALL)
