@@ -92,7 +92,7 @@ int CWebTV::exec()
 			readChannellist(NETZKINO_XMLFILE);
 			break;
 			
-		case DIVERS:
+		case USER:
 			readChannellist(g_settings.webtv_settings);
 			break;
 			
@@ -120,6 +120,8 @@ CFile * CWebTV::getSelectedFile()
 // readxml file
 bool CWebTV::readChannellist(std::string filename)
 {
+	dprintf(DEBUG_INFO, "CWebTV::readChannellist parsing %s\n", filename.c_str());
+	
 	CFile file;
 	
 	// clear channellist
@@ -335,33 +337,35 @@ showList:
 			
 			// divers
 			sprintf(cnt, "%d", ++count);
-			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_DIVERS, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_USER, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
 			hide();
 			InputSelector.exec(NULL, "");
 			delete WebTVInputChanger;
 					
 			if(select >= 0)
+			{
 				old_select = select;
 					
-			switch (select) 
-			{
-				case WEBTV:	
-					mode = WEBTV;
-					readChannellist(DEFAULT_WEBTV_XMLFILE); 	
-					break;
-							
-				case NETZKINO:	
-					mode = NETZKINO;
-					readChannellist(NETZKINO_XMLFILE);
-					break;
-					
-				case DIVERS:
-					mode = DIVERS;
-					readChannellist(g_settings.webtv_settings);
-					break;
-					
-				default: break;
+				switch (select) 
+				{
+					case WEBTV:	
+						mode = WEBTV;
+						readChannellist(DEFAULT_WEBTV_XMLFILE); 	
+						break;
+								
+					case NETZKINO:	
+						mode = NETZKINO;
+						readChannellist(NETZKINO_XMLFILE);
+						break;
+						
+					case USER:
+						mode = USER;
+						readChannellist(g_settings.webtv_settings);
+						break;
+						
+					default: break;
+				}
 			}
 			
 			goto showList;
@@ -537,8 +541,8 @@ void CWebTV::paintHead()
 			title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
 			break;
 			
-		case DIVERS:
-			title = g_Locale->getText(LOCALE_WEBTV_DIVERS);
+		case USER:
+			title = g_Locale->getText(LOCALE_WEBTV_USER);
 			break;
 			
 		default:

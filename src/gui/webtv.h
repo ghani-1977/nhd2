@@ -46,9 +46,9 @@ class CWebTV
 		enum {
 			WEBTV,
 			NETZKINO,
-			IPTV,
+			USER,
 			DIVERS = 255
-		}MODES;
+		};
 		
 		struct webtv_channels {
 			char * title;

@@ -761,6 +761,7 @@ miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after they ti
 miscsettings.epg_old_events_hint2 Set in hours
 miscsettings.epg_save Save/Restore epg on reboot
 miscsettings.epgplus_show_logos Channel Logo(EPGPlus)
+miscsettings.webtv_user_bouquet WebTV User Bouquet
 miscsettings.fb_destination Expert! Boot-Console
 miscsettings.general General
 servicemenu.tuner Tuner Setup
@@ -1610,7 +1611,7 @@ webtv.head WebTV
 webtvchannellist.nonefound No WebTV channels were found!
 webtvchannellist.info Info
 webtv.netzkino Netzkino.de
-webtv.divers not ordered
+webtv.user User bouquet
 webtv.bouquets Favorites
 
 menu.hint_ytplay Play selected youtube feeds
