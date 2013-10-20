@@ -383,9 +383,9 @@ AC_DEFUN([AC_PROG_EGREP],
 AC_DEFUN([TUXBOX_BOXTYPE],[
 
 AC_ARG_WITH(boxtype,
-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube],
+	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp,odin,ixuss,iqonios,e3hd,ebox5000],
 	[case "${withval}" in
-		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube)
+		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp|odin|ixuss|iqonios|e3hd|ebox5000)
 			BOXTYPE="$withval"
 			;;
 		cu*)
@@ -433,6 +433,26 @@ AC_ARG_WITH(boxtype,
 			BOXMODEL="$withval"
 			;;
 
+		ven*)
+			BOXTYPE="venton"
+			BOXMODEL="$withval"
+			;;
+
+		ixu*)
+			BOXTYPE="ixuss"
+			BOXMODEL="$withval"
+			;;
+
+		iqo*)
+			BOXTYPE="iqonios"
+			BOXMODEL="$withval"
+			;;
+		
+		odi*)
+			BOXTYPE="odin"
+			BOXMODEL="$withval"
+			;;
+
 		*)
 			AC_MSG_ERROR([unsupported value $withval for --with-boxtype])
 			;;
@@ -449,7 +469,11 @@ AC_ARG_WITH(boxmodel,
 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo
 				valid for azbox: azboxhd,azboxme,azboxminime
-				valid for technomate: tmtwin,tm2t,tmsingle,tmnano],
+				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
+				valid for venton: ventonhde,ventonhdx
+				valid for ixuss: ixusszero,ixussone
+				valid foriqonios: iqonios100hd,iqonios300hd
+				valid for odin: odinm7,odinm9],
 	[case "${withval}" in
 		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd)
 			if test "$BOXTYPE" = "dgs"; then
@@ -542,6 +566,55 @@ AC_ARG_WITH(boxmodel,
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 			fi
 			;;
+		ventonhde|ventonhdx)
+			if test "$BOXTYPE" = "venton"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		ixusszero|ixussone)
+			if test "$BOXTYPE" = "ixuss"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		iqonios100hd|iqonios300hd)
+			if test "$BOXTYPE" = "iqonios"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		odinm7|odinm9)
+			if test "$BOXTYPE" = "odin"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		xp1000)
+			if test "$BOXTYPE" = "xp1000"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		e3hd)
+			if test "$BOXTYPE" = "e3hd"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		ebox5000)
+			if test "$BOXTYPE" = "ebox5000"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
 		qemu*)
 			if test "$BOXTYPE" = "generic"; then
 				BOXMODEL="$withval"
@@ -553,7 +626,7 @@ AC_ARG_WITH(boxmodel,
 			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
 			;;
 	esac],
-	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" && test -z "$BOXMODEL"; then
+	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" && test -z "$BOXMODEL"; then
 		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
 	fi])
 
@@ -583,6 +656,13 @@ AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
 AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
 AM_CONDITIONAL(BOXTYPE_COOLSTREAM, test "$BOXTYPE" = "coolstream")
 AM_CONDITIONAL(BOXTYPE_HYPERCUBE, test "$BOXTYPE" = "hypercube")
+AM_CONDITIONAL(BOXTYPE_VENTON, test "$BOXTYPE" = "venton")
+AM_CONDITIONAL(BOXTYPE_IXUSS, test "$BOXTYPE" = "ixuss")
+AM_CONDITIONAL(BOXTYPE_IQONIOS, test "$BOXTYPE" = "iqonios")
+AM_CONDITIONAL(BOXTYPE_ODIN, test "$BOXTYPE" = "odin")
+AM_CONDITIONAL(BOXTYPE_XP1000, test "$BOXTYPE" = "xp1000")
+AM_CONDITIONAL(BOXTYPE_E3HD, test "$BOXTYPE" = "e3hd")
+AM_CONDITIONAL(BOXTYPE_EBOX5000, test "$BOXTYPE" = "ebox5000")
 
 AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
 AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
@@ -618,10 +698,10 @@ AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
 AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
 
 AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
-AM_CONDITIONAL(BOXMODEL_UFS912,test "$BOXMODEL" = "ufs912")
-AM_CONDITIONAL(BOXMODEL_UFS913,test "$BOXMODEL" = "ufs913")
-AM_CONDITIONAL(BOXMODEL_UFS922,test "$BOXMODEL" = "ufs922")
-AM_CONDITIONAL(BOXMODEL_UFC960,test "$BOXMODEL" = "ufc960")
+AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
+AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
+AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
+AM_CONDITIONAL(BOXMODEL_UFC960, test "$BOXMODEL" = "ufc960")
 
 AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
 AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
@@ -632,21 +712,33 @@ AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
 
-AM_CONDITIONAL(BOXMODEL_VUSOLO2,test "$BOXMODEL" = "vusolo2")
-AM_CONDITIONAL(BOXMODEL_VUDUO2,test "$BOXMODEL" = "vuduo2")
-AM_CONDITIONAL(BOXMODEL_VUSOLO,test "$BOXMODEL" = "vusolo")
-AM_CONDITIONAL(BOXMODEL_VUDUO,test "$BOXMODEL" = "vuduo")
-AM_CONDITIONAL(BOXMODEL_VUUNO,test "$BOXMODEL" = "vuuno")
-AM_CONDITIONAL(BOXMODEL_VUULTIMO,test "$BOXMODEL" = "vuultimo")
+AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
+AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
+AM_CONDITIONAL(BOXMODEL_VUSOLO, test "$BOXMODEL" = "vusolo")
+AM_CONDITIONAL(BOXMODEL_VUDUO, test "$BOXMODEL" = "vuduo")
+AM_CONDITIONAL(BOXMODEL_VUUNO, test "$BOXMODEL" = "vuuno")
+AM_CONDITIONAL(BOXMODEL_VUULTIMO, test "$BOXMODEL" = "vuultimo")
 
-AM_CONDITIONAL(BOXMODEL_AZBOXHD,test "$BOXMODEL" = "azboxhd")
-AM_CONDITIONAL(BOXMODEL_AZBOXME,test "$BOXMODEL" = "azboxme")
-AM_CONDITIONAL(BOXMODEL_AZBOXMINIME,test "$BOXMODEL" = "azboxminime")
+AM_CONDITIONAL(BOXMODEL_AZBOXHD, test "$BOXMODEL" = "azboxhd")
+AM_CONDITIONAL(BOXMODEL_AZBOXME, test "$BOXMODEL" = "azboxme")
+AM_CONDITIONAL(BOXMODEL_AZBOXMINIME, test "$BOXMODEL" = "azboxminime")
 
-AM_CONDITIONAL(BOXMODEL_TMTWIN,test "$BOXMODEL" = "tmtwin")
-AM_CONDITIONAL(BOXMODEL_TM2T,test "$BOXMODEL" = "tm2t")
-AM_CONDITIONAL(BOXMODEL_TMSINGLE,test "$BOXMODEL" = "tmsingle")
-AM_CONDITIONAL(BOXMODEL_TMNANO,test "$BOXMODEL" = "tmnano")
+AM_CONDITIONAL(BOXMODEL_TMTWIN, test "$BOXMODEL" = "tmtwin")
+AM_CONDITIONAL(BOXMODEL_TM2T, test "$BOXMODEL" = "tm2t")
+AM_CONDITIONAL(BOXMODEL_TMSINGLE, test "$BOXMODEL" = "tmsingle")
+AM_CONDITIONAL(BOXMODEL_TMNANO, test "$BOXMODEL" = "tmnano")
+
+AM_CONDITIONAL(BOXMODEL_VENTONHDE, test "$BOXMODEL" = "ventonhde")
+AM_CONDITIONAL(BOXMODEL_VENTONHDX, test "$BOXMODEL" = "ventonhdx")
+
+AM_CONDITIONAL(BOXMODEL_IXUSSZERO, test "$BOXMODEL" = "ixusszero")
+AM_CONDITIONAL(BOXMODEL_IXUSSONE, test "$BOXMODEL" = "ixussone")
+
+AM_CONDITIONAL(BOXMODEL_IQONIOS100HD, test "$BOXMODEL" = "iqonios100hd")
+AM_CONDITIONAL(BOXMODEL_IQONIOS300HD, test "$BOXMODEL" = "iqonios300hd")
+
+AM_CONDITIONAL(BOXMODEL_ODINM7, test "$BOXMODEL" = "odinm7")
+AM_CONDITIONAL(BOXMODEL_ODINM9, test "$BOXMODEL" = "odinm9")
 
 if test "$BOXTYPE" = "generic"; then
 	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
@@ -665,31 +757,45 @@ elif test "$BOXTYPE" = "kathrein"; then
 elif test "$BOXTYPE" = "ipbox"; then
 	AC_DEFINE(PLATFORM_IPBOX, 1, [building for ipbox])
 elif test "$BOXTYPE" = "topfield"; then
-	AC_DEFINE(PLATFORM_TF7700, 1, [building for a topfield])
+	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
 elif test "$BOXTYPE" = "fortis_hdbox"; then
-	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for a fortis_hdbox])
+	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for fortis_hdbox])
 elif test "$BOXTYPE" = "octagon"; then
-	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for a octagon])
+	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
 elif test "$BOXTYPE" = "atevio"; then
-	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for a atevio])
+	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
 elif test "$BOXTYPE" = "adb_box"; then
-	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for a adb_box])
+	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
 elif test "$BOXTYPE" = "whitebox"; then
-	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for a whitebox])
+	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for whitebox])
 elif test "$BOXTYPE" = "vip"; then
-	AC_DEFINE(PLATFORM_VIP, 1, [building for an vip])
+	AC_DEFINE(PLATFORM_VIP, 1, [building for vip])
 elif test "$BOXTYPE" = "homecast"; then
-	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for a homecast])
+	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for homecast])
 elif test "$BOXTYPE" = "vuplus"; then
-	AC_DEFINE(PLATFORM_VUPLUS, 1, [building for a vuplus])
+	AC_DEFINE(PLATFORM_VUPLUS, 1, [building for vuplus])
 elif test "$BOXTYPE" = "azbox"; then
-	AC_DEFINE(PLATFORM_AZBOX, 1, [building for a azbox])
+	AC_DEFINE(PLATFORM_AZBOX, 1, [building for azbox])
 elif test "$BOXTYPE" = "technomate"; then
-	AC_DEFINE(PLATFORM_TECHNOMATE, 1, [building for a technomate])
+	AC_DEFINE(PLATFORM_TECHNOMATE, 1, [building for technomate])
 elif test "$BOXTYPE" = "coolstream"; then
-	AC_DEFINE(PLATFORM_COOLSTREAM, 1, [building for a coolstream])
+	AC_DEFINE(PLATFORM_COOLSTREAM, 1, [building for coolstream])
 elif test "$BOXTYPE" = "hypercube"; then
-	AC_DEFINE(PLATFORM_HYPERCUBE, 1, [building for a hypercube])
+	AC_DEFINE(PLATFORM_HYPERCUBE, 1, [building for hypercube])
+elif test "$BOXTYPE" = "venton"; then
+	AC_DEFINE(PLATFORM_VENTON, 1, [building for venton])
+elif test "$BOXTYPE" = "ixuss"; then
+	AC_DEFINE(PLATFORM_IXUSS, 1, [building for ixuss])
+elif test "$BOXTYPE" = "iqonios"; then
+	AC_DEFINE(PLATFORM_IQONIOS, 1, [building for iqonios])
+elif test "$BOXTYPE" = "odin"; then
+	AC_DEFINE(PLATFORM_ODIN, 1, [building for odin])
+elif test "$BOXTYPE" = "xp1000"; then
+	AC_DEFINE(PLATFORM_XP1000, 1, [building for xp1000])
+elif test "$BOXTYPE" = "e3hd"; then
+	AC_DEFINE(PLATFORM_E3HD, 1, [building for e3hd])
+elif test "$BOXTYPE" = "ebox5000"; then
+	AC_DEFINE(PLATFORM_EBOX5000, 1, [building for ebox5000])
 fi
 
 if test "$BOXMODEL" = "cuberevo"; then
@@ -806,6 +912,26 @@ elif test "$BOXMODEL" = "tmsingle"; then
 	AC_DEFINE(BOXMODEL_TMSINGLE, 1, [building for technomate single])
 elif test "$BOXMODEL" = "tmnano"; then
 	AC_DEFINE(BOXMODEL_TMNANO, 1, [building for technomate nano])
+
+elif test "$BOXMODEL" = "ventonhde"; then
+	AC_DEFINE(BOXMODEL_VENTONHDE, 1, [building for ventonhde])
+elif test "$BOXMODEL" = "ventonhdx"; then
+	AC_DEFINE(BOXMODEL_VENTONHDX, 1, [building for ventonhdx])
+
+elif test "$BOXMODEL" = "ixusszero"; then
+	AC_DEFINE(BOXMODEL_IXUSSZERO, 1, [building for ixusszero])
+elif test "$BOXMODEL" = "ixussone"; then
+	AC_DEFINE(BOXMODEL_IXUSSONE, 1, [building for ixussone])
+
+elif test "$BOXMODEL" = "iqonios100hd"; then
+	AC_DEFINE(BOXMODEL_IQONIOS100HD, 1, [building for iqonios100hd])
+elif test "$BOXMODEL" = "iqonios300hd"; then
+	AC_DEFINE(BOXMODEL_IQONIOS300HD, 1, [building for iqonios300hd])
+
+elif test "$BOXMODEL" = "odinm7"; then
+	AC_DEFINE(BOXMODEL_ODINM7, 1, [building for odinm7])
+elif test "$BOXMODEL" = "odinm9"; then
+	AC_DEFINE(BOXMODEL_ODINM9, 1, [building for odinm9])
 fi
 ])
 
