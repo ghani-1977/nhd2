@@ -257,12 +257,12 @@ showList:
 			
 			loop = false;
 		}
-		else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup )
+		else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup || msg == CRCInput::RC_yellow)
                 {
                         int step = 0;
                         int prev_selected = selected;
 
-			step =  ((int) msg == g_settings.key_channelList_pageup) ? listmaxshow : 1;  // browse or step 1
+			step =  ((int) msg == g_settings.key_channelList_pageup || (int) msg == CRCInput::RC_yellow) ? listmaxshow : 1;  // browse or step 1
                         selected -= step;
                         if((prev_selected-step) < 0)            // because of uint
                                 selected = channels.size() - 1;
@@ -276,12 +276,12 @@ showList:
                         else
                                 paintItem(selected - liststart);
                 }
-                else if ( msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown )
+                else if ( msg == CRCInput::RC_down || (int) msg == g_settings.key_channelList_pagedown || msg == CRCInput::RC_green)
                 {
                         unsigned int step = 0;
                         int prev_selected = selected;
 
-			step =  ((int) msg == g_settings.key_channelList_pagedown) ? listmaxshow : 1;  // browse or step 1
+			step =  ((int) msg == g_settings.key_channelList_pagedown || (int)msg == CRCInput::RC_green) ? listmaxshow : 1;  // browse or step 1
                         selected += step;
 
                         if(selected >= channels.size()) 
@@ -486,10 +486,12 @@ void CWebTV::paintItem(int pos)
 	}
 }
 
-#define NUM_LIST_BUTTONS 2
+#define NUM_LIST_BUTTONS 4
 struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 {
 	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_WEBTV_INFO},
+	{NEUTRINO_ICON_BUTTON_GREEN , LOCALE_FILEBROWSER_NEXTPAGE},
+	{NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_FILEBROWSER_PREVPAGE},
 	{ NEUTRINO_ICON_BUTTON_BLUE, LOCALE_WEBTV_BOUQUETS}
 };
 
@@ -504,7 +506,7 @@ void CWebTV::paintHead()
 	
 	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth*3, NUM_LIST_BUTTONS, CWebTVButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 	
 	// head icon
 	int icon_w, icon_h;
