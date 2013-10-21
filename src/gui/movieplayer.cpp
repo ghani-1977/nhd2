@@ -59,6 +59,8 @@
 #include <gui/widget/stringinput.h>
 #include <gui/widget/stringinput_ext.h>
 #include <gui/widget/helpbox.h>
+#include <gui/widget/msgbox.h>
+
 #include <system/debug.h>
 
 #include <libxmltree/xmlinterface.h>
@@ -165,6 +167,10 @@ std::string g_file_epg;
 std::string g_file_epg1;
 
 bool showaudioselectdialog = false;
+
+// for timeshift epg infos
+bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
+bool sectionsd_getEPGidShort(event_id_t epgID, CShortEPGData * epgdata);
 
 #define TIMESHIFT_SECONDS 	3
 
@@ -311,7 +317,7 @@ void CMoviePlayerGui::Init(void)
 
 	filebrowser->Multi_Select = true;
 	
-	filebrowser->Dirs_Selectable = false;
+	filebrowser->Dirs_Selectable = true;
 
 	// moviebrowser
 	moviebrowser = new CMovieBrowser();
@@ -1336,12 +1342,34 @@ void CMoviePlayerGui::PlayFile(void)
 			sprintf(fname, "%s.ts", rec_filename);
 			filename = fname;
 			sel_filename = std::string(rindex(filename, '/') + 1);
+			
 			dprintf(DEBUG_NORMAL, "[MoviePlayer] Timeshift: %s\n", sel_filename.c_str());
 
 			update_lcd = true;
 			start_play = true;
 			open_filebrowser = false;
 			timesh = false;
+			
+			// extract channel epg infos
+			CEPGData epgData;
+			event_id_t epgid = 0;
+			
+			if(sectionsd_getActualEPGServiceKey(live_channel_id&0xFFFFFFFFFFFFULL, &epgData));
+				epgid = epgData.eventID;
+
+			if(epgid != 0) 
+			{
+				CShortEPGData epgdata;
+				
+				if(sectionsd_getEPGidShort(epgid, &epgdata)) 
+				{
+					if (!(epgdata.title.empty())) 
+						g_file_epg = epgdata.title;
+					
+					if(!(epgdata.info1.empty()))
+						g_file_epg1 = epgdata.info1;
+				}
+			}
 			
 			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
@@ -2051,15 +2079,15 @@ void CMoviePlayerGui::PlayFile(void)
 #endif	
 				
 				// show movieinfoviewer at start
-				if(timeshift)
-				{
-					g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
-				}
-				else
-				{
+				//if(timeshift)
+				//{
+				//	g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
+				//}
+				//else
+				//{
 					//g_InfoViewer->showMovieInfo(false);
 					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
-				}
+				//}
 			}
 		}
 		
@@ -2355,33 +2383,11 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 		else if (msg == CRCInput::RC_info) 
 		{
-			if(!timeshift)
-			{
-				if (FileTime.IsVisible()) 
-					FileTime.hide();
+			if (FileTime.IsVisible()) 
+				FileTime.hide();
 				
-				if( !g_InfoViewer->m_visible )
-					//g_InfoViewer->showMovieInfo();
-					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
-				else 
-				{
-					g_InfoViewer->killTitle();
-					
-					if(isVlc)
-						showFileInfoVLC();
-					else if(isWebTV)
-						showFileInfoWebTV();
-					else if (p_movie_info != NULL)
-						cMovieInfo.showMovieInfo(*p_movie_info);
-				}
-			}
-			else if(timeshift)
-			{
-				if (FileTime.IsVisible()) 
-					FileTime.hide();
-				
-				g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
-			}
+			if( !g_InfoViewer->m_visible )
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 		}
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_time )
 		{
@@ -2714,12 +2720,10 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if(isVlc)
 				showFileInfoVLC();
-			else if(isWebTV)
-				showFileInfoWebTV();
 			else if (p_movie_info != NULL)
 				cMovieInfo.showMovieInfo(*p_movie_info);
-			else if(timeshift)
-				g_EpgData->show(live_channel_id);
+			else
+				showFileInfo();
 		}
 		else if(msg == CRCInput::RC_home)
 		{
@@ -2933,15 +2937,9 @@ void CMoviePlayerGui::showFileInfoVLC()
 	}
 }
 
-void CMoviePlayerGui::showFileInfoWebTV()
+void CMoviePlayerGui::showFileInfo()
 {
-	Helpbox helpbox;
-	
-	helpbox.addLine(g_file_epg.c_str());
-	helpbox.addLine(g_file_epg1.c_str());
-	
-	hide();
-	helpbox.show(LOCALE_MESSAGEBOX_INFO);
+	ShowMsg2UTF(g_file_epg.c_str(), g_file_epg1.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
 }
 
 

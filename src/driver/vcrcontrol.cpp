@@ -429,8 +429,8 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 	CZapitClient::CCurrentServiceInfo si = g_Zapit->getRecordServiceInfo ();
 
         APIDList apid_list;
-        getAPIDs(apids,apid_list);
-        apids_selected="";
+        getAPIDs(apids, apid_list);
+        apids_selected = "";
 	
         for(APIDList::iterator it = apid_list.begin(); it != apid_list.end(); it++)
         {
@@ -789,7 +789,7 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		if(epgid != 0) 
 		{
 			CShortEPGData epgdata;
-			//if (g_Sectionsd->getEPGidShort(epgid, &epgdata)) {
+
 			if(sectionsd_getEPGidShort(epgid, &epgdata)) 
 			{
 				if (!(epgdata.title.empty())) 
@@ -891,7 +891,7 @@ std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRComm
 	if (epgid != 0) 
 	{
 		CEPGData epgdata;
-		//if (g_Sectionsd->getEPGid(epgid, epg_time, &epgdata)) {
+		
 		if (sectionsd_getEPGid(epgid, epg_time, &epgdata)) 
 		{
 			tmpstring = epgdata.title;

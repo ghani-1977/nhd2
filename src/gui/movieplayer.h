@@ -90,8 +90,10 @@ class CMoviePlayerGui : public CMenuTarget
 		CFileFilter vlcfilefilter;
 
 		void showHelpTS(void);
+		
+		// show infos
 		void showFileInfoVLC(void);
-		void showFileInfoWebTV();
+		void showFileInfo();
 		
 	public:
 		CMoviePlayerGui();
