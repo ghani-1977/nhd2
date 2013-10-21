@@ -104,7 +104,7 @@ class CWebTV
 		CFile * getSelectedFile();
 		
 		void quickZap(int key);
-		
 		void showFileInfoWebTV();
+		void showUserBouquet();
 };
 #endif

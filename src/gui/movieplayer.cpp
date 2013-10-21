@@ -2775,9 +2775,17 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			if(isWebTV)
 			{
-				//exit = true;
 				open_filebrowser = true;
 				webtv->quickZap(msg);
+			}
+		}
+		else if(msg == CRCInput::RC_favorites)
+		{
+			if(isWebTV)
+			{
+				//exit = true;
+				open_filebrowser = true;
+				webtv->showUserBouquet();
 			}
 		}
 		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)

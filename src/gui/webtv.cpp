@@ -195,6 +195,58 @@ bool CWebTV::readChannellist(std::string filename)
 	return false;
 }
 
+void CWebTV::showUserBouquet(void)
+{
+	static int old_select = 0;
+	char cnt[5];
+	CMenuWidget InputSelector(LOCALE_WEBTV_HEAD, NEUTRINO_ICON_STREAMING);
+	int count = 0;
+	int select = -1;
+					
+	CMenuSelectorTarget *WebTVInputChanger = new CMenuSelectorTarget(&select);
+			
+	// webtv
+	sprintf(cnt, "%d", count);
+	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+	
+	// netzkino
+	sprintf(cnt, "%d", ++count);
+	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_NETZKINO, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+			
+	// divers
+	sprintf(cnt, "%d", ++count);
+	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_USER, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+
+	hide();
+	InputSelector.exec(NULL, "");
+	delete WebTVInputChanger;
+					
+	if(select >= 0)
+	{
+		old_select = select;
+					
+		switch (select) 
+		{
+			case WEBTV:	
+				mode = WEBTV;
+				readChannellist(DEFAULT_WEBTV_XMLFILE); 	
+				break;
+								
+			case NETZKINO:	
+				mode = NETZKINO;
+				readChannellist(NETZKINO_XMLFILE);
+				break;
+						
+			case USER:
+				mode = USER;
+				readChannellist(g_settings.webtv_settings);
+				break;
+						
+			default: break;
+		}
+	}
+}
+
 int CWebTV::Show()
 {
 	bool res = false;
@@ -317,56 +369,9 @@ showList:
 			
 			goto showList;
 		}
-		else if(msg == CRCInput::RC_blue)
+		else if(msg == CRCInput::RC_blue || msg == CRCInput::RC_favorites)
 		{
-			static int old_select = 0;
-			char cnt[5];
-			CMenuWidget InputSelector(LOCALE_WEBTV_HEAD, NEUTRINO_ICON_STREAMING);
-			int count = 0;
-			int select = -1;
-					
-			CMenuSelectorTarget *WebTVInputChanger = new CMenuSelectorTarget(&select);
-			
-			// webtv
-			sprintf(cnt, "%d", count);
-			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
-	
-			// netzkino
-			sprintf(cnt, "%d", ++count);
-			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_NETZKINO, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
-			
-			// divers
-			sprintf(cnt, "%d", ++count);
-			InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_USER, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
-
-			hide();
-			InputSelector.exec(NULL, "");
-			delete WebTVInputChanger;
-					
-			if(select >= 0)
-			{
-				old_select = select;
-					
-				switch (select) 
-				{
-					case WEBTV:	
-						mode = WEBTV;
-						readChannellist(DEFAULT_WEBTV_XMLFILE); 	
-						break;
-								
-					case NETZKINO:	
-						mode = NETZKINO;
-						readChannellist(NETZKINO_XMLFILE);
-						break;
-						
-					case USER:
-						mode = USER;
-						readChannellist(g_settings.webtv_settings);
-						break;
-						
-					default: break;
-				}
-			}
+			showUserBouquet();
 			
 			goto showList;
 		}
@@ -404,10 +409,7 @@ void CWebTV::quickZap(int key)
 	{
                 selected = (selected+1)%channels.size();
         }
-
-	dprintf(DEBUG_NORMAL, "CWebTV::quickZap: quick zap selected = %d\n", selected);
 	
-	//g_RCInput->postMsg(CRCInput::RC_ok, 0 );
 	filelist[selected].Url = channels[selected]->url;
 	filelist[selected].Name = channels[selected]->title;
 	filelist[selected].Description = channels[selected]->description;
