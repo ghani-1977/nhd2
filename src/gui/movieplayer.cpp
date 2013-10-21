@@ -1368,6 +1368,9 @@ void CMoviePlayerGui::PlayFile(void)
 					
 					if(!(epgdata.info1.empty()))
 						g_file_epg1 = epgdata.info1;
+					
+					if(!(epgdata.info2.empty()))
+						g_file_epg1 += epgdata.info2;
 				}
 			}
 			
