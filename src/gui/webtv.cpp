@@ -227,19 +227,22 @@ void CWebTV::showUserBouquet(void)
 					
 		switch (select) 
 		{
-			case WEBTV:	
+			case WEBTV:
 				mode = WEBTV;
-				readChannellist(DEFAULT_WEBTV_XMLFILE); 	
+				readChannellist(DEFAULT_WEBTV_XMLFILE);
+				selected = 0;
 				break;
 								
 			case NETZKINO:	
 				mode = NETZKINO;
 				readChannellist(NETZKINO_XMLFILE);
+				selected = 0;
 				break;
 						
 			case USER:
 				mode = USER;
 				readChannellist(g_settings.webtv_settings);
+				selected = 0;
 				break;
 						
 			default: break;

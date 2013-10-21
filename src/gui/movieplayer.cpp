@@ -1354,7 +1354,7 @@ void CMoviePlayerGui::PlayFile(void)
 			CEPGData epgData;
 			event_id_t epgid = 0;
 			
-			if(sectionsd_getActualEPGServiceKey(live_channel_id&0xFFFFFFFFFFFFULL, &epgData));
+			if(sectionsd_getActualEPGServiceKey(live_channel_id&0xFFFFFFFFFFFFULL, &epgData))
 				epgid = epgData.eventID;
 
 			if(epgid != 0) 
@@ -2733,7 +2733,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			
-			if(g_InfoViewer->m_visible);
+			if(g_InfoViewer->m_visible)
 				  g_InfoViewer->killTitle();
 			
 			if ( (was_file && !isMovieBrowser && !isWebTV) || m_loop) 
