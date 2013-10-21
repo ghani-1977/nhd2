@@ -113,7 +113,7 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 	key_standby = configfile.getInt32("key_standby", KEY_POWER);
 			
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE) || defined(PLATFORM_VUPLUS)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE) || defined(PLATFORM_VUPLUS) || defined (PLATFORM_VENTON)
 	key_home = configfile.getInt32("key_home", 0xAE);
 #else
 	key_home = configfile.getInt32("key_home", KEY_HOME);
