@@ -112,7 +112,7 @@ class CBouquetManager
 
 		CZapitChannel * findChannelByChannelID(const t_channel_id channel_id);
 		void sortBouquets(void);
-
+		CZapitChannel *findChannelByName(std::string name, const t_service_id sid);
 };
 
 /*

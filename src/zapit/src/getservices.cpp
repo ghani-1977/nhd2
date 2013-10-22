@@ -134,7 +134,7 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 			printf("[zapit] duplicate transponder id %llx freq %d\n", tid, feparams.frequency);
 
 		/* read channels that belong to the current transponder */
-		ParseChannels(node->xmlChildrenNode, transport_stream_id, original_network_id, satellitePosition, freq, polarization );
+		ParseChannels(node->xmlChildrenNode, transport_stream_id, original_network_id, satellitePosition, freq, polarization);
 
 		/* hop to next transponder */
 		node = node->xmlNextNode;
@@ -143,7 +143,7 @@ void ParseTransponders(xmlNodePtr node, t_satellite_position satellitePosition, 
 	return;
 }
 
-void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, uint8_t polarisation )
+void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq, uint8_t polarisation)
 {
 	t_service_id service_id;
 	std::string  name;
@@ -174,7 +174,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 		vtype = xmlGetNumericAttribute(node, "vt", 16);
 		scrambled = xmlGetNumericAttribute(node, "s", 16);
 
-		chid = CREATE_CHANNEL_ID64;
+		chid = CREATE_CHANNEL_ID;
 		char *ptr = xmlGetAttribute(node, "action");
 		bool remove = ptr ? (!strcmp(ptr, "remove") || !strcmp(ptr, "replace")) : false;
 		bool add    = ptr ? (!strcmp(ptr, "add")    || !strcmp(ptr, "replace")) : true;
@@ -201,7 +201,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 
 		pair<map<t_channel_id, CZapitChannel>::iterator,bool> ret;
 
-		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid,CZapitChannel ( name, 
+		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid, CZapitChannel( name, 
 												     service_id, 
 												     transport_stream_id,
 												     original_network_id, 
@@ -277,6 +277,8 @@ void FindTransponder(xmlNodePtr search)
 					break;
 				}
 			}
+			
+			dprintf(DEBUG_NORMAL, "getservices:FindTransponder: going to parse dvb-%c provider %s\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"));
 		}
 		else if ( !(strcmp(xmlGetName(search), "terrestrial")) && have_t)
 		{
@@ -290,19 +292,21 @@ void FindTransponder(xmlNodePtr search)
 					break;
 				}
 			}
+			
+			dprintf(DEBUG_NORMAL, "getservices:FindTransponder: going to parse dvb-%c provider %s\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"));
 		}
 		else if ( !(strcmp(xmlGetName(search), "sat")) && have_s) 
 		{
 			Source = DVB_S;
 			satellitePosition = xmlGetSignedNumericAttribute(search, "position", 10);
+			
+			dprintf(DEBUG_NORMAL, "getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
 		}
 		else // unknow
 		{
 			search = search->xmlNextNode;
 			continue;
 		}
-			
-		dprintf(DEBUG_NORMAL, "getservices:FindTransponder: going to parse dvb-%c provider %s position %d\n", xmlGetName(search)[0], xmlGetAttribute(search, "name"), satellitePosition);
 		
 		// parse TP
 		ParseTransponders(search->xmlChildrenNode, satellitePosition, Source );

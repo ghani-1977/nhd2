@@ -85,7 +85,7 @@ uint32_t  actual_freq;
 uint32_t actual_polarisation;
 int scan_mode = 0;
 int scan_sat_mode = 0;
-CBouquetManager* scanBouquetManager;
+CBouquetManager *scanBouquetManager;
 
 std::map <transponder_id_t, transponder> scantransponders;		/* TP list to scan */
 std::map <transponder_id_t, transponder> scanedtransponders;		/* global TP list for current scan */
