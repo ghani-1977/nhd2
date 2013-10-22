@@ -778,7 +778,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + height, dx - (stringstartposOption - x), l_option, color, 0, true); // UTF-8
 	
 	if(selected)
-	{
+	{  
 		//helpbar
 		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
 		// refresh
@@ -1023,6 +1023,7 @@ int CMenuOptionChooser::paint( bool selected )
 
 	if (selected)
 	{
+#if 0	  
 		//helpbar
 		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
 		
@@ -1042,6 +1043,7 @@ int CMenuOptionChooser::paint( bool selected )
 		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 			
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_h_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_h_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
+#endif		
 		
 		// vfd
 		char str[256];
@@ -1078,7 +1080,7 @@ void CMenuOptionStringChooser::addOption(const char * const value)
 	options.push_back(std::string(value));
 }
 
-int CMenuOptionStringChooser::exec(CMenuTarget * parent)
+int CMenuOptionStringChooser::exec(CMenuTarget *parent)
 {
 	bool wantsRepaint = false;
 	int ret = menu_return::RETURN_NONE;
@@ -1215,6 +1217,28 @@ int CMenuOptionStringChooser::paint( bool selected )
 	
 	if (selected)
 	{
+#if 0
+		//helpbar
+		int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();	// helpbar
+		
+		// refresh
+		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+		
+		// paint help icon
+		int icon_h_w = 0;
+		int icon_h_h = 0;
+		
+		frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_h_w, &icon_h_h);
+			
+		frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT - 2, HEIGHT - fheight + (fheight - icon_h_h)/2);
+			
+		// help text locale
+		const char * help_text = l_optionName;
+		int HelpTextHeight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
+			
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(x + BORDER_LEFT + icon_h_w + 5, HEIGHT - HelpTextHeight/3, dx - (x + (offx == 0? 0 : offx) + BORDER_LEFT + icon_h_w + 5 - x), help_text, COL_MENUFOOT, 0, true); // UTF-8
+#endif		
+
 		// vfd
 		char str[256];
 		snprintf(str, 255, "%s %s", l_optionName, optionValue);
