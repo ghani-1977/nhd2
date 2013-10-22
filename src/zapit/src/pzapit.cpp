@@ -1,5 +1,5 @@
 /*
- * $Id: pzapit.cpp,v 1.51 2013/08/18 11:23:30 mohousch obi Exp $
+ * $Id: pzapit.cpp,v 1.51 2013/08/18 11:23:30 mohousch Exp $
  *
  * simple commandline client for zapit
  *

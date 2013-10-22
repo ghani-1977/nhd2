@@ -539,8 +539,10 @@ void CScanTs::paint(bool fortest)
 	/* main box */
 	frameBuffer->paintBoxRel(x, ypos + hheight, width, height - hheight, COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
+	// radar
 	frameBuffer->loadPal("radar.pal", 17, 37);
-	 
+	
+	// satellites
 	ypos = y + hheight + (mheight >> 1);
 	
 	ypos_cur_satellite = ypos;
@@ -566,28 +568,33 @@ void CScanTs::paint(bool fortest)
 		xpos2 = xpos1 + 10 + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(g_Locale->getText(LOCALE_SCANTS_ACTTERRESTRIAL), true); // UTF-8
 	}
 
+	// transponder
 	ypos_transponder = ypos;
 	paintLineLocale(xpos1, &ypos, width - xpos1, LOCALE_SCANTS_TRANSPONDERS);
 	xpos2 = greater_xpos(xpos2, LOCALE_SCANTS_TRANSPONDERS);
 
+	// frequency
 	ypos_frequency = ypos;
 	paintLineLocale(xpos1, &ypos, width - xpos1, LOCALE_SCANTS_FREQDATA);
 	xpos2 = greater_xpos(xpos2, LOCALE_SCANTS_FREQDATA);
 
+	// provider
 	ypos += mheight >> 1; // 1/2 blank line
 	
 	ypos_provider = ypos;
 	paintLineLocale(xpos1, &ypos, width - xpos1, LOCALE_SCANTS_PROVIDER);
 	xpos2 = greater_xpos(xpos2, LOCALE_SCANTS_PROVIDER);
 	
+	// channel
 	ypos_channel = ypos;
 	paintLineLocale(xpos1, &ypos, width - xpos1, LOCALE_SCANTS_CHANNEL);
 	xpos2 = greater_xpos(xpos2, LOCALE_SCANTS_CHANNEL);
 
+	// services (tv/radio/data/summe)
 	ypos += mheight >> 1; // 1/2 blank line
 
 	ypos_service_numbers = ypos; paintLineLocale(xpos1         , &ypos, 72                 , LOCALE_SCANTS_NUMBEROFTVSERVICES   );
-	ypos = ypos_service_numbers; paintLineLocale(xpos1 +     56/*72*/, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFRADIOSERVICES);
+	ypos = ypos_service_numbers; paintLineLocale(xpos1 +     56, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFRADIOSERVICES);
 	ypos = ypos_service_numbers; paintLineLocale(xpos1 + 2 * 72, &ypos, 72                 , LOCALE_SCANTS_NUMBEROFDATASERVICES );
 	ypos = ypos_service_numbers; paintLineLocale(xpos1 + 3 * 72, &ypos, width - 3 * 72 - 10, LOCALE_SCANTS_NUMBEROFTOTALSERVICES);
 }

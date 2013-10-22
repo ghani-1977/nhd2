@@ -242,9 +242,9 @@ _repeat:
 		if( getFE(feindex)->getInfo()->type == FE_QAM)
 			actual_freq = tI->second.feparams.frequency;
 		else if( getFE(feindex)->getInfo()->type == FE_QPSK)
-			actual_freq = tI->second.feparams.frequency/1000;
+			actual_freq = tI->second.feparams.frequency;
 		else if( getFE(feindex)->getInfo()->type == FE_OFDM)
-			actual_freq = tI->second.feparams.frequency/1000000;
+			actual_freq = tI->second.feparams.frequency;
 
 		processed_transponders++;
 		
