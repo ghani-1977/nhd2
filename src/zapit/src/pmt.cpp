@@ -228,7 +228,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0xC2: /* User Private descriptor - Canal+ */
-#if 1
+#if 0
 				printf("0xC2 dump:");
 				for (i = 0; i < descriptor_length; i++) 
 				{
@@ -255,7 +255,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 			default:
 				dprintf(DEBUG_INFO, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
-#if 1
+#if 0
 				printf("0x%2X dump:\n", descriptor_tag);
 				for (i = 0; i < descriptor_length; i++) 
 				{
