@@ -586,11 +586,12 @@ void CBEBouquetWidget::switchLockBouquet()
 
 std::string CBEBouquetWidget::inputName(const char * const defaultName, const neutrino_locale_t caption)
 {
-	char Name[30];
+	//FIXME: max input it too long than bqt window width
+	char Name[MAX_INPUT_CHARS + 1];
 
-	strncpy(Name, defaultName, 30);
+	strncpy(Name, defaultName, MAX_INPUT_CHARS + 1);
 
-	CStringInputSMS * nameInput = new CStringInputSMS(caption, Name);
+	CStringInputSMS *nameInput = new CStringInputSMS(caption, Name);
 	nameInput->exec(this, "");
 	delete nameInput;
 
