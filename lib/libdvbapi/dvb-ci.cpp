@@ -872,11 +872,11 @@ bool cDvbCi::CamPresent(int slot)
 	
         for(it = slot_data.begin(); it != slot_data.end(); ++it)
         {
-            if ((*it)->slot == slot) 
-	    {
-	       return (*it)->camIsReady;
-	       break;
-	    }
+		if ((*it)->slot == slot) 
+		{
+			return (*it)->camIsReady;
+			break;
+		}
 	}
 	
 	return false; 
@@ -890,12 +890,12 @@ bool cDvbCi::GetName(int slot, char * name)
 	
         for(it = slot_data.begin(); it != slot_data.end(); ++it)
         {
-	    //printf("%d. name = %s, %p\n", (*it)->slot, (*it)->name, (*it));
-            if ((*it)->slot == slot) 
-	    {
-	       strcpy(name, (*it)->name);
-	       break;
-	    }
+		//printf("%d. name = %s, %p\n", (*it)->slot, (*it)->name, (*it));
+		if ((*it)->slot == slot) 
+		{
+			strcpy(name, (*it)->name);
+			break;
+		}
 	}
 	
 	return true;
@@ -903,22 +903,21 @@ bool cDvbCi::GetName(int slot, char * name)
 
 void cDvbCi::reset(int slot)
 {
-     std::list<tSlot*>::iterator it;
-     bool haveFound = false;
+	std::list<tSlot*>::iterator it;
+	bool haveFound = false;
 
-     for(it = slot_data.begin(); it != slot_data.end(); ++it)
-     {
-         if ((*it)->slot == slot) 
-	 {
-	    haveFound = true;
-	    break;
-	 }
-     }
-#if HAVE_DVB_API_VERSION < 5
-     if (haveFound)
-     {
-	if (ioctl((*it)->fd, CA_RESET, (*it)->slot) < 0)
-		printf("IOCTL CA_RESET failed for slot %d\n", slot);
-     }
-#endif     
+	for(it = slot_data.begin(); it != slot_data.end(); ++it)
+	{
+		if ((*it)->slot == slot) 
+		{
+			haveFound = true;
+			break;
+		}
+	}
+
+	if (haveFound)
+	{
+		if (ioctl((*it)->fd, CA_RESET, (*it)->slot) < 0)
+			printf("IOCTL CA_RESET failed for slot %d\n", slot);
+	}    
 }
