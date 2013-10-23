@@ -135,8 +135,8 @@ struct sectionsd
 		int network_ntprefresh;
 		int network_ntpenable;
 		int epg_extendedcache;
-//		std::string network_ntpserver;
-//		std::string epg_dir;
+		//std::string network_ntpserver;
+		//std::string epg_dir;
 	};
 
 };

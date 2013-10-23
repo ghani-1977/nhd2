@@ -120,17 +120,6 @@ bool CSectionsdClient::getIsTimeSet()
 	}
 }
 
-
-#if 0
-void CSectionsdClient::setEventsAreOldInMinutes(const unsigned short minutes)
-{
-	send(sectionsd::setEventsAreOldInMinutes, (char*)&minutes, sizeof(minutes));
-
-	readResponse();
-	close_connection();
-}
-#endif
-
 void CSectionsdClient::setPauseSorting(const bool doPause)
 {
 	int PauseIt = (doPause) ? 1 : 0;
@@ -298,7 +287,6 @@ bool CSectionsdClient::getNVODTimesServiceKey(const t_channel_id channel_id, CSe
 	}
 }
 
-
 bool CSectionsdClient::getCurrentNextServiceKey(const t_channel_id channel_id, CSectionsdClient::responseGetCurrentNextInfoChannelID& current_next)
 {
 	if (send(sectionsd::currentNextInformationID, (char*)&channel_id, sizeof(channel_id)))
@@ -341,8 +329,6 @@ bool CSectionsdClient::getCurrentNextServiceKey(const t_channel_id channel_id, C
 		return false;
 	}
 }
-
-
 
 CChannelEventList CSectionsdClient::getChannelEvents(const bool tv_mode, t_channel_id *p_requested_channels, int size_requested_channels)
 {
@@ -500,6 +486,7 @@ CChannelEventList CSectionsdClient::getEventsServiceKey(const t_channel_id chann
 	close_connection();
 	return eList;
 }
+
 void showhexdumpa (char *label, unsigned char * from, int len)
 {
   int i, j, k;
@@ -543,37 +530,43 @@ void showhexdumpa (char *label, unsigned char * from, int len)
 
 // 21.07.2005 - rainerk
 // Convert line-terminated extended events to vector of strings
-char * CSectionsdClient::parseExtendedEvents(char * dp, CEPGData * epgdata) {
+char * CSectionsdClient::parseExtendedEvents(char * dp, CEPGData * epgdata) 
+{
 	char * pItemDescriptions = dp, * pItemDescriptionStart;
 	dp+=strlen(dp)+1;
 	char * pItems = dp, * pItemStart;
 	dp+=strlen(dp)+1;
 	/* Clear vector since epgdata seems to be reused */
 	epgdata->itemDescriptions.clear();
-	while (*pItemDescriptions) {
+	
+	while (*pItemDescriptions) 
+	{
 		pItemDescriptionStart = pItemDescriptions;
-		while (*pItemDescriptions && '\n' != *pItemDescriptions) {
+		while (*pItemDescriptions && '\n' != *pItemDescriptions) 
+		{
 			pItemDescriptions++;
 		}
 		char pp = *pItemDescriptions;
 		*pItemDescriptions = 0;
 		epgdata->itemDescriptions.push_back(pItemDescriptionStart);
-/*printf("CSectionsdClient::parseExtendedEvents: desc %s\n", pItemDescriptionStart);*/
+		/*printf("CSectionsdClient::parseExtendedEvents: desc %s\n", pItemDescriptionStart);*/
 		if(!pp)
 			break;
 		pItemDescriptions++;
 	}
+	
 	/* Clear vector since epgdata seems to be reused */
 	epgdata->items.clear();
 	while (*pItems) {
 		pItemStart = pItems;
-		while (*pItems && '\n' != *pItems) {
+		while (*pItems && '\n' != *pItems) 
+		{
 			pItems++;
 		}
 		char pp = *pItemDescriptions;
 		*pItems = 0;
 		epgdata->items.push_back(pItemStart);
-/*printf("CSectionsdClient::parseExtendedEvents: item %s\n", pItemStart);*/
+		/*printf("CSectionsdClient::parseExtendedEvents: item %s\n", pItemStart);*/
 		if(!pp)
 			break;
 		pItems++;
@@ -607,7 +600,7 @@ bool CSectionsdClient::getActualEPGServiceKey(const t_channel_id channel_id, CEP
 			dp+=strlen(dp)+1;
 			// 21.07.2005 - rainerk
 			// Convert line-terminated extended events to vector of strings
-//showhexdumpa("Data:", (unsigned char *)pData, nBufSize);
+			//showhexdumpa("Data:", (unsigned char *)pData, nBufSize);
 			dp = parseExtendedEvents(dp, epgdata);
 
 			// *dp is the length, dp+1 is the chararray[]
@@ -633,7 +626,6 @@ bool CSectionsdClient::getActualEPGServiceKey(const t_channel_id channel_id, CEP
 
 	return false;
 }
-
 
 bool CSectionsdClient::getEPGid(const event_id_t eventid, const time_t starttime, CEPGData * epgdata)
 {
@@ -690,7 +682,6 @@ bool CSectionsdClient::getEPGid(const event_id_t eventid, const time_t starttime
 	return false;
 }
 
-
 bool CSectionsdClient::getEPGidShort(const event_id_t eventid, CShortEPGData * epgdata)
 {
 	if (send(sectionsd::epgEPGidShort, (char*)&eventid, sizeof(eventid)))
@@ -715,8 +706,7 @@ bool CSectionsdClient::getEPGidShort(const event_id_t eventid, CShortEPGData * e
 			dp+=strlen(dp)+1;
 			epgdata->info2 = dp;
 			dp+=strlen(dp)+1;
-//			printf("titel: %s\n",epgdata->title.c_str());
-
+			//printf("titel: %s\n",epgdata->title.c_str());
 
 			delete[] pData;
 			return true;
@@ -729,19 +719,11 @@ bool CSectionsdClient::getEPGidShort(const event_id_t eventid, CShortEPGData * e
 
 	return false;
 }
+
 #ifdef ENABLE_PPT
 void CSectionsdClient::setPrivatePid(const unsigned short pid)
 {
 	send(sectionsd::setPrivatePid, (char*)&pid, sizeof(pid));
-
-	readResponse();
-	close_connection();
-}
-#endif
-#if 0
-void CSectionsdClient::setSectionsdScanMode(const int scanMode)
-{
-	send(sectionsd::setSectionsdScanMode, (char*)&scanMode, sizeof(scanMode));
 
 	readResponse();
 	close_connection();
