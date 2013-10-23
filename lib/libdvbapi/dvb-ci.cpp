@@ -781,6 +781,7 @@ cDvbCi::cDvbCi(int Slots)
 
 	int fd, i;
 	char filename[128];
+	ci_num = 0;
 
 	for (i = 0; i < Slots; i++)
 	{
@@ -792,48 +793,42 @@ cDvbCi::cDvbCi(int Slots)
 #endif
 		fd = open(filename, O_RDWR | O_NONBLOCK);
 	    
-		if (fd < 0)
+		if (fd > 0)
 		{
-			printf("failed to open %s ->%m\n", filename);
-		} 
-	    	
-		tSlot *slot = (tSlot*) malloc(sizeof(tSlot));
-		
-		ci_num = i;
+			tSlot *slot = (tSlot*) malloc(sizeof(tSlot));
+			
+			ci_num++;
 
-		slot->slot   = i;
-		slot->fd     = fd;
-		slot->connection_id = 0;
-		slot->status = eStatusNone;
-		slot->receivedLen = 0;
-		slot->receivedData = NULL;
-		slot->pClass = this;
-		slot->pollConnection = false;
-		slot->camIsReady = false;
+			slot->slot   = i;
+			slot->fd     = fd;
+			slot->connection_id = 0;
+			slot->status = eStatusNone;
+			slot->receivedLen = 0;
+			slot->receivedData = NULL;
+			slot->pClass = this;
+			slot->pollConnection = false;
+			slot->camIsReady = false;
 
-		slot->hasMMIManager = false;
-		slot->hasCAManager = false;
-		slot->hasDateTime = false;
-		slot->hasAppManager = false;
+			slot->hasMMIManager = false;
+			slot->hasCAManager = false;
+			slot->hasDateTime = false;
+			slot->hasAppManager = false;
 
-		slot->mmiOpened = false;
+			slot->mmiOpened = false;
 
-		slot->init = false;
-    
-		slot->caPmt = NULL;
-		slot->source = TUNER_A;
+			slot->init = false;
+	    
+			slot->caPmt = NULL;
+			slot->source = TUNER_A;
 
-		sprintf(slot->name, "unknown module %d", i);
+			sprintf(slot->name, "unknown module %d", i);
 
-		slot_data.push_back(slot);
-		
-		/* now reset the slot so the poll pri can happen in the thread */
-		reset(i); 
+			slot_data.push_back(slot);
+			
+			/* now reset the slot so the poll pri can happen in the thread */
+			reset(i); 
 
-		/* create a thread for each slot */
-		if (fd > 0) 
-		{
-		  
+			/* create a thread for each slot */	  
 			if (pthread_create(&slot->slot_thread, 0, execute_thread,  (void*)slot)) 
 			{
 				printf("pthread_create\n");
