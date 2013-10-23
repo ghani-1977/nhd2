@@ -777,18 +777,19 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt, int source)
 //
 cDvbCi::cDvbCi(int Slots) 
 {
-	printf("%s:%s %d\n", FILENAME, __FUNCTION__, Slots);
+	printf("%s:%s\n", FILENAME, __FUNCTION__);
 
 	int fd, i;
 	char filename[128];
 
 	for (i = 0; i < Slots; i++)
 	{
-#if defined (PLATFORM_GIGABLUE)
-		sprintf(filename, "/dev/ci%d", i);
-#else
+
+#if defined (__sh__)
 		sprintf(filename, "/dev/dvb/adapter0/ci%d", i);
-#endif	    
+#else
+		sprintf(filename, "/dev/ci%d", i);
+#endif
 		fd = open(filename, O_RDWR | O_NONBLOCK);
 	    
 		if (fd < 0)
@@ -796,7 +797,9 @@ cDvbCi::cDvbCi(int Slots)
 			printf("failed to open %s ->%m\n", filename);
 		} 
 	    	
-		tSlot* slot = (tSlot*) malloc(sizeof(tSlot));
+		tSlot *slot = (tSlot*) malloc(sizeof(tSlot));
+		
+		ci_num = i;
 
 		slot->slot   = i;
 		slot->fd     = fd;
@@ -852,11 +855,7 @@ cDvbCi * cDvbCi::getInstance()
 	printf("%s:%s\n", FILENAME, __FUNCTION__);
 	
 	if (pDvbCiInstance == NULL)
-#if defined (PLATFORM_GIGABLUE)
-		pDvbCiInstance = new cDvbCi(1);
-#else
-		pDvbCiInstance = new cDvbCi(2);
-#endif		
+		pDvbCiInstance = new cDvbCi(MAX_SLOTS);		
 	
 	return pDvbCiInstance;
 }

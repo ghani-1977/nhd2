@@ -81,13 +81,11 @@ int CCAMMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 	if(actionKey == "cam1") 
 	{
 		return doMenu(0);
-	}
-#if !defined (PLATFORM_GIGABLUE)	
+	}	
 	else if(actionKey == "cam2") 
 	{
 		return doMenu(1);
-	}
-#endif	
+	}	
 
 	return doMainMenu();
 }
@@ -95,9 +93,8 @@ int CCAMMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 int CCAMMenuHandler::doMainMenu()
 {
 	int ret;
-	char name1[255], name2[255];
-	char str1[255];
-	char str2[255];
+	char name[255];
+	char str[255];
 
 	CMenuWidget * cammenu = new CMenuWidget(LOCALE_CAM_SETTINGS, NEUTRINO_ICON_SETTINGS);
 	
@@ -108,33 +105,24 @@ int CCAMMenuHandler::doMainMenu()
 
 	CMenuWidget * tempMenu;
 	
-	if(ci->CamPresent(0)) 
+	for (unsigned int i = 0; i < ci->ci_num; i++)
 	{
-		ci->GetName(0, name1);
-		printf("CCAMMenuHandler::doMenu cam1 name %s\n", name1);
-		cammenu->addItem(new CMenuForwarderNonLocalized(name1, true, NULL, this, "cam1", CRCInput::RC_1));
-	} 
-	else 
-	{
-		sprintf(str1, "%s 1", g_Locale->getText(LOCALE_CAM_EMPTY));
-		tempMenu = new CMenuWidget(str1, NEUTRINO_ICON_SETTINGS);
-		cammenu->addItem(new CMenuForwarderNonLocalized(str1, false, NULL, tempMenu));
-	}
-
-#if !defined (PLATFORM_GIGABLUE)
-	if(ci->CamPresent(1)) 
-	{
-		ci->GetName(1, name2);
-		printf("CCAMMenuHandler::doMenu cam2 name %s\n", name2);
-		cammenu->addItem(new CMenuForwarderNonLocalized(name2, true, NULL, this, "cam2", CRCInput::RC_2));
-	} 
-	else 
-	{
-		sprintf(str2, "%s 2", g_Locale->getText(LOCALE_CAM_EMPTY));
-		tempMenu = new CMenuWidget(str2, NEUTRINO_ICON_SETTINGS);
-		cammenu->addItem(new CMenuForwarderNonLocalized(str2, false, NULL, tempMenu));
-	}
-#endif	
+		if(ci->CamPresent(i)) 
+		{
+			ci->GetName(i, name);
+			printf("CCAMMenuHandler::doMenu cam %d name %s\n", i, name);
+			
+			char CAM[255];
+			sprintf(CAM, "cam%d", i + 1);
+			cammenu->addItem(new CMenuForwarderNonLocalized(name, true, NULL, this, CAM, CRCInput::RC_nokey));
+		} 
+		else 
+		{
+			sprintf(str, "%s %d", g_Locale->getText(LOCALE_CAM_EMPTY), i + 1);
+			tempMenu = new CMenuWidget(str, NEUTRINO_ICON_SETTINGS);
+			cammenu->addItem(new CMenuForwarderNonLocalized(str, false, NULL, tempMenu));
+		}
+	}	
 
 	ret = cammenu->exec(NULL, "");
 	delete cammenu;

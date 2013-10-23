@@ -20,6 +20,8 @@
 #define TUNER_C		2
 #define TUNER_D		3
 
+#define MAX_SLOTS	2
+
 typedef struct
 {
         int slot;
@@ -137,6 +139,8 @@ class cDvbCi {
 	        std::list<tSlot*> slot_data;
                 pthread_t slot_thread;
 	public:
+		int ci_num;
+		
                 bool SendCaPMT(CCaPmt *caPmt, int source = TUNER_A);
 
                 void slot_pollthread(void *c);
