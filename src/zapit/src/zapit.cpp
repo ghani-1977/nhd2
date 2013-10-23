@@ -1015,7 +1015,8 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	} 
 	else 
 	{
-		volume_left = volume_right = (thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
+		if(thischannel->getAudioChannel() != NULL)
+			volume_left = volume_right = (thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3)? VOLUME_DEFAULT_AC3 : VOLUME_DEFAULT_PCM;
 		audio_mode = def_audio_mode;
 		
 		// set default tuxtxt pid
@@ -1023,7 +1024,8 @@ static void restore_channel_pids(CZapitChannel * thischannel)
 	}
 
 	// set saved volume pro pid
-	volume_percent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
+	if(thischannel->getAudioChannel() != NULL)
+		volume_percent = getPidVolume(thischannel->getChannelID(), thischannel->getAudioPid(), thischannel->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
 	setVolumePercent(volume_percent);
 	
 	//FIXME: is is muted
@@ -2539,8 +2541,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 			while (CBasicServer::receive_data(connfd, &msgAddSubService, sizeof(msgAddSubService))) 
 			{
-				t_original_network_id original_network_id = msgAddSubService.original_network_id;
-				t_service_id          service_id          = msgAddSubService.service_id;
+				//t_original_network_id original_network_id = msgAddSubService.original_network_id;
+				//t_service_id          service_id          = msgAddSubService.service_id;
+				
 				dprintf(DEBUG_DEBUG, "NVOD insert %llx\n", CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(msgAddSubService.service_id, msgAddSubService.original_network_id, msgAddSubService.transport_stream_id));
 				
 				nvodchannels.insert (
@@ -2548,9 +2551,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(msgAddSubService.service_id, msgAddSubService.original_network_id, msgAddSubService.transport_stream_id),
 					CZapitChannel (
 					"NVOD",
-					service_id,
+					//service_id,
+					msgAddSubService.service_id,
 					msgAddSubService.transport_stream_id,
-					original_network_id,
+					//original_network_id,
+					msgAddSubService.original_network_id,
 					1,
 					live_channel ? live_channel->getSatellitePosition() : 0,
 					0) //FIXME: global for more than one tuner???

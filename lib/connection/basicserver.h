@@ -30,6 +30,7 @@
 
 #include "basicmessage.h"
 
+
 class CBasicServer
 {
 	private:

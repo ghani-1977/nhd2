@@ -278,7 +278,7 @@ void CZapitClient::setSubServices( subServiceList& subServices )
 
 	send(CZapitMessages::CMD_SETSUBSERVICES);
 
-	for (i = 0; i< subServices.size(); i++)
+	for (i = 0; i < subServices.size(); i++)
 		send_data((char*)&subServices[i], sizeof(subServices[i]));
 
 	close_connection();
