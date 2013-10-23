@@ -254,12 +254,6 @@ int CWebTV::Show()
 {
 	bool res = false;
 	
-	if(channels.size() == 0)
-	{
-		DisplayErrorMessage(g_Locale->getText(LOCALE_WEBTVCHANNELLIST_NONEFOUND)); // UTF-8
-		return res;
-	}
-	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 	
