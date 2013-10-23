@@ -353,7 +353,6 @@ void CPlugins::startPlugin(int number, int param)
 		return;
 	}
 
-#if defined (ENABLE_STANDALONEPLUGINS)
 	/* export neutrino settings to the environment */
 	char tmp[32];
 	sprintf(tmp, "%d", g_settings.screen_StartX);
@@ -365,6 +364,7 @@ void CPlugins::startPlugin(int number, int param)
 	sprintf(tmp, "%d", g_settings.screen_EndY);
 	setenv("SCREEN_END_Y", tmp, 1);
 
+	/* stop rc input */
 	g_RCInput->stopInput();
 	
 	printf("Starting %s\n", plugin_list[number].pluginfile.c_str());
@@ -378,181 +378,6 @@ void CPlugins::startPlugin(int number, int param)
 	
 	g_RCInput->restartInput();
 	g_RCInput->clearRCMsg();
-#else
-	PluginExec execPlugin;
-	char depstring[129];
-	char			*argv[20];
-	void			*libhandle[20];
-	int			argc = 0, i = 0, lcd_fd = -1;
-	char			*p;
-	char			*np;
-	void			*handle;
-	char *        		error;
-	int           		vtpid      =  0;
-	PluginParam * 		startparam =  0;
-	
-	// fb
-	if (plugin_list[number].fb)
-	{
-		// filehandle pointer
-		startparam = makeParam(P_ID_FBUFFER, frameBuffer->getFileHandle(), startparam);
-		startparam = makeParam(P_ID_LFBUFFER, (long int)frameBuffer->getFrameBufferPointer(), startparam);
-		startparam = makeParam(P_ID_XRESFBUFFER, frameBuffer->getScreenWidth(true), startparam);
-		startparam = makeParam(P_ID_YRESFBUFFER, frameBuffer->getScreenHeight(true), startparam);
-		startparam = makeParam(P_ID_STRIDEFBUFFER, frameBuffer->getStride(), startparam);
-		startparam = makeParam(P_ID_MEMFBUFFER, frameBuffer->getAvailableMem(), startparam);
-	}
-	
-	// rc
-	if (plugin_list[number].rc)
-	{
-		startparam = makeParam(P_ID_RCINPUT  , g_RCInput->getFileHandle()      , startparam);
-		startparam = makeParam(P_ID_RCBLK_ANF, g_settings.repeat_genericblocker, startparam);
-		startparam = makeParam(P_ID_RCBLK_REP, g_settings.repeat_blocker       , startparam);
-	}
-	else
-	{
-		g_RCInput->stopInput();
-	}
-	
-	// lcd	
-	if (plugin_list[number].lcd)
-	{
-		CVFD::getInstance()->pause();
-
-		lcd_fd = open("/dev/vfd", O_RDWR);		
-
-		startparam = makeParam(P_ID_LCD, lcd_fd, startparam);
-	}	
-	
-	// vtxtpid	
-	if (plugin_list[number].vtxtpid)
-	{
-		vtpid = g_RemoteControl->current_PIDs.PIDs.vtxtpid;
-
-		if (param > 0)
-			vtpid = param;
-		
-		startparam = makeParam(P_ID_VTXTPID, vtpid, startparam);
-	}	
-	
-	// offset
-	if (plugin_list[number].needoffset)
-	{
-		startparam = makeParam(P_ID_VFORMAT  , g_settings.video_Format         , startparam);
-		startparam = makeParam(P_ID_OFF_X    , g_settings.screen_StartX        , startparam);
-		startparam = makeParam(P_ID_OFF_Y    , g_settings.screen_StartY        , startparam);
-		startparam = makeParam(P_ID_END_X    , g_settings.screen_EndX          , startparam);
-		startparam = makeParam(P_ID_END_Y    , g_settings.screen_EndY          , startparam);
-	}
-
-	PluginParam *par = startparam;
-	for ( ; par; par=par->next )
-	{
-		printf("[CPlugins] (id, val):(%s,%s)\n", par->id, par->val);
-	}
-	std::string pluginname = plugin_list[number].filename;
-
-	strcpy(depstring, plugin_list[number].depend.c_str());
-
-	argc = 0;
-	if ( depstring[0] )
-	{
-		p = depstring;
-		while ( 1 )
-		{
-			argv[ argc ] = p;
-			argc++;
-			np = strchr(p,',');
-			if ( !np )
-				break;
-
-			*np = 0;
-			p = np + 1;
-			if ( argc == 20 )	// mehr nicht !
-				break;
-		}
-	}
-	
-	for ( i = 0; i < argc; i++ )
-	{
-		std::string libname = argv[i];
-		printf("[CPlugins] try load shared lib : %s\n",argv[i]);
-		libhandle[i] = dlopen( *argv[i] == '/' ? argv[i] : (PLUGINDIR "/"+libname).c_str(), RTLD_NOW | RTLD_GLOBAL );
-		
-		if ( !libhandle[i] )
-		{
-			fputs(dlerror(), stderr);
-			break;
-		}
-	}
-	
-	if ( i == argc )		// alles geladen
-	{
-		handle = dlopen(plugin_list[number].pluginfile.c_str(), RTLD_NOW);
-		if (!handle)
-		{
-			fputs (dlerror(), stderr);
-		} 
-		else 
-		{
-			execPlugin = (PluginExec) dlsym(handle, "plugin_exec");
-			if ((error = dlerror()) != NULL)
-			{
-				fputs(error, stderr);
-				dlclose(handle);
-			} 
-			else 
-			{
-				printf("[CPlugins] try exec...\n");
-				
-				execPlugin(startparam);
-				dlclose(handle);
-				printf("[CPlugins] exec done...\n");
-			}
-		}
-
-		// restart rc
-		if (!plugin_list[number].rc)
-			g_RCInput->restartInput();
-		
-		g_RCInput->clearRCMsg();
-
-		// resume lcd
-		if (plugin_list[number].lcd)
-		{
-			if (lcd_fd != -1)
-				close(lcd_fd);
-			CVFD::getInstance()->resume();
-		}
-
-		// restore fb
-		if (plugin_list[number].fb)
-		{	
-#if !defined USE_OPENGL
-			frameBuffer->blit();
-#endif			
-		}
-	}
-
-	/* unload shared libs */
-	for ( i=0; i<argc; i++ )
-	{
-		if ( libhandle[i] )
-			dlclose(libhandle[i]);
-		else
-			break;
-	}
-
-	for (par = startparam ; par; )
-	{
-		/* we must not free par->id, since it is the original */
-		free(par->val);
-		PluginParam * tmp = par;
-		par = par->next;
-		delete tmp;
-	}
-#endif
 }
 
 bool CPlugins::hasPlugin(CPlugins::p_type_t type)

@@ -133,16 +133,6 @@ if test "$enable_freesatepg" = "yes"; then
 AC_DEFINE(ENABLE_FREESATEPG,1,[include freesatepg support])
 fi
 
-# standalone plugins
-AC_ARG_ENABLE(standaloneplugins,
-	AS_HELP_STRING(--enable-standaloneplugins,enable standaloneplugins support),
-	,[enable_standaloneplugins=no])
-AM_CONDITIONAL(ENABLE_STANDALONEPLUGINS,test "$enable_standaloneplugins" = "yes")
-
-if test "$enable_standaloneplugins" = "yes"; then
-AC_DEFINE(ENABLE_STANDALONEPLUGINS,1,[include standaloneplugins support])
-fi
-
 # scart output
 AC_ARG_ENABLE(scart,
 	AS_HELP_STRING(--enable-scart,enable scart output),
