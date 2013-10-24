@@ -1662,7 +1662,7 @@ bool CZapProtection::check()
 		  ( res == menu_return::RETURN_REPAINT ) &&
 		  ( fsk >= g_settings.parentallock_lockage ) );
 		  
-	return ( ( strncmp(cPIN,validPIN, 4) == 0 ) ||
+	return ( ( strncmp(cPIN, validPIN, 4) == 0 ) ||
 			 ( fsk < g_settings.parentallock_lockage ) );
 }
 

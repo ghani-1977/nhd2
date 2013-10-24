@@ -63,6 +63,8 @@ CWebTV::CWebTV()
 	
 	parser = NULL;
 	mode = WEBTV;
+	
+	zapProtection = NULL;
 }
 
 CWebTV::~CWebTV()
@@ -156,9 +158,7 @@ bool CWebTV::readChannellist(std::string filename)
 				char * title = xmlGetAttribute(l1, (char *)"title");
 				char * url = xmlGetAttribute(l1, (char *)"url");
 				char * description = xmlGetAttribute(l1, (char *)"description");
-				char * locked = xmlGetAttribute(l1, (char *)"locked");
-				
-				bool ChLocked = locked ? (strcmp(locked, "1") == 0) : false;
+				bool locked = xmlGetAttribute(l1, (char *)"locked");
 				
 				// fill webtv list
 				tmp = new webtv_channels();
@@ -168,13 +168,8 @@ bool CWebTV::readChannellist(std::string filename)
 				tmp->description = description;
 				tmp->locked = locked;
 				
-				// parentallock
-				if ((g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_ONSIGNAL) && (g_settings.parentallock_prompt != PARENTALLOCK_PROMPT_CHANGETOLOCKED))
-					ChLocked = false;			
-			
-				// skip if locked
-				if(!ChLocked)
-					channels.push_back(tmp);
+				// fill channelslist
+				channels.push_back(tmp);
 				
 				// fill filelist
 				file.Url = url;
@@ -351,14 +346,41 @@ showList:
                                 paintItem(selected - liststart);
                 }
                 else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
-		{	  
+		{
 			filelist[selected].Url = channels[selected]->url;
 			filelist[selected].Name = channels[selected]->title;
 			filelist[selected].Description = channels[selected]->description;
-			
-			res = true;
-		
-			loop = false;
+				
+			if ( (channels[selected]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
+			{
+				if ( zapProtection != NULL )
+					zapProtection->fsk = g_settings.parentallock_lockage;
+				else
+				{
+					zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
+						
+					if ( !zapProtection->check() )
+					{
+						delete zapProtection;
+						zapProtection = NULL;
+					
+						goto showList;
+					}
+					else
+					{
+						delete zapProtection;
+						zapProtection = NULL;
+					
+						res = true;
+						loop = false;
+					}
+				}
+			}
+			else
+			{
+				res = true;
+				loop = false;
+			}
 		}
 		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
 		{

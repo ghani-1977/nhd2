@@ -54,13 +54,15 @@ class CWebTV
 			char * title;
 			char * url;
 			char * description;
-			char * locked;		// for parentallock
+			bool locked;		// for parentallock
 		};
 
 		xmlDocPtr parser;
 		bool readChannellist(std::string filename);
 		
 		std::vector<webtv_channels *> channels;
+		
+		CZapProtection * 	zapProtection;
 		
 		/* gui */
 		CFrameBuffer * frameBuffer;
