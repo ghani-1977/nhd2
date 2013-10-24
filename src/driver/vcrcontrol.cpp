@@ -812,11 +812,7 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 		
 		strcat(filename, ".jpg");
 		
-#if defined (__sh__)		
-		sprintf(cmd, "ffmpeg -itsoffset -4 -i `wget -q -O - \"http://127.0.0.1/control/build_live_url?vlc_link=true\"` -y -f image2 -sn -an -vframes 1 -s 320*240 %s", filename);
-#else
-		sprintf(cmd, "grab -v %s", filename);
-#endif
+		sprintf(cmd, "grab -v -r320 %s", filename);
 	} 
 	else
 	{
