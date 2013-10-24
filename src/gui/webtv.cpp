@@ -353,6 +353,8 @@ showList:
 				
 			if ( (channels[selected]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
 			{
+				hide();
+				
 				if ( zapProtection != NULL )
 					zapProtection->fsk = g_settings.parentallock_lockage;
 				else
