@@ -2054,6 +2054,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
           	}
 	}
+#if defined (__sh__)	//FIXME: remove this also for sh4 when using aio-grab
 	else if ( msg == (neutrino_msg_t)g_settings.key_screenshot ) 
 	{
           	if (m_movieSelectionHandler != NULL && show_mode != MB_SHOW_YT) 
@@ -2069,6 +2070,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
           	}
 	}
+#endif	
 	else
 	{
 		dprintf(DEBUG_INFO, "[mb]->onButtonPressMainFrame none\r\n");
