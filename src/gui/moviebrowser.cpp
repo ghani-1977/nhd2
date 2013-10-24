@@ -1314,7 +1314,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 
 		//printf("refreshMovieInfo: EpgId %llx id %llx y %d\n", m_movieSelectionHandler->epgEpgId, m_movieSelectionHandler->epgId, m_cBoxFrameTitleRel.iY);
 		
-		/* display logo */
+		/* display channel logo */
 		//lx = m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + m_cBoxFrameTitleRel.iWidth - PIC_W -10;
 		//ly = m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY+ (m_cBoxFrameTitleRel.iHeight - PIC_H)/2;
 
@@ -1333,7 +1333,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 			m_pcWindow->paintHLineRel(lx, picw, ly, COL_WHITE);
 			m_pcWindow->paintHLineRel(lx, picw, ly + pich, COL_WHITE);
 			
-			// preview screenshot
+			// display screenshot
 			g_PicViewer->DisplayImage(fname, lx + 3, ly + 3, picw - 3, pich - 3);
 		}
 	}
@@ -2053,24 +2053,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 				refresh();
 			}
           	}
-	}
-#if defined (__sh__)	//FIXME: remove this also for sh4 when using aio-grab
-	else if ( msg == (neutrino_msg_t)g_settings.key_screenshot ) 
-	{
-          	if (m_movieSelectionHandler != NULL && show_mode != MB_SHOW_YT) 
-		{
-                	if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_ANNOUNCE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
-			{
-                        	std::string fname = m_movieSelectionHandler->file.Name;
-				
-				if(!CVCRControl::getInstance()->Screenshot(0, (char *)fname.c_str()))
-					result = false;
-				
-				refresh();
-			}
-          	}
-	}
-#endif	
+	}	
 	else
 	{
 		dprintf(DEBUG_INFO, "[mb]->onButtonPressMainFrame none\r\n");

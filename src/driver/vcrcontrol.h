@@ -180,7 +180,7 @@ class CVCRControl
 		bool Record(const CTimerd::RecordingInfo * const eventinfo);
 		bool Pause(){return Device->Pause();};
 		bool Resume(){return Device->Resume();};
-		bool Screenshot(const t_channel_id channel_id, char * fname = NULL, int spos = 10);
+		bool Screenshot(const t_channel_id channel_id, char * fname = NULL, bool msg = true);
 };
 
 

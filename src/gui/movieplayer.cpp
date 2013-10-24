@@ -2795,7 +2795,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
          		if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_ANNOUNCE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 			{
-				CVCRControl::getInstance()->Screenshot(0, (char *)filename, position / 1000);
+				CVCRControl::getInstance()->Screenshot(0, (char *)filename);
 			}
 		}
 		else if ((msg == NeutrinoMessages::ANNOUNCE_RECORD) || msg == NeutrinoMessages::RECORD_START || msg == NeutrinoMessages::ZAPTO || msg == NeutrinoMessages::STANDBY_ON || msg == NeutrinoMessages::SHUTDOWN || msg == NeutrinoMessages::SLEEPTIMER) 

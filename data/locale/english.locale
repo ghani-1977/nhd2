@@ -1536,6 +1536,7 @@ helptext.dvd Here you can play your DVD image.
 helptext.blueray Here you can play Blueray image.
 
 miscsettings.logosdir Sender logos Dir
+miscsettings.recording_screenshot Screenshot (record)
 
 videomenu.psisetup Video fine Setup
 psisetup.contrast Contrast

@@ -68,10 +68,13 @@ extern "C" {
 }
 
 #include <neutrino.h>
+#include <driver/vcrcontrol.h>
 
 static cRecord * record = NULL;
 extern CZapitChannel * rec_channel;
 extern CFrontend * live_fe;
+extern t_channel_id live_channel_id;
+extern t_channel_id rec_channel_id;
 
 extern bool autoshift;
 extern int timeshift;
@@ -151,6 +154,23 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 		delete record;
 		record = NULL;
 		return STREAM2FILE_INVALID_DIRECTORY;
+	}
+	
+	// take screenshot if !standby
+	if ( g_settings.recording_screenshot && rec_channel_id == live_channel_id && !autoshift && !CNeutrinoApp::getInstance()->timeshiftstatus && (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby))
+	{
+		//std::string fname = rec_filename;
+		char fname[512];
+		
+		//strcat((char *)fname.c_str(), ".jpg");
+		sprintf(fname, "%s.jpg", rec_filename);
+		
+		// check if dont exit
+		bool preview_ok = !access(fname, F_OK);
+		
+		// say "cheers :)"
+		if(!preview_ok)
+			CVCRControl::getInstance()->Screenshot(0, fname, false);
 	}
 
 	return STREAM2FILE_OK;

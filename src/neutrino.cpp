@@ -862,6 +862,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	//crypticon on channellist
 	g_settings.channellist_ca = configfile.getInt32("channellist_ca", 1);
+	
+	// record screenshot
+	g_settings.recording_screenshot = configfile.getInt32("recording_screenshot", 0);
 	//
 
 	//Filebrowser
@@ -1329,6 +1332,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	// infobar show channelname
 	configfile.setBool("show_channelname", g_settings.show_channelname);
+	
+	// record screenshot
+	configfile.setInt32("recording_screenshot", g_settings.recording_screenshot);
 	
 	// vol
 	configfile.setInt32( "volume_pos", g_settings.volume_pos);
@@ -4392,7 +4398,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
 		
 		//if(videoDecoder)
-		//	videoDecoder->SetInput(INPUT_SCART);
+		//	videoDecoder->SetInput(INPUT_ENCODER);
 
 		// zapit standby
 		if(!recordingstatus && !timeshiftstatus)
@@ -4468,7 +4474,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		// video wake up
 		//if(videoDecoder)
-		//	videoDecoder->SetInput(INPUT_ENCODER);
+		//	videoDecoder->SetInput(INPUT_SCART);
 
 		g_Sectionsd->setPauseScanning(false);
 		g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );

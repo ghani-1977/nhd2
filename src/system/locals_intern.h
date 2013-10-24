@@ -1549,6 +1549,7 @@ const char * locale_real_names[] = {
 	"helptext.blueray",
 	
 	"miscsettings.logosdir",
+	"miscsettings.recording_screenshot",
 	
 	"videomenu.psisetup",
 	"psisetup.contrast",

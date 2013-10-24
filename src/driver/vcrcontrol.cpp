@@ -735,7 +735,7 @@ bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGD
 
 void strReplace(std::string & orig, const char *fstr, const std::string rstr);	//defined in movieinfo.cpp
 
-bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int spos) 
+bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, bool msg) 
 {
 	char filename[512]; // UTF-8
 	char cmd[512];
@@ -831,24 +831,21 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, int sp
 			strReplace(file_name, extension.c_str(), ".jpg");
 		}
 		
-#if defined (__sh__)		
-		//sprintf(cmd, "ffmpeg -y -i %s -y -f image2 -ss %d -vframes 1 -s 320*240 \"%s\"", fname, spos, (char *)file_name.c_str());
-		sprintf(cmd, "ffmpeg -ss %d -y -i \"%s\" -y -f image2 -vframes 1 -s 320*240 \"%s\"", spos, fname, (char *)file_name.c_str());	//FIXME: dbo dont work here this cmd line
-#else
-		sprintf(cmd, "grab -v %s", (char *)file_name.c_str());
-#endif
+		sprintf(cmd, "grab -v -r320 %s", (char *)file_name.c_str());
 	}
 	
 	printf("Executing %s\n", cmd);
 	
 	CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_CREATING) );
-
-	hintBox->paint();
+	if(msg)
+		hintBox->paint();
 	
 	if(system(cmd))
 		return false;
 	
-	hintBox->hide();
+	if(msg)
+		hintBox->hide();
+	
 	delete hintBox;
 	
 	return true;
