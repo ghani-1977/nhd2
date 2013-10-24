@@ -744,7 +744,7 @@ void loadZapitSettings()
 
 	saveLastChannel = config.getBool("saveLastChannel", true);
 	lastChannelMode = config.getInt32("lastChannelMode", 1);
-	live_channel_id = config.getInt64("lastChannel", 0);
+	live_channel_id = config.getInt64("lastChannel", 0) & 0xFFFFFFFFFFFFULL;	// if readed from neutrinoMP
 	lastChannelRadio = config.getInt32("lastChannelRadio", 0);
 	lastChannelTV = config.getInt32("lastChannelTV", 0);
 	
@@ -827,7 +827,7 @@ static void save_channel_pids(CZapitChannel * thischannel)
 	if(thischannel == NULL)
 		return;
 
-	dprintf(DEBUG_INFO, "[zapit] saving channel, apid %x mode %d volume %d\n", thischannel->getAudioPid(), audio_mode, volume_right);
+	dprintf(DEBUG_INFO, "[zapit] saving channel (%llx), apid %x mode %d volume %d\n", thischannel->getChannelID(), thischannel->getAudioPid(), audio_mode, volume_right);
 	
 	audio_map[thischannel->getChannelID()].apid = thischannel->getAudioPid();
 	audio_map[thischannel->getChannelID()].mode = audio_mode;
@@ -1209,7 +1209,7 @@ void setPidVolume(t_channel_id channel_id, int pid, int percent)
 	if (!pid && (channel_id == live_channel_id) && live_channel)
 		pid = live_channel->getAudioPid();
 
-	dprintf(DEBUG_INFO, "channel %llx pid %x percent %d\n", channel_id, pid, percent);
+	dprintf(DEBUG_INFO, "[zapit] setPidVolume: channel %llx pid %x percent %d\n", channel_id, pid, percent);
 	
 	volume_map_range_t pids = vol_map.equal_range(channel_id);
 	for (volume_map_iterator_t it = pids.first; it != pids.second; ++it) 
@@ -1261,7 +1261,7 @@ int getPidVolume(t_channel_id channel_id, int pid, bool ac3)
 		}
 	}
 	
-	dprintf(DEBUG_INFO, "channel %llx pid %x percent %d\n", channel_id, pid, percent);
+	dprintf(DEBUG_INFO, "[zapit] getPidVolume: channel %llx pid %x percent %d\n", channel_id, pid, percent);
 	
 	return percent;
 }
@@ -1275,7 +1275,7 @@ void setVolumePercent(int percent)
 		
 	int vol = current_volume + (current_volume*volume_percent)/100;
 		
-	dprintf(DEBUG_NORMAL, "[zapit] vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
+	dprintf(DEBUG_NORMAL, "[zapit] setVolumePercent: vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
 		
 	audioDecoder->setVolume(vol, vol);
 }
@@ -1301,7 +1301,7 @@ int change_audio_pid(uint8_t index)
 
 	if (!currentAudioChannel) 
 	{
-		dprintf(DEBUG_INFO, "No current audio live_channel\n");
+		dprintf(DEBUG_INFO, "[zapit] change_audio_pid: No current audio live_channel\n");
 		return -1;
 	}
 	
@@ -1355,12 +1355,12 @@ int change_audio_pid(uint8_t index)
 				break;
 				
 			default:
-				dprintf(DEBUG_NORMAL, "[zapit] unknown audio live_channel type 0x%x\n", currentAudioChannel->audioChannelType);
+				dprintf(DEBUG_NORMAL, "[zapit] change_audio_pid: unknown audio live_channel type 0x%x\n", currentAudioChannel->audioChannelType);
 				break;
 		}
 	}
 
-	dprintf(DEBUG_NORMAL, "[zapit] change apid to 0x%x\n", live_channel->getAudioPid());
+	dprintf(DEBUG_NORMAL, "[zapit] change_audio_pid: change apid to 0x%x\n", live_channel->getAudioPid());
 
 	//set audio-demux filter
 	if (audioDemux->pesFilter( live_channel->getAudioPid() ) < 0)
@@ -1501,7 +1501,7 @@ int prepare_channels()
 	if (LoadServices(false) < 0)
 		return -1;
 
-	dprintf(DEBUG_INFO, "LoadServices: success\n");
+	dprintf(DEBUG_INFO, "prepare_channels: LoadServices: success\n");
 
 	// load bouquets
 	g_bouquetManager->loadBouquets();		// 2004.08.02 g_bouquetManager->storeBouquets();
@@ -1534,7 +1534,7 @@ void parseScanInputXml(int feindex)
 			break;
 			
 		default:
-			dprintf(DEBUG_INFO, "Unknown type %d\n", getFE(feindex)->getInfo()->type);
+			dprintf(DEBUG_INFO, "[zapit] parseScanInputXml: Unknown type %d\n", getFE(feindex)->getInfo()->type);
 			return;
 	}
 }
@@ -1555,7 +1555,7 @@ int start_scan(CZapitMessages::commandStartScan StartScan)
 
 		if (!scanInputParser) 
 		{
-			dprintf(DEBUG_INFO, "scan not configured\n");
+			dprintf(DEBUG_INFO, "[zapit] start_scan: scan not configured\n");
 			return -1;
 		}
 	}
@@ -3951,12 +3951,14 @@ int zapit_main_thread(void *data)
 	//start channel
 	if(ZapStart_arg->uselastchannel == 0)
 	{
+		// mode
 		if (ZapStart_arg->lastchannelmode == 0)
 			setRadioMode();
 		else
 			setTVMode();
 		
-		live_channel_id = (currentMode & RADIO_MODE) ? ZapStart_arg->startchannelradio_id : ZapStart_arg->startchanneltv_id ;
+		// last channel
+		live_channel_id = (currentMode & RADIO_MODE) ? ZapStart_arg->startchannelradio_id & 0xFFFFFFFFFFFFULL : ZapStart_arg->startchanneltv_id & 0xFFFFFFFFFFFFULL;	// if readed from neutrinoMP
 		lastChannelRadio = ZapStart_arg->startchannelradio_nr;
 		lastChannelTV    = ZapStart_arg->startchanneltv_nr;
 	}

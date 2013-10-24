@@ -842,7 +842,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.lastChannelMode = configfile.getInt32("lastChannelMode", 1);		//TV mode
 	g_settings.StartChannelTV = configfile.getString("startchanneltv","");
 	g_settings.StartChannelRadio = configfile.getString("startchannelradio","");
-	g_settings.startchanneltv_id =  configfile.getInt64("startchanneltv_id", 0);
+	g_settings.startchanneltv_id =  configfile.getInt64("startchanneltv_id", 0) & 0xFFFFFFFFFFFFULL; // in cas e readed from neutrinoMP
 	g_settings.startchannelradio_id =  configfile.getInt64("startchannelradio_id", 0);
 	g_settings.startchanneltv_nr =  configfile.getInt32("startchanneltv_nr", 0);
 	g_settings.startchannelradio_nr =  configfile.getInt32("startchannelradio_nr", 0);

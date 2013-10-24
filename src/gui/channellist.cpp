@@ -346,6 +346,7 @@ t_channel_id CChannelList::getActiveChannel_ChannelID(void) const
 	if (selected < chanlist.size()) 
 	{
 		//printf("CChannelList::getActiveChannel_ChannelID me %x selected = %d %llx\n", (int) this, selected, chanlist[selected]->channel_id);
+		
 		return chanlist[selected]->channel_id;
 	} 
 	else
