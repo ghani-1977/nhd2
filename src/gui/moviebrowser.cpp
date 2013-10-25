@@ -209,7 +209,7 @@ const neutrino_locale_t m_localizedItemName[MB_INFO_MAX_NUMBER+1] =
 #define	MB_ROW_WIDTH_GEOMETRIE		50
 #define	MB_ROW_WIDTH_AUDIO		50 	
 #define	MB_ROW_WIDTH_LENGTH		40
-#define	MB_ROW_WIDTH_SIZE 		45
+#define	MB_ROW_WIDTH_SIZE 		80
 
 const int m_defaultRowWidth[MB_INFO_MAX_NUMBER+1] = 
 {
