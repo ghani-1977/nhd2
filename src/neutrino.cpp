@@ -518,6 +518,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	{
 		sprintf(cfg_key, "pref_lang_%d", i);
 		strncpy(g_settings.pref_lang[i], configfile.getString(cfg_key, "German").c_str(), 30);
+		
 		sprintf(cfg_key, "pref_subs_%d", i);
 		strncpy(g_settings.pref_subs[i], configfile.getString(cfg_key, "German").c_str(), 30);
 	}
@@ -855,7 +856,15 @@ int CNeutrinoApp::loadSetup(const char * fname)
         g_settings.epg_max_events       = configfile.getString("epg_max_events", "50000");
         g_settings.epg_dir              = configfile.getString("epg_dir", "/media/sda1/epg");
 	g_settings.epg_save = configfile.getBool("epg_save", false);
-
+	
+	for(int i = 0; i < 3; i++) 
+	{
+		sprintf(cfg_key, "pref_epgs_%d", i);
+		strncpy(g_settings.pref_epgs[i], configfile.getString(cfg_key, "German").c_str(), 30);
+	}
+	//
+	
+	// channellist 
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
 
 	g_settings.make_hd_list = configfile.getInt32("make_hd_list", 0);
@@ -1289,6 +1298,13 @@ void CNeutrinoApp::saveSetup(const char * fname)
         configfile.setString("epg_old_events", g_settings.epg_old_events );
         configfile.setString("epg_max_events", g_settings.epg_max_events );
         configfile.setString("epg_dir", g_settings.epg_dir);
+	
+	for(int i = 0; i < 3; i++) 
+	{
+		sprintf(cfg_key, "pref_epgs_%d", i);
+		configfile.setString(cfg_key, g_settings.pref_epgs[i]);
+	}
+	//
 
 	//filebrowser
 	configfile.setBool  ("filesystem_is_utf8", g_settings.filesystem_is_utf8);

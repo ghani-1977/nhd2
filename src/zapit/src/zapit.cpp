@@ -82,7 +82,6 @@ cDvbCi * ci;
 #endif
 
 /* audio conf */
-#define AUDIO_CONFIG_FILE CONFIGDIR "/zapit/audio.conf"
 map<t_channel_id, audio_map_set_t> audio_map;
 map<t_channel_id, audio_map_set_t>::iterator audio_map_it;
 unsigned int volume_left = 100, volume_right = 100;
@@ -90,7 +89,6 @@ int audio_mode = 0;
 int def_audio_mode = 0;
 
 /* volume percent conf */
-#define VOLUME_CONFIG_FILE CONFIGDIR "/zapit/audiovolume.conf"
 #define VOLUME_DEFAULT_PCM 0
 #define VOLUME_DEFAULT_AC3 25
 typedef std::pair<int, int> pid_pair_t;
@@ -228,14 +226,12 @@ extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 
 // multi frontend stuff
-#define DVBADAPTER_MAX	2
-#define FRONTEND_MAX	4
 int FrontendCount = 0;
 fe_map_t femap;
 
 // frontend config
 CConfigFile fe_configfile(',', false);
-#define FRONTEND_CONFIGFILE CONFIGDIR "/zapit/frontend.conf"
+//#define FRONTEND_CONFIGFILE CONFIGDIR "/zapit/frontend.conf"
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
@@ -720,7 +716,7 @@ void saveZapitSettings(bool write, bool write_a)
 		config.setInt32("scanSDT", scanSDT);
 
 		if (config.getModifiedFlag())
-			config.saveConfig(CONFIGFILE);
+			config.saveConfig(ZAPIT_CONFIGFILE);
 
 	}
 
@@ -739,8 +735,8 @@ void loadZapitSettings()
 {
 	dprintf(DEBUG_INFO, "zapit:loadZapitSettings\n");
 	
-	if (!config.loadConfig(CONFIGFILE))
-		printf("%s not found\n", CONFIGFILE);
+	if (!config.loadConfig(ZAPIT_CONFIGFILE))
+		printf("%s not found\n", ZAPIT_CONFIGFILE);
 
 	saveLastChannel = config.getBool("saveLastChannel", true);
 	lastChannelMode = config.getInt32("lastChannelMode", 1);

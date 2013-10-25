@@ -69,6 +69,11 @@
 #include <gui/scan_setup.h>
 #include <gui/filebrowser.h>
 
+/* configfiles */
+#include <gui/moviebrowser.h>
+#include <timerd/timermanager.h>
+#include <nhttpd/yconfig.h>
+
 
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
 extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
@@ -913,8 +918,23 @@ int CDataResetNotifier::exec(CMenuTarget */*parent*/, const std::string& actionK
 		if(result != CMessageBox::mbrYes) 
 			return true;
 		
+		// neutrino settings
 		unlink(NEUTRINO_SETTINGS_FILE);
+		
+		// moviebrowser settings
+		unlink(MOVIEBROWSER_SETTINGS_FILE);
+		
+		// timerd settings
+		unlink(TIMERD_CONFIGFILE);
+		
+		// nhttpd settings
+		unlink(HTTPD_CONFIGFILE );
+		unlink(YWEB_CONFIGFILE);
+		
+		// load default settings
 		CNeutrinoApp::getInstance()->loadSetup(NEUTRINO_SETTINGS_FILE);
+		
+		// create default settings to stop wizard
 		CNeutrinoApp::getInstance()->saveSetup(NEUTRINO_SETTINGS_FILE);
 		
 		CFrameBuffer::getInstance()->paintBackground();
@@ -1018,7 +1038,7 @@ bool CAutoAudioNotifier::changeNotify(const neutrino_locale_t, void *)
 
 void sectionsd_set_languages(const std::vector<std::string>& newLanguages);
 
-bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
+bool CEPGlangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 {
 	std::vector<std::string> v_languages;
 	bool found = false;
@@ -1027,18 +1047,19 @@ bool CLangSelectNotifier::changeNotify(const neutrino_locale_t, void *)
 	//prefered audio languages
 	for(int i = 0; i < 3; i++) 
 	{
-		if(strlen(g_settings.pref_lang[i])) 
+		if(strlen(g_settings.pref_epgs[i])) 
 		{
-			dprintf(DEBUG_NORMAL, "setLanguages: %d: %s\n", i, g_settings.pref_lang[i]);
+			dprintf(DEBUG_NORMAL, "EPG: setLanguages: %d: %s\n", i, g_settings.pref_epgs[i]);
 			
-			std::string temp(g_settings.pref_lang[i]);
+			std::string temp(g_settings.pref_epgs[i]);
+			
 			for(it = iso639.begin(); it != iso639.end(); it++) 
 			{
 				if(temp == it->second) 
 				{
 					v_languages.push_back(it->first);
 					
-					dprintf(DEBUG_NORMAL, "setLanguages: adding %s\n", it->first.c_str());
+					dprintf(DEBUG_NORMAL, "EPG: setLanguages: adding %s\n", it->first.c_str());
 					
 					found = true;
 				}

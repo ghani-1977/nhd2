@@ -79,6 +79,7 @@ struct SNeutrinoSettings
 	int auto_subs;
 	char pref_lang[3][30];
 	char pref_subs[3][30];
+	char pref_epgs[3][30];
 	// END AUDIO
 
 	// PARENTALLOCK

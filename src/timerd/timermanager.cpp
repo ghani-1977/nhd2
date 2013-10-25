@@ -435,10 +435,10 @@ void CTimerManager::loadEventsFromConfig()
 {
 	CConfigFile config(',');
 
-	if(!config.loadConfig(CONFIGFILE))
+	if(!config.loadConfig(TIMERD_CONFIGFILE))
 	{
 		/* set defaults if no configuration file exists */
-		dprintf(DEBUG_NORMAL, "[timermanager] %s not found\n", CONFIGFILE);
+		dprintf(DEBUG_NORMAL, "[timermanager] %s not found\n", TIMERD_CONFIGFILE);
 	}
 	else
 	{
@@ -639,10 +639,10 @@ void CTimerManager::loadRecordingSafety()
 {
 	CConfigFile config(',');
 
-	if(!config.loadConfig(CONFIGFILE))
+	if(!config.loadConfig(TIMERD_CONFIGFILE))
 	{
 		/* set defaults if no configuration file exists */
-		dprintf(DEBUG_NORMAL, "[timermanager] %s not found\n", CONFIGFILE);
+		dprintf(DEBUG_NORMAL, "[timermanager] %s not found\n", TIMERD_CONFIGFILE);
 		
 		m_extraTimeStart = 0;
 		m_extraTimeEnd  = 0;
@@ -677,8 +677,8 @@ void CTimerManager::saveEventsToConfig()
 	dprintf(DEBUG_INFO, "[timermanager] setting EXTRA_TIME_START to %d\n",m_extraTimeStart);
 	config.setInt32 ("EXTRA_TIME_END", m_extraTimeEnd);
 	dprintf(DEBUG_INFO, "[timermanager] setting EXTRA_TIME_END to %d\n",m_extraTimeEnd);
-	dprintf(DEBUG_INFO, "[timermanager] now saving config to %s...\n",CONFIGFILE);
-	config.saveConfig(CONFIGFILE);
+	dprintf(DEBUG_INFO, "[timermanager] now saving config to %s...\n", TIMERD_CONFIGFILE);
+	config.saveConfig(TIMERD_CONFIGFILE);
 	dprintf(DEBUG_INFO, "[timermanager] config saved!\n");
 	m_saveEvents=false;			
 

@@ -744,20 +744,19 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	CMenuOptionChooser * a1 = new CMenuOptionChooser(LOCALE_AUDIOMENU_DOLBYDIGITAL, &g_settings.audio_DolbyDigital, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, g_settings.auto_lang, audioSetupNotifier );
 	
 	// audiolang
-	CMenuOptionStringChooser * audioepglangSelect[3];
-	CLangSelectNotifier * langNotifier = new CLangSelectNotifier();
+	CMenuOptionStringChooser * audiolangSelect[3];
 	
 	for(int i = 0; i < 3; i++) 
 	{
-		audioepglangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_LANG, g_settings.pref_lang[i], g_settings.auto_lang, langNotifier, CRCInput::RC_nokey, "", true);
+		audiolangSelect[i] = new CMenuOptionStringChooser(LOCALE_AUDIOMENU_PREF_LANG, g_settings.pref_lang[i], g_settings.auto_lang, NULL, CRCInput::RC_nokey, "", true);
 		
-		audioepglangSelect[i]->addOption("");
+		audiolangSelect[i]->addOption("");
 		std::map<std::string, std::string>::const_iterator it;
 		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
-			audioepglangSelect[i]->addOption(it->first.c_str());
+			audiolangSelect[i]->addOption(it->first.c_str());
 	}
 	
-	CAutoAudioNotifier * autoAudioNotifier = new CAutoAudioNotifier(a1, audioepglangSelect[0], audioepglangSelect[1], audioepglangSelect[2]);
+	CAutoAudioNotifier * autoAudioNotifier = new CAutoAudioNotifier(a1, audiolangSelect[0], audiolangSelect[1], audiolangSelect[2]);
 	
 	// auto lang
 	audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_LANG, &g_settings.auto_lang, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, autoAudioNotifier));
@@ -767,7 +766,7 @@ void CNeutrinoApp::InitAudioSettings(CMenuWidget &audioSettings, CAudioSetupNoti
 	
 	// lang
 	for(int i = 0; i < 3; i++) 
-		audioSettings.addItem(audioepglangSelect[i]);
+		audioSettings.addItem(audiolangSelect[i]);
 	
 	// sublang
 	audioSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_AUDIOMENU_PREF_SUBS_HEAD));
@@ -1281,6 +1280,33 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 
 	// epg save dir
         miscSettingsEPG.addItem(new CMenuForwarder(LOCALE_MISCSETTINGS_EPG_DIR, true, g_settings.epg_dir, this, "epgdir", CRCInput::convertDigitToKey(shortcutMiscEpg++) ));
+	
+	///
+	// epglang
+	 miscSettingsEPG.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MISCSETTINGS_PREF_EPGS_HEAD));
+	
+	CMenuOptionStringChooser * epglangSelect[3];
+	CEPGlangSelectNotifier * EPGlangNotifier = new CEPGlangSelectNotifier();
+	
+	for(int i = 0; i < 3; i++) 
+	{
+		epglangSelect[i] = new CMenuOptionStringChooser(LOCALE_MISCSETTINGS_PREF_EPGS, g_settings.pref_epgs[i], true, EPGlangNotifier, CRCInput::RC_nokey, "", true);
+		std::map<std::string, std::string>::const_iterator it;
+		
+		epglangSelect[i]->addOption("");
+		for(it = iso639rev.begin(); it != iso639rev.end(); it++) 
+			epglangSelect[i]->addOption(it->first.c_str());
+	}
+	
+	//CSubLangSelectNotifier * subLangSelectNotifier = new CSubLangSelectNotifier(sublangSelect[0], sublangSelect[1], sublangSelect[2]);
+	
+	// auto sublang
+	//audioSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_AUTO_SUBS, &g_settings.auto_subs, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, subLangSelectNotifier));
+	
+	// epglang
+	for(int i = 0; i < 3; i++) 
+		miscSettingsEPG.addItem(epglangSelect[i]);
+	///
 
 	miscSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MISCSETTINGS_EPG_HEAD, true, "", &miscSettingsEPG, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, "miscsettingsepg", LOCALE_HELPTEXT_MISCSETTINGSEPG ));
 

@@ -238,13 +238,6 @@ class CAutoAudioNotifier : public CChangeObserver
 		bool changeNotify(const neutrino_locale_t, void * /*data*/);
 };
 
-// language select notifier
-class CLangSelectNotifier : public CChangeObserver
-{	
-	public:
-		bool changeNotify(const neutrino_locale_t, void * /*data*/);
-};
-
 // autoaudio select notifier
 class CSubLangSelectNotifier : public CChangeObserver
 {
@@ -253,6 +246,13 @@ class CSubLangSelectNotifier : public CChangeObserver
 		
 	public:
 		CSubLangSelectNotifier(CMenuItem * item1, CMenuItem * item2, CMenuItem * item3);
+		bool changeNotify(const neutrino_locale_t, void * /*data*/);
+};
+
+// epglanguage select notifier
+class CEPGlangSelectNotifier : public CChangeObserver
+{	
+	public:
 		bool changeNotify(const neutrino_locale_t, void * /*data*/);
 };
 

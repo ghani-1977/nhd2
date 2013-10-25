@@ -1551,6 +1551,8 @@ const char * locale_real_names[] = {
 	
 	"miscsettings.logosdir",
 	"miscsettings.recording_screenshot",
+	"miscsettings.pref_epg_language",
+	"miscsettings.epg_language",
 	
 	"videomenu.psisetup",
 	"psisetup.contrast",

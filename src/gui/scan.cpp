@@ -61,7 +61,6 @@
 
 #define NEUTRINO_SCAN_START_SCRIPT	CONFIGDIR "/scan.start"
 #define NEUTRINO_SCAN_STOP_SCRIPT	CONFIGDIR "/scan.stop"
-#define NEUTRINO_SCAN_SETTINGS_FILE	CONFIGDIR "/scan.conf"
 
 #define RED_BAR 40
 #define YELLOW_BAR 70

@@ -31,7 +31,7 @@
 #define CONFIGDIR       		"/var/tuxbox/config"
 #endif
 
-#define CONFIGFILE      		CONFIGDIR "/zapit/zapit.conf"
+#define ZAPIT_CONFIGFILE      		CONFIGDIR "/zapit/zapit.conf"
 #define SATCONFIG 			CONFIGDIR "/zapit/sat.conf"
 #define SERVICES_XML    		CONFIGDIR "/zapit/services.xml"
 #define SERVICES_TMP    		"/tmp/services.tmp"
@@ -51,6 +51,13 @@
 #define TERRESTRIALS_XML 		CONFIGDIR "/terrestrial.xml"
 
 #define CAMD_UDS_NAME  			"/tmp/camd.socket"
+
+#define FRONTEND_CONFIGFILE 		CONFIGDIR "/zapit/frontend.conf"
+#define VOLUME_CONFIG_FILE 		CONFIGDIR "/zapit/audiovolume.conf"
+#define AUDIO_CONFIG_FILE 		CONFIGDIR "/zapit/audio.conf"
+
+#define DVBADAPTER_MAX			2
+#define FRONTEND_MAX			4
 
 
 #endif /* __zapit__settings_h__ */

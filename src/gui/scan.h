@@ -38,6 +38,7 @@
 #include <gui/widget/progressbar.h>
 #include <string>
 
+#define NEUTRINO_SCAN_SETTINGS_FILE	CONFIGDIR "/scan.conf"
 
 class CScanTs : public CMenuTarget
 {

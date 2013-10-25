@@ -28,7 +28,7 @@ audiomenu.volume_adjust Lautstärkeanpassung (in %)
 audiomenu.auto_lang Tonwahl automatisch
 audiomenu.auto_subs Untertitel automatisch
 audiomenu.pref_lang Sprache
-audiomenu.pref_lang_head Bevorzugte EPG/Ton Sprachen
+audiomenu.pref_lang_head Bevorzugte Ton Sprachen
 audiomenu.pref_languages Bevorzugte Sprachen
 audiomenu.pref_subs Sprache
 audiomenu.pref_subs_head Untertitelwahl
@@ -1539,6 +1539,8 @@ helptext.blueray hier können sie Ihre Blueray Image abspielen.
 
 miscsettings.logosdir Sender logos Dir
 miscsettings.recording_screenshot Screenshot (Aufnahme)
+miscsettings.pref_epg_language bevorzugte EPG Sprache
+miscsettings.epg_language Sprache
 
 videomenu.psisetup Video fein Einstellugen
 psisetup.contrast Kontrast
