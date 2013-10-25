@@ -723,7 +723,7 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 		settings->storageDirRecUsed = (bool)configfile.getInt32("mb_storageDir_rec", true );
 		settings->storageDirMovieUsed = (bool)configfile.getInt32("mb_storageDir_movie", true );
 
-		settings->reload = (bool)configfile.getInt32("mb_reload", false );
+		settings->reload = true; //(bool)configfile.getInt32("mb_reload", false );
 		settings->remount = (bool)configfile.getInt32("mb_remount", false );
 
 		char cfg_key[81];
@@ -792,7 +792,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	configfile.setInt32("mb_parentalLockAge", settings->parentalLockAge);
 	configfile.setInt32("mb_parentalLock", settings->parentalLock);
 
-	configfile.setInt32("mb_reload", settings->reload);
+	//configfile.setInt32("mb_reload", settings->reload);
 	configfile.setInt32("mb_remount", settings->remount);
 
 	char cfg_key[81];
@@ -1074,9 +1074,7 @@ int CMovieBrowser::exec(const char * path)
 			if (msg == CRCInput::RC_timeout && returnDefaultOnTimeout)
 			{
 				dprintf(DEBUG_NORMAL, "[mb] Timerevent\n");
-				//if( restart_mb_timeout == 1)
-				//    restart_mb_timeout = 0;
-				//else
+				
 				loop = false;
 			}
 			else if(msg == CRCInput::RC_ok)
@@ -1110,7 +1108,7 @@ int CMovieBrowser::exec(const char * path)
 			else if (CNeutrinoApp::getInstance()->handleMsg(msg, data) & messages_return::cancel_all)
 			{
 				dprintf(DEBUG_NORMAL, "[mb]->exec: getInstance\r\n");
-				//res  = menu_return::RETURN_EXIT_ALL;
+				
 				loop = false;
 			}
 		}
@@ -3156,7 +3154,7 @@ void CMovieBrowser::loadMovies(void)
 		}
 	}
 	
-	m_file_info_stale = false;	//FIXME:???
+	m_file_info_stale = false;
 	
 	loadBox.hide();
 
@@ -3435,7 +3433,7 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 		optionsMenu.addItem( new CMenuForwarder(LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD,   true, NULL, &parentalMenu,NULL,CRCInput::RC_nokey, NULL));
 	
 	optionsMenu.addItem(GenericMenuSeparatorLine);
-	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_RELOAD_AT_START,   (int*)(&m_settings.reload), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
+	//optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_RELOAD_AT_START,   (int*)(&m_settings.reload), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
 	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_REMOUNT_AT_START,  (int*)(&m_settings.remount), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
 	//optionsMenu.addItem(GenericMenuSeparatorLine);
 	//optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_HIDE_SERIES,       (int*)(&m_settings.browser_serie_mode), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
