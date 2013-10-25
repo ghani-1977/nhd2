@@ -1341,7 +1341,7 @@ void CMovieBrowser::refreshMovieInfo(void)
         	//g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
 
 		/* display screenshot if exists */
-		if(logo_ok) 
+		if(logo_ok && m_settings.gui != MB_GUI_FILTER) 
 		{
 			lx = m_cBoxFrameInfo.iX + m_cBoxFrameInfo.iWidth - picw - 10;
 			ly = m_cBoxFrameInfo.iY + (m_cBoxFrameInfo.iHeight - pich)/2;
@@ -1846,13 +1846,11 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	{
 		if (show_mode != MB_SHOW_YT)
 			onSetGUIWindowPrev();
-		//refreshMovieInfo();
 	}
 	else if (msg == CRCInput::RC_plus) 
 	{
 		if (show_mode != MB_SHOW_YT)
 			onSetGUIWindowNext();
-		//refreshMovieInfo();
 	}
 	else if (msg == CRCInput::RC_green) 
 	{
