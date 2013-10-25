@@ -1934,8 +1934,11 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	{
 		if(m_movieSelectionHandler != NULL)
 		{
-			hide();
-			
+			m_pcWindow->paintBackground();
+
+#if !defined USE_OPENGL
+			m_pcWindow->blit();
+#endif		  
 			m_movieInfo.showMovieInfo(*m_movieSelectionHandler);
 			//m_movieInfo.printDebugMovieInfo(*m_movieSelectionHandler); //FIXME
 			refresh();

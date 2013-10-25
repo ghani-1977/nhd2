@@ -51,7 +51,7 @@
 #include <neutrino.h>
 
 
-CStringInput::CStringInput(const neutrino_locale_t Name, char* Value, int Size, const neutrino_locale_t Hint_1, const neutrino_locale_t Hint_2, const char * const Valid_Chars, CChangeObserver* Observ, const char * const Icon)
+CStringInput::CStringInput(const neutrino_locale_t Name, char *Value, int Size, const neutrino_locale_t Hint_1, const neutrino_locale_t Hint_2, const char * const Valid_Chars, CChangeObserver *Observ, const char * const Icon)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	name =  Name;
@@ -206,7 +206,7 @@ void CStringInput::keyYellowPressed()
 	selected = 0;
 	for(int i = 0 ; i < size ; i++)
 	{
-		value[i]=' ';
+		value[i] = ' ';
 		paintChar(i);
 	}
 }
@@ -313,7 +313,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 	if (parent)
 		parent->hide();
 
-	for(int count=strlen(value)-1;count<size-1;count++)
+	for(int count = strlen(value)-1;count<size-1;count++)
 		strcat(value, " ");
 	
 	strncpy(oldval, value, size);
@@ -341,11 +341,11 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
-		if (msg==CRCInput::RC_left)
+		if (msg == CRCInput::RC_left)
 		{
 			keyLeftPressed();
 		}
-		else if (msg==CRCInput::RC_right)
+		else if (msg == CRCInput::RC_right)
 		{
 			keyRightPressed();
 		}
@@ -353,15 +353,15 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		{
 			NormalKeyPressed(msg);
 		}
-		else if (msg==CRCInput::RC_red)
+		else if (msg == CRCInput::RC_red)
 		{
 			keyRedPressed();
 		}
-		else if (msg==CRCInput::RC_yellow)
+		else if (msg == CRCInput::RC_yellow)
 		{
 			keyYellowPressed();
 		}
-		else if ( (msg==CRCInput::RC_green) && (index(validchars, '.') != NULL))
+		else if ( (msg == CRCInput::RC_green) && (index(validchars, '.') != NULL))
 		{
 			value[selected] = '.';
 
@@ -391,11 +391,11 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		{
 			keyMinusPressed();
 		}
-		else if (msg==CRCInput::RC_ok)
+		else if (msg == CRCInput::RC_ok)
 		{
 			loop = false;
 		}
-		else if ( (msg==CRCInput::RC_home) || (msg==CRCInput::RC_timeout) )
+		else if ( (msg == CRCInput::RC_home) || (msg==CRCInput::RC_timeout) )
 		{
 			if ( ( strcmp(value, oldval) != 0) && (ShowLocalizedMessage(name, LOCALE_MESSAGEBOX_DISCARD, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbCancel) == CMessageBox::mbrCancel))
 				continue;
@@ -422,7 +422,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		}
 
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+		frameBuffer->blit();
 #endif		
 	}
 
@@ -430,7 +430,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 	for(int count = size - 1; count >= 0; count--)
 	{
-		if((value[count] ==' ') || (value[count] == 0))
+		if((value[count] == ' ') || (value[count] == 0))
 		{
 			value[count] = 0;
 		}
@@ -536,7 +536,7 @@ void CStringInput::paintChar(int pos, const char c)
 
 void CStringInput::paintChar(int pos)
 {
-	if(pos<(int)strlen(value))
+	if(pos < (int)strlen(value))
 		paintChar(pos, value[pos]);
 }
 
@@ -614,7 +614,7 @@ void CStringInputSMS::NormalKeyPressed(const neutrino_msg_t key)
 void CStringInputSMS::keyRedPressed()		// switch between lower & uppercase
 {
 	if (((value[selected] | 32) >= 'a') && ((value[selected] | 32) <= 'z'))
-	value[selected] ^= 32;
+		value[selected] ^= 32;
 
 	paintChar(selected);
 }
@@ -745,11 +745,11 @@ int CPINInput::exec( CMenuTarget* parent, const std::string & )
 		{
 			g_RCInput->postMsg( msg, data );
 			res = menu_return::RETURN_EXIT;
-			loop=false;
+			loop = false;
 		}
 		else if ( (msg==CRCInput::RC_home) || (msg==CRCInput::RC_timeout) || (msg==CRCInput::RC_ok) )
 		{
-			loop=false;
+			loop = false;
 		}
 		else
 		{
