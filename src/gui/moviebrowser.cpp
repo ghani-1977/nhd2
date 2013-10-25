@@ -1025,6 +1025,7 @@ int CMovieBrowser::exec(const char * path)
 	m_pcLastRecord->setSelectedLine(m_currentRecordSelection);
 	m_pcLastPlay->setSelectedLine(m_currentPlaySelection);
 
+	//
 	updateMovieSelection();
 	//refreshMovieInfo();
 
@@ -1104,6 +1105,15 @@ int CMovieBrowser::exec(const char * path)
 	m_prevBrowserSelection = m_currentBrowserSelection;
 	m_prevRecordSelection = m_currentRecordSelection;
 	m_prevPlaySelection = m_currentPlaySelection;
+	
+	// reset filter
+	m_settings.filter.item = MB_INFO_MAX_NUMBER;
+	m_settings.filter.optionString = "";
+	m_settings.filter.optionVar = 0;
+	
+	// reset sorting
+	m_settings.sorting.direction = MB_DIRECTION_DOWN;
+	m_settings.sorting.item =  MB_INFO_TITLE;
 
 	saveSettings(&m_settings);	// might be better done in ~CMovieBrowser, but for any reason this does not work if MB is killed by neutrino shutdown	
 
@@ -1457,7 +1467,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 	// prepare Browser list for sorting and filtering
 	for(unsigned int file=0; file < m_vMovieInfo.size(); file++)
 	{
-		if(	/*isFiltered(m_vMovieInfo[file]) 	   == false &&*/
+		if(/*isFiltered(m_vMovieInfo[file]) == false &&*/
 			isParentalLock(m_vMovieInfo[file]) == false) 
 		{
 			movie_handle = &(m_vMovieInfo[file]);
@@ -1465,7 +1475,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 		}
 	}
 	// sort the not filtered files
-	onSortMovieInfoHandleList(m_vHandlePlayList,MB_INFO_PREVPLAYDATE,MB_DIRECTION_DOWN);
+	onSortMovieInfoHandleList(m_vHandlePlayList, MB_INFO_PREVPLAYDATE,MB_DIRECTION_DOWN);
 
 	for( int handle=0; handle < (int) m_vHandlePlayList.size() && handle < m_settings.lastPlayMaxItems ;handle++)
 	{
@@ -1581,7 +1591,7 @@ void CMovieBrowser::refreshBrowserList(void) //P1
 	// prepare Browser list for sorting and filtering
 	for(unsigned int file=0; file < m_vMovieInfo.size(); file++)
 	{
-		if(	isFiltered(m_vMovieInfo[file]) 	   == false &&
+		if(	isFiltered(m_vMovieInfo[file]) == false &&
 				isParentalLock(m_vMovieInfo[file]) == false  &&
 				(m_settings.browser_serie_mode == 0 || m_vMovieInfo[file].serieName.empty() || m_settings.filter.item == MB_INFO_SERIE) )
 		{
@@ -1680,10 +1690,20 @@ void CMovieBrowser::refreshFoot(void)
 	
 	int color = (CFBWindow::color_t) COL_MENUHEAD;
 
+	// filter
 	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_FILTER);
-	filter_text += m_settings.filter.optionString;
 	std::string sort_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_SORT);
-	sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
+	
+	if (show_mode != MB_SHOW_YT) 
+	{
+		// filter
+		filter_text += m_settings.filter.optionString;
+		
+		// sort
+		sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
+	}
+	
+	// ok (play)
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
 	// draw the background first
@@ -2192,7 +2212,7 @@ bool CMovieBrowser::onButtonPressFilterList(neutrino_msg_t msg)
 	
 	bool result = true;
 
-	if(msg==CRCInput::RC_up)
+	if(msg == CRCInput::RC_up)
 	{
 		m_pcFilter->scrollLineUp(1);
 	}
@@ -2600,9 +2620,9 @@ bool CMovieBrowser::onSortMovieInfoHandleList(std::vector<MI_MOVIE_INFO*>& handl
 	dprintf(DEBUG_DEBUG, "sort: %d\r\n", direction);
 	
 	if(handle_list.size() <= 0) 
-	    return (false); // nothing to sort, return immedately
+		return (false); // nothing to sort, return immedately
 	if(sortBy[sort_item] == NULL) 
-	    return (false);
+		return (false);
 	
 	if(direction == MB_DIRECTION_AUTO)
 	{
@@ -2790,13 +2810,24 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					
 					if(show_mode == MB_SHOW_FILES)
 					{
+						// title
+						if(movieInfo.epgTitle.empty())
+							movieInfo.epgTitle = flist[i].Name;
+						
 						// info1
-						//if(movieInfo.epgInfo1.empty())
-						//	movieInfo.epgInfo1 = flist[i].Name;
+						if(movieInfo.epgInfo1.empty())
+							movieInfo.epgInfo1 = flist[i].Name;
 						
 						// info2
 						if(movieInfo.epgInfo2.empty())
 							movieInfo.epgInfo2 = flist[i].Name;
+					}
+					
+					//TEST: remove me
+					if(show_mode != MB_SHOW_YT)
+					{
+						if(movieInfo.serieName.empty())
+							movieInfo.serieName = movieInfo.epgTitle;
 					}
 					
 					//
@@ -3006,7 +3037,8 @@ void CMovieBrowser::updateFilterSelection(void)
 {
 	dprintf(DEBUG_INFO, "[mb]->updateFilterSelection \r\n");
 	
-	if(m_FilterLines.lineArray[0].size() == 0) return;
+	if( m_FilterLines.lineArray[0].size() == 0) 
+		return;
 
 	bool result = true;
 	int selected_line = m_pcFilter->getSelectedLine();
@@ -3399,9 +3431,9 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	optionsMenu.addItem(GenericMenuSeparatorLine);
 	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_RELOAD_AT_START,   (int*)(&m_settings.reload), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
 	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_REMOUNT_AT_START,  (int*)(&m_settings.remount), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
-	optionsMenu.addItem(GenericMenuSeparatorLine);
-	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_HIDE_SERIES,       (int*)(&m_settings.browser_serie_mode), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
-	optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_SERIE_AUTO_CREATE, (int*)(&m_settings.serie_auto_create), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
+	//optionsMenu.addItem(GenericMenuSeparatorLine);
+	//optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_HIDE_SERIES,       (int*)(&m_settings.browser_serie_mode), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
+	//optionsMenu.addItem( new CMenuOptionChooser(LOCALE_MOVIEBROWSER_SERIE_AUTO_CREATE, (int*)(&m_settings.serie_auto_create), MESSAGEBOX_YES_NO_OPTIONS, MESSAGEBOX_YES_NO_OPTIONS_COUNT, true ));
 	//optionsMenu.addItem(GenericMenuSeparator);
  
 	// main menu
@@ -3578,26 +3610,27 @@ bool CMovieBrowser::isFiltered(MI_MOVIE_INFO& movie_info)
 			if(m_settings.filter.optionVar == movie_info.dirItNr)
 				result = false;
 			break;
-			
+				
 		case MB_INFO_INFO1:
-			if(strcmp(m_settings.filter.optionString.c_str(),movie_info.epgInfo1.c_str()) == 0) 
+			if(strcmp(m_settings.filter.optionString.c_str(), movie_info.epgInfo1.c_str()) == 0) 
 				result = false;
 			break;
-			
+				
 		case MB_INFO_MAJOR_GENRE:
 			if(m_settings.filter.optionVar == movie_info.genreMajor)
 				result = false;
 			break;
-			
+				
 		case MB_INFO_SERIE:
-			if(strcmp(m_settings.filter.optionString.c_str(),movie_info.serieName.c_str()) == 0) 
+			if(strcmp(m_settings.filter.optionString.c_str(), movie_info.serieName.c_str()) == 0) 
 				result = false;
 			break;
-			
+				
 		default:
 			result = false;
 			break;
 	}
+	
 	return (result);
 }
 
@@ -3811,8 +3844,8 @@ bool CMovieBrowser::getMovieInfoItem(MI_MOVIE_INFO& movie_info, MB_INFO_ITEM ite
 
 void CMovieBrowser::updateSerienames(void)
 {
-	if(m_seriename_stale == false) 
-		return;
+	//if(m_seriename_stale == false) 
+	//	return;
 		
 	m_vHandleSerienames.clear();
 	for(unsigned int i = 0; i < m_vMovieInfo.size(); i++)
@@ -3835,12 +3868,13 @@ void CMovieBrowser::updateSerienames(void)
 	//dprintf(DEBUG_NORMAL, "[mb]->updateSerienames: %d\r\n",m_vHandleSerienames.size());
 	// TODO sort(m_serienames.begin(), m_serienames.end(), my_alphasort);
 	
-	m_seriename_stale = false;
+	//m_seriename_stale = false;
 }	
 
 void CMovieBrowser::autoFindSerie(void)
 {
 	dprintf(DEBUG_INFO, "autoFindSerie\n");
+	
 	updateSerienames(); // we have to make sure that the seriename array is up to date, otherwise this does not work
 			    // if the array is not stale, the function is left immediately
 			    
@@ -3862,6 +3896,7 @@ void CMovieBrowser::autoFindSerie(void)
 					 break; // we  found a maching serie, nothing to do else, leave for(t=0)
 				}
 			}
+			
 			//dprintf(DEBUG_NORMAL, "\n");
 		}
 	}

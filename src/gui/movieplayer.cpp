@@ -1597,8 +1597,8 @@ void CMoviePlayerGui::PlayFile(void)
 						else
 							g_file_epg = sel_filename;
 						
-						if(!p_movie_info->epgInfo2.empty())
-							g_file_epg1 = p_movie_info->epgInfo2;
+						if(!p_movie_info->epgInfo1.empty())
+							g_file_epg1 = p_movie_info->epgInfo1;
 						else
 							g_file_epg1 = sel_filename;
 						
