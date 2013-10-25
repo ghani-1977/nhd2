@@ -374,6 +374,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		// epg reload
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_reload)
 		{
+			sort_mode = 0;
 			hide();
 			paintHead(channel_id);
 			readEvents(channel_id);
