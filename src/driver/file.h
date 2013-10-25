@@ -83,7 +83,7 @@ class CFile
 		std::string Name;
 		std::string Url;
 		std::string Description;
-		unsigned int index;
+		unsigned int Index;
 		mode_t Mode;
 		bool Marked;
 		time_t Time;

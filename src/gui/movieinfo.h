@@ -159,7 +159,7 @@ typedef struct
 	int  epgMode;				// currently not used, we just do not want to loose this info if movie info is saved backed
 	int  epgVideoPid; 			// currently not used, we just do not want to loose this info if movie info is saved backed
 	int  VideoType;
-	int	 epgVTXPID;			// currently not used, we just do not want to loose this info if movie info is saved backed 
+	int epgVTXPID;				// currently not used, we just do not want to loose this info if movie info is saved backed 
 	
 	// youtube
 	std::string tfile; 			// thumbnail/cover file name
