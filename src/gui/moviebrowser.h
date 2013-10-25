@@ -233,6 +233,9 @@ typedef struct
 	std::string ytregion;
 	std::string ytvid;
 	std::string ytsearch;
+	
+	// show mode
+	int show_mode;
 }MB_SETTINGS;
 
 // Priorities for Developmemt: P1: critical feature, P2: important feature, P3: for next release, P4: looks nice, lets see

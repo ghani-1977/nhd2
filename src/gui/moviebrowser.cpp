@@ -536,7 +536,7 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.gui = MB_GUI_MOVIE_INFO;
 	
 	m_settings.sorting.direction = MB_DIRECTION_DOWN;
-	m_settings.sorting.item 	=  MB_INFO_TITLE;
+	m_settings.sorting.item =  MB_INFO_RECORDDATE;
 
 	m_settings.filter.item = MB_INFO_MAX_NUMBER;
 	m_settings.filter.optionString = "";
@@ -582,6 +582,9 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.remount = false;
 	m_settings.browser_serie_mode = 0;
 	m_settings.serie_auto_create = 0;
+	
+	// show_mode
+	m_settings.show_mode = MB_SHOW_RECORDS;
 }
 
 void CMovieBrowser::initFrames(void)
@@ -742,6 +745,9 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 			sprintf(cfg_key, "mb_browserRowWidth_%d", i);
 			settings->browserRowWidth[i] = configfile.getInt32(cfg_key, 50);
 		}
+		
+		// show mode
+		settings->show_mode = configfile.getInt32("show_mode", MB_SHOW_RECORDS);
 	}
 	else
 	{
@@ -808,6 +814,9 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 		sprintf(cfg_key, "mb_browserRowWidth_%d", i);
 		configfile.setInt32(cfg_key, settings->browserRowWidth[i]);
 	}
+	
+	// show_mode
+	configfile.setInt32("show_mode", settings->show_mode);
 	
 	// youtube
 	configfile.setInt32("mb_ytmode", settings->ytmode);
@@ -958,6 +967,19 @@ int CMovieBrowser::exec(const char * path)
 	// load settings
 	loadSettings(&m_settings);
 	
+	// reset soring/filter
+	if(show_mode != m_settings.show_mode)
+	{
+		// reset filter
+		m_settings.filter.item = MB_INFO_MAX_NUMBER;
+		m_settings.filter.optionString = "";
+		m_settings.filter.optionVar = 0;
+	
+		// reset sorting
+		m_settings.sorting.direction = MB_DIRECTION_DOWN;
+		m_settings.sorting.item =  MB_INFO_RECORDDATE;
+	}
+	
 	// init frames
 	initFrames();
 
@@ -998,9 +1020,6 @@ int CMovieBrowser::exec(const char * path)
 		// mount
 		CFSMounter::automount();
 	}
-
-	// refresh title
-	//refreshTitle();
 	
 	// reload movies
 	if(m_file_info_stale == true)
@@ -1025,12 +1044,17 @@ int CMovieBrowser::exec(const char * path)
 	m_pcLastRecord->setSelectedLine(m_currentRecordSelection);
 	m_pcLastPlay->setSelectedLine(m_currentPlaySelection);
 
-	//
+	// update movie selection
 	updateMovieSelection();
-	//refreshMovieInfo();
 
+	// refresh title
 	refreshTitle();
+	
+	// on set guiwindow
 	onSetGUIWindow(m_settings.gui);
+	
+	// browser paint 
+	m_pcBrowser->paint();
 	
 #if !defined USE_OPENGL
 	m_pcWindow->blit();
@@ -1105,15 +1129,6 @@ int CMovieBrowser::exec(const char * path)
 	m_prevBrowserSelection = m_currentBrowserSelection;
 	m_prevRecordSelection = m_currentRecordSelection;
 	m_prevPlaySelection = m_currentPlaySelection;
-	
-	// reset filter
-	m_settings.filter.item = MB_INFO_MAX_NUMBER;
-	m_settings.filter.optionString = "";
-	m_settings.filter.optionVar = 0;
-	
-	// reset sorting
-	m_settings.sorting.direction = MB_DIRECTION_DOWN;
-	m_settings.sorting.item =  MB_INFO_TITLE;
 
 	saveSettings(&m_settings);	// might be better done in ~CMovieBrowser, but for any reason this does not work if MB is killed by neutrino shutdown	
 
@@ -1216,12 +1231,6 @@ int CMovieBrowser::paint(void)
 
 		return (false);
 	}  
-	
-	//onSetGUIWindow(m_settings.gui);	
-	//refreshTitle();
-	//refreshFoot();
-	//refreshLCD();
-	//refresh();
 	
 	return (true);
 }
@@ -2477,7 +2486,6 @@ void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 		m_pcInfo->hide();
 		
 		m_pcFilter->paint();
-		
 		onSetFocus(MB_FOCUS_FILTER);
 	}	
 }
