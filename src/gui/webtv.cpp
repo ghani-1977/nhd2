@@ -431,9 +431,36 @@ void CWebTV::quickZap(int key)
                 selected = (selected+1)%channels.size();
         }
 	
-	filelist[selected].Url = channels[selected]->url;
-	filelist[selected].Name = channels[selected]->title;
-	filelist[selected].Description = channels[selected]->description;
+	//filelist[selected].Url = channels[selected]->url;
+	//filelist[selected].Name = channels[selected]->title;
+	//filelist[selected].Description = channels[selected]->description;
+	
+	if ( (channels[selected]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
+	{
+		if ( zapProtection != NULL )
+			zapProtection->fsk = g_settings.parentallock_lockage;
+		else
+		{
+			zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
+						
+			if ( !zapProtection->check() )
+			{
+				delete zapProtection;
+				zapProtection = NULL;
+				
+				filelist[selected].Name = "";
+			}
+			else
+			{
+				delete zapProtection;
+				zapProtection = NULL;
+					
+				filelist[selected].Url = channels[selected]->url;
+				filelist[selected].Name = channels[selected]->title;
+				filelist[selected].Description = channels[selected]->description;
+			}
+		}
+	}
 }
 
 void CWebTV::hide()
