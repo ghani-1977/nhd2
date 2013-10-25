@@ -255,7 +255,8 @@ eventfinder.search_within_list Suche innerhalb Liste
 eventfinder.searching Suche nach Stichwort in EPG...
 eventfinder.start_search Suche beginnen
 eventlistbar.channelswitch Umschalten
-eventlistbar.eventsort Sortieren
+eventlistbar.eventsorttime Sortieren(Zeit)
+eventlistbar.eventsortalpha Sortieren(A..Z)
 eventlistbar.recordevent Aufnehmen
 extra.add_to_bouquet zur den Bouquets hinzufuegen
 extra.audio_run_player Audio Taste startet Player

@@ -255,7 +255,8 @@ eventfinder.search_within_list Search within
 eventfinder.searching Search for keyword in EPG...
 eventfinder.start_search  Start Search
 eventlistbar.channelswitch schedule
-eventlistbar.eventsort sorting
+eventlistbar.eventsorttime sorting(Time)
+eventlistbar.eventsortalpha sorting(A..Z)
 eventlistbar.recordevent record
 extra.add_to_bouquet Add to Bouquets
 extra.audio_run_player Audio key start player

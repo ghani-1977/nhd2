@@ -71,12 +71,12 @@ bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGD
 bool sectionsd_getLinkageDescriptorsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::LinkageDescriptorList& descriptors);
 
 // sort operators
-bool sortById (const CChannelEvent& a, const CChannelEvent& b)
+bool sortById(const CChannelEvent& a, const CChannelEvent& b)
 {
 	return a.eventID < b.eventID ;
 }
 
-bool sortByDescription (const CChannelEvent& a, const CChannelEvent& b)
+bool sortByDescription(const CChannelEvent& a, const CChannelEvent& b)
 {
 	if(a.description == b.description)
 		return a.eventID < b.eventID;
@@ -84,7 +84,7 @@ bool sortByDescription (const CChannelEvent& a, const CChannelEvent& b)
 		return a.description < b.description ;
 }
 
-static bool sortByDateTime (const CChannelEvent& a, const CChannelEvent& b)
+static bool sortByDateTime(const CChannelEvent& a, const CChannelEvent& b)
 {
 	return a.startTime < b.startTime;
 }
@@ -340,7 +340,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			if(sort_mode == 0) // by description
 			{
 				sort_mode++;
-				sort(evtlist.begin(),evtlist.end(),sortByDescription);
+				sort(evtlist.begin(), evtlist.end(), sortByDescription);
 			}
 #if 0
 			else if(sort_mode == 1) //by id
@@ -352,7 +352,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			else // datetime
 			{
 				sort_mode = 0;
-				sort(evtlist.begin(),evtlist.end(),sortByDateTime);
+				sort(evtlist.begin(), evtlist.end(), sortByDateTime);
 			}
 			
 			// find selected
@@ -854,7 +854,7 @@ void  EventList::showFunctionBar(bool show)
 		if (g_settings.key_channelList_sort == CRCInput::RC_blue) 
 		{
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORT), COL_INFOBAR, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, (sort_mode == 0)?g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTALPHA) : g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTTIME), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 	
