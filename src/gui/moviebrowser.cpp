@@ -412,6 +412,8 @@ CMovieBrowser::~CMovieBrowser()
 
 void CMovieBrowser::fileInfoStale(void)
 {
+	dprintf(DEBUG_NORMAL, "fileInfoStale\n");
+	
 	m_file_info_stale = true;
 	m_seriename_stale = true;
 	
@@ -578,7 +580,7 @@ void CMovieBrowser::initGlobalSettings(void)
 
 	m_settings.storageDirMovieUsed = true;
 	m_settings.storageDirRecUsed = true;
-	m_settings.reload = true;
+	m_settings.reload = true;	// not used reload for first time or when show mode changes
 	m_settings.remount = false;
 	m_settings.browser_serie_mode = 0;
 	m_settings.serie_auto_create = 0;
@@ -723,7 +725,7 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 		settings->storageDirRecUsed = (bool)configfile.getInt32("mb_storageDir_rec", true );
 		settings->storageDirMovieUsed = (bool)configfile.getInt32("mb_storageDir_movie", true );
 
-		settings->reload = true; //(bool)configfile.getInt32("mb_reload", false );
+		//settings->reload = (bool)configfile.getInt32("mb_reload", false );
 		settings->remount = (bool)configfile.getInt32("mb_remount", false );
 
 		char cfg_key[81];
@@ -816,7 +818,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	}
 	
 	// show_mode
-	configfile.setInt32("show_mode", settings->show_mode);
+	configfile.setInt32("show_mode", show_mode);
 	
 	// youtube
 	configfile.setInt32("mb_ytmode", settings->ytmode);
@@ -978,6 +980,10 @@ int CMovieBrowser::exec(const char * path)
 		// reset sorting
 		m_settings.sorting.direction = MB_DIRECTION_DOWN;
 		m_settings.sorting.item =  MB_INFO_RECORDDATE;
+		
+		// reload movie 
+		dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
+		fileInfoStale();
 	}
 	
 	// init frames
@@ -1129,16 +1135,6 @@ int CMovieBrowser::exec(const char * path)
 	m_prevPlaySelection = m_currentPlaySelection;
 
 	saveSettings(&m_settings);	// might be better done in ~CMovieBrowser, but for any reason this does not work if MB is killed by neutrino shutdown	
-
-	// make stale if we should reload the next time, but not if movie has to be played
-	//FIXME: terminate called after throwing an instance of 'std::bad_alloc' what():  St9bad_alloc
-	if(m_settings.reload == true && res == false)
-	{
-		dprintf(DEBUG_NORMAL, "[mb] force reload next time\r\n");
-		fileInfoStale();
-	}
-
-	//CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	
 	return (res);
 }
