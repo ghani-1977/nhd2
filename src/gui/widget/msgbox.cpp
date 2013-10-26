@@ -374,7 +374,7 @@ void CMsgBox::refreshFoot(void)
 		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HOME, xpos+10+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
 		/*m_pcWindow->RenderString(*/
-		m_pcFontFoot->RenderString(xpos + 43+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 2 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText((m_nFootButtons & mbCancel) ? LOCALE_MESSAGEBOX_CANCEL : LOCALE_MESSAGEBOX_BACK), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 2 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText((m_nFootButtons & mbCancel) ? LOCALE_MESSAGEBOX_CANCEL : LOCALE_MESSAGEBOX_BACK), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 }
 
@@ -393,38 +393,21 @@ void CMsgBox::refreshTitle(void)
 		return;
 
 	// draw the background
-	m_pcWindow->paintBoxRel(	m_cBoxFrameTitleRel.iX+m_cBoxFrame.iX, 
-							m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY, 
-							m_cBoxFrameTitleRel.iWidth, 
-							m_cBoxFrameTitleRel.iHeight, 
-							(CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
+	m_pcWindow->paintBoxRel(m_cBoxFrameTitleRel.iX + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
 
 	if (!m_cIcon.empty())
 	{
 		// draw icon and title text
 		m_pcWindow->paintIcon(m_cIcon.c_str(), m_cBoxFrameTitleRel.iX + 8+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY + 5+m_cBoxFrame.iY);
+		
 		/*m_pcWindow->RenderString(*/	
-		m_pcFontTitle->RenderString(
-								m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, 
-								m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, 
-								m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, 
-								m_cTitle.c_str(), 
-								(CFBWindow::color_t)COL_MENUHEAD, 
-								0, 
-								true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 	}
 	else
 	{
 		// no icon available, just draw the title text
 		/*m_pcWindow->RenderString(*/
-		m_pcFontTitle->RenderString(
-								m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, 
-								m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, 
-								m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, 
-								m_cTitle.c_str(), 
-								(CFBWindow::color_t)COL_MENUHEAD, 
-								0, 
-								true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 	}
 }
 
@@ -438,22 +421,14 @@ void CMsgBox::refreshTitle(void)
 //////////////////////////////////////////////////////////////////////
 void CMsgBox::refreshBorder(void)
 {
-	if(	!(m_nMode & BORDER && m_nWindowFrameBorderWidth > 0))
+	if(!(m_nMode & BORDER && m_nWindowFrameBorderWidth > 0))
 		return;
 
 	//draw bottom shadow
-	m_pcWindow->paintBoxRel(	m_nWindowFrameBorderWidth+m_cBoxFrame.iX, 
-							m_cBoxFrame.iHeight - m_nWindowFrameBorderWidth+m_cBoxFrame.iY, 
-							m_cBoxFrame.iWidth - m_nWindowFrameBorderWidth, 
-							m_nWindowFrameBorderWidth,  
-							COL_INFOBAR_SHADOW_PLUS_0);
+	m_pcWindow->paintBoxRel(m_nWindowFrameBorderWidth+m_cBoxFrame.iX, m_cBoxFrame.iHeight - m_nWindowFrameBorderWidth+m_cBoxFrame.iY, m_cBoxFrame.iWidth - m_nWindowFrameBorderWidth, m_nWindowFrameBorderWidth, COL_INFOBAR_SHADOW_PLUS_0);
 
 	//draw right shadow
-	m_pcWindow->paintBoxRel(	m_cBoxFrame.iWidth - m_nWindowFrameBorderWidth+m_cBoxFrame.iX, 
-							m_nWindowFrameBorderWidth+m_cBoxFrame.iY, 
-							m_nWindowFrameBorderWidth, 
-							m_cBoxFrame.iHeight - m_nWindowFrameBorderWidth,  
-							COL_INFOBAR_SHADOW_PLUS_0);
+	m_pcWindow->paintBoxRel(m_cBoxFrame.iWidth - m_nWindowFrameBorderWidth+m_cBoxFrame.iX, m_nWindowFrameBorderWidth+m_cBoxFrame.iY, m_nWindowFrameBorderWidth, m_cBoxFrame.iHeight - m_nWindowFrameBorderWidth, COL_INFOBAR_SHADOW_PLUS_0);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -503,7 +478,7 @@ bool CMsgBox::hide(void)
 // Return:		
 // Notes:		
 //////////////////////////////////////////////////////////////////////
-void    CMsgBox::scrollPageDown(const int pages)
+void CMsgBox::scrollPageDown(const int pages)
 {
 	// send scroll up event to text box if there is one
 	if(m_pcTextBox != NULL)
@@ -521,7 +496,7 @@ void    CMsgBox::scrollPageDown(const int pages)
 // Return:		
 // Notes:		
 //////////////////////////////////////////////////////////////////////
-void    CMsgBox::scrollPageUp(const int pages)
+void CMsgBox::scrollPageUp(const int pages)
 {
 	// send scroll up event to text box if there is one
 	if(m_pcTextBox != NULL)
@@ -555,7 +530,6 @@ bool CMsgBox::paint(void)
 	}
 
 	// create new window
-	//m_pcWindow = new CFBWindow( m_cBoxFrame.iX, m_cBoxFrame.iY, m_cBoxFrame.iWidth, m_cBoxFrame.iHeight);
 	m_pcWindow = CFrameBuffer::getInstance();
 	if(m_pcTextBox != NULL)
 	{
@@ -634,7 +608,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 	m_pcWindow->blit();
 #endif
 
-	bool loop=true;
+	bool loop = true;
 	while (loop)
 	{
 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
@@ -644,9 +618,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 			// return default 
 			loop = false;
 		}
-		else if (	((msg == CRCInput::RC_timeout) ||
-					(msg  == (neutrino_msg_t)g_settings.key_channelList_cancel)) &&
-					(return_button & (mbCancel | mbBack)))
+		else if (((msg == CRCInput::RC_timeout) || (msg  == (neutrino_msg_t)g_settings.key_channelList_cancel)) && (return_button & (mbCancel | mbBack)))
 		{
 			m_nResult = (return_button & mbCancel) ? mbrCancel : mbrBack;
 			loop   = false;
@@ -773,25 +745,11 @@ int CMsgBox::result(void)
 // Return:		
 // Notes:		
 //////////////////////////////////////////////////////////////////////
-int ShowMsg2UTF(	const neutrino_locale_t Caption,
-					const char * const Text, 
-					const CMsgBox::result_ Default, 
-					const uint32_t ShowButtons, 
-					const char * const Icon, 
-					const int Width, 
-					const int timeout, 
-					bool returnDefaultOnTimeout)
+int ShowMsg2UTF(const neutrino_locale_t Caption, const char * const Text, const CMsgBox::result_ Default, const uint32_t ShowButtons, const char * const Icon, const int Width, const int timeout, bool returnDefaultOnTimeout)
 {
 	//TRACE("->CMsgBox::ShowTextUTF \r\n");
 
-	int result = ShowMsg2UTF(	g_Locale->getText(Caption),
-								Text, 
-								Default, 
-								ShowButtons, 
-								Icon, 
-								Width, 
-								timeout, 
-								returnDefaultOnTimeout);
+	int result = ShowMsg2UTF(g_Locale->getText(Caption),Text, Default, ShowButtons, Icon, Width, timeout, returnDefaultOnTimeout);
 
 	return (result);
 
@@ -805,38 +763,14 @@ int ShowMsg2UTF(	const neutrino_locale_t Caption,
 // Return:		
 // Notes:		
 //////////////////////////////////////////////////////////////////////
-int ShowMsg2UTF(	const char * const Title,
-					const char * const Text, 
-					const CMsgBox::result_ Default, 
-					const uint32_t ShowButtons, 
-					const char * const Icon, 
-					const int /*Width*/, 
-					const int timeout, 
-					bool returnDefaultOnTimeout)
+int ShowMsg2UTF(const char * const Title,const char * const Text, const CMsgBox::result_ Default, const uint32_t ShowButtons, const char * const Icon, const int /*Width*/, const int timeout, bool returnDefaultOnTimeout)
 {
-	int mode =  CMsgBox::SCROLL | 
-				CMsgBox::TITLE | 
-				CMsgBox::FOOT | 
-				CMsgBox::BORDER;// | 
-				//CMsgBox::NO_AUTO_LINEBREAK | 
-				//CMsgBox::CENTER | 
-				//CMsgBox::AUTO_WIDTH | 
-				//CMsgBox::AUTO_HIGH;
-	CBox position (	g_settings.screen_StartX+30,
-					g_settings.screen_StartY+30,
-					g_settings.screen_EndX - g_settings.screen_StartX-60,
-					g_settings.screen_EndY - g_settings.screen_StartY-60); 
+	int mode =  CMsgBox::SCROLL | CMsgBox::TITLE | CMsgBox::FOOT | CMsgBox::BORDER;// | //CMsgBox::NO_AUTO_LINEBREAK | //CMsgBox::CENTER | //CMsgBox::AUTO_WIDTH | //CMsgBox::AUTO_HIGH;
+	
+	CBox position(g_settings.screen_StartX + 30, g_settings.screen_StartY + 30, g_settings.screen_EndX - g_settings.screen_StartX - 60, g_settings.screen_EndY - g_settings.screen_StartY - 60); 
 	
 	//TRACE("\r\n->ShowTextUTF %s\r\n",Text);
-   	CMsgBox * msgBox = new CMsgBox(		Text, 
-   										g_Font[SNeutrinoSettings::FONT_TYPE_MENU], 
-   										mode, 
-   										&position, 
-   										Title,
-   										g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE],
-   										Icon,
-										ShowButtons,
-										Default);
+   	CMsgBox * msgBox = new CMsgBox(Text, g_Font[SNeutrinoSettings::FONT_TYPE_MENU], mode, &position, Title, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE], Icon, ShowButtons, Default);
 
 	msgBox->exec( timeout, returnDefaultOnTimeout);
 

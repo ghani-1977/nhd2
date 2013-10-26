@@ -59,6 +59,7 @@
 #include <gui/widget/icons.h>
 #include <driver/fb_window.h>
 
+
 class CMsgBox  
 {
 	public:

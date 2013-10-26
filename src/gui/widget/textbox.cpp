@@ -391,7 +391,7 @@ void CTextBox::refreshScroll(void)
 	}
 	
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+	//frameBuffer->blit();
 #endif	
 }
 
@@ -420,7 +420,7 @@ void CTextBox::refreshText(void)
 	}
 
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+	//frameBuffer->blit();
 #endif	
 }
 
@@ -475,7 +475,7 @@ void CTextBox::refresh(void)
 	refreshText();
 	
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+	//frameBuffer->blit();
 #endif	
 }
 
@@ -504,6 +504,11 @@ void CTextBox::paint (void)
 	//TRACE("[CTextBox]->paint \r\n");
 	frameBuffer = CFrameBuffer::getInstance();
 	refresh();
+	
+	//TEST
+#if !defined USE_OPENGL
+	//frameBuffer->blit();
+#endif	
 }
 
 void CTextBox::hide (void)
@@ -515,7 +520,7 @@ void CTextBox::hide (void)
 	frameBuffer->paintBackgroundBoxRel(m_cFrame.iX, m_cFrame.iY, m_cFrame.iWidth, m_cFrame.iHeight);
 
 #if !defined USE_OPENGL
-	frameBuffer->blit();
+	//frameBuffer->blit();
 #endif
 	frameBuffer = NULL;
 }
