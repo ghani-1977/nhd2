@@ -3136,8 +3136,12 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		// auto timeshift
 		if (!recordingstatus && g_settings.auto_timeshift) 		  
 		{
-			int delay = g_settings.auto_timeshift;			
+			int delay = g_settings.auto_timeshift;
+			
+			// add shift timer
 			shift_timer = g_RCInput->addTimer( delay*1000*1000, true );
+			
+			// infoviewer handle msg
 			g_InfoViewer->handleMsg(NeutrinoMessages::EVT_RECORDMODE, 1);
 		}
 		
@@ -3872,16 +3876,18 @@ skip_message:
 
 // exit run
 void CNeutrinoApp::ExitRun(int retcode)
-{  
+{ 
+	// break silently autotimeshift
+	if(autoshift) 
+	{
+		stopAutoRecord();
+		recordingstatus = 0;
+		timeshiftstatus = 0;
+	}
+	
+	//
 	if (!recordingstatus || ShowLocalizedMessage(LOCALE_MESSAGEBOX_INFO, LOCALE_SHUTDOWN_RECODING_QUERY, CMessageBox::mbrNo, CMessageBox::mbYes | CMessageBox::mbNo, NULL, 450, 30, true) == CMessageBox::mbrYes)  
 	{
-		if(autoshift) 
-		{
-			stopAutoRecord();
-			recordingstatus = 0;
-			timeshiftstatus = 0;
-		}
-
 		// stop recording
 		if(recordingstatus) 
 		{

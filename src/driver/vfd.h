@@ -405,6 +405,14 @@ class CVFD
 			AUDIO_MODE_REV
 		};
 
+		//0:off, 1:blue, 2:red, 3:purple (gigablue)
+		enum LEDS
+		{
+			LED_OFF,
+			LED_BLUE,
+			LED_RED,
+			LED_PURPLE
+		};
 
 	private:
 		MODES			mode;

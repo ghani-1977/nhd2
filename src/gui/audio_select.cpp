@@ -110,8 +110,7 @@ int CAudioSelectMenuHandler::doMenu()
 	unsigned int count;
 	CSubtitleChangeExec SubtitleChanger;
 	
-	//unsigned int shortcut_num = 1;
-
+	// audio pids
 	for(count = 0; count < g_RemoteControl->current_PIDs.APIDs.size(); count++ ) 
 	{
 		char apid[5];

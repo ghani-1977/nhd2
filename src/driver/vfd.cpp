@@ -218,7 +218,7 @@ void CVFD::init()
 	
 	// set led color
 #if defined (PLATFORM_GIGABLUE)
-	vfd_led(1);  //0:off, 1:blue, 2:red, 3:purple
+	vfd_led(LED_BLUE);  //0:off, 1:blue, 2:red, 3:purple
 #endif
 }
 
@@ -932,7 +932,14 @@ void CVFD::setFan(bool enable)
 
 void CVFD::vfd_led(int led)
 {
-	dprintf(DEBUG_NORMAL, "%s\n", __FUNCTION__);
+	const char *VFDLED[] = {
+		"VFD_OFF",
+		"VFD_BLUE",
+		"VFD_RED",
+		"VFD_PURPLE"
+	};
+	
+	dprintf(DEBUG_NORMAL, "CVFD::vfd_led: %s\n", VFDLED[led]);
 	
 #if defined (PLATFORM_GIGABLUE)  
 	FILE * f;

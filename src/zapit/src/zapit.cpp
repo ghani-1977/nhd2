@@ -3500,7 +3500,8 @@ void leaveStandby(void)
 
 	// if we have already zapped channel
 	if (live_channel)
-		zapit(live_channel_id, current_is_nvod, false);
+		//zapit(live_channel_id, current_is_nvod, false);
+		zapTo_ChannelID(live_channel_id, current_is_nvod);
 }
 
 unsigned zapTo(const unsigned int bouquet, const unsigned int channel)

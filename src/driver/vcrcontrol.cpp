@@ -993,9 +993,9 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 
 		if ( pids.APIDs[count].is_ac3 )
 		{
-			strncat(pids.APIDs[count].desc, " (Dolby Digital)", 25);
+			//strncat(pids.APIDs[count].desc, " (Dolby Digital)", 25);
 			has_ac3 = true;
-			if((strlen( pids.APIDs[count].desc ) == 3) /*&& g_settings.audio_DolbyDigital*/ && (ac3_found < 0))
+			if((strlen( pids.APIDs[count].desc ) == 3) && (ac3_found < 0))
 				ac3_found = count;
 		}
 	}
@@ -1021,8 +1021,8 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 							{
 								strncpy(pids.APIDs[j].desc, tags[i].component.c_str(), 25);
 								
-								if ( pids.APIDs[j].is_ac3)
-									strncat( pids.APIDs[j].desc, " (Dolby Digital)", 25);
+								//if ( pids.APIDs[j].is_ac3)
+								//	strncat( pids.APIDs[j].desc, " (Dolby Digital)", 25);
 							}
 							pids.APIDs[j].component_tag = -1;
 							break;
