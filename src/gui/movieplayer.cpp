@@ -2164,8 +2164,8 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 			}
-			else if(timeshift == P_TIMESHIFT) //ptimeshift
-				g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
+			//else if(timeshift == P_TIMESHIFT) //ptimeshift
+			//	g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
 
 			if (!was_file)
 				exit = true;
