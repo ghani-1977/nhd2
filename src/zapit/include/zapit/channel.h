@@ -109,6 +109,8 @@ class CZapitAudioChannel
 	                 AAC,
 	                 AACPLUS, //?
 	                 DTS,
+			 DTSHD,
+	                 EAC3,
 	                 UNKNOWN,
 	       };
 	       
@@ -188,7 +190,7 @@ class CZapitChannel
 		t_service_id		getServiceId(void)         	const { return service_id; }
 		t_transport_stream_id	getTransportStreamId(void) 	const { return transport_stream_id; }
 		t_original_network_id	getOriginalNetworkId(void) 	const { return original_network_id; }
-		unsigned char        	getServiceType(bool real=false);
+		unsigned char        	getServiceType(bool real = false);
 		bool			isHD();
 		bool			is3DTV();
 		t_channel_id         	getChannelID(void)         	const { return channel_id; }

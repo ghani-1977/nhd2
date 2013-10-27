@@ -23,15 +23,12 @@
 #include <linux/dvb/audio.h>
 
 #include <config.h>
-
-// stm_ioctl
-#ifdef __sh__
-#include <linux/dvb/stm_ioctls.h>
-#endif
-
 #include <string>
 
-
+// stm_ioctl
+#if defined (__sh__)
+#include <linux/dvb/stm_ioctls.h>
+#else
 // bcm
 /*
 [%s] (%d) NEXUS_AudioCodec_eMpeg 
@@ -42,7 +39,6 @@
 [%s] (%d) NEXUS_AudioCodec_eLpcmDvd 
 [%s] (%d) NEXUS_AudioCodec_eMp3
 */
-#ifndef __sh__
 typedef enum {
 	AUDIO_STREAMTYPE_AC3 = 0,
 	AUDIO_STREAMTYPE_MPEG,
@@ -50,7 +46,9 @@ typedef enum {
 	AUDIO_STREAMTYPE_LPCMDVD = 6,
 	AUDIO_STREAMTYPE_AAC = 8,
 	AUDIO_STREAMTYPE_AACPLUS,
-	AUDIO_STREAMTYPE_MP3
+	AUDIO_STREAMTYPE_MP3,
+	AUDIO_STREAMTYPE_DTSHD = 0x10,
+	AUDIO_STREAMTYPE_EAC3 = 0x22
 }AUDIO_FORMAT;
 #endif
 
@@ -83,7 +81,7 @@ class cAudio
 #endif		
 		
 		bool Muted;
-#ifdef __sh__
+#if defined (__sh__)
 		stream_type_t StreamType;
 		audio_encoding_t EncodingType;	
 #else
@@ -112,7 +110,7 @@ class cAudio
 		int Stop(void);
 		bool Pause();
 		bool Resume();
-#ifdef __sh__		
+#if defined (__sh__)
 		void SetStreamType(stream_type_t type);
 		void SetEncoding(audio_encoding_t type);
 				

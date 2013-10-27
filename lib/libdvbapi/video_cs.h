@@ -26,10 +26,9 @@
 #include <driver/framebuffer.h>
 
 // stm_ioctl
-#ifdef __sh__
+#if defined (__sh__)
 #include <linux/dvb/stm_ioctls.h>
-#endif
-
+#else
 // bcm
 /*   
 [%s][%d]: VIDEO_SET_ID
@@ -43,7 +42,6 @@
 [%s] (%d) -> NEXUS_VideoCodec_eMpeg1(%d)
 [%s] (%d) -> NEXUS_VideoCodec_eDivx311(%d)
 */ 
-#ifndef __sh__
 typedef enum {
 	VIDEO_STREAMTYPE_MPEG2,
 	VIDEO_STREAMTYPE_MPEG4_H264,
@@ -57,7 +55,7 @@ typedef enum {
 #endif
 
 // video mode
-#ifdef __sh__
+#if defined (__sh__)
 /*
 pal 
 1080i50 
@@ -101,7 +99,7 @@ enum {
 	VIDEO_STD_PC
 };
 #else
-// giga
+// bcm
 /*
 pal 
 ntsc 
@@ -136,7 +134,7 @@ enum {
 };
 
 // policy
-#ifdef __sh__
+#if defined (__sh__)
 enum {
 	VIDEOFORMAT_LETTERBOX,
 	VIDEOFORMAT_PANSCAN,
@@ -160,7 +158,7 @@ enum {
 };
 
 // analoge mode
-#ifdef __sh__
+#if defined (__sh__)
 enum {
 	ANALOG_RGB,
 	ANALOG_CVBS,
@@ -176,7 +174,7 @@ enum {
 #endif
 
 // color space
-#ifdef __sh__
+#if defined (__sh__)
 enum {
 	HDMI_RGB,
 	HDMI_YUV,
@@ -228,7 +226,7 @@ class cVideo
 
 		video_play_state_t playstate;
 
-#ifdef __sh__	
+#if defined (__sh__	)
 		// streamtype
 		stream_type_t StreamType;
 		
@@ -237,9 +235,6 @@ class cVideo
 #else
 		VIDEO_FORMAT StreamType;
 #endif	
-
-		//int Ratio;
-		//int Policy;
 
 	public:
 		/* constructor & destructor */
@@ -279,7 +274,7 @@ class cVideo
 
 		int SetSpaceColour(int space_colour);
 		
-#ifdef __sh__		
+#if defined (__sh__)
 		int SetStreamType(stream_type_t type);
 		int SetEncoding(video_encoding_t type);
 		
@@ -301,7 +296,7 @@ class cVideo
 		void SetAnalogMode(int mode); //analog
 		
 		// speed normal
-#ifdef __sh__		
+#if defined (__sh__)
 		int setSpeedNormal();
 #endif		
 		
@@ -312,7 +307,7 @@ class cVideo
 		void finishShowSinglePic();
 		
 		
-		//
+		// psi
 		void setContrast(int contrast);
 		void setSaturation(int saturation);
 		void setBrightness(int brightness);

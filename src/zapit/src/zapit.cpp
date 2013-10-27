@@ -1307,7 +1307,7 @@ int change_audio_pid(uint8_t index)
 		switch (currentAudioChannel->audioChannelType) 
 		{
 			case CZapitAudioChannel::AC3:
-#ifdef __sh__			  
+#if defined (__sh__)			  
 				audioDecoder->SetEncoding(AUDIO_ENCODING_AC3);
 #elif defined (PLATFORM_COOLSTREAM)
 				audioDecoder->SetStreamType(AUDIO_FMT_DOLBY_DIGITAL);				
@@ -1317,7 +1317,7 @@ int change_audio_pid(uint8_t index)
 				break;
 			
 			case CZapitAudioChannel::MPEG:
-#ifdef __sh__			  
+#if defined (__sh__)			  
 				audioDecoder->SetEncoding(AUDIO_ENCODING_MPEG2);
 #elif defined (PLATFORM_COOLSTREAM)
 				audioDecoder->SetStreamType(AUDIO_FMT_MPEG);
@@ -1327,21 +1327,25 @@ int change_audio_pid(uint8_t index)
 				break;
 				
 			case CZapitAudioChannel::AAC:
-#ifdef __sh__			  
+#if defined (__sh__)			  
 				audioDecoder->SetEncoding(AUDIO_ENCODING_AAC);
 #elif defined (PLATFORM_COOLSTREAM)
 				audioDecoder->SetStreamType(AUDIO_FMT_AAC);
+#else				
+				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_AAC);
 #endif				
 				break;
 			
 			case CZapitAudioChannel::AACPLUS:
 #if defined (PLATFORM_COOLSTREAM)			  
 				audioDecoder->SetStreamType(AUDIO_FMT_AAC_PLUS);
+#elif !defined (__sh__)
+				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_AACPLUS);
 #endif
 				break;
 			
 			case CZapitAudioChannel::DTS:
-#ifdef __sh__			  
+#if defined (__sh__)			  
 				audioDecoder->SetEncoding(AUDIO_ENCODING_DTS);
 #elif defined (PLATFORM_COOLSTREAM)
 				audioDecoder->SetStreamType(AUDIO_FMT_DTS);
@@ -1350,8 +1354,20 @@ int change_audio_pid(uint8_t index)
 #endif
 				break;
 				
+			case CZapitAudioChannel::DTSHD:
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_DTSHD);
+#endif
+				break;
+				
+			case CZapitAudioChannel::EAC3:
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_EAC3);
+#endif
+				break;
+				
 			default:
-				dprintf(DEBUG_NORMAL, "[zapit] change_audio_pid: unknown audio live_channel type 0x%x\n", currentAudioChannel->audioChannelType);
+				dprintf(DEBUG_NORMAL, "[zapit] change_audio_pid: unknown audio live_channel audiotype 0x%x\n", currentAudioChannel->audioChannelType);
 				break;
 		}
 	}

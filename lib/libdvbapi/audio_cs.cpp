@@ -121,7 +121,7 @@ int cAudio::SetMute(int enable)
 	
 	int ret = 0;
 
-#ifdef __sh__	
+#if defined (__sh__)
 	char sMuted[4];
 	sprintf(sMuted, "%d", Muted);
 
@@ -257,7 +257,7 @@ bool cAudio::Resume()
 	return true;
 }
 
-#ifdef __sh__
+#if defined (__sh__)
 /* set streamtype */
 /*
  * List of possible container types - used to select demux..  If stream_source is AUDIO_SOURCE_DEMUX
@@ -338,6 +338,8 @@ void cAudio::SetStreamType(AUDIO_FORMAT type)
 		"AUDIO_STREAMTYPE_AACPLUS",
 		"AUDIO_STREAMTYPE_LPCMDVD",
 		"AUDIO_STREAMTYPE_MP3",
+		"AUDIO_STREAMTYPE_DTSHD",
+		"AUDIO_STREAMTYPE_EAC3",
 	};
 
 	dprintf(DEBUG_INFO, "%s:%s - type=%s\n", FILENAME, __FUNCTION__, aAUDIOFORMAT[type]);
@@ -375,7 +377,7 @@ int cAudio::Flush(void)
 	
 	int ret = -1;
 
-#ifdef __sh__	
+#if defined (__sh__)
 	ret = ioctl(audio_fd, AUDIO_FLUSH);
 #else
 	ret = ioctl(audio_fd, AUDIO_CLEAR_BUFFER);
@@ -662,7 +664,7 @@ void cAudio::SetHdmiDD(int ac3)
 	
 	dprintf(DEBUG_NORMAL, "%s:%s %s\n", FILENAME, __FUNCTION__, aHDMIDD[ac3]);	
 
-#ifdef __sh__
+#if defined (__sh__)
 	const char *aHDMIDDSOURCE[] = {
 		"pcm",
 		"spdif",

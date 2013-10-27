@@ -183,6 +183,7 @@ class CZapitClient : public CBasicClient
 			char    desc[25];
 			int     is_ac3;
 			int     is_aac;
+			int 	is_eac3;
 			int     component_tag;
 		};
 		typedef std::vector<responseGetAPIDs> APIDList;

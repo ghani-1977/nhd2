@@ -72,9 +72,12 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 	unsigned char descriptor_length;
 	unsigned char i;
 
-	bool isAc3 = false;
-	bool isDts = false;
-	bool isAac = false;
+	bool isAC3 = false;
+	bool isDTS = false;
+	bool isAAC = false;
+	bool isDTSHD = false;
+	bool isEAC3 = false;
+	bool isAACPLUS = false;
 	
 	bool descramble = false;
 	std::string description = "";
@@ -106,10 +109,10 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				audio_stream_descriptor(buffer + pos);
 				break;
 
-			case 0x05:
+			case 0x05:	/* REGISTRATION_DESCRIPTOR */
 				if (descriptor_length >= 3)
 					if (!strncmp((const char*)&buffer[pos + 2], "DTS", 3))
-						isDts = true;
+						isDTS = true;
 				break;
 
 			case 0x09:
@@ -201,18 +204,27 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0x6A: /* AC3 descriptor */
-				isAc3 = true;
+				isAC3 = true;
 				break;
 
 			case 0x6F: /* unknown, Astra 19.2E */
 				break;
-
-			case 0x7B: /* AC3 descriptor */
-				isDts = true;
+				
+			case 0x7A: /* ENHANCED_AC3_DESCRIPTOR */
+				isEAC3 = true;
 				break;
 
+			case 0x7B: /* DTS descriptor */
+				isDTS = true;
+				break;
+
+			case 0x1C:
 			case 0x7C: //FIXME AAC
-				isAac = true;
+				isAACPLUS = true;
+				break;
+				
+			case 0x2B:
+				isAAC = true;
 				break;
 
 			case 0x90: /* unknown, Astra 19.2E */
@@ -270,9 +282,10 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 	switch (esInfo->stream_type) 
 	{
-		case 0x01:
-		case 0x02:	/* video es_pids */
-		case 0x1b: 	/* AVC Video Stream (MPEG4 H264) */
+		case 0x01:	// MPEG 1 video
+		case 0x02:	// MPEG 2 video
+		case 0x1b: 	// AVC Video Stream (MPEG4 H264)
+		case 0x10:	// MPEG 4 Part 2
 			channel->setVideoPid(esInfo->elementary_PID);
 			descramble = true;
 			channel->type = (esInfo->stream_type == 0x1b); //FIXME
@@ -334,12 +347,13 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 			}
 			
-		case 0x81:
+		case 0x81: 	// AC3
+		case 0xA1: 	// bluray secondary AC3
 			esInfo->stream_type = 0x6;
 			if (description == "")
 				description = esInfo->elementary_PID;
 			description += " (AC3)";
-			isAc3 = true;
+			isAC3 = true;
 			descramble = true;
 			
 			if(!scan_runs)
@@ -349,28 +363,36 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			break;
 			
 		case 0x06:
-			if ( (isAc3) || (isDts) || (isAac) ) 
+			if ( (isAC3) || (isDTS) || (isAAC) || (isAACPLUS) || (isEAC3)) 
 			{
 				if (description == "") 
 				{
 					description = esInfo->elementary_PID;
-					if (isAc3)
+					if (isAC3)
 						description += " (AC3)";
-					else if (isDts)
+					else if (isDTS)
 						description += " (DTS)";
-					else if (isAac)
+					else if (isAAC)
 	                                        description += " (AAC)";
+					else if (isAACPLUS)
+	                                        description += " (AACPLUS)";
+					else if (isEAC3)
+	                                        description += " (EAC3)";
 				}
 				
 				if(!scan_runs)
 				{
 					CZapitAudioChannel::ZapitAudioChannelType Type;
-					if (isAc3)
+					if (isAC3)
 						Type = CZapitAudioChannel::AC3;
-					else if (isDts)
+					else if (isDTS)
 						Type = CZapitAudioChannel::DTS;
-					else if (isAac)
+					else if (isAAC)
 						Type = CZapitAudioChannel::AAC;
+					else if (isAACPLUS)
+						Type = CZapitAudioChannel::AACPLUS;
+					else if (isEAC3)
+						Type = CZapitAudioChannel::EAC3;
 					else
 						Type = CZapitAudioChannel::UNKNOWN;
 					
@@ -382,16 +404,60 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			}
 			break;
 			
-		case 0x0F: // AAC ADTS
-	        case 0x11: // AAC LATM
+		case 0x0F: 	// AAC 
 			if (description == "")
 				description = esInfo->elementary_PID;
 			
 			description += " (AAC)";
-			isAac = true;
+			isAAC = true;
 			descramble = true;
 			if(!scan_runs)
 				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::AAC, description, componentTag);
+			
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			break;
+	        case 0x11:	 // AACPLUS
+			if (description == "")
+				description = esInfo->elementary_PID;
+			
+			description += " (AACPLUS)";
+			isAACPLUS = true;
+			descramble = true;
+			if(!scan_runs)
+				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::AACPLUS, description, componentTag);
+			
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			break;
+			
+		case 0x80: // user private ... but bluray LPCM
+		case 0xA0: // bluray secondary LPCM
+			break;
+			
+		case 0x82: // bluray DTS (dvb user private...)
+		case 0xA2: // bluray secondary DTS
+			if (description == "")
+				description = esInfo->elementary_PID;
+			
+			description += " (DTS)";
+			isDTS = true;
+			descramble = true;
+			if(!scan_runs)
+				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::DTS, description, componentTag);
+			
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
+			break;
+		
+		case 0x85: // bluray DTS-HD HRA(dvb user private...)
+		case 0x86: // bluray DTS-HD MA(dvb user private...)
+		case 0xA6: // bluray secondary DTS-HD
+			if (description == "")
+				description = esInfo->elementary_PID;
+			
+			description += " (DTSHD)";
+			isDTSHD = true;
+			descramble = true;
+			if(!scan_runs)
+				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::DTSHD, description, componentTag);
 			
 			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			break;
