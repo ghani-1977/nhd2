@@ -2767,16 +2767,18 @@ void sendAPIDs(int connfd)
 		response.pid = live_channel->getAudioPid(i);
 		strncpy(response.desc, live_channel->getAudioChannel(i)->description.c_str(), 25);
 
-		response.is_ac3 = response.is_aac = 0;
+		response.is_ac3 = 0;
 		
-		if (live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3) 
+		if (live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3
+			|| live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AAC
+			|| live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AACPLUS
+			|| live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::EAC3
+			|| live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::DTS
+			|| live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::DTSHD
+			) 
 		{
 			response.is_ac3 = 1;
 		} 
-		else if (live_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AAC) 
-		{
-			response.is_aac = 1;
-		}
 		
 		response.component_tag = live_channel->getAudioChannel(i)->componentTag;
 
@@ -2846,16 +2848,18 @@ void sendRecordAPIDs(int connfd)
 		response.pid = rec_channel->getAudioPid(i);
 		strncpy(response.desc, rec_channel->getAudioChannel(i)->description.c_str(), 25);
 
-		response.is_ac3 = response.is_aac = 0;
+		response.is_ac3 = 0;
 		
-		if (rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3) 
+		if (rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AC3
+			|| rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AAC
+			|| rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AACPLUS
+			|| rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::EAC3
+			|| rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::DTS
+			|| rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::DTSHD
+			) 
 		{
 			response.is_ac3 = 1;
 		} 
-		else if (rec_channel->getAudioChannel(i)->audioChannelType == CZapitAudioChannel::AAC) 
-		{
-			response.is_aac = 1;
-		}
 		
 		response.component_tag = rec_channel->getAudioChannel(i)->componentTag;
 
@@ -3243,6 +3247,20 @@ int startPlayBack(CZapitChannel * thisChannel)
 					audioDecoder->SetStreamType(AUDIO_FMT_DTS);
 #else
 					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_DTS);
+#endif
+					break;
+					
+				case CZapitAudioChannel::DTSHD:
+					audioStr = "DTSHD";
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_DTSHD);
+#endif
+					break;
+					
+				case CZapitAudioChannel::EAC3:
+					audioStr = "EAC3";
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_EAC3);
 #endif
 					break;
 					

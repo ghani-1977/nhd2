@@ -188,7 +188,7 @@ void CVCRControl::CDevice::getAPIDs(const unsigned char ap, APIDList & apid_list
 
         if (apids & TIMERD_APIDS_AC3)
         {
-                bool ac3_found=false;
+                bool ac3_found = false;
                 for(unsigned int i = 0; i < allpids.APIDs.size(); i++)
                 {
                         if (allpids.APIDs[i].is_ac3)
@@ -1023,9 +1023,6 @@ void CVCRControl::CFileAndServerDevice::processAPIDnames()
 								
 								if ( pids.APIDs[j].is_ac3)
 									strncat( pids.APIDs[j].desc, " (AC3)", 25);
-								
-								else if ( pids.APIDs[j].is_aac)
-									strncat( pids.APIDs[j].desc, " (AAC)", 25);
 							}
 							pids.APIDs[j].component_tag = -1;
 							break;

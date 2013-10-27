@@ -555,7 +555,7 @@ void CRemoteControl::processAPIDnames()
 							pref_idx = i;
 						}
 						
-						if(current_PIDs.APIDs[j].is_ac3 && g_settings.audio_DolbyDigital && (pref_ac3_found < 0)) {
+						if( current_PIDs.APIDs[j].is_ac3 && g_settings.audio_DolbyDigital && (pref_ac3_found < 0)) {
 							pref_ac3_found = j;
 							pref_ac3_idx = i;
 						}
@@ -616,9 +616,6 @@ void CRemoteControl::processAPIDnames()
 								strncpy(current_PIDs.APIDs[j].desc, tags[i].component.c_str(), 25);
 								if (current_PIDs.APIDs[j].is_ac3)
 									strncat(current_PIDs.APIDs[j].desc, " (AC3)", 25);
-								
-								else if (current_PIDs.APIDs[j].is_aac)
-									strncat(current_PIDs.APIDs[j].desc, " (AAC)", 25);
 							}
 							current_PIDs.APIDs[j].component_tag = -1;
 							break;
