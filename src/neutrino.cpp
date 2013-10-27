@@ -2063,6 +2063,10 @@ void CNeutrinoApp::InitZapper()
 		g_Zapit->getPIDS(g_RemoteControl->current_PIDs);
 		g_RemoteControl->processAPIDnames();
 		
+		//TEST
+		if(g_settings.auto_timeshift)
+			startAutoRecord(true);
+		
 		// show info bar
 		g_RCInput->postMsg(NeutrinoMessages::SHOW_INFOBAR, 0);
 		
