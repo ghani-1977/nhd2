@@ -467,7 +467,7 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 			{
 				decodeUrl(uparams[j]);
 
-				dprintf(DEBUG_NORMAL, "	param: %s\n", uparams[j].c_str());
+				dprintf(DEBUG_DEBUG, "	param: %s\n", uparams[j].c_str());
 
 				splitString(uparams[j], "=", smap);
 			}

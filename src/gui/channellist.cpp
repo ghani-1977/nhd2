@@ -1748,7 +1748,7 @@ void CChannelList::paintItem(int pos)
 		// get logo size	
 		g_PicViewer->getLogoSize(chanlist[selected]->channel_id, &logo_w, &logo_h, &logo_bpp);
 	
-		//g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight, true);
+		// display logo
 		g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - /*90*/(OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W + ((logo_bpp == 4)? 0 : (PIC_W - 2 - PIC_W_1)/2), y, (logo_bpp == 4)? PIC_W : PIC_W_1, theight, true);
 
 		// infobox
