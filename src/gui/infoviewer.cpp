@@ -399,7 +399,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			if (satNameWidth > (ChanNumberWidth + 70))
 				satNameWidth = ChanNumberWidth + 70;
 				
-			g_SignalFont->RenderString( BoxStartX + 5, BoxStartY + (SatNameHeight*3)/2, satNameWidth, sit->second.name, COL_COLORED_EVENTS_INFOBAR );
+			g_SignalFont->RenderString( BoxStartX + 5, BoxStartY + (SatNameHeight*3)/2, satNameWidth, sit->second.name, COL_INFOBAR );
 		}
 	}
 
@@ -463,7 +463,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			
 	int widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
 			
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (SatNameHeight*3)/2, widthtime, datestr, COL_COLORED_EVENTS_INFOBAR, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (SatNameHeight*3)/2, widthtime, datestr, COL_INFOBAR, 0, true); // UTF-8
 		
 	// botton bar
 	frameBuffer->paintBoxRel(BoxStartX, BoxEndY - BUTTON_BAR_HEIGHT, BoxWidth, BUTTON_BAR_HEIGHT, COL_INFOBAR_BUTTONS_BACKGROUND, RADIUS_MID, CORNER_BOTTOM);
@@ -867,7 +867,7 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	{
 		sprintf(strSpeed, "%d", speed);
 			
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_COLORED_EVENTS_INFOBAR ); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_INFOBAR ); // UTF-8
 	}
 	
 	time_t tDisplayTime = duration/1000;
@@ -1681,7 +1681,7 @@ void CInfoViewer::showSNR()
 				freqWidth = g_SignalFont->getRenderWidth(freq);
 				freqStartX = BoxStartX + ChanNumberWidth + 80;
 
-				g_SignalFont->RenderString(freqStartX, BoxStartY + (SatNameHeight *3)/2, freqWidth, freq, COL_COLORED_EVENTS_INFOBAR );
+				g_SignalFont->RenderString(freqStartX, BoxStartY + (SatNameHeight *3)/2, freqWidth, freq, COL_INFOBAR );
 			
 				if(live_fe != NULL)
 				{
@@ -1732,7 +1732,7 @@ void CInfoViewer::showSNR()
 					posx = posx + barwidth + 2;
 					sw = g_SignalFont->getRenderWidth(percent);
 
-					g_SignalFont->RenderString (posx, posy, sw, percent, COL_COLORED_EVENTS_INFOBAR );
+					g_SignalFont->RenderString (posx, posy, sw, percent, COL_INFOBAR );
 				}
 
 				//SNR
@@ -1746,7 +1746,7 @@ void CInfoViewer::showSNR()
 					snr_posx = snr_posx + barwidth + 2;
 					sw = g_SignalFont->getRenderWidth(percent);
 					
-					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_COLORED_EVENTS_INFOBAR );
+					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_INFOBAR );
 				}
 			
 			}
@@ -1888,7 +1888,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				// there are later events available - yet no current
 				//refresh box
 				frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, BoxEndX - xStart, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_INFOBAR, 0, true);	// UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, BoxEndX - xStart, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
 
 				// next
 				ChanInfoY += height;
@@ -1898,9 +1898,9 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					// refresh box
 					frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, nextStart, COL_COLORED_EVENTS_INFOBAR );
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(xStart, ChanInfoY + height, duration2TextPos - xStart - 5, info_CurrentNext.next_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + height, duration2Width, nextDuration, COL_COLORED_EVENTS_INFOBAR );
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, nextStart, COL_INFOBAR );
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(xStart, ChanInfoY + height, duration2TextPos - xStart - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + height, duration2Width, nextDuration, COL_INFOBAR );
 
 					last_next_id = info_CurrentNext.next_uniqueKey;
 				}
@@ -1913,8 +1913,8 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					// refresh box
 			  		frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 					
-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, runningStart, COL_INFOBAR);
-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration1TextPos - xStart - 5, info_CurrentNext.current_name, COL_INFOBAR, 0, true);
+			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
+			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration1TextPos - xStart - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
 
 			  		last_curr_id = info_CurrentNext.current_uniqueKey;
 		  		}
@@ -1933,9 +1933,9 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 						// refresh
 						frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + height, COL_INFOBAR_PLUS_0);
 
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, /*100*/EPGTimeWidth, nextStart, COL_COLORED_EVENTS_INFOBAR);
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration2TextPos - xStart - 5, info_CurrentNext.next_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + height, duration2Width, nextDuration, COL_COLORED_EVENTS_INFOBAR );
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + height, EPGTimeWidth, nextStart, COL_INFOBAR);
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (xStart, ChanInfoY + height, duration2TextPos - xStart - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + height, duration2Width, nextDuration, COL_INFOBAR );
 
 						last_next_id = info_CurrentNext.next_uniqueKey;
 					}
