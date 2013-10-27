@@ -587,7 +587,7 @@ void CRemoteControl::processAPIDnames()
 
 		if ( current_PIDs.APIDs[count].is_ac3 )
 		{
-			strncat(current_PIDs.APIDs[count].desc, " (AC3)", 25);
+			strncat(current_PIDs.APIDs[count].desc, " (Dolby Digital)", 25);
 			has_ac3 = true;
 			if((strlen( current_PIDs.APIDs[count].desc ) == 3) && g_settings.audio_DolbyDigital && (ac3_found < 0))
 				ac3_found = count;
@@ -615,7 +615,7 @@ void CRemoteControl::processAPIDnames()
 							{
 								strncpy(current_PIDs.APIDs[j].desc, tags[i].component.c_str(), 25);
 								if (current_PIDs.APIDs[j].is_ac3)
-									strncat(current_PIDs.APIDs[j].desc, " (AC3)", 25);
+									strncat(current_PIDs.APIDs[j].desc, " (Dolby Digital)", 25);
 							}
 							current_PIDs.APIDs[j].component_tag = -1;
 							break;

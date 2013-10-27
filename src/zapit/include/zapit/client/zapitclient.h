@@ -182,11 +182,6 @@ class CZapitClient : public CBasicClient
 			uint32_t    pid;
 			char    desc[25];
 			int     is_ac3;
-			//int     is_aac;
-			//int 	is_eac3;
-			//int	is_aacplus;
-			//int	is_dts;
-			//int	is_dtshd;
 			int     component_tag;
 		};
 		typedef std::vector<responseGetAPIDs> APIDList;
