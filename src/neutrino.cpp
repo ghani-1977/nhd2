@@ -5139,6 +5139,22 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		
 		return true;
 	}
+	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_EXTRA_AUTO_TIMESHIFT)) 
+	{
+		if(g_settings.auto_timeshift)
+			startAutoRecord(true);
+		else
+		{
+			if(autoshift) 
+			{
+				stopAutoRecord();
+				recordingstatus = 0;
+				timeshiftstatus = 0;
+			}
+		}
+		
+		return true;
+	}
 
 	return false;
 }
