@@ -25,6 +25,8 @@
 #include <linux/dvb/video.h>
 #include <driver/framebuffer.h>
 
+#include <frontend_c.h>
+
 // stm_ioctl
 #if defined (__sh__)
 #include <linux/dvb/stm_ioctls.h>
@@ -223,6 +225,7 @@ class cVideo
 	private:
 		int video_fd;
 		int video_num;
+		int video_adapter;
 
 		video_play_state_t playstate;
 
@@ -238,7 +241,7 @@ class cVideo
 
 	public:
 		/* constructor & destructor */
-		cVideo();
+		cVideo(int num = 0);
 		~cVideo(void);
 
 		/* aspect ratio */
@@ -266,7 +269,7 @@ class cVideo
 		int setSlowMotion(int repeat);
 		int setFastForward(int skip);
 
-		bool Open(int num = 0);
+		bool Open(CFrontend * fe = NULL);
 		bool Close();
 		
 		/* set video_system */

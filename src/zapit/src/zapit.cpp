@@ -1373,6 +1373,14 @@ int change_audio_pid(uint8_t index)
 #endif
 				break;
 				
+			case CZapitAudioChannel::LPCM:
+#if defined (__sh__)			  
+				audioDecoder->SetEncoding(AUDIO_ENCODING_LPCM);
+#elif !defined (PLATFORM_COOLSTREAM)
+				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_LPCMDVD);
+#endif
+				break;
+				
 			default:
 				dprintf(DEBUG_NORMAL, "[zapit] change_audio_pid: unknown audio live_channel audiotype 0x%x\n", currentAudioChannel->audioChannelType);
 				break;
@@ -3226,7 +3234,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			{
 				case CZapitAudioChannel::AC3:
 					audioStr = "AC3";
-#ifdef __sh__					
+#if defined (__sh__)
 					audioDecoder->SetEncoding(AUDIO_ENCODING_AC3);
 #elif defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_FMT_DOLBY_DIGITAL);
@@ -3237,7 +3245,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 					
 				case CZapitAudioChannel::MPEG:
 					audioStr = "MPEG2";
-#ifdef __sh__					
+#if defined (__sh__)
 					audioDecoder->SetEncoding(AUDIO_ENCODING_MPEG2);
 #elif defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_FMT_MPEG);
@@ -3248,7 +3256,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 					
 				case CZapitAudioChannel::AAC:
 					audioStr = "AAC";
-#ifdef __sh__					
+#if defined (__sh__)
 					audioDecoder->SetEncoding(AUDIO_ENCODING_AAC);
 #elif defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_FMT_AAC);
@@ -3268,7 +3276,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 					
 				case CZapitAudioChannel::DTS:
 					audioStr = "DTS";
-#ifdef __sh__					
+#if defined (__sh__)
 					audioDecoder->SetEncoding(AUDIO_ENCODING_DTS);
 #elif defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_FMT_DTS);
@@ -3288,6 +3296,15 @@ int startPlayBack(CZapitChannel * thisChannel)
 					audioStr = "EAC3";
 #if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_EAC3);
+#endif
+					break;
+					
+				case CZapitAudioChannel::LPCM:
+					audioStr = "LPCM";
+#if defined (__sh__)			  
+					audioDecoder->SetEncoding(AUDIO_ENCODING_LPCM);
+#elif !defined (PLATFORM_COOLSTREAM)
+					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_LPCMDVD);
 #endif
 					break;
 					
@@ -3314,7 +3331,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			if(thisChannel->type == 0)
 			{
 				videoStr = "MPEG2";
-#ifdef __sh__				
+#if defined (__sh__)
 				videoDecoder->SetEncoding(VIDEO_ENCODING_MPEG2);
 #elif defined (PLATFORM_COOLSTREAM)
 				videoDecoder->SetStreamType(VIDEO_FORMAT_MPEG2);
@@ -3325,7 +3342,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 			else if(thisChannel->type == 1)
 			{
 				videoStr = "H.264/MPEG-4 AVC";
-#ifdef __sh__				
+#if defined (__sh__)
 				videoDecoder->SetEncoding(VIDEO_ENCODING_H264);
 #elif defined (PLATFORM_COOLSTREAM)
 				videoDecoder->SetStreamType(VIDEO_FORMAT_MPEG4);
@@ -3456,12 +3473,12 @@ void openAVDecoder(void)
 	if(videoDecoder)
 	{
 		// open video decoder
-		videoDecoder->Open();
+		videoDecoder->Open(live_fe);
 	
 		// set source
 		videoDecoder->setSource(VIDEO_SOURCE_DEMUX);	
 		
-#ifdef __sh__		
+#if defined (__sh__)
 		// StreamType
 		videoDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
 #endif
@@ -3470,12 +3487,12 @@ void openAVDecoder(void)
 	if(audioDecoder)
 	{
 		// open audiodecoder
-		audioDecoder->Open();
+		audioDecoder->Open(live_fe);
 		
 		// set source
 		audioDecoder->setSource(AUDIO_SOURCE_DEMUX);
 	
-#ifdef __sh__		
+#if defined (__sh__)		
 		// StreamType
 		audioDecoder->SetStreamType(STREAM_TYPE_TRANSPORT);
 #endif	

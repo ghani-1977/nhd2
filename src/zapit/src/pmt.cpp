@@ -78,6 +78,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 	bool isDTSHD = false;
 	bool isEAC3 = false;
 	bool isAACPLUS = false;
+	bool isLPCM = false;
 	
 	bool descramble = false;
 	std::string description = "";
@@ -431,6 +432,16 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 			
 		case 0x80: // user private ... but bluray LPCM
 		case 0xA0: // bluray secondary LPCM
+			if (description == "")
+				description = esInfo->elementary_PID;
+			
+			description += " (LPCM)";
+			isLPCM = true;
+			descramble = true;
+			if(!scan_runs)
+				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::LPCM, description, componentTag);
+			
+			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
 			break;
 			
 		case 0x82: // bluray DTS (dvb user private...)

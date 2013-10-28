@@ -40,13 +40,15 @@ static const char * FILENAME = "[audio_cs.cpp]";
 //ugly most functions are done in proc
 cAudio * audioDecoder = NULL;
 
-cAudio::cAudio()
+cAudio::cAudio(int num)
 {  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 
 	Muted = false;
 	
 	audio_fd = -1;	
+	audio_adapter = 0;
+	audio_num = num;
 	
 #if defined (__sh__)
 	StreamType = STREAM_TYPE_TRANSPORT;
@@ -68,14 +70,15 @@ cAudio::~cAudio(void)
 	Close();
 }
 
-bool cAudio::Open(int num)
-{  
-	audio_num = num; //always 0
+bool cAudio::Open(CFrontend * fe)
+{ 
+	if(fe)
+		audio_adapter = fe->fe_adapter;
 	
 	char devname[32];
 
 	// Open audio device	
-	sprintf(devname, "/dev/dvb/adapter0/audio%d", audio_num);
+	sprintf(devname, "/dev/dvb/adapter%d/audio%d", audio_adapter, audio_num);
 	
 	if(audio_fd > 0)
 	{

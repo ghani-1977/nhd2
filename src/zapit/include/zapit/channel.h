@@ -111,6 +111,7 @@ class CZapitAudioChannel
 	                 DTS,
 			 DTSHD,
 	                 EAC3,
+	                 LPCM,
 	                 UNKNOWN,
 	       };
 	       

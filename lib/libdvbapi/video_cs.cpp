@@ -49,11 +49,13 @@ cVideo * videoDecoder = NULL;
 
 //ugly most functions are done in proc
 /* constructor & destructor */
-cVideo::cVideo()
+cVideo::cVideo(int num)
 { 
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);
 	
 	video_fd = -1;
+	video_adapter = 0;
+	video_num = num;
 
 	playstate = VIDEO_STOPPED;
 	
@@ -72,14 +74,15 @@ cVideo::~cVideo(void)
 	Close();
 }
 
-bool cVideo::Open(int num)
+bool cVideo::Open(CFrontend * fe)
 { 
-	video_num = num; // eventually always 0
+	if(fe)
+		video_adapter = fe->fe_adapter;
 	
 	char devname[32];
 
 	// Open video device
-	sprintf(devname, "/dev/dvb/adapter0/video%d", video_num);
+	sprintf(devname, "/dev/dvb/adapter%d/video%d", video_adapter, video_num);
 	
 	if(video_fd > 0)
 	{
@@ -195,7 +198,7 @@ int cVideo::setAspectRatio(int ratio, int format)
 	// policy
 	fd = open("/proc/stb/video/policy", O_WRONLY);
 	
-#ifdef __sh__	
+#if defined (__sh__)
 	const char* sFormat[]=
 	{
 		"letterbox",
@@ -242,7 +245,7 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 
 	if (n > 0) 
 	{
-#ifdef __sh__	  
+#if defined (__sh__)
 		sscanf((const char*) buffer, "%X", &rate);
 #else
 		sscanf((const char*) buffer, "%d", &rate);
@@ -349,7 +352,7 @@ int cVideo::Flush(void)
 	
 	int ret = -1;
 
-#ifdef __sh__
+#if defined (__sh__)
 	ret = ioctl(video_fd, VIDEO_FLUSH);
 #else
 	ret = ioctl(video_fd, VIDEO_CLEAR_BUFFER);
@@ -395,7 +398,7 @@ int cVideo::setFastForward(int skip)
 /* set video_system */
 int cVideo::SetVideoSystem(int video_system)
 {	
-#ifdef __sh__
+#if defined (__sh__)
 /*
 pal 
 1080i50 
@@ -466,7 +469,7 @@ ntsc
 /* set hdmi space colour */
 int cVideo::SetSpaceColour(int colour_space)
 {
-#ifdef __sh__  
+#if defined (__sh__)
 	const char *aCOLORSPACE[] = {
 		"hdmi_rgb",
 		"hdmi_yuv",
@@ -485,7 +488,7 @@ int cVideo::SetSpaceColour(int colour_space)
 	dprintf(DEBUG_INFO, "%s:%s - mode=%s\n", FILENAME, __FUNCTION__, aCOLORSPACE[colour_space]);	
 
 #if !defined (PLATFORM_GENERIC)
-#ifdef __sh__
+#if defined (__sh__)
 	int fd = open("/proc/stb/avs/0/colorformat", O_RDWR);
 #else
 	int fd = open("/proc/stb/video/hdmi_colorspace", O_RDWR);
@@ -499,7 +502,7 @@ int cVideo::SetSpaceColour(int colour_space)
 	return 0;
 }
 
-#ifdef __sh__
+#if defined (__sh__)
 /* set streamtype */
 /*
  * List of possible container types - used to select demux..  If stream_source is VIDEO_SOURCE_DEMUX
@@ -599,7 +602,7 @@ void cVideo::SetStreamType(VIDEO_FORMAT type)
 /* set sync mode */
 void cVideo::SetSyncMode(int mode)
 {
-#ifdef __sh__  
+#if defined (__sh__)
         int clock = 0;
 	
 	const char *aAVSYNCTYPE[] = {
@@ -767,7 +770,7 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h, int num)
 //void cVideo::SetWideScreen(bool onoff)
 void cVideo::SetWideScreen(int val) // 0 = auto, 1 = auto(4:3_off)
 {
-#ifdef __sh__  
+#if defined (__sh__)
 	const char * wss[] = {
 		"off", 
 		"auto", 
@@ -808,7 +811,7 @@ void cVideo::SetAnalogMode(int mode)
   cvbs 
   yuv 
   */
-#ifdef __sh__  
+#if defined (__sh__)
   	const char *aANALOGMODE[] = {
 		"rgb",
 		"cvbs",
@@ -889,7 +892,7 @@ int cVideo::setSource(video_stream_source_t source)
 }
 
 // set speed normal
-#ifdef __sh__
+#if defined (__sh__)
 int cVideo::setSpeedNormal()
 {
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__);	
@@ -1002,7 +1005,7 @@ void cVideo::setContrast(int Contrast)
 	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Contrast);
 	
 	FILE *fd;
-#ifdef __sh__
+#if defined (__sh__)
 	fd = fopen("/proc/stb/video/plane/psi_contrast", "w");
 #else
 	fd = fopen("/proc/stb/vmpeg/0/pep_contrast", "w");
@@ -1019,7 +1022,7 @@ void cVideo::setSaturation(int Saturation)
 	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Saturation);
 	
 	FILE *fd;
-#ifdef __sh__
+#if defined (__sh__)
 	fd = fopen("/proc/stb/video/plane/psi_saturation", "w");
 #else
 	fd = fopen("/proc/stb/vmpeg/0/pep_saturation", "w");
@@ -1036,7 +1039,7 @@ void cVideo::setBrightness(int Brightness)
 	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Brightness);
 	
 	FILE *fd;
-#ifdef __sh__
+#if defined (__sh__)
 	fd = fopen("/proc/stb/video/plane/psi_brightness", "w");
 #else
 	fd = fopen("/proc/stb/vmpeg/0/pep_brightness", "w");
@@ -1053,7 +1056,7 @@ void cVideo::setTint(int Tint)
 	dprintf(DEBUG_NORMAL, "%s %s (%d)\n", __FILE__, __FUNCTION__, Tint);
 	
 	FILE *fd;
-#ifdef __sh__
+#if defined (__sh__)
 	fd = fopen("/proc/stb/video/plane/psi_tint", "w");
 #else
 	fd = fopen("/proc/stb/vmpeg/0/pep_hue", "w");

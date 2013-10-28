@@ -25,6 +25,8 @@
 #include <config.h>
 #include <string>
 
+#include <frontend_c.h>
+
 // stm_ioctl
 #if defined (__sh__)
 #include <linux/dvb/stm_ioctls.h>
@@ -71,6 +73,7 @@ class cAudio
 	private:
 		int audio_fd;
 		int audio_num;
+		int audio_adapter;
 		
 		// for pcm playback
 #if defined (ENABLE_PCMDECODER)		
@@ -95,7 +98,7 @@ class cAudio
 		
 	public:
 		// construct & destruct
-		cAudio();
+		cAudio(int num = 0);
 		~cAudio(void);
 		
 		// shut up
@@ -123,7 +126,7 @@ class cAudio
 		
 		void SetSyncMode(int Mode);
 
-		bool Open(int num = 0);
+		bool Open(CFrontend * fe = NULL);
 		bool Close();
 
 		// flush	
