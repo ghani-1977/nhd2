@@ -2509,7 +2509,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			{
 				sprintf(fname, "%s.ts", rec_filename);
 				
-				usleep(6000000);
+				usleep(10000000);
 				playback->Open();
 				playback->Start(fname);
 			}

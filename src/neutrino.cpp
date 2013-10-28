@@ -1899,7 +1899,7 @@ int startAutoRecord(bool addTimer)
 	{
 		sprintf(fname, "%s.ts", rec_filename);
 		
-		usleep(6000000);
+		usleep(10000000);
 		playback->Open();
 		playback->Start(fname);
 	}
