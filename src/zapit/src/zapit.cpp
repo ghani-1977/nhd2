@@ -71,6 +71,13 @@
 #include <dvb-ci.h>
 #endif
 
+// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+#include <playback_cs.h>
+extern cPlayback *playback;
+extern char rec_filename[512];				// defined in stream2file.cpp
+#endif
+
 
 /* globals */
 int zapit_ready;
@@ -2455,6 +2462,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 #endif			
 			
 			playbackStopForced = true;
+			
+			// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+			playback->Close();
+#endif
 
 			break;
 	
@@ -2487,6 +2499,21 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			//start cam
 			dprintf(DEBUG_INFO, "%s sending capmt....\n", __FUNCTION__);
 			sendCaPmt(live_channel, live_fe);
+			
+			// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+			playback->Close();
+			char fname[255];
+		
+			if(strlen(rec_filename))
+			{
+				sprintf(fname, "%s.ts", rec_filename);
+				
+				usleep(6000000);
+				playback->Open();
+				playback->Start(fname);
+			}
+#endif			
 			
 			break;
 	

@@ -160,6 +160,13 @@
 #include <cs_api.h>
 #endif
 
+// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+#include <playback_cs.h>
+extern cPlayback *playback;
+extern char rec_filename[512];				// defined in stream2file.cpp
+#endif
+
 
 extern tallchans allchans;				// defined in zapit.cpp
 extern CBouquetManager * g_bouquetManager;		// defined in zapit.cpp
@@ -575,7 +582,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
 
 	// permanent timeshift
-	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );	
+#if defined (USE_OPENGL)
+	g_settings.auto_timeshift = 1;	
+#else
+	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
+#endif	
 
 	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
@@ -1866,9 +1877,33 @@ int startAutoRecord(bool addTimer)
 	{
 		time_t now = time(NULL);
 		CNeutrinoApp::getInstance()->recording_id = g_Timerd->addImmediateRecordTimerEvent(eventinfo.channel_id, now, now+g_settings.record_hours*60*60, eventinfo.epgID, eventinfo.epg_starttime, eventinfo.apids);
-	}
+	}	
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
+	
+	// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+	playback->Close();
+	char fname[255];
+	int cnt = 10 * 1000000;
+
+	while (!strlen(rec_filename)) 
+	{
+		usleep(1000);
+		cnt -= 1000;
+		if (!cnt)
+			break;
+	}
+
+	if(strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+		
+		usleep(6000000);
+		playback->Open();
+		playback->Start(fname);
+	}
+#endif		
 
 	return 0;
 }
@@ -1895,7 +1930,12 @@ void stopAutoRecord()
 		shift_timer = 0;
 	}
 	
-	CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false);	
+	CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false);
+	
+	// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+	playback->Close();
+#endif	
 }
 
 // do gui-record
