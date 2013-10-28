@@ -982,8 +982,8 @@ int CMovieBrowser::exec(const char * path)
 		m_settings.sorting.item =  MB_INFO_RECORDDATE;
 		
 		// reload movie 
-		//dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
-		//fileInfoStale();
+		dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
+		fileInfoStale();
 	}
 	
 	// init frames
@@ -1135,10 +1135,6 @@ int CMovieBrowser::exec(const char * path)
 	m_prevPlaySelection = m_currentPlaySelection;
 
 	saveSettings(&m_settings);	// might be better done in ~CMovieBrowser, but for any reason this does not work if MB is killed by neutrino shutdown	
-	
-	// clear to force reload movie 
-	dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
-	fileInfoStale();
 	
 	return (res);
 }
