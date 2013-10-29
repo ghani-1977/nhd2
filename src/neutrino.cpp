@@ -904,7 +904,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 #endif	
 	
 	// logos_dir
-	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/icons/logos");
+	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/logos");
 	
 	// epgplus logos
 	g_settings.epgplus_show_logo = configfile.getBool("epgplus_show_logo", false);

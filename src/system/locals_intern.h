@@ -173,6 +173,7 @@ const char * locale_real_names[] = {
 	"audioplayer.deleteall",
 	"audioplayer.display_order",
 	"audioplayer.enable_sc_metadata",
+	"audioplayer.enable_sc_id",
 	"audioplayer.fastforward",
 	"audioplayer.follow",
 	"audioplayer.head",

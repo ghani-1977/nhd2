@@ -1023,6 +1023,10 @@ void CNeutrinoApp::InitAudioplayerSettings(CMenuWidget &audioplayerSettings)
 
 	// sc metadata
 	audioplayerSettings.addItem(new CMenuOptionChooser(LOCALE_AUDIOPLAYER_ENABLE_SC_METADATA, &g_settings.audioplayer_enable_sc_metadata, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutAudioPlayer++) ));
+	
+	// sc dev id
+	CStringInputSMS * shoutCastDevID = new CStringInputSMS(LOCALE_AUDIOPLAYER_ENABLE_SC_ID, &g_settings.shoutcast_dev_id);
+	audioplayerSettings.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ENABLE_SC_ID, true, g_settings.shoutcast_dev_id, shoutCastDevID));
 }
 
 // InitPicViewerSettings
@@ -1718,7 +1722,7 @@ void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 	CStringInput* mp_setup_server_port = new CStringInput(LOCALE_STREAMINGMENU_SERVER_PORT, g_settings.streaming_server_port, 6, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
 
 	// cd drive
-	CStringInputSMS* cddriveInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE, g_settings.streaming_server_cddrive);
+	CStringInputSMS * cddriveInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE, g_settings.streaming_server_cddrive);
 	
 	// video rate
 	CStringInput* mp_setup_videorate = new CStringInput(LOCALE_STREAMINGMENU_STREAMING_VIDEORATE, g_settings.streaming_videorate, 5, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
