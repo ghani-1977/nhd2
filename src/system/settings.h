@@ -147,6 +147,9 @@ struct SNeutrinoSettings
 	
 	// for upnp video playing
 	std::string streaming_server_url;
+	
+	// multi select
+	int streaming_allow_multiselect;
 	// END MOVIEPLAYER
 
 	// OSD

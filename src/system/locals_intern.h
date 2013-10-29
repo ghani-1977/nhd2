@@ -1119,6 +1119,7 @@ const char * locale_real_names[] = {
 	"streamingmenu.streaming_vlcver10",
 	"streamingmenu.streaming_vlcver20",
 	"streamingserver.noconnect",
+	"streamingmenu.filebrowser_allow_multiselect",
 	"stringinput.caps",
 	"stringinput.clear",
 	"timer.eventrecord.msg",

@@ -314,10 +314,8 @@ void CMoviePlayerGui::Init(void)
 		filebrowser = new CFileBrowser(Path_local.c_str());
 	else
 		filebrowser = new CFileBrowser();
-
-	filebrowser->Multi_Select = true;
 	
-	filebrowser->Dirs_Selectable = true;
+	filebrowser->Dirs_Selectable = false;
 
 	// moviebrowser
 	moviebrowser = new CMovieBrowser();
@@ -495,6 +493,11 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		frameBuffer->blit();
 #endif
 	}
+	
+	if (g_settings.streaming_allow_multiselect)
+		filebrowser->Multi_Select = true;
+	else 
+		filebrowser->Multi_Select = false;
 	
 	startposition = 0;
 

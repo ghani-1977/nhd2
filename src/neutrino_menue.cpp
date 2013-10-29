@@ -302,13 +302,11 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	// main settings
 	int shortcutMainSettings = 1;
 
-#if !defined USE_OPENGL	
 	// video settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_VIDEO, true, NULL, &videoSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "videosettings", LOCALE_HELPTEXT_VIDEOSETTINGS ));
 
 	//Audio Settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_AUDIO, true, NULL, &audioSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, "audiosettings", LOCALE_HELPTEXT_AUDIOSETTINGS ));
-#endif
 
 	//Parentallock
 	if(g_settings.parentallock_prompt)
@@ -1699,6 +1697,9 @@ void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
 	// save settings
 	streamingSettings.addItem(new CMenuForwarder(LOCALE_MAINSETTINGS_SAVESETTINGSNOW, true, NULL, this, "savesettings", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
 	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+	
+	// multi select
+	streamingSettings.addItem(new CMenuOptionChooser(LOCALE_STREAMINGMENU_FILEBROWSER_ALLOW_MULTISELECT, &g_settings.streaming_allow_multiselect, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true));
 
 	// multiformat Dir
 	streamingSettings.addItem(new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFDIR, true, g_settings.network_nfs_moviedir, this, "moviedir") ); 

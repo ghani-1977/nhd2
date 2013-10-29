@@ -1305,6 +1305,7 @@ streamingmenu.streaming_vlcver08 0.x
 streamingmenu.streaming_vlcver10 1.x
 streamingmenu.streaming_vlcver20 2.x
 streamingserver.noconnect Keine Verbindung zum Streamingserver.\nAufnahme wird abgebrochen.
+streamingmenu.filebrowser_allow_multiselect Mehrfachauswahl im Browser
 stringinput.caps Groß-/Kleinbuchstaben
 stringinput.clear Alles löschen
 subtitles.head Untertitel

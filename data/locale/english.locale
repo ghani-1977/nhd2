@@ -1305,6 +1305,7 @@ streamingmenu.streaming_vlcver08 0.x
 streamingmenu.streaming_vlcver10 1.x
 streamingmenu.streaming_vlcver20 2.x
 streamingserver.noconnect No connection to streamingserver.\nRecording canceled.
+streamingmenu.filebrowser_allow_multiselect Multiselect in Filebrowser
 stringinput.caps caps / no caps
 stringinput.clear clear all
 subtitles.head Subtitles

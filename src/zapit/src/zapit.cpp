@@ -1368,7 +1368,9 @@ int change_audio_pid(uint8_t index)
 				break;
 				
 			case CZapitAudioChannel::EAC3:
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+#if defined (__sh__)
+				audioDecoder->SetEncoding(AUDIO_ENCODING_AC3);
+#elif !defined (PLATFORM_COOLSTREAM)
 				audioDecoder->SetStreamType(AUDIO_STREAMTYPE_EAC3);
 #endif
 				break;
@@ -3294,7 +3296,9 @@ int startPlayBack(CZapitChannel * thisChannel)
 					
 				case CZapitAudioChannel::EAC3:
 					audioStr = "EAC3";
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM)
+#if defined (__sh__)
+					audioDecoder->SetEncoding(AUDIO_ENCODING_AC3);
+#elif !defined (PLATFORM_COOLSTREAM)
 					audioDecoder->SetStreamType(AUDIO_STREAMTYPE_EAC3);
 #endif
 					break;

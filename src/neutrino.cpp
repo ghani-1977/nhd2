@@ -617,6 +617,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.streaming_force_avi_rawaudio = configfile.getInt32( "streaming_force_avi_rawaudio", 0 );
 	g_settings.streaming_resolution = configfile.getInt32( "streaming_resolution", 0 );
 	g_settings.streaming_vlc10 = configfile.getInt32( "streaming_vlc10", 0);
+	
+	// multi select
+	g_settings.streaming_allow_multiselect = configfile.getBool("streaming_allow_multiselect", false);
 	// end movieplayer
 
 	// OSD
@@ -1093,6 +1096,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32 ( "streaming_transcode_video_codec", g_settings.streaming_transcode_video_codec );
 	configfile.setInt32 ( "streaming_resolution", g_settings.streaming_resolution );
 	configfile.setInt32 ( "streaming_vlc10", g_settings.streaming_vlc10 );
+	
+	// multi select
+	configfile.setBool ("streaming_allow_multiselect", g_settings.streaming_allow_multiselect);
 	// END MOVIEPLAYER
 
 	// OSD
