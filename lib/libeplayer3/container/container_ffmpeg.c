@@ -206,6 +206,9 @@ static char *Codec2Encoding(enum CodecID id, int* version)
 		case CODEC_ID_DTS:
 			return "A_DTS";
 			
+		case AV_CODEC_ID_EAC3:
+			return "A_EAC3";
+			
 		case CODEC_ID_WMAV1:
 		case CODEC_ID_WMAV2:
 		case 86056: //CODEC_ID_WMAPRO

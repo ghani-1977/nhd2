@@ -264,11 +264,11 @@ void GLThreadObj::render()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	// bltDisplayBuffer(); /* decoded video stream */
 	bltOSDBuffer(); /* OSD */
 
 	glBindTexture(GL_TEXTURE_2D, mState.osdtex);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	// cube test
 	if(mState.go3d)
 	{
@@ -302,7 +302,6 @@ void GLThreadObj::render()
 	}
 
 	/* simply limit to 30 Hz, if anyone wants to do this properly, feel free */
-	// boost::thread::sleep(boost::get_system_time() + boost::posix_time::milliseconds(34));
 	usleep(34000);
 	glutPostRedisplay();
 }
@@ -398,17 +397,13 @@ void GLThreadObj::drawSquare(float size)
 
 void GLThreadObj::initDone()
 {
-	// mMutex.lock();
 	mInitDone = true;
-	// mInitCond.notify_all();
 }
 
 void GLThreadObj::waitInit()
 {
-	// mMutex.lock();
 	while(!mInitDone)
 	{
-		// mInitCond.wait(lock);
 		usleep(1);
 	}
 }
@@ -425,27 +420,6 @@ void GLThreadObj::bltOSDBuffer()
 
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
-
-#if 0
-void GLThreadObj::bltDisplayBuffer()
-{
-	if(mpSWDecoder)
-	{
-		SWDecoder::pBuffer_t displaybuffer = mpSWDecoder->acquireDisplayBuffer();
-		if(displaybuffer != 0)
-		{
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mState.displaypbo);
-			glBufferData(GL_PIXEL_UNPACK_BUFFER, displaybuffer->size(), &(*displaybuffer)[0], GL_STREAM_DRAW_ARB);
-
-			glBindTexture(GL_TEXTURE_2D, mState.displaytex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displaybuffer->width(), displaybuffer->height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
-
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-			mpSWDecoder->returnDisplayBuffer(displaybuffer);
-		}
-	}
-}
-#endif
 
 void GLThreadObj::clear()
 {

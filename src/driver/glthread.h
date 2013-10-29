@@ -38,9 +38,6 @@ class GLThreadObj : public OpenThreads::Thread
 public:
 	GLThreadObj(int x, int y);
 	~GLThreadObj();
-	// GLThreadObj(GLThreadObj &rhs);
-	// GLThreadObj const &operator= (GLThreadObj const &rhs);
-	// void operator()();
 
 	void run();
 	void Start() { OpenThreads::Thread::start(); }
@@ -60,8 +57,6 @@ private:
 	bool mReInit;			/* setup things for GL */
 	bool mShutDown;			/* if set main loop is left */
 	bool mInitDone;			/* condition predicate */
-	// OpenThreads::Condition mInitCond;	/* condition variable for init */
-	// mutable OpenThreads::Mutex mMutex;	/* lock our data */
 
 	std::vector<unsigned char> mOSDBuffer; /* silly bounce buffer */
 
@@ -89,15 +84,11 @@ private:
 		int height;
 		GLuint osdtex;		/* holds the OSD texture */
 		GLuint pbo;		/* PBO we use for transfer to texture */
-		// GLuint displaytex;	/* holds the display texture */
-		// GLuint displaypbo;
+		GLuint displaytex;	/* holds the display texture */
+		GLuint displaypbo;
 		int go3d;
 	} mState;
 
-	// boost::shared_ptr<SWDecoder>mpSWDecoder; /* our Decoder-Object that runs in its own thread */
-	// boost::thread mSWDecoderThread; /* thread running the decoder */
-
 	void bltOSDBuffer();
-	// void bltDisplayBuffer();
 };
 #endif

@@ -46,7 +46,7 @@
 #include <global.h>
 #include <system/debug.h>
 
-// generic
+// opengl
 #ifdef USE_OPENGL
 #include <GL/glew.h>
 #include "rcinput.h"
@@ -124,7 +124,7 @@ void CFrameBuffer::init(const char * const fbDevice)
 {
 	int tr = 0xFF;
 	
-#ifdef USE_OPENGL
+#if defined (USE_OPENGL)
 	fd = -1;
 	if(!mpGLThreadObj)
 	{
@@ -142,6 +142,7 @@ void CFrameBuffer::init(const char * const fbDevice)
 		screeninfo.red.offset = 16;
 		screeninfo.transp.length = 8;
 		screeninfo.transp.offset = 24;
+		
 		mpGLThreadObj = new GLThreadObj(screeninfo.xres, screeninfo.yres);
 
 		if(mpGLThreadObj)
@@ -276,7 +277,7 @@ CFrameBuffer::~CFrameBuffer()
 		virtual_fb = NULL;
 	}
 	
-#ifdef USE_OPENGL
+#if defined (USE_OPENGL)
 	active = false; /* keep people/infoclocks from accessing */
 	mpGLThreadObj->shutDown();
 	mpGLThreadObj->join();
@@ -345,7 +346,7 @@ void CFrameBuffer::setActive(bool enable)
 {
 	active = enable;
 		
-#if !defined __sh__ && !defined USE_OPENGL
+#if !defined (__sh__) && !defined (USE_OPENGL)
 	if(enable)
 	{
 		// set manual blit when fb is activ
@@ -452,7 +453,7 @@ int CFrameBuffer::setMode()
 	
 	dprintf(DEBUG_NORMAL, "CFrameBuffer::setMode: FB: %dx%dx%d\n", DEFAULT_XRES, DEFAULT_YRES, DEFAULT_BPP);
 
-#if defined __sh__ || defined USE_OPENGL
+#if defined (__sh__) || defined (USE_OPENGL)
 	xRes = DEFAULT_XRES;
 	yRes = DEFAULT_YRES;
 	bpp = DEFAULT_BPP;
@@ -464,7 +465,7 @@ int CFrameBuffer::setMode()
 	// clear frameBuffer
 	paintBackground();
 	
-#if !defined USE_OPENGL
+#if !defined (USE_OPENGL)
 	blit();
 #endif
 
@@ -1878,7 +1879,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	return fbbuff;
 }
 
-#if !defined USE_OPENGL
+#if !defined (USE_OPENGL)
 
 #ifndef FBIO_WAITFORVSYNC
 #define FBIO_WAITFORVSYNC _IOW('F', 0x20, __u32)

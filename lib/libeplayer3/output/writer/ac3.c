@@ -139,7 +139,7 @@ static WriterCaps_t caps_ac3 = {
 	"ac3",
 	eAudio,
 	"A_AC3",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_AC3
 #else
 	AUDIO_STREAMTYPE_AC3
@@ -151,5 +151,23 @@ struct Writer_s WriterAudioAC3 = {
 	&writeData,
 	NULL,
 	&caps_ac3,
+};
+
+static WriterCaps_t caps_eac3 = {
+	"eac3",
+	eAudio,
+	"A_EAC3",
+#if defined (__sh__)	
+	AUDIO_ENCODING_AC3
+#else
+	AUDIO_STREAMTYPE_EAC3
+#endif
+};
+
+struct Writer_s WriterAudioEAC3 = {
+	&reset,
+	&writeData,
+	NULL,
+	&caps_eac3
 };
 

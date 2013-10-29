@@ -80,16 +80,19 @@ typedef struct Writer_s {
 	WriterCaps_t *caps;
 } Writer_t;
 
+// audio
 extern Writer_t WriterAudioIPCM;
 extern Writer_t WriterAudioMP3;
 extern Writer_t WriterAudioMPEGL3;
 extern Writer_t WriterAudioAC3;
+extern Writer_t WriterAudioEAC3;
 extern Writer_t WriterAudioAAC;
 extern Writer_t WriterAudioDTS;
 extern Writer_t WriterAudioWMA;
 extern Writer_t WriterAudioFLAC;
 extern Writer_t WriterAudioVORBIS;
 
+// video
 extern Writer_t WriterVideoMPEG2;
 extern Writer_t WriterVideoMPEGH264;
 extern Writer_t WriterVideoH264;
@@ -107,6 +110,7 @@ static Writer_t * AvailableWriter[] = {
 	&WriterAudioMP3,
 	&WriterAudioMPEGL3,
 	&WriterAudioAC3,
+	&WriterAudioEAC3,
 	&WriterAudioAAC,
 	&WriterAudioDTS,
 	&WriterAudioWMA,
