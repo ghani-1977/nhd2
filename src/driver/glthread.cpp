@@ -36,7 +36,7 @@
 #include "glthread.h"
 
 
-static GLThreadObj *gThiz = 0; /* GLUT does not allow for an arbitrary argument to the render func */
+/*static*/ GLThreadObj *gThiz = 0; /* GLUT does not allow for an arbitrary argument to the render func */
 
 GLThreadObj::GLThreadObj(int x, int y) : mX(x), mY(y), mReInit(true), mShutDown(false), mInitDone(false)
 {

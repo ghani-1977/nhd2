@@ -642,12 +642,8 @@ and add to neutrino playlist
 	const std::string sc_get_genre = "/legacy/stationsearch?k=" + g_settings.shoutcast_dev_id + "&search=";
 	const std::string sc_tune_in_base = "http://yp.shoutcast.com";
 
-//	printf("readDir_sc %s\n",dirname.c_str());
 	std::string answer="";
-//	char *dir_escaped = curl_escape(dirname.c_str(), 0);
 	std::string url = m_baseurl;
-//	url += dir_escaped;
-//	curl_free(dir_escaped);
 	url += dirname;
 	std::cout << "[FileBrowser] SC URL: " << url << std::endl;
 	CURL *curl_handle;
@@ -672,8 +668,6 @@ and add to neutrino playlist
 	httpres = curl_easy_perform(curl_handle);
 	/* cleanup curl stuff */
 	curl_easy_cleanup(curl_handle);
-
-	//std::cout << "Answer:" << std::endl << "----------------" << std::endl << answer << std::endl;
 	
 	if (!answer.empty() && httpres == 0)
 	{
@@ -711,11 +705,7 @@ and add to neutrino playlist
 					CFile file;
 					file.Mode = S_IFDIR + 0777 ;
 					file.Name = " Top500"; // use space to have it at the beginning of the list
-					//test
 					file.Url = sc_get_top500;
-					//file.Url = "/sbin/newxml.phtml?genre=Top500";
-					//test
-					//file.Url = SC_GET_TOP500;
 					file.Size = 0;
 					file.Time = 0;
 					flist->push_back(file);
@@ -725,15 +715,12 @@ and add to neutrino playlist
 					CFile file2;
 					file2.Mode = S_IFDIR + 0777 ;
 					file2.Name = "..";
-					//file2.Url = "/sbin/newxml.phtml";
-					//test
 					file2.Url = sc_init_dir;
-					//test
-					//file2.Url = SC_INIT_DIR;
 					file2.Size = 0;
 					file2.Time = 0;
 					flist->push_back(file2);
 				}
+				
 				while (element) 
 				{
 					CFile file;
@@ -742,8 +729,6 @@ and add to neutrino playlist
 						file.Mode = S_IFDIR + 0777 ;
 						file.Name = xmlGetAttribute(element, (char *) "name");
 						file.Url = "/sbin/newxml.phtml?genre=" + file.Name;
-						//test
-						//file.Url = (std::string)SC_GET_GENRE + file.Name;
 						file.Size = 0;
 						file.Time = 0;
 						flist->push_back(file);
@@ -766,11 +751,8 @@ and add to neutrino playlist
 								{
 									file.Mode = S_IFREG + 0777 ;
 									file.Name = xmlGetAttribute(element, (char *) "name");
-									//file.Url = base + tunein_base + (std::string)"?id=" + xmlGetAttribute(element, (char *) "id");
-									//test
+									
 									file.Url = sc_tune_in_base + tunein_base + (std::string)"?id=" + xmlGetAttribute(element, "id") + (std::string)"&k=" + g_settings.shoutcast_dev_id;
-									//test
-									//file.Url = (std::string)SC_TUNE_IN_BASE + tunein_base + (std::string)"?id=" + xmlGetAttribute(element, "id") + (std::string)"&k=" + SC_DEV_ID;
 									
 									//printf("adding %s (%s)\n", file.Name.c_str(), file.Url.c_str());
 									

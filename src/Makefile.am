@@ -105,7 +105,7 @@ endif
 
 if USE_OPENGL
 neutrino_LDADD += \
-	-lglut -lGL -lGLU -lGLEW -lOpenThreads
+	-lglut -lGL -lGLU -lGLEW -lOpenThreads -lgstinterfaces-0.10 
 endif
 
 
