@@ -2807,9 +2807,6 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 						if(recordingstatus) 
 						{
 							timeshiftstatus = recordingstatus;
-							
-							audioDecoder->Stop();
-							videoDecoder->Stop(false); // dont blank 
 						} 
 						else
 						{
@@ -2819,20 +2816,21 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 							timeshiftstatus = recordingstatus;
 
 							doGuiRecord(timeshiftDir, true);
-							
-							// jump in movieplayer mode
-							if(timeshiftstatus) 
-							{
-								//g_Zapit->lockPlayBack();
-								audioDecoder->Stop();
-								videoDecoder->Stop(false); // dont blank
-							}
 						}
+						
+						// freeze audio/video
+						audioDecoder->Stop();
+						videoDecoder->Stop(false); // dont blank
 					}
 			   	}
 			}
-			else if( (msg == (neutrino_msg_t)g_settings.mpkey_play) && timeshiftstatus) // play timeshift
+			else if( (msg == (neutrino_msg_t)g_settings.mpkey_play || msg == (neutrino_msg_t)g_settings.mpkey_rewind) && timeshiftstatus) // play timeshift
 			{
+				if(msg == CRCInput::RC_rewind)
+					tmode = "rtimeshift"; // rewind
+					
+				dprintf(DEBUG_NORMAL, "[neutrino] %s\n", tmode.c_str());
+					
 				if(g_RemoteControl->is_video_started) 
 				{
 					moviePlayerGui->exec(NULL, tmode);
@@ -4398,6 +4396,11 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 
 		lastMode = mode;
 		mode = mode_scart;
+		
+#if !defined (PLATFORM_COOLSTREAM)	  
+		if(videoDecoder)
+			videoDecoder->SetInput(INPUT_SCART);
+#endif		
 	} 
 	else 
 	{
@@ -4469,8 +4472,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		// show time in vfd
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
 		
-		//if(videoDecoder)
-		//	videoDecoder->SetInput(INPUT_ENCODER);
+		if(videoDecoder)
+			videoDecoder->SetInput(INPUT_ENCODER);
 
 		// zapit standby
 		if(!recordingstatus && !timeshiftstatus)
@@ -4545,8 +4548,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 			g_Zapit->startPlayBack();
 
 		// video wake up
-		//if(videoDecoder)
-		//	videoDecoder->SetInput(INPUT_SCART);
+		if(videoDecoder)
+			videoDecoder->SetInput(INPUT_SCART);
 
 		g_Sectionsd->setPauseScanning(false);
 		g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );
@@ -4607,10 +4610,8 @@ void CNeutrinoApp::radioMode( bool rezap)
 #endif		
 	}
 	else if( mode == mode_standby ) 
-	{
-#if 1	  
+	{	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-#endif
 
 #if !defined (PLATFORM_COOLSTREAM)
 		if(videoDecoder)

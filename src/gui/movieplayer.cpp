@@ -177,7 +177,8 @@ bool sectionsd_getEPGidShort(event_id_t epgID, CShortEPGData * epgdata);
 enum {
 	NO_TIMESHIFT,
 	TIMESHIFT,
-	P_TIMESHIFT
+	P_TIMESHIFT,	//paused timeshift
+	R_TIMESHIFT	// rewind timeshift
 };
 
 extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
@@ -573,6 +574,11 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if (actionKey == "ptimeshift") 
 	{
 		timeshift = P_TIMESHIFT;
+		PlayFile();
+	} 
+	else if (actionKey == "rtimeshift") 
+	{
+		timeshift = R_TIMESHIFT;
 		PlayFile();
 	} 
 	else if ( actionKey == "vlcplayback" ) 
@@ -2064,19 +2070,57 @@ void CMoviePlayerGui::PlayFile(void)
 				CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, true);
 				
 				// PlayBack SetStartPosition for timeshift
-				if(timeshift)
+				if(timeshift) 
 				{
-					startposition = 0;
+					startposition = -1;
+					int i;
+					int towait = (timeshift == TIMESHIFT) ? TIMESHIFT_SECONDS + 1 : TIMESHIFT_SECONDS;
 					
-					//wait
-					usleep(TIMESHIFT_SECONDS*1000);
+					for(i = 0; i < 500; i++) 
+					{
+#if defined (PLATFORM_COOLSTREAM)					  
+						playback->GetPosition(position, duration);
+#else						
+						playback->GetPosition((int64_t &)position, (int64_t &)duration);
+#endif						
+						startposition = (duration - position);
 
+						printf("CMoviePlayerGui::PlayFile: waiting for data, position %d duration %d (%d)\n", position, duration, towait);
+						
+						if(startposition > towait*1000)
+							break;
+						
+						usleep(TIMESHIFT_SECONDS*1000);
+					}
+					
+					if(timeshift == TIMESHIFT)
+					{
+						startposition = 0;
+						
+						//wait
+						usleep(TIMESHIFT_SECONDS*1000);
+					}
+					else if(timeshift == R_TIMESHIFT) 
+					{
+						startposition = duration;	
+					}
+					else if(timeshift == P_TIMESHIFT)
+					{
+						if(duration > 1000000)
+							startposition = duration - TIMESHIFT_SECONDS*1000;
+						else
+							startposition = 0;
+					}
+					
 					dprintf(DEBUG_NORMAL, "[movieplayer] Timeshift %d, position %d, seek to %d seconds\n", timeshift, position, startposition/1000);
 				}
 				
 				// set position 
 				if( !is_file_player && startposition >= 0)//FIXME no jump for file at start yet
 					playback->SetPosition((int64_t)startposition);
+				
+				if(timeshift == R_TIMESHIFT) 
+					playback->SetSpeed(-1);
 				
 #if defined (PLATFORM_COOLSTREAM)
 				playback->GetPosition(position, duration);
@@ -2085,15 +2129,7 @@ void CMoviePlayerGui::PlayFile(void)
 #endif	
 				
 				// show movieinfoviewer at start
-				//if(timeshift)
-				//{
-				//	g_InfoViewer->showTitle(CNeutrinoApp::getInstance()->channelList->getActiveChannelNumber(), CNeutrinoApp::getInstance()->channelList->getActiveChannelName(), CNeutrinoApp::getInstance()->channelList->getActiveSatellitePosition(), CNeutrinoApp::getInstance()->channelList->getActiveChannel_ChannelID());	// UTF-8
-				//}
-				//else
-				//{
-					//g_InfoViewer->showMovieInfo(false);
-					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
-				//}
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
 			}
 		}
 		
@@ -2167,8 +2203,6 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false );
 			}
-			//else if(timeshift == P_TIMESHIFT) //ptimeshift
-			//	g_RCInput->postMsg((neutrino_msg_t) CRCInput::RC_stop, 0); // this will send msg yes/nos to stop timeshift
 
 			if (!was_file)
 				exit = true;
