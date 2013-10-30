@@ -149,7 +149,7 @@ int LinuxDvbOpen(Context_t  *context, char * type)
 			linuxdvb_err("AUDIO_SELECT_SOURCE: %s\n", strerror(errno));
 		}
 
-#ifdef __sh__
+#if defined (__sh__)
 		if (ioctl( audiofd, AUDIO_SET_STREAMTYPE, (void*)STREAM_TYPE_PROGRAM) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
@@ -189,7 +189,7 @@ int LinuxDvbOpen(Context_t  *context, char * type)
 			linuxdvb_err("VIDEO_SELECT_SOURCE: %s\n", strerror(errno));
 		}
 		
-#ifdef __sh__
+#if defined (__sh__)
 		if (ioctl( videofd, VIDEO_SET_STREAMTYPE, (void*)STREAM_TYPE_PROGRAM) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
@@ -262,7 +262,7 @@ int LinuxDvbPlay(Context_t  *context, char * type)
 		{
 			linuxdvb_err("cannot found writer for encoding %s using default\n", Encoding);
 			
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl( audiofd, AUDIO_SET_ENCODING, (void*)AUDIO_ENCODING_MP3) == -1)
 #else
 			if (ioctl( audiofd, AUDIO_SET_BYPASS_MODE, (AUDIO_FORMAT)AUDIO_STREAMTYPE_MPEG) == -1)
@@ -277,7 +277,7 @@ int LinuxDvbPlay(Context_t  *context, char * type)
 		{
 			linuxdvb_printf(20, "found writer %s for encoding %s\n", writer->caps->name, Encoding);
 			
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl( audiofd, AUDIO_SET_ENCODING, (void*) writer->caps->dvbEncoding) == -1)
 #else
 			if (ioctl( audiofd, AUDIO_SET_BYPASS_MODE, (AUDIO_FORMAT) writer->caps->dvbEncoding) == -1)
@@ -310,7 +310,7 @@ int LinuxDvbPlay(Context_t  *context, char * type)
 		if (writer == NULL)
 		{
 			linuxdvb_err("cannot found writer for encoding %s using default\n", Encoding);
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl( videofd, VIDEO_SET_ENCODING, (void*) VIDEO_ENCODING_AUTO) == -1)
 #else
 			if (ioctl( videofd, VIDEO_SET_STREAMTYPE, (VIDEO_FORMAT) VIDEO_STREAMTYPE_MPEG2 ) == -1)
@@ -325,7 +325,7 @@ int LinuxDvbPlay(Context_t  *context, char * type)
 		{
 			linuxdvb_printf(20, "found writer %s for encoding %s\n", writer->caps->name, Encoding);
 			
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl( videofd, VIDEO_SET_ENCODING, (void*) writer->caps->dvbEncoding) == -1)
 #else
 			if (ioctl( videofd, VIDEO_SET_STREAMTYPE, (VIDEO_FORMAT) writer->caps->dvbEncoding) == -1)
@@ -369,7 +369,7 @@ int LinuxDvbStop(Context_t  *context, char * type)
 		}
 
 		/* set back to normal speed (end trickmodes) */
-#ifdef __sh__		
+#if defined (__sh__)
 		if (ioctl(audiofd, AUDIO_SET_SPEED, DVB_SPEED_NORMAL_PLAY) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
@@ -394,7 +394,7 @@ int LinuxDvbStop(Context_t  *context, char * type)
 		}
 
 		/* set back to normal speed (end trickmodes) */
-#ifdef __sh__		
+#if defined (__sh__)
 		if (ioctl(videofd, VIDEO_SET_SPEED, DVB_SPEED_NORMAL_PLAY) == -1)
 		{
 			linuxdvb_err("ioctl failed with errno %d\n", errno);
@@ -487,7 +487,7 @@ int LinuxDvbReverseDiscontinuity(Context_t  *context, int* surplus)
 {
 	int ret = cERR_LINUXDVB_NO_ERROR;
 	
-#ifdef __sh__	
+#if defined (__sh__)
 	int dis_type = VIDEO_DISCONTINUITY_CONTINUOUS_REVERSE | *surplus;
     
 	linuxdvb_printf(50, "\n");
@@ -515,14 +515,14 @@ int LinuxDvbAudioMute(Context_t  *context, char *flag)
 		if(*flag == '1')
 		{
 			//AUDIO_SET_MUTE has no effect with new player
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl(audiofd, AUDIO_STOP, NULL) == -1)
 #else
 			if (ioctl(audiofd, AUDIO_SET_MUTE, 1) == -1)
 #endif
 			{
 				linuxdvb_err("ioctl failed with errno %d\n", errno);
-#ifdef __sh__				
+#if defined (__sh__)
 				linuxdvb_err("AUDIO_STOP: %s\n", strerror(errno));
 #else
 				linuxdvb_err("AUDIO_SET_MUTE: %s\n", strerror(errno));
@@ -533,14 +533,14 @@ int LinuxDvbAudioMute(Context_t  *context, char *flag)
 		else
 		{
 			//AUDIO_SET_MUTE has no effect with new player
-#ifdef __sh__			
+#if defined (__sh__)
 			if (ioctl(audiofd, AUDIO_PLAY, NULL) == -1)
 #else
 			if (ioctl(audiofd, AUDIO_SET_MUTE, 0) == -1)
 #endif
 			{
 				linuxdvb_err("ioctl failed with errno %d\n", errno);
-#ifdef __sh__				
+#if defined (__sh__)
 				linuxdvb_err("AUDIO_PLAY: %s\n", strerror(errno));
 #else
 				linuxdvb_err("AUDIO_SET_MUTE: %s\n", strerror(errno));
@@ -569,7 +569,7 @@ int LinuxDvbFlush(Context_t  *context, char * type)
 
 		if (video && videofd != -1) 
 		{
-#ifdef __sh__		  
+#if defined (__sh__)
 			if (ioctl(videofd, VIDEO_FLUSH ,NULL) == -1)
 #else
 			if (ioctl(videofd, VIDEO_CLEAR_BUFFER,NULL) == -1)
@@ -588,7 +588,7 @@ int LinuxDvbFlush(Context_t  *context, char * type)
 
 		if (audio && audiofd != -1) 
 		{
-#ifdef __sh__		  
+#if defined (__sh__)
 			if (ioctl(audiofd, AUDIO_FLUSH ,NULL) == -1)
 #else
 			if (ioctl(audiofd, AUDIO_CLEAR_BUFFER ,NULL) == -1)
@@ -662,7 +662,7 @@ int LinuxDvbFastForward(Context_t  *context, char * type)
 
 	linuxdvb_printf(10, "v%d a%d\n", video, audio);
 
-#ifdef __sh__
+#if defined (__sh__)
 	if (audio && audiofd != -1) 
 	{
 		getLinuxDVBMutex(FILENAME, __FUNCTION__,__LINE__);
@@ -909,7 +909,7 @@ int LinuxDvbGetFrameCount(Context_t  *context, unsigned long long int* frameCoun
 {
 	int ret = cERR_LINUXDVB_NO_ERROR;
 	
-#ifdef __sh__	
+#if defined (__sh__)
 	dvb_play_info_t playInfo;  //???
 
 	linuxdvb_printf(50, "\n");
@@ -991,7 +991,7 @@ int LinuxDvbSwitch(Context_t  *context, char * type)
 				{
 					linuxdvb_err("cannot found writer for encoding %s using default\n", Encoding);
 					
-#ifdef __sh__					
+#if defined (__sh__)
 					if (ioctl( audiofd, AUDIO_SET_ENCODING, (void*) AUDIO_ENCODING_MP3) == -1)
 #else
 					if (ioctl( audiofd, AUDIO_SET_BYPASS_MODE, (AUDIO_FORMAT) AUDIO_STREAMTYPE_MPEG) == -1)
@@ -1005,7 +1005,7 @@ int LinuxDvbSwitch(Context_t  *context, char * type)
 				{
 					linuxdvb_printf(10, "found writer %s for encoding %s\n", writer->caps->name, Encoding);
 					
-#ifdef __sh__					
+#if defined (__sh__)
 					if (ioctl( audiofd, AUDIO_SET_ENCODING, (void*) writer->caps->dvbEncoding) == -1)
 #else
 					if (ioctl( audiofd, AUDIO_SET_BYPASS_MODE, (AUDIO_FORMAT) writer->caps->dvbEncoding) == -1)
@@ -1054,7 +1054,7 @@ int LinuxDvbSwitch(Context_t  *context, char * type)
 				{
 					linuxdvb_err("cannot found writer for encoding %s using default\n", Encoding);
 					
-#ifdef __sh__					
+#if defined (__sh__)
 					if (ioctl( videofd, VIDEO_SET_ENCODING, (void*) VIDEO_ENCODING_AUTO) == -1)
 #else
 					if (ioctl( videofd, VIDEO_SET_STREAMTYPE, (VIDEO_FORMAT)VIDEO_STREAMTYPE_MPEG2 ) == -1)
@@ -1068,7 +1068,7 @@ int LinuxDvbSwitch(Context_t  *context, char * type)
 				{
 					linuxdvb_printf(10, "found writer %s for encoding %s\n", writer->caps->name, Encoding);
 					
-#ifdef __sh__					
+#if defined (__sh__)
 					if (ioctl( videofd, VIDEO_SET_ENCODING, (void*) writer->caps->dvbEncoding) == -1)
 #else
 					if (ioctl( videofd, VIDEO_SET_STREAMTYPE, (VIDEO_FORMAT) writer->caps->dvbEncoding) == -1)

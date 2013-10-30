@@ -285,7 +285,7 @@ static WriterCaps_t caps = {
 	"vc1",
 	eVideo,
 	"V_VC1",
-#ifdef __sh__    
+#if defined (__sh__)
 	VIDEO_ENCODING_VC1
 #else
 	VIDEO_STREAMTYPE_VC1_SM

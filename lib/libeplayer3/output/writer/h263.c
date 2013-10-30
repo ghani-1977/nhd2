@@ -153,7 +153,7 @@ static WriterCaps_t caps_h263 = {
 	"h263",
 	eVideo,
 	"V_H263",
-#ifdef __sh__    
+#if defined (__sh__)
 	VIDEO_ENCODING_H263
 #else
 	VIDEO_STREAMTYPE_MPEG4_H263

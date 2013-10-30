@@ -326,7 +326,7 @@ static WriterCaps_t caps_pcm = {
 	"pcm",
 	eAudio,
 	"A_PCM",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_LPCMA
 #else
 	AUDIO_STREAMTYPE_LPCMDVD
@@ -344,7 +344,7 @@ static WriterCaps_t caps_ipcm = {
 	"ipcm",
 	eAudio,
 	"A_IPCM",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_LPCMA
 #else
 	AUDIO_STREAMTYPE_LPCMDVD

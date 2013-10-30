@@ -157,7 +157,7 @@ static WriterCaps_t caps = {
 	"dts",
 	eAudio,
 	"A_DTS",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_DTS
 #else
 	AUDIO_STREAMTYPE_DTS

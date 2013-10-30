@@ -279,7 +279,7 @@ static WriterCaps_t caps = {
 	"aac",
 	eAudio,
 	"A_AAC",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_AAC
 #else
 	AUDIO_STREAMTYPE_AAC

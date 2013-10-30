@@ -141,7 +141,7 @@ static WriterCaps_t caps_mp3 = {
 	"mp3",
 	eAudio,
 	"A_MP3",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_MP3
 #else
 	AUDIO_STREAMTYPE_MP3
@@ -159,7 +159,7 @@ static WriterCaps_t caps_mpegl3 = {
 	"mpeg/l3",
 	eAudio,
 	"A_MPEG/L3",
-#ifdef __sh__    
+#if defined (__sh__)
 	AUDIO_ENCODING_MPEG2
 #else
 	AUDIO_STREAMTYPE_MPEG

@@ -178,7 +178,7 @@ static WriterCaps_t mpeg4p2_caps = {
 	"mscomp",
 	eVideo,
 	"V_MSCOMP",
-#ifdef __sh__
+#if defined (__sh__)
 	VIDEO_ENCODING_MPEG4P2
 #else
 	VIDEO_STREAMTYPE_DIVX311
@@ -196,7 +196,7 @@ static WriterCaps_t fourcc_caps = {
     "fourcc",
     eVideo,
     "V_MS/VFW/FOURCC",
-#ifdef __sh__    
+#if defined (__sh__)
     VIDEO_ENCODING_MPEG4P2,
 #else
     VIDEO_STREAMTYPE_DIVX311,
@@ -214,7 +214,7 @@ static WriterCaps_t divx_caps = {
     "divx",
     eVideo,
     "V_MKV/XVID",
-#ifdef __sh__    
+#if defined (__sh__)
     VIDEO_ENCODING_MPEG4P2,
 #else
     VIDEO_STREAMTYPE_DIVX311,

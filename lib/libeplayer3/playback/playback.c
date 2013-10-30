@@ -479,7 +479,6 @@ static int PlaybackContinue(Context_t  *context)
 		(context->playback->isPaused || context->playback->isForwarding || context->playback->BackWard || context->playback->SlowMotion)) 
 	{
 		//FIXME:
-		//context->output->Command(context, OUTPUT_AVSYNC, NULL);
 		PlaybackPause(context);
 		
 		if(context->playback->SlowMotion)

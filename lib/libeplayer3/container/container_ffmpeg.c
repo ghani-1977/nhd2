@@ -205,9 +205,11 @@ static char *Codec2Encoding(enum CodecID id, int* version)
 			
 		case CODEC_ID_DTS:
 			return "A_DTS";
-			
+		
+#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)			
 		case AV_CODEC_ID_EAC3:
 			return "A_EAC3";
+#endif			
 			
 		case CODEC_ID_WMAV1:
 		case CODEC_ID_WMAV2:

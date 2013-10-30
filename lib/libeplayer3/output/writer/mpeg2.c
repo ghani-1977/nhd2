@@ -154,7 +154,7 @@ static WriterCaps_t caps = {
 	"mpeg2",
 	eVideo,
 	"V_MPEG2",
-#ifdef __sh__    
+#if defined (__sh__)
 	VIDEO_ENCODING_AUTO,
 #else
 	VIDEO_STREAMTYPE_MPEG2,
@@ -172,7 +172,7 @@ static WriterCaps_t h264_caps = {
 	"mpges_h264",
 	eVideo,
 	"V_MPEG2/H264",
-#ifdef __sh__    
+#if defined (__sh__)
 	VIDEO_ENCODING_H264
 #else
 	VIDEO_STREAMTYPE_MPEG4_H264
