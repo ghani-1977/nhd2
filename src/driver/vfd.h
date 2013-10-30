@@ -405,7 +405,7 @@ class CVFD
 			AUDIO_MODE_REV
 		};
 
-		//0:off, 1:blue, 2:red, 3:purple (gigablue)
+		//0:off, 1:blue, 2:red, 3:purple (gigablue power button)
 		enum LEDS
 		{
 			LED_OFF,

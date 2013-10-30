@@ -45,11 +45,11 @@
 #include <system/debug.h>
 
 
-#if defined(PLATFORM_SPARK7162)
+#if defined (PLATFORM_SPARK7162)
 static struct aotom_ioctl_data aotom_data;
 #endif
 
-#if defined(PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
+#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_SPARK7162)
 static bool usb_icon = false;
 static bool timer_icon = false;
 static bool hdd_icon = false;
@@ -57,7 +57,7 @@ static bool hdd_icon = false;
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
-#ifdef __sh__
+#if defined (__sh__)
 bool blocked = false;
 
 void CVFD::openDevice()

@@ -1995,6 +1995,7 @@ const CMenuOptionChooser::keyval LCDMENU_EPGALIGN_OPTIONS[LCDMENU_EPGALIGN_OPTIO
 #endif
 
 /* led color */
+#if defined (PLATFORM_GIGABLUE)
 #define LCDMENU_LEDCOLOR_OPTION_COUNT 4
 const CMenuOptionChooser::keyval LCDMENU_LEDCOLOR_OPTIONS[LCDMENU_LEDCOLOR_OPTION_COUNT] =
 {
@@ -2003,6 +2004,7 @@ const CMenuOptionChooser::keyval LCDMENU_LEDCOLOR_OPTIONS[LCDMENU_LEDCOLOR_OPTIO
 	{ CVFD::LED_RED, LOCALE_LCDMENU_LEDCOLOR_RED, NULL },
 	{ CVFD::LED_PURPLE, LOCALE_LCDMENU_LEDCOLOR_PURPLE, NULL },
 };
+#endif
 
 /* Init LCD Settings */
 void CNeutrinoApp::InitLcdSettings(CMenuWidget &lcdSettings)

@@ -28,11 +28,15 @@
 #ifndef __lcdd__
 #define __lcdd__
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifndef LCD_UPDATE
 #define LCD_UPDATE 1
 #endif
 
-#define LCDDIR_VAR "/var/tuxbox/config/icons/lcdd"
+#define LCDDIR_VAR CONFIGDIR "/icons/lcdd"
 
 typedef enum
 {
@@ -71,9 +75,6 @@ typedef enum
 } vfd_icon;
 
 #ifdef LCD_UPDATE
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 // TODO Why is USE_FILE_OFFSET64 not defined, if file.h is included here????
 #ifndef __USE_FILE_OFFSET64
 #define __USE_FILE_OFFSET64 1
