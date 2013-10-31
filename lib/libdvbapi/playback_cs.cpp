@@ -53,6 +53,14 @@ bool isTS = false;
 #include <gst/gst.h>
 #include <gst/pbutils/missing-plugins.h>
 
+#if defined (USE_OPENGL)
+#include <gst/interfaces/xoverlay.h>
+
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#include <GL/gl.h>
+#endif
+
 
 GstElement * m_gst_playbin = NULL;
 GstElement * audioSink = NULL;
@@ -113,7 +121,6 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			gst_message_parse_error(msg, &err, &debug1);
 			g_free(debug1);
 			
-			//g_error("%s", err->message);
 			printf("cPlayback:: Gstreamer error: %s (%i)\n", err->message, err->code );
 			
 			if ( err->domain == GST_STREAM_ERROR )
@@ -237,6 +244,15 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			}
 			break;
 		}
+#if defined (USE_OPENGL) //FIXME: ???		
+		case GST_MESSAGE_ELEMENT:
+		{
+			if(gst_structure_has_name(gst_message_get_structure(msg), "prepare-xwindow-id")) 
+				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), 0 /*glutGetWindow()*/);
+		}
+		break;
+#endif		
+			
 		default:
 			break;
 	}
@@ -338,7 +354,7 @@ void cPlayback::Close(void)
 	{
 		// disconnect sync handler callback
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, NULL, NULL);
+		gst_bus_set_sync_handler(bus, Gst_bus_call, /*NULL*/m_gst_playbin);
 		gst_object_unref(bus);
 		
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");
@@ -468,7 +484,7 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 		
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
+		gst_bus_set_sync_handler(bus, Gst_bus_call, this);
 		gst_object_unref(bus);
 		
 		// start playing

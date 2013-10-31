@@ -136,7 +136,7 @@ void CHintBox::paint(void)
 		return;
 	}
 
-	CFrameBuffer* frameBuffer = CFrameBuffer::getInstance();
+	CFrameBuffer *frameBuffer = CFrameBuffer::getInstance();
 	
 	window = new CFBWindow(frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width ) >> 1),
 			       frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 2),
