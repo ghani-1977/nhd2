@@ -289,7 +289,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	
 	servicename = name;
 
-	if (mode != MODE_TVRADIO)
+	if (mode != MODE_TVRADIO && mode != MODE_IPTV)
 		return;
 
 	// scroll text
@@ -533,10 +533,10 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showclock = false;
 			break;
 			
-		case MODE_IPTV:  
+		case MODE_IPTV: 
+			showServicename(servicename);
 			ShowIcon(VFD_ICON_TV, false);			
 			showclock = false;
-			ShowText("IPTV"); 
 			break;
 	}
 

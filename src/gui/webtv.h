@@ -84,6 +84,11 @@ class CWebTV
 		
 		unsigned int mode;
 		
+		unsigned int position;
+		unsigned int duration;
+		unsigned int file_prozent;
+		unsigned int speed;
+		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
 		void paintItem2DetailsLine (int pos, int ch_index);
@@ -122,5 +127,15 @@ class CWebTV
 		void continuePlayBack(void);
 		
 		void showInfo();
+		void getInfos();
+		
+		void showAudioDialog();
 };
+
+class CWebTVAPIDSelectExec : public CMenuTarget
+{
+	public:
+		int exec(CMenuTarget * parent, const std::string & actionKey);
+};
+
 #endif

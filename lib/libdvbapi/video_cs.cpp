@@ -1,5 +1,5 @@
 /*
- * 	video_cs.c
+ * 	video_cs.cpp
  *
  * 	$Id: video.cpp,v 1.0 2013/08/18 11:23:30 mohousch Exp $
 

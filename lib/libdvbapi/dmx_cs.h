@@ -1,5 +1,5 @@
 /*
-	$Id: audio_cs.h,v 1.0 2013/08/18 11:23:30 mohousch Exp $
+	$Id: dmx_cs.h,v 1.0 2013/08/18 11:23:30 mohousch Exp $
 	License: GPL
 
 	This program is free software; you can redistribute it and/or modify

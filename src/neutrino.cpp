@@ -209,7 +209,7 @@ extern void dvbsub_setpid(int pid);
 extern int dvbsub_terminate();
 
 // volume bar
-static CProgressBar 		* g_volscale;
+static CProgressBar * g_volscale;
 
 // timerd thread
 static pthread_t timer_thread;
@@ -2971,9 +2971,9 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( msg == CRCInput::RC_red ) 
 			{
-				//if(mode == mode_iptv)
-				//	webtv->showFileInfoWebTV();
-				//else
+				if(mode == mode_iptv)
+					webtv->showFileInfoWebTV();
+				else
 				{
 					StopSubtitles();
 					// event list
@@ -2981,12 +2981,17 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					StartSubtitles();
 				}
 			}
-			else if( (( msg == CRCInput::RC_green) || ( msg == CRCInput::RC_audio)) && (mode != mode_iptv) )
+			else if( ( msg == CRCInput::RC_green) || ( msg == CRCInput::RC_audio) )
 			{
-				StopSubtitles();
-				// audio
-				showUserMenu(SNeutrinoSettings::BUTTON_GREEN);
-				StartSubtitles();
+				if(mode == mode_iptv)
+					webtv->showAudioDialog();
+				else
+				{
+					StopSubtitles();
+					// audio
+					showUserMenu(SNeutrinoSettings::BUTTON_GREEN);
+					StartSubtitles();
+				}
 			}
 			else if( (msg == CRCInput::RC_yellow || msg == CRCInput::RC_multifeed) && (mode != mode_iptv))
 			{ 
@@ -4904,6 +4909,7 @@ void CNeutrinoApp::webtvMode( bool rezap)
 
 	// zapto last webtv channel
 	webtv->zapTo(webtv->lastselected);
+	//webtv->exec();
 }
 
 // exec, menuitem callback (shutdown)

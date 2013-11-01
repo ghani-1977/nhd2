@@ -48,12 +48,113 @@
 #include <video_cs.h>
 #include <system/debug.h>
 
+/* libdvbapi */
+#include <playback_cs.h>
+#include <video_cs.h>
+#include <audio_cs.h>
+
+
+extern cPlayback *playback;
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
 #define NETZKINO_XMLFILE		CONFIGDIR "/netzkino.xml"
 
 extern cVideo * videoDecoder;
 extern CPictureViewer * g_PicViewer;
+
+//
+unsigned short w_apids[10];
+unsigned short w_ac3flags[10];
+unsigned short w_numpida = 0;
+unsigned short w_vpid = 0;
+unsigned short w_vtype = 0;
+std::string    w_language[10];
+
+unsigned int w_currentapid = 0, w_currentac3 = 0, w_apidchanged = 0;
+
+unsigned int w_ac3state = CInfoViewer::NO_AC3;
+
+extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
+// aspect ratio
+#if defined (__sh__)
+#define VIDEOMENU_VIDEORATIO_OPTION_COUNT 2
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
+{
+	{ ASPECTRATIO_43, LOCALE_VIDEOMENU_VIDEORATIO_43, NULL },
+	{ ASPECTRATIO_169, LOCALE_VIDEOMENU_VIDEORATIO_169, NULL }
+};
+#else
+#define VIDEOMENU_VIDEORATIO_OPTION_COUNT 3
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEORATIO_OPTIONS[VIDEOMENU_VIDEORATIO_OPTION_COUNT] =
+{
+	{ ASPECTRATIO_43, LOCALE_VIDEOMENU_VIDEORATIO_43, NULL },
+	{ ASPECTRATIO_169, LOCALE_VIDEOMENU_VIDEORATIO_169, NULL },
+	{ ASPECTRATIO_AUTO, NONEXISTANT_LOCALE, "Auto" }
+};
+#endif
+
+// policy
+#if defined (__sh__)
+/*
+letterbox 
+panscan 
+non 
+bestfit
+*/
+#define VIDEOMENU_VIDEOFORMAT_OPTION_COUNT 4
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFORMAT_OPTION_COUNT] = 
+{
+	{ VIDEOFORMAT_LETTERBOX, LOCALE_VIDEOMENU_LETTERBOX, NULL },
+	{ VIDEOFORMAT_PANSCAN, LOCALE_VIDEOMENU_PANSCAN, NULL },
+	{ VIDEOFORMAT_FULLSCREEN, LOCALE_VIDEOMENU_FULLSCREEN, NULL },
+	{ VIDEOFORMAT_PANSCAN2, LOCALE_VIDEOMENU_PANSCAN2, NULL }
+};
+#else
+// giga/generic
+/*
+letterbox 
+panscan 
+bestfit 
+nonlinear
+*/
+#define VIDEOMENU_VIDEOFORMAT_OPTION_COUNT 4
+const CMenuOptionChooser::keyval VIDEOMENU_VIDEOFORMAT_OPTIONS[VIDEOMENU_VIDEOFORMAT_OPTION_COUNT] = 
+{
+	{ VIDEOFORMAT_LETTERBOX, LOCALE_VIDEOMENU_LETTERBOX, NULL },
+	{ VIDEOFORMAT_PANSCAN, LOCALE_VIDEOMENU_PANSCAN, NULL },
+	{ VIDEOFORMAT_PANSCAN2, LOCALE_VIDEOMENU_PANSCAN2, NULL },
+	{ VIDEOFORMAT_FULLSCREEN, LOCALE_VIDEOMENU_FULLSCREEN, NULL }
+};
+#endif
+
+// ac3
+extern CAudioSetupNotifier * audioSetupNotifier;	/* defined neutrino.cpp */
+
+#if !defined (PLATFORM_COOLSTREAM)
+#define AC3_OPTION_COUNT 2
+const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
+{
+	{ AC3_PASSTHROUGH, NONEXISTANT_LOCALE, "passthrough" },
+	{ AC3_DOWNMIX, NONEXISTANT_LOCALE, "downmix" }
+};
+#endif
+
+int CWebTVAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey)
+{
+	w_apidchanged = 0;
+	unsigned int sel = atoi(actionKey.c_str());
+
+	if (w_currentapid != w_apids[sel - 1]) 
+	{
+		w_currentapid = w_apids[sel - 1];
+		w_currentac3 = w_ac3flags[sel - 1];
+		w_apidchanged = 1;
+		
+		dprintf(DEBUG_NORMAL, "[movieplayer] apid changed to %d\n", w_apids[sel - 1]);
+	}
+
+	return menu_return::RETURN_EXIT;
+}
 
 CWebTV::CWebTV()
 {
@@ -65,6 +166,10 @@ CWebTV::CWebTV()
 	
 	parser = NULL;
 	mode = WEBTV;
+	
+	position = 0;
+	duration = 0;
+	file_prozent = 0;
 	
 	zapProtection = NULL;
 	
@@ -87,6 +192,7 @@ CWebTV::CWebTV()
 	}
 	
 	playstate = PLAY;
+	speed = 1;
 }
 
 CWebTV::~CWebTV()
@@ -232,8 +338,135 @@ void CWebTV::showUserBouquet(void)
 	}
 }
 
-#include <playback_cs.h>
-extern cPlayback *playback;
+void CWebTV::showAudioDialog(void)
+{
+	CMenuWidget APIDSelector(LOCALE_APIDSELECTOR_HEAD, NEUTRINO_ICON_AUDIO);
+
+	// g_apids will be rewritten for mb
+	playback->FindAllPids(w_apids, w_ac3flags, &w_numpida, w_language);
+			
+	if (w_numpida > 0) 
+	{
+		CWebTVAPIDSelectExec * APIDChanger = new CWebTVAPIDSelectExec;
+		bool enabled;
+		bool defpid;
+
+		for (unsigned int count = 0; count < w_numpida; count++) 
+		{
+			bool name_ok = false;
+			char apidnumber[10];
+			sprintf(apidnumber, "%d %X", count + 1, w_apids[count]);
+			enabled = true;
+			defpid = w_currentapid ? (w_currentapid == w_apids[count]) : (count == 0);
+			std::string apidtitle = "Stream ";
+
+			// language
+			if (!w_language[count].empty())
+			{
+				apidtitle = w_language[count];
+				name_ok = true;
+			}
+
+			if (!name_ok)
+			{
+				apidtitle = "Stream ";
+				name_ok = true;
+			}
+
+			switch(w_ac3flags[count])
+			{
+				case 1: /*AC3,EAC3*/
+					if (apidtitle.find("AC3") <= 0)
+					{
+						apidtitle.append(" (AC3)");
+								
+						// ac3 state
+						w_ac3state = CInfoViewer::AC3_AVAILABLE;
+					}
+					break;
+
+				case 2: /*teletext*/
+					apidtitle.append(" (Teletext)");
+					enabled = false;
+					break;
+
+				case 3: /*MP2*/
+					apidtitle.append(" (MP2)");
+					break;
+
+				case 4: /*MP3*/
+					apidtitle.append(" (MP3)");
+					break;
+
+				case 5: /*AAC*/
+					apidtitle.append(" (AAC)");
+					break;
+
+				case 6: /*DTS*/
+					apidtitle.append(" (DTS)");
+					break;
+
+				case 7: /*MLP*/
+					apidtitle.append(" (MLP)");
+					break;
+
+				default:
+					break;
+			}
+
+			if (!name_ok)
+				apidtitle.append(apidnumber);
+
+			APIDSelector.addItem(new CMenuForwarderNonLocalized( apidtitle.c_str(), enabled, NULL, APIDChanger, apidnumber, CRCInput::convertDigitToKey(count + 1)), defpid);
+		}
+				
+				// ac3
+#if !defined (PLATFORM_COOLSTREAM)				
+		APIDSelector.addItem(GenericMenuSeparatorLine);
+		APIDSelector.addItem(new CMenuOptionChooser(LOCALE_AUDIOMENU_HDMI_DD, &g_settings.hdmi_dd, AC3_OPTIONS, AC3_OPTION_COUNT, true, audioSetupNotifier, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED ));
+#endif				
+				
+		// policy/aspect ratio
+		APIDSelector.addItem(GenericMenuSeparatorLine);
+				
+		// video aspect ratio 4:3/16:9
+		APIDSelector.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_VIDEORATIO, &g_settings.video_Ratio, VIDEOMENU_VIDEORATIO_OPTIONS, VIDEOMENU_VIDEORATIO_OPTION_COUNT, true, videoSetupNotifier, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, true ));
+	
+		// video format bestfit/letterbox/panscan/non
+		APIDSelector.addItem(new CMenuOptionChooser(LOCALE_VIDEOMENU_VIDEOFORMAT, &g_settings.video_Format, VIDEOMENU_VIDEOFORMAT_OPTIONS, VIDEOMENU_VIDEOFORMAT_OPTION_COUNT, true, videoSetupNotifier, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, true ));
+
+		w_apidchanged = 0;
+		APIDSelector.exec(NULL, "");
+
+		if (w_apidchanged) 
+		{
+			if (w_currentapid == 0) 
+			{
+				w_currentapid = w_apids[0];
+				w_currentac3 = w_ac3flags[0];
+
+				if(w_currentac3)
+					w_ac3state = CInfoViewer::AC3_ACTIVE;
+			}
+
+#if defined (PLATFORM_COOLSTREAM)
+			playback->SetAPid(w_currentapid, w_currentac3);
+#else					
+			playback->SetAPid(w_currentapid);
+#endif					
+			w_apidchanged = 0;
+		}
+				
+		delete APIDChanger;
+				
+		//CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
+
+	} 
+	else 
+	{
+		DisplayErrorMessage(g_Locale->getText(LOCALE_AUDIOSELECTMENUE_NO_TRACKS)); // UTF-8
+	}
+}
 
 bool CWebTV::startPlayBack(int pos)
 {
@@ -244,6 +477,7 @@ bool CWebTV::startPlayBack(int pos)
 		return false;
 	
 	playstate = PLAY;
+	speed = 1;
 	return true;
 }
 
@@ -257,15 +491,17 @@ void CWebTV::pausePlayBack(void)
 {
 	playback->SetSpeed(0);
 	playstate = PAUSE;
+	speed = 0;
 }
 
 void CWebTV::continuePlayBack(void)
 {
 	playback->SetSpeed(1);
 	playstate = PLAY;
+	speed = 1;
 }
 
-// forceStoreToLastChannels defaults to false
+//
 void CWebTV::zapTo(int pos)
 {
 	playback->Close();
@@ -310,14 +546,53 @@ void CWebTV::zapTo(int pos)
 	else
 		startPlayBack(pos);
 	
+	// vfd
+	if (CVFD::getInstance()->is4digits)
+	{
+		char tmp[5];
+			
+		sprintf(tmp, "%04d", channels[lastselected]->title);
+			
+		CVFD::getInstance()->ShowText(tmp); // UTF-8
+	}
+	else
+		CVFD::getInstance()->showServicename(channels[lastselected]->title); // UTF-8
+	
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, 0, 0, 0, 0, playstate, false);
+	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, NEUTRINO_ICON_WEBTV, false);
+}
+
+void CWebTV::quickZap(int key)
+{
+	if (key == g_settings.key_quickzap_down)
+	{
+                if(selected == 0)
+                        selected = channels.size() - 1;
+                else
+                        selected--;
+        }
+	else if (key == g_settings.key_quickzap_up)
+	{
+                selected = (selected+1)%channels.size();
+        }
+	
+	lastselected = selected;
+	
+	zapTo(lastselected);
 }
 
 void CWebTV::showInfo()
 {
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, 0, 0, 0, 0, playstate, NEUTRINO_ICON_WEBTV, false);
+	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, file_prozent, duration, w_ac3state, speed, playstate, NEUTRINO_ICON_WEBTV, false);
+}
+
+void CWebTV::getInfos()
+{
+	playback->GetPosition((int64_t &)position, (int64_t &)duration);
+	
+	if(duration > 100)
+		file_prozent = (unsigned char) (position / (duration / 100));
 }
 
 int CWebTV::Show()
@@ -458,7 +733,7 @@ showList:
 	
 	hide();
 	
-	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+	//CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	
 	if(zapOnExit)
 		res = lastselected;
@@ -466,25 +741,6 @@ showList:
 	printf("CWebTV::show res %d\n", res);
 			
 	return (res);
-}
-
-void CWebTV::quickZap(int key)
-{
-	if (key == g_settings.key_quickzap_down)
-	{
-                if(selected == 0)
-                        selected = channels.size() - 1;
-                else
-                        selected--;
-        }
-	else if (key == g_settings.key_quickzap_up)
-	{
-                selected = (selected+1)%channels.size();
-        }
-	
-	lastselected = selected;
-	
-	zapTo(lastselected);
 }
 
 void CWebTV::hide()

@@ -448,7 +448,12 @@ int CMenuWidget::exec(CMenuTarget * parent, const std::string &)
 	hide();	
 
 	if(!parent)
-		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+	{
+		if(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+			CVFD::getInstance()->setMode(CVFD::MODE_IPTV);
+		else
+			CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+	}
 
 	// init items
 	for (unsigned int count = 0; count < items.size(); count++) 
