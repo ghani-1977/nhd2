@@ -532,6 +532,12 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_TV, false);			
 			showclock = false;
 			break;
+			
+		case MODE_IPTV:  
+			ShowIcon(VFD_ICON_TV, false);			
+			showclock = false;
+			ShowText("IPTV"); 
+			break;
 	}
 
 	wake_up();

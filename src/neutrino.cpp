@@ -282,6 +282,12 @@ CPictureViewer 		* g_PicViewer;
 CCAMMenuHandler 	* g_CamHandler;
 #endif
 
+// webtv
+CWebTV * webtv;
+
+// timezone for wizard
+extern CMenuOptionStringChooser * tzSelect;
+
 bool parentallocked = false;
 static char **global_argv;
 
@@ -1832,6 +1838,22 @@ void CNeutrinoApp::SetupTiming()
 		sprintf(g_settings.timing_string[i], "%d", g_settings.timing[i]);
 };
 
+// setup recording device
+void CNeutrinoApp::setupRecordingDevice(void)
+{
+	if (recDir != NULL)
+	{
+		recordingdevice = new CVCRControl::CFileDevice(g_settings.network_nfs_recordingdir );
+
+		CVCRControl::getInstance()->registerDevice(recordingdevice);
+	}
+	else
+	{
+		if (CVCRControl::getInstance()->isDeviceRegistered())
+			CVCRControl::getInstance()->unregisterDevice();
+	}
+}
+
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
 bool sectionsd_getEPGid(const event_id_t epgID, const time_t startzeit, CEPGData * epgdata);
 
@@ -2027,6 +2049,89 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 	return false;
 }
 
+// start next recording
+void CNeutrinoApp::startNextRecording()
+{
+	if ( nextRecordingInfo != NULL ) 
+	{
+		bool doRecord = true;
+		if (CVCRControl::getInstance()->isDeviceRegistered()) 
+		{
+			recording_id = nextRecordingInfo->eventID;
+			
+			if (recDir != NULL)
+			{
+				char *lrecDir = strlen(nextRecordingInfo->recordingDir) > 0 ? nextRecordingInfo->recordingDir : g_settings.network_nfs_recordingdir;
+
+				if (!CFSMounter::isMounted(lrecDir)) 
+				{
+					doRecord = false;
+					
+					for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+					{
+						if (strcmp(g_settings.network_nfs_local_dir[i], lrecDir) == 0) 
+						{
+							CFSMounter::MountRes mres =
+								CFSMounter::mount(g_settings.network_nfs_ip[i].c_str(), g_settings.network_nfs_dir[i],
+										  g_settings.network_nfs_local_dir[i], (CFSMounter::FSType) g_settings.network_nfs_type[i],
+										  g_settings.network_nfs_username[i], g_settings.network_nfs_password[i],
+										  g_settings.network_nfs_mount_options1[i], g_settings.network_nfs_mount_options2[i]);
+										  
+							if (mres == CFSMounter::MRES_OK) 
+							{
+								doRecord = true;
+							} 
+							else 
+							{
+								const char * merr = mntRes2Str(mres);
+								int msglen = strlen(merr) + strlen(nextRecordingInfo->recordingDir) + 7;
+								char msg[msglen];
+								strcpy(msg, merr);
+								strcat(msg, "\nDir: ");
+								strcat(msg, nextRecordingInfo->recordingDir);
+
+								ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, msg); // UTF-8
+								doRecord = false;
+							}
+							break;
+						}
+					}
+
+					if (!doRecord) 
+					{
+						// recording dir does not seem to exist in config anymore
+						// or an error occured while mounting
+						// -> try default dir
+						lrecDir = g_settings.network_nfs_recordingdir;
+					
+						doRecord = true;
+					}
+				}
+
+				(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = std::string(lrecDir);
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::startNextRecording: start to dir %s\n", lrecDir);
+
+				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
+			}
+			
+			if(doRecord && CVCRControl::getInstance()->Record(nextRecordingInfo))
+				recordingstatus = 1;
+			else
+				recordingstatus = 0;
+		}
+		else
+			puts("CNeutrinoApp::startNextRecording: no recording devices");
+
+		/* Note: CTimerd::RecordingInfo is a class!
+		 * What a brilliant idea to send classes via the eventserver!
+		 * => typecast to avoid destructor call
+		 */
+		delete [](unsigned char *)nextRecordingInfo;
+
+		nextRecordingInfo = NULL;
+	}
+}
+
 #define LCD_UPDATE_TIME_RADIO_MODE (6 * 1000 * 1000)
 #define LCD_UPDATE_TIME_TV_MODE (60 * 1000 * 1000)
 
@@ -2130,27 +2235,10 @@ static void CSSendMessage(uint32_t msg, uint32_t data)
 }
 #endif
 
-// setup recording device
-void CNeutrinoApp::setupRecordingDevice(void)
-{
-	if (recDir != NULL)
-	{
-		recordingdevice = new CVCRControl::CFileDevice(g_settings.network_nfs_recordingdir );
-
-		CVCRControl::getInstance()->registerDevice(recordingdevice);
-	}
-	else
-	{
-		if (CVCRControl::getInstance()->isDeviceRegistered())
-			CVCRControl::getInstance()->unregisterDevice();
-	}
-}
-
-extern CMenuOptionStringChooser * tzSelect;
-
 void CISendMessage(uint32_t msg, uint32_t data)
 {
-	g_RCInput->postMsg(msg, data);
+	if (g_RCInput)
+	      g_RCInput->postMsg(msg, data);
 }
 
 int CNeutrinoApp::run(int argc, char **argv)
@@ -2578,6 +2666,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 	cDvbCi::getInstance()->SetHook(CISendMessage);	
 #endif	
 
+	// init webtv
+	webtv = new CWebTV();
+
 	// real run ;-)
 	RealRun(mainMenu);
 
@@ -2593,10 +2684,15 @@ void CNeutrinoApp::quickZap(int msg)
 {
 	StopSubtitles();
 	
-	if(g_settings.zap_cycle && (bouquetList!=NULL) && !(bouquetList->Bouquets.empty()))
-		bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->quickZap(msg, true);
+	if(mode == mode_iptv)
+		webtv->quickZap(msg);
 	else
-		channelList->quickZap(msg);
+	{
+		if(g_settings.zap_cycle && (bouquetList!=NULL) && !(bouquetList->Bouquets.empty()))
+			bouquetList->Bouquets[bouquetList->getActiveBouquetNumber()]->channelList->quickZap(msg, true);
+		else
+			channelList->quickZap(msg);
+	}
 }
 
 // showInfo
@@ -2660,9 +2756,9 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 #endif		
 
 		// mode TV/Radio
-		if( (mode == mode_tv) || (mode == mode_radio) ) 
+		if( (mode == mode_tv) || (mode == mode_radio) || (mode == mode_iptv) ) 
 		{
-			if(msg == NeutrinoMessages::SHOW_EPG) 
+			if(msg == NeutrinoMessages::SHOW_EPG && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -2670,7 +2766,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}
-			else if( msg == CRCInput::RC_epg ) 
+			else if( msg == CRCInput::RC_epg && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -2678,7 +2774,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}
-			else if( msg == CRCInput::RC_text) 
+			else if( msg == CRCInput::RC_text && (mode != mode_iptv)) 
 			{
 				g_RCInput->clearRCMsg();
 
@@ -2700,7 +2796,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}			
-			else if( msg == (neutrino_msg_t)g_settings.key_timerlist ) //timerlist
+			else if( msg == (neutrino_msg_t)g_settings.key_timerlist && (mode != mode_iptv)) //timerlist
 			{
 				StopSubtitles();
 				
@@ -2719,18 +2815,18 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_tvradio_mode ) 
+			else if( msg == (neutrino_msg_t) g_settings.key_tvradio_mode && (mode != mode_iptv)) 
 			{
 				if( mode == mode_tv )
 					radioMode();
 				else if( mode == mode_radio )
 					tvMode();
 			}
-			else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
+			else if(( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ))
 			{
 				quickZap(msg);
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_subchannel_up ) 
+			else if( msg == (neutrino_msg_t) g_settings.key_subchannel_up && (mode != mode_iptv)) 
 			{
 			   	if(g_RemoteControl->subChannels.size() > 0) 
 				{
@@ -2748,7 +2844,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					quickZap(msg);
 				}
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_subchannel_down ) 
+			else if( msg == (neutrino_msg_t) g_settings.key_subchannel_down && (mode != mode_iptv)) 
 			{
 			   	if(g_RemoteControl->subChannels.size()> 0) 
 				{
@@ -2767,14 +2863,14 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				}
 			}
 			// in case key_subchannel_up/down redefined
-			else if( msg == CRCInput::RC_left || msg == CRCInput::RC_right) 
+			else if( (msg == CRCInput::RC_left || msg == CRCInput::RC_right) && (mode != mode_iptv) ) 
 			{
 				if(channelList->getSize()) 
 				{
 					showInfo();
 				}
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_zaphistory ) 
+			else if( msg == (neutrino_msg_t) g_settings.key_zaphistory && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -2783,7 +2879,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles(res < 0);
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_lastchannel ) 
+			else if( msg == (neutrino_msg_t) g_settings.key_lastchannel && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -2792,51 +2888,61 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles(res < 0);
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_timeshift ) // start timeshift recording
+			else if( msg == (neutrino_msg_t) g_settings.key_timeshift) // start timeshift recording
 			{
-				if (recDir != NULL)
+				if(mode == mode_iptv)
+					webtv->pausePlayBack();
+				else
 				{
-					if(recordingstatus)
-						tmode = "ptimeshift"; 	// already recording, pause(timeshift)
-					else
-						tmode = "timeshift";
-
-					if(g_RemoteControl->is_video_started) 
-					{		
-						// ptimeshift
-						if(recordingstatus) 
-						{
-							timeshiftstatus = recordingstatus;
-						} 
+					if (recDir != NULL)
+					{
+						if(recordingstatus)
+							tmode = "ptimeshift"; 	// already recording, pause(timeshift)
 						else
-						{
-							// timeshift
-							recordingstatus = 1;
-								
-							timeshiftstatus = recordingstatus;
+							tmode = "timeshift";
 
-							doGuiRecord(timeshiftDir, true);
+						if(g_RemoteControl->is_video_started) 
+						{		
+							// ptimeshift
+							if(recordingstatus) 
+							{
+								timeshiftstatus = recordingstatus;
+							} 
+							else
+							{
+								// timeshift
+								recordingstatus = 1;
+									
+								timeshiftstatus = recordingstatus;
+
+								doGuiRecord(timeshiftDir, true);
+							}
+							
+							// freeze audio/video
+							audioDecoder->Stop();
+							videoDecoder->Stop(false); // dont blank
 						}
-						
-						// freeze audio/video
-						audioDecoder->Stop();
-						videoDecoder->Stop(false); // dont blank
 					}
-			   	}
-			}
-			else if( (msg == (neutrino_msg_t)g_settings.mpkey_play || msg == (neutrino_msg_t)g_settings.mpkey_rewind) && timeshiftstatus) // play timeshift
-			{
-				if(msg == CRCInput::RC_rewind)
-					tmode = "rtimeshift"; // rewind
-					
-				dprintf(DEBUG_NORMAL, "[neutrino] %s\n", tmode.c_str());
-					
-				if(g_RemoteControl->is_video_started) 
-				{
-					moviePlayerGui->exec(NULL, tmode);
 				}
 			}
-			else if( msg == CRCInput::RC_record || msg == CRCInput::RC_stop ) 
+			else if( ((msg == (neutrino_msg_t)g_settings.mpkey_play || msg == (neutrino_msg_t)g_settings.mpkey_rewind) && timeshiftstatus) && (mode != mode_iptv)) // play timeshift
+			{
+				if(mode == mode_iptv)
+					webtv->continuePlayBack();
+				else
+				{
+					if(msg == CRCInput::RC_rewind)
+						tmode = "rtimeshift"; // rewind
+						
+					dprintf(DEBUG_NORMAL, "[neutrino] %s\n", tmode.c_str());
+						
+					if(g_RemoteControl->is_video_started) 
+					{
+						moviePlayerGui->exec(NULL, tmode);
+					}
+				}
+			}
+			else if( (msg == CRCInput::RC_record || msg == CRCInput::RC_stop) && (mode != mode_iptv) ) 
 			{
 				dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun\n");
 				
@@ -2865,19 +2971,24 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( msg == CRCInput::RC_red ) 
 			{
-				StopSubtitles();
-				// event list
-				showUserMenu(SNeutrinoSettings::BUTTON_RED);
-				StartSubtitles();
+				//if(mode == mode_iptv)
+				//	webtv->showFileInfoWebTV();
+				//else
+				{
+					StopSubtitles();
+					// event list
+					showUserMenu(SNeutrinoSettings::BUTTON_RED);
+					StartSubtitles();
+				}
 			}
-			else if( ( msg == CRCInput::RC_green) || ( msg == CRCInput::RC_audio) )
+			else if( (( msg == CRCInput::RC_green) || ( msg == CRCInput::RC_audio)) && (mode != mode_iptv) )
 			{
 				StopSubtitles();
 				// audio
 				showUserMenu(SNeutrinoSettings::BUTTON_GREEN);
 				StartSubtitles();
 			}
-			else if( msg == CRCInput::RC_yellow || msg == CRCInput::RC_multifeed) 
+			else if( (msg == CRCInput::RC_yellow || msg == CRCInput::RC_multifeed) && (mode != mode_iptv))
 			{ 
 				StopSubtitles();
 				// NVODs
@@ -2927,7 +3038,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				StartSubtitles();
 			}
-			else if( msg == CRCInput::RC_dvbsub)
+			else if( (msg == CRCInput::RC_dvbsub) && (mode != mode_iptv) )
 			{
 				StopSubtitles();
 				
@@ -3040,7 +3151,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				nGLCD::unlockChannel();
 #endif				
 			}
-			else if( msg == (neutrino_msg_t)g_settings.key_webtv )	// webtv
+			else if( msg == (neutrino_msg_t)g_settings.key_webtv && (mode != mode_iptv))	// webtv
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "WebTV";
@@ -3075,7 +3186,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}			
-			else if (CRCInput::isNumeric(msg) && g_RemoteControl->director_mode ) 
+			else if ( CRCInput::isNumeric(msg) && g_RemoteControl->director_mode && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -3085,7 +3196,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}
-			else if (CRCInput::isNumeric(msg)) 
+			else if (CRCInput::isNumeric(msg) && (mode != mode_iptv)) 
 			{
 				StopSubtitles();
 				
@@ -3093,24 +3204,29 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}
-			else if( (msg == CRCInput::RC_info) || ( msg == NeutrinoMessages::SHOW_INFOBAR ) )
+			else if((msg == CRCInput::RC_info) || ( msg == NeutrinoMessages::SHOW_INFOBAR ))
 			{
-				bool show_info = ((msg != NeutrinoMessages::SHOW_INFOBAR) || (g_InfoViewer->is_visible || g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] != 0));
-				
-			         // turn on LCD display
-				CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-				
-				if(show_info && channelList->getSize()) 
+				if(mode == mode_iptv)
+					webtv->showInfo();
+				else
 				{
-					showInfo();
-				}
-				
+					bool show_info = ((msg != NeutrinoMessages::SHOW_INFOBAR) || (g_InfoViewer->is_visible || g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] != 0));
+					
+					// turn on LCD display
+					CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+					
+					if(show_info && channelList->getSize()) 
+					{
+						showInfo();
+					}
+					
 #ifdef ENABLE_GRAPHLCD
-				if (msg == NeutrinoMessages::EVT_CURRENTNEXT_EPG)
-					nGLCD::Update();				
-#endif				
+					if (msg == NeutrinoMessages::EVT_CURRENTNEXT_EPG)
+						nGLCD::Update();				
+#endif	
+				}
 			}
-			else if( msg == (neutrino_msg_t) g_settings.key_pip )
+			else if( msg == (neutrino_msg_t) g_settings.key_pip && (mode != mode_iptv))
 			{
 				StopSubtitles();
 				
@@ -3324,6 +3440,16 @@ _repeat:
 				g_Zapit->saveBouquets();
 			}
 
+			return messages_return::handled;
+		}
+		else if(mode == mode_iptv)
+		{
+			StopSubtitles();
+			
+			webtv->exec();
+			
+			StartSubtitles();
+			
 			return messages_return::handled;
 		}
 	}
@@ -3875,7 +4001,7 @@ skip_message:
 		
 		if((data &mode_mask) == mode_pic) 
 		{
-			lastMode=mode;
+			lastMode = mode;
 			mode = mode_pic;
 		}
 		
@@ -3883,6 +4009,12 @@ skip_message:
 		{
 			lastMode = mode;
 			mode = mode_ts;
+		}
+		
+		if((data &mode_mask) == mode_iptv) 
+		{
+			lastMode = mode;
+			mode = mode_iptv;
 		}
 	}	
 	else if( msg == NeutrinoMessages::VCR_ON ) 
@@ -4345,6 +4477,16 @@ void CNeutrinoApp::tvMode( bool rezap )
 			videoDecoder->SetInput(INPUT_ENCODER);
 #endif		
 	}
+	else if(mode == mode_iptv)
+	{
+		webtv->stopPlayBack();
+		
+		// unlock playback
+		g_Zapit->unlockPlayBack();
+			
+		// start epg scanning
+		g_Sectionsd->setPauseScanning(false);
+	}
 
 	bool stopauto = (mode != mode_ts);	
 	mode = mode_tv;
@@ -4375,6 +4517,87 @@ void CNeutrinoApp::tvMode( bool rezap )
 		channelList->tuned = 0xfffffff;;
 		channelList->zapTo( firstchannel.channelNumber - 1 );
 	}
+}
+
+// Radio Mode
+void CNeutrinoApp::radioMode( bool rezap)
+{
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::radioMode: rezap %s\n", rezap ? "yes" : "no");
+
+	if(mode == mode_tv ) 
+	{
+		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
+		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_RADIO_MODE, false );
+
+		StopSubtitles();
+	}
+
+	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+
+	if( mode == mode_radio ) 
+	{
+		return;
+	}
+	else if( mode == mode_scart ) 
+	{
+#if !defined (PLATFORM_COOLSTREAM)	  
+		if(videoDecoder)
+			videoDecoder->SetInput(INPUT_SCART);
+#endif		
+	}
+	else if( mode == mode_standby ) 
+	{	  
+		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+
+#if !defined (PLATFORM_COOLSTREAM)
+		if(videoDecoder)
+			videoDecoder->SetInput(INPUT_ENCODER);
+#endif		
+	}
+	if(mode == mode_iptv)
+	{
+		webtv->stopPlayBack();
+		
+		// unlock playback
+		g_Zapit->unlockPlayBack();
+			
+		// start epg scanning
+		g_Sectionsd->setPauseScanning(false);
+	}
+
+	mode = mode_radio;
+
+	if(autoshift) 
+	{
+		dprintf(DEBUG_NORMAL, "CNeutrinoApp::radioMode: standby on: autoshift ! stopping ...\n");
+		stopAutoRecord();
+		recordingstatus = 0;
+		timeshiftstatus = 0;
+	}
+
+	g_RemoteControl->radioMode();
+	SetChannelMode( g_settings.channel_mode);//FIXME needed?
+
+	if( rezap ) 
+	{
+		firstChannel();
+		channelList->tuned = 0xfffffff;;
+		channelList->zapTo( firstchannel.channelNumber -1 );
+	}
+
+	if (!g_settings.radiotext_enable)
+		frameBuffer->loadBackgroundPic("radiomode.jpg");
+	
+#if !defined USE_OPENGL
+	frameBuffer->blit();
+#endif	
+
+#if ENABLE_RADIOTEXT
+	if (g_settings.radiotext_enable) 
+	{
+		g_Radiotext = new CRadioText;
+	}
+#endif	
 }
 
 // Scart Mode
@@ -4423,6 +4646,10 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 		else if( lastMode == mode_standby ) 
 		{
 			standbyMode( true );
+		}
+		else if(mode == mode_iptv)
+		{
+			webtvMode();
 		}
 	}
 }
@@ -4474,28 +4701,35 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_ENCODER);
-
-		// zapit standby
-		if(!recordingstatus && !timeshiftstatus)
+		
+		if(mode == mode_iptv)
 		{
-			g_Zapit->setStandby(true);
-		} 
+			webtv->stopPlayBack();
+		}
 		else
 		{
-			//zapit stop playback
-			g_Zapit->stopPlayBack();
-		}
-
-		// stop sectionsd
-		g_Sectionsd->setServiceChanged(0, false);
-		g_Sectionsd->setPauseScanning(true);
-
-		//save epg
-		if(!recordingstatus && !timeshiftstatus)
-		{
-			if(g_settings.epg_save) 
+			// zapit standby
+			if(!recordingstatus && !timeshiftstatus)
 			{
-				saveEpg();
+				g_Zapit->setStandby(true);
+			} 
+			else
+			{
+				//zapit stop playback
+				g_Zapit->stopPlayBack();
+			}
+
+			// stop sectionsd
+			g_Sectionsd->setServiceChanged(0, false);
+			g_Sectionsd->setPauseScanning(true);
+
+			//save epg
+			if(!recordingstatus && !timeshiftstatus)
+			{
+				if(g_settings.epg_save) 
+				{
+					saveEpg();
+				}
 			}
 		}
 
@@ -4539,31 +4773,39 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		
 			CVFD::getInstance()->ShowText(tmp); // UTF-8
 		}
-
-		// zapit startplayback
-		g_Zapit->setStandby(false);
-
-		// this is buggy don't respect parentallock
-		if(!recordingstatus && !timeshiftstatus)
-			g_Zapit->startPlayBack();
-
+		
 		// video wake up
 		if(videoDecoder)
 			videoDecoder->SetInput(INPUT_SCART);
-
-		g_Sectionsd->setPauseScanning(false);
-		g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );
-
-		// setmode?radio:tv
+		
+		// setmode?radio:tv/iptv
 		mode = mode_unknown;
+
+		if(lastMode != mode_iptv)
+		{
+			// zapit startplayback
+			g_Zapit->setStandby(false);
+
+			// this is buggy don't respect parentallock
+			if(!recordingstatus && !timeshiftstatus)
+				g_Zapit->startPlayBack();
+
+
+			g_Sectionsd->setPauseScanning(false);
+			g_Sectionsd->setServiceChanged(live_channel_id&0xFFFFFFFFFFFFULL, true );
+		}
 
 		if( lastMode == mode_radio ) 
 		{
 			radioMode( false );
 		} 
-		else 
+		else if(lastMode == mode_tv)
 		{
 			tvMode( false );
+		}
+		else if(lastMode == mode_iptv)
+		{
+			webtvMode();
 		}
 
 		// set vol (saved)
@@ -4583,10 +4825,11 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 	}
 }
 
+//
 // Radio Mode
-void CNeutrinoApp::radioMode( bool rezap)
+void CNeutrinoApp::webtvMode( bool rezap)
 {
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::radioMode: rezap %s\n", rezap ? "yes" : "no");
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::webtvMode: rezap %s\n", rezap ? "yes" : "no");
 
 	if(mode == mode_tv ) 
 	{
@@ -4595,12 +4838,24 @@ void CNeutrinoApp::radioMode( bool rezap)
 
 		StopSubtitles();
 	}
-
-	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
-
-	if( mode == mode_radio ) 
+	else if( mode == mode_radio ) 
 	{
-		return;
+#if ENABLE_RADIOTEXT	  
+		if (g_settings.radiotext_enable && g_Radiotext) 
+		{
+			videoDecoder->finishShowSinglePic();
+			
+			delete g_Radiotext;
+			g_Radiotext = NULL;
+		}
+#endif		
+
+		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
+		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_TV_MODE, false );
+
+		CVFD::getInstance()->ShowIcon(VFD_ICON_RADIO, false);
+
+		StartSubtitles(!rezap);
 	}
 	else if( mode == mode_scart ) 
 	{
@@ -4618,8 +4873,11 @@ void CNeutrinoApp::radioMode( bool rezap)
 			videoDecoder->SetInput(INPUT_ENCODER);
 #endif		
 	}
+	else if(mode == mode_iptv)
+		return;
 
-	mode = mode_radio;
+	//mode = mode_iptv;
+	//lastMode = mode;
 
 	if(autoshift) 
 	{
@@ -4628,113 +4886,24 @@ void CNeutrinoApp::radioMode( bool rezap)
 		recordingstatus = 0;
 		timeshiftstatus = 0;
 	}
-
-	g_RemoteControl->radioMode();
-	SetChannelMode( g_settings.channel_mode);//FIXME needed?
-
-	if( rezap ) 
-	{
-		firstChannel();
-		channelList->tuned = 0xfffffff;;
-		channelList->zapTo( firstchannel.channelNumber -1 );
-	}
-
-	if (!g_settings.radiotext_enable)
-		frameBuffer->loadBackgroundPic("radiomode.jpg");
 	
+	frameBuffer->useBackground(false);
+	frameBuffer->paintBackground();
+
 #if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
+#endif
 
-#if ENABLE_RADIOTEXT
-	if (g_settings.radiotext_enable) 
-	{
-		g_Radiotext = new CRadioText;
-	}
-#endif	
-}
-
-// start next recording
-void CNeutrinoApp::startNextRecording()
-{
-	if ( nextRecordingInfo != NULL ) 
-	{
-		bool doRecord = true;
-		if (CVCRControl::getInstance()->isDeviceRegistered()) 
-		{
-			recording_id = nextRecordingInfo->eventID;
+	// pause epg scanning
+	g_Sectionsd->setPauseScanning(true);
 			
-			if (recDir != NULL)
-			{
-				char *lrecDir = strlen(nextRecordingInfo->recordingDir) > 0 ? nextRecordingInfo->recordingDir : g_settings.network_nfs_recordingdir;
+	// lock playback
+	g_Zapit->lockPlayBack();
+	
+	mode = mode_iptv;
 
-				if (!CFSMounter::isMounted(lrecDir)) 
-				{
-					doRecord = false;
-					
-					for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
-					{
-						if (strcmp(g_settings.network_nfs_local_dir[i], lrecDir) == 0) 
-						{
-							CFSMounter::MountRes mres =
-								CFSMounter::mount(g_settings.network_nfs_ip[i].c_str(), g_settings.network_nfs_dir[i],
-										  g_settings.network_nfs_local_dir[i], (CFSMounter::FSType) g_settings.network_nfs_type[i],
-										  g_settings.network_nfs_username[i], g_settings.network_nfs_password[i],
-										  g_settings.network_nfs_mount_options1[i], g_settings.network_nfs_mount_options2[i]);
-										  
-							if (mres == CFSMounter::MRES_OK) 
-							{
-								doRecord = true;
-							} 
-							else 
-							{
-								const char * merr = mntRes2Str(mres);
-								int msglen = strlen(merr) + strlen(nextRecordingInfo->recordingDir) + 7;
-								char msg[msglen];
-								strcpy(msg, merr);
-								strcat(msg, "\nDir: ");
-								strcat(msg, nextRecordingInfo->recordingDir);
-
-								ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, msg); // UTF-8
-								doRecord = false;
-							}
-							break;
-						}
-					}
-
-					if (!doRecord) 
-					{
-						// recording dir does not seem to exist in config anymore
-						// or an error occured while mounting
-						// -> try default dir
-						lrecDir = g_settings.network_nfs_recordingdir;
-					
-						doRecord = true;
-					}
-				}
-
-				(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = std::string(lrecDir);
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::startNextRecording: start to dir %s\n", lrecDir);
-
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
-			}
-			
-			if(doRecord && CVCRControl::getInstance()->Record(nextRecordingInfo))
-				recordingstatus = 1;
-			else
-				recordingstatus = 0;
-		}
-		else
-			puts("CNeutrinoApp::startNextRecording: no recording devices");
-
-		/* Note: CTimerd::RecordingInfo is a class!
-		 * What a brilliant idea to send classes via the eventserver!
-		 * => typecast to avoid destructor call
-		 */
-		delete [](unsigned char *)nextRecordingInfo;
-
-		nextRecordingInfo = NULL;
-	}
+	// zapto last webtv channel
+	webtv->zapTo(webtv->lastselected);
 }
 
 // exec, menuitem callback (shutdown)
@@ -5095,6 +5264,11 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		}
 		
 		return menu_return::RETURN_REPAINT;
+	}
+	else if(actionKey=="webtv") 
+	{
+		webtvMode();
+		return menu_return::RETURN_EXIT_ALL;
 	}
 
 	return returnval;

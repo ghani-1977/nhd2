@@ -4,6 +4,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
+	-I$(top_srcdir)/lib/libxmltree \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM

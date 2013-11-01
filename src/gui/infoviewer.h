@@ -173,7 +173,7 @@ class CInfoViewer
 		// movie infoviewer
 		CProgressBar *moviescale;
 		bool m_visible;
-		void showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow = true);
+		void showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, const char *const IconName = NULL, bool lshow = true);
 };
 
 class CInfoViewerHandler : public CMenuTarget

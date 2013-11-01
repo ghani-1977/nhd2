@@ -158,6 +158,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void radioMode( bool rezap = true );
 		void scartMode( bool bOnOff );
 		void standbyMode( bool bOnOff );
+		void webtvMode(bool rezap = true);
 		
 		void setvol(int vol);
 		
@@ -276,6 +277,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		};
 		
 		void ExitRun(int retcode = SHUTDOWN);
+		//CWebTV * webtv;
 };
 
 

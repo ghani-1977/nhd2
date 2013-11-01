@@ -81,10 +81,8 @@ class CWebTV
 		unsigned int	listmaxshow;
 		unsigned int	numwidth;
 		int 		info_height;
-		//unsigned int 	selected_playing;
-		unsigned int oldselected;
+		
 		unsigned int mode;
-		//unsigned int last_mode;
 		
 		void paintDetails(int index);
 		void clearItem2DetailsLine ();
@@ -94,20 +92,35 @@ class CWebTV
 		void paintHead();
 		void hide();
 		
-		bool qZap;
-		
 	public:
+		enum state
+		{
+			STOPPED     =  0,
+			PLAY        =  1,
+			PAUSE       =  2
+		};
+		
+		unsigned int playstate;
+		
 		CWebTV();
 		~CWebTV();
 		int exec();
 		
 		int Show();
 		
-		CFileList filelist;
-		CFile * getSelectedFile();
-		
 		void quickZap(int key);
 		void showFileInfoWebTV();
 		void showUserBouquet();
+		
+		unsigned int oldselected;
+		unsigned int lastselected;
+		void zapTo(int pos);
+		
+		bool startPlayBack(int pos);
+		void stopPlayBack(void);
+		void pausePlayBack(void);
+		void continuePlayBack(void);
+		
+		void showInfo();
 };
 #endif

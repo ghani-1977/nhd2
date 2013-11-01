@@ -56,9 +56,14 @@ bool isTS = false;
 #if defined (USE_OPENGL)
 #include <gst/interfaces/xoverlay.h>
 
+#include <OpenThreads/ScopedLock>
+#include <OpenThreads/ReentrantMutex>
+
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
+
+OpenThreads::ReentrantMutex	mutex;
 #endif
 
 
@@ -248,7 +253,12 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 		case GST_MESSAGE_ELEMENT:
 		{
 			if(gst_structure_has_name(gst_message_get_structure(msg), "prepare-xwindow-id")) 
-				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), 0 /*glutGetWindow()*/);
+			{
+				OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(mutex);
+				mutex.lock();
+				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), /*glutGetWindow()*/0);
+				mutex.unlock();
+			}
 		}
 		break;
 #endif		
@@ -354,7 +364,7 @@ void cPlayback::Close(void)
 	{
 		// disconnect sync handler callback
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, Gst_bus_call, /*NULL*/m_gst_playbin);
+		gst_bus_set_sync_handler(bus, NULL, NULL);
 		gst_object_unref(bus);
 		
 		dprintf(DEBUG_NORMAL, "GST bus handler closed\n");

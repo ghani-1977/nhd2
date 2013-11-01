@@ -43,6 +43,8 @@
 
 #include <gui/filebrowser.h>
 
+#include <xmlinterface.h>
+
 #include <video_cs.h>
 #include <system/debug.h>
 
@@ -59,12 +61,32 @@ CWebTV::CWebTV()
 	
 	selected = 0;
 	liststart = 0;
-	qZap = false;
+	lastselected = selected;
 	
 	parser = NULL;
 	mode = WEBTV;
 	
 	zapProtection = NULL;
+	
+	switch(mode)
+	{
+		case WEBTV:
+			readChannellist(DEFAULT_WEBTV_XMLFILE);
+			break;
+			
+		case NETZKINO:
+			readChannellist(NETZKINO_XMLFILE);
+			break;
+			
+		case USER:
+			readChannellist(g_settings.webtv_settings);
+			break;
+			
+		default:
+			break;	
+	}
+	
+	playstate = PLAY;
 }
 
 CWebTV::~CWebTV()
@@ -84,47 +106,19 @@ CWebTV::~CWebTV()
 
 int CWebTV::exec()
 {
-	switch(mode)
-	{
-		case WEBTV:
-			readChannellist(DEFAULT_WEBTV_XMLFILE);
-			break;
-			
-		case NETZKINO:
-			readChannellist(NETZKINO_XMLFILE);
-			break;
-			
-		case USER:
-			readChannellist(g_settings.webtv_settings);
-			break;
-			
-		default:
-			break;	
-	}
+	int nNewChannel = Show();
 	
-	if(qZap == true)
-	{	
-		qZap = false;
-		return true;
-	}
-	else
-		return Show();
-}
+	// zapto
+	if ( nNewChannel > -1 && nNewChannel < (int) channels.size()) 
+		zapTo(nNewChannel);
 
-CFile * CWebTV::getSelectedFile()
-{
-	if ((!(filelist.empty())) && (!(filelist[selected].Name.empty())))
-		return &filelist[selected];
-	else
-		return NULL;
+	return nNewChannel;
 }
 
 // readxml file
 bool CWebTV::readChannellist(std::string filename)
 {
 	dprintf(DEBUG_INFO, "CWebTV::readChannellist parsing %s\n", filename.c_str());
-	
-	CFile file;
 	
 	// clear channellist
 	for(unsigned int count = 0; count < channels.size(); count++)
@@ -170,13 +164,6 @@ bool CWebTV::readChannellist(std::string filename)
 				
 				// fill channelslist
 				channels.push_back(tmp);
-				
-				// fill filelist
-				file.Url = url;
-				file.Name = title;
-				file.Description = description;
-				
-				filelist.push_back(file);
 
 				l1 = l1->xmlNextNode;
 			}
@@ -245,9 +232,97 @@ void CWebTV::showUserBouquet(void)
 	}
 }
 
+#include <playback_cs.h>
+extern cPlayback *playback;
+
+bool CWebTV::startPlayBack(int pos)
+{
+	playback->Close();
+	
+	playback->Open();
+	if (!playback->Start(channels[pos]->url))
+		return false;
+	
+	playstate = PLAY;
+	return true;
+}
+
+void CWebTV::stopPlayBack(void)
+{
+	playback->Close();
+	playstate = STOPPED;
+}
+
+void CWebTV::pausePlayBack(void)
+{
+	playback->SetSpeed(0);
+	playstate = PAUSE;
+}
+
+void CWebTV::continuePlayBack(void)
+{
+	playback->SetSpeed(1);
+	playstate = PLAY;
+}
+
+// forceStoreToLastChannels defaults to false
+void CWebTV::zapTo(int pos)
+{
+	playback->Close();
+	
+	// show emty channellist error msg
+	if (channels.empty()) 
+	{
+		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+		return;
+	}
+
+	if ( (pos >= (signed int) channels.size()) || (pos < 0) ) 
+	{
+		pos = 0;
+	}
+	
+	if ( (channels[pos]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
+	{
+		if ( zapProtection != NULL )
+			zapProtection->fsk = g_settings.parentallock_lockage;
+		else
+		{
+			zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
+						
+			if ( !zapProtection->check() )
+			{
+				delete zapProtection;
+				zapProtection = NULL;
+				
+				// do not thing
+			}
+			else
+			{
+				delete zapProtection;
+				zapProtection = NULL;
+				
+				// start playback
+				startPlayBack(pos);
+			}
+		}
+	}
+	else
+		startPlayBack(pos);
+	
+	//infoviewer
+	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, 0, 0, 0, 0, playstate, false);
+}
+
+void CWebTV::showInfo()
+{
+	//infoviewer
+	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, 0, 0, 0, 0, playstate, NEUTRINO_ICON_WEBTV, false);
+}
+
 int CWebTV::Show()
 {
-	bool res = false;
+	int res = -1;
 	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
@@ -257,7 +332,7 @@ int CWebTV::Show()
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
 	// display channame in vfd	
-	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );
+	CVFD::getInstance()->setMode(CVFD::MODE_IPTV);
 	
 	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
@@ -283,6 +358,7 @@ showList:
 #endif
 
 	oldselected = selected;
+	int zapOnExit = false;
 
 	// loop control
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
@@ -295,11 +371,12 @@ showList:
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 
-		if ( msg == CRCInput::RC_timeout )
+		if ( ( msg == CRCInput::RC_timeout ) || ( msg == (neutrino_msg_t)g_settings.key_channelList_cancel) ) 
 		{
 			selected = oldselected;
 			
 			loop = false;
+			res = -1;
 		}
 		else if ( msg == CRCInput::RC_up || (int) msg == g_settings.key_channelList_pageup || msg == CRCInput::RC_yellow)
                 {
@@ -347,62 +424,31 @@ showList:
                 }
                 else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{
-			filelist[selected].Url = channels[selected]->url;
-			filelist[selected].Name = channels[selected]->title;
-			filelist[selected].Description = channels[selected]->description;
-				
-			if ( (channels[selected]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
-			{
-				hide();
-				
-				if ( zapProtection != NULL )
-					zapProtection->fsk = g_settings.parentallock_lockage;
-				else
-				{
-					zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
-						
-					if ( !zapProtection->check() )
-					{
-						delete zapProtection;
-						zapProtection = NULL;
-					
-						goto showList;
-					}
-					else
-					{
-						delete zapProtection;
-						zapProtection = NULL;
-					
-						res = true;
-						loop = false;
-					}
-				}
-			}
-			else
-			{
-				res = true;
-				loop = false;
-			}
+			lastselected = selected;
+			zapOnExit = true;
+			loop = false;
 		}
 		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
 		{
 			showFileInfoWebTV();
+			res = -1;
 			
 			goto showList;
 		}
 		else if(msg == CRCInput::RC_blue || msg == CRCInput::RC_favorites)
 		{
 			showUserBouquet();
+			res = -1;
 			
 			goto showList;
 		}
-		else if ( msg == CRCInput::RC_home) 
+		else
 		{
-			loop = false;
-		}
-		else if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
-		{
-			loop = false;
+			if ( CNeutrinoApp::getInstance()->handleMsg( msg, data ) & messages_return::cancel_all ) 
+			{
+				loop = false;
+				res = - 1;
+			}
 		}
 			
 #if !defined USE_OPENGL
@@ -411,14 +457,19 @@ showList:
 	}
 	
 	hide();
+	
+	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+	
+	if(zapOnExit)
+		res = lastselected;
+
+	printf("CWebTV::show res %d\n", res);
 			
 	return (res);
 }
 
 void CWebTV::quickZap(int key)
 {
-	qZap = true;
-
 	if (key == g_settings.key_quickzap_down)
 	{
                 if(selected == 0)
@@ -431,32 +482,9 @@ void CWebTV::quickZap(int key)
                 selected = (selected+1)%channels.size();
         }
 	
-	if ( (channels[selected]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
-	{
-		if ( zapProtection != NULL )
-			zapProtection->fsk = g_settings.parentallock_lockage;
-		else
-		{
-			zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
-						
-			if ( !zapProtection->check() )
-			{
-				delete zapProtection;
-				zapProtection = NULL;
-				
-				filelist[selected].Name = "";
-			}
-			else
-			{
-				delete zapProtection;
-				zapProtection = NULL;
-					
-				filelist[selected].Url = channels[selected]->url;
-				filelist[selected].Name = channels[selected]->title;
-				filelist[selected].Description = channels[selected]->description;
-			}
-		}
-	}
+	lastselected = selected;
+	
+	zapTo(lastselected);
 }
 
 void CWebTV::hide()

@@ -1,7 +1,6 @@
 SUBDIRS = zapit gui daemonc driver system timerd nhttpd sectionsd
 
 INCLUDES = \
-	-I$(top_srcdir)/daemons \
 	-I$(top_srcdir)/src/zapit/include/zapit \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/connection \

@@ -63,6 +63,10 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 
+#include <gui/webtv.h>
+
+
+extern CWebTV * webtv;
 
 bool comparePictureByDate (const CPicture& a, const CPicture& b)
 {
@@ -154,12 +158,18 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 		frameBuffer->blit();
 #endif
 	}
-		
-	// stop playback
-	g_Zapit->lockPlayBack();
-		
-	// Stop Sectionsd
-	g_Sectionsd->setPauseScanning(true);
+	
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->stopPlayBack();
+	else
+	{
+		// stop playback
+		g_Zapit->lockPlayBack();
+			
+		// Stop Sectionsd
+		g_Sectionsd->setPauseScanning(true);
+	}
 
 	show();
 
@@ -177,12 +187,18 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 		frameBuffer->blit();
 #endif			
 	}
-		
-	// start playback
-	g_Zapit->unlockPlayBack();
+	
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->zapTo(webtv->lastselected);
+	else
+	{
+		// start playback
+		g_Zapit->unlockPlayBack();
 
-	// Start Sectionsd
-	g_Sectionsd->setPauseScanning(false);
+		// Start Sectionsd
+		g_Sectionsd->setPauseScanning(false);
+	}
 
 	// Restore last mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );

@@ -266,7 +266,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 #endif
 
 	// webtv
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "webtv", LOCALE_HELPTEXT_SCART) );
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_WEBTV_HEAD, true, NULL, /*moviePlayerGui*/this, "webtv", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, "webtv", LOCALE_HELPTEXT_SCART) );
 	
 	//Main Setting Menu
 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
@@ -2839,7 +2839,7 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_WEBTV;
                                 keyhelper.get(&key, &icon);	
-				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, moviePlayerGui, "webtv", key, icon);
+				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, /*moviePlayerGui*/this, "webtv", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
 #endif				

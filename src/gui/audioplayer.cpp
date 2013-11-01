@@ -81,9 +81,12 @@
 
 #include <system/debug.h>
 
+#include <gui/webtv.h>
+
 
 extern CPictureViewer * g_PicViewer;
 extern int current_muted;
+extern CWebTV * webtv;
 
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
@@ -300,11 +303,17 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	// remember last mode
 	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode());
 	
-	// stop/lock live playback	
-	g_Zapit->lockPlayBack();
-	
-	//pause epg scanning
-	g_Sectionsd->setPauseScanning(true);
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->stopPlayBack();
+	else
+	{
+		// stop/lock live playback	
+		g_Zapit->lockPlayBack();
+		
+		//pause epg scanning
+		g_Sectionsd->setPauseScanning(true);
+	}
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -330,11 +339,17 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	if (system(AUDIOPLAYER_END_SCRIPT) != 0) 
 		perror("Datei " AUDIOPLAYER_END_SCRIPT " fehlt. Bitte erstellen, wenn gebraucht.\nFile " AUDIOPLAYER_END_SCRIPT " not found. Please create if needed.\n");
 	
-	// unlock playback	
-	g_Zapit->unlockPlayBack();	
-	
-	//start epg scanning
-	g_Sectionsd->setPauseScanning(false);
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->zapTo(webtv->lastselected);
+	else
+	{
+		// unlock playback	
+		g_Zapit->unlockPlayBack();	
+		
+		//start epg scanning
+		g_Sectionsd->setPauseScanning(false);
+	}
 
 	//last mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE, m_LastMode );

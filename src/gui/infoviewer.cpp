@@ -736,7 +736,7 @@ extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
 
-void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, const char *const IconName, bool lshow)
 {
 	m_visible = true;
 	
@@ -769,18 +769,15 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	int m_icon_w = 0;
 	int m_icon_h = 0;
 	
-	if(isWebTV)
-		frameBuffer->getIconSize("iptv", &m_icon_w, &m_icon_h);
-	else
-		frameBuffer->getIconSize("mp", &m_icon_w, &m_icon_h);
+	if(!access(IconName, F_OK))
+	{
+		frameBuffer->getIconSize(IconName, &m_icon_w, &m_icon_h);
 
-	int m_icon_x = BoxStartX + 5;
-	int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
-	
-	if(isWebTV)
-		frameBuffer->paintIcon("iptv", m_icon_x, m_icon_y);
-	else
-		frameBuffer->paintIcon("mp", m_icon_x, m_icon_y);
+		int m_icon_x = BoxStartX + 5;
+		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
+		
+		frameBuffer->paintIcon(IconName, m_icon_x, m_icon_y);
+	}
 	
 	// paint buttons
 	// red

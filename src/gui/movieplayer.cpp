@@ -172,6 +172,8 @@ bool showaudioselectdialog = false;
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
 bool sectionsd_getEPGidShort(event_id_t epgID, CShortEPGData * epgdata);
 
+extern CWebTV * webtv;
+
 #define TIMESHIFT_SECONDS 	3
 
 enum {
@@ -322,7 +324,7 @@ void CMoviePlayerGui::Init(void)
 	moviebrowser = new CMovieBrowser();
 	
 	// webtv
-	webtv = new CWebTV();
+	//webtv = new CWebTV();
 
 	// tsfilefilter
 #if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)
@@ -394,11 +396,22 @@ void CMoviePlayerGui::cutNeutrino()
 	if (stopped)
 		return;
 	
-	// pause epg scanning
-	g_Sectionsd->setPauseScanning(true);
-		
-	// lock playback
-	g_Zapit->lockPlayBack();
+	// tell neutrino we are in ts mode
+	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, NeutrinoMessages::mode_ts);
+	
+	// save (remeber) last mode
+	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode() | NeutrinoMessages::norezap);
+	
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->stopPlayBack();
+	else
+	{
+		// pause epg scanning
+		g_Sectionsd->setPauseScanning(true);
+			
+		// lock playback
+		g_Zapit->lockPlayBack();
+	}
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	/* hide AC3 Icon */
@@ -412,12 +425,6 @@ void CMoviePlayerGui::cutNeutrino()
 		if(live_channel->type == 1)
 			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 	}
-
-	// tell neutrino we are in ts mode
-	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE, NeutrinoMessages::mode_ts);
-	
-	// save (remeber) last mode
-	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode() | NeutrinoMessages::norezap);
 	
 	// start mp start-script
 	puts("[movieplayer.cpp] executing " MOVIEPLAYER_START_SCRIPT ".");
@@ -434,11 +441,16 @@ void CMoviePlayerGui::restoreNeutrino()
 	if (!stopped)
 		return;
 
-	// unlock playback
-	g_Zapit->unlockPlayBack();
-		
-	// start epg scanning
-	g_Sectionsd->setPauseScanning(false);
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->zapTo(webtv->lastselected);
+	else
+	{
+		// unlock playback
+		g_Zapit->unlockPlayBack();
+			
+		// start epg scanning
+		g_Sectionsd->setPauseScanning(false);
+	}
 	
 	//FIXME: remove this to main control in neutrino.cpp
 	//TODO: check if ac3 is selected???
@@ -511,6 +523,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
+	
+	cutNeutrino();
 
 	if (actionKey == "tsmoviebrowser") 
 	{
@@ -1682,6 +1696,7 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			else if (isWebTV)	//webtv
 			{
+				/*
 				if( webtv->exec())
 				{
 					CFile * file;
@@ -1706,6 +1721,7 @@ void CMoviePlayerGui::PlayFile(void)
 					was_file = false;
 					break;
 				}
+				*/
 			}
 			else if(isDVD) // dvd
 			{
@@ -1802,7 +1818,16 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					Path_local = filebrowser->getCurrentDir();
 					
-					_filelist = filebrowser->getSelectedFiles();
+					if (g_settings.streaming_allow_multiselect) 
+					{
+						_filelist = filebrowser->getSelectedFiles();
+					} 
+					else 
+					{
+						CFile *file = filebrowser->getSelectedFile();
+						_filelist.clear();
+						_filelist.push_back(*file);
+					}
 
 					if(!_filelist.empty())
 					{
@@ -2042,8 +2067,6 @@ void CMoviePlayerGui::PlayFile(void)
 				playback->Close();
 			}
 
-			cutNeutrino();
-
 			// init player
 #if defined (PLATFORM_COOLSTREAM)
 			playback->Open(is_file_player ? PLAYMODE_FILE : PLAYMODE_TS);
@@ -2129,7 +2152,7 @@ void CMoviePlayerGui::PlayFile(void)
 #endif	
 				
 				// show movieinfoviewer at start
-				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP, false);
 			}
 		}
 		
@@ -2260,7 +2283,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				if(!g_InfoViewer->m_visible)
 					//g_InfoViewer->showMovieInfo();
-					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP);
 			}
 		} 
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_pause) 
@@ -2311,7 +2334,7 @@ void CMoviePlayerGui::PlayFile(void)
 				
 				if(!g_InfoViewer->m_visible)
 					//g_InfoViewer->showMovieInfo();
-					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
+					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP);
 			}
 		} 
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_bookmark) 
@@ -2427,7 +2450,7 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.hide();
 				
 			if( !g_InfoViewer->m_visible )
-				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP);
 		}
 		else if ( msg == (neutrino_msg_t) g_settings.mpkey_time )
 		{
@@ -2495,7 +2518,7 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if(!g_InfoViewer->m_visible)
 				//g_InfoViewer->showMovieInfo();
-				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP);
 		}
 		else if (msg == (neutrino_msg_t) g_settings.mpkey_forward) 
 		{	// fast-forward
@@ -2531,7 +2554,7 @@ void CMoviePlayerGui::PlayFile(void)
 			
 			if(!g_InfoViewer->m_visible)
 				//g_InfoViewer->showMovieInfo();
-				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
+				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, NEUTRINO_ICON_MP);
 		} 
 		else if (msg == CRCInput::RC_1) 
 		{	// Jump Backwards 1 minute
@@ -2816,7 +2839,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(isWebTV)
 			{
 				open_filebrowser = true;
-				webtv->quickZap(msg);
+				//webtv->quickZap(msg);
 			}
 		}
 		else if(msg == CRCInput::RC_favorites)
@@ -2825,7 +2848,7 @@ void CMoviePlayerGui::PlayFile(void)
 			{
 				//exit = true;
 				open_filebrowser = true;
-				webtv->showUserBouquet();
+				//webtv->showUserBouquet();
 			}
 		}
 		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)

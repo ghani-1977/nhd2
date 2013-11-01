@@ -68,6 +68,7 @@
 #include <system/settings.h>
 #include <gui/pictureviewer.h>
 #include <gui/movieplayer.h>
+#include <gui/webtv.h>
 
 
 #ifdef ConnectLineBox_Width
@@ -77,6 +78,7 @@
 
 extern CPictureViewer * g_PicViewer;
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
+extern CWebTV * webtv;
 
 const struct button_label RescanButton = {NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_UPNPBROWSER_RESCAN};
 const struct button_label StopButton   = {NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_AUDIOPLAYER_STOP};
@@ -132,11 +134,17 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	m_x = (((g_settings.screen_EndX - g_settings.screen_StartX) - (m_width + ConnectLineBox_Width)) / 2) + g_settings.screen_StartX + ConnectLineBox_Width;
 	m_y = (((g_settings.screen_EndY- g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
 
-	// stop playback
-	g_Zapit->lockPlayBack();
-	
-	// Stop sectionsd
-	g_Sectionsd->setPauseScanning(true);	
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->stopPlayBack();
+	else
+	{
+		// stop playback
+		g_Zapit->lockPlayBack();
+		
+		// Stop sectionsd
+		g_Sectionsd->setPauseScanning(true);
+	}
 
 	m_indexdevice = 0;
 	m_selecteddevice = 0;
@@ -147,11 +155,17 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 		CAudioPlayer::getInstance()->stop();
 	
-	// start playback
-	g_Zapit->unlockPlayBack();
+	//
+	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
+		webtv->zapTo(webtv->lastselected);
+	else
+	{
+		// start playback
+		g_Zapit->unlockPlayBack();
 
-	// Start Sectionsd
-	g_Sectionsd->setPauseScanning(false);
+		// Start Sectionsd
+		g_Sectionsd->setPauseScanning(false);
+	}
 
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE , m_LastMode );
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );

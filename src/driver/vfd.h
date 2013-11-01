@@ -394,6 +394,7 @@ class CVFD
 			MODE_AUDIO,
 			MODE_PIC,
 			MODE_TS,
+			MODE_IPTV
 		};
 
 		enum AUDIOMODES
