@@ -553,7 +553,7 @@ void CWebTV::zapTo(int pos)
 		CVFD::getInstance()->showServicename(channels[lastselected]->title); // UTF-8
 	
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, NEUTRINO_ICON_WEBTV, false);
+	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
 }
 
 void CWebTV::quickZap(int key)
@@ -578,7 +578,7 @@ void CWebTV::quickZap(int key)
 void CWebTV::showInfo()
 {
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, file_prozent, duration, w_ac3state, speed, playstate, NEUTRINO_ICON_WEBTV, false);
+	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
 }
 
 void CWebTV::getInfos()

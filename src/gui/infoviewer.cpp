@@ -84,6 +84,7 @@ extern CFrontend * live_fe;				// zapit.cpp
 extern fe_map_t femap;					// zapit.cpp
 extern CFrontend * getFE(int index);			// zapit.cpp
 extern int FrontendCount;				// defined in zapit.cpp
+extern CWebTV * webtv;					// defined in neutrino.cpp
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -637,7 +638,11 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			}
 			else if ( msg == CRCInput::RC_info )
 			{
-				g_RCInput->postMsg (NeutrinoMessages::SHOW_EPG, 0);
+				if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+					webtv->showFileInfoWebTV();
+				else
+					g_RCInput->postMsg (NeutrinoMessages::SHOW_EPG, 0);
+				
 				res = messages_return::cancel_info;
 			} 
 			else if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) 
@@ -736,7 +741,7 @@ extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
 
-void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, const char *const IconName, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
 {
 	m_visible = true;
 	
@@ -769,6 +774,7 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	int m_icon_w = 0;
 	int m_icon_h = 0;
 	
+	/*
 	//if(!access(IconName, F_OK))
 	{
 		frameBuffer->getIconSize(IconName, &m_icon_w, &m_icon_h);
@@ -777,6 +783,18 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
 		
 		frameBuffer->paintIcon(IconName, m_icon_x, m_icon_y);
+	}
+	*/
+	//std::string IconName = DATADIR "/neutrino/icons/" NEUTRINO_ICON_MP;
+	
+	//if(!access(IconName.c_str(), F_OK))
+	{
+		frameBuffer->getIconSize((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_WEBTV : NEUTRINO_ICON_MP, &m_icon_w, &m_icon_h);
+
+		int m_icon_x = BoxStartX + 5;
+		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
+		
+		frameBuffer->paintIcon((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_WEBTV : NEUTRINO_ICON_MP, m_icon_x, m_icon_y);
 	}
 	
 	// paint buttons
@@ -796,7 +814,15 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 		
 	// yellow	
 	// help
+	/*
 	if(isMovieBrowser || isVlc || cdDvd || isDVD || isBlueRay || isURL)
+	{
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+	}
+	*/
+	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
@@ -807,10 +833,17 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	// bookmark
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
+	
+	/*
 	if(isMovieBrowser)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 	else if(!isVlc && !cdDvd && !isDVD && !isBlueRay && !isURL)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	*/
+	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	else if(isMovieBrowser)
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// ac3
 	int icon_w_ac3, icon_h_ac3;
@@ -828,7 +861,7 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
 	
 	/* mp keys */
-	if(!isWebTV)
+	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
 		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
@@ -890,7 +923,7 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
 
 	// duration
-	if(!isWebTV && !isVlc && lshow)
+	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, cDisplayTime, COL_INFOBAR);
 		
 	// show data
@@ -925,14 +958,19 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 		
 		if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) 
 		{
-				res = messages_return::cancel_info;
+			res = messages_return::cancel_info;
 		} 
+		else if(msg == CRCInput::RC_info)
+		{
+			if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+			{
+				killTitle();
+				webtv->showFileInfoWebTV();
+			}
+		}
 		else 
 		{		
 			res = neutrino->handleMsg (msg, data);
-			
-			// progressbar
-			moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
 					
 			if (res & messages_return::unhandled) 
 			{

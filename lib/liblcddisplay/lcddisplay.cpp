@@ -639,7 +639,6 @@ void CLCDDisplay::draw_rectangle (int left,int top, int right, int bottom, int l
 
 void CLCDDisplay::draw_polygon(int num_vertices, int *vertices, int state) 
 {
-
 	// coordinate checking in draw_pixel (-> you can draw polygons only
 	// partly on screen)
 

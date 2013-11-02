@@ -122,11 +122,13 @@ CVFD::CVFD()
 	
 	if(fd < 0) 
 	{
+		perror("/dev/dbox/oled0");
+		
 		fd = open("/dev/oled0", O_RDONLY);
 		
 		if(fd < 0)
 		{
-			perror("/dev/dbox/oled0");
+			perror("/dev/oled0");
 			has_lcd = 0;
 		}
 	}
@@ -835,7 +837,7 @@ void CVFD::ShowText(const char * str)
 #if defined (__sh__)	 
 	openDevice();
 	
-	if( write(fd , text.c_str(), len > 16? 16 : len ) < 0)
+	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
 		perror("write to vfd failed");
 	
 	closeDevice();
@@ -852,7 +854,7 @@ void CVFD::ShowText(const char * str)
 	if(ret < 0)
 		perror("IOC_VFD_SET_TEXT");
 #else
-	if( write(fd , text.c_str(), len > 12? 12 : len ) < 0)
+	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
 		perror("write to vfd failed");
 #endif
 }
