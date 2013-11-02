@@ -1497,7 +1497,10 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			showIcon_Resolution();
 
 		// show failure..!
-		CVFD::getInstance()->showServicename ("(" + g_RemoteControl->getCurrentChannelName () + ')');
+		if (CVFD::getInstance()->is4digits)
+			CVFD::getInstance()->LCDshowText(g_RemoteControl->getCurrentChannelNumber());
+		else
+			CVFD::getInstance()->showServicename("(" + g_RemoteControl->getCurrentChannelName() + ')');
 		
 		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 		showFailure();
@@ -1520,7 +1523,10 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		if ((*(t_channel_id *) data) == channel_id) 
 		{
 	  		// show failure..!
-			CVFD::getInstance()->showServicename ("(" + g_RemoteControl->getCurrentChannelName () + ')');
+			if (CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->LCDshowText(g_RemoteControl->getCurrentChannelNumber());
+			else
+				CVFD::getInstance()->showServicename ("(" + g_RemoteControl->getCurrentChannelName () + ')');
 			
 	  		dprintf(DEBUG_NORMAL, "CInfoViewer::handleMsg: zap failed!\n");
 	  		showFailure ();
