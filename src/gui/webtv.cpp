@@ -40,12 +40,12 @@
 #include <gui/widget/buttons.h>
 #include <gui/widget/messagebox.h>
 #include <gui/widget/helpbox.h>
+#include <gui/widget/msgbox.h>
 
 #include <gui/filebrowser.h>
 
 #include <xmlinterface.h>
 
-#include <video_cs.h>
 #include <system/debug.h>
 
 /* libdvbapi */
