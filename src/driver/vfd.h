@@ -484,6 +484,7 @@ class CVFD
 		void ShowIcon(vfd_icon icon, bool show);
 #endif		
 		void ShowText(const char * str);
+		void LCDshowText(int pos);
 		
 		void setFan(bool enable);
 		void setFPTime(void);

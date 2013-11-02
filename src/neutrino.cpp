@@ -2196,13 +2196,7 @@ void CNeutrinoApp::InitZapper()
 
 		// show service name in vfd (250hd has only 4 digit so we show service number)
 		if (CVFD::getInstance()->is4digits)
-		{
-			char tmp[5];
-			
-			sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
-			
-			CVFD::getInstance()->ShowText(tmp); // UTF-8
-		}
+			CVFD::getInstance()->LCDshowText(channelList->getActiveChannelNumber());
 		else
 			CVFD::getInstance()->showServicename(channelList->getActiveChannelName());	
 
@@ -4771,13 +4765,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 				
 		if (CVFD::getInstance()->is4digits)
-		{
-			char tmp[5];
-		
-			sprintf(tmp, "%04d", channelList->getActiveChannelNumber() );
-		
-			CVFD::getInstance()->ShowText(tmp); // UTF-8
-		}
+			CVFD::getInstance()->LCDshowText(channelList->getActiveChannelNumber());
 		
 		// video wake up
 		if(videoDecoder)

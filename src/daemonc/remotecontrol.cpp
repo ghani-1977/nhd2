@@ -165,13 +165,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
 				{
 					if (CVFD::getInstance()->is4digits)					
-					{
-						char tmp[5];
-						
-						sprintf(tmp, "%04d", current_channel_number );
-						
-						CVFD::getInstance()->ShowText(tmp); // UTF-8
-					}					
+						CVFD::getInstance()->LCDshowText(current_channel_number);
 					else
 						CVFD::getInstance()->showServicename(current_channel_name); // UTF-8						
 				}
@@ -321,13 +315,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				}
 					
 				if (CVFD::getInstance()->is4digits)					
-				{
-					char tmp[5];
-						
-					sprintf(tmp, "%04d", current_channel_number);
-						
-					CVFD::getInstance()->ShowText(tmp); // UTF-8
-				}				
+					CVFD::getInstance()->LCDshowText(current_channel_number);
 				else
 					CVFD::getInstance()->showServicename(current_channel_name); // UTF-8						
 			}
@@ -386,13 +374,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 				}
 					
 				if (CVFD::getInstance()->is4digits)			
-				{
-					char tmp[5];
-						
-					sprintf(tmp, "%04d", current_channel_number);
-						
-					CVFD::getInstance()->ShowText(tmp); // UTF-8
-				}
+					CVFD::getInstance()->LCDshowText(current_channel_number);
 				else				
 					CVFD::getInstance()->showServicename(std::string("<") + current_channel_name + '>'); // UTF-8					
 			}

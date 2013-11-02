@@ -1685,8 +1685,11 @@ void CAudioPlayerGui::paintItem(int pos)
 		if ((pos + m_liststart) == m_selected)
 		{
 			if (m_state == CAudioPlayerGui::STOP)
-			{	  
-				CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);				
+			{
+				if (CVFD::getInstance()->is4digits)
+					CVFD::getInstance()->LCDshowText(m_selected + 1);
+				else
+					CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);				
 			}
 		}		
 	}
@@ -2459,7 +2462,10 @@ void CAudioPlayerGui::paintLCD()
 			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PLAY);
 
 			// audio-track	
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			if (CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->LCDshowText(m_selected + 1);
+			else
+				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			
 #if ENABLE_LCD
 			if(m_curr_audiofile.FileType != CFile::STREAM_AUDIO && m_time_total != 0)
@@ -2475,18 +2481,27 @@ void CAudioPlayerGui::paintLCD()
 
 			break;
 		case CAudioPlayerGui::PAUSE:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PAUSE);		
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_PAUSE);
+			if (CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->LCDshowText(m_selected + 1);
+			else
+				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 			
 		case CAudioPlayerGui::FF:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_FF);		
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_FF);
+			if (CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->LCDshowText(m_selected + 1);
+			else
+				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 			
 		case CAudioPlayerGui::REV:
-			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_REV);	
-			CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			CVFD::getInstance()->showAudioPlayMode(CVFD::AUDIO_MODE_REV);
+			if (CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->LCDshowText(m_selected + 1);
+			else
+				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			break;
 	}
 }

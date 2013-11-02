@@ -548,13 +548,7 @@ void CWebTV::zapTo(int pos)
 	
 	// vfd
 	if (CVFD::getInstance()->is4digits)
-	{
-		char tmp[5];
-			
-		sprintf(tmp, "%04d", channels[lastselected]->title);
-			
-		CVFD::getInstance()->ShowText(tmp); // UTF-8
-	}
+		CVFD::getInstance()->LCDshowText(lastselected + 1);
 	else
 		CVFD::getInstance()->showServicename(channels[lastselected]->title); // UTF-8
 	
