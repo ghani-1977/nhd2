@@ -242,7 +242,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 
 	dprintf(DEBUG_DEBUG, "CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
 	
-#ifdef __sh__
+#if defined (__sh__)
         struct vfd_ioctl_data data;
 	data.start_address = dimm;
 	
@@ -528,7 +528,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			showclock = false;
 			break;
 			
-		case MODE_TS:  
+		case MODE_MOVIE:  
 			ShowIcon(VFD_ICON_TV, false);			
 			showclock = false;
 			break;
@@ -585,7 +585,7 @@ void CVFD::setPower(int power)
 	if(!has_lcd || is4digits) 
 		return;
 
-#ifdef __sh__
+#if defined (__sh__)
 	struct vfd_ioctl_data data;
 	data.start_address = power;
 	
@@ -655,7 +655,7 @@ void CVFD::Clear()
 	
 #if defined (PLATFORM_GIGABLUE)
 	ShowText("    "); // 4 empty digits
-#elif defined __sh__ 
+#elif defined (__sh__)
 	struct vfd_ioctl_data data;
 	
 #if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
@@ -754,7 +754,7 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	
 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 
-#ifdef __sh__
+#if defined (__sh__)
 #if defined (PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
 	switch (icon)
 	{
@@ -926,7 +926,7 @@ void CVFD::ShowText(const char * str)
 
 void CVFD::setFan(bool enable)
 {
-#ifdef __sh__
+#if defined (__sh__)
 	//openDevice();
 	
 	//if( ioctl(fd, VFDSETFAN, enable) < 0)  
@@ -962,7 +962,7 @@ void CVFD::setFPTime(void)
 	if(!has_lcd)
 		return;
 
-#ifdef __sh__
+#if defined (__sh__)
 	openDevice();
 	
 	char timebuf[6];
