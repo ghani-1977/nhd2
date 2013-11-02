@@ -144,6 +144,8 @@ CVFD::~CVFD()
 #if !defined (__sh__) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
 	if(fd > 0)
 		close(fd);
+	
+	fd = -1;
 #endif
 }
 
@@ -691,6 +693,8 @@ void CVFD::Clear()
 		perror("IOC_VFD_SET_TEXT");
 	else
 		text[0] = 0;
+#else
+	ShowText("            "); // 12 empty digits
 #endif
 }
 
@@ -934,7 +938,7 @@ void CVFD::ShowText(const char * str)
 	int ret = ioctl(fd, IOC_VFD_SET_TEXT, len ? str : NULL);
 	if(ret < 0)
 		perror("IOC_VFD_SET_TEXT");
-#elif defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
+#else
 	if( write(fd , text.c_str(), len > 12? 12 : len ) < 0)
 		perror("write to vfd failed");
 #endif
