@@ -417,10 +417,11 @@ void CLCDDisplay::update()
 			unsigned char raw[64*64];
 			int x, y;
 			memset(raw, 0, 64*64);
-			for (y=0; y<64; y++)
+			
+			for (y = 0; y < 64; y++)
 			{
-				int pix=0;
-				for (x=0; x<128 / 2; x++)
+				int pix = 0;
+				for (x = 0; x < 128 / 2; x++)
 				{
 					pix = (surface_data[y*132 + x * 2 + 2] & 0xF0) |(surface_data[y*132 + x * 2 + 1 + 2] >> 4);
 					if (inverted)

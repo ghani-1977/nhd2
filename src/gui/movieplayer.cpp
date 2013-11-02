@@ -138,7 +138,7 @@ static int slow = 0;
 
 static int position = 0;
 static int duration = 0;
-static int file_prozent;
+static int file_prozent = 0;
 
 static int startposition;
 int timeshift;
@@ -1104,6 +1104,7 @@ void CMoviePlayerGui::PlayFile(void)
 	//
 	position = 0;
 	duration = 0;
+	file_prozent = 0;
 	startposition = 0;
 	
 	// global flags

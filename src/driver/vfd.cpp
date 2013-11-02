@@ -94,7 +94,7 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 	// vfd
-#if defined (PLATFORM_XTREND) || defined (PLATFORM_GENERIC)
+#if defined (PLATFORM_GENERIC)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
@@ -122,6 +122,16 @@ CVFD::CVFD()
 		has_lcd = 0;
 	}
 #endif
+
+#if defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
+	fd = open("/dev/dbox/oled0", O_RDONLY);
+	
+	if(fd < 0) 
+	{
+		perror("/dev/dbox/oled0");
+		has_lcd = 0;
+	}
+#endif
 	
 	text[0] = 0;
 	clearClock = 0;
@@ -131,7 +141,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if defined (PLATFORM_COOLSTREAM)
+#if defined (PLATFORM_COOLSTREAM) || defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
 	if(fd > 0)
 		close(fd);
 #endif
@@ -921,6 +931,9 @@ void CVFD::ShowText(const char * str)
 	int ret = ioctl(fd, IOC_VFD_SET_TEXT, len ? str : NULL);
 	if(ret < 0)
 		perror("IOC_VFD_SET_TEXT");
+#elif defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
+	if( write(fd , text.c_str(), len > 12? 12 : len ) < 0)
+		perror("write to vfd failed");
 #endif
 }
 

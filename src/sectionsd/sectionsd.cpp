@@ -7372,7 +7372,7 @@ static void *pptThread(void *)
 	dmxPPT.addfilter( 0xa0, (0xff));
 	dprintf(DEBUG_DEBUG, "[%sThread] pid %d (%lu) start\n", "ppt", getpid(), pthread_self());
 	int timeoutsDMX = 0;
-	char *static_buf = new char[MAX_SECTION_LENGTH];
+	uint8_t *static_buf = new uint8_t[MAX_SECTION_LENGTH];
 	int rc;
 
 	if (static_buf == NULL)
@@ -7545,7 +7545,7 @@ static void *pptThread(void *)
 				continue;
 			}
 
-			//				SIsectionPPT ppt(SIsection(section_length + 3, buf));
+			//SIsectionPPT ppt(SIsection(section_length + 3, buf));
 			SIsectionPPT ppt(section_length + 3, static_buf);
 			if (ppt.is_parsed())
 			{
@@ -7595,7 +7595,7 @@ static void *pptThread(void *)
 									if (already_exists)
 									{
 										// Zusaetzliche Zeiten in ein Event einfuegen
-										addEventTimes(*e);
+										//addEventTimes(*e);
 									}
 									else
 									{
@@ -7935,19 +7935,8 @@ void sectionsd_main_thread(void */*data*/)
 	struct sched_param parm;
 
 	printf("$Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp Exp $\n");
-	
-	/* "export NO_SLOW_ADDEVENT=true" to disable this */
-	slow_addevent = (getenv("NO_SLOW_ADDEVENT") == NULL);
-	if (slow_addevent)
-		printf("====> USING SLOW ADDEVENT. export 'NO_SLOW_ADDEVENT=1' to avoid <===\n");
 
-	/* for debugging / benchmarking, "export STARTUP_WAIT=true" to wait with startup for
-	 * the EPG loading to finish
-	* this wil fail badly if no EPG saving / loading is configured! */
-	reader_ready = (getenv("STARTUP_WAIT") == NULL);
-	if (!reader_ready)
-		printf("====> sectionsd waiting with startup until saved EPG is read <===\n");
-
+	// load languages
 	SIlanguage::loadLanguages();
 
 	tzset(); // TZ auswerten
@@ -7984,9 +7973,6 @@ void sectionsd_main_thread(void */*data*/)
 
 	readEPGFilter();
 	readDVBTimeFilter();
-#if 0
-	readBouquetFilter();
-#endif
 	readEncodingFile();
 
 	if (!sectionsd_server.prepare(SECTIONSD_UDS_NAME)) 
@@ -8811,11 +8797,12 @@ bool sectionsd_getNVODTimesServiceKey(const t_channel_id uniqueServiceKey, CSect
 	return ret;
 }
 
-void sectionsd_setPrivatePid(unsigned short /*pid*/)
+void sectionsd_setPrivatePid(unsigned short pid)
 {
 #ifdef ENABLE_PPT
 	privatePid = pid;
-	if (pid != 0) {
+	if (pid != 0) 
+	{
 		dprintf(DEBUG_DEBUG, "[sectionsd] wakeup PPT Thread, pid=%x\n", pid);
 		dmxPPT.change( 0 );
 	}
