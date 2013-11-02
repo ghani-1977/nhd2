@@ -498,7 +498,11 @@ class CVFD
 		
 		void vfd_led(int led);
 		
-#ifdef __sh__
+		// venton
+		void vfd_symbol_network(int net);
+		void vfd_symbol_circle(int cir);
+		
+#if defined (__sh__)
 		void openDevice();
 		void closeDevice();
 #endif

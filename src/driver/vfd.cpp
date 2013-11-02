@@ -123,7 +123,7 @@ CVFD::CVFD()
 	}
 #endif
 
-#if defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
 	fd = open("/dev/dbox/oled0", O_RDONLY);
 	
 	if(fd < 0) 
@@ -141,7 +141,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if defined (PLATFORM_COOLSTREAM) || defined (PLATFORM_XTREND) || defined (PLATFORM_VENTON)
+#if !defined (__sh__) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
 	if(fd > 0)
 		close(fd);
 #endif
@@ -229,6 +229,9 @@ void CVFD::init()
 	// set led color
 #if defined (PLATFORM_GIGABLUE)
 	vfd_led(LED_BLUE);  //0:off, 1:blue, 2:red, 3:purple
+#elif defined (PLATFORM_VENTON)
+	vfd_symbol_network(0);
+	vfd_symbol_circle(0);
 #endif
 }
 
@@ -966,6 +969,49 @@ void CVFD::vfd_led(int led)
 		return;
 	
 	fprintf(f, "%d", led);
+	fclose(f);
+#endif	
+}
+
+void CVFD::vfd_symbol_network(int net)
+{
+	const char *VFDNET[] = {
+		"OFF",
+		"ON"
+	};
+	
+	dprintf(DEBUG_NORMAL, "CVFD::vfd_symbol_network: %s\n", VFDNET[net]);
+	
+#if defined (PLATFORM_VENTON)	
+	FILE *f;
+	if((f = fopen("/proc/stb/lcd/symbol_network","w")) == NULL) 
+	{
+		printf("cannot open /proc/stb/lcd/symbol_network (%m)\n");
+		return;
+	}	
+	fprintf(f,"%i", net);
+	fclose(f);
+#endif	
+}
+
+void CVFD::vfd_symbol_circle(int cir)
+{
+	const char *VFDCIRCLE[] = {
+		"OFF",
+		"ON"
+	};
+	
+	dprintf(DEBUG_NORMAL, "CVFD::vfd_symbol_circle: %s\n", VFDCIRCLE[cir]);
+	
+#if defined (PLATFORM_VENTON)	
+	FILE *f;
+	if((f = fopen("/proc/stb/lcd/symbol_circle","w")) == NULL) 
+	{
+		printf("cannotopen /proc/stb/lcd/symbol_circle (%m)\n");
+	
+		return;
+	}
+	fprintf(f,"%i", cir);
 	fclose(f);
 #endif	
 }
