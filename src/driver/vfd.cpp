@@ -106,12 +106,6 @@ CVFD::CVFD()
 #else
 	is4digits = 0;
 #endif
-	// has led
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_SPARK)
-	has_led = 1;
-#else	
-	has_led = 0;
-#endif
 
 #if defined (PLATFORM_COOLSTREAM)
 	fd = open("/dev/display", O_RDONLY);
@@ -128,15 +122,18 @@ CVFD::CVFD()
 	
 	if(fd < 0) 
 	{
-		perror("/dev/dbox/oled0");
-		has_lcd = 0;
+		fd = open("/dev/oled0", O_RDONLY);
+		
+		if(fd < 0)
+		{
+			perror("/dev/dbox/oled0");
+			has_lcd = 0;
+		}
 	}
 #endif
 	
 	text[0] = 0;
 	clearClock = 0;
-
-	vfd_scrollText = 0;
 }
 
 CVFD::~CVFD()
@@ -307,34 +304,7 @@ void CVFD::showServicename(const std::string & name) // UTF-8
 	if (mode != MODE_TVRADIO && mode != MODE_IPTV)
 		return;
 
-	// scroll text
-	#if 0
-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_SCROLL_TEXT] == 1)
-	{
-		int len = strlen((char *) servicename.c_str());
-
-		if(len>14)
-		{
-			ShowScrollText((char *) servicename.c_str());
-		}
-		else
-		{
-			if(vfd_scrollText != 0)
-			{
-				pthread_cancel(vfd_scrollText);
-				pthread_join(vfd_scrollText, NULL);
-		
-				vfd_scrollText = 0;
-			}
-	
-			ShowText((char *) servicename.c_str());
-		}
-	}
-	else
-	#endif
-	{
-		ShowText((char *)name.c_str() );
-	}
+	ShowText((char *)name.c_str() );
 
 	wake_up();
 }
@@ -820,63 +790,6 @@ void CVFD::ShowIcon(vfd_icon icon, bool show)
 	if(ret < 0)
 		perror(show ? "IOC_VFD_SET_ICON" : "IOC_VFD_CLEAR_ICON");
 #endif
-}
-
-void * CVFD::ThreadScrollText(void * arg)
-{
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-
-	int vfd = open("/dev/vfd", O_RDWR);
-
-	int i;
-	char *str = (char *)arg;
-	int len = strlen(str);
-	char out[15];
-
-	memset(out, 0, 15);
-
-	int retries = 1;
-
-	while(retries--)
-	{
-		usleep(500000);
-			
-		for (i=0; i<=(len-14); i++) 
-		{ 
-			// scroll text till end
-			memset(out, ' ', 14);
-			memcpy(out, str+i, 14);
-			write(vfd, out, strlen(out));
-			usleep(500000);
-		}
-	
-		memcpy(out, str, 14); // display first 13 chars after scrolling
-		write(vfd, out, strlen(out));
-	}
-	
-	close(vfd);
-	
-	pthread_exit(0);
-
-	return NULL;
-}
-
-void CVFD::ShowScrollText(char *str)
-{
-	int len = strlen(str);
-	int ret;
-
-	//stop scrolltextthread
-	if(vfd_scrollText != 0)
-	{
-		pthread_cancel(vfd_scrollText);
-		pthread_join(vfd_scrollText, NULL);
-
-		vfd_scrollText = 0;
-	}
-
-	//scroll text thread
-	pthread_create(&vfd_scrollText, NULL, ThreadScrollText, (void *)str);
 }
 
 void CVFD::ShowText(const char * str)

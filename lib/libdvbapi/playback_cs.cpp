@@ -390,7 +390,7 @@ void cPlayback::Close(void)
 	{
 		// unref m_gst_playbin
 		gst_object_unref (GST_OBJECT (m_gst_playbin));
-		//m_gst_playbin = NULL;
+		m_gst_playbin = NULL;
 		
 		dprintf(DEBUG_NORMAL, "GST playbin closed\n");
 	}

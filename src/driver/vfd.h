@@ -438,16 +438,12 @@ class CVFD
 
 		static void * TimeThread(void*);
 		void setlcdparameter(int dimm, int power);
-		
-		// scroll text
-		pthread_t vfd_scrollText;
 
 	public:
 
 		~CVFD();
 		bool has_lcd;	
 		bool is4digits;	
-		bool has_led;
 		
 		void setlcdparameter(void);
 
@@ -488,14 +484,11 @@ class CVFD
 		void ShowIcon(vfd_icon icon, bool show);
 #endif		
 		void ShowText(const char * str);
-
-		void ShowScrollText(char * str);
-
-		static void* ThreadScrollText(void * arg);
 		
 		void setFan(bool enable);
 		void setFPTime(void);
 		
+		// gigablue800se
 		void vfd_led(int led);
 		
 		// venton
