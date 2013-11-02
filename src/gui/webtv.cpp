@@ -699,7 +699,7 @@ showList:
 		}
 		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
 		{
-			showFileInfoWebTV();
+			showFileInfoWebTVSelected(selected);
 			res = -1;
 			
 			goto showList;
@@ -983,13 +983,12 @@ void CWebTV::paint()
 	frameBuffer->paintBoxRel(x + width- 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
 }
 
+void CWebTV::showFileInfoWebTVSelected(int pos)
+{
+	ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
+}
+
 void CWebTV::showFileInfoWebTV()
 {
-	Helpbox helpbox;
-	
-	helpbox.addLine(channels[selected]->title);
-	helpbox.addLine(channels[selected]->description);
-	
-	hide();
-	helpbox.show(LOCALE_MESSAGEBOX_INFO);
+	ShowMsg2UTF(channels[oldselected]->title, channels[oldselected]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
 }

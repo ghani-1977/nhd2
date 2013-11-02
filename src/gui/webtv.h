@@ -114,6 +114,7 @@ class CWebTV
 		int Show();
 		
 		void quickZap(int key);
+		void showFileInfoWebTVSelected(int pos);
 		void showFileInfoWebTV();
 		void showUserBouquet();
 		
