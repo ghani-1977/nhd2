@@ -2885,7 +2885,12 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else if( msg == (neutrino_msg_t) g_settings.key_timeshift) // start timeshift recording
 			{
 				if(mode == mode_iptv)
-					webtv->pausePlayBack();
+				{
+					if(webtv->playstate == CWebTV::PAUSE)
+						webtv->continuePlayBack();
+					else if(webtv->playstate == CWebTV::PLAY)
+						webtv->pausePlayBack();
+				}
 				else
 				{
 					if (recDir != NULL)
@@ -2934,7 +2939,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else if(msg == (neutrino_msg_t)g_settings.mpkey_play && mode == mode_iptv)
 			{
 				if(mode == mode_iptv)
-					webtv->continuePlayBack();
+				{
+					if(webtv->playstate == CWebTV::PAUSE)
+						webtv->continuePlayBack();
+				}
 			}
 			else if( (msg == CRCInput::RC_record || msg == CRCInput::RC_stop) && (mode != mode_iptv) ) 
 			{
@@ -2966,7 +2974,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else if(msg == CRCInput::RC_stop && mode == mode_iptv) 
 			{
 				if(mode == mode_iptv)
-					webtv->stopPlayBack();
+				{
+					if(webtv->playstate == CWebTV::PLAY || webtv->playstate == CWebTV::PAUSE)
+						webtv->stopPlayBack();
+				}
 			}
 			else if( msg == CRCInput::RC_red ) 
 			{

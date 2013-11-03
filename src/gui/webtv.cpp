@@ -720,19 +720,27 @@ showList:
 		}
 		else if( msg == (neutrino_msg_t) g_settings.key_timeshift) // pause playing
 		{
-			pausePlayBack();
+			if(playstate == PAUSE)
+				continuePlayBack();
+			else if(playstate == PLAY)
+				pausePlayBack();
+			
 			res = -1;
 			loop = false;
 		}
 		else if( msg == CRCInput::RC_stop) // pause playing
 		{
-			stopPlayBack();
+			if(playstate == PLAY || playstate == PAUSE)
+				stopPlayBack();
+			
 			res = -1;
 			loop = false;
 		}
 		else if(msg == (neutrino_msg_t)g_settings.mpkey_play)
 		{
-			continuePlayBack();
+			if(playstate == PAUSE)
+				continuePlayBack();
+			
 			res = -1;
 			loop = false;
 		}
