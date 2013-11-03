@@ -157,7 +157,7 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->zapTo(webtv->getTunedChannel(), false);
+		webtv->startPlayBack(webtv->getTunedChannel());
 	else
 	{
 		// start playback

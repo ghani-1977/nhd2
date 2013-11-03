@@ -173,6 +173,35 @@ CWebTV::CWebTV()
 	
 	zapProtection = NULL;
 	
+	playstate = STOPPED;
+	speed = 0;
+}
+
+CWebTV::~CWebTV()
+{
+	Close();
+}
+
+void CWebTV::Close(void)
+{
+	if (parser)
+	{
+		xmlFreeDoc(parser);
+		parser = NULL;
+	}
+	
+	for(unsigned int count = 0; count < channels.size(); count++)
+	{
+		delete channels[count];
+	}
+	channels.clear();
+}
+
+int CWebTV::exec()
+{
+	tuned = -1;
+	
+	// load streams channels list
 	switch(mode)
 	{
 		case WEBTV:
@@ -191,27 +220,6 @@ CWebTV::CWebTV()
 			break;	
 	}
 	
-	playstate = PLAY;
-	speed = 1;
-}
-
-CWebTV::~CWebTV()
-{
-	if (parser)
-	{
-		xmlFreeDoc(parser);
-		parser = NULL;
-	}
-	
-	for(unsigned int count = 0; count < channels.size(); count++)
-	{
-		delete channels[count];
-	}
-	channels.clear();
-}
-
-int CWebTV::exec()
-{
 	int nNewChannel = Show();
 	
 	// zapto
@@ -470,8 +478,6 @@ void CWebTV::showAudioDialog(void)
 
 bool CWebTV::startPlayBack(int pos)
 {
-	playback->Close();
-	
 	playback->Open();
 	if (!playback->Start(channels[pos]->url))
 		return false;

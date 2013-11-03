@@ -4495,6 +4495,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 	else if(mode == mode_iptv)
 	{
 		webtv->stopPlayBack();
+		webtv->Close();
 		
 		// unlock playback
 		g_Zapit->unlockPlayBack();
@@ -4572,6 +4573,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 	if(mode == mode_iptv)
 	{
 		webtv->stopPlayBack();
+		webtv->Close();
 		
 		// unlock playback
 		g_Zapit->unlockPlayBack();
@@ -4720,6 +4722,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		if(mode == mode_iptv)
 		{
 			webtv->stopPlayBack();
+			webtv->Close();
 		}
 		else
 		{
@@ -4885,9 +4888,6 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	else if(mode == mode_iptv)
 		return;
 
-	//mode = mode_iptv;
-	//lastMode = mode;
-
 	if(autoshift) 
 	{
 		dprintf(DEBUG_NORMAL, "CNeutrinoApp::radioMode: standby on: autoshift ! stopping ...\n");
@@ -4911,8 +4911,7 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	
 	mode = mode_iptv;
 
-	// zapto last webtv channel
-	//webtv->zapTo(webtv->getTunedChannel());
+	// show streams channel list
 	webtv->exec();
 }
 

@@ -131,6 +131,8 @@ class CWebTV
 		void showAudioDialog();
 		
 		unsigned int getTunedChannel() {return tuned;};
+		
+		void Close(void);
 };
 
 class CWebTVAPIDSelectExec : public CMenuTarget

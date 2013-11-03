@@ -442,7 +442,7 @@ void CMoviePlayerGui::restoreNeutrino()
 		return;
 
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->zapTo(webtv->getTunedChannel(), false);
+		webtv->startPlayBack(webtv->getTunedChannel());
 	else
 	{
 		// unlock playback
