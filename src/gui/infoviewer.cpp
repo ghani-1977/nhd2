@@ -639,7 +639,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			else if ( msg == CRCInput::RC_info )
 			{
 				if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
-					webtv->showFileInfoWebTV();
+					webtv->showFileInfoWebTV(webtv->getTunedChannel());
 				else
 					g_RCInput->postMsg (NeutrinoMessages::SHOW_EPG, 0);
 				
@@ -938,7 +938,7 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 			if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
 			{
 				killTitle();
-				webtv->showFileInfoWebTV();
+				webtv->showFileInfoWebTV(webtv->getTunedChannel());
 			}
 		}
 		else 

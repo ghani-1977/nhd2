@@ -162,7 +162,7 @@ CWebTV::CWebTV()
 	
 	selected = 0;
 	liststart = 0;
-	lastselected = selected;
+	tuned = -1;
 	
 	parser = NULL;
 	mode = WEBTV;
@@ -504,8 +504,6 @@ void CWebTV::continuePlayBack(void)
 //
 void CWebTV::zapTo(int pos, bool _show)
 {
-	playback->Close();
-	
 	// show emty channellist error msg
 	if (channels.empty()) 
 	{
@@ -513,44 +511,55 @@ void CWebTV::zapTo(int pos, bool _show)
 		return;
 	}
 
+	// if not mached
 	if ( (pos >= (signed int) channels.size()) || (pos < 0) ) 
 	{
 		pos = 0;
 	}
 	
-	if ( (channels[pos]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
+	// check if the same channel
+	if ( pos != tuned) 
 	{
-		if ( zapProtection != NULL )
-			zapProtection->fsk = g_settings.parentallock_lockage;
-		else
+		tuned = pos;
+		
+		// 
+		playback->Close();
+	
+		// parentallock
+		if ( (channels[pos]->locked) && ( (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_ONSIGNAL) || (g_settings.parentallock_prompt == PARENTALLOCK_PROMPT_CHANGETOLOCKED)) )
 		{
-			zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
-						
-			if ( !zapProtection->check() )
-			{
-				delete zapProtection;
-				zapProtection = NULL;
-				
-				// do not thing
-			}
+			if ( zapProtection != NULL )
+				zapProtection->fsk = g_settings.parentallock_lockage;
 			else
 			{
-				delete zapProtection;
-				zapProtection = NULL;
-				
-				// start playback
-				startPlayBack(pos);
+				zapProtection = new CZapProtection( g_settings.parentallock_pincode, g_settings.parentallock_lockage);
+							
+				if ( !zapProtection->check() )
+				{
+					delete zapProtection;
+					zapProtection = NULL;
+					
+					// do not thing
+				}
+				else
+				{
+					delete zapProtection;
+					zapProtection = NULL;
+					
+					// start playback
+					startPlayBack(pos);
+				}
 			}
 		}
+		else
+			startPlayBack(pos);
 	}
-	else
-		startPlayBack(pos);
 	
 	// vfd
 	if (CVFD::getInstance()->is4digits)
-		CVFD::getInstance()->LCDshowText(lastselected + 1);
+		CVFD::getInstance()->LCDshowText(pos + 1);
 	else
-		CVFD::getInstance()->showServicename(channels[lastselected]->title); // UTF-8
+		CVFD::getInstance()->showServicename(channels[pos]->title); // UTF-8
 	
 	//infoviewer
 	if(_show)
@@ -571,15 +580,13 @@ void CWebTV::quickZap(int key)
                 selected = (selected+1)%channels.size();
         }
 	
-	lastselected = selected;
-	
-	zapTo(lastselected);
+	zapTo(selected);
 }
 
 void CWebTV::showInfo()
 {
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[lastselected]->title, channels[lastselected]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
+	g_InfoViewer->showMovieInfo(channels[tuned]->title, channels[tuned]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
 }
 
 void CWebTV::getInfos()
@@ -694,13 +701,12 @@ showList:
                 }
                 else if ( msg == CRCInput::RC_ok || msg == (neutrino_msg_t) g_settings.mpkey_play) 
 		{
-			lastselected = selected;
 			zapOnExit = true;
 			loop = false;
 		}
 		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
 		{
-			showFileInfoWebTVSelected(selected);
+			showFileInfoWebTV(selected);
 			res = -1;
 			
 			goto showList;
@@ -749,7 +755,7 @@ showList:
 	//CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 	
 	if(zapOnExit)
-		res = lastselected;
+		res = selected;
 
 	printf("CWebTV::show res %d\n", res);
 			
@@ -1002,12 +1008,7 @@ void CWebTV::paint()
 	frameBuffer->paintBoxRel(x + width- 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
 }
 
-void CWebTV::showFileInfoWebTVSelected(int pos)
+void CWebTV::showFileInfoWebTV(int pos)
 {
 	ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
-}
-
-void CWebTV::showFileInfoWebTV()
-{
-	ShowMsg2UTF(channels[oldselected]->title, channels[oldselected]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
 }

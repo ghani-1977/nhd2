@@ -190,7 +190,7 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 	
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->zapTo(webtv->lastselected, false);
+		webtv->zapTo(webtv->getTunedChannel(), false);
 	else
 	{
 		// start playback

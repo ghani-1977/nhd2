@@ -2971,7 +2971,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else if( msg == CRCInput::RC_red ) 
 			{
 				if(mode == mode_iptv)
-					webtv->showFileInfoWebTV();
+					webtv->showFileInfoWebTV(webtv->getTunedChannel());
 				else
 				{
 					StopSubtitles();
@@ -4901,7 +4901,7 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	mode = mode_iptv;
 
 	// zapto last webtv channel
-	//webtv->zapTo(webtv->lastselected);
+	//webtv->zapTo(webtv->getTunedChannel());
 	webtv->exec();
 }
 

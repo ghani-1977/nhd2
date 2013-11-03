@@ -76,6 +76,9 @@ class CWebTV
 		int            	fheight; 	// foot font height (buttons???)
 		
 		unsigned int   	selected;
+		unsigned int oldselected;
+		int tuned;
+		
 		unsigned int   	liststart;
 		int		buttonHeight;
 		unsigned int	listmaxshow;
@@ -114,14 +117,9 @@ class CWebTV
 		int Show();
 		
 		void quickZap(int key);
-		void showFileInfoWebTVSelected(int pos);
-		void showFileInfoWebTV();
+		void showFileInfoWebTV(int pos);
 		void showUserBouquet();
-		
-		unsigned int oldselected;
-		unsigned int lastselected;
 		void zapTo(int pos, bool _show = true);
-		
 		bool startPlayBack(int pos);
 		void stopPlayBack(void);
 		void pausePlayBack(void);
@@ -131,6 +129,8 @@ class CWebTV
 		void getInfos();
 		
 		void showAudioDialog();
+		
+		unsigned int getTunedChannel() {return tuned;};
 };
 
 class CWebTVAPIDSelectExec : public CMenuTarget
