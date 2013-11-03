@@ -774,20 +774,9 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	int m_icon_w = 0;
 	int m_icon_h = 0;
 	
-	/*
-	//if(!access(IconName, F_OK))
-	{
-		frameBuffer->getIconSize(IconName, &m_icon_w, &m_icon_h);
-
-		int m_icon_x = BoxStartX + 5;
-		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
-		
-		frameBuffer->paintIcon(IconName, m_icon_x, m_icon_y);
-	}
-	*/
-	//std::string IconName = DATADIR "/neutrino/icons/" NEUTRINO_ICON_MP;
+	std::string IconName = DATADIR "/neutrino/icons/" NEUTRINO_ICON_MP ".png";
 	
-	//if(!access(IconName.c_str(), F_OK))
+	if(!access(IconName.c_str(), F_OK))
 	{
 		frameBuffer->getIconSize((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_WEBTV : NEUTRINO_ICON_MP, &m_icon_w, &m_icon_h);
 
@@ -814,14 +803,6 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 		
 	// yellow	
 	// help
-	/*
-	if(isMovieBrowser || isVlc || cdDvd || isDVD || isBlueRay || isURL)
-	{
-		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, BoxEndY + 2, BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
-	}
-	*/
 	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
@@ -834,12 +815,6 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxStartY + (BoxHeight - 20) + (20 - icon_h)/2);
 	
-	/*
-	if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	else if(!isVlc && !cdDvd && !isDVD && !isBlueRay && !isURL)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	*/
 	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, BoxEndY + 2, BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 	else if(isMovieBrowser)
