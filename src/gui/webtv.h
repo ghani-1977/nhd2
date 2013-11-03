@@ -113,7 +113,7 @@ class CWebTV
 		
 		CWebTV();
 		~CWebTV();
-		int exec();
+		int exec(bool rezap = false);
 		
 		int Show();
 		

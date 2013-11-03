@@ -4912,7 +4912,7 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	mode = mode_iptv;
 
 	// show streams channel list
-	webtv->exec();
+	webtv->exec(true);
 }
 
 // exec, menuitem callback (shutdown)

@@ -197,7 +197,7 @@ void CWebTV::Close(void)
 	channels.clear();
 }
 
-int CWebTV::exec()
+int CWebTV::exec(bool rezap)
 {
 	// load streams channels list
 	loadChannels();
@@ -206,7 +206,7 @@ int CWebTV::exec()
 	
 	// zapto
 	if ( nNewChannel > -1 && nNewChannel < (int) channels.size()) 
-		zapTo(nNewChannel, true);
+		zapTo(nNewChannel, rezap);
 
 	return nNewChannel;
 }
