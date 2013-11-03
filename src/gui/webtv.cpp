@@ -502,7 +502,7 @@ void CWebTV::continuePlayBack(void)
 }
 
 //
-void CWebTV::zapTo(int pos)
+void CWebTV::zapTo(int pos, bool _show)
 {
 	playback->Close();
 	
@@ -553,7 +553,8 @@ void CWebTV::zapTo(int pos)
 		CVFD::getInstance()->showServicename(channels[lastselected]->title); // UTF-8
 	
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
+	if(_show)
+		g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
 }
 
 void CWebTV::quickZap(int key)
@@ -710,6 +711,24 @@ showList:
 			res = -1;
 			
 			goto showList;
+		}
+		else if( msg == (neutrino_msg_t) g_settings.key_timeshift) // pause playing
+		{
+			pausePlayBack();
+			res = -1;
+			loop = false;
+		}
+		else if( msg == CRCInput::RC_stop) // pause playing
+		{
+			stopPlayBack();
+			res = -1;
+			loop = false;
+		}
+		else if(msg == (neutrino_msg_t)g_settings.mpkey_play)
+		{
+			continuePlayBack();
+			res = -1;
+			loop = false;
 		}
 		else
 		{

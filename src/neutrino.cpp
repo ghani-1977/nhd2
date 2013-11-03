@@ -2921,20 +2921,20 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			}
 			else if( ((msg == (neutrino_msg_t)g_settings.mpkey_play || msg == (neutrino_msg_t)g_settings.mpkey_rewind) && timeshiftstatus) && (mode != mode_iptv)) // play timeshift
 			{
+				if(msg == CRCInput::RC_rewind)
+					tmode = "rtimeshift"; // rewind
+						
+				dprintf(DEBUG_NORMAL, "[neutrino] %s\n", tmode.c_str());
+						
+				if(g_RemoteControl->is_video_started) 
+				{
+					moviePlayerGui->exec(NULL, tmode);
+				}
+			}
+			else if(msg == (neutrino_msg_t)g_settings.mpkey_play && mode == mode_iptv)
+			{
 				if(mode == mode_iptv)
 					webtv->continuePlayBack();
-				else
-				{
-					if(msg == CRCInput::RC_rewind)
-						tmode = "rtimeshift"; // rewind
-						
-					dprintf(DEBUG_NORMAL, "[neutrino] %s\n", tmode.c_str());
-						
-					if(g_RemoteControl->is_video_started) 
-					{
-						moviePlayerGui->exec(NULL, tmode);
-					}
-				}
 			}
 			else if( (msg == CRCInput::RC_record || msg == CRCInput::RC_stop) && (mode != mode_iptv) ) 
 			{
@@ -2962,6 +2962,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					recordingstatus = 1;
 					doGuiRecord( g_settings.network_nfs_recordingdir, true );
 				}
+			}
+			else if(msg == CRCInput::RC_stop && mode == mode_iptv) 
+			{
+				if(mode == mode_iptv)
+					webtv->stopPlayBack();
 			}
 			else if( msg == CRCInput::RC_red ) 
 			{
@@ -4896,8 +4901,8 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	mode = mode_iptv;
 
 	// zapto last webtv channel
-	webtv->zapTo(webtv->lastselected);
-	//webtv->exec();
+	//webtv->zapTo(webtv->lastselected);
+	webtv->exec();
 }
 
 // exec, menuitem callback (shutdown)

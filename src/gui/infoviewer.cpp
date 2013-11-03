@@ -856,19 +856,19 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	if(g_settings.video_Ratio == ASPECTRATIO_169)
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
-	int icon_w_aspect, icon_h_aspect;
-	frameBuffer->getIconSize(aspect_icon, &icon_w_aspect, &icon_h_aspect);
-	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect, BoxStartY + BoxHeight - 20 + (20 - icon_h_aspect)/2);
+	int icon_w_asp, icon_h_asp;
+	frameBuffer->getIconSize(aspect_icon, &icon_w_asp, &icon_h_asp);
+	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp, BoxStartY + BoxHeight - 20 + (20 - icon_h_asp)/2);
 	
 	/* mp keys */
 	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
-		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_aspect - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
 	}
 		
 	//playstate
@@ -932,8 +932,6 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	runningPercent = file_prozent;
 	if(runningPercent > 100)
 		runningPercent = 100;
-	else if(runningPercent < 0)
-		runningPercent = 0;
 	
 	// progressbar
 	moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);

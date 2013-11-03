@@ -120,7 +120,7 @@ class CWebTV
 		
 		unsigned int oldselected;
 		unsigned int lastselected;
-		void zapTo(int pos);
+		void zapTo(int pos, bool _show = true);
 		
 		bool startPlayBack(int pos);
 		void stopPlayBack(void);
