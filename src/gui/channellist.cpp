@@ -1005,9 +1005,7 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 			tuned = i;
 			if (bToo && (bouquetList != NULL)) 
 			{
-				//bouquetList->adjustToChannel( getActiveChannelNumber());
-				//bouquetList->adjustToChannelID(channel_id);
-//FIXME
+				//FIXME
 				if(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv) 
 				{
 					TVbouquetList->adjustToChannelID(channel_id);
@@ -1095,14 +1093,6 @@ void CChannelList::zapTo(int pos, bool /*forceStoreToLastChannels*/)
 	{
 		pos = 0;
 	}
-	
-	//TEST
-	/* we record when we switched away from a channel, so that the parental-PIN code can
-	   check for timeout. last_unlocked_time == 0 means: the PIN was not entered
-	   "tuned" is the *old* channel, before zap 
-	*/
-	//if (tuned < chanlist.size() && chanlist[tuned]->last_unlocked_time != 0)
-		//chanlist[tuned]->last_unlocked_time = time_monotonic();
 
 	CZapitChannel * chan = chanlist[pos];
 	

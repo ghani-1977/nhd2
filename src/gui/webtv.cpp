@@ -200,6 +200,20 @@ void CWebTV::Close(void)
 int CWebTV::exec()
 {
 	// load streams channels list
+	loadChannels();
+	
+	int nNewChannel = Show();
+	
+	// zapto
+	if ( nNewChannel > -1 && nNewChannel < (int) channels.size()) 
+		zapTo(nNewChannel, true);
+
+	return nNewChannel;
+}
+
+void CWebTV::loadChannels(void)
+{
+	// load streams channels list
 	switch(mode)
 	{
 		case WEBTV:
@@ -217,14 +231,6 @@ int CWebTV::exec()
 		default:
 			break;	
 	}
-	
-	int nNewChannel = Show();
-	
-	// zapto
-	if ( nNewChannel > -1 && nNewChannel < (int) channels.size()) 
-		zapTo(nNewChannel);
-
-	return nNewChannel;
 }
 
 // readxml file
@@ -506,7 +512,7 @@ void CWebTV::continuePlayBack(void)
 }
 
 //
-void CWebTV::zapTo(int pos, bool _show)
+void CWebTV::zapTo(int pos, bool rezap)
 {
 	// show emty channellist error msg
 	if (channels.empty()) 
@@ -514,8 +520,6 @@ void CWebTV::zapTo(int pos, bool _show)
 		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
 		return;
 	}
-	
-	tuned = -1;
 
 	// if not mached
 	if ( (pos >= (signed int) channels.size()) || (pos < 0) ) 
@@ -524,7 +528,7 @@ void CWebTV::zapTo(int pos, bool _show)
 	}
 	
 	// check if the same channel
-	if ( pos != tuned) 
+	if ( pos != tuned || rezap) 
 	{
 		tuned = pos;
 		
@@ -568,8 +572,7 @@ void CWebTV::zapTo(int pos, bool _show)
 		CVFD::getInstance()->showServicename(channels[pos]->title); // UTF-8
 	
 	//infoviewer
-	if(_show)
-		g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
+	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
 }
 
 void CWebTV::quickZap(int key)
@@ -609,6 +612,9 @@ int CWebTV::Show()
 	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
+	
+	if(channels.empty())
+		loadChannels();
 	
 	// windows size
 	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));

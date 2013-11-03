@@ -59,6 +59,7 @@ class CWebTV
 
 		xmlDocPtr parser;
 		bool readChannellist(std::string filename);
+		void loadChannels(void);
 		
 		std::vector<webtv_channels *> channels;
 		
@@ -119,7 +120,7 @@ class CWebTV
 		void quickZap(int key);
 		void showFileInfoWebTV(int pos);
 		void showUserBouquet();
-		void zapTo(int pos, bool _show = true);
+		void zapTo(int pos, bool rezap = false);
 		bool startPlayBack(int pos);
 		void stopPlayBack(void);
 		void pausePlayBack(void);
