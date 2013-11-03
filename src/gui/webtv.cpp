@@ -199,8 +199,6 @@ void CWebTV::Close(void)
 
 int CWebTV::exec()
 {
-	tuned = -1;
-	
 	// load streams channels list
 	switch(mode)
 	{
@@ -516,6 +514,8 @@ void CWebTV::zapTo(int pos, bool _show)
 		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
 		return;
 	}
+	
+	tuned = -1;
 
 	// if not mached
 	if ( (pos >= (signed int) channels.size()) || (pos < 0) ) 
