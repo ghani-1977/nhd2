@@ -1591,7 +1591,7 @@ void CMoviePlayerGui::PlayFile(void)
 							g_currentac3 = p_movie_info->audioPids[0].atype;
 
 							if(g_currentac3)
-								ac3state = CInfoViewer::AC3_AVAILABLE;
+								ac3state = CInfoViewer::AC3_ACTIVE;
 						}
 
 						for (int i = 0; i < (int)p_movie_info->audioPids.size(); i++) 
@@ -1608,7 +1608,7 @@ void CMoviePlayerGui::PlayFile(void)
 								//break;
 
 								if(g_currentac3)
-									ac3state = CInfoViewer::AC3_ACTIVE;
+									ac3state = CInfoViewer::AC3_AVAILABLE;
 							}
 						}
 
@@ -1879,6 +1879,10 @@ void CMoviePlayerGui::PlayFile(void)
 
 			// g_apids will be rewritten for mb
 			playback->FindAllPids(g_apids, g_ac3flags, &g_numpida, g_language);
+			
+			// rewrite g_numpid in modemoviebrowser records
+			if(isMovieBrowser && moviebrowser->getMode() == MB_SHOW_RECORDS)
+				g_numpida = p_movie_info->audioPids.size();
 			
 			if (g_numpida > 0) 
 			{

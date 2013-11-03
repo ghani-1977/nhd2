@@ -883,7 +883,7 @@ bool cPlayback::SetPosition(int64_t position)
 	if(playing == false) 
 		return false;
 	
-	dprintf(DEBUG_NORMAL, "%s:%s position: %d\n", FILENAME, __FUNCTION__, position);
+	dprintf(DEBUG_NORMAL, "%s:%s position: %lld\n", FILENAME, __FUNCTION__, position);
 	
 #if ENABLE_GSTREAMER
 	//FIXME: brocken ;(
@@ -921,7 +921,7 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 		
 		// get audio
 		g_object_get (m_gst_playbin, "n-audio", &n_audio, NULL);
-		printf("%s: %d audio\n", __FUNCTION__, n_audio);
+		dprintf(DEBUG_NORMAL, "%s: %d audio\n", __FUNCTION__, n_audio);
 		
 		if(n_audio == 0)
 			return;
@@ -952,32 +952,13 @@ void cPlayback::FindAllPids(uint16_t *apids, unsigned short *ac3flags, uint16_t 
 				if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
 					ac3flags[i] = 0;
 
-				switch (mpegversion) 
-				{
-					case 1:
-						/*
-						{
-							gst_structure_get_int (structure, "layer", &layer);
-							if ( layer == 3 )
-								ac3flags[i] = 4;
-							else
-								return atMPEG;
-								ac3flags[0] = 4;
-							break;
-						}
-						*/
-						ac3flags[i] = 4;
-						break;
-					case 2:
-						ac3flags[i] = 5;
-						break;
-					case 4:
-						ac3flags[i] = 5;
-						break;
-					default:
-						ac3flags[i] = 0;
-						break;
-				}
+				if(mpegversion == 1)
+					ac3flags[i] = 4;
+				else if(mpegversion == 2)
+					ac3flags[i] = 5;
+				else if(mpegversion == 4)
+					ac3flags[i] = 5;
+				
 			}
 			else if ( gst_structure_has_name (structure, "audio/x-ac3") || gst_structure_has_name (structure, "audio/ac3") )
 				ac3flags[i] = 1;
