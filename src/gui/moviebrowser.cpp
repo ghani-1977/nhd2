@@ -343,24 +343,24 @@ bool (* const sortBy[MB_INFO_MAX_NUMBER+1])(const MI_MOVIE_INFO* a, const MI_MOV
 	&sortByFileName ,	//MB_INFO_FILENAME		= 0,
 	&sortByDir, 		//MB_INFO_FILEPATH		= 1,
 	&sortByTitle, 		//MB_INFO_TITLE			= 2,
-	NULL, 				//MB_INFO_SERIE 		= 3,
+	NULL, 			//MB_INFO_SERIE 		= 3,
 	&sortByGenre, 		//MB_INFO_INFO1			= 4,
-	NULL, 				//MB_INFO_MAJOR_GENRE 	= 5,
-	NULL, 				//MB_INFO_MINOR_GENRE 	= 6,
-	NULL, 				//MB_INFO_INFO2 			= 7,
-	&sortByAge, 		//MB_INFO_PARENTAL_LOCKAGE			= 8,
+	NULL, 			//MB_INFO_MAJOR_GENRE 		= 5,
+	NULL, 			//MB_INFO_MINOR_GENRE 		= 6,
+	NULL, 			//MB_INFO_INFO2 		= 7,
+	&sortByAge, 		//MB_INFO_PARENTAL_LOCKAGE	= 8,
 	&sortByChannel, 	//MB_INFO_CHANNEL		= 9,
-	NULL, 				//MB_INFO_BOOKMARK		= 10,
+	NULL, 			//MB_INFO_BOOKMARK		= 10,
 	&sortByQuality, 	//MB_INFO_QUALITY		= 11,
-	&sortByLastPlay, 	//MB_INFO_PREVPLAYDATE 	= 12,
-	&sortByRecordDate, 	//MB_INFO_RECORDDATE	= 13,
-	NULL, 				//MB_INFO_PRODDATE 		= 14,
-	NULL, 				//MB_INFO_COUNTRY 		= 15,
-	NULL, 				//MB_INFO_GEOMETRIE 	= 16,
-	NULL, 				//MB_INFO_AUDIO 		= 17,
-	NULL, 				//MB_INFO_LENGTH 		= 18,
+	&sortByLastPlay, 	//MB_INFO_PREVPLAYDATE 		= 12,
+	&sortByRecordDate, 	//MB_INFO_RECORDDATE		= 13,
+	NULL, 			//MB_INFO_PRODDATE 		= 14,
+	NULL, 			//MB_INFO_COUNTRY 		= 15,
+	NULL, 			//MB_INFO_GEOMETRIE 		= 16,
+	NULL, 			//MB_INFO_AUDIO 		= 17,
+	NULL, 			//MB_INFO_LENGTH 		= 18,
 	&sortBySize, 		//MB_INFO_SIZE 			= 19, 
-	NULL				//MB_INFO_MAX_NUMBER		= 20
+	NULL			//MB_INFO_MAX_NUMBER		= 20
 };
 
 /************************************************************************
@@ -537,6 +537,9 @@ void CMovieBrowser::initGlobalSettings(void)
 	
 	m_settings.gui = MB_GUI_MOVIE_INFO;
 	
+	m_settings.lastPlayMaxItems = NUMBER_OF_MOVIES_LAST;
+	m_settings.lastRecordMaxItems = NUMBER_OF_MOVIES_LAST;
+	
 	m_settings.sorting.direction = MB_DIRECTION_DOWN;
 	m_settings.sorting.item =  MB_INFO_RECORDDATE;
 
@@ -693,7 +696,7 @@ void CMovieBrowser::defaultSettings(MB_SETTINGS *settings)
 	CFile file;
 	file.Name = MOVIEBROWSER_SETTINGS_FILE;
 	delFile(file);
-	//configfile.clear();
+	configfile.clear();
 	loadSettings(settings);
 }
 

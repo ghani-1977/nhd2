@@ -483,6 +483,13 @@ void CWebTV::showAudioDialog(void)
 bool CWebTV::startPlayBack(int pos)
 {
 	playback->Open();
+	
+	// if not mached
+	if ( (pos >= (signed int) channels.size()) || (pos < 0) ) 
+	{
+		pos = 0;
+	}
+	
 	if (!playback->Start(channels[pos]->url))
 		return false;
 	
