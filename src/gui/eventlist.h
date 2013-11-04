@@ -73,6 +73,13 @@ class EventList
                         SEARCH_LIST_ALL
                 }SEARCH_LIST;
 		
+		enum
+		{
+			SORT_DESCRIPTION,
+			SORT_ID,
+			SORT_DATETIME
+		};
+		
         private:
 		int             m_search_epg_item;
 		std::string     m_search_keyword;

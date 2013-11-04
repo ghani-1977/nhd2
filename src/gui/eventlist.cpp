@@ -95,7 +95,7 @@ EventList::EventList()
 	selected = 0;
 	current_event = 0;
 	liststart = 0;
-	sort_mode = 0;
+	sort_mode = SORT_DESCRIPTION;
 
 	m_search_list = SEARCH_LIST_NONE;
 	m_search_epg_item = SEARCH_LIST_NONE;
@@ -265,7 +265,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	m_showChannel = false; // do not show the channel in normal mode, we just need it in search mode
 
 	name = channelname;
-	sort_mode = 0;
+	sort_mode = SORT_DESCRIPTION;
 	
 	paintHead(channel_id);
 	readEvents(channel_id);
@@ -337,21 +337,21 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		{
 			unsigned long long selected_id = evtlist[selected].eventID;
 			
-			if(sort_mode == 0) // by description
+			if(sort_mode == SORT_DESCRIPTION) // by description
 			{
 				sort_mode++;
 				sort(evtlist.begin(), evtlist.end(), sortByDescription);
 			}
 #if 0
-			else if(sort_mode == 1) //by id
+			else if(sort_mode == SORT_ID) //by id
 			{
 				sort_mode++;
 				sort(evtlist.begin(),evtlist.end(),sortById);
 			}
 #endif
-			else // datetime
+			else// datetime
 			{
-				sort_mode = 0;
+				sort_mode = SORT_DESCRIPTION;
 				sort(evtlist.begin(), evtlist.end(), sortByDateTime);
 			}
 			
@@ -374,22 +374,14 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		// epg reload
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_reload)
 		{
-			sort_mode = 0;
+			sort_mode = SORT_DESCRIPTION;
 			hide();
 			paintHead(channel_id);
 			readEvents(channel_id);
 			paint(channel_id);
 			showFunctionBar(true);
 		}
-
-		//  -- I commented out the following part (code is working)
-		//  -- reason: this is a little bit confusing, because e.g. you can enter the function
-		//  -- with RED, but pressing RED doesn't leave - it triggers a record timer instead
-		//  -- I think it's sufficient, to press RIGHT or HELP to get movie details and then
-		//  -- press "auto record" or "auto switch"  (rasc 2003-06-28)
-		//  --- hm, no need to comment out that part, leave the decision to the user
-		//  --- either set addrecord timer key to "no key" and leave eventlist with red (default now),
-		//  --- or set addrecord timer key to "red key" (zwen 2003-07-29)
+		// add record
 		else if ( msg == (neutrino_msg_t)g_settings.key_channelList_addrecord )
 		{
 			if (recDir != NULL)
@@ -407,7 +399,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				
 				if (recDir != NULL)
 				{
-					//FIXME: bad ?if (g_Timerd->addRecordTimerEvent(evtlist[selected].sub ? GET_CHANNEL_ID_FROM_EVENT_ID(evtlist[selected].eventID) : channel_id,
 					if (g_Timerd->addRecordTimerEvent(channel_id,
 								evtlist[selected].startTime,
 								evtlist[selected].startTime + evtlist[selected].duration,
@@ -417,7 +408,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 					{
 						if(askUserOnTimerConflict(evtlist[selected].startTime - (ANNOUNCETIME + 120), evtlist[selected].startTime + evtlist[selected].duration))
 						{
-							//g_Timerd->addRecordTimerEvent(evtlist[selected].sub ? GET_CHANNEL_ID_FROM_EVENT_ID(evtlist[selected].eventID) : channel_id,
 							g_Timerd->addRecordTimerEvent(channel_id,
 									evtlist[selected].startTime,
 									evtlist[selected].startTime + evtlist[selected].duration,
@@ -438,6 +428,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				paint(channel_id);
 			}					
 		}
+		// add remind
 		else if ( msg == (neutrino_msg_t) g_settings.key_channelList_addremind )		  
 		{
 			int tID = -1;
@@ -450,7 +441,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				paint(channel_id);
 				continue;
 			}
-			// FIXME g_Timerd->addZaptoTimerEvent(evtlist[selected].sub ? GET_CHANNEL_ID_FROM_EVENT_ID(evtlist[selected].eventID) : channel_id,
+
 			g_Timerd->addZaptoTimerEvent(channel_id, 
 					evtlist[selected].startTime,
 					evtlist[selected].startTime - ANNOUNCETIME, 0,
@@ -498,13 +489,12 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		{
 			loop = false;
 		}
-		else if ( msg==CRCInput::RC_right || msg==CRCInput::RC_ok || msg==CRCInput::RC_info)
+		else if ( msg == CRCInput::RC_right || msg == CRCInput::RC_ok || msg == CRCInput::RC_info)
 		{
 			if ( evtlist[selected].eventID != 0 )
 			{
 				hide();
 
-				//FIXME res = g_EpgData->show(evtlist[selected].sub ? GET_CHANNEL_ID_FROM_EVENT_ID(evtlist[selected].eventID) : channel_id, evtlist[selected].eventID, &evtlist[selected].startTime);
 				res = g_EpgData->show(channel_id, evtlist[selected].eventID, &evtlist[selected].startTime);
 				if ( res == menu_return::RETURN_EXIT_ALL )
 				{
@@ -855,7 +845,7 @@ void  EventList::showFunctionBar(bool show)
 		if (g_settings.key_channelList_sort == CRCInput::RC_blue) 
 		{
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, (sort_mode == 0)?g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTALPHA) : g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTTIME), COL_INFOBAR, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, (sort_mode == SORT_DESCRIPTION)?g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTALPHA) : g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTTIME), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 	
