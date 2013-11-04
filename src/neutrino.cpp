@@ -3461,7 +3461,10 @@ _repeat:
 		{
 			StopSubtitles();
 			
-			webtv->exec();
+			if(webtv->playstate == CWebTV::STOPPED)
+				webtv->exec(true);
+			else
+				webtv->exec();
 			
 			StartSubtitles();
 			
