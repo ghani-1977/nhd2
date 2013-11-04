@@ -4240,8 +4240,9 @@ int CFileChooser::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 		*dirPath = browser.getSelectedFile()->Name;
 		short a = dirPath->compare(0, 5, "/mnt/");
 		short b = dirPath->compare(0, 7, "/media/");
-		if(a != 0 && b != 0)
-		    *dirPath = "";   // We clear the  string if the selected folder is not at leaset /mnt/ or /hdd (There is no other possibility to clear this) 
+		short c = dirPath->compare(0, 5, "/hdd/");
+		if(a != 0 && b != 0 && c != 0)
+			*dirPath = "";   // We clear the  string if the selected folder is not at leaset /mnt/ or /hdd (There is no other possibility to clear this) 
 	}
 	  
 	return menu_return::RETURN_REPAINT;
@@ -4305,7 +4306,7 @@ int CDirMenu::exec(CMenuTarget* parent, const std::string & actionKey)
 				if(system(command.c_str()) != 0)
 					perror("etherwake failed");
 
-				dirOptionText[number]="STARTE SERVER";
+				dirOptionText[number]= "STARTE SERVER";
 			}
 			else if(dirState[number] == DIR_STATE_NOT_MOUNTED)
 			{

@@ -484,11 +484,11 @@ class CMenuWidgetSelection : public CMenuWidget
 class CFileChooser : public CMenuWidget
 {
 	private:
-		std::string* dirPath;
+		std::string *dirPath;
 
 	public:
-		CFileChooser(std::string* path){dirPath= path;};
-		int exec(CMenuTarget* parent, const std::string & actionKey);
+		CFileChooser(std::string *path){dirPath = path;};
+		int exec(CMenuTarget *parent, const std::string & actionKey);
  };
 
 typedef enum
