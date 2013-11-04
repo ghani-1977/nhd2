@@ -2487,25 +2487,8 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			
 #if !defined (PLATFORM_COOLSTREAM)
 			openAVDecoder();
-			
-			//HACK: dirty hack for gstreamer on some platforms???
-#if defined (ENABLE_GSTREAMER)
-			if(videoDecoder)
-			{
-				videoDecoder->Resume();
-				videoDecoder->Stop();
-			}
-			
-#if !defined (PLATFORM_HYPERCUBE)			
-			if(audioDecoder)
-			{
-				audioDecoder->Resume();
-				audioDecoder->Stop();
-			}
 #endif			
-#endif				
-#endif			
-	
+
 			startPlayBack(live_channel);
 			
 			//start cam
@@ -3326,7 +3309,13 @@ int startPlayBack(CZapitChannel * thisChannel)
 		
 		// start Audio Deocder
 		if(audioDecoder)
+		{			
+#if !defined (__sh__)			
+			audioDecoder->Resume();
+			audioDecoder->Stop();
+#endif				  
 			audioDecoder->Start();
+		}
 	}
 
 	// start video
@@ -3364,11 +3353,18 @@ int startPlayBack(CZapitChannel * thisChannel)
 		
 		// start Video Decoder
 		if(videoDecoder)
+		{
+#if !defined (__sh__)
+			videoDecoder->Resume();
+			videoDecoder->Stop();
+#endif
+							  
 #if defined (PLATFORM_COOLSTREAM)
 			videoDecoder->Start(0, thisChannel->getPcrPid(), thisChannel->getVideoPid());
 #else			
 			videoDecoder->Start();
-#endif			
+#endif	
+		}
 	}
 
 	playing = true;
@@ -3378,6 +3374,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 
 int stopPlayBack( bool sendPmt)
 {
+	// cam
 	if(sendPmt) 
 	{
 		//cam0->sendMessage(0, 0);
@@ -3419,6 +3416,7 @@ int stopPlayBack( bool sendPmt)
 	if (playbackStopForced)
 		return -1;
 
+	// stop video
 	if (videoDemux)
 	{
 		// stop
