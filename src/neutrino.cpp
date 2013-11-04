@@ -4666,7 +4666,7 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 		}
 		else if(mode == mode_iptv)
 		{
-			webtvMode();
+			webtvMode(false);
 		}
 	}
 }
@@ -4722,7 +4722,6 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		if(mode == mode_iptv)
 		{
 			webtv->stopPlayBack();
-			webtv->Close();
 		}
 		else
 		{
@@ -4793,7 +4792,11 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		// setmode?radio:tv/iptv
 		mode = mode_unknown;
 
-		if(lastMode != mode_iptv)
+		if(lastMode == mode_iptv)
+		{
+			webtv->startPlayBack(webtv->getTunedChannel());
+		}
+		else
 		{
 			// zapit startplayback
 			g_Zapit->setStandby(false);
@@ -4814,10 +4817,6 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		else if(lastMode == mode_tv)
 		{
 			tvMode( false );
-		}
-		else if(lastMode == mode_iptv)
-		{
-			webtvMode();
 		}
 
 		// set vol (saved)
