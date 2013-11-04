@@ -3156,6 +3156,7 @@ void CMovieBrowser::loadMovies(void)
 	m_file_info_stale = false;
 	
 	loadBox.hide();
+	sleep(1);
 
 	refreshBrowserList();	
 	refreshLastPlayList();	
