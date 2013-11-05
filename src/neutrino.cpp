@@ -4127,6 +4127,9 @@ void CNeutrinoApp::ExitRun(int retcode)
 		// movieplayerGui
 		if(moviePlayerGui)
 			delete moviePlayerGui;
+		
+		if (webtv)
+			delete webtv;
 			
 		if (g_RCInput != NULL)
 			delete g_RCInput;
