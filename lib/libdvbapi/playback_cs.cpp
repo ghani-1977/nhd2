@@ -414,7 +414,7 @@ void cPlayback::Close(void)
 		player = NULL;
 #endif	
 
-	//NOTE: just tob sure
+	//NOTE: just to be sure
 	if(videoDecoder)
 		videoDecoder->Open();
 	if(audioDecoder)

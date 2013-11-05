@@ -63,5 +63,4 @@ void openAVDecoder(void);
 void enterStandby(void);
 void leaveStandby(void);
 
-
 #endif /* __zapit_h__ */
