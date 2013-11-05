@@ -41,6 +41,7 @@
 #include <sys/stat.h>
 #include <sys/sysinfo.h>
 #include <sys/vfs.h>
+#include <unistd.h>
 
 #include <map>
 

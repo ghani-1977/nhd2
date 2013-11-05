@@ -237,9 +237,8 @@ const int m_defaultRowWidth[MB_INFO_MAX_NUMBER+1] =
 };
 
 static MI_MOVIE_INFO* playing_info;
-//------------------------------------------------------------------------
+
 // sorting
-//------------------------------------------------------------------------
 #define FILEBROWSER_NUMBER_OF_SORT_VARIANTS 5
 
 bool sortDirection = 0;
@@ -363,9 +362,6 @@ bool (* const sortBy[MB_INFO_MAX_NUMBER+1])(const MI_MOVIE_INFO* a, const MI_MOV
 	NULL			//MB_INFO_MAX_NUMBER		= 20
 };
 
-/************************************************************************
- Public API
-************************************************************************/
 CMovieBrowser::CMovieBrowser(const char* path): configfile ('\t')
 {
 	m_selectedDir = path; 
@@ -382,9 +378,6 @@ CMovieBrowser::CMovieBrowser(): configfile ('\t')
 CMovieBrowser::~CMovieBrowser()
 {
 	dprintf(DEBUG_NORMAL, "[mb] del\r\n");
-	
-	//saveSettings(&m_settings);
-	//hide();
 	
 	m_dir.clear();
 
@@ -503,6 +496,7 @@ void CMovieBrowser::init(void)
 	if(m_settings.browserRowNr == 0)
 	{
 		dprintf(DEBUG_NORMAL, " row error\r\n");
+		
 		// init browser row elements if not configured correctly by neutrino.config
 		m_settings.browserRowNr = 6;
 		m_settings.browserRowItem[0] = MB_INFO_TITLE;
@@ -4710,9 +4704,11 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
         int dx = 256;
         int x = (((g_settings.screen_EndX- g_settings.screen_StartX)- dx) / 2) + g_settings.screen_StartX;
         int y = g_settings.screen_EndY - 50;
+	
 	frameBuffer->paintBoxRel (x + 40, y+12, 200, 15, COL_INFOBAR_PLUS_0);
 
 	timescale->paint(x + 41, y + 12, percent);
+	
 	int len = minfo->length;
 	off64_t size = minfo->file.Size;
 	//off64_t secsize = len ? size/len/60 : 511040;
@@ -4826,12 +4822,14 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 				bool stop;
 				int msg = get_input(&stop);
 				was_cancel = msg & 2;
+				
 				if(stop) {
 					close(srcfd);
 					unlink(dpart);
 					retval = 1;
 					goto ret_err;
 				}
+				
 				if(msg) 
 				{
 					timescale->reset();
@@ -4999,11 +4997,14 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 		*ptr = 0;
 	sprintf(spart, "%s", name);
 	srcfd = open (spart, O_RDONLY | O_LARGEFILE);
-	if(read_psi(spart, &psi[0])) {
+	if(read_psi(spart, &psi[0])) 
+	{
 		perror(spart);
 		goto ret_err;
 	}
-	for(i = 0; i < bcount; i++) {
+	
+	for(i = 0; i < bcount; i++) 
+	{
 		printf("\ncopy: processing bookmark %d at %lld len %lld\n", i, books[i].pos, books[i].len);
 		off64_t bpos = books[i].pos;
 		off64_t bskip = books[i].len;

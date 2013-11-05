@@ -322,9 +322,6 @@ void CMoviePlayerGui::Init(void)
 
 	// moviebrowser
 	moviebrowser = new CMovieBrowser();
-	
-	// webtv
-	//webtv = new CWebTV();
 
 	// tsfilefilter
 #if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)
@@ -384,9 +381,6 @@ CMoviePlayerGui::~CMoviePlayerGui()
 	
 	if (moviebrowser)
 		delete moviebrowser;
-	
-	if (webtv)
-		delete webtv;
 }
 
 void CMoviePlayerGui::cutNeutrino()
