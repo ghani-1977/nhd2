@@ -64,6 +64,11 @@ bool isTS = false;
 #include <GL/gl.h>
 
 OpenThreads::ReentrantMutex	mutex;
+extern int GLWinID;
+extern int GLxStart;
+extern int GLyStart;
+extern int GLWidth;
+extern int GLHeight;
 #endif
 
 
@@ -256,7 +261,17 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			{
 				OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(mutex);
 				mutex.lock();
-				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), /*glutGetWindow()*/0);
+				// set window id
+				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), /*GLWinID*/0);
+				
+				// reshape window
+				gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), GLxStart, GLyStart, /*GLWidth*/-1, /*GLHeight*/-1);
+				
+				// sync frames
+				gst_x_overlay_expose(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)));
+				
+				// depends on gst rev, not working here ;(
+				//gst_x_overlay_set_window_handle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), (guintptr)glutGetWindow());
 				mutex.unlock();
 			}
 		}

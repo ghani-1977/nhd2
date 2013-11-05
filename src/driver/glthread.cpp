@@ -37,6 +37,11 @@
 
 
 /*static*/ GLThreadObj *gThiz = 0; /* GLUT does not allow for an arbitrary argument to the render func */
+int GLWinID;
+int GLxStart;
+int GLyStart;
+int GLWidth;
+int GLHeight;
 
 GLThreadObj::GLThreadObj(int x, int y) : mX(x), mY(y), mReInit(true), mShutDown(false), mInitDone(false)
 {
@@ -149,9 +154,14 @@ void GLThreadObj::setupCtx()
 	glutInitWindowSize(mX, mY);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("neutrino");
-	glutSetWindow(glutGetWindow());
 	
-	printf("WinID:%d\n", glutGetWindow());
+	//
+	GLWinID = glutGetWindow();
+	GLxStart = mX;
+	GLyStart = mY;
+	GLWidth = getOSDWidth();
+	GLHeight = getOSDHeight();
+	//
 }
 
 void GLThreadObj::setupOSDBuffer()
