@@ -131,7 +131,7 @@ extern uint32_t shift_timer;
 #define SAT_INFOBOX_HEIGHT	30
 
 #define BUTTON_BAR_HEIGHT	20
-#define CHANNAME_HEIGHT		40
+#define CHANNAME_HEIGHT		35
 
 #define MOVIE_TIMEBAR_H		40
 

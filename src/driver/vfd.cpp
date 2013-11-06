@@ -118,13 +118,13 @@ CVFD::CVFD()
 #endif
 
 #if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
-	fd = open("/dev/dbox/oled0", O_RDONLY);
+	fd = open("/dev/dbox/oled0", O_RDWR);
 	
 	if(fd < 0) 
 	{
 		perror("/dev/dbox/oled0");
 		
-		fd = open("/dev/oled0", O_RDONLY);
+		fd = open("/dev/oled0", O_RDWR);
 		
 		if(fd < 0)
 		{
