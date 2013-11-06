@@ -153,6 +153,7 @@
 #include "gui/proxyserver_setup.h"
 #include "gui/opkg_manager.h"
 #include "gui/themes.h"
+#include "gui/webtv.h"
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
@@ -173,6 +174,9 @@ extern Zapit_config zapitCfg;			//defined in neutrino.cpp
 void getZapitConfig(Zapit_config *Cfg);
 
 extern char recDir[255];			// defined in neutrino.cpp
+
+// webtv
+extern CWebTV * webtv;
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -2658,14 +2662,17 @@ bool CNeutrinoApp::showUserMenu(int button)
 				break;
 
                         case SNeutrinoSettings::ITEM_RECORD:
-				if(recDir == NULL)
-                                        break;
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					if(recDir == NULL)
+						break;
 
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_RECORD;
-                                keyhelper.get(&key, &icon, CRCInput::RC_red);
-                                menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_RECORDING, &recordingstatus, MAINMENU_RECORDING_OPTIONS, MAINMENU_RECORDING_OPTION_COUNT, true, this, key, icon);
-                                menu->addItem(menu_item, false);
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_RECORD;
+					keyhelper.get(&key, &icon, CRCInput::RC_red);
+					menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_RECORDING, &recordingstatus, MAINMENU_RECORDING_OPTIONS, MAINMENU_RECORDING_OPTION_COUNT, true, this, key, icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB:
@@ -2701,82 +2708,103 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 
                         case SNeutrinoSettings::ITEM_EPG_SUPER:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_EPG_SUPER;
-                                tmpEPGplusHandler = new CEPGplusHandler();
-                                keyhelper.get(&key, &icon, CRCInput::RC_green);
-                                menu_item = new CMenuForwarder(LOCALE_EPGMENU_EPGPLUS   , true, NULL, tmpEPGplusHandler  ,  "-1", key, icon);
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_EPG_SUPER;
+					tmpEPGplusHandler = new CEPGplusHandler();
+					keyhelper.get(&key, &icon, CRCInput::RC_green);
+					menu_item = new CMenuForwarder(LOCALE_EPGMENU_EPGPLUS   , true, NULL, tmpEPGplusHandler  ,  "-1", key, icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_EPG_LIST:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_EPG_LIST;
-                                tmpEventListHandler = new CEventListHandler();
-                                keyhelper.get(&key, &icon, CRCInput::RC_red);
-                                menu_item = new CMenuForwarder(LOCALE_EPGMENU_EVENTLIST , true, NULL, tmpEventListHandler,  "-1", key, icon);
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_EPG_LIST;
+					tmpEventListHandler = new CEventListHandler();
+					keyhelper.get(&key, &icon, CRCInput::RC_red);
+					menu_item = new CMenuForwarder(LOCALE_EPGMENU_EVENTLIST , true, NULL, tmpEventListHandler,  "-1", key, icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_EPG_INFO:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_EPG_INFO;
-                                tmpEPGDataHandler = new CEPGDataHandler();
-                                keyhelper.get(&key, &icon, CRCInput::RC_yellow);
-                                menu_item = new CMenuForwarder(LOCALE_EPGMENU_EVENTINFO , true, NULL, tmpEPGDataHandler ,  "-1", key, icon);
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_EPG_INFO;
+					tmpEPGDataHandler = new CEPGDataHandler();
+					keyhelper.get(&key, &icon, CRCInput::RC_yellow);
+					menu_item = new CMenuForwarder(LOCALE_EPGMENU_EVENTINFO , true, NULL, tmpEPGDataHandler ,  "-1", key, icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_EPG_MISC:
-				// on/off read epg
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_EPG_MISC;
-                                dummy = g_Sectionsd->getIsScanningActive();
-                                tmpPauseSectionsdNotifier = new CPauseSectionsdNotifier;
-                                keyhelper.get(&key, &icon);
-                                menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_PAUSESECTIONSD, &dummy, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, tmpPauseSectionsdNotifier , key, icon );
-                                menu->addItem(menu_item, false);
-				
-				// clear epg cache
-                                menu_items++;
-                                keyhelper.get(&key, &icon);
-                                menu_item = new CMenuForwarder(LOCALE_MAINMENU_CLEARSECTIONSD, true, NULL, this, "clearSectionsd", key,icon);
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					// on/off read epg
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_EPG_MISC;
+					dummy = g_Sectionsd->getIsScanningActive();
+					tmpPauseSectionsdNotifier = new CPauseSectionsdNotifier;
+					keyhelper.get(&key, &icon);
+					menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_PAUSESECTIONSD, &dummy, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, tmpPauseSectionsdNotifier , key, icon );
+					menu->addItem(menu_item, false);
+					
+					// clear epg cache
+					menu_items++;
+					keyhelper.get(&key, &icon);
+					menu_item = new CMenuForwarder(LOCALE_MAINMENU_CLEARSECTIONSD, true, NULL, this, "clearSectionsd", key,icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_AUDIO_SELECT:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
-                                tmpAudioSelectMenuHandler = new CAudioSelectMenuHandler;
-                                keyhelper.get(&key, &icon);
-                                menu_item = new CMenuForwarder(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon);
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
+					tmpAudioSelectMenuHandler = new CAudioSelectMenuHandler;
+					keyhelper.get(&key, &icon);
+					menu_item = new CMenuForwarder(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_SUBCHANNEL:
-                                if (!(g_RemoteControl->subChannels.empty())) 
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 				{
-                                        // NVOD/SubService- Kanal!
-                                        tmpNVODSelector = new CMenuWidget(g_RemoteControl->are_subchannels ? LOCALE_NVODSELECTOR_SUBSERVICE : LOCALE_NVODSELECTOR_HEAD, NEUTRINO_ICON_VIDEO);
-					
-                                        if(getNVODMenu(tmpNVODSelector)) 
+					if (!(g_RemoteControl->subChannels.empty())) 
 					{
-                                                menu_items++;
-                                                menu_prev = SNeutrinoSettings::ITEM_SUBCHANNEL;
-                                                keyhelper.get(&key, &icon);
-                                                menu_item = new CMenuForwarder(g_RemoteControl->are_subchannels ? LOCALE_NVODSELECTOR_SUBSERVICE : LOCALE_NVODSELECTOR_HEAD, true, NULL, tmpNVODSelector, "-1", key,icon);
-                                                menu->addItem(menu_item, false);
-                                        }
-                                }
+						// NVOD/SubService- Kanal!
+						tmpNVODSelector = new CMenuWidget(g_RemoteControl->are_subchannels ? LOCALE_NVODSELECTOR_SUBSERVICE : LOCALE_NVODSELECTOR_HEAD, NEUTRINO_ICON_VIDEO);
+						
+						if(getNVODMenu(tmpNVODSelector)) 
+						{
+							menu_items++;
+							menu_prev = SNeutrinoSettings::ITEM_SUBCHANNEL;
+							keyhelper.get(&key, &icon);
+							menu_item = new CMenuForwarder(g_RemoteControl->are_subchannels ? LOCALE_NVODSELECTOR_SUBSERVICE : LOCALE_NVODSELECTOR_HEAD, true, NULL, tmpNVODSelector, "-1", key,icon);
+							menu->addItem(menu_item, false);
+						}
+					}
+				}
                                 break;
 
                         case SNeutrinoSettings::ITEM_TECHINFO:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_TECHINFO;
-                                tmpStreamInfo2Handler = new CStreamInfo2Handler();
-                                keyhelper.get(&key, &icon, CRCInput::RC_blue);
-                                menu_item = new CMenuForwarder(LOCALE_EPGMENU_STREAMINFO, true, NULL, tmpStreamInfo2Handler, "-1", key, icon );
-                                menu->addItem(menu_item, false);
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_TECHINFO;
+					tmpStreamInfo2Handler = new CStreamInfo2Handler();
+					keyhelper.get(&key, &icon, CRCInput::RC_blue);
+					menu_item = new CMenuForwarder(LOCALE_EPGMENU_STREAMINFO, true, NULL, tmpStreamInfo2Handler, "-1", key, icon );
+					menu->addItem(menu_item, false);
+				}
                                 break;
 			
 			// plugins
@@ -2802,12 +2830,14 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 break;
 				
 			case SNeutrinoSettings::ITEM_VTXT:
-				menu_items++;
-				menu_prev = SNeutrinoSettings::ITEM_VTXT;
-				keyhelper.get(&key, &icon);
-				menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, TuxtxtChanger, "-1", key, icon);
-				menu->addItem(menu_item, false);
-
+				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
+				{
+					menu_items++;
+					menu_prev = SNeutrinoSettings::ITEM_VTXT;
+					keyhelper.get(&key, &icon);
+					menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, TuxtxtChanger, "-1", key, icon);
+					menu->addItem(menu_item, false);
+				}
                                 break;
 			
 #if ENABLE_GRAPHLCD				
@@ -2839,7 +2869,7 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_WEBTV;
                                 keyhelper.get(&key, &icon);	
-				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, /*moviePlayerGui*/this, "webtv", key, icon);
+				menu_item = new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, this, "webtv", key, icon);
                                 menu->addItem(menu_item, false);
                                 break;
 #endif				
