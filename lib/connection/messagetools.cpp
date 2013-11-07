@@ -27,7 +27,7 @@ size_t write_length_field (unsigned char * buffer, unsigned int length)
 {
         if (length < 128)
         {
-                buffer[0] = length;
+                buffer[0] = static_cast<unsigned char>(length);
                 return 1;
         }
         else
@@ -47,7 +47,7 @@ size_t write_length_field (unsigned char * buffer, unsigned int length)
                 while (shiftby != 0)
                 {
 			shiftby -= 8;
-                        buffer[pos++] = length >> shiftby;
+                        buffer[pos++] = static_cast<unsigned char>(length >> shiftby);
                 }
                 return pos;
         }

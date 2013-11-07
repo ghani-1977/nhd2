@@ -24,5 +24,4 @@ extern  void 	netGetMacAddr(char * ifname, unsigned char * mac);
 }
 #endif
 
-
 #endif

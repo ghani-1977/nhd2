@@ -647,7 +647,7 @@ void RenderClearMenuLineBB(char *p, tstPageAttr *attrcol, tstPageAttr *attr)
 	memset(p-TOPMENUCHARS, ' ', TOPMENUCHARS); /* init with spaces */
 }
 
-void ClearBB(int color)
+void ClearBB(int /*color*/)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 		
@@ -656,7 +656,7 @@ void ClearBB(int color)
 #endif	
 }
 
-void ClearFB(int color)
+void ClearFB(int /*color*/)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 		
@@ -2157,11 +2157,11 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 /*
 * MyFaceRequester
 */
-FT_Error MyFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face *aface)
+FT_Error MyFaceRequester(FTC_FaceID face_id, FT_Library _library, FT_Pointer /*request_data*/, FT_Face *aface)
 {
 	FT_Error result;
 
-	result = FT_New_Face(library, (char *) face_id, 0, aface);
+	result = FT_New_Face(_library, (char *) face_id, 0, aface);
 
 #if TUXTXT_DEBUG
 	if (!result)
@@ -2365,9 +2365,9 @@ int Init( int source )
 	ymosaic[3] = fontheight;
 	
 	{
-		int i;
-		for (i = 0; i <= 10; i++)
-			aydrcs[i] = (fontheight * i + 5) / 10;
+		int i1;
+		for (i1 = 0; i1 <= 10; i1++)
+			aydrcs[i1] = (fontheight * i1 + 5) / 10;
 	}
 
 	/* center screen */
@@ -2569,7 +2569,7 @@ void CleanUp()
  * GetTeletextPIDs
 */
 //TODO: multi demuxes needed
-int GetTeletextPIDs(int source)
+int GetTeletextPIDs(int /*source*/)
 {
 	int pat_scan, pmt_scan, sdt_scan, desc_scan, pid_test, byte, diff, first_sdt_sec;
 
@@ -3504,11 +3504,11 @@ void ConfigMenu(int Init, int source)
 					{
 						if (maxhotlist > 0) /* don't empty completely */
 						{
-							int i;
+							int i1;
 
-							for (i=hotindex; i<maxhotlist; i++) /* move rest of list */
+							for (i1 = hotindex; i1 < maxhotlist; i1++) /* move rest of list */
 							{
-								hotlist[i] = hotlist[i+1];
+								hotlist[i1] = hotlist[i1+1];
 							}
 							maxhotlist--;
 							if (hotindex > maxhotlist)
@@ -4245,7 +4245,7 @@ void SwitchScreenMode(int newscreenmode)
 		
 		// ugly hack
 		// dont calculate rate when we have HD until to fix this
-		int xres, yres, framerate;
+		//int xres, yres, framerate;
 
 		if (screenmode == 1) // split with topmenu
 		{
@@ -4482,14 +4482,14 @@ void FlipHorz(int x, int y, int w, int h)
 		memcpy(buf,p,w*4);
 		for (w1 = 0 ; w1 < w ; w1++)
 		{
-			if (w1 + x > CFrameBuffer::getInstance()->getScreenWidth(true))
+			if (w1 + x > (int)CFrameBuffer::getInstance()->getScreenWidth(true))
 				fprintf(stderr, "%s !!!!!!!!! out of bounds x %d\n", __func__, w1 + x);
 			memcpy(p+w1*4,buf+((w-w1)*4)-4,4);
 		}
 		
 		p += CFrameBuffer::getInstance()->getStride();
 
-		if (h1 + y > CFrameBuffer::getInstance()->getScreenHeight(true))
+		if (h1 + y > (int)CFrameBuffer::getInstance()->getScreenHeight(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y %d\n", __func__, w1 + y);
 
 	}
@@ -5079,7 +5079,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	p = lfb + PosX*4 + (yoffset + PosY + Row) * CFrameBuffer::getInstance()->getStride(); /* running pointer into framebuffer */
 
-	int saveRow = Row;
+	//int saveRow = Row;
 	for (Row = sbit->height; Row; Row--) /* row counts up, but down may be a little faster :) */
 	{
 		int pixtodo = (usettf ? sbit->width : curfontwidth);
@@ -5167,7 +5167,7 @@ void RenderCharBB(int Char, tstPageAttr *Attribute)
 /*
  * RenderCharLCD
 */
-void RenderCharLCD(int Digit, int XPos, int YPos)
+void RenderCharLCD(int /*Digit*/, int /*XPos*/, int /*YPos*/)
 {
 #if 0
 	int x, y;
@@ -5205,7 +5205,7 @@ void RenderCharLCDsmall(int Char, int XPos, int YPos)
 void RenderMessage(int Message)
 {
 	int byte;
-	int fbcolor, timecolor, menuatr;
+	int fbcolor, timecolor, _menuatr;
 	int pagecolumn;
 	const char *msg;
 
@@ -5230,7 +5230,7 @@ void RenderMessage(int Message)
 	/* set colors */
 	fbcolor   = transp;
 	timecolor = transp<<4 | transp;
-	menuatr = ATR_MSG0;
+	_menuatr = ATR_MSG0;
 
 	/* clear framebuffer */
 	ClearFB(fbcolor);
@@ -5266,43 +5266,43 @@ void RenderMessage(int Message)
 	PosY = StartY + fontheight*16;
 	
 	for (byte = 0; byte < 37; byte++)
-		RenderCharFB(message_1[byte], &atrtable[menuatr + ((byte >= 9 && byte <= 27) ? 1 : 0)]);
-	RenderCharFB(message_1[37], &atrtable[menuatr + 2]);
+		RenderCharFB(message_1[byte], &atrtable[_menuatr + ((byte >= 9 && byte <= 27) ? 1 : 0)]);
+	RenderCharFB(message_1[37], &atrtable[_menuatr + 2]);
 
 	PosX = StartX + fontwidth+5;
 	PosY = StartY + fontheight*17;
-	RenderCharFB(message_2[0], &atrtable[menuatr + 0]);
+	RenderCharFB(message_2[0], &atrtable[_menuatr + 0]);
 	for (byte = 1; byte < 36; byte++)
-		RenderCharFB(message_2[byte], &atrtable[menuatr + 3]);
-	RenderCharFB(message_2[36], &atrtable[menuatr + 0]);
-	RenderCharFB(message_2[37], &atrtable[menuatr + 2]);
+		RenderCharFB(message_2[byte], &atrtable[_menuatr + 3]);
+	RenderCharFB(message_2[36], &atrtable[_menuatr + 0]);
+	RenderCharFB(message_2[37], &atrtable[_menuatr + 2]);
 
 	PosX = StartX + fontwidth+5;
 	PosY = StartY + fontheight*18;
-	RenderCharFB(msg[0], &atrtable[menuatr + 0]);
+	RenderCharFB(msg[0], &atrtable[_menuatr + 0]);
 	for (byte = 1; byte < 36; byte++)
-		RenderCharFB(msg[byte], &atrtable[menuatr + 3]);
-	RenderCharFB(msg[36], &atrtable[menuatr + 0]);
-	RenderCharFB(msg[37], &atrtable[menuatr + 2]);
+		RenderCharFB(msg[byte], &atrtable[_menuatr + 3]);
+	RenderCharFB(msg[36], &atrtable[_menuatr + 0]);
+	RenderCharFB(msg[37], &atrtable[_menuatr + 2]);
 
 	PosX = StartX + fontwidth+5;
 	PosY = StartY + fontheight*19;
-	RenderCharFB(message_4[0], &atrtable[menuatr + 0]);
+	RenderCharFB(message_4[0], &atrtable[_menuatr + 0]);
 	for (byte = 1; byte < 36; byte++)
-		RenderCharFB(message_4[byte], &atrtable[menuatr + 3]);
-	RenderCharFB(message_4[36], &atrtable[menuatr + 0]);
-	RenderCharFB(message_4[37], &atrtable[menuatr + 2]);
+		RenderCharFB(message_4[byte], &atrtable[_menuatr + 3]);
+	RenderCharFB(message_4[36], &atrtable[_menuatr + 0]);
+	RenderCharFB(message_4[37], &atrtable[_menuatr + 2]);
 
 	PosX = StartX + fontwidth+5;
 	PosY = StartY + fontheight*20;
 	for (byte = 0; byte < 37; byte++)
-		RenderCharFB(message_5[byte], &atrtable[menuatr + 0]);
-	RenderCharFB(message_5[37], &atrtable[menuatr + 2]);
+		RenderCharFB(message_5[byte], &atrtable[_menuatr + 0]);
+	RenderCharFB(message_5[37], &atrtable[_menuatr + 2]);
 
 	PosX = StartX + fontwidth+5;
 	PosY = StartY + fontheight*21;
 	for (byte = 0; byte < 38; byte++)
-		RenderCharFB(message_6[byte], &atrtable[menuatr + 2]);
+		RenderCharFB(message_6[byte], &atrtable[_menuatr + 2]);
 	
 #if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();

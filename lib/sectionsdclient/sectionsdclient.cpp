@@ -487,47 +487,6 @@ CChannelEventList CSectionsdClient::getEventsServiceKey(const t_channel_id chann
 	return eList;
 }
 
-void showhexdumpa (char *label, unsigned char * from, int len)
-{
-  int i, j, k;
-  char buf[128];
-  char abuf[128];
-  unsigned char fl, ol;
-
-  fl = len / 16;
-  ol = len % 16;
-  if (label) {
-        time_t tt = time (0);
-        printf("\n%s -- %s", label, ctime (&tt));
-        printf("----------------------------------------------------\n");
-  }
-
-  for (i = 0; i < fl; i++) {
-        j = i * 16;
-        sprintf (buf, "%03X: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", i * 16, from[j + 0], from[j + 1], from[j + 2], from[j + 3], from[j + 4], from[j + 5], from[j + 6], from[j + 7], from[j + 8], from[j + 9], from[j + 10], from[j + 11], from[j + 12], from[j + 13], from[j + 14], from[j + 15]);
-        printf ("%s  ", buf);
-        for (k = 0; k < 16; k++) {
-          abuf[k] = (from[j + k] >= 0x20 && from[j + k] <= 0x7b) ? from[j + k] : 0x2E;
-        }
-        abuf[16] = 0;
-        printf("%s\n", abuf);
-  }
-  if (ol) {
-        j = fl * 16;
-        sprintf (buf, "%03X: ", j);
-        for (i = 0; i < ol; i++) {
-          sprintf (&buf[5 + i * 3], "%02x ", from[j + i]);
-          abuf[i] = (from[j + i] >= 0x20 && from[j + i] <= 0x7b) ? from[j + i] : 0x2E;
-        }
-        abuf[ol] = 0;
-        for (i = ol; i < 16; i++)
-          sprintf (&buf[5 + i * 3], "   ");
-        printf ("%s ", buf);
-        printf ("%s\n", abuf);
-  }
-  printf ("\n");
-}
-
 // 21.07.2005 - rainerk
 // Convert line-terminated extended events to vector of strings
 char * CSectionsdClient::parseExtendedEvents(char * dp, CEPGData * epgdata) 

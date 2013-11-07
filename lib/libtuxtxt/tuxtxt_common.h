@@ -558,7 +558,7 @@ void tuxtxt_allocate_cache(int magazine)
  * CacheThread                                                                *
  ******************************************************************************/
 static int stop_cache = 0;
-void * tuxtxt_CacheThread(void * arg)
+void * tuxtxt_CacheThread(void * /*arg*/)
 {
 	printf("tuxtxt_CacheThread: starting... tid %ld\n", syscall(__NR_gettid));
 	
