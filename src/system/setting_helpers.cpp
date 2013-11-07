@@ -825,7 +825,6 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_OPKG, LOCALE_OPKG_MANAGER, NULL},       
         {SNeutrinoSettings::ITEM_GLCD, LOCALE_GLCD_HEAD, NULL},
 	{SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB, LOCALE_MOVIEPLAYER_RECORDS, NULL},
-	{SNeutrinoSettings::ITEM_WEBTV, LOCALE_WEBTV_HEAD, NULL},
 };
 
 int CUserMenuMenu::exec(CMenuTarget *parent, const std::string &/*actionKey*/)

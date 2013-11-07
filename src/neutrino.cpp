@@ -771,7 +771,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
                 "2, 3, 4, 12",                     // RED
                 "6",                            // GREEN
                 "7",                            // YELLOW
-                "10, 11, 13, 14, 15, 19",   		// BLUE
+                "10, 11, 13, 14, 15",   	// BLUE
 #if defined (PLATFORM_GIGABLUE)
 		"0",				// F1
 		"0",				// F2
@@ -3166,7 +3166,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				nGLCD::unlockChannel();
 #endif				
 			}
-			else if( msg == (neutrino_msg_t)g_settings.key_webtv && (mode != mode_iptv))	// webtv
+			else if( msg == (neutrino_msg_t)g_settings.key_webtv)	// webtv
 			{
 #ifdef ENABLE_GRAPHLCD
 				std::string c = "WebTV";
@@ -3175,16 +3175,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			  
 				StopSubtitles();
 
-				moviePlayerGui->exec(NULL, "webtv");
-
-				if( mode == mode_radio )
-				{
-					if (!g_settings.radiotext_enable)
-						frameBuffer->loadBackgroundPic("radiomode.jpg");			
-#if !defined USE_OPENGL
-					frameBuffer->blit();
-#endif						
-				}
+				webtvMode();
 					
 				StartSubtitles();
 				

@@ -371,7 +371,6 @@ struct SNeutrinoSettings
                 ITEM_OPKG = 16,               
                 ITEM_GLCD = 17,
 		ITEM_MOVIEPLAYER_TSMB = 18,
-		ITEM_WEBTV = 19,
                 ITEM_MAX   // MUST be always the last in the list
         }USER_ITEM;
 	
