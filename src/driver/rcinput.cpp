@@ -113,10 +113,10 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 
 	key_standby = configfile.getInt32("key_standby", KEY_POWER);
 			
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE) || defined(PLATFORM_VUPLUS) || defined (PLATFORM_VENTON)
-	key_home = configfile.getInt32("key_home", 0xAE);
-#else
+#if defined (__sh__)
 	key_home = configfile.getInt32("key_home", KEY_HOME);
+#else
+	key_home = configfile.getInt32("key_home", 0xAE);
 #endif			
 
 #if defined (PLATFORM_DGS)
@@ -176,13 +176,13 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 	key_stop = configfile.getInt32("key_stop", KEY_STOP);
 	key_timeshift = configfile.getInt32("key_timeshift", KEY_TIME);
 			
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_DREAMBOX) || defined (PLATFORM_XTREND) || defined (PLATFORM_TECHNOMATE) || defined(PLATFORM_VUPLUS) || defined (PLATFORM_DGS)
-	key_mode = configfile.getInt32("key_mode", 0x181);
-#else			
+#if defined (__sh__)
 	key_mode = configfile.getInt32("key_mode", KEY_MODE);
+#else
+	key_mode = configfile.getInt32("key_mode", 0x181);
 #endif			
 
-#if defined (PLATFORM_GIGABLUE) || defined(PLATFORM_VUPLUS)
+#if defined (PLATFORM_GIGABLUE) || defined(PLATFORM_VUPLUS) || defined(PLATFORM_ODIN)
 	key_next = configfile.getInt32("key_next", 0x197);
 	key_prev = configfile.getInt32("key_prev", 0x19C);
 #else
@@ -191,25 +191,25 @@ bool CRCInput::loadKeyMap(const char * const fileName)
 #endif			
 
 	/* added from cuberevo3000hd so fix it please */
-	key_music = configfile.getInt32("key_music", /*KEY_MUSIC*/0x3F );
-	key_picture = configfile.getInt32("key_picture", /*KEY_PICTURE*/ 0x169 );
+	key_music = configfile.getInt32("key_music", 0x3F );
+	key_picture = configfile.getInt32("key_picture", 0x169 );
 			
-	key_repeat = configfile.getInt32("key_repeat", /*KEY_REPEAT*/0x81);
-	key_slow = configfile.getInt32("key_slow", /*KEY_SLOW*/0x199 );
+	key_repeat = configfile.getInt32("key_repeat", 0x81);
+	key_slow = configfile.getInt32("key_slow", 0x199 );
 			
 	key_dvbsub = configfile.getInt32("key_dvbsub", KEY_DVBSUB);
 
 	key_pip = configfile.getInt32("key_pip", KEY_PIP);
-	key_pippos = configfile.getInt32("key_pippos", /*KEY_PIPPOS*/0x175);
-	key_pipswap = configfile.getInt32("key_pipswap", /*KEY_PIPSWAP*/0X9E);
-	key_pipsubch = configfile.getInt32("key_pipsubch", /*KEY_PIPSUBCH*/0x188);
+	key_pippos = configfile.getInt32("key_pippos", 0x175);
+	key_pipswap = configfile.getInt32("key_pipswap", 0X9E);
+	key_pipsubch = configfile.getInt32("key_pipsubch", 0x188);
 
 	key_net = configfile.getInt32("key_net", KEY_NET);
 			
-	key_bookmark = configfile.getInt32("key_bookmark", /*KEY_BOOKMARK*/0x9C);
+	key_bookmark = configfile.getInt32("key_bookmark", 0x9C);
 
 #if defined (PLATFORM_DGS)
-	key_multifeed = configfile.getInt32("key_multifeed", /*KEY_MULTIFEED*/0x42);
+	key_multifeed = configfile.getInt32("key_multifeed", 0x42);
 #else
 	key_multifeed = configfile.getInt32("key_multifeed", 0x165);
 #endif
@@ -1424,9 +1424,12 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 				ret = read(fd_rc[i], &ev, sizeof(t_input_event));
 
 				if(ret != sizeof(t_input_event)) 
+				{
+					dprintf(DEBUG_INFO, "CRCInput::getMsg_us: read event %d != %d\n", ret, sizeof(t_input_event) );	
 					continue;
+				}
 								
-				dprintf(DEBUG_INFO, "CRCInput::getMsg_us: key: 0x%X value %d, translate: 0x%X -%s-\n", ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str() );				
+				dprintf(DEBUG_INFO, "CRCInput::getMsg_us: type: 0x%X key: 0x%X value %d, translate: 0x%X -%s-\n", ev.type, ev.code, ev.value, translate(ev.code, i), getKeyName(translate(ev.code, i)).c_str() );
 
 				uint32_t trkey = translate(ev.code, i);
 

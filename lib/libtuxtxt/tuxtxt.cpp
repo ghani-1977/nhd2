@@ -25,9 +25,12 @@
 
 #include "tuxtxt.h"
 
+#include <global.h>
+
 #include <dmx_cs.h>
 
 #include <driver/framebuffer.h>
+
 #include <system/debug.h>
 	
 #include <configfile.h>
@@ -37,414 +40,6 @@
 
 extern cVideo * videoDecoder;
 extern CFrontend * live_fe;
-
-/* this values are token from cuberevo3000hd */
-#ifndef KEY_PIP	
-#define KEY_PIP		0x041
-#endif
-
-#ifndef KEY_PIPPOS	
-#define KEY_PIPPOS	0x0BE
-#endif
-
-#ifndef KEY_PIPSWAP 
-#define KEY_PIPSWAP	0x0BF
-#endif
-
-#ifndef __KEY_PIPSUBCH	
-#define KEY_PIPSUBCH	0x0C0
-#endif
-
-#ifndef KEY_BOOKMARK	
-#define	KEY_BOOKMARK	0x03f
-#endif
-
-#ifndef KEY_MUSIC	
-#define KEY_MUSIC	0x0c1
-#endif
-
-#ifndef KEY_PICTURE	
-#define KEY_PICTURE	0x03e
-#endif
-
-#ifndef KEY_REPEAT	
-#define	KEY_REPEAT	0x040
-#endif
-
-#ifndef KEY_SLOW	
-#define KEY_SLOW	0x199
-#endif
-
-#ifndef KEY_MULTFEED	
-#define KEY_MULTIFEED	0x0bd
-#endif
-
-#ifndef KEY_DVBSUB	
-#define KEY_DVBSUB	0x172
-#endif
-
-#ifndef KEY_NET
-#define KEY_NET		0x096
-#endif
-
-/* VFD */
-#define VFD_UP		0x042
-#define VFD_DOWN	0x043
-#define VFD_RIGHT	0x057
-#define VFD_LEFT	0x044
-#define VFD_POWER	0x0ba
-#define VFD_MENU	0x0b8
-#define VFD_EXIT	0x0b7
-#define VFD_OK		0x058
-
-CConfigFile configfile(',', false);
-
-unsigned short key_0;
-unsigned short key_1;
-unsigned short key_2;
-unsigned short key_3;
-unsigned short key_4;
-unsigned short key_5;
-unsigned short key_6;
-unsigned short key_7;
-unsigned short key_8;
-unsigned short key_9;
-			
-unsigned short key_up;
-unsigned short key_left;
-unsigned short key_right;
-unsigned short key_down;
-			
-unsigned short key_spkr;
-						
-unsigned short key_minus;
-unsigned short key_plus;			
-
-unsigned short key_standby;
-unsigned short key_home;
-unsigned short key_setup;				
-			
-unsigned short key_page_up;
-unsigned short key_page_down;			
-			
-unsigned short key_ok;
-			
-unsigned short key_red;
-unsigned short key_green;
-unsigned short key_yellow;
-unsigned short key_blue;
-
-unsigned short key_audio;
-unsigned short key_video;
-			
-unsigned short key_text;
-
-unsigned short key_info;				
-			
-unsigned short key_epg;
-			
-unsigned short key_recall;		
-
-unsigned short key_favorites;
-
-unsigned short key_sat;
-			
-unsigned short key_record;
-unsigned short key_play;
-unsigned short key_pause;
-unsigned short key_forward;
-unsigned short key_rewind;
-unsigned short key_stop;
-			
-unsigned short key_timeshift;
-						
-unsigned short key_mode;			
-
-unsigned short key_next;
-unsigned short key_prev;			
-
-/* added from cuberevo3000hd so fix it please */
-unsigned short key_music;
-unsigned short key_picture;	
-unsigned short key_repeat;
-unsigned short key_slow;
-			
-unsigned short key_dvbsub;
-
-unsigned short key_pip;
-unsigned short key_pippos;
-unsigned short key_pipswap;
-unsigned short key_pipsubch;
-
-unsigned short key_net;	
-unsigned short key_bookmark;
-unsigned short key_multifeed;
-					
-unsigned short key_f1;
-unsigned short key_f2;
-unsigned short key_f3;
-unsigned short key_f4;
-		
-//unsigned short key_aspect;
-			
-unsigned short key_vfdup;
-unsigned short key_vfddown;
-unsigned short key_vfdright;
-unsigned short key_vfdleft;
-unsigned short key_vfdpower;
-unsigned short key_vfdmenu;
-unsigned short key_vfdexit;
-unsigned short key_vfdok;
-		
-bool loadKeyMap(const char * const fileName)
-{
-	dprintf(DEBUG_NORMAL, "CRCInput::loadKeymap:\n");
-	
-	/* if keymap.conf not exists load default */
-	if(!configfile.loadConfig(fileName))
-		printf("CRCInput::loadKeyMap: %s not found, using default\n", fileName);
-	
-	key_0 = configfile.getInt32("key_0", KEY_0);
-	key_1 = configfile.getInt32("key_1", KEY_1);
-	key_2 = configfile.getInt32("key_2", KEY_2);
-	key_3 = configfile.getInt32("key_3", KEY_3);
-	key_4 = configfile.getInt32("key_4", KEY_4);
-	key_5 = configfile.getInt32("key_5", KEY_5);
-	key_6 = configfile.getInt32("key_6", KEY_6);
-	key_7 = configfile.getInt32("key_7", KEY_7);
-	key_8 = configfile.getInt32("key_8", KEY_8);
-	key_9 = configfile.getInt32("key_9", KEY_9);
-			
-	key_up = configfile.getInt32("key_up", KEY_UP);
-	key_left = configfile.getInt32("key_left", KEY_LEFT);
-	key_right = configfile.getInt32("key_right", KEY_RIGHT);
-	key_down = configfile.getInt32("key_down", KEY_DOWN);
-			
-	key_spkr = configfile.getInt32("key_spkr", KEY_MUTE);
-				
-	key_minus = configfile.getInt32("key_minus", KEY_VOLUMEDOWN);
-	key_plus = configfile.getInt32("key_plus", KEY_VOLUMEUP);	
-
-	key_standby = configfile.getInt32("key_standby", KEY_POWER);
-			
-#if defined (PLATFORM_GIGABLUE)
-	key_home = configfile.getInt32("key_home", 0xAE);
-#else
-	key_home = configfile.getInt32("key_home", KEY_HOME);
-#endif			
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_setup = configfile.getInt32("key_setup", 0x8B);
-#else
-	key_setup = configfile.getInt32("key_setup", KEY_MENU);
-#endif				
-			
-	key_page_up = configfile.getInt32("key_page_up", 0x192);
-	key_page_down = configfile.getInt32("key_page_down", 0x193);	
-			
-	key_ok = configfile.getInt32("key_ok", KEY_OK);
-			
-	key_red = configfile.getInt32("key_red", KEY_RED);
-	key_green = configfile.getInt32("key_green", KEY_GREEN);
-	key_yellow = configfile.getInt32("key_yellow", KEY_YELLOW);
-	key_blue	= configfile.getInt32("key_blue", KEY_BLUE);
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_audio = configfile.getInt32("key_audio", 0x188);
-	key_video = configfile.getInt32("key_video", 0xE2);		
-	key_text = configfile.getInt32("key_text", 0x184);
-#else
-	key_audio = configfile.getInt32("key_audio", KEY_AUDIO);
-	key_video = configfile.getInt32("key_video", KEY_VIDEO);		
-	key_text = configfile.getInt32("key_text", KEY_TEXT);
-#endif
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_info = configfile.getInt32("key_info", 0x166);
-#else
-	key_info = configfile.getInt32("key_info", KEY_INFO);
-#endif			
-			
-#if defined (PLATFORM_GIGABLUE)			
-	key_epg = configfile.getInt32("key_epg", 0x8A);
-#else			
-	key_epg = configfile.getInt32("key_epg", KEY_EPG);
-#endif			
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_recall = configfile.getInt32("key_recall", 0x19C);
-#else
-	key_recall = configfile.getInt32("key_recall", KEY_BACK);
-#endif			
-
-	key_favorites = configfile.getInt32("key_favorites", KEY_FAVORITES);
-	key_sat = configfile.getInt32("key_sat", KEY_SAT);
-			
-	key_record = configfile.getInt32("key_record", KEY_RECORD);
-	key_play = configfile.getInt32("key_play", KEY_PLAY);
-	key_pause = configfile.getInt32("key_pause", KEY_PAUSE);
-	key_forward = configfile.getInt32("key_forward", KEY_FASTFORWARD);
-	key_rewind = configfile.getInt32("key_rewind", KEY_REWIND);
-	key_stop = configfile.getInt32("key_stop", KEY_STOP);
-	key_timeshift = configfile.getInt32("key_timeshift", KEY_TIME);
-			
-#if defined (PLATFORM_GIGABLUE)
-	key_mode = configfile.getInt32("key_mode", 0x181);
-#elif defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_mode = configfile.getInt32("key_mode", 0x181);
-#else			
-	key_mode = configfile.getInt32("key_mode", KEY_MODE);
-#endif			
-
-#if defined (PLATFORM_GIGABLUE)
-	key_next = configfile.getInt32("key_next", 0x197);
-	key_prev = configfile.getInt32("key_prev", 0x19C);
-#else
-	key_next = configfile.getInt32("key_next", 0xFFFFFFF0);
-	key_prev = configfile.getInt32("key_prev", 0xFFFFFFF1);
-#endif			
-
-	/* added from cuberevo3000hd so fix it please */
-	key_music = configfile.getInt32("key_music", 0x3F );
-	key_picture = configfile.getInt32("key_picture", 0x169 );
-			
-	key_repeat = configfile.getInt32("key_repeat", 0x81);
-	key_slow = configfile.getInt32("key_slow", 0x199 );
-			
-	key_dvbsub = configfile.getInt32("key_dvbsub", KEY_DVBSUB);
-
-	key_pip = configfile.getInt32("key_pip", KEY_PIP);
-	key_pippos = configfile.getInt32("key_pippos", 0x175);
-	key_pipswap = configfile.getInt32("key_pipswap", 0X9E);
-	key_pipsubch = configfile.getInt32("key_pipsubch", 0x188);
-
-	key_net = configfile.getInt32("key_net", KEY_NET);
-			
-	key_bookmark = configfile.getInt32("key_bookmark", 0x9C);
-
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-	key_multifeed = configfile.getInt32("key_multifeed", 0x42);
-#else
-	key_multifeed = configfile.getInt32("key_multifeed", 0x165);
-#endif
-				
-	key_f1 = configfile.getInt32("key_f1", 0x3B);
-	key_f2 = configfile.getInt32("key_f2", 0x3C);
-	key_f3 = configfile.getInt32("key_f3", 0x3D);
-	key_f4 = configfile.getInt32("key_f4", 0x3E);
-	
-	//key_aspect = configfile.getInt32("key_aspect", 0x40);	
-			
-	key_vfdup = configfile.getInt32("key_vfdup", VFD_UP);
-	key_vfddown = configfile.getInt32("key_vfddown", VFD_DOWN);
-	key_vfdright = configfile.getInt32("key_vfdright", VFD_RIGHT);
-	key_vfdleft = configfile.getInt32("key_vfdleft", VFD_LEFT);
-	key_vfdpower = configfile.getInt32("key_vfdpower", VFD_POWER);
-	key_vfdmenu = configfile.getInt32("key_vfdmenu", VFD_MENU);
-	key_vfdexit = configfile.getInt32("key_vfdexit", VFD_EXIT);
-	key_vfdok = configfile.getInt32("key_vfdok", VFD_OK);
-	
-	return true;
-}
-
-unsigned short translate(int code)
-{
-	/* common */
-	if (code == key_standby) RCCode = RC_STANDBY;
-	else if (code == key_spkr) RCCode = RC_MUTE;
-			
-	//else if (code == key_mode) return RC_;
-	//else if (code == key_net) return RC_net;
-			
-			
-	//else if (code == key_page_up) return RC_page_up;
-	//else if (code == key_page_down) return RC_page_down;
-	else if (code == key_plus) RCCode = RC_PLUS;
-	else if (code == key_minus) RCCode = RC_MINUS;
-	
-	else if (code == key_setup) RCCode = RC_DBOX;
-	else if (code == key_left) RCCode = RC_LEFT;
-	else if (code == key_up) RCCode = RC_UP;
-	else if (code == key_ok) RCCode = RC_OK;
-	else if (code == key_down) RCCode = RC_DOWN;
-	else if (code == key_right) RCCode = RC_RIGHT;
-	else if (code == key_home) RCCode = RC_HOME;
-			
-	/* special */
-	//else if (code == key_recall) return RC_recall;
-	else if (code == key_info) RCCode = RC_HELP;
-	//else if (code == key_bookmark) return RC_bookmark;
-	
-	/* colored */
-	else if (code == key_red) RCCode = RC_RED;
-	else if (code == key_green) RCCode = RC_GREEN;
-	else if (code == key_yellow) RCCode = RC_YELLOW;
-	else if (code == key_blue) RCCode = RC_BLUE;
-	
-	/* alphanumeric */
-	else if (code == key_1) RCCode = RC_1;
-	else if (code == key_2) RCCode = RC_2;
-	else if (code == key_3) RCCode = RC_3;
-	else if (code == key_4) RCCode = RC_4;
-	else if (code == key_5) RCCode = RC_5;
-	else if (code == key_6) RCCode = RC_6;
-	else if (code == key_7) RCCode = RC_7;
-	else if (code == key_8) RCCode = RC_8;
-	else if (code == key_9) RCCode = RC_9;
-	else if (code == key_0) RCCode = RC_0;
-	
-	/* media */
-	//else if (code == key_video) return RC_video;
-	//else if (code == key_music) return RC_music;
-	//else if (code == key_picture) return RC_picture;		
-	//else if (code == key_record) return RC_record;
-	//else if (code == key_rewind) return RC_rewind;
-	//else if (code == key_play) return RC_play;
-	//else if (code == key_forward) return RC_forward;
-	//else if (code == key_repeat) return RC_repeat;
-	//else if (code == key_slow) return RC_slow;
-	//else if (code == key_stop) return RC_stop;
-	//else if (code == key_pause) return RC_pause;
-	//else if (code == key_audio) return RC_audio;
-	//else if (code == key_next) return RC_next;
-	//else if (code == key_prev) return RC_prev;
-	//else if (code == key_timeshift) return RC_timeshift;
-	
-	/* dvb */
-	//else if (code == key_sat) return RC_sat;
-	//else if (code == key_favorites) return RC_favorites;
-	//else if (code == key_multifeed) return RC_multifeed;
-	//else if (code == key_dvbsub) return RC_dvbsub;
-	else if (code == key_text) RCCode = RC_TEXT;
-	//else if (code == key_epg) return RC_epg;
-	//else if (code == key_pip) return RC_pip;
-	//else if (code == key_pippos) return RC_pippos;
-	//else if (code == key_pipswap) return RC_pipswap;
-	//else if (code == key_pipsubch) return RC_pipsubch;
-	
-	//else if (code == key_aspect) return RC_aspect;
-	
-	/* functions */
-	//else if (code == key_f1) return RC_f1;
-	//else if (code == key_f2) return RC_f2;
-	//else if (code == key_f3) return RC_f3;
-	//else if (code == key_f4) return RC_f4;
-	
-	/* frontpanel */
-	//else if (code == key_vfdpower) return RC_standby;
-	//else if (code == key_vfdmenu) return RC_setup;
-	//else if (code == key_vfdexit) return RC_home;
-	//else if (code == key_vfdok) return RC_ok;
-	//else if (code == key_vfdleft) return RC_left;
-	//else if (code == key_vfdright) return RC_right;
-	//else if (code == key_vfddown) return RC_down;
-	//else if (code == key_vfdup) return RC_up;	
-	else RCCode = KEY_RESERVED;
-	
-	return RCCode;
-}
-
-#define NEUTRINO_KEYMAP_FILE		CONFIGDIR "/keymap.conf"	
 
 // subs
 static pthread_t ttx_sub_thread;
@@ -1948,10 +1543,6 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 
 	//rcinput
 	rc = _rc;
-	
-	//load keymap
-	if( !loadKeyMap(NEUTRINO_KEYMAP_FILE) )
-		printf("CRCInput::CRCInput: Loading of keymap file failed. Using defaults.\n");
 	
 	//fb
 	lfb = (unsigned char *)CFrameBuffer::getInstance()->getFrameBufferPointer();
@@ -4508,13 +4099,13 @@ void FlipVert(int x, int y, int w, int h)
 	
 		p2 = (p+(h-(h1+1))*CFrameBuffer::getInstance()->getStride());
 
-		if (w + x > CFrameBuffer::getInstance()->getScreenWidth(true))
+		if (w + x > (int)CFrameBuffer::getInstance()->getScreenWidth(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds x %d\n", __func__, w + x);
 
-		if ((h-(h1+1) ) + y > CFrameBuffer::getInstance()->getScreenHeight(true))
+		if ((h-(h1+1) ) + y > (int)CFrameBuffer::getInstance()->getScreenHeight(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y %d\n", __func__, (h-(h1+1)) + y);
 
-		if (h1 + y > CFrameBuffer::getInstance()->getScreenHeight(true))
+		if (h1 + y > (int)CFrameBuffer::getInstance()->getScreenHeight(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y1 %d\n", __func__, h1 + y);
 		
 		memcpy(buf,p1,w*4);
@@ -6186,7 +5777,7 @@ void DecodePage()
 				page_atrb[i] = atrtable[ATR_WB];
 
 			/* decode parity/hamming */
-			for (i = 40; i < sizeof(page_char); i++)
+			for (i = 40; i < (int)sizeof(page_char); i++)
 			{
 				page_atrb[i] = atrtable[ATR_WB];
 				p = page_char + i;
@@ -6545,38 +6136,16 @@ void DecodePage()
 */
 int GetRCCode()
 {
-	struct input_event ev;
-	static __u16 rc_last_key = KEY_RESERVED;
-
-	int val = fcntl(rc, F_GETFL);
-	
-	if(!(val & O_NONBLOCK))
-		printf("[tuxtxt] GetRCCode in blocking mode.\n");
-
-	/* get code */
-	if (read(rc, &ev, sizeof(ev)) == sizeof(ev))
-	{
-		if (ev.value)
-		{
-			if (ev.code != rc_last_key)
-			{
-				rc_last_key = ev.code;
-				
-				translate(ev.code);
-				
-				printf("[tuxtxt] new key, code 0x%X\n", RCCode);
-				return 1;
-			}
-		}
-		else
-		{
-			RCCode = -1;
-			rc_last_key = KEY_RESERVED;
-		}
-	}
-
+	neutrino_msg_t msg;
+	neutrino_msg_data_t data;
+	g_RCInput->getMsg_ms(&msg, &data, 40);
 	RCCode = -1;
-	usleep(1000000/100);
 
+	if (msg <= CRCInput::RC_MaxRC) 
+	{
+		RCCode = msg;
+		return 1;
+	}
+	
 	return 0;
 }

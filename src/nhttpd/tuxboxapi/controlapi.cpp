@@ -611,9 +611,12 @@ void CControlAPI::RebootCGI(CyhookHandler *hh)
 int CControlAPI::rc_send(int ev, unsigned int code, unsigned int value)
 {
 	struct input_event iev;
-	iev.type=EV_KEY;
-	iev.code=code;
-	iev.value=value;
+	iev.type = EV_KEY;
+	if ((code == 0) && (value == 0))
+		iev.type = EV_SYN;
+	iev.code = code;
+	iev.value = value;
+	
 	return write(ev,&iev,sizeof(iev));
 }
 
@@ -670,21 +673,21 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
 		sendcode = Config->getInt32("key_info", KEY_INFO);
 #endif	
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_VUPLUS) || defined (PLATFORM_DGS)
 	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
 		sendcode = Config->getInt32("key_mode", 0x181);
 #else	
 	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
 		sendcode = Config->getInt32("key_mode", KEY_MODE);
 #endif	
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
+#if defined (PLATFORM_DGS)
 	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
 		sendcode = Config->getInt32("key_setup", 0x8B);
 #else	
 	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
 		sendcode = Config->getInt32("key_setup", KEY_MENU);
 #endif	
-#if defined (PLATFORM_GIGABLUE)
+#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_VUPLUS)
 	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
 		sendcode = Config->getInt32("key_epg", 0x8A);
 #else	
@@ -693,7 +696,7 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 #endif	
 	else if ( !strcmp(keyname.c_str(), "KEY_FAVORITES"))
 		sendcode = Config->getInt32("key_favorites", KEY_FAVORITES);
-#if defined (PLATFORM_GIGABLUE)	
+#if defined (PLATFORM_GIGABLUE)	|| defined (PLATFORM_VUPLUS)
 	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
 		sendcode = Config->getInt32("key_home", 0xAE);
 #else	
@@ -780,22 +783,42 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
 	{
 		int evd = open(RC_EVENT_DEVICE[i], O_RDWR);
-		if (evd < 0) {
+		if (evd < 0) 
+		{
 			printf("[nhttpd] opening event%d failed\n", i);
 			continue;
 		}
-		if (rc_send(evd, sendcode, KEY_PRESSED) < 0) {
+		
+		if (rc_send(evd, sendcode, KEY_PRESSED) < 0) 
+		{
 			perror("writing 'KEY_PRESSED' event failed");
 			close(evd);
 			continue;
 		}
-		if (rc_send(evd, sendcode, KEY_RELEASED) < 0) {
+		
+		if (rc_send(evd, 0, 0) < 0) 
+		{
+			perror("writing EV_SYN for 'KEY_PRESSED' event failed");
+			close(evd);
+			continue;
+		}
+		
+		if (rc_send(evd, sendcode, KEY_RELEASED) < 0) 
+		{
 			perror("writing 'KEY_RELEASED' event failed");
 			close(evd);
 			continue;
 		}
+		
+		if (rc_send(evd, 0, 0) < 0) 
+		{
+			perror("writing EV_SYN for 'KEY_RELEASED' event failed");
+			close(evd);
+			continue;
+		}
+		
 		ret = true;
-		hh->SendError();
+
 		close(evd);
 	}
 	
@@ -1978,8 +2001,10 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 	}
 	else
 		script=cmd;
+	
 	// get file
 	std::string fullfilename;
+	std::string fullcmd;
 	script += ".sh"; //add script extention
 	char cwd[255];
 	getcwd(cwd, 254);
@@ -1992,12 +2017,16 @@ std::string CControlAPI::YexecuteScript(CyhookHandler *, std::string cmd)
 		{
 			fclose(test);
 			chdir(PLUGIN_DIRS[i].c_str());
-#ifndef __sh__	
+#if !defined (__sh__)
+			result = "";
+			fullcmd = fullfilename + " " + para;
+
 			//FIXME: dont know why popen dont work in oe1.2
-			system( (fullfilename+" "+para).c_str() ); //execute
+			system( fullcmd.c_str() ); //execute
+			found = true;
 #else			
 			//
-			FILE *f = popen( (fullfilename+" "+para).c_str(), "r"); //execute
+			FILE *f = popen( fullcmd.c_str(), "r"); //execute
 			if (f != NULL)
 			{
 				found = true;
