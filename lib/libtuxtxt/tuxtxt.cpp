@@ -1704,7 +1704,8 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 			case RC_7:
 			case RC_8:
 			case RC_9:
-				PageInput(RCCode - RC_0);
+				//PageInput(RCCode - RC_0);
+				PageInput(CRCInput::getNumericValue(RCCode));
 				break;
 
 			case RC_RED:	 ColorKey(prev_100);		break;
@@ -2729,15 +2730,15 @@ void ConfigMenu(int Init, int source)
 	do {
 		if (GetRCCode() == 1)
 		{
+			//
+			int rc_num = -1;
 
-			if (
-#if (RC_1 > 0)
-				RCCode >= RC_1 && /* generates a warning... */
-#endif
-				RCCode <= RC_1+M_MaxDirect) /* direct access */
+			if (CRCInput::isNumeric(RCCode))
+				rc_num = CRCInput::getNumericValue(RCCode) -1; /* valid: 1 to M_MaxDirect */
+			if (rc_num >= 0 && rc_num <= M_MaxDirect) /* direct access */
 			{
 				Menu_HighlightLine(menu, MenuLine[menuitem], 0);
-				menuitem = RCCode-RC_1;
+				menuitem = rc_num;
 				Menu_HighlightLine(menu, MenuLine[menuitem], 1);
 
 				if (menuitem != M_PID) /* just select */

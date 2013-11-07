@@ -145,33 +145,33 @@ int displaywidth;
 #define release_mosaic      0x1F
 
 /* rc codes */
-#define RC_0        0x00
-#define RC_1        0x01
-#define RC_2        0x02
-#define RC_3        0x03
-#define RC_4        0x04
-#define RC_5        0x05
-#define RC_6        0x06
-#define RC_7        0x07
-#define RC_8        0x08
-#define RC_9        0x09
-#define RC_RIGHT    0x0A
-#define RC_LEFT     0x0B
-#define RC_UP       0x0C
-#define RC_DOWN     0x0D
-#define RC_OK       0x0E
-#define RC_MUTE     0x0F
-#define RC_STANDBY  0x10
-#define RC_GREEN    0x11
-#define RC_YELLOW   0x12
-#define RC_RED      0x13
-#define RC_BLUE     0x14
-#define RC_PLUS     0x15
-#define RC_MINUS    0x16
-#define RC_HELP     0x17
-#define RC_DBOX     0x18
-#define RC_TEXT     0x19
-#define RC_HOME     0x1F
+#define RC_0        CRCInput::RC_0
+#define RC_1        CRCInput::RC_1
+#define RC_2        CRCInput::RC_2
+#define RC_3        CRCInput::RC_3
+#define RC_4        CRCInput::RC_4
+#define RC_5        CRCInput::RC_5
+#define RC_6        CRCInput::RC_6
+#define RC_7        CRCInput::RC_7
+#define RC_8        CRCInput::RC_8
+#define RC_9        CRCInput::RC_9
+#define RC_RIGHT    CRCInput::RC_right
+#define RC_LEFT     CRCInput::RC_left
+#define RC_UP       CRCInput::RC_up
+#define RC_DOWN     CRCInput::RC_down
+#define RC_OK       CRCInput::RC_ok
+#define RC_MUTE     CRCInput::RC_spkr
+#define RC_STANDBY  CRCInput::RC_standby
+#define RC_GREEN    CRCInput::RC_green
+#define RC_YELLOW   CRCInput::RC_yellow
+#define RC_RED      CRCInput::RC_red
+#define RC_BLUE     CRCInput::RC_blue
+#define RC_PLUS     CRCInput::RC_plus
+#define RC_MINUS    CRCInput::RC_minus
+#define RC_HELP     CRCInput::RC_info
+#define RC_DBOX     CRCInput::RC_setup
+#define RC_TEXT     CRCInput::RC_text
+#define RC_HOME     CRCInput::RC_home
 
 typedef enum /* object type */
 {
