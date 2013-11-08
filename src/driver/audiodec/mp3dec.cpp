@@ -1346,10 +1346,6 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 					}
 				}
 			}
-			else
-			{
-				remove(coverfile);
-			}
 		
 			id3_tag_delete(tag);
 		}

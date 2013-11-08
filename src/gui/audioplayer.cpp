@@ -252,9 +252,6 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_current = -1;
 	else
 		m_current = 0;
-	
-	if(!access("/tmp/cover.jpg", F_OK))
-		remove("/tmp/cover.jpg");
 
 	m_selected = 0;
 
@@ -587,7 +584,6 @@ int CAudioPlayerGui::show()
 					else
 						m_selected = ((step == m_listmaxshow) && (m_selected < (((m_playlist.size() / m_listmaxshow)+1) * m_listmaxshow))) ? (m_playlist.size() - 1) : 0;
 				}
-				//m_selected = (m_selected + 1) % m_playlist.size();
 
 				paintItem(prevselected - m_liststart);
 				unsigned int oldliststart = m_liststart;
@@ -1678,6 +1674,7 @@ void CAudioPlayerGui::paintItem(int pos)
 			snprintf(dura, 8, "%ldk", m_playlist[pos + m_liststart].MetaData.total_time);
 		else
 			snprintf(dura, 8, "%ld:%02ld", m_playlist[pos + m_liststart].MetaData.total_time / 60, m_playlist[pos + m_liststart].MetaData.total_time % 60);
+		
 		int w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(dura) + 5;
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + 10, ypos + m_fheight, m_width - 30 - w, tmp, color, m_fheight, true); // UTF-8
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + m_width - 15 - w, ypos + m_fheight, w, dura, color, m_fheight);
@@ -2045,7 +2042,7 @@ void CAudioPlayerGui::paint()
 	paintInfo();
 		
 #if !defined USE_OPENGL
-	m_frameBuffer->blit();
+	//m_frameBuffer->blit();
 #endif
 	m_visible = true;
 }
