@@ -244,7 +244,7 @@ class CAudioPlayerGui : public CMenuTarget
 		bool shufflePlaylist(void);
 		bool playNext(bool allow_rotate = false);
 		bool playPrev(bool allow_rotate = false);
-		bool SaveCover(CAudiofileExt &File);
+		//bool SaveCover(CAudiofileExt &File);
 	
 	public:
 		CAudioPlayerGui(bool inetmode = false);

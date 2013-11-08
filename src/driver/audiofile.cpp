@@ -36,6 +36,7 @@
 
 #include <driver/audiofile.h>
 
+
 /* default constructor */
 CAudiofile::CAudiofile()
   : MetaData(), Filename(), FileType( CFile::FILE_UNKNOWN )

@@ -61,7 +61,7 @@ class CAudioPlayer
 		CAudioMetaData getMetaData();
 		bool hasMetaDataChanged();
 		bool readMetaData(CAudiofile* const, const bool);
-		bool readCoverData(CAudiofile* const, const bool);
+		//bool readCoverData(CAudiofile* const, const bool);
 		time_t getTimePlayed(){return m_played_time;}
 		time_t getTimeTotal(){return m_Audiofile.MetaData.total_time;}
 		int getScBuffered(){return m_sc_buffered;}

@@ -632,12 +632,6 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 	std::string keyname = hh->ParamList["1"];
 	int sendcode = -1;
 	
-	//for (unsigned int i = 0; sendcode == -1 && i < sizeof(keynames)/ sizeof(key); i++) 
-	//{
-	//	if (!strcmp(keyname.c_str(), keynames[i].name))
-	//		sendcode = keynames[i].code;
-	//}
-	
 	//FIXME: use keymap.conf this belong to all boxes models
 	CConfigFile * Config = new CConfigFile(',');
 	Config->loadConfig(NEUTRINO_KEYMAP_FILE);

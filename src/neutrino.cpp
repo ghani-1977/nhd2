@@ -2942,6 +2942,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					if(webtv->playstate == CWebTV::PAUSE)
 						webtv->continuePlayBack();
+					else if(webtv->playstate == CWebTV::STOPPED)
+						webtv->startPlayBack(webtv->getTunedChannel());
 				}
 			}
 			else if( (msg == CRCInput::RC_record || msg == CRCInput::RC_stop) && (mode != mode_iptv) ) 
@@ -5015,6 +5017,14 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "restart") 
 	{
+		// break silently autotimeshift
+		if(autoshift) 
+		{
+			stopAutoRecord();
+			recordingstatus = 0;
+			timeshiftstatus = 0;
+		}
+	
 		if (recordingstatus)
 			DisplayErrorMessage(g_Locale->getText(LOCALE_SERVICEMENU_RESTART_REFUSED_RECORDING));
 		else 

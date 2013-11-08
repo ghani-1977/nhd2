@@ -272,6 +272,7 @@ inline signed short CMP3Dec::MadFixedToSShort(const mad_fixed_t Fixed)
 	return (signed short)(Fixed >> (MAD_F_FRACBITS + 1 - 16));
 }
 #endif
+
 /****************************************************************************
  * Print human readable informations about an audio MPEG frame.             *
  ****************************************************************************/
@@ -282,10 +283,7 @@ void CMP3Dec::CreateInfo(CAudioMetaData * m, int FrameNumber)
 
 	if ( !m->hasInfoOrXingTag )
 	{
-		m->total_time = m->avg_bitrate != 0 ?
-			static_cast<int>( round( static_cast<double>( m->filesize )
-									 / m->avg_bitrate ) )
-			: 0;
+		m->total_time = m->avg_bitrate != 0 ? static_cast<int>( round( static_cast<double>( m->filesize ) / m->avg_bitrate ) ) : 0;
 	}
 
 	if ( FrameNumber == 1 )
@@ -888,8 +886,14 @@ bool CMP3Dec::GetMetaData(FILE * in, const bool nice, CAudioMetaData * const m)
 	
 	if ( in && m )
 	{
+		//mp3 infos
 		res = GetMP3Info(in, nice, m);
+		
+		// id3tag infos
 		GetID3(in, m);
+		
+		// id3taf cover
+		SaveCover(in, m);
 	}
 	else
 	{
@@ -1134,7 +1138,6 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 		};
 
 	/* text information */
-
 	struct id3_file * id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
 	if(id3file == 0)
 		printf("error open id3 file\n");
@@ -1284,7 +1287,7 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 	}
 }
 
-bool CMP3Dec::SaveCover(FILE * in)
+bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 {
 	struct id3_frame const *frame;
 	const char * coverfile = "/tmp/cover.jpg";
@@ -1322,6 +1325,7 @@ bool CMP3Dec::SaveCover(FILE * in)
 							data = id3_field_getbinarydata(field, &size);
 							if ( data )
 							{
+								m->cover = coverfile;
 								FILE * pFile;
 								pFile = fopen ( coverfile , "wb" );
 								fwrite (data , 1 , size , pFile );

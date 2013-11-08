@@ -186,6 +186,7 @@ bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 	return Status;
 }
 
+/*
 bool CBaseDec::GetCoverDataBase(CAudiofile * const in, const bool nice)
 {
 	bool Status = true;
@@ -220,6 +221,7 @@ bool CBaseDec::GetCoverDataBase(CAudiofile * const in, const bool nice)
 
 	return Status;
 }
+*/
 
 void CBaseDec::Init()
 {

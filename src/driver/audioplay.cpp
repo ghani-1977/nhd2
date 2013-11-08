@@ -291,8 +291,8 @@ void CAudioPlayer::sc_callback(void *arg)
 void CAudioPlayer::clearFileData()
 {
 	m_Audiofile.clear();
-	m_played_time=0;
-	m_sc_buffered=0;
+	m_played_time = 0;
+	m_sc_buffered = 0;
 }
 
 CAudioMetaData CAudioPlayer::getMetaData()
@@ -312,10 +312,12 @@ bool CAudioPlayer::readMetaData(CAudiofile* const file, const bool nice)
 	return CBaseDec::GetMetaDataBase(file, nice);
 }
 
+/*
 bool CAudioPlayer::readCoverData(CAudiofile * const file, const bool nice)
 {
 	return CBaseDec::GetCoverDataBase(file, nice);
 }
+*/
 
 
 

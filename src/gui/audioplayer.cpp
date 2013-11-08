@@ -1999,13 +1999,6 @@ void CAudioPlayerGui::paintInfo()
 			tmp += " / ";
 			tmp += m_curr_audiofile.MetaData.title;
 		}
-		
-		// show cover
-        	if ( SaveCover(m_curr_audiofile) )
-		{
-			if(!access("/tmp/cover.jpg", F_OK))
-				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
-		}
 
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		xstart=(m_width-w)/2;
@@ -2019,6 +2012,16 @@ void CAudioPlayerGui::paintInfo()
 		m_time_total = 0;
 		m_time_played = 0;
 		updateMetaData();
+		
+		// show cover
+        	//if ( SaveCover(m_curr_audiofile) )
+		/*
+		if (!m_curr_audiofile.MetaData.cover.empty())
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		}
+		*/
 
 		updateTimes(true);
 	}
@@ -2350,6 +2353,12 @@ void CAudioPlayerGui::updateMetaData()
 			m_curr_audiofile.MetaData.album = meta.sc_station;
 			updateLcd = true;
 		}
+		
+		if (!meta.cover.empty())
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		}
 	}
 	
 	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
@@ -2357,11 +2366,13 @@ void CAudioPlayerGui::updateMetaData()
 		updateLcd = true;
 	}
 	
+	/*
 	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
 	{
 		if(!access("/tmp/cover.jpg", F_OK))
 			remove("/tmp/cover.jpg");
 	}
+	*/
 	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
 		
@@ -2551,7 +2562,8 @@ void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 		std::string::size_type i = tmp.rfind(" - ");
 		
 		if(i != std::string::npos)
-		{ // Trennzeichen " - " gefunden
+		{ 
+			// Trennzeichen " - " gefunden
 			File.MetaData.artist = tmp.substr(0, i);
 			File.MetaData.title = tmp.substr(i + 3);
 		}
@@ -3073,9 +3085,11 @@ std::string CAudioPlayerGui::absPath2Rel(const std::string& fromDir, const std::
 	return res;
 }
 
+/*
 bool CAudioPlayerGui::SaveCover(CAudiofileExt &File)
 {
 	return CAudioPlayer::getInstance()->readCoverData(&File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
 }
+*/
 
 
