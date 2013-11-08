@@ -1104,6 +1104,7 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 	{
 		int mode = CNeutrinoApp::getInstance()->getMode();
 		std::string rt_icon = NEUTRINO_ICON_RADIOTEXTOFF;
+		
 		if ((!virtual_zap_mode) && (!recordModeActive) && (mode == NeutrinoMessages::mode_radio))
 		{
 			if (g_settings.radiotext_enable)
@@ -1328,8 +1329,6 @@ void CInfoViewer::showRadiotext()
 			if (g_Radiotext->S_RtOsdTitle == 1) 
 			{
 				// Title
-				//sprintf(stext[0], g_Radiotext->RT_PTY == 0 ? "%s - %s %s%s" : "%s - %s (%s)%s",
-				//g_Radiotext->RT_Titel, tr("Radiotext"), g_Radiotext->RT_PTY == 0 ? g_Radiotext->RDS_PTYN : g_Radiotext->ptynr2string(g_Radiotext->RT_PTY), g_Radiotext->RT_MsgShow ? ":" : tr("  [waiting ...]"));
 				if ((lines) || (g_Radiotext->RT_PTY !=0)) 
 				{
 					sprintf(stext[0], g_Radiotext->RT_PTY == 0 ? "%s %s%s" : "%s (%s)%s", tr("Radiotext"), g_Radiotext->RT_PTY == 0 ? g_Radiotext->RDS_PTYN : g_Radiotext->ptynr2string(g_Radiotext->RT_PTY), ":");
@@ -1346,6 +1345,7 @@ void CInfoViewer::showRadiotext()
 				yoff = 17;
 				ii = 1;
 			}
+			
 			// Body
 			if (lines) 
 			{

@@ -2012,16 +2012,6 @@ void CAudioPlayerGui::paintInfo()
 		m_time_total = 0;
 		m_time_played = 0;
 		updateMetaData();
-		
-		// show cover
-        	//if ( SaveCover(m_curr_audiofile) )
-		/*
-		if (!m_curr_audiofile.MetaData.cover.empty())
-		{
-			if(!access("/tmp/cover.jpg", F_OK))
-				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
-		}
-		*/
 
 		updateTimes(true);
 	}
@@ -2314,14 +2304,15 @@ void CAudioPlayerGui::updateMetaData()
 
 		if ( meta.bitrate > 0 )
 		{
+			//NOTE: some meta can as vbr can be parsed only when the decoder is running
 #if defined (ENABLE_PCMDECODER)		  
-			info << " / ";
-#endif			
+			info << " / ";			
 			
 			if ( meta.vbr )
 			{
 				info << "VBR ";
 			}
+#endif			
 			
 			info << meta.bitrate/1000 << "kbps";
 		}
@@ -2366,14 +2357,6 @@ void CAudioPlayerGui::updateMetaData()
 		updateLcd = true;
 	}
 	
-	/*
-	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
-	{
-		if(!access("/tmp/cover.jpg", F_OK))
-			remove("/tmp/cover.jpg");
-	}
-	*/
-	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
 		
 	if(updateLcd)
@@ -2385,7 +2368,6 @@ void CAudioPlayerGui::updateMetaData()
 	if(updateMeta || updateScreen)
 	{
 		//FIXME:???
-		//m_frameBuffer->paintBoxRel(m_x + 10, m_y + 4 + 2*m_fheight, m_width - 20, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
 		m_frameBuffer->paintBoxRel(m_x + 10 + m_title_height, m_y + 4 + 2*m_fheight, m_width - 20 - m_title_height, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
 		
 		int xstart = ((m_width - 20 - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(m_metainfo))/2)+10;
@@ -3084,12 +3066,4 @@ std::string CAudioPlayerGui::absPath2Rel(const std::string& fromDir, const std::
 	res = res + relFilepath;
 	return res;
 }
-
-/*
-bool CAudioPlayerGui::SaveCover(CAudiofileExt &File)
-{
-	return CAudioPlayer::getInstance()->readCoverData(&File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
-}
-*/
-
 

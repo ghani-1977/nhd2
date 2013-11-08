@@ -244,7 +244,6 @@ class CAudioPlayerGui : public CMenuTarget
 		bool shufflePlaylist(void);
 		bool playNext(bool allow_rotate = false);
 		bool playPrev(bool allow_rotate = false);
-		//bool SaveCover(CAudiofileExt &File);
 	
 	public:
 		CAudioPlayerGui(bool inetmode = false);
@@ -252,6 +251,5 @@ class CAudioPlayerGui : public CMenuTarget
 		int show();
 		int exec(CMenuTarget *parent, const std::string &actionKey);
 };
-
 
 #endif

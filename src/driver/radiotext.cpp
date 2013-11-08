@@ -449,14 +449,17 @@ void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 						printf("RText-Rep[%d]: %s\n", ind, RT_Text[ind]);
 				}
 			}
+			
 			if (!repeat) 
 			{
 				memcpy(RT_Text[RT_Index], temptext, RT_MEL);
 				// +Memory
 				char *temp;
 				asprintf(&temp, "%s", RT_Text[RT_Index]);
+				
 				if (++rtp_content.rt_Index >= 2*MAX_RTPC)
 					rtp_content.rt_Index = 0;
+				
 				asprintf(&rtp_content.radiotext[rtp_content.rt_Index], "%s", rtrim(temp));
 				free(temp);
 				if (S_Verbose >= 1)
@@ -502,199 +505,205 @@ void CRadioText::RadiotextDecode(unsigned char *mtext, int len)
 			if (S_Verbose >= 2)
 				printf("RTplus (tag=Typ/Start/Len):  Toggle/Run = %d/%d, tag#1 = %d/%d/%d, tag#2 = %d/%d/%d\n", 
 					(mtext[10]&0x10)>0, (mtext[10]&0x08)>0, rtp_typ[0], rtp_start[0], rtp_len[0], rtp_typ[1], rtp_start[1], rtp_len[1]);
-		// save info
-		for (int i = 0; i < 2; i++) 
-		{
-			if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) 
-			{	
-				// length-error
-				if (S_Verbose >= 1)
-					printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n", i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
-			} 
-			else 
+			// save info
+			for (int i = 0; i < 2; i++) 
 			{
-				char temptext[RT_MEL];
-				memset(temptext, 0x20, RT_MEL-1);
-				memmove(temptext, plustext+rtp_start[i], rtp_len[i]+1);
-				rds_entitychar(temptext);
-				// +Memory
-				memset(rtp_content.temptext, 0x20, RT_MEL-1);
-				memcpy(rtp_content.temptext, temptext, RT_MEL-1);
-				switch (rtp_typ[i]) 
+				if (rtp_start[i]+rtp_len[i]+1 >= RT_MEL) 
+				{	
+					// length-error
+					if (S_Verbose >= 1)
+						printf("RTp-Error (tag#%d = Typ/Start/Len): %d/%d/%d (Start+Length > 'RT-MEL' !)\n", i+1, rtp_typ[i], rtp_start[i], rtp_len[i]);
+				} 
+				else 
 				{
-				case 1:		// Item-Title	
-					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) 
+					char temptext[RT_MEL];
+					memset(temptext, 0x20, RT_MEL-1);
+					memmove(temptext, plustext+rtp_start[i], rtp_len[i]+1);
+					rds_entitychar(temptext);
+					// +Memory
+					memset(rtp_content.temptext, 0x20, RT_MEL-1);
+					memcpy(rtp_content.temptext, temptext, RT_MEL-1);
+					switch (rtp_typ[i]) 
 					{
-					RTP_TToggle -= 0x01;
-					RT_Info = 2;
-					if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) 
-					{
-						memcpy(RTP_Title, temptext, RT_MEL-1);
-						if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
-							rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
-						if (!rtp_content.item_New) {
-							RTP_Starttime = time(NULL);
-							rtp_itime.Set(0);
-							sprintf(RTP_Artist, "---");
-							if (++rtp_content.item_Index >= MAX_RTPC)
-							rtp_content.item_Index = 0;
-							rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
-							rtp_content.item_Artist[rtp_content.item_Index] = NULL;
-						}
-						rtp_content.item_New = (!rtp_content.item_New) ? true : false;
-						if (rtp_content.item_Index >= 0)
-						    asprintf(&rtp_content.item_Title[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
-						RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
-						
-						//
-						//g_InfoViewer->showRadiotext();
-						//
-						}
-					}
-					break;
-				case 4:		// Item-Artist	
-					if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x02) == 0x02) {
-						RTP_TToggle -= 0x02;
-						RT_Info = 2;
-						if (memcmp(RTP_Artist, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) {
-							memcpy(RTP_Artist, temptext, RT_MEL-1);
-							if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
-								rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
-							if (!rtp_content.item_New) {
-								RTP_Starttime = time(NULL);
-								rtp_itime.Set(0);
-								sprintf(RTP_Title, "---");
-								if (++rtp_content.item_Index >= MAX_RTPC)
+					case 1:		// Item-Title	
+						if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x01) == 0x01) 
+						{
+							RTP_TToggle -= 0x01;
+							RT_Info = 2;
+							if (memcmp(RTP_Title, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) 
+							{
+								memcpy(RTP_Title, temptext, RT_MEL-1);
+								if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
+									rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
+								if (!rtp_content.item_New) 
+								{
+									RTP_Starttime = time(NULL);
+									rtp_itime.Set(0);
+									sprintf(RTP_Artist, "---");
+									if (++rtp_content.item_Index >= MAX_RTPC)
 									rtp_content.item_Index = 0;
-								rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
-								rtp_content.item_Title[rtp_content.item_Index] = NULL;
-							}
-							rtp_content.item_New = (!rtp_content.item_New) ? true : false;
-							if (rtp_content.item_Index >= 0)
-								asprintf(&rtp_content.item_Artist[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
-							RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
+									rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
+									rtp_content.item_Artist[rtp_content.item_Index] = NULL;
+								}
+								rtp_content.item_New = (!rtp_content.item_New) ? true : false;
+								if (rtp_content.item_Index >= 0)
+								    asprintf(&rtp_content.item_Title[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
+								RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
 							
-							//
-							//g_InfoViewer->showRadiotext();
-							//
+								//
+								//g_InfoViewer->showRadiotext();
+								//
+							}
 						}
+						break;
+					case 4:		// Item-Artist	
+						if ((mtext[10] & 0x08) > 0 && (RTP_TToggle & 0x02) == 0x02) 
+						{
+							RTP_TToggle -= 0x02;
+							RT_Info = 2;
+							if (memcmp(RTP_Artist, temptext, RT_MEL-1) != 0 || (mtext[10] & 0x10) != RTP_ItemToggle) 
+							{
+								memcpy(RTP_Artist, temptext, RT_MEL-1);
+								if (RT_PlusShow && rtp_itime.Elapsed() > 1000)
+									rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
+								if (!rtp_content.item_New) 
+								{
+									RTP_Starttime = time(NULL);
+									rtp_itime.Set(0);
+									sprintf(RTP_Title, "---");
+									if (++rtp_content.item_Index >= MAX_RTPC)
+										rtp_content.item_Index = 0;
+									rtp_content.item_Start[rtp_content.item_Index] = time(NULL);	// todo: replay-mode
+									rtp_content.item_Title[rtp_content.item_Index] = NULL;
+								}
+								rtp_content.item_New = (!rtp_content.item_New) ? true : false;
+								if (rtp_content.item_Index >= 0)
+									asprintf(&rtp_content.item_Artist[rtp_content.item_Index], "%s", rtrim(rtp_content.temptext));
+								RT_PlusShow = RT_MsgShow = rtp_itoggle = true;
+								
+								//
+								//g_InfoViewer->showRadiotext();
+								//
+							}
+						}
+						break;
+					case 12:	// Info_News
+						asprintf(&rtp_content.info_News, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 13:	// Info_NewsLocal
+						asprintf(&rtp_content.info_NewsLocal, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 14:	// Info_Stockmarket
+						if (++rtp_content.info_StockIndex >= MAX_RTPC)
+							    rtp_content.info_StockIndex = 0;
+						asprintf(&rtp_content.info_Stock[rtp_content.info_StockIndex], "%s", rtrim(rtp_content.temptext));
+						break;
+					case 15:	// Info_Sport
+						if (++rtp_content.info_SportIndex >= MAX_RTPC)
+							    rtp_content.info_SportIndex = 0;
+						asprintf(&rtp_content.info_Sport[rtp_content.info_SportIndex], "%s", rtrim(rtp_content.temptext));
+						break;
+					case 16:	// Info_Lottery
+						if (++rtp_content.info_LotteryIndex >= MAX_RTPC)
+						    rtp_content.info_LotteryIndex = 0;
+						asprintf(&rtp_content.info_Lottery[rtp_content.info_LotteryIndex], "%s", rtrim(rtp_content.temptext));
+						break;
+					case 24:	// Info_DateTime
+						asprintf(&rtp_content.info_DateTime, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 25:	// Info_Weather
+						if (++rtp_content.info_WeatherIndex >= MAX_RTPC)
+							    rtp_content.info_WeatherIndex = 0;
+						asprintf(&rtp_content.info_Weather[rtp_content.info_WeatherIndex], "%s", rtrim(rtp_content.temptext));
+						break;
+					case 26:	// Info_Traffic
+						asprintf(&rtp_content.info_Traffic, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 27:	// Info_Alarm
+						asprintf(&rtp_content.info_Alarm, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 28:	// Info_Advert
+						asprintf(&rtp_content.info_Advert, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 29:	// Info_Url
+						asprintf(&rtp_content.info_Url, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 30:	// Info_Other
+						if (++rtp_content.info_OtherIndex >= MAX_RTPC)
+							    rtp_content.info_OtherIndex = 0;
+						asprintf(&rtp_content.info_Other[rtp_content.info_OtherIndex], "%s", rtrim(rtp_content.temptext));
+						break;
+					case 31:	// Programme_Stationname.Long
+						asprintf(&rtp_content.prog_Station, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 32:	// Programme_Now
+						asprintf(&rtp_content.prog_Now, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 33:	// Programme_Next
+						asprintf(&rtp_content.prog_Next, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 34:	// Programme_Part
+						asprintf(&rtp_content.prog_Part, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 35:	// Programme_Host
+						asprintf(&rtp_content.prog_Host, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 36:	// Programme_EditorialStaff
+						asprintf(&rtp_content.prog_EditStaff, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 38:	// Programme_Homepage
+						asprintf(&rtp_content.prog_Homepage, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 39:	// Phone_Hotline
+						asprintf(&rtp_content.phone_Hotline, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 40:	// Phone_Studio
+						asprintf(&rtp_content.phone_Studio, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 44:	// Email_Hotline
+						asprintf(&rtp_content.email_Hotline, "%s", rtrim(rtp_content.temptext));
+						break;
+					case 45:	// Email_Studio
+						asprintf(&rtp_content.email_Studio, "%s", rtrim(rtp_content.temptext));
+						break;
 					}
-					break;
-				case 12:	// Info_News
-					asprintf(&rtp_content.info_News, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 13:	// Info_NewsLocal
-					asprintf(&rtp_content.info_NewsLocal, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 14:	// Info_Stockmarket
-					if (++rtp_content.info_StockIndex >= MAX_RTPC)
-						    rtp_content.info_StockIndex = 0;
-					asprintf(&rtp_content.info_Stock[rtp_content.info_StockIndex], "%s", rtrim(rtp_content.temptext));
-					break;
-				case 15:	// Info_Sport
-					if (++rtp_content.info_SportIndex >= MAX_RTPC)
-						    rtp_content.info_SportIndex = 0;
-					asprintf(&rtp_content.info_Sport[rtp_content.info_SportIndex], "%s", rtrim(rtp_content.temptext));
-					break;
-				case 16:	// Info_Lottery
-					if (++rtp_content.info_LotteryIndex >= MAX_RTPC)
-					    rtp_content.info_LotteryIndex = 0;
-					asprintf(&rtp_content.info_Lottery[rtp_content.info_LotteryIndex], "%s", rtrim(rtp_content.temptext));
-					break;
-				case 24:	// Info_DateTime
-					asprintf(&rtp_content.info_DateTime, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 25:	// Info_Weather
-					if (++rtp_content.info_WeatherIndex >= MAX_RTPC)
-						    rtp_content.info_WeatherIndex = 0;
-					asprintf(&rtp_content.info_Weather[rtp_content.info_WeatherIndex], "%s", rtrim(rtp_content.temptext));
-					break;
-				case 26:	// Info_Traffic
-					asprintf(&rtp_content.info_Traffic, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 27:	// Info_Alarm
-					asprintf(&rtp_content.info_Alarm, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 28:	// Info_Advert
-					asprintf(&rtp_content.info_Advert, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 29:	// Info_Url
-					asprintf(&rtp_content.info_Url, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 30:	// Info_Other
-					if (++rtp_content.info_OtherIndex >= MAX_RTPC)
-						    rtp_content.info_OtherIndex = 0;
-					asprintf(&rtp_content.info_Other[rtp_content.info_OtherIndex], "%s", rtrim(rtp_content.temptext));
-					break;
-				case 31:	// Programme_Stationname.Long
-					asprintf(&rtp_content.prog_Station, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 32:	// Programme_Now
-					asprintf(&rtp_content.prog_Now, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 33:	// Programme_Next
-					asprintf(&rtp_content.prog_Next, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 34:	// Programme_Part
-					asprintf(&rtp_content.prog_Part, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 35:	// Programme_Host
-					asprintf(&rtp_content.prog_Host, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 36:	// Programme_EditorialStaff
-					asprintf(&rtp_content.prog_EditStaff, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 38:	// Programme_Homepage
-					asprintf(&rtp_content.prog_Homepage, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 39:	// Phone_Hotline
-					asprintf(&rtp_content.phone_Hotline, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 40:	// Phone_Studio
-					asprintf(&rtp_content.phone_Studio, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 44:	// Email_Hotline
-					asprintf(&rtp_content.email_Hotline, "%s", rtrim(rtp_content.temptext));
-					break;
-				case 45:	// Email_Studio
-					asprintf(&rtp_content.email_Studio, "%s", rtrim(rtp_content.temptext));
-					break;
 				}
 			}
-		}
 
-		// Title-end @ no Item-Running'
-		if ((mtext[10] & 0x08) == 0) {
-			sprintf(RTP_Title, "---");
-			sprintf(RTP_Artist, "---");
-			if (RT_PlusShow) {
-				RT_PlusShow = false;
-				rtp_itoggle = true;
-				rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
-				RTP_Starttime = time(NULL);
-			}
-			RT_MsgShow = (RT_Info > 0);
-			rtp_content.item_New = false;
-		}
-
-		if (rtp_itoggle) 
-		{
-			if (S_Verbose >= 1) 
+			// Title-end @ no Item-Running'
+			if ((mtext[10] & 0x08) == 0) 
 			{
-				struct tm tm_store;
-				struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
-				if (rtp_idiffs > 0)
-					printf("  StartTime : %02d:%02d:%02d  (last Title elapsed = %d s)\n",
-						ts->tm_hour, ts->tm_min, ts->tm_sec, rtp_idiffs);
-				else
-					printf("  StartTime : %02d:%02d:%02d\n", ts->tm_hour, ts->tm_min, ts->tm_sec);
-				printf("  RTp-Title : %s\n  RTp-Artist: %s\n", RTP_Title, RTP_Artist);
+				sprintf(RTP_Title, "---");
+				sprintf(RTP_Artist, "---");
+				if (RT_PlusShow) 
+				{
+					RT_PlusShow = false;
+					rtp_itoggle = true;
+					rtp_idiffs = (int) rtp_itime.Elapsed()/1000;
+					RTP_Starttime = time(NULL);
+				}
+				RT_MsgShow = (RT_Info > 0);
+				rtp_content.item_New = false;
 			}
-			RTP_ItemToggle = mtext[10] & 0x10;
-			rtp_itoggle = false;
-			rtp_idiffs = 0;
-			RadioStatusMsg();
-			//AudioRecorderService();
+
+			if (rtp_itoggle) 
+			{
+				if (S_Verbose >= 1) 
+				{
+					struct tm tm_store;
+					struct tm *ts = localtime_r(&RTP_Starttime, &tm_store);
+					if (rtp_idiffs > 0)
+						printf("  StartTime : %02d:%02d:%02d  (last Title elapsed = %d s)\n",
+							ts->tm_hour, ts->tm_min, ts->tm_sec, rtp_idiffs);
+					else
+						printf("  StartTime : %02d:%02d:%02d\n", ts->tm_hour, ts->tm_min, ts->tm_sec);
+					printf("  RTp-Title : %s\n  RTp-Artist: %s\n", RTP_Title, RTP_Artist);
+				}
+				RTP_ItemToggle = mtext[10] & 0x10;
+				rtp_itoggle = false;
+				rtp_idiffs = 0;
+				RadioStatusMsg();
+				//AudioRecorderService();
 			}
 			RTP_TToggle = 0;
 		}
@@ -754,6 +763,7 @@ void CRadioText::RadioStatusMsg(void)
 		char temp[100];
 		int ind = (RT_Index == 0) ? S_RtOsdRows - 1 : RT_Index - 1;
 		strcpy(temp, RT_Text[ind]);
+		
 		printf("RadioStatusMsg = %s\n", temp);
 		//cStatus::MsgOsdTextItem(rtrim(temp), false);
 	}
@@ -765,6 +775,8 @@ void CRadioText::RadioStatusMsg(void)
 		//cStatus::MsgOsdProgramme(mktime(ts), RTP_Title, RTP_Artist, 0, NULL, NULL);
 		printf("RTP_Title = %s, RTP_Artist = %s\n", RTP_Title, RTP_Artist);
 	}
+	
+	g_InfoViewer->showRadiotext();
 }
 
 

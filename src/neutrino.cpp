@@ -3212,6 +3212,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}
+			else if (CRCInput::isNumeric(msg) && (mode == mode_radio && g_settings.radiotext_enable && g_Radiotext != NULL && g_Radiotext->Rass_Show) ) 
+			{
+				g_Radiotext->RassImage(0, msg, true);
+			}
 			else if((msg == CRCInput::RC_info) || ( msg == NeutrinoMessages::SHOW_INFOBAR ))
 			{
 				if(mode == mode_iptv)

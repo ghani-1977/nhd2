@@ -60,7 +60,7 @@ CAudioMetaData::CAudioMetaData( const CAudioMetaData& src )
 // assignment operator
 void CAudioMetaData::operator=( const CAudioMetaData& src )
 {
-    // self assignment check
+	// self assignment check
 	if ( &src == this )
 		return;
 
@@ -89,16 +89,16 @@ void CAudioMetaData::operator=( const CAudioMetaData& src )
 
 void CAudioMetaData::clear()
 {
-	type=NONE;
+	type = NONE;
 	type_info.clear();
-	filesize=0;
-	bitrate=0;
-	avg_bitrate=0;
-	samplerate=0;
-	total_time=0;
-	audio_start_pos=0;
-	vbr=false;
-	hasInfoOrXingTag=false;
+	filesize = 0;
+	bitrate = 0;
+	avg_bitrate = 0;
+	samplerate = 0;
+	total_time = 0;
+	audio_start_pos = 0;
+	vbr = false;
+	hasInfoOrXingTag = false;
 	artist.clear();
 	title.clear();
 	album.clear();
@@ -107,5 +107,5 @@ void CAudioMetaData::clear()
 	genre.clear();
 	track.clear();
 	cover.clear();
-	changed=false;
+	changed = false;
 }

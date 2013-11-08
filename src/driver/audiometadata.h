@@ -87,4 +87,5 @@ public:
 	std::string cover;
 	bool changed;
 };
+
 #endif /* __AUDIO_METADATA__ */

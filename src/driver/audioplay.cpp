@@ -67,7 +67,7 @@ void CAudioPlayer::pause()
 		playback->SetSpeed(0);
 #endif
 	}
-	else if(state==CBaseDec::PAUSE)
+	else if(state == CBaseDec::PAUSE)
 	{
 		state = CBaseDec::PLAY;
 #if !defined (ENABLE_PCMDECODER)
@@ -311,13 +311,4 @@ bool CAudioPlayer::readMetaData(CAudiofile* const file, const bool nice)
 {
 	return CBaseDec::GetMetaDataBase(file, nice);
 }
-
-/*
-bool CAudioPlayer::readCoverData(CAudiofile * const file, const bool nice)
-{
-	return CBaseDec::GetCoverDataBase(file, nice);
-}
-*/
-
-
 

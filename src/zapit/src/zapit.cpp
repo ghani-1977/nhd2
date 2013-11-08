@@ -778,7 +778,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
  
-void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
+void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe)
 {
 	if(!thischannel)
 		return;
@@ -806,7 +806,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 		if(rec_channel_id != live_channel_id) 
 		{
 			/* zap from rec. channel */
-			cam1->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+			cam1->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask); //start cam1
                 } 
                 else 
 		{
@@ -817,7 +817,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 	} 
 	else 
 	{
-		cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask);
+		cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask); //start cam0
 	}
 	
 	// ci cam
@@ -826,50 +826,7 @@ void sendCaPmt(CZapitChannel * thischannel, CFrontend * fe)
 #endif	
 }
 
-void sendCaPmtRecordEnd(void)
-{
-	dprintf(DEBUG_NORMAL, "%s sending capmt record end....\n", __FUNCTION__);
-	
-	int demux_index = -1;
-	int ca_mask = 0;
-	
-	// cam1 stop
-	cam1->sendMessage(0, 0);
-	
-	// cam0 update	
-	if(live_fe != NULL)
-		demux_index = live_fe->fenumber;
-
-#if defined (PLATFORM_GIGABLUE)
-	ca_mask = 1;
-
-#else
-	ca_mask |= 1 << demux_index;
-#endif	
-	
-	if(standby)
-		cam0->sendMessage(0, 0); // stop
-	else if(live_channel_id == rec_channel_id) 
-	{
-		if(live_channel != NULL)
-			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // update
-	} 
-	else 
-	{
-		cam1->sendMessage(0,0); // stop
-		
-		if(live_channel != NULL)
-			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask); // update
-	}
-	
-	// ci cam
-#if defined (ENABLE_CI)
-	if(live_fe != NULL)
-		ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
-#endif
-}
-
-void sendcapmtStopPlayBack(bool _sendPmt)
+void sendcapmtPlayBackStop(bool _sendPmt)
 {
 	dprintf(DEBUG_NORMAL, "%s sending capmtstopplayback....send:%d\n", __FUNCTION__, _sendPmt);
 	
@@ -891,15 +848,55 @@ void sendcapmtStopPlayBack(bool _sendPmt)
 #endif	
 
 			if(live_channel_id == rec_channel_id)
-				cam0->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask, true); 
+				cam0->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask, true); //update cam0
 			else
-				cam1->sendMessage(0,0);
+				cam1->sendMessage(0,0); // stop cam1
 		} 
 		else 
 		{
-			cam0->sendMessage(0,0);
+			cam0->sendMessage(0,0); // stop cam0
 		}
 	}
+}
+
+void sendCaPmtRecordStop(void)
+{
+	dprintf(DEBUG_NORMAL, "%s sending capmt record end....\n", __FUNCTION__);
+	
+	int demux_index = -1;
+	int ca_mask = 0;
+	
+	// cam1 stop
+	cam1->sendMessage(0, 0); // cam1 stop
+	
+	// cam0 update	
+	if(live_fe != NULL)
+		demux_index = live_fe->fenumber;
+
+#if defined (PLATFORM_GIGABLUE)
+	ca_mask = 1;
+#else
+	ca_mask |= 1 << demux_index;
+#endif	
+	
+	if(standby)
+		cam0->sendMessage(0, 0); // cam0 stop
+	else if(live_channel_id == rec_channel_id) 
+	{
+		if(live_channel != NULL)
+			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask, true); // cam0 update
+	} 
+	else 
+	{
+		if(live_channel != NULL)
+			cam0->setCaPmt(live_channel, live_channel->getCaPmt(), demux_index, ca_mask); //cam0 start
+	}
+	
+	// ci cam
+#if defined (ENABLE_CI)
+	if(live_fe != NULL)
+		ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
+#endif
 }
 
 // save pids
@@ -1141,7 +1138,7 @@ int zapit(const t_channel_id channel_id, bool in_nvod, bool forupdate = 0)
 	// stop update pmt filter
 	pmt_stop_update_filter(&pmt_update_fd);
 	
-	// FIXME: how to stop ci capmt or we dont need this???
+	// FIXME: how to stop ci_capmt or we dont need this???
 	stopPlayBack(!forupdate);
 
 	if(!forupdate && live_channel)
@@ -1213,7 +1210,7 @@ tune_again:
 	startPlayBack(live_channel);
 
 	// send ca pmt
-	sendCaPmt(live_channel, live_fe);
+	sendCaPmtPlayBackStart(live_channel, live_fe);
 	
 	// send caid
 	int caid = 1;
@@ -1260,7 +1257,7 @@ int zapit_to_record(const t_channel_id channel_id)
 		return -1;
 	
 	// capmt
-	sendCaPmt(rec_channel, record_fe);
+	sendCaPmtPlayBackStart(rec_channel, record_fe);
 
 	return 0;
 }
@@ -1533,20 +1530,20 @@ void unsetRecordMode(void)
 {
 	if(!(currentMode & RECORD_MODE)) 
 		return;
-
-	/* zapit mode */
-	currentMode &= ~RECORD_MODE;
- 
-	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 	
 	// capmt
-	sendCaPmtRecordEnd();
+	sendCaPmtRecordStop();
 	
 	rec_channel_id = 0;
 	rec_channel = NULL;
 	
 	if(record_fe)
-		record_fe->locked = false;	
+		record_fe->locked = false;
+
+	/* zapit mode */
+	currentMode &= ~RECORD_MODE;
+ 
+	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_DEACTIVATED, CEventServer::INITID_ZAPIT );
 }
 
 int prepare_channels()
@@ -2151,8 +2148,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 				if(scanProviders.size() > 0)
 					scanProviders.clear();
- 
-				//live_channel = 0;
 			}
 	
 			stopPlayBack();
@@ -2528,7 +2523,7 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			startPlayBack(live_channel);
 			
 			//start cam
-			sendCaPmt(live_channel, live_fe);
+			sendCaPmtPlayBackStart(live_channel, live_fe);
 			
 			// ugly and dirty://FIXME
 #if defined (USE_OPENGL)
@@ -3412,7 +3407,7 @@ int stopPlayBack( bool sendPmt)
 	dprintf(DEBUG_NORMAL, "[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
 	
 	// capmt
-	sendcapmtStopPlayBack(sendPmt);
+	sendcapmtPlayBackStop(sendPmt);
 
 	if (!playing)
 		return 0;
@@ -4144,7 +4139,7 @@ int zapit_main_thread(void *data)
 					} 
 					else 
 					{
-						sendCaPmt(live_channel, live_fe);
+						sendCaPmtPlayBackStart(live_channel, live_fe);
 						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe);
 					}
 						
@@ -4161,14 +4156,17 @@ int zapit_main_thread(void *data)
 	if(live_channel)
 		save_channel_pids(live_channel);
 	
+	// save setting
 	saveZapitSettings(true, true);
+	
+	// stop playback (stop capmt)
 	stopPlayBack();
 	
+	// stop std thread
 	pthread_cancel(tsdt);
 	
 	zapit_ready = 0;
 	
-	// stop sdt thread
 	pthread_join (tsdt, NULL);
 	
 	dprintf(DEBUG_INFO, "zapit: shutdown started\n\n");

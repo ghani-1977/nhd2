@@ -400,7 +400,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 	{
 		int secondsToJump = *secondsToSkip;
 
-		if(*state==PAUSE)
+		if(*state == PAUSE)
 		{
 			// in pause mode do nothing
 			usleep(100000);
@@ -410,7 +410,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 		/* The input bucket must be filled if it becomes empty or if
 		 * it's the first execution of the loop.
 		 */
-		if(Stream.buffer == NULL || Stream.error==MAD_ERROR_BUFLEN)
+		if(Stream.buffer == NULL || Stream.error == MAD_ERROR_BUFLEN)
 		{
 			size_t ReadSize, Remaining;
 			unsigned char	*ReadStart;
@@ -450,19 +450,18 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 			 * reached we also leave the loop but the return status is
 			 * left untouched.
 			 */
-			ReadSize=fread(ReadStart, 1, ReadSize, InputFp);
-			if(ReadSize<=0)
+			ReadSize = fread(ReadStart, 1, ReadSize, InputFp);
+			if(ReadSize <= 0)
 			{
 				if(ferror(InputFp))
 				{
-					fprintf(stderr,"%s: read error on bitstream (%s)\n",
-							ProgName,strerror(errno));
-					Status=READ_ERR;
+					fprintf(stderr,"%s: read error on bitstream (%s)\n", ProgName,strerror(errno));
+					Status = READ_ERR;
 				}
 				
 				if(feof(InputFp))
 				{
-					fprintf(stderr,"%s: end of input stream\n",ProgName);
+					fprintf(stderr,"%s: end of input stream\n", ProgName);
 					
 					// Lets flush the remaining seconds through the decoder matrix	
 #if defined (ENABLE_PCMDECODER)					
@@ -524,6 +523,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 		if( (*state!=FF && *state!=REV) || FrameCount % actFramesToSkip < FRAMES_TO_PLAY )
 			ret = mad_frame_decode(&Frame,&Stream);
 		else if(*state==FF) // in FF mode just decode the header, this sets bufferptr to next frame and also gives stats about the frame for totals
+		{
 			if (secondsToJump != 0 && !jumpDone)
 			{	
 				jumpDone=true;
@@ -548,6 +548,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 					}
 					else
 						Timer.fraction+= m.fraction;
+					
 					// in case we calculated wrong...
 					if(Timer.seconds < 0)
 					{
@@ -560,12 +561,14 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 				Stream.buffer=NULL;
 				Stream.next_frame=NULL;
 				// if a custom value was set we only jump once
-				*state=PLAY;
+				*state = PLAY;
 				continue;
-			} else
+			} 
+			else
 			{	
 				ret=mad_header_decode(&Frame.header,&Stream);
 			}
+		}
 		else
 		{ //REV
 			// Jump back 
@@ -576,6 +579,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 				jumpDone=true;
 				//printf("jumping backwards by %d secs and %ld bytes\n",secondsToJump, bytesBack);
 			}
+			
 			if (fseek(InputFp, -1*(bytesBack), SEEK_CUR)!=0)
 			{
 				// Reached beginning
@@ -667,6 +671,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 			meta_data->bitrate = Frame.header.bitrate;
 			meta_data->mode = Frame.header.mode;
 			meta_data->layer = Frame.header.layer;
+			
 			CreateInfo( meta_data, FrameCount );
 		}
 		else
@@ -678,10 +683,9 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 				meta_data->bitrate = Frame.header.bitrate;
 
 				/* approximate average bitrate */
-				meta_data->avg_bitrate -=
-					meta_data->avg_bitrate / FrameCount;
-				meta_data->avg_bitrate +=
-					Frame.header.bitrate / FrameCount;
+				meta_data->avg_bitrate -= meta_data->avg_bitrate / FrameCount;
+				meta_data->avg_bitrate += Frame.header.bitrate / FrameCount;
+				
 				CreateInfo( meta_data, FrameCount );
 			}
 		}
@@ -803,7 +807,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 			*state=PLAY;
 		}
 
-	}while(*state!=STOP_REQ);
+	}while(*state != STOP_REQ);
 
 	/* 
 	* Mad is no longer used, the structures that were initialized must
@@ -872,7 +876,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 
 CMP3Dec* CMP3Dec::getInstance()
 {
-	static CMP3Dec* MP3Dec = NULL;
+	static CMP3Dec *MP3Dec = NULL;
 	if(MP3Dec == NULL)
 	{
 		MP3Dec = new CMP3Dec();
@@ -892,7 +896,7 @@ bool CMP3Dec::GetMetaData(FILE * in, const bool nice, CAudioMetaData * const m)
 		// id3tag infos
 		GetID3(in, m);
 		
-		// id3taf cover
+		// id3tag cover
 		SaveCover(in, m);
 	}
 	else
