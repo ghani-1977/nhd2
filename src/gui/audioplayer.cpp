@@ -364,7 +364,6 @@ int CAudioPlayerGui::show()
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	int pic_index = 0;
 	int _selected = 0;
 	CFileList filelist;
 	
@@ -447,9 +446,19 @@ int CAudioPlayerGui::show()
 							{
 								file.Name = g_settings.audioplayer_screensaver_dir + "/" + namelist[count]->d_name;
 								
-								// skip not jpg/jpeg files
-								if( (file.Name.find(".jpg")) || (file.Name.find(".jpeg")) )
-									filelist.push_back(file);
+								// 
+								if(strcmp(g_settings.audioplayer_screensaver_dir.c_str(), (DATADIR "/neutrino/icons")) == 0)
+								{
+									// fill only mp3%d.jpg/jpeg
+									if( strstr(file.Name.c_str(), "mp3") && strstr(file.Name.c_str(), "jpg") )
+										filelist.push_back(file);
+								}
+								else
+								{
+									// fill only %s.jpg/.jpeg
+									if( (file.Name.find(".jpg")) || (file.Name.find(".jpeg")) )
+										filelist.push_back(file);
+								}
 							}
 							free(namelist[count]);
 						}
@@ -475,26 +484,6 @@ int CAudioPlayerGui::show()
 							}	
 						} 
 					}
-					else
-					{
-						char fname[255];
-
-						sprintf(fname, "%s/mp3-%d.jpg", DATADIR "/neutrino/icons", pic_index);
-
-						int ret1 = access(fname, F_OK);
-						dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret1 ? "not found" : "found");
-						
-						if(ret1 == 0) 
-						{
-							pic_index++;
-
-							g_PicViewer->DisplayImage(fname);
-						}
-						else if(pic_index) // when all pics are shown show the mp3 pic once again
-						{
-							pic_index = 0;
-						}
-					}
 				} 
 				else if(m_screensaver == HIDE_PLAYLIST)
 				{
@@ -504,7 +493,7 @@ int CAudioPlayerGui::show()
 					paintInfo();
 				}
 				else
-					pic_index = 0;
+					_selected = 0;
 			}
 
 		}
