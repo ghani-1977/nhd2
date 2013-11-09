@@ -350,10 +350,12 @@ int request_file(URL *url)
 		strcpy(url->entity, ptr + 1);
 		*ptr = 0;
 	}
+	
 	switch(url->proto_version)
 	{
 		/* send a HTTP/1.0 request */
-		case HTTP10:	{
+		case HTTP10:	
+			{
 				snprintf(str, sizeof(str)-1, "GET http://%s:%d%s\n", url->host, url->port, url->file);
 				dprintf(stderr, "> %s", str);
 				send(url->fd, str, strlen(str), 0);
@@ -361,7 +363,8 @@ int request_file(URL *url)
 			break;
 
 		/* send a HTTP/1.1 request */
-		case HTTP11:	{
+		case HTTP11:	
+			{
 				int meta_int;
 				CSTATE tmp;
 
@@ -449,7 +452,8 @@ int request_file(URL *url)
 			break;
 
 		/* send a SHOUTCAST request */
-		case SHOUTCAST:{
+		case SHOUTCAST:
+		{
 			int meta_int;
 			CSTATE tmp;
 
