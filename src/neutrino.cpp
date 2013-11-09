@@ -824,10 +824,10 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.audioplayer_follow  = configfile.getInt32("audioplayer_follow",0);
 	strcpy( g_settings.audioplayer_screensaver, configfile.getString( "audioplayer_screensaver", "0" ).c_str() );
 	g_settings.audioplayer_highprio  = configfile.getInt32("audioplayer_highprio",0);
-	g_settings.audioplayer_select_title_by_name = configfile.getInt32("audioplayer_select_title_by_name",0);
+	g_settings.audioplayer_select_title_by_name = configfile.getInt32("audioplayer_select_title_by_name", 0);
 	g_settings.audioplayer_repeat_on = configfile.getInt32("audioplayer_repeat_on",0);
-	g_settings.audioplayer_show_playlist = configfile.getInt32("audioplayer_show_playlist",1);
-	g_settings.audioplayer_enable_sc_metadata = configfile.getInt32("audioplayer_enable_sc_metadata",1);
+	g_settings.audioplayer_screensaver_type = configfile.getInt32("audioplayer_screensaver_type", CAudioPlayerGui::NONE);
+	g_settings.audioplayer_enable_sc_metadata = configfile.getInt32("audioplayer_enable_sc_metadata", 1);
 	
 	// shoutcast --- not in GUI
 	g_settings.shoutcast_dev_id = configfile.getString("shoutcast_dev_id","XXXXXXXXXXXXXXXX");
@@ -1284,7 +1284,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "audioplayer_highprio", g_settings.audioplayer_highprio );
 	configfile.setInt32( "audioplayer_select_title_by_name", g_settings.audioplayer_select_title_by_name );
 	configfile.setInt32( "audioplayer_repeat_on", g_settings.audioplayer_repeat_on );
-	configfile.setInt32( "audioplayer_show_playlist", g_settings.audioplayer_show_playlist );
+	configfile.setInt32( "audioplayer_screensaver_type", g_settings.audioplayer_screensaver_type );
 	configfile.setInt32( "audioplayer_enable_sc_metadata", g_settings.audioplayer_enable_sc_metadata );
 	
 	//shoutcast
@@ -3212,10 +3212,12 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				StartSubtitles();
 			}
+#if ENABLE_RADIOTEXT			
 			else if (CRCInput::isNumeric(msg) && (mode == mode_radio && g_settings.radiotext_enable && g_Radiotext != NULL && g_Radiotext->Rass_Show) ) 
 			{
 				g_Radiotext->RassImage(0, msg, true);
 			}
+#endif			
 			else if((msg == CRCInput::RC_info) || ( msg == NeutrinoMessages::SHOW_INFOBAR ))
 			{
 				if(mode == mode_iptv)

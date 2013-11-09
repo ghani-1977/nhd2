@@ -901,16 +901,9 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	// duration
 	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, BoxStartY + BoxHeight/2 - 5, durationWidth, cDisplayTime, COL_INFOBAR);
-		
-	// show data
-	char runningPercent = 0;
-	
-	runningPercent = file_prozent;
-	if(runningPercent > 100)
-		runningPercent = 100;
 	
 	// progressbar
-	moviescale->paint(BoxStartX + 10, BoxStartY + 15, runningPercent);
+	moviescale->paint(BoxStartX + 10, BoxStartY + 15, file_prozent);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();

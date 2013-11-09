@@ -72,9 +72,12 @@ audioplayer.receiving_list Empfange Liste, bitte warten...
 audioplayer.repeat_on Repeatmodus aktivieren
 audioplayer.rewind schneller Rückl.
 audioplayer.save_playlist Playlist speichern
-audioplayer.screensaver_timeout Bildschirmschoner (min, 0=aus)
+audioplayer.screensaver_timeout Bildschirmschoner timeout(min, 0=aus)
 audioplayer.select_title_by_name Titelsuche nach Name (SMS)
-audioplayer.show_playlist Playlist anzeigen
+audioplayer.screensaver_type Bildschirmschöner
+audioplayer_screensaver_none aus
+audioplayer_screensaver_hide_playlist verstecke Playliste
+audioplayer_screensaver_diashow Diashow
 audioplayer.shuffle Shuffle
 audioplayer.spectrum LCD Skala
 audioplayer.stop Stop

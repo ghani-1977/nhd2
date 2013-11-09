@@ -74,7 +74,10 @@ audioplayer.rewind rewind
 audioplayer.save_playlist save play list
 audioplayer.screensaver_timeout screensaver timeout (min, 0=off)
 audioplayer.select_title_by_name search title by name (SMS)
-audioplayer.show_playlist Show Playlist
+audioplayer.screensaver_type Screensaver
+audioplayer_screensaver_none off
+audioplayer_screensaver_hide_playlist Hide playlist
+audioplayer_screensaver_diashow Diashow
 audioplayer.shuffle shuffle
 audioplayer.spectrum lcd a-spectrum
 audioplayer.stop Stop

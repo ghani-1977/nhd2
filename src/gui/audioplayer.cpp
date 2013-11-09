@@ -236,9 +236,6 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	m_state = CAudioPlayerGui::STOP;
 
-	// show playlist or not?
-	m_show_playlist = g_settings.audioplayer_show_playlist == 1;
-
 	if (m_select_title_by_name != (g_settings.audioplayer_select_title_by_name == 1))
 	{
 		if ((g_settings.audioplayer_select_title_by_name == 1) && m_playlistHasChanged)
@@ -278,7 +275,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	m_y = (((g_settings.screen_EndY- g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
 	
 	m_idletime = time(NULL);
-	m_screensaver = false;
+	m_screensaver = g_settings.audioplayer_screensaver_type;
+	
+	if(atoi(g_settings.audioplayer_screensaver) == 0)
+		m_screensaver = NONE;
 
 	if(parent)
 		parent->hide(); 
@@ -379,7 +379,7 @@ int CAudioPlayerGui::show()
 	// control loop
 	while(loop)
 	{
-		if(!m_screensaver)
+		if(m_screensaver <= HIDE_PLAYLIST)
 		{
 			updateMetaData();
 		}
@@ -414,15 +414,16 @@ int CAudioPlayerGui::show()
 
 		if( msg == CRCInput::RC_timeout  || msg == NeutrinoMessages::EVT_TIMER)
 		{
+			// set screensaver
 			int timeout = time(NULL) - m_idletime;
 			int screensaver_timeout = atoi(g_settings.audioplayer_screensaver);
 			
-			if(screensaver_timeout !=0 && timeout > screensaver_timeout*60 && !m_screensaver)
-				screensaver(true);
+			if(screensaver_timeout != 0 && timeout > screensaver_timeout*60 && (m_screensaver == NONE))
+				screensaver(g_settings.audioplayer_screensaver_type);
 
 			if(msg == NeutrinoMessages::EVT_TIMER && data == stimer) 
 			{
-				if(m_screensaver) 
+				if(m_screensaver == SHOW_PIC) 
 				{
 					char fname[255];
 
@@ -442,6 +443,13 @@ int CAudioPlayerGui::show()
 						pic_index = 0;
 					}
 				} 
+				else if(m_screensaver == HIDE_PLAYLIST)
+				{
+					hide();
+					
+					// paint infos
+					paintInfo();
+				}
 				else
 					pic_index = 0;
 			}
@@ -451,9 +459,9 @@ int CAudioPlayerGui::show()
 		{
 			m_idletime = time(NULL);
 			
-			if(m_screensaver)
+			if(m_screensaver > NONE)
 			{
-				screensaver(false);
+				screensaver(NONE);
 			}
 		}
 
@@ -491,15 +499,7 @@ int CAudioPlayerGui::show()
 			}
 			else
 			{
-				if (!m_show_playlist)
-				{
-					m_current--;
-					if (m_current < 0)
-						m_current = m_playlist.size()-1;
-					
-					update = true;
-				}
-				else if (!m_playlist.empty())
+				if (!m_playlist.empty())
 				{
 					if (m_selected < m_listmaxshow)
 					{
@@ -522,15 +522,7 @@ int CAudioPlayerGui::show()
 			}
 			else
 			{
-				if (!m_show_playlist)
-				{
-					m_current++;
-					if (m_current >= (int)m_playlist.size())
-						m_current = 0;
-					
-					update = true;
-				}
-				else if (!m_playlist.empty())
+				if (!m_playlist.empty())
 				{
 					m_selected += m_listmaxshow;
 					if (m_selected >= m_playlist.size()) 
@@ -547,7 +539,7 @@ int CAudioPlayerGui::show()
 		}
 		else if( (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_up || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_up)
 		{
-			if(m_show_playlist && !m_playlist.empty() )
+			if(!m_playlist.empty() )
 			{
 				int step = 0;
 				int prevselected = m_selected;
@@ -572,7 +564,7 @@ int CAudioPlayerGui::show()
 		}
 		else if((msg &~ CRCInput::RC_Repeat) == CRCInput::RC_down || (msg &~ CRCInput::RC_Repeat) == CRCInput::RC_page_down)
 		{
-			if(m_show_playlist && !m_playlist.empty() )
+			if(!m_playlist.empty() )
 			{
 				int prevselected = m_selected;
 				unsigned int step =  msg == CRCInput::RC_page_down ? m_listmaxshow : 1;
@@ -602,10 +594,7 @@ int CAudioPlayerGui::show()
 		{
 			if (!m_playlist.empty()) 
 			{
-				if (!m_show_playlist)
-					play(m_current);
-				else
-					play(m_selected);
+				play(m_selected);
 			}
 		}
 		else if (msg == CRCInput::RC_red)
@@ -819,6 +808,7 @@ int CAudioPlayerGui::show()
 			{
 				m_key_level = 2;
 			}
+			
 			paintFoot();
 		}
 		else if(msg == CRCInput::RC_0)
@@ -1485,10 +1475,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 	
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));	
 	paintLCD();
-	
-	// if playlist is turned off -> start playing immediately
-	if (!m_show_playlist && !m_playlist.empty())
-		play(m_selected);
 
 	return ( result);
 }
@@ -1569,10 +1555,6 @@ bool CAudioPlayerGui::openSCbrowser(void)
 	
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));	
 	paintLCD();
-	
-	// if playlist is turned off -> start playing immediately
-	if (!m_show_playlist && !m_playlist.empty())
-		play(m_selected);
 
 	return ( result);
 }
@@ -1600,9 +1582,6 @@ void CAudioPlayerGui::hide()
 
 void CAudioPlayerGui::paintItem(int pos)
 {
-	if (!m_show_playlist)
-		return;
-
 	int ypos = m_y + m_title_height + m_theight + pos*m_fheight;
 	
 	uint8_t    color;
@@ -1696,9 +1675,6 @@ void CAudioPlayerGui::paintItem(int pos)
 // paint head
 void CAudioPlayerGui::paintHead()
 {
-	if (!m_show_playlist)
-		return;
-	
 	std::string strCaption;
 	if (m_inetmode)
 		strCaption = g_Locale->getText(LOCALE_INETRADIO_NAME);
@@ -1849,20 +1825,12 @@ const struct button_label AudioPlayerButtons[][4] =
 
 void CAudioPlayerGui::paintFoot()
 {
-	int top;
-
-	if (m_show_playlist)
-		top = m_y + (m_height - m_info_height - 2*m_buttonHeight);
-	else
-		top = m_y + (m_height - 2*m_buttonHeight);
+	int top = m_y + (m_height - m_info_height - 2*m_buttonHeight);
 
 	int ButtonWidth = (m_width - 20) / 4;
 	int ButtonWidth2 = (m_width - 50) / 2;
 	
-	if(m_show_playlist)
-		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
-	else
-		m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
 	
 	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);
@@ -1936,23 +1904,14 @@ void CAudioPlayerGui::paintFoot()
 
 void CAudioPlayerGui::paintInfo()
 {
-	if(m_state == CAudioPlayerGui::STOP && m_show_playlist)
+	if(m_state == CAudioPlayerGui::STOP )
 	{
 		m_frameBuffer->paintBackgroundBoxRel(m_x, m_y, m_width, m_title_height);
 	}
 	else
 	{
-		if (!m_show_playlist)
-		{
-			// no playlist -> smaller Info-Box
-			m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10 - m_fheight, COL_MENUCONTENT_PLUS_6 );
-			m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2 , m_width - 4, m_title_height - 14 - m_fheight, COL_MENUCONTENTSELECTED_PLUS_0 );
-		}
-		else
-		{
-			m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10, COL_MENUCONTENT_PLUS_6 );
-			m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2 , m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0 );
-		}
+		m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10, COL_MENUCONTENT_PLUS_6 );
+		m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2 , m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0 );
 
 		// first line (Track number)
 		std::string tmp;
@@ -2016,34 +1975,28 @@ void CAudioPlayerGui::paintInfo()
 
 void CAudioPlayerGui::paint()
 {
-	if (m_show_playlist) 
+	m_liststart = (m_selected / m_listmaxshow) * m_listmaxshow;
+		
+	// head
+	paintHead();
+		
+	for (unsigned int count = 0; count < m_listmaxshow; count++)
 	{
-		m_liststart = (m_selected / m_listmaxshow) * m_listmaxshow;
-		
-		// head
-		paintHead();
-		
-		for (unsigned int count=0;count<m_listmaxshow;count++)
-		{
-			paintItem(count);
-		}
-
-		int ypos = m_y + m_title_height + m_theight;
-		int sb = m_fheight * m_listmaxshow;
-		m_frameBuffer->paintBoxRel(m_x + m_width - 15, ypos, 15, sb, COL_MENUCONTENT_PLUS_1);
-
-		int sbc = ((m_playlist.size() - 1) / m_listmaxshow) + 1;
-		int sbs = (m_selected / m_listmaxshow);
-
-		m_frameBuffer->paintBoxRel(m_x + m_width - 13, ypos + 2 + sbs*(sb-4)/sbc , 11, (sb-4)/sbc, COL_MENUCONTENT_PLUS_3 );
+		paintItem(count);
 	}
+
+	int ypos = m_y + m_title_height + m_theight;
+	int sb = m_fheight * m_listmaxshow;
+	m_frameBuffer->paintBoxRel(m_x + m_width - 15, ypos, 15, sb, COL_MENUCONTENT_PLUS_1);
+
+	int sbc = ((m_playlist.size() - 1) / m_listmaxshow) + 1;
+	int sbs = (m_selected / m_listmaxshow);
+
+	m_frameBuffer->paintBoxRel(m_x + m_width - 13, ypos + 2 + sbs*(sb-4)/sbc , 11, (sb-4)/sbc, COL_MENUCONTENT_PLUS_3 );
 
 	paintFoot();
 	paintInfo();
 		
-#if !defined USE_OPENGL
-	//m_frameBuffer->blit();
-#endif
 	m_visible = true;
 }
 
@@ -2136,7 +2089,9 @@ void CAudioPlayerGui::stop()
 	//Display
 	paintInfo();
 	m_key_level = 0;
-	paintFoot();
+	
+	if(m_screensaver != HIDE_PLAYLIST)
+		paintFoot();
 
 	if(CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 		CAudioPlayer::getInstance()->stop();
@@ -2210,31 +2165,33 @@ void CAudioPlayerGui::play(unsigned int pos)
 	if(m_selected - m_liststart >= m_listmaxshow && g_settings.audioplayer_follow)
 	{
 		m_liststart = m_selected;
-		if(!m_screensaver)
+		if(m_screensaver <= HIDE_PLAYLIST)
 			paint();
 	}
 	else if(m_liststart < m_selected && g_settings.audioplayer_follow)
 	{
 		m_liststart = m_selected - m_listmaxshow + 1;
-		if(!m_screensaver)
+		if(m_screensaver <= HIDE_PLAYLIST)
 			paint();
 	}
 	else
 	{
 		if(old_current >= m_liststart && old_current - m_liststart < m_listmaxshow)
 		{
-			if(!m_screensaver)
+			if(m_screensaver == NONE)
 				paintItem(old_current - m_liststart);
 		}
+		
 		if(pos >= m_liststart && pos - m_liststart < m_listmaxshow)
 		{
-			if(!m_screensaver)
+			if(m_screensaver == NONE)
 				paintItem(pos - m_liststart);
 		}
+		
 		if(g_settings.audioplayer_follow)
 		{
 			if(old_selected >= m_liststart && old_selected - m_liststart < m_listmaxshow)
-				if(!m_screensaver)
+				if(m_screensaver == NONE)
 					paintItem(old_selected - m_liststart);
 		}
 	}
@@ -2258,18 +2215,20 @@ void CAudioPlayerGui::play(unsigned int pos)
 	//LCD	
 	paintLCD();
 	
-	// Display
-	if(!m_screensaver)
+	// info (top)
+	if(m_screensaver <= HIDE_PLAYLIST)
 		paintInfo();
 	
 	m_key_level = 1;
-	if(!m_screensaver)
+	
+	// foot
+	if(m_screensaver == NONE)
 		paintFoot();
 }
 
 int CAudioPlayerGui::getNext()
 {
-	int ret= m_current + 1;
+	int ret = m_current + 1;
 	if(m_playlist.empty())
 		return -1;
 	
@@ -2289,7 +2248,7 @@ void CAudioPlayerGui::updateMetaData()
 	bool updateLcd = false;
 	bool updateScreen = false;
 
-	if(m_state == CAudioPlayerGui::STOP || !m_show_playlist)
+	if(m_state == CAudioPlayerGui::STOP)
 		return;
 
 	if( CAudioPlayer::getInstance()->hasMetaDataChanged() || m_metainfo.empty() )
@@ -2397,7 +2356,7 @@ void CAudioPlayerGui::updateTimes(const bool force)
 			updatePlayed = true;
 		}
 		
-		if(!m_screensaver)
+		if(m_screensaver == NONE)
 		{
 			char tot_time[11];
 			snprintf(tot_time, 10, " / %ld:%02ld", m_time_total / 60, m_time_total % 60);
@@ -2496,21 +2455,22 @@ void CAudioPlayerGui::paintLCD()
 	}
 }
 
-void CAudioPlayerGui::screensaver(bool on)
+void CAudioPlayerGui::screensaver(int type)
 {
-	if(on)
-	{
-		m_screensaver = true;
-		m_frameBuffer->ClearFrameBuffer();
-
-		stimer = g_RCInput->addTimer(10*1000*1000, false);
-	}
-	else
+	const char *SCREENSAVER_TYPE[] = {
+		"NONE",
+		"HIDE_PLAYLIST",
+		"SHOW_PIC"
+	};
+	
+	dprintf(DEBUG_NORMAL, "CAudioPlayerGui::screensaver: screensaver type %s (%d)\n", SCREENSAVER_TYPE[type], type);
+	
+	if(type == NONE)
 	{
 		if(stimer)
 			g_RCInput->killTimer(stimer);
 		stimer = 0;
-		m_screensaver = false;
+		m_screensaver = NONE;
 		
 		bool usedBackground = m_frameBuffer->getuseBackground();
 		if (usedBackground)
@@ -2522,6 +2482,13 @@ void CAudioPlayerGui::screensaver(bool on)
 		
 		m_idletime = time(NULL);
 	}	
+	else
+	{
+		m_screensaver = type;
+		m_frameBuffer->ClearFrameBuffer();
+
+		stimer = g_RCInput->addTimer(10*1000*1000, false);
+	}
 }
 
 void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)

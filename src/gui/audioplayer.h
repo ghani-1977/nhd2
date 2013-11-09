@@ -98,6 +98,13 @@ class CAudioPlayerGui : public CMenuTarget
 			ARTIST_TITLE = 0, 
 			TITLE_ARTIST = 1
 		};
+		
+		enum
+		{
+			NONE = 0,
+			HIDE_PLAYLIST = 1,
+			SHOW_PIC = 2
+		};
 
 	private:
 		void Init(void);
@@ -119,8 +126,6 @@ class CAudioPlayerGui : public CMenuTarget
 		time_t         m_time_played;
 		std::string    m_metainfo;
 		bool           m_select_title_by_name;
-		bool           m_show_playlist;
-
 		bool           m_playlistHasChanged;
 
 		CAudioPlayList      m_playlist;
@@ -138,7 +143,7 @@ class CAudioPlayerGui : public CMenuTarget
 
 		int            m_LastMode;
 		int            m_idletime;
-		bool          m_screensaver;
+		int          m_screensaver;
 		bool          m_vol_ost;
 		bool          m_inetmode;
 		uint32_t       stimer;
@@ -168,7 +173,7 @@ class CAudioPlayerGui : public CMenuTarget
 		void updateMetaData();
 		void updateTimes(const bool force = false);
 		void showMetaData();
-		void screensaver(bool on);
+		void screensaver(int type);
 		bool getNumericInput(neutrino_msg_t& msg,int& val);
 
 		void addToPlaylist(CAudiofileExt &file);

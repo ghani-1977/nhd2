@@ -1301,7 +1301,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
     
 	if(id3file == 0)
 	{
-		printf("error open id3 file\n");
+		printf("CMP3Dec::SaveCover: error open id3 file\n");
 		return false;
 	}
 	else
@@ -1313,7 +1313,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 			
 			if (frame)
 			{
-				printf("Cover found\n");
+				printf("CMP3Dec::SaveCover: Cover found\n");
 				// Picture file data
 				unsigned int j;
 				union id3_field const *field;
@@ -1351,7 +1351,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 		}
 		else
 		{
-			printf("error open id3 tag\n");
+			printf("CMP3Dec::SaveCover: error open id3 tag\n");
 			return false;
 		}
 
@@ -1360,7 +1360,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
     
 	if(0)
 	{
-		printf("id3: not enough memory to display tag\n");
+		printf("CMP3Dec::SaveCover:id3: not enough memory to display tag\n");
 		return false;
 	}
 	
