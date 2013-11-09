@@ -815,7 +815,7 @@ bool CFileBrowser::readDir_std(const std::string & dirname, CFileList* flist)
 	for(int i = 0; i < n;i++)
 	{
 		CFile file;
-		if(strcmp(namelist[i]->d_name,".") != 0)
+		if(strcmp(namelist[i]->d_name, ".") != 0)
 		{
 			file.Name = dirname + namelist[i]->d_name;
 

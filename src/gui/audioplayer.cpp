@@ -40,6 +40,7 @@
 #endif
 
 #include <unistd.h>
+#include <dirent.h>
 
 #include <gui/audioplayer.h>
 
@@ -364,6 +365,7 @@ int CAudioPlayerGui::show()
 	neutrino_msg_data_t data;
 
 	int pic_index = 0;
+	int _selected = 0;
 
 	int ret = -1;
 
@@ -425,22 +427,68 @@ int CAudioPlayerGui::show()
 			{
 				if(m_screensaver == SHOW_PIC) 
 				{
-					char fname[255];
-
-					sprintf(fname, "%s/mp3-%d.jpg", g_settings.audioplayer_screensaver_dir.c_str(), pic_index);
-
-					int ret1 = access(fname, F_OK);
-					dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret1 ? "not found" : "found");
+					struct dirent **namelist;
+					int n;
 					
-					if(ret1 == 0) 
+					n = scandir(g_settings.audioplayer_screensaver_dir.c_str(), &namelist, 0, alphasort);
+					
+					if(n > 0)
 					{
-						pic_index++;
+						CFileList filelist;
+						CFile file;
+						const char * filename;
+					
+						for(int count = 0; count < n; count++) 
+						{
+							if( (strcmp(namelist[count]->d_name, ".") != 0) && (strcmp(namelist[count]->d_name, "..") != 0) )
+							{
+								file.Name = g_settings.audioplayer_screensaver_dir + "/" + namelist[count]->d_name;
+								
+								filelist.push_back(file);
+							}
+							free(namelist[count]);
+						}
+						free(namelist);
+					
+						if(!filelist.empty())
+						{
+							filename = filelist[_selected].Name.c_str();
+								
+							int ret1 = access(filename, F_OK);
+								
+							dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", filename, ret1 ? "not found" : "found");
+								
+							if(ret1 == 0) 
+							{
+								_selected++;
 
-						g_PicViewer->DisplayImage(fname);
+								g_PicViewer->DisplayImage(filename);
+							}
+							else if(_selected) // when all pics are shown show the mp3 pic once again
+							{
+								_selected = 0;
+							}	
+						} 
 					}
-					else if(pic_index) // when all pics are shown show the mp3 pic once again
+					else
 					{
-						pic_index = 0;
+						char fname[255];
+
+						sprintf(fname, "%s/mp3-%d.jpg", DATADIR "/neutrino/icons", pic_index);
+
+						int ret1 = access(fname, F_OK);
+						dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret1 ? "not found" : "found");
+						
+						if(ret1 == 0) 
+						{
+							pic_index++;
+
+							g_PicViewer->DisplayImage(fname);
+						}
+						else if(pic_index) // when all pics are shown show the mp3 pic once again
+						{
+							pic_index = 0;
+						}
 					}
 				} 
 				else if(m_screensaver == HIDE_PLAYLIST)

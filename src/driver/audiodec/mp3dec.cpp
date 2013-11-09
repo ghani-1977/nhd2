@@ -1313,7 +1313,6 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 			
 			if (frame)
 			{
-				printf("CMP3Dec::SaveCover: Cover found\n");
 				// Picture file data
 				unsigned int j;
 				union id3_field const *field;
@@ -1329,6 +1328,8 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 							data = id3_field_getbinarydata(field, &size);
 							if ( data )
 							{
+								printf("CMP3Dec::SaveCover: Cover found\n");
+								
 								m->cover = coverfile;
 								FILE * pFile;
 								pFile = fopen ( coverfile , "wb" );

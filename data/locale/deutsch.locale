@@ -74,7 +74,7 @@ audioplayer.rewind schneller Rückl.
 audioplayer.save_playlist Playlist speichern
 audioplayer.screensaver_timeout Bildschirmschoner timeout(min, 0=aus)
 audioplayer.select_title_by_name Titelsuche nach Name (SMS)
-audioplayer.screensaver_type Bildschirmschöner Modus
+audioplayer.screensaver_type Bildschirmschoner Modus
 audioplayer_screensaver_none aus
 audioplayer_screensaver_hide_playlist verstecke Playliste
 audioplayer_screensaver_diashow Diashow
