@@ -366,6 +366,10 @@ int CAudioPlayerGui::show()
 
 	int pic_index = 0;
 	int _selected = 0;
+	CFileList filelist;
+	
+	if(!filelist.empty())
+		filelist.clear();
 
 	int ret = -1;
 
@@ -434,7 +438,6 @@ int CAudioPlayerGui::show()
 					
 					if(n > 0)
 					{
-						CFileList filelist;
 						CFile file;
 						const char * filename;
 					
@@ -444,7 +447,9 @@ int CAudioPlayerGui::show()
 							{
 								file.Name = g_settings.audioplayer_screensaver_dir + "/" + namelist[count]->d_name;
 								
-								filelist.push_back(file);
+								// skip not jpg/jpeg files
+								if( (file.Name.find(".jpg")) || (file.Name.find(".jpeg")) )
+									filelist.push_back(file);
 							}
 							free(namelist[count]);
 						}
@@ -969,6 +974,9 @@ int CAudioPlayerGui::show()
 
 	if(m_state != CAudioPlayerGui::STOP)
 		stop();
+	
+	if(!filelist.empty())
+		filelist.clear();
 
 	return ret;
 }
