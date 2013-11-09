@@ -706,6 +706,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.screen_height = configfile.getInt32("screen_height", frameBuffer->getScreenHeight(true) );
 	g_settings.screen_xres = configfile.getInt32("screen_xres", 120);
 	g_settings.screen_yres = configfile.getInt32("screen_yres", 100);
+	
+	g_settings.rounded_corners = configfile.getInt32("rounded_corners", 1);
 	// END OSD
 
 	// keysbinding
@@ -826,7 +828,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.audioplayer_highprio  = configfile.getInt32("audioplayer_highprio",0);
 	g_settings.audioplayer_select_title_by_name = configfile.getInt32("audioplayer_select_title_by_name", 0);
 	g_settings.audioplayer_repeat_on = configfile.getInt32("audioplayer_repeat_on",0);
-	g_settings.audioplayer_screensaver_type = configfile.getInt32("audioplayer_screensaver_type", CAudioPlayerGui::NONE);
+	g_settings.audioplayer_screensaver_type = configfile.getInt32("audioplayer_screensaver_type", CAudioPlayerGui::SHOW_PIC);
 	g_settings.audioplayer_enable_sc_metadata = configfile.getInt32("audioplayer_enable_sc_metadata", 1);
 	
 	// shoutcast --- not in GUI
@@ -922,6 +924,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.current_volume = configfile.getInt32("current_volume", 25);
 	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "5" ).c_str() );
+	
+	// audioplayer screensaver_dir
+	g_settings.audioplayer_screensaver_dir = configfile.getString("audioplayer_screensaver_dir", DATADIR "/neutrino/icons");
 	// END MISC OPTS
 
 	// HDD
@@ -1193,6 +1198,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		configfile.setInt32(locale_real_names[timing_setting_name[i]], g_settings.timing[i]);
+	
+	configfile.setInt32("rounded_corners", g_settings.rounded_corners);
 	// END OSD
 
 	// KEYS
@@ -1379,6 +1386,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "volume_pos", g_settings.volume_pos);
 	configfile.setInt32( "current_volume", g_settings.current_volume );
 	configfile.setString( "audio_step"	, g_settings.audio_step);
+	
+	// audioplayer_screensaver_dir
+	configfile.setString("audioplayer_screensaver_dir", g_settings.audioplayer_screensaver_dir);
 	// END MISC OPTS
 
 	// HDD
@@ -2614,6 +2624,10 @@ int CNeutrinoApp::run(int argc, char **argv)
 		// setup scan settings
 		//if(ret != menu_return::RETURN_EXIT_ALL)
 		//	scansetup.exec(NULL, "");
+		
+		// misc settings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			miscSettings.exec(NULL, "");
 
 		dprintf(DEBUG_INFO, "config file or options missing\n");
 
@@ -5290,6 +5304,22 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		webtvMode();
 		return menu_return::RETURN_EXIT_ALL;
+	}
+	else if(actionKey == "audioplayer_screensaver_dir") 
+	{
+		parent->hide();
+		
+		CFileBrowser b;
+		b.Dir_Mode=true;
+		
+		if (b.exec(g_settings.audioplayer_screensaver_dir.c_str())) 
+		{
+			g_settings.audioplayer_screensaver_dir = b.getSelectedFile()->Name;
+
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::exec: new audioplayer_screensaver dir %s\n", b.getSelectedFile()->Name.c_str());
+		}
+
+		return menu_return::RETURN_REPAINT;
 	}
 
 	return returnval;

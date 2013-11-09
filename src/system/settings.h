@@ -274,6 +274,7 @@ struct SNeutrinoSettings
 	int screen_yres;
 	
 	int volume_pos;
+	int rounded_corners;
 	// END OSD
 
 	// KEYS
@@ -415,6 +416,7 @@ struct SNeutrinoSettings
 	std::string logos_dir;
 	int epgplus_show_logo;
 	int show_channelname;
+	std::string audioplayer_screensaver_dir;
 
 	// channellist
 	int zap_cycle;
@@ -538,13 +540,17 @@ extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 #define DEFAULT_LCD_DUMP_PNG			0x00
 
 // corners (osd)
-#define RADIUS_LARGE		16
-#define RADIUS_MID      	8
-#define RADIUS_SMALL    	4
+#define CORNER_RADIUS_LARGE		16
+#define CORNER_RADIUS_MID      		8
+#define CORNER_RADIUS_SMALL    		4
 
-#define BORDER_LEFT		10
-#define BORDER_RIGHT		10
-#define SCROLLBAR_WIDTH		15
+#define RADIUS_LARGE    		(g_settings.rounded_corners ? CORNER_RADIUS_LARGE : 0)
+#define RADIUS_MID      		(g_settings.rounded_corners ? CORNER_RADIUS_MID : 0)
+#define RADIUS_SMALL    		(g_settings.rounded_corners ? CORNER_RADIUS_SMALL : 0)
+
+#define BORDER_LEFT			10
+#define BORDER_RIGHT			10
+#define SCROLLBAR_WIDTH			15
 /* end default values */
 
 // parentallock

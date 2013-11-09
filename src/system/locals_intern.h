@@ -631,6 +631,7 @@ const char * locale_real_names[] = {
 	"miscsettings.epg_save",
 	"miscsettings.epgplus_show_logos",
 	"miscsettings.webtv_user_bouquet",
+	"miscsettings.audioplayer_screensaver_dir",
 	"motorcontrol.head",
 	"motorcontrol.user_menu",
 	"motorcontrol.install_menu",

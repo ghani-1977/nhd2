@@ -1112,6 +1112,13 @@ const CMenuOptionChooser::keyval  VOLUMEBAR_DISP_POS_OPTIONS[VOLUMEBAR_DISP_POS_
 	{ 5 , LOCALE_SETTINGS_POS_HIGHER_CENTER, NULL }
 };
 
+#define MENU_CORNERSETTINGS_TYPE_OPTION_COUNT 2
+const CMenuOptionChooser::keyval MENU_CORNERSETTINGS_TYPE_OPTIONS[MENU_CORNERSETTINGS_TYPE_OPTION_COUNT] =
+{
+	{ 0, LOCALE_EXTRA_ROUNDED_CORNERS_OFF, NULL },
+	{ 1, LOCALE_EXTRA_ROUNDED_CORNERS_ON, NULL }
+};
+
 CMenuOptionStringChooser * tzSelect;
 
 void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &miscSettingsGeneral, CMenuWidget &miscSettingsChannelList, CMenuWidget &miscSettingsEPG, CMenuWidget &miscSettingsFileBrowser )
@@ -1158,6 +1165,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	// logos dir
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_LOGOSDIR, true, g_settings.logos_dir, this, "logos_dir" ) );
 	
+	// audioplayer screensaver dir
+	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
+	
 	// webtv settings
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_WEBTVUSER, true, g_settings.webtv_settings, this, "webtv_settings" ) );
 	
@@ -1175,6 +1185,9 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// volumebar position
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_EXTRA_VOLUME_POS, &g_settings.volume_pos, VOLUMEBAR_DISP_POS_OPTIONS, VOLUMEBAR_DISP_POS_OPTIONS_COUNT, true, NULL, CRCInput::RC_nokey, "", true ));
+	
+	// corners
+	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_EXTRA_ROUNDED_CORNERS, &g_settings.rounded_corners, MENU_CORNERSETTINGS_TYPE_OPTIONS, MENU_CORNERSETTINGS_TYPE_OPTION_COUNT, true));
 	
 	// volume bar steps
 	CStringInput * audio_step = new CStringInput(LOCALE_AUDIOMENU_VOLUMEBAR_AUDIOSTEPS,g_settings.audio_step, 2, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE, "0123456789 " );
