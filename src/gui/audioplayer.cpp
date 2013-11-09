@@ -427,7 +427,7 @@ int CAudioPlayerGui::show()
 				{
 					char fname[255];
 
-					sprintf(fname, "%s/mp3-%d.jpg", /*DATADIR "/neutrino/icons"*/g_settings.audioplayer_screensaver_dir, pic_index);
+					sprintf(fname, "%s/mp3-%d.jpg", g_settings.audioplayer_screensaver_dir.c_str(), pic_index);
 
 					int ret1 = access(fname, F_OK);
 					dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", fname, ret1 ? "not found" : "found");
