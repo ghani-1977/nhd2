@@ -1759,14 +1759,19 @@ void CChannelList::paintItem(int pos)
 		char nameAndDescription[255];
 		char tmp[10];
 		CZapitChannel * chan = chanlist[curr];
-		int prg_offset=0;
-		int title_offset=0;
+		int prg_offset = 0;
+		int title_offset = 0;
 		uint8_t tcolor = (liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
 		int xtheight = fheight-2;
 		
 		// due to extended info
-		prg_offset = 42;
-		title_offset = 6;
+		//prg_offset = 42;
+		//title_offset = 6;
+		if(g_settings.channellist_extended)
+		{
+			prg_offset = 42;
+			title_offset = 6;
+		}
 
 		sprintf((char*) tmp, "%d", this->historyMode ? pos : chan->number);
 
@@ -1825,35 +1830,38 @@ void CChannelList::paintItem(int pos)
 			if (ch_desc_len <= 0)
 				ch_desc_len = 0;
 			
-			// next infos
-			if(displayNext)
+			if(g_settings.channellist_extended)
 			{
-				struct tm *pStartZeit = localtime(&p_event->startTime);
-			
-				sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
-				
-				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos + xtheight, width - numwidth - 20 - 15 - prg_offset, tmp, tcolor, 0, true);
-			}
-			else
-			{
-				time_t jetzt = time(NULL);
-				int runningPercent = 0;
-					
-				if (((jetzt - p_event->startTime + 30) / 60) < 0 )
+				// next infos
+				if(displayNext)
 				{
-					runningPercent = 0;
+					struct tm *pStartZeit = localtime(&p_event->startTime);
+				
+					sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
+					
+					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos + xtheight, width - numwidth - 20 - 15 - prg_offset, tmp, tcolor, 0, true);
 				}
 				else
 				{
-					runningPercent = (jetzt-p_event->startTime) * 30 / p_event->duration;
-					if (runningPercent > 30)	// this would lead to negative value in paintBoxRel
-						runningPercent = 30;	// later on which can be fatal...
+					time_t jetzt = time(NULL);
+					int runningPercent = 0;
+						
+					if (((jetzt - p_event->startTime + 30) / 60) < 0 )
+					{
+						runningPercent = 0;
+					}
+					else
+					{
+						runningPercent = (jetzt-p_event->startTime) * 30 / p_event->duration;
+						if (runningPercent > 30)	// this would lead to negative value in paintBoxRel
+							runningPercent = 30;	// later on which can be fatal...
+					}
+					
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+					
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 				}
-				
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
-				
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 			}
 
 			// name and description
@@ -1864,14 +1872,17 @@ void CChannelList::paintItem(int pos)
 		}
 		else 
 		{
-			// extended info
-			short runningPercent = 0;
-			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+			if(g_settings.channellist_extended)
+			{
+				// extended info
+				short runningPercent = 0;
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 
-			frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
-				
-			frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos + fheight/4 + 1, x + 5 + numwidth + title_offset + 32, ypos + fheight/4 + fheight/2 - 3, COL_MENUCONTENT_PLUS_3);
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+					
+				frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos + fheight/4 + 1, x + 5 + numwidth + title_offset + 32, ypos + fheight/4 + fheight/2 - 3, COL_MENUCONTENT_PLUS_3);
+			}
 			
 			//name
 			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true); // UTF-8

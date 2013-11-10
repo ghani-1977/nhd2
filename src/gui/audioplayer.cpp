@@ -2008,7 +2008,7 @@ void CAudioPlayerGui::paintInfo()
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		xstart=(m_width-w)/2;
 		if(xstart < 10)
-			xstart=10;
+			xstart = 10;
 		
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x+xstart, m_y + 4 + 2*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8		
 

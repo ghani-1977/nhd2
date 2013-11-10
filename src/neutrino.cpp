@@ -888,11 +888,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// channellist 
 	g_settings.virtual_zap_mode = configfile.getBool("virtual_zap_mode", false);
-
 	g_settings.make_hd_list = configfile.getInt32("make_hd_list", 0);
 	
 	//crypticon on channellist
 	g_settings.channellist_ca = configfile.getInt32("channellist_ca", 1);
+	g_settings.channellist_extended	= configfile.getBool("channellist_extended", true);
 	
 	// record screenshot
 	g_settings.recording_screenshot = configfile.getInt32("recording_screenshot", 0);
@@ -1315,8 +1315,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	//crypticon channellist
 	configfile.setInt32("channellist_ca", g_settings.channellist_ca);
-
 	configfile.setInt32("make_hd_list", g_settings.make_hd_list);
+	configfile.setBool("channellist_extended", g_settings.channellist_extended);
 	//
 
 	configfile.setString("timezone", g_settings.timezone);
