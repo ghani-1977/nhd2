@@ -2405,7 +2405,8 @@ void CAudioPlayerGui::updateTimes(const bool force)
 			updatePlayed = true;
 		}
 		
-		if(m_screensaver == NONE)
+		//NOTE:time played
+		if(m_screensaver <= HIDE_PLAYLIST)
 		{
 			char tot_time[11];
 			snprintf(tot_time, 10, " / %ld:%02ld", m_time_total / 60, m_time_total % 60);
