@@ -1986,7 +1986,7 @@ void CAudioPlayerGui::paintInfo()
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 		// second line (Artist/Title...)
-		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO && !m_curr_audiofile.MetaData.bitrate)
+		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO /*&& !m_curr_audiofile.MetaData.bitrate*/) //FIXME: need to relaod id3tag
 		{
 			GetMetaData(m_curr_audiofile);
 		}
@@ -2006,6 +2006,13 @@ void CAudioPlayerGui::paintInfo()
 			tmp = m_curr_audiofile.MetaData.artist;
 			tmp += " / ";
 			tmp += m_curr_audiofile.MetaData.title;
+		}
+		
+		// cover
+		if (!m_curr_audiofile.MetaData.cover.empty())
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
 		}
 
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
@@ -2252,7 +2259,7 @@ void CAudioPlayerGui::play(unsigned int pos)
 	}
 
 	// metadata
-	if (m_playlist[pos].FileType != CFile::STREAM_AUDIO /*&& !m_playlist[pos].MetaData.bitrate*/) //FIXME:???
+	if (m_playlist[pos].FileType != CFile::STREAM_AUDIO && !m_playlist[pos].MetaData.bitrate)
 	{
 		// id3tag noch nicht geholt
 		//printf("play: need getMetaData\n");
@@ -2272,15 +2279,7 @@ void CAudioPlayerGui::play(unsigned int pos)
 	
 	// info/cover
 	if(m_screensaver <= HIDE_PLAYLIST)
-	{
 		paintInfo();
-		
-		if (!m_playlist[pos].MetaData.cover.empty())
-		{
-			if(!access("/tmp/cover.jpg", F_OK))
-				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
-		}
-	}
 	
 	m_key_level = 1;
 	
