@@ -1198,8 +1198,6 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 						{
 							//printf("%s  %s %s\n", spaces, (info[i].id[1] == 'C') ? ("Copyright (C)") : ("Produced (P)"), latin1);
 						}
-						//else
-							//printf("%s  %s\n", spaces, latin1);
 					}
 
 					free(utf8);

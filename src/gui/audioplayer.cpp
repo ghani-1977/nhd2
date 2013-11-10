@@ -2538,7 +2538,7 @@ void CAudioPlayerGui::screensaver(int type)
 
 void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 {
-	//printf("GetMetaData\n");
+	//printf("CAudioPlayerGui::GetMetaData: fileType:%d\n", File.FileType);
 	
 	bool ret = 1;
 

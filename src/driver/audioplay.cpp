@@ -175,6 +175,7 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	return NULL;
 }
 
+void ShoutcastCallback(void *arg);
 bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 {
 	if (state != CBaseDec::STOP)
@@ -208,6 +209,29 @@ bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 	
 #if !defined (ENABLE_PCMDECODER)
 	playback->Close();
+	
+	FILE * fp = fopen( file->Filename.c_str(), "r" );
+	if ( fp == NULL )
+	{
+		fprintf( stderr, "Error opening file %s for decoding.\n", file->Filename.c_str() );
+		//Status = INTERNAL_ERR;
+	}
+	// jump to first audio frame; audio_start_pos is only set for FILE_MP3
+	else if ( file->MetaData.audio_start_pos && fseek( fp, file->MetaData.audio_start_pos, SEEK_SET ) == -1 )
+	{
+		fprintf( stderr, "fseek() failed.\n" );
+		//Status = INTERNAL_ERR;
+	}
+	
+	//
+	if( file->FileType == CFile::STREAM_AUDIO )
+	{
+		if ( fstatus( fp, ShoutcastCallback ) < 0 )
+		{
+			fprintf( stderr, "Error adding shoutcast callback: %s", err_txt );
+		}
+	}
+	//
 	
 #if defined (PLATFORM_COOLSTREAM)
 	if(! playback->Open(PLAYMODE_FILE))

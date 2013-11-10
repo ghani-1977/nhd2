@@ -1513,7 +1513,7 @@ int tuxtx_subtitle_running(int *pid, int *page, int *running)
 	return ret;
 }
 
-int tuxtx_main(int _rc, int pid, int page, int source)
+int tuxtx_main(int /*_rc*/, int pid, int page, int source)
 {
 	char cvs_revision[] = "$Revision: 1.95 $";
 	
@@ -1540,9 +1540,6 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	sscanf(cvs_revision, "%*s %s", versioninfo);
 	
 	dprintf(DEBUG_NORMAL, "TuxTxt %s for 32bpp framebuffer\n", versioninfo);
-
-	//rcinput
-	rc = _rc;
 	
 	//fb
 	lfb = (unsigned char *)CFrameBuffer::getInstance()->getFrameBufferPointer();
@@ -1554,7 +1551,7 @@ int tuxtx_main(int _rc, int pid, int page, int source)
 	else
 		printf("[tuxtxt] using PID 0x%x\n", tuxtxt_cache.vtxtpid);
 
-	fcntl(rc, F_SETFL, fcntl(rc, F_GETFL) | O_EXCL | O_NONBLOCK);
+	
 	
 	// coordinate
 	int x = CFrameBuffer::getInstance()->getScreenX();
@@ -2067,7 +2064,7 @@ int Init( int source )
 #else
 	tuxtxt_start(tuxtxt_cache.vtxtpid, source);
 #endif
-	fcntl(rc, F_SETFL, O_NONBLOCK);
+
 	gethotlist();
 	
 	//SwitchScreenMode(screenmode);
@@ -2677,7 +2674,7 @@ void ConfigMenu(int Init, int source)
 {
 	dprintf(DEBUG_NORMAL, "[tuxtxt] Menu\n");
 	
-	int val, menuitem = M_Start;
+	int menuitem = M_Start;
 	int current_pid = 0;
 	int hotindex;
 	int oldscreenmode, oldtrans = 0;
@@ -2721,10 +2718,6 @@ void ConfigMenu(int Init, int source)
 	ClearFB(transp);
 	clearbbcolor = black;
 	Menu_Init(menu, current_pid, menuitem, hotindex);
-
-	/* set blocking mode */
-	val = fcntl(rc, F_GETFL);
-	fcntl(rc, F_SETFL, val &~ O_NONBLOCK);
 
 	/* loop */
 	do {
@@ -3208,7 +3201,6 @@ void ConfigMenu(int Init, int source)
 						current_service = current_pid;
 						//RenderMessage(ShowServiceName);
 
-						fcntl(rc, F_SETFL, O_NONBLOCK);
 						RCCode = -1;
 						
 						if (oldscreenmode)
@@ -3286,8 +3278,6 @@ void ConfigMenu(int Init, int source)
 #endif		
 	} while ((RCCode != RC_HOME) && (RCCode != RC_DBOX) && (RCCode != RC_MUTE));
 
-	/* reset to nonblocking mode */
-	fcntl(rc, F_SETFL, O_NONBLOCK);
 	tuxtxt_cache.pageupdate = 1;
 	RCCode = -1;
 	
@@ -3506,7 +3496,7 @@ void ColorKey(int target)
 */
 void PageCatching()
 {
-	int val, byte;
+	int byte;
 	int oldzoommode = zoommode;
 
 	pagecatching = 1;
@@ -3535,10 +3525,6 @@ void PageCatching()
 		tuxtxt_cache.pageupdate = 1;
 		return;
 	}
-
-	/* set blocking mode */
-	val = fcntl(rc, F_GETFL);
-	fcntl(rc, F_SETFL, val &~ O_NONBLOCK);
 
 	/* loop */
 	do {
@@ -3578,7 +3564,6 @@ void PageCatching()
 		case RC_HOME:
 		case RC_HELP:
 		case RC_MUTE:
-			fcntl(rc, F_SETFL, O_NONBLOCK);
 			tuxtxt_cache.pageupdate = 1;
 			pagecatching = 0;
 			RCCode = -1;
@@ -3608,9 +3593,6 @@ void PageCatching()
 		tuxtxt_cache.subpage = subp;
 	else
 		tuxtxt_cache.subpage = 0;
-
-	/* reset to nonblocking mode */
-	fcntl(rc, F_SETFL, O_NONBLOCK);
 }
 
 /*

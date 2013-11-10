@@ -36,6 +36,8 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include <stdio.h>
+
 #include <sys/stat.h>
 #include <driver/file.h>
 #include <cstring>
@@ -67,9 +69,9 @@ const char * const file_extension_list[] =
 	"mpg",
 	"ogg",  
 	"png",  
-	"sh",   
-	"txt",	
+	"sh", 
 	"ts",
+	"txt",	
 	"url",  
 	"vob",  
 	"wav",  
@@ -102,8 +104,8 @@ const CFile::FileType file_type_list[] =
 	CFile::FILE_OGG, 
 	CFile::FILE_PICTURE, 
 	CFile::FILE_TEXT, 
-	CFile::FILE_TEXT, 
 	CFile::FILE_TS,
+	CFile::FILE_TEXT, 
 	CFile::STREAM_AUDIO, 
 	CFile::FILE_VOB, 
 	CFile::FILE_WAV, 

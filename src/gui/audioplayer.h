@@ -56,7 +56,6 @@ typedef std::pair<unsigned char, CPosList> CTitle2PosItem;
 class CAudiofileExt : public CAudiofile
 {
 	public:
-		
 		CAudiofileExt();
 		CAudiofileExt(std::string name, CFile::FileType type);
 		CAudiofileExt(const CAudiofileExt& src);
