@@ -354,6 +354,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//show infobar
 	g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
+	
+	// remove mp3 cover
+	if(!access("/tmp/cover.jpg", F_OK))
+		remove("/tmp/cover.jpg");
 
 	//always repaint
 	return menu_return::RETURN_REPAINT;
