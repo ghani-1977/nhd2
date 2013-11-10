@@ -146,6 +146,8 @@ class CAudioPlayerGui : public CMenuTarget
 		bool          m_vol_ost;
 		bool          m_inetmode;
 		uint32_t       stimer;
+		
+		bool 		info_visible;
 
 		SMSKeyInput    m_SMSKeyInput;
 

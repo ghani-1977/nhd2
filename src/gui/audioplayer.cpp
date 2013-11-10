@@ -176,6 +176,8 @@ CAudioPlayerGui::CAudioPlayerGui(bool inetmode)
 	m_frameBuffer = CFrameBuffer::getInstance();
 	m_visible = false;
 	m_inetmode = inetmode;
+	
+	info_visible = false;
 
 	Init();
 }
@@ -1626,6 +1628,7 @@ void CAudioPlayerGui::hide()
 		m_frameBuffer->blit();
 #endif		
 		m_visible = false;
+		info_visible = false;
 	}
 }
 
@@ -2017,6 +2020,8 @@ void CAudioPlayerGui::paintInfo()
 		m_time_total = 0;
 		m_time_played = 0;
 		updateMetaData();
+		
+		info_visible = true;
 
 		updateTimes(true);
 	}
@@ -2406,7 +2411,7 @@ void CAudioPlayerGui::updateTimes(const bool force)
 		}
 		
 		//NOTE:time played
-		if(m_screensaver <= HIDE_PLAYLIST)
+		if(m_screensaver <= HIDE_PLAYLIST && info_visible)
 		{
 			char tot_time[11];
 			snprintf(tot_time, 10, " / %ld:%02ld", m_time_total / 60, m_time_total % 60);
