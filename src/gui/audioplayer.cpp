@@ -2019,6 +2019,7 @@ void CAudioPlayerGui::paintInfo()
 		m_metainfo.clear();
 		m_time_total = 0;
 		m_time_played = 0;
+		
 		updateMetaData();
 		
 		info_visible = true;
@@ -2250,8 +2251,8 @@ void CAudioPlayerGui::play(unsigned int pos)
 		}
 	}
 
-	/* Meta Data */
-	if (m_playlist[pos].FileType != CFile::STREAM_AUDIO && !m_playlist[pos].MetaData.bitrate)
+	// metadata
+	if (m_playlist[pos].FileType != CFile::STREAM_AUDIO /*&& !m_playlist[pos].MetaData.bitrate*/) //FIXME:???
 	{
 		// id3tag noch nicht geholt
 		//printf("play: need getMetaData\n");
@@ -2263,15 +2264,23 @@ void CAudioPlayerGui::play(unsigned int pos)
 	m_state = CAudioPlayerGui::PLAY;
 	m_curr_audiofile = m_playlist[m_current];
 
-	/* Play */
+	// play
 	CAudioPlayer::getInstance()->play(&m_curr_audiofile, g_settings.audioplayer_highprio == 1);
 
-	//LCD	
+	//lcd	
 	paintLCD();
 	
-	// info (top)
+	// info/cover
 	if(m_screensaver <= HIDE_PLAYLIST)
+	{
 		paintInfo();
+		
+		if (!m_playlist[pos].MetaData.cover.empty())
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		}
+	}
 	
 	m_key_level = 1;
 	
@@ -2354,18 +2363,10 @@ void CAudioPlayerGui::updateMetaData()
 			m_curr_audiofile.MetaData.album = meta.sc_station;
 			updateLcd = true;
 		}
-		
-		if (!meta.cover.empty())
-		{
-			if(!access("/tmp/cover.jpg", F_OK))
-				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
-		}
 	}
 	
 	if (CAudioPlayer::getInstance()->hasMetaDataChanged() != 0)
-	{
 		updateLcd = true;
-	}
 	
 	//printf("CAudioPlayerGui::updateMetaData: updateLcd %d\n", updateLcd);
 		
@@ -2374,7 +2375,7 @@ void CAudioPlayerGui::updateMetaData()
 
 	if(updateScreen)
 		paintInfo();
-	
+		
 	if(updateMeta || updateScreen)
 	{
 		// refresh box
@@ -2554,7 +2555,7 @@ void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 	bool ret = 1;
 
 	if (CFile::STREAM_AUDIO != File.FileType)
-		ret = CAudioPlayer::getInstance()->readMetaData(  &File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
+		ret = CAudioPlayer::getInstance()->readMetaData(&File, m_state != CAudioPlayerGui::STOP && !g_settings.audioplayer_highprio);
 
 	if (!ret || (File.MetaData.artist.empty() && File.MetaData.title.empty() ))
 	{
@@ -2580,6 +2581,7 @@ void CAudioPlayerGui::GetMetaData(CAudiofileExt &File)
 			else
 				File.MetaData.title = tmp;
 		}
+		
 		File.MetaData.artist = FILESYSTEM_ENCODING_TO_UTF8_STRING(File.MetaData.artist);
 		File.MetaData.title  = FILESYSTEM_ENCODING_TO_UTF8_STRING(File.MetaData.title );
 	}

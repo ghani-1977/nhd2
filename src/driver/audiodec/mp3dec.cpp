@@ -1041,6 +1041,8 @@ long CMP3Dec::scanHeader( FILE* input, struct mad_header* const header,
  */
 bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const meta )
 {
+	printf("CMP3Dec::GetMP3Info\n");
+	
 	struct mad_header header;
 	struct tag ftag;
 	mad_header_init( &header );
@@ -1060,8 +1062,10 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const me
 			perror( "fseek()" );
 			result = false;
 		}
-		/* this is still not 100% accurate, because it does not take
-		   id3 tags at the end of the file in account */
+		/* 
+		this is still not 100% accurate, because it does not take
+		id3 tags at the end of the file in account 
+		*/
 		meta->filesize = ( ftell( input ) - meta->audio_start_pos ) * 8;
 		
 		/* valid Xing vbr tag present? */
@@ -1076,8 +1080,7 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const me
 		}
 		else /* no valid Xing vbr tag present */
 		{
-			meta->total_time = header.bitrate != 0
-				? meta->filesize / header.bitrate : 0;
+			meta->total_time = header.bitrate != 0 ? meta->filesize / header.bitrate : 0;
 		}
 
 		/* vbr file */
@@ -1111,6 +1114,8 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const me
 
 void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 {
+	printf("CMP3Dec::GetID3\n");
+	
 	unsigned int i;
 	struct id3_frame const *frame;
 	id3_ucs4_t const *ucs4;
@@ -1291,6 +1296,8 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 
 bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 {
+	printf("CMP3Dec::SaveCover\n");
+	
 	struct id3_frame const *frame;
 	const char * coverfile = "/tmp/cover.jpg";
 
