@@ -2377,7 +2377,7 @@ void CAudioPlayerGui::updateMetaData()
 	
 	if(updateMeta || updateScreen)
 	{
-		//FIXME:???
+		// refresh box
 		m_frameBuffer->paintBoxRel(m_x + 10 + m_title_height, m_y + 4 + 2*m_fheight, m_width - 20 - m_title_height, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
 		
 		int xstart = ((m_width - 20 - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(m_metainfo))/2)+10;
@@ -2541,6 +2541,7 @@ void CAudioPlayerGui::screensaver(int type)
 	{
 		m_screensaver = type;
 		m_frameBuffer->ClearFrameBuffer();
+		info_visible = false;
 
 		stimer = g_RCInput->addTimer(10*1000*1000, false);
 	}
