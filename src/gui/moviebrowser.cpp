@@ -403,7 +403,7 @@ CMovieBrowser::~CMovieBrowser()
 	}
 	
 	// netzkino
-	netzKinoClearlist();
+	ClearChannellist();
 }
 
 void CMovieBrowser::fileInfoStale(void)
@@ -983,7 +983,11 @@ int CMovieBrowser::exec(const char * path)
 	
 		// reset sorting
 		m_settings.sorting.direction = MB_DIRECTION_DOWN;
-		m_settings.sorting.item =  MB_INFO_RECORDDATE;
+		
+		if(show_mode == MB_SHOW_NETZKINO)
+			m_settings.sorting.item =  MB_INFO_TITLE;
+		else
+			m_settings.sorting.item =  MB_INFO_RECORDDATE;
 		
 		// reload movie 
 		dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
@@ -1893,7 +1897,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_yellow) 
 	{
-		if (show_mode != MB_SHOW_YT)
+		if (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO)
 			onSetFocusNext();
 	}
 	else if (msg == CRCInput::RC_blue) 
@@ -1902,7 +1906,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		if (show_mode == MB_SHOW_YT)
 			ytparser.Cleanup();
 		else if(show_mode == MB_SHOW_NETZKINO)
-			netzKinoClearlist();
+			ClearChannellist();
 
 		loadMovies();
 		refresh();
@@ -3936,7 +3940,6 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 
 	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) 
 	{
-		//if (ytparser.ParseFeed((cYTFeedParser::yt_feed_mode_t)mode, search, id)) 
 		if (ytparser.ParseFeed((cYTFeedParser::yt_feed_mode_t)mode, search, id, (cYTFeedParser::yt_feed_orderby_t)m_settings.ytorderby))
 		{
 			ytparser.DownloadThumbnails();
@@ -5176,42 +5179,34 @@ ret_err:
 }
 
 //netzkino
-void CMovieBrowser::netzKinoClearlist(void)
+void CMovieBrowser::ClearChannellist(void)
 {
+	dprintf(DEBUG_INFO, "CMovieBrowser::ClearChannellist:\n");
+	
+	// clear parser
 	if (parser)
 	{
 		xmlFreeDoc(parser);
 		parser = NULL;
 	}
-	
-	for(unsigned int count = 0; count < NETZKINOLIST.size(); count++)
-	{
-		delete NETZKINOLIST[count];
-	}
-	NETZKINOLIST.clear();
-}
-
-bool CMovieBrowser::readChannellist(std::string filename)
-{
-	dprintf(DEBUG_INFO, "CMovieBrowser::readChannellist parsing %s\n", filename.c_str());
 	
 	// clear channellist
 	for(unsigned int count = 0; count < NETZKINOLIST.size(); count++)
 	{
 		delete NETZKINOLIST[count];
 	}
+	
 	NETZKINOLIST.clear();
+}
+
+bool CMovieBrowser::loadChannellist(std::string filename)
+{
+	dprintf(DEBUG_INFO, "CMovieBrowser::loadChannellist: %s\n", filename.c_str());
 	
-	static int inserted = 0;
+	// clear channellist
+	ClearChannellist();
 	
-	netzKinolist * tmp = new netzKinolist();
-	
-	// parse webtv.xml
-	if (parser)
-	{
-		xmlFreeDoc(parser);
-		parser = NULL;
-	}
+	Channellist * tmp = new Channellist();
 	
 	parser = parseXmlFile(filename.c_str());
 	
@@ -5232,7 +5227,7 @@ bool CMovieBrowser::readChannellist(std::string filename)
 				char * thumbnail = (char *)DATADIR "/neutrino/icons/netzkino.jpg";
 				
 				// fill webtv list
-				tmp = new netzKinolist();
+				tmp = new Channellist();
 				
 				tmp->title = title;
 				tmp->url = url;
@@ -5241,8 +5236,6 @@ bool CMovieBrowser::readChannellist(std::string filename)
 				
 				// fill channelslist
 				NETZKINOLIST.push_back(tmp);
-				
-				inserted++;
 
 				l1 = l1->xmlNextNode;
 			}
@@ -5263,7 +5256,13 @@ void CMovieBrowser::loadNetzKinoTitles(void)
 	
 	m_vMovieInfo.clear();
 	
-	readChannellist(NETZKINO_XMLFILE);
+	loadChannellist(NETZKINO_XMLFILE);
+	
+	if(NETZKINOLIST.empty())
+	{
+		DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEBROWSER_NETZKINO_ERROR));
+		return;
+	}
 	
 	for (unsigned i = 0; i < NETZKINOLIST.size(); i++) 
 	{

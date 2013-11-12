@@ -103,7 +103,7 @@ typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
 typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
 volume_map_t vol_map;
 typedef volume_map_t::iterator volume_map_iterator_t;
-typedef std::pair<volume_map_iterator_t,volume_map_iterator_t> volume_map_range_t;
+typedef std::pair<volume_map_iterator_t, volume_map_iterator_t> volume_map_range_t;
 
 int volume_percent;
 extern int current_volume;

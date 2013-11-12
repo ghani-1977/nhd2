@@ -188,7 +188,7 @@ typedef enum
 	MB_SHOW_NETZKINO
 } MB_SHOW_MODE;
 
-struct netzKinolist{
+struct Channellist{
 	char * title;
 	char * url;
 	char * description;
@@ -332,10 +332,10 @@ class CMovieBrowser : public CMenuTarget
 		
 		// netzkino
 		xmlDocPtr parser;
-		std::vector<netzKinolist *> NETZKINOLIST;
+		std::vector<Channellist *> NETZKINOLIST;
 		
-		void netzKinoClearlist(void);
-		bool readChannellist(std::string filename);
+		void ClearChannellist(void);
+		bool loadChannellist(std::string filename);
 		
 		void loadNetzKinoTitles();
 

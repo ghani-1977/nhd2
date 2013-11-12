@@ -1660,6 +1660,9 @@ const char * locale_real_names[] = {
 	"moviebrowser.yt_orderby.published",
 	"moviebrowser.yt_orderby.rating",
 	"moviebrowser.yt_orderby.relevance",
-	"moviebrowser.yt_orderby.viewcount"
+	"moviebrowser.yt_orderby.viewcount",
+	
+	// netzkino
+	"moviebrowser.netzkino_error",
 };
 #endif
