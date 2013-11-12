@@ -1266,7 +1266,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 {
 	// zap
 	/* zapto if we dont have the same channel or not the same TP */
-	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) )
+	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) && !feCanTune(thischannel->getChannelID()))
 		zapTo_ChannelID(channel_id, false);
 
 	zapit_to_record(channel_id);
