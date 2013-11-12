@@ -401,6 +401,9 @@ CMovieBrowser::~CMovieBrowser()
 		m_playListLines.lineArray[i].clear();
 		m_FilterLines.lineArray[i].clear();
 	}
+	
+	// netzkino
+	netzKinoClearlist();
 }
 
 void CMovieBrowser::fileInfoStale(void)
@@ -535,7 +538,10 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.lastRecordMaxItems = NUMBER_OF_MOVIES_LAST;
 	
 	m_settings.sorting.direction = MB_DIRECTION_DOWN;
-	m_settings.sorting.item =  MB_INFO_RECORDDATE;
+	if(show_mode == MB_SHOW_NETZKINO)
+		m_settings.sorting.item =  MB_INFO_TITLE;
+	else
+		m_settings.sorting.item =  MB_INFO_RECORDDATE;
 
 	m_settings.filter.item = MB_INFO_MAX_NUMBER;
 	m_settings.filter.optionString = "";
@@ -573,7 +579,8 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.ytresults = 10;
 	m_settings.ytregion = "default";
 
-	//
+	//netzkino
+	parser = NULL;
 
 	m_settings.storageDirMovieUsed = true;
 	m_settings.storageDirRecUsed = true;
@@ -1297,7 +1304,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 		// youtube
 		std::string fname;
 
-		if (show_mode == MB_SHOW_YT) 
+		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO) 
 		{
 			fname = m_movieSelectionHandler->tfile;
 		} 
@@ -1355,7 +1362,8 @@ void CMovieBrowser::refreshMovieInfo(void)
 
 void CMovieBrowser::refreshLCD(void)
 {
-	if(m_vMovieInfo.size() <= 0) return;
+	if(m_vMovieInfo.size() <= 0) 
+		return;
 
 	//CVFD * lcd = CVFD::getInstance();
 	if(m_movieSelectionHandler == NULL)
@@ -1475,7 +1483,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 		}
 	}
 	// sort the not filtered files
-	onSortMovieInfoHandleList(m_vHandlePlayList, MB_INFO_PREVPLAYDATE,MB_DIRECTION_DOWN);
+	onSortMovieInfoHandleList(m_vHandlePlayList, MB_INFO_PREVPLAYDATE, MB_DIRECTION_DOWN);
 
 	for( int handle=0; handle < (int) m_vHandlePlayList.size() && handle < m_settings.lastPlayMaxItems ;handle++)
 	{
@@ -1536,7 +1544,7 @@ void CMovieBrowser::refreshLastRecordList(void) //P2
 		}
 	}
 	// sort the not filtered files
-	onSortMovieInfoHandleList(m_vHandleRecordList,MB_INFO_RECORDDATE,MB_DIRECTION_DOWN);
+	onSortMovieInfoHandleList(m_vHandleRecordList,MB_INFO_RECORDDATE, MB_DIRECTION_DOWN);
 
 	for( int handle=0; handle < (int) m_vHandleRecordList.size() && handle < m_settings.lastRecordMaxItems ;handle++)
 	{
@@ -1600,7 +1608,7 @@ void CMovieBrowser::refreshBrowserList(void) //P1
 		}
 	}
 	// sort the not filtered files
-	onSortMovieInfoHandleList(m_vHandleBrowserList,m_settings.sorting.item,MB_DIRECTION_AUTO);
+	onSortMovieInfoHandleList(m_vHandleBrowserList,m_settings.sorting.item, MB_DIRECTION_AUTO);
 
 	for(unsigned int handle=0; handle < m_vHandleBrowserList.size() ;handle++)
 	{
@@ -1659,6 +1667,10 @@ void CMovieBrowser::refreshTitle(void)
 		
 		mb_icon = NEUTRINO_ICON_YOUTUBE;
 	}
+	else if(show_mode == MB_SHOW_NETZKINO)
+	{
+		title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
+	}
 
 	// head box
 	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX, m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR, RADIUS_MID, CORNER_TOP);
@@ -1694,7 +1706,7 @@ void CMovieBrowser::refreshFoot(void)
 	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_FILTER);
 	std::string sort_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_SORT);
 	
-	if (show_mode != MB_SHOW_YT) 
+	if (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO) 
 	{
 		// filter
 		filter_text += m_settings.filter.optionString;
@@ -1727,7 +1739,7 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, m_cBoxFrame.iX + xpos1, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//1
-		if (show_mode == MB_SHOW_YT) 
+		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO) 
 			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
 		else
 			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
@@ -1740,7 +1752,7 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, m_cBoxFrame.iX + xpos2, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//2
-		if (show_mode == MB_SHOW_YT) 
+		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO) 
 			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
 		else
 			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
@@ -1871,6 +1883,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 				refresh();
 			}
 		}
+		else if(show_mode == MB_SHOW_NETZKINO)
+			onButtonPress(CRCInput::RC_page_down);
 		else if(m_settings.gui == MB_GUI_MOVIE_INFO)
 			onSetGUIWindow(MB_GUI_FILTER);
 		else if(m_settings.gui == MB_GUI_FILTER)
@@ -1887,6 +1901,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		// youtube
 		if (show_mode == MB_SHOW_YT)
 			ytparser.Cleanup();
+		else if(show_mode == MB_SHOW_NETZKINO)
+			netzKinoClearlist();
 
 		loadMovies();
 		refresh();
@@ -1921,7 +1937,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 				refresh();
 			}
 		}
-		
+		else if(show_mode == MB_SHOW_NETZKINO)
+			onButtonPress(CRCInput::RC_page_up);
 		else if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 		{
 			// sorting is not avialable for last play and record
@@ -1967,7 +1984,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		// youtube
 		if (show_mode == MB_SHOW_YT)
 			showYTMenu();
-		else
+		else if(show_mode != MB_SHOW_NETZKINO) // NOTE: think about it (no netzkino menu yet)
 			showMenu(m_movieSelectionHandler);
 	}
 	else if (msg == CRCInput::RC_text) 
@@ -2382,7 +2399,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 {
-	if (show_mode == MB_SHOW_YT)
+	if (show_mode == MB_SHOW_YT || MB_SHOW_NETZKINO)
 	{
 		switch(gui) 
 		{
@@ -3126,7 +3143,8 @@ void CMovieBrowser::loadMovies(void)
 	m_pcWindow->blit();
 #endif		
 
-	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+	//CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_NETZKINO)?LOCALE_WEBTV_NETZKINO : (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 	loadBox.paint();
 
 	// youtube
@@ -3134,6 +3152,10 @@ void CMovieBrowser::loadMovies(void)
 	{
 		loadYTitles(m_settings.ytmode, m_settings.ytsearch, m_settings.ytvid);
 	} 
+	else if(show_mode == MB_SHOW_NETZKINO)
+	{
+		loadNetzKinoTitles();
+	}
 	else 
 	{
 		loadAllTsFileNamesFromStorage(); // P1
@@ -5152,3 +5174,124 @@ ret_err:
 		g_RCInput->postMsg(CRCInput::RC_home, 0);
 	return retval;
 }
+
+//netzkino
+void CMovieBrowser::netzKinoClearlist(void)
+{
+	if (parser)
+	{
+		xmlFreeDoc(parser);
+		parser = NULL;
+	}
+	
+	for(unsigned int count = 0; count < NETZKINOLIST.size(); count++)
+	{
+		delete NETZKINOLIST[count];
+	}
+	NETZKINOLIST.clear();
+}
+
+bool CMovieBrowser::readChannellist(std::string filename)
+{
+	dprintf(DEBUG_INFO, "CMovieBrowser::readChannellist parsing %s\n", filename.c_str());
+	
+	// clear channellist
+	for(unsigned int count = 0; count < NETZKINOLIST.size(); count++)
+	{
+		delete NETZKINOLIST[count];
+	}
+	NETZKINOLIST.clear();
+	
+	static int inserted = 0;
+	
+	netzKinolist * tmp = new netzKinolist();
+	
+	// parse webtv.xml
+	if (parser)
+	{
+		xmlFreeDoc(parser);
+		parser = NULL;
+	}
+	
+	parser = parseXmlFile(filename.c_str());
+	
+	if (parser) 
+	{
+		xmlNodePtr l0 = NULL;
+		xmlNodePtr l1 = NULL;
+		l0 = xmlDocGetRootElement(parser);
+		l1 = l0->xmlChildrenNode;
+		
+		if (l1) 
+		{
+			while ((xmlGetNextOccurence(l1, "webtv"))) 
+			{
+				char * title = xmlGetAttribute(l1, (char *)"title");
+				char * url = xmlGetAttribute(l1, (char *)"url");
+				char * description = xmlGetAttribute(l1, (char *)"description");
+				char * thumbnail = (char *)DATADIR "/neutrino/icons/netzkino.jpg";
+				
+				// fill webtv list
+				tmp = new netzKinolist();
+				
+				tmp->title = title;
+				tmp->url = url;
+				tmp->description = description;
+				tmp->tfile = thumbnail;
+				
+				// fill channelslist
+				NETZKINOLIST.push_back(tmp);
+				
+				inserted++;
+
+				l1 = l1->xmlNextNode;
+			}
+		}
+		
+		return true;
+	}
+	
+	xmlFreeDoc(parser);
+	
+	return false;
+}
+
+#define NETZKINO_XMLFILE		CONFIGDIR "/netzkino.xml"
+void CMovieBrowser::loadNetzKinoTitles(void)
+{
+	printf("CMovieBrowser::loadNetzKinoTitles: \n");
+	
+	m_vMovieInfo.clear();
+	
+	readChannellist(NETZKINO_XMLFILE);
+	
+	for (unsigned i = 0; i < NETZKINOLIST.size(); i++) 
+	{
+		MI_MOVIE_INFO movieInfo;
+		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
+		
+		//movieInfo.epgChannel = ;
+		movieInfo.epgTitle = NETZKINOLIST[i]->title;
+		movieInfo.epgInfo1 = NETZKINOLIST[i]->description;
+		movieInfo.epgInfo2 = NETZKINOLIST[i]->description;
+		//movieInfo.length = ;
+		movieInfo.tfile = NETZKINOLIST[i]->tfile;
+		//movieInfo.ytdate = ;
+		//movieInfo.ytid = ;
+
+		movieInfo.file.Name = NETZKINOLIST[i]->title;
+		movieInfo.file.Url = NETZKINOLIST[i]->url;
+		
+		m_vMovieInfo.push_back(movieInfo);
+	}
+	
+	m_currentBrowserSelection = 0;
+	m_currentRecordSelection = 0;
+	m_currentPlaySelection = 0;
+	m_pcBrowser->setSelectedLine(m_currentBrowserSelection);
+	m_pcLastRecord->setSelectedLine(m_currentRecordSelection);
+	m_pcLastPlay->setSelectedLine(m_currentPlaySelection);
+}
+
+
+

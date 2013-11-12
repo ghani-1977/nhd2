@@ -199,7 +199,7 @@ void ParseChannels(xmlNodePtr node, const t_transport_stream_id transport_stream
 			apid = audio_map_it->second.apid;
 		}
 
-		pair<map<t_channel_id, CZapitChannel>::iterator,bool> ret;
+		pair<map<t_channel_id, CZapitChannel>::iterator, bool> ret;
 
 		ret = allchans.insert (std::pair <t_channel_id, CZapitChannel> (chid, CZapitChannel( name, 
 												     service_id, 

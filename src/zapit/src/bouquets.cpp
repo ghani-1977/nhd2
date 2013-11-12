@@ -127,7 +127,7 @@ void CZapitBouquet::addService(CZapitChannel *newChannel)
 	}
 }
 
-void CZapitBouquet::removeService(CZapitChannel* oldChannel)
+void CZapitBouquet::removeService(CZapitChannel *oldChannel)
 {
 	if (oldChannel != NULL) 
 	{

@@ -62,6 +62,7 @@ bool isTS = false;
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
+#include <GL/glx.h>
 
 OpenThreads::ReentrantMutex	mutex;
 extern int GLWinID;
@@ -259,20 +260,20 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 		{
 			if(gst_structure_has_name(gst_message_get_structure(msg), "prepare-xwindow-id")) 
 			{
-				OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(mutex);
-				mutex.lock();
+				//OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(mutex);
+				//mutex.lock();
 				// set window id
-				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), /*GLWinID*/0);
+				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), glXGetCurrentDrawable());
 				
 				// reshape window
-				gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), GLxStart, GLyStart, /*GLWidth*/-1, /*GLHeight*/-1);
+				//gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), GLxStart, GLyStart, GLWidth, GLHeight);
 				
 				// sync frames
-				gst_x_overlay_expose(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)));
+				//gst_x_overlay_expose(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)));
 				
 				// depends on gst rev, not working here ;(
 				//gst_x_overlay_set_window_handle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), (guintptr)glutGetWindow());
-				mutex.unlock();
+				//mutex.unlock();
 			}
 		}
 		break;
@@ -509,7 +510,7 @@ bool cPlayback::Start(char *filename, unsigned short /*_vp*/, int /*_vtype*/, un
 		
 		//gstbus handler
 		bus = gst_pipeline_get_bus(GST_PIPELINE (m_gst_playbin));
-		gst_bus_set_sync_handler(bus, Gst_bus_call, this);
+		gst_bus_set_sync_handler(bus, Gst_bus_call, NULL);
 		gst_object_unref(bus);
 		
 		// start playing

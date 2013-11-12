@@ -97,14 +97,14 @@ typedef enum
 	MB_INFO_TITLE 			= 2,
 	MB_INFO_SERIE 			= 3,
 	MB_INFO_INFO1 			= 4,
-	MB_INFO_MAJOR_GENRE 	= 5,
-	MB_INFO_MINOR_GENRE 	= 6,
+	MB_INFO_MAJOR_GENRE 		= 5,
+	MB_INFO_MINOR_GENRE 		= 6,
 	MB_INFO_INFO2 			= 7,
 	MB_INFO_PARENTAL_LOCKAGE	= 8,
 	MB_INFO_CHANNEL 		= 9,
 	MB_INFO_BOOKMARK		= 10,
 	MB_INFO_QUALITY 		= 11,
-	MB_INFO_PREVPLAYDATE 	= 12,
+	MB_INFO_PREVPLAYDATE 		= 12,
 	MB_INFO_RECORDDATE 		= 13,
 	MB_INFO_PRODDATE 		= 14,
 	MB_INFO_COUNTRY 		= 15,
@@ -184,8 +184,16 @@ typedef enum
 {
 	MB_SHOW_RECORDS,
 	MB_SHOW_FILES,
-	MB_SHOW_YT
+	MB_SHOW_YT,
+	MB_SHOW_NETZKINO
 } MB_SHOW_MODE;
+
+struct netzKinolist{
+	char * title;
+	char * url;
+	char * description;
+	char * tfile;
+};
 
 #define MB_MAX_ROWS 6
 #define MB_MAX_DIRS 10
@@ -321,6 +329,15 @@ class CMovieBrowser : public CMenuTarget
 		int show_mode;
 		void loadYTitles(int mode, std::string search = "", std::string id = "");
 		bool showYTMenu(void);
+		
+		// netzkino
+		xmlDocPtr parser;
+		std::vector<netzKinolist *> NETZKINOLIST;
+		
+		void netzKinoClearlist(void);
+		bool readChannellist(std::string filename);
+		
+		void loadNetzKinoTitles();
 
 
 	public:  // Functions //////////////////////////////////////////////////////////7

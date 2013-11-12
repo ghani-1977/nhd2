@@ -562,6 +562,20 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		PlayFile();
  	}
+ 	else if (actionKey == "netzkinoplayback") 
+	{
+		isMovieBrowser = true;
+		moviebrowser->setMode(MB_SHOW_NETZKINO);
+		
+		timeshift = NO_TIMESHIFT;
+		isWebTV = false;
+		isVlc = false;
+		isDVD = false;
+		isBlueRay = false;
+		isURL = false;
+		
+		PlayFile();
+ 	}
 	else if (actionKey == "fileplayback") 
 	{
 		isMovieBrowser = false;
@@ -1557,7 +1571,7 @@ void CMoviePlayerGui::PlayFile(void)
 						CFile::FileType ftype;
 						ftype = file->getType();
 						
-						if (moviebrowser->getMode() == MB_SHOW_YT) 
+						if (moviebrowser->getMode() == MB_SHOW_YT || moviebrowser->getMode() == MB_SHOW_NETZKINO) 
 						{
 							filename = file->Url.c_str();
 						}

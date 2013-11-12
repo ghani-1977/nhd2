@@ -78,6 +78,10 @@ install_DATA += \
 install_DATA += \
 	picture.png plugin.png softupdate_small.png mark.png radiotextget.png radiotextoff.png radiotextwait.png hint_ytplay.png youtube.png webtv.png iptv.png
 
+# netzkino.de
+install_DATA += \
+	netzkino.jpg netzkino.png
+
 
 
 

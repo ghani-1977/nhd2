@@ -1461,7 +1461,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 #ifdef AUDIOPLAYER_CHECK_FOR_DUPLICATES
 								// Check for duplicates and remove (new entry has higher prio)
 								// this really needs some time :(
-								for (unsigned long i=0;i<m_playlist.size();i++)
+								for (unsigned long i = 0; i < m_playlist.size(); i++)
 								{
 									if(m_playlist[i].Filename == filename)
 										removeFromPlaylist(i);
