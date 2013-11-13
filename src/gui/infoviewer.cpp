@@ -86,6 +86,7 @@ extern fe_map_t femap;					// zapit.cpp
 extern CFrontend * getFE(int index);			// zapit.cpp
 extern int FrontendCount;				// defined in zapit.cpp
 extern CWebTV * webtv;					// defined in neutrino.cpp
+extern CMoviePlayerGui * moviePlayerGui;
 
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
@@ -932,7 +933,16 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 			if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
 			{
 				killTitle();
-				webtv->showFileInfoWebTV(webtv->getTunedChannel());
+				
+				if(webtv)
+					webtv->showFileInfoWebTV(webtv->getTunedChannel());
+			}
+			else if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_ts)
+			{
+				killTitle();
+				
+				if(moviePlayerGui)
+					moviePlayerGui->showFileInfo();
 			}
 		}
 		else 

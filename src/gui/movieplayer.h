@@ -80,7 +80,9 @@ class CMoviePlayerGui : public CMenuTarget
 
 		CFileBrowser * filebrowser;
 		CMovieBrowser * moviebrowser;
-		//CWebTV * webtv;
+		
+		CMovieInfo cMovieInfo;	
+		MI_MOVIE_INFO * p_movie_info;
 
 		void PlayFile();
 		void cutNeutrino();
@@ -91,14 +93,14 @@ class CMoviePlayerGui : public CMenuTarget
 
 		void showHelpTS(void);
 		
-		// show infos
-		void showFileInfoVLC(void);
-		void showFileInfo();
-		
 	public:
 		CMoviePlayerGui();
 		~CMoviePlayerGui();
 		int exec(CMenuTarget* parent, const std::string & actionKey);
+		
+		// show infos
+		void showFileInfoVLC(void);
+		void showFileInfo();
 };
 
 class CAPIDSelectExec : public CMenuTarget

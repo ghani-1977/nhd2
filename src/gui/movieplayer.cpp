@@ -1251,8 +1251,8 @@ void CMoviePlayerGui::PlayFile(void)
 
 	// bookmarks menu
 	timeb current_time;
-	CMovieInfo cMovieInfo;			// funktions to save and load movie info
-	MI_MOVIE_INFO * p_movie_info = NULL;	// movie info handle which comes from the MovieBrowser, if not NULL MoviePla yer is able to save new bookmarks
+	//CMovieInfo cMovieInfo;			// funktions to save and load movie info
+	/*MI_MOVIE_INFO * */ p_movie_info = NULL;	// movie info handle which comes from the MovieBrowser, if not NULL MoviePla yer is able to save new bookmarks
 
 	int width = 280;
 	int height = 65;
@@ -2793,11 +2793,9 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			
-			if(isVlc)
-				showFileInfoVLC();
-			else if (p_movie_info != NULL)
-				cMovieInfo.showMovieInfo(*p_movie_info);
-			else
+			//if (p_movie_info != NULL)
+			//	cMovieInfo.showMovieInfo(*p_movie_info);
+			//else
 				showFileInfo();
 		}
 		else if(msg == CRCInput::RC_home)
@@ -3022,7 +3020,13 @@ void CMoviePlayerGui::showFileInfoVLC()
 
 void CMoviePlayerGui::showFileInfo()
 {
-	ShowMsg2UTF(g_file_epg.c_str(), g_file_epg1.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
+	if (p_movie_info != NULL)
+		cMovieInfo.showMovieInfo(*p_movie_info);
+	else if(isVlc)
+		// show infos
+		showFileInfoVLC();
+	else
+		ShowMsg2UTF(g_file_epg.c_str(), g_file_epg1.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
 }
 
 
