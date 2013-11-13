@@ -2211,7 +2211,7 @@ void CMoviePlayerGui::PlayFile(void)
 				exit = true;
 			}
 
-			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
@@ -2355,7 +2355,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 						
-			if(isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)
+			if(isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO)
 			{
 				int pos_sec = position / 1000;
 
@@ -2759,7 +2759,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(!isWebTV)
 			{
 				// cancel bookmark jump
-				if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+				if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO) 
 				{
 					if (new_bookmark.pos != 0) 
 					{
@@ -2861,7 +2861,7 @@ void CMoviePlayerGui::PlayFile(void)
 				//webtv->showUserBouquet();
 			}
 		}
-		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT)
+		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO)
 		{
          		if(ShowMsgUTF (LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SCREENSHOT_ANNOUNCE), CMessageBox::mbrNo, CMessageBox:: mbYes | CMessageBox::mbNo) == CMessageBox::mbrYes) 
 			{
@@ -2893,7 +2893,7 @@ void CMoviePlayerGui::PlayFile(void)
 		{
 			dprintf(DEBUG_NORMAL, "[movieplayer] stop (3)\n");	
 
-			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT) 
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO) 
 			{
 				// if we have a movie information, try to save the stop position
 				ftime(&current_time);
