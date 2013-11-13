@@ -164,6 +164,9 @@
 #define NEUTRINO_ICON_HINT_YTPLAY      		"hint_ytplay"
 #define NEUTRINO_ICON_YOUTUBE			"youtube"
 
+#define NEUTRINO_ICON_NETZKINO			"netzkino"
+#define NEUTRINO_ICON_HINT_NETZKINO		"hint_netzkino"
+
 #define NEUTRINO_ICON_WEBTV			"iptv"
 #define NEUTRINO_ICON_MP			"mp"
 

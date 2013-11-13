@@ -76,11 +76,19 @@ install_DATA += \
 
 # new
 install_DATA += \
-	picture.png plugin.png softupdate_small.png mark.png radiotextget.png radiotextoff.png radiotextwait.png hint_ytplay.png youtube.png webtv.png iptv.png
+	picture.png plugin.png softupdate_small.png mark.png radiotextget.png radiotextoff.png radiotextwait.png 
+
+# yt
+install_DATA += \
+	hint_ytplay.png youtube.png 
+
+# webtv
+install_DATA += \
+	webtv.png iptv.png
 
 # netzkino.de
 install_DATA += \
-	netzkino.jpg netzkino.png
+	netzkino.jpg netzkino.png hint_netzkino.png
 
 
 

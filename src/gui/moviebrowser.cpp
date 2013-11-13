@@ -1674,6 +1674,7 @@ void CMovieBrowser::refreshTitle(void)
 	else if(show_mode == MB_SHOW_NETZKINO)
 	{
 		title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
+		mb_icon = NEUTRINO_ICON_HINT_NETZKINO;
 	}
 
 	// head box
