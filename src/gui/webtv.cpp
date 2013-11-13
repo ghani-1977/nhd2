@@ -57,7 +57,6 @@
 extern cPlayback *playback;
 
 #define DEFAULT_WEBTV_XMLFILE 		CONFIGDIR "/webtv.xml"
-#define NETZKINO_XMLFILE		CONFIGDIR "/netzkino.xml"
 
 extern cVideo * videoDecoder;
 extern CPictureViewer * g_PicViewer;
@@ -179,10 +178,10 @@ CWebTV::CWebTV()
 
 CWebTV::~CWebTV()
 {
-	Close();
+	ClearChannels();
 }
 
-void CWebTV::Close(void)
+void CWebTV::ClearChannels(void)
 {
 	if (parser)
 	{
@@ -220,10 +219,6 @@ void CWebTV::loadChannels(void)
 			readChannellist(DEFAULT_WEBTV_XMLFILE);
 			break;
 			
-		case NETZKINO:
-			readChannellist(NETZKINO_XMLFILE);
-			break;
-			
 		case USER:
 			readChannellist(g_settings.webtv_settings);
 			break;
@@ -239,20 +234,9 @@ bool CWebTV::readChannellist(std::string filename)
 	dprintf(DEBUG_INFO, "CWebTV::readChannellist parsing %s\n", filename.c_str());
 	
 	// clear channellist
-	for(unsigned int count = 0; count < channels.size(); count++)
-	{
-		delete channels[count];
-	}
-	channels.clear();
+	ClearChannels();
 	
 	webtv_channels * tmp = new webtv_channels();
-	
-	// parse webtv.xml
-	if (parser)
-	{
-		xmlFreeDoc(parser);
-		parser = NULL;
-	}
 	
 	parser = parseXmlFile(filename.c_str());
 	
@@ -309,10 +293,6 @@ void CWebTV::showUserBouquet(void)
 	sprintf(cnt, "%d", count);
 	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_HEAD, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 	
-	// netzkino
-	sprintf(cnt, "%d", ++count);
-	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_NETZKINO, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
-			
 	// divers
 	sprintf(cnt, "%d", ++count);
 	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_USER, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
@@ -330,12 +310,6 @@ void CWebTV::showUserBouquet(void)
 			case WEBTV:
 				mode = WEBTV;
 				readChannellist(DEFAULT_WEBTV_XMLFILE);
-				selected = 0;
-				break;
-								
-			case NETZKINO:	
-				mode = NETZKINO;
-				readChannellist(NETZKINO_XMLFILE);
 				selected = 0;
 				break;
 						
@@ -913,10 +887,6 @@ void CWebTV::paintHead()
 	{
 		case WEBTV:
 			title = g_Locale->getText(LOCALE_WEBTV_HEAD);
-			break;
-			
-		case NETZKINO:
-			title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
 			break;
 			
 		case USER:

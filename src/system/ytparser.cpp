@@ -274,10 +274,12 @@ bool cYTFeedParser::parseFeedXml(std::string &answer)
 		printf("failed to parse xml\n");
 		return false;
 	}
+	
 	next.clear();
 	prev.clear();
 	total.clear();
 	start.clear();
+	
 	xmlNodePtr entry = xmlDocGetRootElement(answer_parser)->xmlChildrenNode;
 	
 	while (entry) 

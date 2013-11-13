@@ -4514,7 +4514,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 	else if(mode == mode_iptv)
 	{
 		webtv->stopPlayBack();
-		webtv->Close();
+		webtv->ClearChannels();
 		
 		// unlock playback
 		g_Zapit->unlockPlayBack();
@@ -4592,7 +4592,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 	if(mode == mode_iptv)
 	{
 		webtv->stopPlayBack();
-		webtv->Close();
+		webtv->ClearChannels();
 		
 		// unlock playback
 		g_Zapit->unlockPlayBack();

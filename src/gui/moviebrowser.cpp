@@ -5269,14 +5269,12 @@ void CMovieBrowser::loadNetzKinoTitles(void)
 		MI_MOVIE_INFO movieInfo;
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 		
-		//movieInfo.epgChannel = ;
+		movieInfo.epgChannel = NETZKINOLIST[i]->description;
 		movieInfo.epgTitle = NETZKINOLIST[i]->title;
 		movieInfo.epgInfo1 = NETZKINOLIST[i]->description;
 		movieInfo.epgInfo2 = NETZKINOLIST[i]->description;
 		//movieInfo.length = ;
 		movieInfo.tfile = NETZKINOLIST[i]->tfile;
-		//movieInfo.ytdate = ;
-		//movieInfo.ytid = ;
 
 		movieInfo.file.Name = NETZKINOLIST[i]->title;
 		movieInfo.file.Url = NETZKINOLIST[i]->url;

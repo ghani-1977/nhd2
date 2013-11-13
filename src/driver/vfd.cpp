@@ -117,7 +117,7 @@ CVFD::CVFD()
 	}
 #endif
 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_ODIN) && !defined (PLATFORM_GENERIC)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
 	fd = open("/dev/dbox/oled0", O_RDWR);
 	
 	if(fd < 0) 
@@ -140,7 +140,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (__sh__) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_ODIN) && !defined (PLATFORM_GENERIC)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
 	if(fd > 0)
 		close(fd);
 	
@@ -848,17 +848,11 @@ void CVFD::ShowText(const char * str)
 	
 	fprintf(f,"%s", str);
 	
-	fclose(f);
-#elif defined (PLATFORM_ODIN)	
-	FILE *f;
-	if((f = fopen("/dev/dbox/oled0", "w")) == NULL) 
-		return;
-
-	fprintf(f,"%s", str);
+	fclose(f);	
+#else
 	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
 		perror("write to vfd failed");
 	
-	fclose(f);
 #endif
 }
 

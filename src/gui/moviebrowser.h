@@ -323,10 +323,10 @@ class CMovieBrowser : public CMenuTarget
 		int movieInfoUpdateAllIfDestEmptyOnly;
 
 		//bool restart_mb_timeout;
+		int show_mode;
 		
 		// youtube
 		cYTFeedParser ytparser;
-		int show_mode;
 		void loadYTitles(int mode, std::string search = "", std::string id = "");
 		bool showYTMenu(void);
 		

@@ -45,7 +45,6 @@ class CWebTV
 	private:
 		enum {
 			WEBTV,
-			NETZKINO,
 			USER,
 			DIVERS = 255
 		};
@@ -58,14 +57,11 @@ class CWebTV
 		};
 
 		xmlDocPtr parser;
-		bool readChannellist(std::string filename);
-		void loadChannels(void);
 		
 		std::vector<webtv_channels *> channels;
-		
 		CZapProtection * 	zapProtection;
 		
-		/* gui */
+		// gui
 		CFrameBuffer * frameBuffer;
 		
 		int            	width;
@@ -116,16 +112,19 @@ class CWebTV
 		int exec(bool rezap = false);
 		
 		int Show();
-		
-		void quickZap(int key);
-		void showFileInfoWebTV(int pos);
 		void showUserBouquet();
+		
+		//
 		void zapTo(int pos, bool rezap = false);
+		void quickZap(int key);
+		
+		// playback
 		bool startPlayBack(int pos);
 		void stopPlayBack(void);
 		void pausePlayBack(void);
 		void continuePlayBack(void);
 		
+		void showFileInfoWebTV(int pos);
 		void showInfo();
 		void getInfos();
 		
@@ -133,7 +132,10 @@ class CWebTV
 		
 		unsigned int getTunedChannel() {return tuned;};
 		
-		void Close(void);
+		void loadChannels(void);
+		void ClearChannels(void);
+		
+		bool readChannellist(std::string filename);
 };
 
 class CWebTVAPIDSelectExec : public CMenuTarget
