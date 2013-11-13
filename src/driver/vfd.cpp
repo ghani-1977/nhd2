@@ -848,7 +848,10 @@ void CVFD::ShowText(const char * str)
 	
 	fprintf(f,"%s", str);
 	
-	fclose(f);	
+	fclose(f);
+#elif defined (PLATFORM_ODIN)
+	if( write(fd, text.c_str(), len > 4? 4 : len ) < 0)
+		perror("write to vfd failed");
 #else
 	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
 		perror("write to vfd failed");
