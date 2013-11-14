@@ -1635,7 +1635,6 @@ void CMoviePlayerGui::PlayFile(void)
 							g_file_epg1 = sel_filename;
 						
 						dprintf(DEBUG_INFO, "CMoviePlayerGui::PlayFile: file %s apid 0x%X atype %d vpid 0x%X vtype %d\n", filename, g_currentapid, g_currentac3, g_vpid, g_vtype);
-						dprintf(DEBUG_NORMAL, "CMoviePlayerGui::PlayFile: Bytes per minute: %lld\n", minuteoffset);
 						
 						// get the start position for the movie					
 						startposition = 1000 * moviebrowser->getCurrentStartPos();						
