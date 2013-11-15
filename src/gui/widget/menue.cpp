@@ -1367,7 +1367,7 @@ CMenuForwarder::CMenuForwarder(const neutrino_locale_t Text, const bool Active, 
 {
 	option = Option;
 	option_string = NULL;
-	text=Text;
+	text = Text;
 	active = Active;
 	jumpTarget = Target;
 	actionKey = ActionKey ? ActionKey : "";

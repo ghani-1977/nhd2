@@ -1650,5 +1650,7 @@ moviebrowser.yt_orderby.relevance Relevanz
 moviebrowser.yt_orderby.viewcount Zahl der Views
 
 moviebrowser.netzkino_error Fehler beim laden des Netzkino Kategorien
+moviebrowser.nk_categories Kategorie-Auswahl
+moviebrowser.nk_error Fehler beim Laden des Netzkino-Feeds
 
 

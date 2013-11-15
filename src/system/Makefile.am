@@ -8,6 +8,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libmd5sum \
 	-I$(top_srcdir)/lib/libxmltree \
+	-I$(top_srcdir)/lib/jsoncpp/include \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
@@ -29,4 +30,5 @@ libneutrino_system_a_SOURCES = \
 	ping.c flashtool.cpp httptool.cpp \
 	settings.cpp lastchannel.cpp \
 	configure_network.cpp fsmounter.cpp \
-	ytparser.cpp
+	helpers.cpp \
+	ytparser.cpp nkparser.cpp

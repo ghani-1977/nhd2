@@ -73,6 +73,8 @@
 
 #include <string>
 #include <vector>
+#include <list>
+
 #include "gui/widget/listframe.h"
 #include "gui/widget/menue.h"
 #include "gui/widget/textbox.h"
@@ -80,7 +82,9 @@
 #include "driver/file.h"
 #include <driver/fb_window.h>
 #include "driver/pictureviewer/pictureviewer.h"
+
 #include <system/ytparser.h>
+#include <system/nkparser.h>
 
 
 #define MAX_NUMBER_OF_BOOKMARK_ITEMS MI_MOVIE_BOOK_USER_MAX // we just use the same size as used in Movie info (MAX_NUMBER_OF_BOOKMARK_ITEMS is used for the number of menu items)
@@ -244,6 +248,18 @@ typedef struct
 	
 	// show mode
 	int show_mode;
+	
+	// netzkino
+	int nkmode;
+	int nkcategory;
+	std::string nkcategoryname;
+	int nkresults;
+	int nkconcconn;
+	int nksearch_history_size;
+	int nksearch_history_max;
+	std::string nksearch;
+	std::string nkthumbnaildir;
+	std::list<std::string> nksearch_history;
 }MB_SETTINGS;
 
 // Priorities for Developmemt: P1: critical feature, P2: important feature, P3: for next release, P4: looks nice, lets see
@@ -331,15 +347,11 @@ class CMovieBrowser : public CMenuTarget
 		bool showYTMenu(void);
 		
 		// netzkino
-		xmlDocPtr parser;
-		std::vector<Channellist *> NETZKINOLIST;
+		cNKFeedParser nkparser;
+		std::string nkcategory_name;
 		
-		void ClearChannellist(void);
-		bool loadChannellist(std::string filename);
-		
-		void loadNetzKinoTitles();
-
-
+		void loadNKTitles(int mode, std::string search, int id);
+		bool showNKMenu();
 	public:  // Functions //////////////////////////////////////////////////////////7
 		CMovieBrowser(const char * path); //P1 
 		CMovieBrowser(); //P1 
