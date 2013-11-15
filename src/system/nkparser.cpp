@@ -31,7 +31,7 @@
 #include <bitset>
 #include <string>
 
-#include <OpenThreads/ScopedLock>
+//#include <OpenThreads/ScopedLock>
 #include "settings.h"
 #include "helpers.h"
 #include <global.h>
@@ -112,7 +112,8 @@ bool cNKFeedParser::getUrl(std::string &url, std::string &answer, CURL *_curl_ha
 
 	printf("http: res %d size %d\n", httpres, (int)answer.size());
 
-	if (httpres != 0 || answer.empty()) {
+	if (httpres != 0 || answer.empty()) 
+	{
 		printf("error: %s\n", cerror);
 		return false;
 	}
@@ -125,7 +126,8 @@ bool cNKFeedParser::DownloadUrl(std::string &url, std::string &file, CURL *_curl
 		_curl_handle = curl_handle;
 
 	FILE * fp = fopen(file.c_str(), "wb");
-	if (fp == NULL) {
+	if (fp == NULL) 
+	{
 		perror(file.c_str());
 		return false;
 	}
@@ -158,7 +160,8 @@ bool cNKFeedParser::DownloadUrl(std::string &url, std::string &file, CURL *_curl
 
 	printf("http: res %d size %g.\n", httpres, dsize);
 
-	if (httpres != 0) {
+	if (httpres != 0) 
+	{
 		printf("curl error: %s\n", cerror);
 		unlink(file.c_str());
 		return false;
@@ -187,51 +190,68 @@ void cNKFeedParser::removeHTMLMarkup(std::string &s)
 	char t[s.length() + 1];
 	char *u = t;
 	const char *p = s.c_str();
-	while (*p) {
-		if (*p == '<') {
+	
+	while (*p) 
+	{
+		if (*p == '<') 
+		{
 			while (*p && *p != '>')
 				p++;
 			if (*p)
 				p++;
 			continue;
 		}
-		if (!strncasecmp(p, "&#8211;", 7)) {
+		
+		if (!strncasecmp(p, "&#8211;", 7)) 
+		{
 			p += 7;
 			*u++ = 0xE2;
 			*u++ = 0x80;
 			*u++ = 0x93;
 			continue;
 		}
-		if (!strncasecmp(p, "&#8230;", 7)) {
+		
+		if (!strncasecmp(p, "&#8230;", 7)) 
+		{
 			p += 7;
 			*u++ = 0xE2;
 			*u++ = 0x80;
 			*u++ = 0xA6;
 			continue;
 		}
-		if (!strncasecmp(p, "&hellip;", 8)) {
+		
+		if (!strncasecmp(p, "&hellip;", 8)) 
+		{
 			p += 8;
 			*u++ = 0xE2;
 			*u++ = 0x80;
 			*u++ = 0xA6;
 			continue;
 		}
-		if (!strncasecmp(p, "&nbsp;", 6)) {
+		
+		if (!strncasecmp(p, "&nbsp;", 6)) 
+		{
 			p += 6;
 			*u++ = ' ';
 			continue;
 		}
-		if (!strncasecmp(p, "&lt;", 4)) {
+		
+		if (!strncasecmp(p, "&lt;", 4)) 
+		{
 			p += 4;
 			*u++ = '<';
 			continue;
 		}
-		if (!strncasecmp(p, "&gt;", 4)) {
+		
+		if (!strncasecmp(p, "&gt;", 4)) 
+		{
 			p += 4;
 			*u++ = '>';
 			continue;
 		}
-		if (!strncasecmp(p, "&#038;", 6)) {
+		
+		if (!strncasecmp(p, "&#038;", 6)) 
+		{
 			p += 6;
 			*u++ = '&';
 			continue;
@@ -260,7 +280,8 @@ bool cNKFeedParser::parseCategoriesJSON(std::string &answer)
 
 	categories.clear();
 
-	for(unsigned int i = 0; i < cats.size(); ++i) {
+	for(unsigned int i = 0; i < cats.size(); ++i) 
+	{
 		const Json::Value cat = cats[i];
 		sNKCategory c;
 		c.id = 0;
@@ -295,40 +316,48 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer)
 	if (posts.type() != Json::arrayValue)
 		return false;
 
-	for(unsigned int i = 0; i < posts.size(); ++i) {
+	for(unsigned int i = 0; i < posts.size(); ++i) 
+	{
 		const Json::Value flick = posts[i];
 		sNKVideoInfo vinfo;
 		v = flick.get("title_plain", "");
-		if (v.type() == Json::stringValue) {
+		if (v.type() == Json::stringValue) 
+		{
 			vinfo.title = v.asString();
 			removeHTMLMarkup(vinfo.title);
 		}
 		v = flick.get("id", "");
-		if (v.type() == Json::intValue || v.type() == Json::uintValue) {
+		if (v.type() == Json::intValue || v.type() == Json::uintValue) 
+		{
 			vinfo.id = to_string(v.asInt());
 			//if (thumbnail_dir)
 				vinfo.tfile = thumbnail_dir + "/" + vinfo.id + ".jpg";
 		}
 		v = flick.get("content", "");
-		if (v.type() == Json::stringValue) {
+		if (v.type() == Json::stringValue) 
+		{
 			vinfo.description = v.asString();
 			removeHTMLMarkup(vinfo.description);
 		}
 		v = flick.get("modified", "");
-		if (v.type() == Json::stringValue) {
+		if (v.type() == Json::stringValue) 
+		{
 			vinfo.published = v.asString();
 		}
 		unsigned int _i = 0;
 		v = flick.get("custom_fields", "");
-		if (v.type() == Json::objectValue) {
+		if (v.type() == Json::objectValue) 
+		{
 			v = v.get("Streaming", "");
-			if (v.type() == Json::arrayValue && v.size() > 0) {
+			if (v.type() == Json::arrayValue && v.size() > 0) 
+			{
 				if (v[_i].type() == Json::stringValue)
 					vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
 			}
 		}
 		v = flick.get("attachments", "");
-		if (v.type() == Json::arrayValue && v.size() > 0 && v[_i].type() == Json::objectValue) {
+		if (v.type() == Json::arrayValue && v.size() > 0 && v[_i].type() == Json::objectValue) 
+		{
 			v = v[_i]["url"];
 			if (v.type() == Json::stringValue)
 				vinfo.thumbnail = v.asString();
@@ -377,7 +406,8 @@ bool cNKFeedParser::ParseFeed(nk_feed_mode_t mode, std::string search, int categ
 
 bool cNKFeedParser::ParseCategories(void)
 {
-	if (categories.empty()) {
+	if (categories.empty()) 
+	{
 		std::string url = "http://www.netzkino.de/capi/get_category_index";
 		std::string answer;
 		if (!getUrl(url, answer))
@@ -395,8 +425,9 @@ void *cNKFeedParser::DownloadThumbnailsThread(void *arg)
 	caller->ThreadCount(+1);
 	CURL *c = curl_easy_init();
 	unsigned int i;
+	
 	do {
-		OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(caller->mutex);
+		//OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(caller->mutex);
 		i = caller->worker_index++;
 	} while (i < caller->videos.size() && ((ret &= caller->DownloadThumbnail(caller->videos[i], c)) || true));
 	curl_easy_cleanup(c);
@@ -409,7 +440,8 @@ bool cNKFeedParser::DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle)
 	if (!_curl_handle)
 		_curl_handle = curl_handle;
 	bool found = false;
-	if (!vinfo.thumbnail.empty()) {
+	if (!vinfo.thumbnail.empty()) 
+	{
 		found = !access(vinfo.tfile, F_OK);
 		if (!found)
 			found = DownloadUrl(vinfo.thumbnail, vinfo.tfile, _curl_handle);
@@ -422,7 +454,8 @@ bool cNKFeedParser::DownloadThumbnails()
 	//if (!thumbnail_dir)
 	//	return false;
 	
-	if (safe_mkdir(thumbnail_dir.c_str()) && errno != EEXIST) {
+	if (safe_mkdir(thumbnail_dir.c_str()) && errno != EEXIST) 
+	{
 		perror(thumbnail_dir.c_str());
 		return false;
 	}
@@ -446,7 +479,7 @@ void cNKFeedParser::DownloadThumbnailsEnd(void)
 
 int cNKFeedParser::ThreadCount(int what)
 {
-	OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(thumbnailthread_mutex);
+	//OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(thumbnailthread_mutex);
 	threadCount += what;
 	return threadCount;
 }
@@ -454,8 +487,11 @@ int cNKFeedParser::ThreadCount(int what)
 void cNKFeedParser::Cleanup(bool delete_thumbnails)
 {
 	printf("cNKFeedParser::Cleanup: %d videos\n", (int)videos.size());
-	if (delete_thumbnails) {
-		for (unsigned i = 0; i < videos.size(); i++) {
+	
+	if (delete_thumbnails) 
+	{
+		for (unsigned i = 0; i < videos.size(); i++) 
+		{
 			unlink(videos[i].tfile.c_str());
 		}
 	}

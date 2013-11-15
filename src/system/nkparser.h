@@ -29,8 +29,8 @@
 #include <map>
 #include <xmlinterface.h>
 
-#include <OpenThreads/Thread>
-#include <OpenThreads/Condition>
+//#include <OpenThreads/Thread>
+//#include <OpenThreads/Condition>
 
 struct sNKVideoInfo
 {
@@ -70,8 +70,8 @@ class cNKFeedParser
 		nk_video_list_t videos;
 
 		CURL *curl_handle;
-		OpenThreads::Mutex mutex;
-		OpenThreads::Mutex thumbnailthread_mutex;
+		//OpenThreads::Mutex mutex;
+		//OpenThreads::Mutex thumbnailthread_mutex;
 		int threadCount;
 		int worker_index;
 		static void* DownloadThumbnailsThread(void*);
