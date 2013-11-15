@@ -1722,13 +1722,6 @@ void CMovieBrowser::refreshTitle(void)
 		
 		mb_icon = NEUTRINO_ICON_YOUTUBE;
 	}
-	/*
-	else if(show_mode == MB_SHOW_NETZKINO)
-	{
-		title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
-		mb_icon = NEUTRINO_ICON_HINT_NETZKINO;
-	}
-	*/
 	else if (show_mode == MB_SHOW_NETZKINO) 
 	{
 		title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
@@ -5271,8 +5264,6 @@ ret_err:
 //netzkino
 void CMovieBrowser::loadNKTitles(int mode, std::string search, int id)
 {
-	//printf("CMovieBrowser::%s: parsed %d old mode %d new mode %d region %s\n", __func__, ytparser.Parsed(), ytparser.GetFeedMode(), m_settings.ytmode, m_settings.ytregion.c_str());
-	
 	nkparser.SetMaxResults(m_settings.nkresults ? m_settings.nkresults : 100000);
 	nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
 	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
@@ -5355,8 +5346,8 @@ int CNKCategoriesMenu::exec(CMenuTarget *parent, const std::string &actionKey)
 	if(parent)
 		parent->hide();
 
-	CMenuWidget m(LOCALE_MOVIEBROWSER_NK_CATEGORIES, NEUTRINO_ICON_NETZKINO);
-	//m.addIntroItems();
+	CMenuWidget m(LOCALE_MOVIEBROWSER_NK_CATEGORIES, NEUTRINO_ICON_HINT_NETZKINO);
+
 	for (unsigned i = 0; i < cats.size(); i++)
 		m.addItem(new CMenuForwarderNonLocalized(cats[i].title.c_str(), true, ("(" + to_string(cats[i].post_count) + ")").c_str(), this, to_string(i).c_str(), CRCInput::convertDigitToKey(i + 1)), cats[i].id == *nkcategory);
 		//m.addItem(new CMenuForwarder(/*cats[i].title*/LOCALE_MOVIEBROWSER_NK_CATEGORIES, true, ("(" + to_string(cats[i].post_count) + ")").c_str(), this, to_string(i).c_str(), CRCInput::convertDigitToKey(i + 1)), cats[i].id == *nkcategory);
@@ -5370,7 +5361,6 @@ bool CMovieBrowser::showNKMenu()
 	m_pcWindow->paintBackground();
 
 	CMenuWidget mainMenu(LOCALE_WEBTV_NETZKINO, NEUTRINO_ICON_HINT_NETZKINO);
-	//mainMenu.addIntroItems(LOCALE_MOVIEBROWSER_OPTION_BROWSER);
 
 	int select = -1;
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
