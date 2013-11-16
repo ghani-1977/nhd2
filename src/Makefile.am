@@ -62,7 +62,6 @@ neutrino_LDADD = \
 	$(top_builddir)/lib/libmd5sum/libtuxbox-md5sum.a \
 	$(top_builddir)/lib/libdvbsub/libdvbsub.a \
 	$(top_builddir)/lib/libtuxtxt/libtuxtxt.a \
-	$(top_builddir)/lib/jsoncpp/libjsoncpp.a \
 	@CURL_LIBS@ \
 	@FREETYPE_LIBS@ \
 	@PNG_LIBS@ \
@@ -108,7 +107,9 @@ neutrino_LDADD += \
 	-lglut -lGL -lGLU -lGLEW -lOpenThreads -lgstinterfaces-0.10 
 endif
 
-
+if ENABLE_NETZKINO
+neutrino_LDADD += $(top_builddir)/lib/jsoncpp/libjsoncpp.a
+endif
 
 
 

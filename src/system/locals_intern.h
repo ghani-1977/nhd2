@@ -1661,6 +1661,7 @@ const char * locale_real_names[] = {
 	"moviebrowser.yt_orderby.rating",
 	"moviebrowser.yt_orderby.relevance",
 	"moviebrowser.yt_orderby.viewcount",
+	"moviebrowser.yt_concurrent_connections",
 	
 	// netzkino
 	"moviebrowser.netzkino_error",

@@ -153,6 +153,16 @@ if test "$enable_ci" = "yes"; then
 AC_DEFINE(ENABLE_CI,1,[include ci cam support])
 fi
 
+# netzkino
+AC_ARG_ENABLE(netzkino,
+	AS_HELP_STRING(--enable-netzkino,include netzkino.de player),
+	,[enable_netzkino=no])
+AM_CONDITIONAL(ENABLE_NETZKINO,test "$enable_netzkino" = "yes")
+
+if test "$enable_netzkino" = "yes"; then
+AC_DEFINE(ENABLE_NETZKINO,1,[include include netzkino.de player])
+fi
+
 AC_OUTPUT([
 Makefile
 lib/Makefile

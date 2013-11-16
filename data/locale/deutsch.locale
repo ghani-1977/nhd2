@@ -1648,6 +1648,7 @@ moviebrowser.yt_orderby.published Veröffentlichungszeitpunkt
 moviebrowser.yt_orderby.rating Bewertung
 moviebrowser.yt_orderby.relevance Relevanz
 moviebrowser.yt_orderby.viewcount Zahl der Views
+moviebrowser.yt_concurrent_connections Gleichzeitige Verbindungen 
 
 moviebrowser.netzkino_error Fehler beim laden des Netzkino Kategorien
 moviebrowser.nk_categories Kategorie-Auswahl

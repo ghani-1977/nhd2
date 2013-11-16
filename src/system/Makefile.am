@@ -8,7 +8,6 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libmd5sum \
 	-I$(top_srcdir)/lib/libxmltree \
-	-I$(top_srcdir)/lib/jsoncpp/include \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
@@ -22,6 +21,10 @@ if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
 endif
 
+if ENABLE_NETZKINO
+INCLUDES += -I$(top_srcdir)/lib/jsoncpp/include
+endif
+
 noinst_LIBRARIES = libneutrino_system.a
 
 libneutrino_system_a_SOURCES = \
@@ -31,4 +34,8 @@ libneutrino_system_a_SOURCES = \
 	settings.cpp lastchannel.cpp \
 	configure_network.cpp fsmounter.cpp \
 	helpers.cpp \
-	ytparser.cpp nkparser.cpp
+	ytparser.cpp 
+
+if ENABLE_NETZKINO
+libneutrino_system_a_SOURCES += nkparser.cpp
+endif

@@ -8,8 +8,7 @@ SUBDIRS = \
 	libnet \
 	libxmltree \
 	libtuxtxt \
-	libdvbsub  \
-	jsoncpp
+	libdvbsub
 
 if !BOXTYPE_COOLSTREAM
 SUBDIRS += libdvbapi
@@ -25,6 +24,10 @@ endif
 
 if ENABLE_UPNP
 SUBDIRS += libupnpclient
+endif
+
+if ENABLE_NETZKINO
+SUBDIRS += jsoncpp
 endif
 
 

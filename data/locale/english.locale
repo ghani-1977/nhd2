@@ -1647,6 +1647,7 @@ moviebrowser.yt_orderby.published publishing date
 moviebrowser.yt_orderby.rating rating
 moviebrowser.yt_orderby.relevance relevance
 moviebrowser.yt_orderby.viewcount view count
+moviebrowser.yt_concurrent_connections Concurrent connections
 
 moviebrowser.netzkino_error Failed to load Netzkino categories
 moviebrowser.nk_categories Select category

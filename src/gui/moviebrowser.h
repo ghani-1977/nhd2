@@ -84,7 +84,10 @@
 #include "driver/pictureviewer/pictureviewer.h"
 
 #include <system/ytparser.h>
+
+#if ENABLE_NETZKINO
 #include <system/nkparser.h>
+#endif
 
 
 #define MAX_NUMBER_OF_BOOKMARK_ITEMS MI_MOVIE_BOOK_USER_MAX // we just use the same size as used in Movie info (MAX_NUMBER_OF_BOOKMARK_ITEMS is used for the number of menu items)
@@ -250,16 +253,18 @@ typedef struct
 	int show_mode;
 	
 	// netzkino
+#if ENABLE_NETZKINO	
 	int nkmode;
 	int nkcategory;
 	std::string nkcategoryname;
 	int nkresults;
 	int nkconcconn;
-	int nksearch_history_size;
-	int nksearch_history_max;
+	//int nksearch_history_size;
+	//int nksearch_history_max;
 	std::string nksearch;
-	std::string nkthumbnaildir;
-	std::list<std::string> nksearch_history;
+	//std::string nkthumbnaildir;
+	//std::list<std::string> nksearch_history;
+#endif	
 }MB_SETTINGS;
 
 // Priorities for Developmemt: P1: critical feature, P2: important feature, P3: for next release, P4: looks nice, lets see
@@ -347,11 +352,13 @@ class CMovieBrowser : public CMenuTarget
 		bool showYTMenu(void);
 		
 		// netzkino
+#if ENABLE_NETZKINO		
 		cNKFeedParser nkparser;
 		std::string nkcategory_name;
 		
 		void loadNKTitles(int mode, std::string search, int id);
 		bool showNKMenu();
+#endif		
 	public:  // Functions //////////////////////////////////////////////////////////7
 		CMovieBrowser(const char * path); //P1 
 		CMovieBrowser(); //P1 

@@ -353,9 +353,12 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer)
 			{
 				if (v[_i].type() == Json::stringValue)
 					// mp4 url
-					//vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
+#if defined (USE_OPENGL)					
+					vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
+#else					
 					// rtmp url
 					vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
+#endif					
 			}
 		}
 		v = flick.get("attachments", "");
