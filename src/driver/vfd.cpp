@@ -94,7 +94,7 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 	// vfd
-#if defined (PLATFORM_GENERIC)
+#if defined (USE_OPENGL)
 	has_lcd = 0;
 #else
 	has_lcd = 1;
@@ -117,7 +117,7 @@ CVFD::CVFD()
 	}
 #endif
 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (USE_OPENGL)
 	fd = open("/dev/dbox/oled0", O_RDWR);
 	
 	if(fd < 0) 
@@ -140,7 +140,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (PLATFORM_GENERIC)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (USE_OPENGL)
 	if(fd > 0)
 		close(fd);
 	

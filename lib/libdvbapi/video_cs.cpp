@@ -121,7 +121,7 @@ int cVideo::getAspectRatio(void)
 {  
 	int ratio = ASPECTRATIO_43; // 0 = 4:3, 1 = 16:9
 	 
-#if !defined (PLATFORM_GENERIC)	 
+#if !defined (USE_OPENGL)	 
 	unsigned char buffer[2];
 	int n, fd;
 
@@ -178,7 +178,7 @@ bestfit
 /* set aspect ratio */
 int cVideo::setAspectRatio(int ratio, int format) 
 { 
-#if !defined (PLATFORM_GENERIC)  
+#if !defined (USE_OPENGL)  
 	int fd;
 
 	// aspectratio	
@@ -231,7 +231,7 @@ int cVideo::setAspectRatio(int ratio, int format)
 
 void cVideo::getPictureInfo(int &width, int &height, int &rate) 
 {
-#if !defined (PLATFORM_GENERIC)	  
+#if !defined (USE_OPENGL)	  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__); 
 
   	unsigned char buffer[10];
@@ -457,7 +457,7 @@ ntsc
 
 	dprintf(DEBUG_INFO, "%s:%s - video_system=%s\n", FILENAME, __FUNCTION__, aVideoSystems[video_system][0]);	
 
-#if !defined (PLATFORM_GENERIC)	
+#if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/video/videomode", O_RDWR);
 	write(fd, aVideoSystems[video_system][1], strlen(aVideoSystems[video_system][1]));
 	close(fd);
@@ -487,7 +487,7 @@ int cVideo::SetSpaceColour(int colour_space)
 	
 	dprintf(DEBUG_INFO, "%s:%s - mode=%s\n", FILENAME, __FUNCTION__, aCOLORSPACE[colour_space]);	
 
-#if !defined (PLATFORM_GENERIC)
+#if !defined (USE_OPENGL)
 #if defined (__sh__)
 	int fd = open("/proc/stb/avs/0/colorformat", O_RDWR);
 #else
@@ -663,7 +663,7 @@ void cVideo::SetInput(int val)
 	
 	printf("cVideo::SetInput: %s\n", input[val]);	
 
-#if !defined (PLATFORM_GENERIC)	
+#if !defined (USE_OPENGL)	
 	int fd_avs_input = open("/proc/stb/avs/0/input", O_RDWR);
 	
 	if( fd_avs_input < 0)
@@ -716,7 +716,7 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h, int num)
 		_h = h * yres / osd_h;
 	}
 	
-#if !defined (PLATFORM_GENERIC)	
+#if !defined (USE_OPENGL)	
 	FILE* fd;
 	char vmpeg_left[100];
 	char vmpeg_top[100];
@@ -794,7 +794,7 @@ void cVideo::SetWideScreen(int val) // 0 = auto, 1 = auto(4:3_off)
 	
 	dprintf(DEBUG_INFO, "%s:%s - mode=%s\n", FILENAME, __FUNCTION__, wss[val]);
 
-#if !defined (PLATFORM_GENERIC)	
+#if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/denc/0/wss", O_RDWR);
 	
 	write(fd, wss[val], strlen(wss[val]));
@@ -828,7 +828,7 @@ void cVideo::SetAnalogMode(int mode)
 	
 	dprintf(DEBUG_INFO, "%s:%s - mode=%s\n", FILENAME, __FUNCTION__, aANALOGMODE[mode]);	
 
-#if !defined (PLATFORM_GENERIC)	
+#if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/avs/0/colorformat", O_RDWR);
 	
 	write(fd, aANALOGMODE[mode], strlen(aANALOGMODE[mode]));

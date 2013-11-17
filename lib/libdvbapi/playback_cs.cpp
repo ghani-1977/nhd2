@@ -653,9 +653,7 @@ bool cPlayback::SetAPid(unsigned short pid, int /*_ac3*/)
 
 #if ENABLE_GSTREAMER
 void cPlayback::trickSeek(double ratio)
-{
-	//FIXME: brocken
-//#if defined (PLATFORM_GENERIC)	
+{	
 	bool validposition = false;
 	gint64 pos = 0;
 	int64_t position;
@@ -683,7 +681,6 @@ void cPlayback::trickSeek(double ratio)
 		else
 			gst_element_seek(m_gst_playbin, ratio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_SKIP), GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_SET, pos);
 	}
-//#endif
 }
 #endif
 
@@ -905,7 +902,7 @@ bool cPlayback::SetPosition(int64_t position)
 	
 #if ENABLE_GSTREAMER
 	//FIXME: brocken ;(
-#if defined (PLATFORM_GENERIC)	
+#if defined (USE_OPENGL)	
 	gint64 time_nanoseconds;
 		
 	if(m_gst_playbin)
