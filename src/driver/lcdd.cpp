@@ -103,7 +103,11 @@ CLCD::CLCD()
 	volume = 0;
 	timeout_cnt = 0;
 	icon_dolby = false;
+#if defined (USE_OPENGL)
+	has_lcd = false;
+#else	
 	has_lcd = true;
+#endif	
 	is4digits = false;
 	clearClock = 0;
 }
@@ -293,7 +297,9 @@ void CLCD::displayUpdate()
 
 void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const int inverse, const int bias)
 {
-//#if defined (PLATFORM_DREAMBOX) //@scp kannst dies checken ob es geht ?
+	if(!has_lcd) 
+		return;
+	
 	if (!display.isAvailable())
 		return;
 	int fd;
@@ -313,11 +319,13 @@ void CLCD::setlcdparameter(int dimm, const int contrast, const int power, const 
 		display.setInverted(CLCDDisplay::PIXEL_ON);
 	else		
 		display.setInverted(CLCDDisplay::PIXEL_OFF);
-//#endif
 }
 
 void CLCD::setlcdparameter(void)
 {
+	if(!has_lcd) 
+		return;
+	
 	last_toggle_state_power = g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
 	int dim_time = atoi(g_settings.lcd_setting_dim_time);
 	int dim_brightness = g_settings.lcd_setting_dim_brightness;
@@ -382,6 +390,9 @@ static std::string splitString(const std::string & text, const int maxwidth, Lcd
  */
 void CLCD::showTextScreen(const std::string & big, const std::string & small, const int showmode, const bool perform_wakeup, const bool centered)
 {
+	if(!has_lcd) 
+		return;
+	
 	unsigned int lcd_width  = display.xres;
 	unsigned int lcd_height = display.yres;
 
@@ -565,6 +576,9 @@ void CLCD::setMovieAudio(const bool is_ac3)
 
 void CLCD::showTime()
 {
+	if(!has_lcd) 
+		return;
+	
 	if (showclock)
 	{
 		char timestr[21];
@@ -605,6 +619,9 @@ void CLCD::showTime()
 
 void CLCD::showRCLock(int duration)
 {
+	if(!has_lcd) 
+		return;
+	
 	std::string icon = DATADIR "/lcdd/icons/rclock.raw";
 	raw_display_t curr_screen = new unsigned char[display.raw_buffer_size];
 
@@ -624,6 +641,9 @@ void CLCD::showRCLock(int duration)
 
 void CLCD::showVolume(const char vol, const bool perform_update)
 {
+	if(!has_lcd) 
+		return;
+	
 	volume = vol;
 	if (
 	    ((mode == MODE_TVRADIO) && (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME])) ||
@@ -685,6 +705,9 @@ void CLCD::showVolume(const char vol, const bool perform_update)
 
 void CLCD::showPercentOver(const unsigned char perc, const bool perform_update, const MODES m)
 {
+	if(!has_lcd) 
+		return;
+	
 	if (mode != m)
 		return;
 
@@ -769,6 +792,9 @@ void CLCD::showPercentOver(const unsigned char perc, const bool perform_update, 
 
 void CLCD::showMenuText(const int position, const char * text, const int highlight, const bool utf_encoded)
 {
+	if(!has_lcd) 
+		return;
+	
 	/* hack, to not have to patch too much in movieplayer.cpp */
 	if (mode == MODE_MOVIE) {
 		size_t p;
@@ -811,10 +837,11 @@ void CLCD::showMenuText(const int position, const char * text, const int highlig
 
 void CLCD::showAudioTrack(const std::string & artist, const std::string & title, const std::string & album)
 {
-	if (mode != MODE_AUDIO) 
-	{
+	if(!has_lcd) 
 		return;
-	}
+	
+	if (mode != MODE_AUDIO) 
+		return;
 	
 	unsigned int lcd_width  = display.xres;
 	unsigned int lcd_height = display.yres;
@@ -834,6 +861,9 @@ void CLCD::showAudioTrack(const std::string & artist, const std::string & title,
 
 void CLCD::showAudioPlayMode(AUDIOMODES m)
 {
+	if(!has_lcd) 
+		return;
+	
 	display.draw_fill_rect (-1,51,10,62, CLCDDisplay::PIXEL_OFF);
 	switch(m)
 	{
@@ -885,6 +915,9 @@ void CLCD::showAudioPlayMode(AUDIOMODES m)
 
 void CLCD::showAudioProgress(const char perc, bool isMuted)
 {
+	if(!has_lcd) 
+		return;
+	
 	if (mode == MODE_AUDIO)
 	{
 		display.draw_fill_rect (11,53,73,61, CLCDDisplay::PIXEL_OFF);
@@ -906,6 +939,9 @@ void CLCD::showAudioProgress(const char perc, bool isMuted)
 
 void CLCD::drawBanner()
 {
+	if(!has_lcd) 
+		return;
+	
 	unsigned int lcd_width  = display.xres;
 	display.load_screen_element(&(element[ELEMENT_BANNER]), 0, 0);
 	
@@ -915,6 +951,9 @@ void CLCD::drawBanner()
 
 void CLCD::setMode(const MODES m, const char * const title)
 {
+	if(!has_lcd) 
+		return;
+	
 	unsigned int lcd_width  = display.xres;
 	unsigned int lcd_height = display.yres;
 
@@ -1121,11 +1160,17 @@ void CLCD::setMuted(bool mu)
 
 void CLCD::resume()
 {
+	if(!has_lcd) 
+		return;
+	
 	display.resume();
 }
 
 void CLCD::pause()
 {
+	if(!has_lcd) 
+		return;
+	
 	display.pause();
 }
 
@@ -1207,6 +1252,9 @@ void CVFD::Unlock()
 
 void CLCD::Clear()
 {
+	if(!has_lcd) 
+		return;
+	
 	if (mode == MODE_SHUTDOWN)
 	{
 		display.clear_screen(); // clear lcd
@@ -1218,11 +1266,17 @@ void CLCD::Clear()
 
 bool CLCD::ShowPng(char *filename)
 {
+	if(!has_lcd) 
+		return false;
+	
 	return display.load_png(filename);
 }
 
 bool CLCD::DumpPng(char *filename)
 {
+	if(!has_lcd) 
+		return false;
+	
 	return display.dump_png(filename);
 }
 
@@ -1243,6 +1297,9 @@ bool CLCD::DumpPng(char *filename)
 // timer 0: OFF, timer>0 time to show in seconds,  timer>=999 endless
 void CLCD::showInfoBox(const char * const title, const char * const text ,int autoNewline,int timer)
 {
+	if(!has_lcd) 
+		return;
+	
 	//printf("[lcdd] Info: \n");
 	if(text != NULL)
 		m_infoBoxText = text;
@@ -1311,6 +1368,9 @@ void CLCD::showInfoBox(const char * const title, const char * const text ,int au
 
 void CLCD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
 {
+	if(!has_lcd) 
+		return;
+	
 	//printf("[lcdd] FileList\n");
 	if(flist != NULL)
 		m_fileList = flist;
@@ -1415,6 +1475,9 @@ void CLCD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDi
 #define PROG_GLOB_POS_HEIGTH 20
 void CLCD::showProgressBar(int global, const char * const text,int show_escape,int timer)
 {
+	if(!has_lcd) 
+		return;
+	
 	if(text != NULL)
 		m_progressHeaderGlobal = text;
 		
@@ -1477,6 +1540,9 @@ void CLCD::showProgressBar(int global, const char * const text,int show_escape,i
 
 void CLCD::showProgressBar2(int local,const char * const text_local ,int global ,const char * const text_global ,int show_escape )
 {
+	if(!has_lcd) 
+		return;
+	
 	//printf("[lcdd] prog2\n");
 	if(text_local != NULL)
 		m_progressHeaderLocal = text_local;
@@ -1548,3 +1614,5 @@ void CLCD::showProgressBar2(int local,const char * const text_local ,int global 
 	}
 }
 #endif // LCD_UPDATE
+
+

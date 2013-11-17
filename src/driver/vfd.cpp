@@ -117,7 +117,15 @@ CVFD::CVFD()
 	}
 #endif
 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (USE_OPENGL)
+#if defined (PLATFORM_GIGABLUE)
+	fd = open("/proc/vfd", O_RDWR);
+		
+	if(fd < 0)
+	{
+		perror("/proc/vfd");
+		has_lcd = 0;
+	}
+#elif !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (USE_OPENGL)
 	fd = open("/dev/dbox/oled0", O_RDWR);
 	
 	if(fd < 0) 
@@ -140,7 +148,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (PLATFORM_GIGABLUE) && !defined (USE_OPENGL)
+#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (USE_OPENGL)
 	if(fd > 0)
 		close(fd);
 	
@@ -273,14 +281,7 @@ void CVFD::setlcdparameter(int dimm, const int power)
 #elif defined (PLATFORM_COOLSTREAM)
 	int ret = ioctl(fd, IOC_VFD_SET_BRIGHT, dimm);
 	if(ret < 0)
-		perror("IOC_VFD_SET_BRIGHT");
-#elif defined (PLATFORM_GIGABLUE)  
-	FILE * f;
-	if((f = fopen("/proc/stb/fp/oled_brightness", "w")) == NULL) 
-		return;
-	
-	fprintf(f, "%d", dimm);
-	fclose(f);	
+		perror("IOC_VFD_SET_BRIGHT");	
 #endif		
 }
 
@@ -841,15 +842,7 @@ void CVFD::ShowText(const char * str)
 		perror("write to vfd failed");
 	
 	closeDevice();
-#elif defined (PLATFORM_GIGABLUE)	
-	FILE *f;
-	if((f = fopen("/proc/vfd", "w")) == NULL) 
-		return;
-	
-	fprintf(f,"%s", str);
-	
-	fclose(f);
-#elif defined (PLATFORM_ODIN)
+#elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
 	if( write(fd, text.c_str(), len > 4? 4 : len ) < 0)
 		perror("write to vfd failed");
 #else
