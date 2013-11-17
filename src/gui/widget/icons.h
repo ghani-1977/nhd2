@@ -161,16 +161,48 @@
 #define NEUTRINO_ICON_RADIOTEXTGET		"radiotextget"
 #define NEUTRINO_ICON_RADIOTEXTWAIT		"radiotextwait"
 
-#define NEUTRINO_ICON_HINT_YTPLAY      		"hint_ytplay"
-#define NEUTRINO_ICON_YOUTUBE			"youtube"
+#define NEUTRINO_ICON_YT      			"hint_ytplay"
+#define NEUTRINO_ICON_YT_SMALL			"youtube"
 
 #define NEUTRINO_ICON_NETZKINO			"netzkino"
-#define NEUTRINO_ICON_HINT_NETZKINO		"hint_netzkino"
+#define NEUTRINO_ICON_NETZKINO_SMALL		"hint_netzkino"
 
-#define NEUTRINO_ICON_WEBTV			"iptv"
+#define NEUTRINO_ICON_WEBTV			"webtv"
+#define NEUTRINO_ICON_WEBTV_SMALL		"iptv"
 #define NEUTRINO_ICON_MP			"mp"
 
 // menuitem icons
+#define NEUTRINO_ICON_TV			"tv"
+#define NEUTRINO_ICON_RADIO			"radio"
+#define NEUTRINO_ICON_MOVIEPLAYER		"movieplayer"
+#define NEUTRINO_ICON_INTERNETRADIO		"internetradio"
+#define NEUTRINO_ICON_AUDIOPLAYER		"audioplayer"
+#define NEUTRINO_ICON_VLC			"vlc"
+#define NEUTRINO_ICON_DVD			"dvd"
+
+#define NEUTRINO_ICON_PICTUREVIEWER		"pictureviewer"
+#define NEUTRINO_ICON_UPNPBROWSER		"upnpbrowser"
+
+#define NEUTRINO_ICON_MAINSETTINGS		"mainsettings"
+#define NEUTRINO_ICON_SERVICE			"service"
+#define NEUTRINO_ICON_SLEEPTIMER		"sleeptimer"
+#define NEUTRINO_ICON_PLUGINS			"plugins"
+
+#define NEUTRINO_ICON_REBOOT			"reboot"
+#define NEUTRINO_ICON_SHUTDOWN			"shutdown"
+#define NEUTRINO_ICON_BOXINFO			"boxinfo"
+
+#define NEUTRINO_ICON_AUDIOSETTINGS		"audiosettings"
+#define NEUTRINO_ICON_PARENTALLOCK		"parentallock"
+#define NEUTRINO_ICON_RECORDINGSETTINGS		"recordingsettings"
+#define NEUTRINO_ICON_OSDSETTINGS		"osdsettings"
+#define NEUTRINO_ICON_KEYSSETTINGS		"keyssettings"
+#define NEUTRINO_ICON_AUDIOPLAYERSETTINGS	"audioplayersettings"
+#define NEUTRINO_ICON_HDDSETTINGS		"hddsettings"
+#define NEUTRINO_ICON_CAM			"cam"
+#define NEUTRINO_ICON_RELOADPLUGINS		"games_item"
+
+
 
 // misc
 #define DUMMY_ICON				"dummy"

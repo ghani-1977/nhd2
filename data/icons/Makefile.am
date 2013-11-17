@@ -88,7 +88,7 @@ install_DATA += \
 
 # netzkino.de
 install_DATA += \
-	netzkino.jpg netzkino.png hint_netzkino.png
+	netzkino.png hint_netzkino.png
 
 
 
