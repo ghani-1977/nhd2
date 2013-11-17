@@ -1652,4 +1652,7 @@ moviebrowser.yt_concurrent_connections Concurrent connections
 moviebrowser.netzkino_error Failed to load Netzkino categories
 moviebrowser.nk_categories Select category
 moviebrowser.nk_error Failed to load Netzkino feed
+moviebrowser.nk_rtmp netzKino URL Protokoll
+moviebrowser.nk_rtmp_http HTTP (mp4)
+moviebrowser.nk_rtmp_rtmp RTMP
 

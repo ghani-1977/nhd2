@@ -580,6 +580,7 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.nkresults = 10;
 	m_settings.nkconcconn = 1;
 	m_settings.nkcategoryname = "Actionkino";
+	m_settings.nkrtmp = true;
 #endif	
 
 	m_settings.storageDirMovieUsed = true;
@@ -779,6 +780,8 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 	//settings->nkthumbnaildir = configfile.getString("mb_nkthumbnaildir", "/media/sda1/netzkino-thumbnails"); // FIXME, add GUI option
 	settings->nkcategory = configfile.getInt32("mb_nkcategory", 1);
 	settings->nkcategoryname = configfile.getString("mb_nkcategoryname", "Actionkino");
+	settings->nkrtmp = configfile.getBool("mb_nkrtmp", true);
+	
 	/*
 	settings->nksearch_history_max = configfile.getInt32("mb_nksearch_history_max", 10);
 	settings->nksearch_history_size = configfile.getInt32("mb_nksearch_history_size", 0);
@@ -868,6 +871,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	configfile.setString("mb_nkcategoryname", settings->nkcategoryname);
 	configfile.setString("mb_nksearch", settings->nksearch);
 	//configfile.setString("mb_nkthumbnaildir", settings->nkthumbnaildir);
+	configfile.setBool("mb_nkrtmp", settings->nkrtmp);
 	
 	/*
 	settings->nksearch_history_size = settings->nksearch_history.size();
@@ -3269,7 +3273,7 @@ void CMovieBrowser::loadMovies(void)
 #if ENABLE_NETZKINO	
 	else if (show_mode == MB_SHOW_NETZKINO) 
 	{
-		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory);
+		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp);
 	}
 #endif	
 	else 
@@ -5303,13 +5307,13 @@ ret_err:
 
 //netzkino
 #if ENABLE_NETZKINO
-void CMovieBrowser::loadNKTitles(int mode, std::string search, int id)
+void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp)
 {
 	nkparser.SetMaxResults(m_settings.nkresults ? m_settings.nkresults : 100000);
 	nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
 	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
 
-	if (nkparser.ParseFeed((cNKFeedParser::nk_feed_mode_t)mode, search, id)) 
+	if (nkparser.ParseFeed((cNKFeedParser::nk_feed_mode_t)mode, search, id, rtmp)) 
 	{
 		nkparser.DownloadThumbnails();
 	} 
@@ -5397,6 +5401,13 @@ int CNKCategoriesMenu::exec(CMenuTarget *parent, const std::string &actionKey)
 	return menu_return::RETURN_REPAINT;
 }
 
+#define MOVIEBROWSER_NKPROTOKOLL_OPTIONS_COUNT 2
+const CMenuOptionChooser::keyval MOVIEBROWSER_NKPROTOKOLL_OPTIONS[MOVIEBROWSER_NKPROTOKOLL_OPTIONS_COUNT] =
+{
+	{ 0, LOCALE_MOVIEBROWSER_NK_RTMP_HTTP, NULL },
+	{ 1, LOCALE_MOVIEBROWSER_NK_RTMP_RTMP, NULL }
+};
+  
 bool CMovieBrowser::showNKMenu()
 {
 	m_pcWindow->paintBackground();
@@ -5427,6 +5438,9 @@ bool CMovieBrowser::showNKMenu()
 	
 	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_HISTORY, &m_settings.nksearch_history_max, true, 10, 50, NULL));
 	mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_CONCURRENT_CONNECTIONS, &m_settings.nkconcconn, true, 1, 8));
+	
+	// rtmp
+	mainMenu.addItem(new CMenuOptionChooser(LOCALE_MOVIEBROWSER_NK_RTMP, (int *)&m_settings.nkrtmp, MOVIEBROWSER_NKPROTOKOLL_OPTIONS, MOVIEBROWSER_NKPROTOKOLL_OPTIONS_COUNT, true));
 
 	int oldcat = m_settings.nkcategory;
 	int oldmode = m_settings.nkmode;
@@ -5473,7 +5487,7 @@ bool CMovieBrowser::showNKMenu()
 		CHintBox loadBox(LOCALE_WEBTV_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 		loadBox.paint();
 		nkparser.Cleanup();
-		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory);
+		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp);
 		loadBox.hide();
 	}
 	

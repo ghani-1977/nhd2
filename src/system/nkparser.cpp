@@ -301,7 +301,7 @@ bool cNKFeedParser::parseCategoriesJSON(std::string &answer)
 	return !categories.empty();
 }
 
-bool cNKFeedParser::parseFeedJSON(std::string &answer)
+bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 {
 	Json::Value root, v;
 	Json::Reader reader;
@@ -352,13 +352,13 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer)
 			if (v.type() == Json::arrayValue && v.size() > 0) 
 			{
 				if (v[_i].type() == Json::stringValue)
-					// mp4 url
-#if defined (USE_OPENGL)					
-					vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
-#else					
+				{
 					// rtmp url
-					vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
-#endif					
+					if(rtmp)
+						vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
+					else
+						vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
+				}
 			}
 		}
 		v = flick.get("attachments", "");
@@ -376,7 +376,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer)
 	return parsed;
 }
 
-bool cNKFeedParser::ParseFeed(std::string &url)
+bool cNKFeedParser::ParseFeed(std::string &url, bool rtmp)
 {
 	DownloadThumbnailsEnd();
 	videos.clear();
@@ -384,10 +384,10 @@ bool cNKFeedParser::ParseFeed(std::string &url)
 	std::string answer;
 	if (!getUrl(url, answer))
 		return false;
-	return parseFeedJSON(answer);
+	return parseFeedJSON(answer, rtmp);
 }
 
-bool cNKFeedParser::ParseFeed(nk_feed_mode_t mode, std::string search, int category)
+bool cNKFeedParser::ParseFeed(nk_feed_mode_t mode, std::string search, int category, bool rtmp)
 {
 	std::string url = "http://www.netzkino.de/capi/";
 	
@@ -407,7 +407,7 @@ bool cNKFeedParser::ParseFeed(nk_feed_mode_t mode, std::string search, int categ
 	
 	url += "&custom_fields=Streaming&count=" + to_string(max_results) + "d&";
 
-	return ParseFeed(url);
+	return ParseFeed(url, rtmp);
 }
 
 bool cNKFeedParser::ParseCategories(void)

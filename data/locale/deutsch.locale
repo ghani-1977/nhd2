@@ -1653,5 +1653,7 @@ moviebrowser.yt_concurrent_connections Gleichzeitige Verbindungen
 moviebrowser.netzkino_error Fehler beim laden des Netzkino Kategorien
 moviebrowser.nk_categories Kategorie-Auswahl
 moviebrowser.nk_error Fehler beim Laden des Netzkino-Feeds
-
+moviebrowser.nk_rtmp netzKino URL Protokoll
+moviebrowser.nk_rtmp_http HTTP (mp4)
+moviebrowser.nk_rtmp_rtmp RTMP
 

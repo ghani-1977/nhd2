@@ -264,6 +264,7 @@ typedef struct
 	std::string nksearch;
 	//std::string nkthumbnaildir;
 	//std::list<std::string> nksearch_history;
+	bool nkrtmp;
 #endif	
 }MB_SETTINGS;
 
@@ -356,7 +357,7 @@ class CMovieBrowser : public CMenuTarget
 		cNKFeedParser nkparser;
 		std::string nkcategory_name;
 		
-		void loadNKTitles(int mode, std::string search, int id);
+		void loadNKTitles(int mode, std::string search, int id, bool rtmp = true);
 		bool showNKMenu();
 #endif		
 	public:  // Functions //////////////////////////////////////////////////////////7

@@ -81,9 +81,9 @@ class cNKFeedParser
 		void decodeUrl(std::string &url);
 		bool getUrl(std::string &url, std::string &answer, CURL *_curl_handle = NULL);
 		bool DownloadUrl(std::string &url, std::string &file, CURL *_curl_handle = NULL);
-		bool parseFeedJSON(std::string &answer);
+		bool parseFeedJSON(std::string &answer, bool rtmp = true);
 		bool parseCategoriesJSON(std::string &answer);
-		bool ParseFeed(std::string &url);
+		bool ParseFeed(std::string &url, bool rtmp = true);
 		void removeHTMLMarkup(std::string &s);
 		void DownloadThumbnailsEnd(void);
 	public:
@@ -96,7 +96,7 @@ class cNKFeedParser
 		cNKFeedParser();
 		~cNKFeedParser();
 
-		bool ParseFeed(nk_feed_mode_t mode, std::string search, int category);
+		bool ParseFeed(nk_feed_mode_t mode, std::string search, int category, bool rtmp = true);
 		bool ParseCategories(void);
 		bool DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle = NULL);
 		bool DownloadThumbnails();
