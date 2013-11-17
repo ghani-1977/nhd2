@@ -128,7 +128,6 @@ CMoviePlayerGui::state playstate;
 bool isMovieBrowser = false;
 bool isVlc = false;
 bool cdDvd = false;
-bool isWebTV = false;
 bool isDVD = false;
 bool isBlueRay = false;
 bool isURL = false;
@@ -509,7 +508,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	startposition = 0;
 
 	isMovieBrowser = false;
-	isWebTV = false;
 	isVlc = false;
 	isDVD = false;
 	isBlueRay = false;
@@ -526,7 +524,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		moviebrowser->setMode(MB_SHOW_RECORDS);
 		
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -540,7 +537,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		moviebrowser->setMode(MB_SHOW_FILES);
 		
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -554,7 +550,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		moviebrowser->setMode(MB_SHOW_YT);
 		
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -568,7 +563,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		moviebrowser->setMode(MB_SHOW_NETZKINO);
 		
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -580,7 +574,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		isMovieBrowser = false;
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -606,20 +599,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else if ( actionKey == "vlcplayback" ) 
 	{
 		isVlc = true;
-		isWebTV = false;
 		streamtype = STREAMTYPE_FILE;
-		isMovieBrowser = false;
-		timeshift = NO_TIMESHIFT;
-		isDVD = false;
-		isBlueRay = false;
-		isURL = false;
-		
-		PlayFile();
-	}
-	else if(actionKey == "webtv")
-	{
-		isVlc = false;
-		isWebTV = true;
 		isMovieBrowser = false;
 		timeshift = NO_TIMESHIFT;
 		isDVD = false;
@@ -632,7 +612,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		isMovieBrowser = false;
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isBlueRay = false;
 		isDVD = true;
@@ -644,7 +623,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		isMovieBrowser = false;
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = true;
@@ -656,7 +634,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		isMovieBrowser = false;
 		timeshift = NO_TIMESHIFT;
-		isWebTV = false;
 		isVlc = false;
 		isDVD = false;
 		isBlueRay = false;
@@ -1188,24 +1165,6 @@ void CMoviePlayerGui::PlayFile(void)
 #endif		
 	}
 	
-	// webtv
-	if(isWebTV)
-	{
-		sel_filename = "WebTV";
-		
-		open_filebrowser = true;
-		
-		update_lcd = true;
-		start_play = true;
-		
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// hide ts icon
-		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif		
-	}
-	
 	// dvd
 	if (isDVD || isBlueRay)
 	{
@@ -1702,35 +1661,6 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 
 			}
-			else if (isWebTV)	//webtv
-			{
-				/*
-				if( webtv->exec())
-				{
-					CFile * file;
-
-					if ((file = webtv->getSelectedFile()) != NULL) 
-					{
-
-						filename = file->Url.c_str();
-						sel_filename = file->Name.c_str();
-						
-						g_file_epg = sel_filename;
-						g_file_epg1 = file->Description.c_str();
-						
-						update_lcd = true;
-						start_play = true;
-						was_file = true;
-						is_file_player = true;
-					}
-				}
-				else if (playstate == CMoviePlayerGui::STOPPED) 
-				{
-					was_file = false;
-					break;
-				}
-				*/
-			}
 			else if(isDVD) // dvd
 			{
 				filename = NULL;
@@ -2189,13 +2119,7 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			else
 			{
-				if(isWebTV)
-				{
-					// hint
-					ShowHintUTF(LOCALE_MESSAGEBOX_ERROR, g_Locale->getText (LOCALE_INFOVIEWER_NOTAVAILABLE), 450);	// UTF-8
-				}
-				else
-					g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
+				g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 			}
 		}
 		
@@ -2453,8 +2377,7 @@ void CMoviePlayerGui::PlayFile(void)
 				FileTime.hide();
 			
 			//show help
-			if(!isWebTV)
-				showHelpTS();
+			showHelpTS();
 		}
 		else if (msg == CRCInput::RC_info) 
 		{
@@ -2683,8 +2606,7 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if ( msg == CRCInput::RC_repeat )
 		{
-			if(!isWebTV)
-				m_loop = true;
+			m_loop = true;
 		} 
 		else if (msg == CRCInput::RC_5) 
 		{	
@@ -2755,22 +2677,19 @@ void CMoviePlayerGui::PlayFile(void)
 		} 
 		else if (msg == CRCInput::RC_0) 
 		{
-			if(!isWebTV)
+			// cancel bookmark jump
+			if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO) 
 			{
-				// cancel bookmark jump
-				if (isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO) 
+				if (new_bookmark.pos != 0) 
 				{
-					if (new_bookmark.pos != 0) 
-					{
-						new_bookmark.pos = 0;	// stop current bookmark activity, TODO:  might bemoved to another key
-						newLoopHintBox.hide();	// hide hint box if any
-						newComHintBox.hide();
-					}
-					jump_not_until = (position / 1000) + 10;	// avoid bookmark jumping for the next 10 seconds, , TODO:  might be moved to another key
-				} 
-				else if (playstate != CMoviePlayerGui::PAUSE)
-					playstate = CMoviePlayerGui::SOFTRESET;
-			}
+					new_bookmark.pos = 0;	// stop current bookmark activity, TODO:  might bemoved to another key
+					newLoopHintBox.hide();	// hide hint box if any
+					newComHintBox.hide();
+				}
+				jump_not_until = (position / 1000) + 10;	// avoid bookmark jumping for the next 10 seconds, , TODO:  might be moved to another key
+			} 
+			else if (playstate != CMoviePlayerGui::PAUSE)
+				playstate = CMoviePlayerGui::SOFTRESET;
 		} 
 #if !defined (PLATFORM_COOLSTREAM)		
 		else if (msg == CRCInput::RC_slow) 
@@ -2792,9 +2711,6 @@ void CMoviePlayerGui::PlayFile(void)
 			if (FileTime.IsVisible()) 
 				FileTime.hide();
 			
-			//if (p_movie_info != NULL)
-			//	cMovieInfo.showMovieInfo(*p_movie_info);
-			//else
 				showFileInfo();
 		}
 		else if(msg == CRCInput::RC_home)
@@ -2805,7 +2721,7 @@ void CMoviePlayerGui::PlayFile(void)
 			if(g_InfoViewer->m_visible)
 				  g_InfoViewer->killTitle();
 			
-			if ( (was_file && !isMovieBrowser && !isWebTV) || m_loop) 
+			if ( (was_file && !isMovieBrowser) || m_loop ) 
 			{
 				was_file = false;
 				m_loop = false;
@@ -2836,28 +2752,6 @@ void CMoviePlayerGui::PlayFile(void)
 				g_file_epg1 = sel_filename;
 				update_lcd = true;
 				start_play = true;
-			}
-		}
-		else if(msg == CRCInput::RC_ok)
-		{
-			if(isWebTV)
-				open_filebrowser = true;
-		}
-		else if( ( msg == (neutrino_msg_t) g_settings.key_quickzap_up ) || ( msg == (neutrino_msg_t) g_settings.key_quickzap_down ) )
-		{
-			if(isWebTV)
-			{
-				open_filebrowser = true;
-				//webtv->quickZap(msg);
-			}
-		}
-		else if(msg == CRCInput::RC_favorites)
-		{
-			if(isWebTV)
-			{
-				//exit = true;
-				open_filebrowser = true;
-				//webtv->showUserBouquet();
 			}
 		}
 		else if (msg == (neutrino_msg_t)g_settings.key_screenshot && isMovieBrowser == true && moviebrowser->getMode() != MB_SHOW_YT && moviebrowser->getMode() != MB_SHOW_NETZKINO)
@@ -2936,24 +2830,23 @@ void CMoviePlayerGui::PlayFile(void)
 void CMoviePlayerGui::showHelpTS()
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1)*/ (char *)"Movie info");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP1));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP2));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP3));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP4));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_HELP, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP5));
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, (char *)"jump backward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, (char *)"goto start"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, (char *)"jump forward 1 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, (char *)"jump backward 5 min"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, (char *)"goto middle"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, (char *)"jump forward 5 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, (char *)"jump backward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10)*/);
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, (char *)"goto end"/*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6)*/ );
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, (char *)"jump forward 10 min" /*g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11)*/ );
-	//helpbox.addLine(g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12));
-	//helpbox.addLine("Version: $Revision: 1.97 $");
-	//helpbox.addLine("Movieplayer (c) 2003, 2004 by gagga");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_1, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP6));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_2, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP12) );
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_3, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP7));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_4, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP8));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_5, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP13));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_6, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP9));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_7, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP10));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_8, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP14));
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_9, g_Locale->getText(LOCALE_MOVIEPLAYER_TSHELP11));
+	helpbox.addLine("Version: $Revision: 1.97 $");
+	helpbox.addLine("Movieplayer (c) 2003, 2004 by gagga");
 	hide();
 	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 }

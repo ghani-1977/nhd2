@@ -2078,7 +2078,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			m_pcWindow->blit();
 #endif		  
 			m_movieInfo.showMovieInfo(*m_movieSelectionHandler);
-			//m_movieInfo.printDebugMovieInfo(*m_movieSelectionHandler); //FIXME
+			
 			refresh();
 		}
 	}
