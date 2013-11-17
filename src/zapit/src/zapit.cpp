@@ -2641,8 +2641,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 		case CZapitMessages::CMD_MUTE: 
 		{
-			printf("[zapit] mute %d\n", msgBoolean.truefalse);
-			
 			CZapitMessages::commandBoolean msgBoolean;
 			CBasicServer::receive_data(connfd, &msgBoolean, sizeof(msgBoolean));
 
