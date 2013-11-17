@@ -516,6 +516,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	minuteoffset = MINUTEOFFSET;
 	secondoffset = minuteoffset / 60;
 	
+	// cutneutrino
 	cutNeutrino();
 
 	if (actionKey == "tsmoviebrowser") 
@@ -654,7 +655,10 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 #endif
 	}
 
+	// restore neutrino
 	restoreNeutrino();
+	
+	//
 	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
 	if (timeshift) 

@@ -92,16 +92,16 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		enum
 		{
 			mode_unknown = -1,
-			mode_tv = 1,		/* TV Mode */
-			mode_radio = 2,		/* Radio Mode */
-			mode_scart = 3,		/* Scart Mode */
-			mode_standby = 4,	/* Standby Mode */
-			mode_audio = 5,		/* Audio Mode */
-			mode_pic = 6,		/* Pic Mode */
-			mode_ts = 7,		/* ??? */
-			mode_iptv = 8,		/**/
-			mode_mask = 0xFF,	/**/
-			norezap = 0x100		/**/
+			mode_tv = 1,		// tv mode
+			mode_radio = 2,		// radio mode
+			mode_scart = 3,		// scart mode
+			mode_standby = 4,	// standby mode
+			mode_audio = 5,		// audioplayer mode
+			mode_pic = 6,		// pictureviewer mode
+			mode_ts = 7,		// movieplayer mode
+			mode_iptv = 8,		// webtv mode
+			mode_mask = 0xFF,	//
+			norezap = 0x100		//
 		};
 
 		CConfigFile configfile;
@@ -277,7 +277,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		};
 		
 		void ExitRun(int retcode = SHUTDOWN);
-		//CWebTV * webtv;
 };
 
 

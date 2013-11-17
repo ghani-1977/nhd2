@@ -115,9 +115,6 @@ bool cAudio::Close()
 // shut up
 int cAudio::SetMute(int enable)
 { 
-	if (audio_fd < 0)
-		return -1;
-	
 	dprintf(DEBUG_NORMAL, "%s:%s (%d)\n", FILENAME, __FUNCTION__, enable);	
 	
 	Muted = enable?true:false;
@@ -132,6 +129,9 @@ int cAudio::SetMute(int enable)
 	write(fd, sMuted, strlen(sMuted));
 	close(fd);
 #else
+	if (audio_fd < 0)
+		return -1;
+	
 	ret = ioctl(audio_fd, AUDIO_SET_MUTE, enable);
 	
 	if(ret < 0)
