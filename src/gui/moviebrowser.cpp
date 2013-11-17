@@ -1731,7 +1731,7 @@ void CMovieBrowser::refreshTitle(void)
 		if (loc == LOCALE_MOVIEBROWSER_YT_RELATED || loc == LOCALE_MOVIEBROWSER_YT_SEARCH)
 			title += " \"" + m_settings.ytsearch + "\"";
 		
-		mb_icon = NEUTRINO_ICON_YOUTUBE;
+		mb_icon = NEUTRINO_ICON_YT_SMALL;
 	}
 #if ENABLE_NETZKINO	
 	else if (show_mode == MB_SHOW_NETZKINO) 
@@ -1749,7 +1749,7 @@ void CMovieBrowser::refreshTitle(void)
 			title += m_settings.nkcategoryname;
 		}
 		
-		mb_icon = NEUTRINO_ICON_HINT_NETZKINO;
+		mb_icon = NEUTRINO_ICON_NETZKINO_SMALL;
 	}
 #endif	
 
@@ -4157,7 +4157,7 @@ bool CMovieBrowser::showYTMenu()
 	m_pcWindow->blit();
 #endif
 
-	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_YOUTUBE);
+	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_YT_SMALL);
 	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 
 	int select = -1;
@@ -5387,7 +5387,7 @@ int CNKCategoriesMenu::exec(CMenuTarget *parent, const std::string &actionKey)
 	if(parent)
 		parent->hide();
 
-	CMenuWidget m(LOCALE_MOVIEBROWSER_NK_CATEGORIES, NEUTRINO_ICON_HINT_NETZKINO);
+	CMenuWidget m(LOCALE_MOVIEBROWSER_NK_CATEGORIES, NEUTRINO_ICON_NETZKINO_SMALL);
 
 	for (unsigned i = 0; i < cats.size(); i++)
 		m.addItem(new CMenuForwarderNonLocalized(cats[i].title.c_str(), true, ("(" + to_string(cats[i].post_count) + ")").c_str(), this, to_string(i).c_str(), CRCInput::convertDigitToKey(i + 1)), cats[i].id == *nkcategory);
@@ -5401,7 +5401,7 @@ bool CMovieBrowser::showNKMenu()
 {
 	m_pcWindow->paintBackground();
 
-	CMenuWidget mainMenu(LOCALE_WEBTV_NETZKINO, NEUTRINO_ICON_HINT_NETZKINO);
+	CMenuWidget mainMenu(LOCALE_WEBTV_NETZKINO, NEUTRINO_ICON_NETZKINO_SMALL);
 
 	int select = -1;
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
