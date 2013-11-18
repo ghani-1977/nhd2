@@ -200,9 +200,6 @@
 #define NEUTRINO_ICON_AUDIOPLAYERSETTINGS	"audioplayersettings"
 #define NEUTRINO_ICON_HDDSETTINGS		"hddsettings"
 #define NEUTRINO_ICON_CAM			"cam"
-#define NEUTRINO_ICON_RELOADPLUGINS		"games_item"
-
-
 
 // misc
 #define DUMMY_ICON				"dummy"
