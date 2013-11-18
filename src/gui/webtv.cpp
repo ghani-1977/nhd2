@@ -1007,5 +1007,6 @@ void CWebTV::paint()
 
 void CWebTV::showFileInfoWebTV(int pos)
 {
-	ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
+	if(pos > -1)
+		ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
 }
