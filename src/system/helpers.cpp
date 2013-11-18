@@ -359,6 +359,15 @@ std::string trim(std::string &str, const std::string &trimChars /*= " \n\r\t"*/)
 	return result.erase(0, result.find_first_not_of(trimChars));
 }
 
+std::string replace_all(const std::string &in, const std::string &entity, const std::string &symbol)
+{
+	std::string out = in;
+	std::string::size_type loc = 0;
+	while (( loc = out.find(entity, loc)) != std::string::npos )
+	out.replace(loc, entity.length(), symbol);
+	return out;
+}
+
 CFileHelpers::CFileHelpers()
 {
 	doCopyFlag	= true;
@@ -584,3 +593,4 @@ bool CFileHelpers::removeDir(const char *Dir)
 	errno = 0;
 	return true;
 }
+

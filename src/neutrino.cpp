@@ -764,7 +764,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.key_screenshot = configfile.getInt32( "key_screenshot", CRCInput::RC_record );
 	
 	// webtv
-	strcpy( g_settings.webtv_settings, configfile.getString( "webtv_settings", CONFIGDIR "/webtv.xml").c_str() );
+	strcpy( g_settings.webtv_settings, configfile.getString( "webtv_settings", "").c_str() );
 	
         // USERMENU -> in system/settings.h
         //-------------------------------------------

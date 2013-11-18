@@ -933,7 +933,7 @@ int CMovieBrowser::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey == "save_movie_info_all")
 	{
-		std::vector<MI_MOVIE_INFO*> * current_list=NULL;
+		std::vector<MI_MOVIE_INFO*> * current_list = NULL;
 
 		if(m_movieSelectionHandler != NULL)
 		{
@@ -1040,6 +1040,17 @@ int CMovieBrowser::exec(const char * path)
 		// reset sorting
 		m_settings.sorting.direction = MB_DIRECTION_DOWN;
 		m_settings.sorting.item =  MB_INFO_RECORDDATE;
+		
+		// reset all positions
+		m_currentStartPos = 0;
+	
+		m_movieSelectionHandler = NULL;
+		m_currentBrowserSelection = 0;
+		m_currentRecordSelection = 0;
+		m_currentPlaySelection = 0;
+		m_prevBrowserSelection = 0;
+		m_prevRecordSelection = 0;
+		m_prevPlaySelection = 0;
 		
 		// reload movie 
 		dprintf(DEBUG_NORMAL, "[mb] force reload\r\n");
@@ -2094,7 +2105,12 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 #if ENABLE_NETZKINO		
 		else if (show_mode == MB_SHOW_NETZKINO)
 			showNKMenu();
-#endif		
+#endif
+		else
+		{
+			if(m_movieSelectionHandler != NULL)
+				showMenu(m_movieSelectionHandler);
+		}
 	}
 	else if (msg == CRCInput::RC_text) 
 	{

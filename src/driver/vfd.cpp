@@ -43,6 +43,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <system/debug.h>
+#include <system/helpers.h>
 
 
 #if defined (PLATFORM_SPARK7162)
@@ -642,7 +643,7 @@ void CVFD::Clear()
 		return;
 	
 #if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_ODIN)
-	ShowText("    "); // 4 empty digits
+	ShowText("     "); // 5 empty digits
 #elif defined (__sh__)
 	struct vfd_ioctl_data data;
 	
@@ -808,32 +809,9 @@ void CVFD::ShowText(const char * str)
 	if(len == 0)
 		return;
 	
-	// token from seifes repo
+	// replace
 	std::string text = str;
-	
-	if(!is4digits)
-	{	
-		/* this is crude, it just replaces ÄÖÜ with AOU since the display can't show them anyway */
-		/*                       Ä           ä           Ö           ö           Ü           ü   	ß  	*/
-		char tofind[][3] = { "\xc3\x84", "\xc3\xa4", "\xc3\x96", "\xc3\xb6", "\xc3\x9c", "\xc3\xbc", "\xc3\x9f" };
-		char toreplace[] = { "AaOoUus" };
-		char repl[2];
-		repl[1] = '\0';
-		int i = 0;
-		size_t pos;
-		
-		while (toreplace[i] != 0x0) 
-		{
-			pos = text.find(tofind[i]);
-			if (pos == std::string::npos) 
-			{
-				i++;
-				continue;
-			}
-			repl[0] = toreplace[i];
-			text.replace(pos, 2, std::string(repl));
-		}
-	}
+	text = replace_all(text, "\n", " ");
 	 
 #if defined (__sh__)	 
 	openDevice();
@@ -843,7 +821,7 @@ void CVFD::ShowText(const char * str)
 	
 	closeDevice();
 #elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
-	if( write(fd, text.c_str(), len > 4? 4 : len ) < 0)
+	if( write(fd, text.c_str(), len > 5? 5 : len ) < 0)
 		perror("write to vfd failed");
 #else
 	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
