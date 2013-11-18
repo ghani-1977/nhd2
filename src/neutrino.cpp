@@ -123,6 +123,7 @@
 #include <system/debug.h>
 #include <system/flashtool.h>
 #include <system/fsmounter.h>
+#include <system/helpers.h>
 
 #include <timerdclient/timerdmsg.h>
 
@@ -770,10 +771,10 @@ int CNeutrinoApp::loadSetup(const char * fname)
         //-------------------------------------------
         // this is as the current neutrino usermen
         const char * usermenu_default[SNeutrinoSettings::BUTTON_MAX]={
-                "2, 3, 4, 12",                     // RED
-                "6",                            // GREEN
-                "7",                            // YELLOW
-                "10, 11, 13, 14, 15",   	// BLUE
+                "2, 3, 4, 10",                  // RED
+                "5",                            // GREEN
+                "6",                            // YELLOW
+                "8, 9, 12, 11, 13",   		// BLUE
 #if defined (PLATFORM_GIGABLUE)
 		"0",				// F1
 		"0",				// F2

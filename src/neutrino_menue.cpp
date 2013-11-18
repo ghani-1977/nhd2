@@ -2703,8 +2703,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB;
                                 keyhelper.get(&key, &icon, CRCInput::RC_green);
-                                //menu_item = new CMenuForwarder(LOCALE_MOVIEPLAYER_RECORDS, true, NULL, moviePlayerGui, "tsmoviebrowser", key, icon);
-				//          new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_AUDIO, true, NULL, &audioSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_AUDIOSETTINGS, LOCALE_HELPTEXT_AUDIOSETTINGS);
 				menu_item = new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_RECORDS, true, NULL, moviePlayerGui, "tsmoviebrowser", key, icon, NEUTRINO_ICON_MOVIEPLAYER, LOCALE_MOVIEPLAYER_RECORDS);
                                 menu->addItem(menu_item, false);
                                 break;
@@ -2713,7 +2711,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_MOVIEPLAYER_MB;
                                 keyhelper.get(&key, &icon, CRCInput::RC_green);
-                                //menu_item = new CMenuForwarder(LOCALE_MOVIEPLAYER_MOVIES, true, NULL, moviePlayerGui, "moviebrowser", key, icon);
 				menu_item = new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_MOVIES, true, NULL, moviePlayerGui, "moviebrowser", key, icon, NEUTRINO_ICON_MOVIEPLAYER, LOCALE_MOVIEPLAYER_MOVIES);
                                 menu->addItem(menu_item, false);
                                 break;
@@ -2722,7 +2719,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_TIMERLIST;
                                 keyhelper.get(&key, &icon, CRCInput::RC_yellow);
-                                //menu_item = new CMenuForwarder(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, "-1", key, icon);
 				menu_item = new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, "-1", key, icon, NEUTRINO_ICON_SLEEPTIMER, LOCALE_TIMERLIST_NAME);
                                 menu->addItem(menu_item, false);
                                 break;
@@ -2731,7 +2727,6 @@ bool CNeutrinoApp::showUserMenu(int button)
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_REMOTE;
                                 keyhelper.get(&key, &icon);
-                                //menu_item = new CMenuForwarder(LOCALE_RCLOCK_MENUEADD, true, NULL, this->rcLock, "-1" , key, icon );
 				menu_item = new CMenuForwarderItemMenuIcon(LOCALE_RCLOCK_MENUEADD, true, NULL, this->rcLock, "-1", key, icon, NEUTRINO_ICON_KEYSSETTINGS, LOCALE_RCLOCK_MENUEADD);
                                 menu->addItem(menu_item, false);
                                 break;

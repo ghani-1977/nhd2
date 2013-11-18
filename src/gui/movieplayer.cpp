@@ -45,6 +45,7 @@
 #include <driver/vcrcontrol.h>
 #include <daemonc/remotecontrol.h>
 #include <system/settings.h>
+#include <system/helpers.h>
 
 #include <gui/eventlist.h>
 #include <gui/color.h>

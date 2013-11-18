@@ -280,7 +280,7 @@ class CAudioSetupNotifierVolPercent : public CChangeObserver
 		bool changeNotify(const neutrino_locale_t OptionName, void *);
 };
 
-int safe_mkdir(char * path);
-int check_dir(const char * newdir);
+//int safe_mkdir(char * path);
+//int check_dir(const char * newdir);
 
 #endif

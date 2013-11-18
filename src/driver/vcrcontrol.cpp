@@ -74,6 +74,8 @@
 #include <frontend_c.h>
 #include <channel.h>
 
+#include <system/helpers.h>
+
 
 extern bool autoshift;
 extern bool autoshift_delete;
@@ -87,7 +89,6 @@ extern "C" {
 
 CMovieInfo * g_cMovieInfo;
 MI_MOVIE_INFO * g_movieInfo;
-int safe_mkdir(char * path);
 
 static CVCRControl vcrControl;
 

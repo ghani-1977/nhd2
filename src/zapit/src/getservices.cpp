@@ -39,7 +39,7 @@
 
 /* system */
 #include <system/debug.h>
-#include <system/setting_helpers.h>	/* needed for safe_mkdir */
+#include <system/helpers.h>	/* needed for safe_mkdir */
 
 
 extern xmlDocPtr scanInputParser;				/* defined in zapit.cpp */

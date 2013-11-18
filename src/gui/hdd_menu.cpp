@@ -61,6 +61,7 @@
 #include "system/setting_helpers.h"
 #include "system/settings.h"
 #include "system/debug.h"
+#include <system/helpers.h>
 
 #include <gui/hdd_menu.h>
 

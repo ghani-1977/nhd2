@@ -811,10 +811,8 @@ const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUN
         {SNeutrinoSettings::ITEM_EPG_LIST, LOCALE_EPGMENU_EVENTLIST, NULL},
         {SNeutrinoSettings::ITEM_EPG_SUPER, LOCALE_EPGMENU_EPGPLUS, NULL},
         {SNeutrinoSettings::ITEM_EPG_INFO, LOCALE_EPGMENU_EVENTINFO, NULL},
-        //{SNeutrinoSettings::ITEM_EPG_MISC, LOCALE_USERMENU_ITEM_EPG_MISC, NULL},
         {SNeutrinoSettings::ITEM_AUDIO_SELECT, LOCALE_AUDIOSELECTMENUE_HEAD, NULL},
         {SNeutrinoSettings::ITEM_SUBCHANNEL, LOCALE_INFOVIEWER_SUBSERVICE, NULL},
-        //{SNeutrinoSettings::ITEM_RECORD, LOCALE_TIMERLIST_TYPE_RECORD, NULL} ,
         {SNeutrinoSettings::ITEM_MOVIEPLAYER_MB, LOCALE_MOVIEPLAYER_MOVIES, NULL},
         {SNeutrinoSettings::ITEM_TIMERLIST, LOCALE_TIMERLIST_NAME, NULL},
         {SNeutrinoSettings::ITEM_REMOTE, LOCALE_RCLOCK_MENUEADD, NULL},
@@ -1166,6 +1164,7 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	return true;
 }
 
+#if 0
 // mkdir (0755)
 int safe_mkdir(char * path)
 {
@@ -1186,8 +1185,10 @@ int safe_mkdir(char * path)
 
 	return ret;
 }
+#endif
 
 // check fs
+#if 0
 int check_dir(const char * newdir)
 {
 	struct statfs s;
@@ -1216,7 +1217,9 @@ int check_dir(const char * newdir)
 	
 	return 1;//error			  
 }
+#endif
 
+#if 0
 bool get_fs_usage(const char * dir, long &btotal, long &bused, long *bsize /*=NULL*/)
 {
 	btotal = bused = 0;
@@ -1234,6 +1237,6 @@ bool get_fs_usage(const char * dir, long &btotal, long &bused, long *bsize /*=NU
 	
 	return false;
 }
-
+#endif
 
 
