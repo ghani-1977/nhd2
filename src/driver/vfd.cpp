@@ -118,7 +118,43 @@ CVFD::CVFD()
 	}
 #endif
 
-#if defined (PLATFORM_GIGABLUE)
+	// generic
+#if defined (PLATFORM_GENERIC) && !defined (USE_OPENGL)
+	// probe /dev/dbox/fp
+	fd = open("/dev/dbox/fp", O_RDWR);
+		
+	if(fd < 0)
+	{
+		// probe /dev/vfd
+		
+		fd = open("/dev/vfd", O_RDWR);
+		
+		if(fd < 0)
+		{
+			// probe /dev/display
+			fd = open("/dev/display", O_RDWR);
+			
+			if(fd < 0)
+			{
+				// probe /dev/dbox/oled0
+				fd = open("/dev/dbox/oled0", O_RDWR);
+	
+				if(fd < 0) 
+				{
+					// probe /dev/oled0
+					fd = open("/dev/oled0", O_RDWR);
+					
+					if(fd < 0)
+					{
+						dprintf(DEBUG_NORMAL, "no VFD detected\n");
+						has_lcd = 0;
+					}
+				}
+			}
+		}
+	}
+	// gigablue
+#elif defined (PLATFORM_GIGABLUE)
 	fd = open("/proc/vfd", O_RDWR);
 		
 	if(fd < 0)
@@ -126,6 +162,7 @@ CVFD::CVFD()
 		perror("/proc/vfd");
 		has_lcd = 0;
 	}
+	// more mipsel
 #elif !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (USE_OPENGL)
 	fd = open("/dev/dbox/oled0", O_RDWR);
 	
@@ -149,7 +186,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (USE_OPENGL)
+#if !defined (__sh__) && !defined (USE_OPENGL)
 	if(fd > 0)
 		close(fd);
 	
