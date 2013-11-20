@@ -1,5 +1,6 @@
 /*
-	$Id: webtv.h 2013/09/03 10:45:30 mohousch Exp $
+	$Id: webtv.cpp 2013/09/03 10:45:30 mohousch Exp $
+	based on martii webtv
 
 	Kommentar:
 

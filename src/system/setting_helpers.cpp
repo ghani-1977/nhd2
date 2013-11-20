@@ -685,123 +685,6 @@ int CTuxtxtChangeExec::exec(CMenuTarget *parent, const std::string &actionKey)
 	return menu_return::RETURN_REPAINT;
 }
 
-const char * mypinghost(const char * const host)
-{
-	int retvalue = pinghost(host);
-	switch (retvalue)
-	{
-		case 1: return (g_Locale->getText(LOCALE_PING_OK));
-		case 0: return (g_Locale->getText(LOCALE_PING_UNREACHABLE));
-		case -1: return (g_Locale->getText(LOCALE_PING_PROTOCOL));
-		case -2: return (g_Locale->getText(LOCALE_PING_SOCKET));
-	}
-	return "";
-}
-
-void testNetworkSettings(const char* ip, const char* netmask, const char* broadcast, const char* gateway, const char* nameserver, bool ip_static)
-{
-	char our_ip[16];
-	char our_mask[16];
-	char our_broadcast[16];
-	char our_gateway[16];
-	char our_nameserver[16];
-	std::string text;
-
-	if (ip_static) 
-	{
-		strcpy(our_ip,ip);
-		strcpy(our_mask,netmask);
-		strcpy(our_broadcast,broadcast);
-		strcpy(our_gateway,gateway);
-		strcpy(our_nameserver,nameserver);
-	}
-	else 
-	{
-		netGetIP((char *) "eth0",our_ip,our_mask,our_broadcast);
-		netGetDefaultRoute(our_gateway);
-		netGetNameserver(our_nameserver);
-	}
-
-	dprintf(DEBUG_NORMAL, "testNw IP       : %s\n", our_ip);
-	dprintf(DEBUG_NORMAL, "testNw Netmask  : %s\n", our_mask);
-	dprintf(DEBUG_NORMAL, "testNw Broadcast: %s\n", our_broadcast);
-	dprintf(DEBUG_NORMAL, "testNw Gateway: %s\n", our_gateway);
-	dprintf(DEBUG_NORMAL, "testNw Nameserver: %s\n", our_nameserver);
-
-	text = our_ip;
-	text += ": ";
-	text += mypinghost(our_ip);
-	text += '\n';
-	text += g_Locale->getText(LOCALE_NETWORKMENU_GATEWAY);
-	text += ": ";
-	text += our_gateway;
-	text += ' ';
-	text += mypinghost(our_gateway);
-	text += '\n';
-	text += g_Locale->getText(LOCALE_NETWORKMENU_NAMESERVER);
-	text += ": ";
-	text += our_nameserver;
-	text += ' ';
-	text += mypinghost(our_nameserver);
-	text += "\nwww.google.de: ";
-	text += mypinghost("173.194.35.152");
-
-	ShowMsgUTF(LOCALE_NETWORKMENU_TEST, text, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
-}
-
-void showCurrentNetworkSettings()
-{
-	char ip[16];
-	char mask[16];
-	char broadcast[16];
-	char router[16];
-	char nameserver[16];
-	std::string mac;
-	std::string text;
-
-	//netGetIP((char *) "eth0",ip,mask,broadcast);
-	netGetIP(g_settings.ifname, ip, mask, broadcast);
-	
-	if (ip[0] == 0) {
-		text = "Network inactive\n";
-	}
-	else {
-		netGetNameserver(nameserver);
-		netGetDefaultRoute(router);
-		//netGetMacAddr(g_settings.ifname, (unsigned char *)mac.c_str());
-		
-		//text = "Box: " + mac + "\n    ";
-		
-		text  = g_Locale->getText(LOCALE_NETWORKMENU_IPADDRESS );
-		text += ": ";
-		text += ip;
-		text += '\n';
-		text += g_Locale->getText(LOCALE_NETWORKMENU_NETMASK   );
-		text += ": ";
-		text += mask;
-		text += '\n';
-		text += g_Locale->getText(LOCALE_NETWORKMENU_BROADCAST );
-		text += ": ";
-		text += broadcast;
-		text += '\n';
-		text += g_Locale->getText(LOCALE_NETWORKMENU_NAMESERVER);
-		text += ": ";
-		text += nameserver;
-		text += '\n';
-		text += g_Locale->getText(LOCALE_NETWORKMENU_GATEWAY   );
-		text += ": ";
-		text += router;
-	}
-	ShowMsgUTF(LOCALE_NETWORKMENU_SHOW, text, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
-}
-
-unsigned long long getcurrenttime()
-{
-	struct timeval tv;
-	gettimeofday( &tv, NULL );
-	return (unsigned long long) tv.tv_usec + (unsigned long long)((unsigned long long) tv.tv_sec * (unsigned long long) 1000000);
-}
-
 // USERMENU
 #define USERMENU_ITEM_OPTION_COUNT SNeutrinoSettings::ITEM_MAX
 const CMenuOptionChooser::keyval USERMENU_ITEM_OPTIONS[USERMENU_ITEM_OPTION_COUNT] =
@@ -1164,79 +1047,114 @@ bool CAudioSetupNotifierVolPercent::changeNotify(const neutrino_locale_t OptionN
 	return true;
 }
 
-#if 0
-// mkdir (0755)
-int safe_mkdir(char * path)
+const char * mypinghost(const char * const host)
 {
-	struct statfs s;
-	int ret = 0;
-
-	if(!strncmp(path, "/hdd", 4)) 
+	int retvalue = pinghost(host);
+	switch (retvalue)
 	{
-		ret = statfs("/hdd", &s);
-
-		if((ret != 0) || (s.f_type == 0x72b6)) 
-			ret = -1;
-		else 
-			mkdir(path, 0755);
-	} 
-	else
-		mkdir(path, 0755);
-
-	return ret;
+		case 1: return (g_Locale->getText(LOCALE_PING_OK));
+		case 0: return (g_Locale->getText(LOCALE_PING_UNREACHABLE));
+		case -1: return (g_Locale->getText(LOCALE_PING_PROTOCOL));
+		case -2: return (g_Locale->getText(LOCALE_PING_SOCKET));
+	}
+	return "";
 }
-#endif
 
-// check fs
-#if 0
-int check_dir(const char * newdir)
+void testNetworkSettings(const char* ip, const char* netmask, const char* broadcast, const char* gateway, const char* nameserver, bool ip_static)
 {
-	struct statfs s;
-	
-	if (::statfs(newdir, &s) == 0) 
+	char our_ip[16];
+	char our_mask[16];
+	char our_broadcast[16];
+	char our_gateway[16];
+	char our_nameserver[16];
+	std::string text;
+
+	if (ip_static) 
 	{
-		switch (s.f_type)	/* f_type is long */
-		{
-			case 0xEF53L:		/*EXT2 & EXT3 & EXT4*/
-			case 0x6969L:		/*NFS*/
-			case 0xFF534D42L:	/*CIFS*/
-			case 0x517BL:		/*SMB*/
-			case 0x52654973L:	/*REISERFS*/
-			case 0x65735546L:	/*fuse for ntfs*/
-			case 0x5346544eL:	/*ntfs*/
-			case 0x58465342L:	/*xfs*/
-			case 0x4d44L:		/*msdos*/
-			case 0x3153464aL:	/*jfs*/
-			case 0x4006L:		/*fat*/
-				return 0;//ok
-			default:
-				fprintf( stderr,"%s Unknow File system type: %i\n",newdir ,s.f_type);
-			  break;
-		}
+		strcpy(our_ip,ip);
+		strcpy(our_mask,netmask);
+		strcpy(our_broadcast,broadcast);
+		strcpy(our_gateway,gateway);
+		strcpy(our_nameserver,nameserver);
+	}
+	else 
+	{
+		netGetIP((char *) "eth0",our_ip,our_mask,our_broadcast);
+		netGetDefaultRoute(our_gateway);
+		netGetNameserver(our_nameserver);
+	}
+
+	dprintf(DEBUG_NORMAL, "testNw IP       : %s\n", our_ip);
+	dprintf(DEBUG_NORMAL, "testNw Netmask  : %s\n", our_mask);
+	dprintf(DEBUG_NORMAL, "testNw Broadcast: %s\n", our_broadcast);
+	dprintf(DEBUG_NORMAL, "testNw Gateway: %s\n", our_gateway);
+	dprintf(DEBUG_NORMAL, "testNw Nameserver: %s\n", our_nameserver);
+
+	text = our_ip;
+	text += ": ";
+	text += mypinghost(our_ip);
+	text += '\n';
+	text += g_Locale->getText(LOCALE_NETWORKMENU_GATEWAY);
+	text += ": ";
+	text += our_gateway;
+	text += ' ';
+	text += mypinghost(our_gateway);
+	text += '\n';
+	text += g_Locale->getText(LOCALE_NETWORKMENU_NAMESERVER);
+	text += ": ";
+	text += our_nameserver;
+	text += ' ';
+	text += mypinghost(our_nameserver);
+	text += "\nwww.google.de: ";
+	text += mypinghost("173.194.35.152");
+
+	ShowMsgUTF(LOCALE_NETWORKMENU_TEST, text, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
+}
+
+void showCurrentNetworkSettings()
+{
+	char ip[16];
+	char mask[16];
+	char broadcast[16];
+	char router[16];
+	char nameserver[16];
+	std::string mac;
+	std::string text;
+
+	//netGetIP((char *) "eth0",ip,mask,broadcast);
+	netGetIP(g_settings.ifname, ip, mask, broadcast);
+	
+	if (ip[0] == 0) {
+		text = "Network inactive\n";
+	}
+	else {
+		netGetNameserver(nameserver);
+		netGetDefaultRoute(router);
+		//netGetMacAddr(g_settings.ifname, (unsigned char *)mac.c_str());
+		
+		//text = "Box: " + mac + "\n    ";
+		
+		text  = g_Locale->getText(LOCALE_NETWORKMENU_IPADDRESS );
+		text += ": ";
+		text += ip;
+		text += '\n';
+		text += g_Locale->getText(LOCALE_NETWORKMENU_NETMASK   );
+		text += ": ";
+		text += mask;
+		text += '\n';
+		text += g_Locale->getText(LOCALE_NETWORKMENU_BROADCAST );
+		text += ": ";
+		text += broadcast;
+		text += '\n';
+		text += g_Locale->getText(LOCALE_NETWORKMENU_NAMESERVER);
+		text += ": ";
+		text += nameserver;
+		text += '\n';
+		text += g_Locale->getText(LOCALE_NETWORKMENU_GATEWAY   );
+		text += ": ";
+		text += router;
 	}
 	
-	return 1;//error			  
+	ShowMsgUTF(LOCALE_NETWORKMENU_SHOW, text, CMessageBox::mbrBack, CMessageBox::mbBack); // UTF-8
 }
-#endif
-
-#if 0
-bool get_fs_usage(const char * dir, long &btotal, long &bused, long *bsize /*=NULL*/)
-{
-	btotal = bused = 0;
-	struct statfs s;
-
-	if (::statfs(dir, &s) == 0 && s.f_blocks) 
-	{
-		btotal = s.f_blocks;
-		bused = s.f_blocks - s.f_bfree;
-		if (bsize != NULL)
-			*bsize = s.f_bsize;
-		//printf("fs (%s): total %ld used %ld\n", dir, btotal, bused);
-		return true;
-	}
-	
-	return false;
-}
-#endif
-
 

@@ -50,6 +50,7 @@ std::string getFileExt(std::string &file);
 std::string getNowTimeStr(const char* format);
 std::string trim(std::string &str, const std::string &trimChars = " \n\r\t");
 std::string replace_all(const std::string &in, const std::string &entity, const std::string &symbol);
+unsigned long long getcurrenttime();
 
 class CFileHelpers
 {

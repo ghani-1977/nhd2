@@ -370,6 +370,13 @@ std::string replace_all(const std::string &in, const std::string &entity, const 
 	return out;
 }
 
+unsigned long long getcurrenttime()
+{
+	struct timeval tv;
+	gettimeofday( &tv, NULL );
+	return (unsigned long long) tv.tv_usec + (unsigned long long)((unsigned long long) tv.tv_sec * (unsigned long long) 1000000);
+}
+
 CFileHelpers::CFileHelpers()
 {
 	doCopyFlag	= true;

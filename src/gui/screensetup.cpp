@@ -41,6 +41,7 @@
 #include <driver/fontrenderer.h>
 #include <driver/rcinput.h>
 #include <system/settings.h>
+#include <system/debug.h>
 
 #include <global.h>
 #include <neutrino.h>
@@ -58,6 +59,8 @@ CScreenSetup::CScreenSetup()
 
 int CScreenSetup::exec(CMenuTarget* parent, const std::string &)
 {
+	dprintf(DEBUG_NORMAL, "CScreenSetup::exec\n");
+	
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 

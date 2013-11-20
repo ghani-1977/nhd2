@@ -41,9 +41,6 @@
 #include <string>
 
 
-unsigned long long getcurrenttime();
-bool get_fs_usage(const char * dir, long &total, long &used, long *bsize = NULL);
-
 // sat setup notifuer
 class CSatelliteSetupNotifier : public CChangeObserver
 {
@@ -184,7 +181,6 @@ class CSubtitleChangeExec : public CMenuTarget
 };
 
 // NVOD change notifier
-void showSubchan(const std::string & subChannelName);
 class CNVODChangeExec : public CMenuTarget
 {
 	public:
@@ -197,10 +193,6 @@ class CTuxtxtChangeExec : public CMenuTarget
 	public:
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 };
-
-// user menu notifier
-void testNetworkSettings(const char* ip, const char* netmask, const char* broadcast, const char* gateway, const char* nameserver, bool dhcp);
-void showCurrentNetworkSettings();
 
 // USERMENU
 class CUserMenuMenu : public CMenuTarget
@@ -280,7 +272,7 @@ class CAudioSetupNotifierVolPercent : public CChangeObserver
 		bool changeNotify(const neutrino_locale_t OptionName, void *);
 };
 
-//int safe_mkdir(char * path);
-//int check_dir(const char * newdir);
+void testNetworkSettings(const char* ip, const char* netmask, const char* broadcast, const char* gateway, const char* nameserver, bool dhcp);
+void showCurrentNetworkSettings();
 
 #endif

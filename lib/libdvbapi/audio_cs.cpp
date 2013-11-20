@@ -131,13 +131,13 @@ int cAudio::SetMute(int enable)
 #endif	
 	
 #if !defined (__sh__)
-	if (audio_fd < 0)
-		return -1;
+	if (audio_fd > 0)
+	{
+		ret = ioctl(audio_fd, AUDIO_SET_MUTE, enable);
 	
-	ret = ioctl(audio_fd, AUDIO_SET_MUTE, enable);
-	
-	if(ret < 0)
-		perror("AUDIO_SET_MUTE"); 
+		if(ret < 0)
+			perror("AUDIO_SET_MUTE"); 
+	}
 #endif
 
 	return ret;

@@ -1835,7 +1835,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitColorSettings\n");
 	
 	// init screensetup objekt
-	CScreenSetup  * ScreenSetup = new CScreenSetup();
+	//CScreenSetup  * ScreenSetup = new CScreenSetup();
 	
 	int shortcutOSD = 1;
 	
@@ -1892,7 +1892,7 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	colorSettings.addItem(new CMenuForwarder(LOCALE_TIMING_HEAD, true, NULL, colorSettings_timing, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 
 	// sceensetup
-	colorSettings.addItem(new CMenuForwarder(LOCALE_VIDEOMENU_SCREENSETUP, true, NULL, ScreenSetup, NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
+	colorSettings.addItem(new CMenuForwarder(LOCALE_VIDEOMENU_SCREENSETUP, true, NULL, new CScreenSetup(), NULL, CRCInput::convertDigitToKey(shortcutOSD++) ));
 	
 #if defined (__sh__)
 	colorSettings.addItem(GenericMenuSeparatorLine);
@@ -2683,22 +2683,6 @@ bool CNeutrinoApp::showUserMenu(int button)
 				menu_prev = SNeutrinoSettings::ITEM_BAR;
 				break;
 
-			/*
-                        case SNeutrinoSettings::ITEM_RECORD:
-				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
-				{
-					if(recDir == NULL)
-						break;
-
-					menu_items++;
-					menu_prev = SNeutrinoSettings::ITEM_RECORD;
-					keyhelper.get(&key, &icon, CRCInput::RC_red);
-					menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_RECORDING, &recordingstatus, MAINMENU_RECORDING_OPTIONS, MAINMENU_RECORDING_OPTION_COUNT, true, this, key, icon);
-					menu->addItem(menu_item, false);
-				}
-                                break;
-			*/
-
                         case SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB:
                                 menu_items++;
                                 menu_prev = SNeutrinoSettings::ITEM_MOVIEPLAYER_TSMB;
@@ -2767,28 +2751,6 @@ bool CNeutrinoApp::showUserMenu(int button)
 				}
                                 break;
 
-			/*
-                        case SNeutrinoSettings::ITEM_EPG_MISC:
-				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
-				{
-					// on/off read epg
-					menu_items++;
-					menu_prev = SNeutrinoSettings::ITEM_EPG_MISC;
-					dummy = g_Sectionsd->getIsScanningActive();
-					tmpPauseSectionsdNotifier = new CPauseSectionsdNotifier;
-					keyhelper.get(&key, &icon);
-					menu_item = new CMenuOptionChooser(LOCALE_MAINMENU_PAUSESECTIONSD, &dummy, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, tmpPauseSectionsdNotifier , key, icon );
-					menu->addItem(menu_item, false);
-					
-					// clear epg cache
-					menu_items++;
-					keyhelper.get(&key, &icon);
-					menu_item = new CMenuForwarder(LOCALE_MAINMENU_CLEARSECTIONSD, true, NULL, this, "clearSectionsd", key,icon);
-					menu->addItem(menu_item, false);
-				}
-                                break;
-			*/
-
                         case SNeutrinoSettings::ITEM_AUDIO_SELECT:
 				if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 				{
@@ -2796,7 +2758,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 					menu_prev = SNeutrinoSettings::ITEM_AUDIO_SELECT;
 					tmpAudioSelectMenuHandler = new CAudioSelectMenuHandler;
 					keyhelper.get(&key, &icon);
-					menu_item = new CMenuForwarderItemMenuIcon(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon, NEUTRINO_ICON_MAINSETTINGS, LOCALE_AUDIOSELECTMENUE_HEAD);
+					menu_item = new CMenuForwarderItemMenuIcon(LOCALE_AUDIOSELECTMENUE_HEAD, true, NULL, tmpAudioSelectMenuHandler, "-1", key,icon, NEUTRINO_ICON_AUDIOSETTINGS, LOCALE_AUDIOSELECTMENUE_HEAD);
 					menu->addItem(menu_item, false);
 				}
                                 break;

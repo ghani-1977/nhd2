@@ -44,6 +44,7 @@
 
 #include <driver/encoding.h>
 #include <system/debug.h>
+#include <system/helpers.h>
 
 /*zapit includes*/
 #include <bouquets.h>
