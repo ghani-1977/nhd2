@@ -479,10 +479,8 @@ class CVFD
 		void ClearIcons();
 #if defined(PLATFORM_SPARK7162)
 		void ShowDiskLevel();
-		void ShowIcon(int icon, bool show);
-#else
-		void ShowIcon(vfd_icon icon, bool show);
 #endif		
+		void ShowIcon(vfd_icon icon, bool show);		
 		void ShowText(const char * str);
 		void LCDshowText(int pos);
 		

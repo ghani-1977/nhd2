@@ -708,7 +708,8 @@ void CVFD::ShowDiskLevel()
 {
 	int hdd_icons[9] ={24, 23, 21, 20, 19, 18, 17, 16, 22};
 	int percent, digits, i, j;
-	long t, u;
+	uint64_t t, u;
+	
 	if (get_fs_usage(g_settings.network_nfs_recordingdir, t, u))
 	{
 		ShowIcon(SPARK_HDD, true);
@@ -716,14 +717,16 @@ void CVFD::ShowDiskLevel()
 		digits = percent / 125;
 		if (percent > 1050)
 			digits = 9;
+		
 		//printf("HDD Fuell = %d Digits = %d\n", percent, digits);
+		
 		if (digits > 0)
 		{
-			for (i=0; i<digits; i++)
-				ShowIcon(hdd_icons[i], true);
+			for (i = 0; i < digits; i++)
+				ShowIcon((vfd_icon)hdd_icons[i], true);
 						
-			for (j=i; j < 9; j++)
-				ShowIcon(hdd_icons[j], false);
+			for (j = i; j < 9; j++)
+				ShowIcon((vfd_icon)hdd_icons[j], false);
 		}
 	}
 	else
@@ -734,11 +737,7 @@ void CVFD::ShowDiskLevel()
 }
 #endif
 
-#if defined(PLATFORM_SPARK7162)
-void CVFD::ShowIcon(int icon, bool show)
-#else
 void CVFD::ShowIcon(vfd_icon icon, bool show)
-#endif
 {
 	if(!has_lcd || is4digits) 
 		return;
