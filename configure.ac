@@ -163,6 +163,16 @@ if test "$enable_netzkino" = "yes"; then
 AC_DEFINE(ENABLE_NETZKINO,1,[include include netzkino.de player])
 fi
 
+# 4 digits
+AC_ARG_ENABLE(4digits,
+	AS_HELP_STRING(--enable-4digits,include 5 segment lcd support),
+	,[enable_4digits=no])
+AM_CONDITIONAL(ENABLE_4DIGITS,test "$enable_4digits" = "yes")
+
+if test "$enable_4digits" = "yes"; then
+AC_DEFINE(ENABLE_4DIGITS,1,[include 5 segment lcd support])
+fi
+
 AC_OUTPUT([
 Makefile
 lib/Makefile

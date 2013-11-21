@@ -95,90 +95,55 @@ void CVFD::closeDevice()
 CVFD::CVFD()
 {
 	// vfd
-#if defined (USE_OPENGL)
-	has_lcd = 0;
-#else
 	has_lcd = 1;
-#endif
 
 	// 4digits
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_ODIN) || defined (PLATFORM_CUBREVO_250HD) || defined (PLATFORM_SPARK)
-	is4digits = 1;
-#else
 	is4digits = 0;
-#endif
-
-#if defined (PLATFORM_COOLSTREAM)
-	fd = open("/dev/display", O_RDONLY);
 	
-	if(fd < 0) 
-	{
-		perror("/dev/display");
-		has_lcd = 0;
-	}
+#if defined (ENABLE_4DIGITS)
+	is4digits = 1;
 #endif
 
-	// generic
-#if defined (PLATFORM_GENERIC) && !defined (USE_OPENGL)
+#if !defined (__sh__)
 	// probe /dev/dbox/fp
 	fd = open("/dev/dbox/fp", O_RDWR);
 		
 	if(fd < 0)
 	{
 		// probe /dev/vfd
-		
 		fd = open("/dev/vfd", O_RDWR);
 		
 		if(fd < 0)
 		{
-			// probe /dev/display
+			// probe /dev/display (e.g coolstream)
 			fd = open("/dev/display", O_RDWR);
 			
 			if(fd < 0)
 			{
-				// probe /dev/dbox/oled0
-				fd = open("/dev/dbox/oled0", O_RDWR);
-	
-				if(fd < 0) 
+				// probe /proc/vfd (e.g gigablue)
+				fd = open("/proc/vfd", O_RDWR);
+				
+				if(fd < 0)
 				{
-					// probe /dev/oled0
-					fd = open("/dev/oled0", O_RDWR);
-					
-					if(fd < 0)
+					// probe /dev/dbox/oled0
+					fd = open("/dev/dbox/oled0", O_RDWR);
+		
+					if(fd < 0) 
 					{
-						dprintf(DEBUG_NORMAL, "no VFD detected\n");
-						has_lcd = 0;
+						// probe /dev/oled0
+						fd = open("/dev/oled0", O_RDWR);
+						
+						if(fd < 0)
+						{
+							dprintf(DEBUG_NORMAL, "no VFD detected\n");
+							has_lcd = 0;
+						}
 					}
 				}
 			}
 		}
 	}
-	// gigablue
-#elif defined (PLATFORM_GIGABLUE)
-	fd = open("/proc/vfd", O_RDWR);
-		
-	if(fd < 0)
-	{
-		perror("/proc/vfd");
-		has_lcd = 0;
-	}
-	// more mipsel
-#elif !defined (__sh__) && !defined (PLATFORM_COOLSTREAM) && !defined (USE_OPENGL)
-	fd = open("/dev/dbox/oled0", O_RDWR);
-	
-	if(fd < 0) 
-	{
-		perror("/dev/dbox/oled0");
-		
-		fd = open("/dev/oled0", O_RDWR);
-		
-		if(fd < 0)
-		{
-			perror("/dev/oled0");
-			has_lcd = 0;
-		}
-	}
-#endif
+#endif	
 	
 	text[0] = 0;
 	clearClock = 0;
@@ -186,7 +151,7 @@ CVFD::CVFD()
 
 CVFD::~CVFD()
 { 
-#if !defined (__sh__) && !defined (USE_OPENGL)
+#if !defined (__sh__)
 	if(fd > 0)
 		close(fd);
 	
