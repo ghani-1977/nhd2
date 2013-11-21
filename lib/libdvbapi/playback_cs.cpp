@@ -146,7 +146,7 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			}
 			g_error_free(err);
 			
-			end_eof = true;
+			//end_eof = true;
 			
 			break;
 		}

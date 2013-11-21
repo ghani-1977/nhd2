@@ -894,10 +894,10 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	int InfoWidth = durationTextPos - InfoStartX;
 		
 	//Title 1
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, g_file_epg, COL_INFOBAR, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, g_file_epg.c_str(), COL_INFOBAR, 0, true);
 
 	//Title2
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1, COL_INFOBAR, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1.c_str(), COL_INFOBAR, 0, true);
 
 	// duration
 	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )
