@@ -743,7 +743,7 @@ extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
 
-void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
 {
 	m_visible = true;
 	
@@ -893,11 +893,11 @@ void CInfoViewer::showMovieInfo(const std::string &g_file_epg, const std::string
 	int InfoStartX = BoxStartX + 5 + m_icon_w + 10 + icon_w + 5 + speedWidth + 20;
 	int InfoWidth = durationTextPos - InfoStartX;
 		
-	//Title 1
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, g_file_epg.c_str(), COL_INFOBAR, 0, true);
+	// Title
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 - 5, InfoWidth, Title.c_str(), COL_INFOBAR, 0, true);
 
-	//Title2
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, g_file_epg1.c_str(), COL_INFOBAR, 0, true);
+	// Info
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (InfoStartX, BoxStartY + BoxHeight/2 + 25, InfoWidth, Info.c_str(), COL_INFOBAR, 0, true);
 
 	// duration
 	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )

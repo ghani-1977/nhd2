@@ -129,7 +129,6 @@ class CInfoViewer
 		void showSNR();		
 
 		CProgressBar *snrscale, *sigscale, *timescale;
-		//char MoviePercent;
 		std::string eventname;
 
  public:
@@ -173,7 +172,7 @@ class CInfoViewer
 		// movie infoviewer
 		CProgressBar *moviescale;
 		bool m_visible;
-		void showMovieInfo(const std::string &g_file_epg, const std::string &g_file_epg1, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow = true);
+		void showMovieInfo(const std::string &Title, const std::string &Info, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow = true);
 };
 
 class CInfoViewerHandler : public CMenuTarget
