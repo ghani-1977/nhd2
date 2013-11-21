@@ -678,14 +678,22 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 {
 	if(!has_lcd || is4digits) 
 		return;
-	
-#if defined (PLATFORM_KATHREIN)
+
+#if defined (__sh__)	
+#if defined(PLATFORM_SPARK7162)		/* using one command for switching off all Icons*/	 
+	openDevice();
+	aotom_data.u.icon.icon_nr = SPARK_ICON_ALL;
+	aotom_data.u.icon.on = 0;
+	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+		perror("VFDICONDISPLAYONOFF");
+	closeDevice();
+#else
 	int i;
 	struct vfd_ioctl_data data;
 	
 	openDevice();
 	
-	for(i=0; i <= 15; i++)
+	for(i = 0; i <= 15; i++)
 	{
 		data.data[0] = i;
 		data.data[4] = 0;
@@ -695,20 +703,14 @@ void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
 	}
 	
 	closeDevice();
-#elif defined(PLATFORM_SPARK7162)		/* using one command for switching off all Icons*/	 
-	openDevice();
-	aotom_data.u.icon.icon_nr = SPARK_ICON_ALL;
-	aotom_data.u.icon.on = 0;
-	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
-		perror("VFDICONDISPLAYONOFF");
-	closeDevice();
+#endif
 #endif
 }
 
 #if defined(PLATFORM_SPARK7162)			/* only for Spark7162 STB's which Display has a HDD Level indicator */	 
 void CVFD::ShowDiskLevel()
 {
-	int hdd_icons[9] ={24, 23, 21, 20, 19, 18, 17, 16, 22};
+	int hdd_icons[9] = {24, 23, 21, 20, 19, 18, 17, 16, 22};
 	int percent, digits, i, j;
 	uint64_t t, u;
 	
