@@ -462,26 +462,29 @@ void cDvbCi::setSource(int slot, int source)
 	FILE *ci = fopen(buf, "wb");
 
 	// set source
-	switch(source)
+	if(ci > 0)
 	{
-		case TUNER_A:
-			fprintf(ci, "A");
-			break;
-			
-		case TUNER_B:
-			fprintf(ci, "B");
-			break;
-			
-		case TUNER_C:
-			fprintf(ci, "C");
-			break;
-			
-		case TUNER_D:
-			fprintf(ci, "D");
-			break;
-	}
+		switch(source)
+		{
+			case TUNER_A:
+				fprintf(ci, "A");
+				break;
+				
+			case TUNER_B:
+				fprintf(ci, "B");
+				break;
+				
+			case TUNER_C:
+				fprintf(ci, "C");
+				break;
+				
+			case TUNER_D:
+				fprintf(ci, "D");
+				break;
+		}
 
-	fclose(ci);
+		fclose(ci);
+	}
 }
 
 void cDvbCi::slot_pollthread(void *c)

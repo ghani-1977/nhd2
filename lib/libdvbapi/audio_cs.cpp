@@ -126,8 +126,12 @@ int cAudio::SetMute(int enable)
 	sprintf(sMuted, "%d", Muted);
 
 	int fd = open("/proc/stb/audio/j1_mute", O_RDWR);
-	write(fd, sMuted, strlen(sMuted));
-	close(fd);
+	
+	if(fd > 0)
+	{
+		write(fd, sMuted, strlen(sMuted));
+		close(fd);
+	}
 #endif	
 	
 #if !defined (__sh__)
@@ -168,8 +172,12 @@ int cAudio::setVolume(unsigned int left, unsigned int right)
 	sprintf(sVolume, "%d", (int)vol);
 
 	int fd = open("/proc/stb/avs/0/volume", O_RDWR);
-	write(fd, sVolume, strlen(sVolume));
-	close(fd);
+	
+	if(fd > 0)
+	{
+		write(fd, sVolume, strlen(sVolume));
+		close(fd);
+	}
 #endif	
 
 #if !defined (__sh__)
@@ -678,18 +686,22 @@ void cAudio::SetHdmiDD(int ac3)
 	};
 	
 	int fd = open("/proc/stb/hdmi/audio_source", O_RDWR);
-	  
-	write(fd, aHDMIDDSOURCE[ac3], strlen(aHDMIDDSOURCE[ac3]));
-		
-	close(fd);
+	
+	if(fd > 0)
+	{
+		write(fd, aHDMIDDSOURCE[ac3], strlen(aHDMIDDSOURCE[ac3]));
+		close(fd);
+	}
 #endif
 
 #if !defined (USE_OPENGL)
 	int fd_ac3 = open("/proc/stb/audio/ac3", O_RDWR);
 	
-	write(fd_ac3, aHDMIDD[ac3], strlen(aHDMIDD[ac3]));
-
-	close(fd_ac3);
+	if(fd_ac3 > 0)
+	{
+		write(fd_ac3, aHDMIDD[ac3], strlen(aHDMIDD[ac3]));
+		close(fd_ac3);
+	}
 #endif	
 }
 

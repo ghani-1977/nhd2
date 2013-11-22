@@ -126,44 +126,48 @@ int cVideo::getAspectRatio(void)
 	int n, fd;
 
 	fd = open("/proc/stb/vmpeg/0/aspect", O_RDONLY);
-	n = read(fd, buffer, 2);
-	close(fd);
 	
-	if (n > 0) 
+	if(fd > 0)
 	{
-		ratio = atoi((const char*) buffer);
-	}
-	
-	char buf[100];
-	
-	switch (ratio) 
-	{
-		case ASPECTRATIO_43:
-			sprintf ((char *) buf, "4:3");
-			break;
+		n = read(fd, buffer, 2);
+		close(fd);
 		
-		case ASPECTRATIO_169:
-			sprintf ((char *) buf, "16:9");
-			break;
+		if (n > 0) 
+		{
+			ratio = atoi((const char*) buffer);
+		}
+		
+		char buf[100];
+		
+		switch (ratio) 
+		{
+			case ASPECTRATIO_43:
+				sprintf ((char *) buf, "4:3");
+				break;
 			
-		case ASPECTRATIO_AUTO:
-			sprintf ((char *) buf, "auto");
-			break;
-			
-		//case 3:
-		//	sprintf ((char *) buf, "14:9");
-		//	break;
-	
-		//case 4:
-		//	sprintf ((char *) buf, "20:9");
-		//	break;
-			
-		default:
-			strncpy (buf, "unknow", sizeof (buf));
-			break;
+			case ASPECTRATIO_169:
+				sprintf ((char *) buf, "16:9");
+				break;
+				
+			case ASPECTRATIO_AUTO:
+				sprintf ((char *) buf, "auto");
+				break;
+				
+			//case 3:
+			//	sprintf ((char *) buf, "14:9");
+			//	break;
+		
+			//case 4:
+			//	sprintf ((char *) buf, "20:9");
+			//	break;
+				
+			default:
+				strncpy (buf, "unknow", sizeof (buf));
+				break;
+		}
 	}
 	
-	dprintf(DEBUG_INFO, "%s:%s (ratio=%d) %s\n", FILENAME, __FUNCTION__, ratio, buf);
+	dprintf(DEBUG_INFO, "%s:%s (ratio=%d)\n", FILENAME, __FUNCTION__, ratio);
 #endif	
 	
 	return ratio;
@@ -178,25 +182,12 @@ bestfit
 /* set aspect ratio */
 int cVideo::setAspectRatio(int ratio, int format) 
 { 
-#if !defined (USE_OPENGL)  
-	int fd;
-
-	// aspectratio	
 	const char * sRatio[] =
 	{
 	   	"4:3",
 	   	"16:9",
 	   	"any" 
         }; 
-
-        fd = open("/proc/stb/video/aspect", O_WRONLY);
-	
-	write(fd, sRatio[ratio], strlen(sRatio[ratio]));
-
-        close(fd);
-
-	// policy
-	fd = open("/proc/stb/video/policy", O_WRONLY);
 	
 #if defined (__sh__)
 	const char* sFormat[]=
@@ -216,15 +207,29 @@ int cVideo::setAspectRatio(int ratio, int format)
 	};
 #endif
 
+#if !defined (USE_OPENGL)  
+	int fd;
+
+	// aspectratio	
+        fd = open("/proc/stb/video/aspect", O_WRONLY);
+	
+	if(fd > 0)
+	{
+		write(fd, sRatio[ratio], strlen(sRatio[ratio]));
+		close(fd);
+	}
+
+	// policy
+	fd = open("/proc/stb/video/policy", O_WRONLY);
+	
+	if(fd > 0)
+	{
+		write(fd, sFormat[format], strlen((const char*) sFormat[format]));
+		close(fd);
+	}
+	
 	dprintf(DEBUG_INFO, "%s %s (aspect=%d format=%d) set %s %s\n", FILENAME, __FUNCTION__, ratio, format, sRatio[ratio], sFormat[format]);
-
-	write(fd, sFormat[format], strlen((const char*) sFormat[format]));
-
-	close(fd);
 #endif	
-
-	//Ratio = ratio;
-	//Policy = format;
 
     	return 0; 
 }
@@ -239,41 +244,54 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 
 	// framerate
 	rate = 0;
+	
 	fd = open("/proc/stb/vmpeg/0/framerate", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
+	
+	if(fd > 0)
 	{
+		n = read(fd, buffer, 10);
+		close(fd);
+
+		if (n > 0) 
+		{
 #if defined (__sh__)
-		sscanf((const char*) buffer, "%X", &rate);
+			sscanf((const char*) buffer, "%X", &rate);
 #else
-		sscanf((const char*) buffer, "%d", &rate);
+			sscanf((const char*) buffer, "%d", &rate);
 #endif		
-		rate = rate/1000;
+			rate = rate/1000;
+		}
 	}
 
 	// width (xres)
 	width = 0;
 	fd = open("/proc/stb/vmpeg/0/xres", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
+	
+	if(fd > 0)
 	{
-		sscanf((const char*) buffer, "%X", &width);
+		n = read(fd, buffer, 10);
+		close(fd);
+
+		if (n > 0) 
+		{
+			sscanf((const char*) buffer, "%X", &width);
+		}
 	}
 
 	// height  (yres)
 	height = 0;
 	fd = open("/proc/stb/vmpeg/0/yres", O_RDONLY);
-	n = read(fd, buffer, 10);
-	close(fd);
-
-	if (n > 0) 
+	
+	if(fd > 0)
 	{
-		sscanf((const char*) buffer, "%X", &height);
-	}	
+		n = read(fd, buffer, 10);
+		close(fd);
+
+		if (n > 0) 
+		{
+			sscanf((const char*) buffer, "%X", &height);
+		}
+	}
 	
 	dprintf(DEBUG_INFO, "%s:%s < w %d, h %d, r %d\n", FILENAME, __FUNCTION__, width, height, rate);
 #endif	
@@ -459,8 +477,12 @@ ntsc
 
 #if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/video/videomode", O_RDWR);
-	write(fd, aVideoSystems[video_system][1], strlen(aVideoSystems[video_system][1]));
-	close(fd);
+	
+	if(fd > 0)
+	{
+		write(fd, aVideoSystems[video_system][1], strlen(aVideoSystems[video_system][1]));
+		close(fd);
+	}
 #endif	
 
 	return 0;
@@ -493,10 +515,11 @@ int cVideo::SetSpaceColour(int colour_space)
 #else
 	int fd = open("/proc/stb/video/hdmi_colorspace", O_RDWR);
 #endif	
-	
-	write(fd, aCOLORSPACE[colour_space], strlen(aCOLORSPACE[colour_space]));
-	
-	close(fd);
+	if(fd > 0)
+	{
+		write(fd, aCOLORSPACE[colour_space], strlen(aCOLORSPACE[colour_space]));
+		close(fd);
+	}
 #endif	
 
 	return 0;
@@ -639,8 +662,6 @@ void cVideo::SetSyncMode(int mode)
 	   	}
 	   	close(fd);
         }
-	else
-	   	printf("error %m\n");
 		
         dprintf(DEBUG_INFO, "%s:%s - set master clock = %s\n", FILENAME, __FUNCTION__, master_clock[clock]);	
 
@@ -650,8 +671,6 @@ void cVideo::SetSyncMode(int mode)
 	   	write(fd, master_clock[clock], strlen(master_clock[clock]));
 	   	close(fd);
         }
-	else
-	   	printf("error %m\n");
 #endif	
 }
 
@@ -665,21 +684,14 @@ void cVideo::SetInput(int val)
 
 #if !defined (USE_OPENGL)	
 	int fd_avs_input = open("/proc/stb/avs/0/input", O_RDWR);
-	
-	if( fd_avs_input < 0)
-		perror("cannot open /proc/stb/avs/0/input");
 
 	if(fd_avs_input > 0)
 	{
 		write(fd_avs_input, input[val], strlen(input[val]));
-	
 		close(fd_avs_input);
 	}
 		
 	int fd_sb = open("/proc/stb/avs/0/standby", O_RDWR);
-	
-	if(fd_sb < 0)
-		perror("cannot open /proc/stb/avs/0/standby");
 	
 	if(fd_sb > 0)
 	{
@@ -727,29 +739,45 @@ void cVideo::Pig(int x, int y, int w, int h, int osd_w, int osd_h, int num)
 	sprintf(vmpeg_left, "/proc/stb/vmpeg/%d/dst_left", num);
 	
 	fd = fopen(vmpeg_left, "w");
-	fprintf(fd, "%x", _x);
-	fclose(fd);
+	
+	if(fd > 0)
+	{
+		fprintf(fd, "%x", _x);
+		fclose(fd);
+	}
 
 	// top
 	sprintf(vmpeg_top, "/proc/stb/vmpeg/%d/dst_top", num);
 	
 	fd = fopen(vmpeg_top, "w");
-	fprintf(fd, "%x", _y);
-	fclose(fd);
+	
+	if(fd > 0)
+	{
+		fprintf(fd, "%x", _y);
+		fclose(fd);
+	}
 
 	// width
 	sprintf(vmpeg_width, "/proc/stb/vmpeg/%d/dst_width", num);
 	
 	fd = fopen(vmpeg_width, "w");
-	fprintf(fd, "%x", _w);
-	fclose(fd);
+	
+	if(fd > 0)
+	{
+		fprintf(fd, "%x", _w);
+		fclose(fd);
+	}
 
 	// height
 	sprintf(vmpeg_height, "/proc/stb/vmpeg/%d/dst_height", num);
 	
 	fd = fopen(vmpeg_height, "w");
-	fprintf(fd, "%x", _h);
-	fclose(fd);
+	
+	if(fd > 0)
+	{
+		fprintf(fd, "%x", _h);
+		fclose(fd);
+	}
 #endif	
 }
 
@@ -797,9 +825,11 @@ void cVideo::SetWideScreen(int val) // 0 = auto, 1 = auto(4:3_off)
 #if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/denc/0/wss", O_RDWR);
 	
-	write(fd, wss[val], strlen(wss[val]));
-
-	close(fd);
+	if(fd > 0)
+	{
+		write(fd, wss[val], strlen(wss[val]));
+		close(fd);
+	}
 #endif	
 }
 
@@ -831,9 +861,11 @@ void cVideo::SetAnalogMode(int mode)
 #if !defined (USE_OPENGL)	
 	int fd = open("/proc/stb/avs/0/colorformat", O_RDWR);
 	
-	write(fd, aANALOGMODE[mode], strlen(aANALOGMODE[mode]));
-	
-	close(fd);
+	if(fd > 0)
+	{
+		write(fd, aANALOGMODE[mode], strlen(aANALOGMODE[mode]));
+		close(fd);
+	}
 #endif	
 }
 
