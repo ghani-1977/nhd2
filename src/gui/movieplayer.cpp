@@ -2223,7 +2223,6 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				
 				if(!g_InfoViewer->m_visible)
-					//g_InfoViewer->showMovieInfo();
 					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 			}
 		} 
@@ -2274,7 +2273,6 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 				
 				if(!g_InfoViewer->m_visible)
-					//g_InfoViewer->showMovieInfo();
 					g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 			}
 		} 
@@ -2492,7 +2490,6 @@ void CMoviePlayerGui::PlayFile(void)
 			}
 			
 			if(!g_InfoViewer->m_visible)
-				//g_InfoViewer->showMovieInfo();
 				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate);
 		} 
 		else if (msg == CRCInput::RC_1) 

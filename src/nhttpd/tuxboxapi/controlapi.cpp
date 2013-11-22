@@ -53,22 +53,6 @@ extern tallchans allchans;
 extern CBouquetManager *g_bouquetManager;
 extern t_channel_id live_channel_id;
 
-#define NUMBER_OF_EVENT_DEVICES 4
- 
-const char * const RC_EVENT_DEVICE[NUMBER_OF_EVENT_DEVICES] = {
-	"/dev/input/event0", 
-	"/dev/input/event1", 
-	"/dev/input/event2", 
-	"/dev/input/event3"
-};
-
-//-----------------------------------------------------------------------------
-enum {	// not defined in input.h but used like that, at least in 2.4.22
-	KEY_RELEASED = 0,
-	KEY_PRESSED,
-	KEY_AUTOREPEAT
-};
-
 //=============================================================================
 // Initialization of static variables
 //=============================================================================
@@ -87,13 +71,13 @@ void CControlAPI::init(CyhookHandler *hh)
 {
 	if(PLUGIN_DIRS[0] == "")
 	{	// given in nhttpd.conf
-		PLUGIN_DIRS[0]=PLUGIN_DIRS[1]=hh->WebserverConfigList["WebsiteMain.override_directory"];
+		PLUGIN_DIRS[0] = PLUGIN_DIRS[1]=hh->WebserverConfigList["WebsiteMain.override_directory"];
 		PLUGIN_DIRS[1].append("/scripts");
-		PLUGIN_DIRS[2]=PLUGIN_DIRS[3]=hh->WebserverConfigList["WebsiteMain.directory"];
+		PLUGIN_DIRS[2] = PLUGIN_DIRS[3]=hh->WebserverConfigList["WebsiteMain.directory"];
 		PLUGIN_DIRS[3].append("/scripts");
-		PLUGIN_DIRS[4]="/var/tuxbox/plugins";
-		PLUGIN_DIRS[5]=PLUGINDIR;
-		PLUGIN_DIRS[6]="/mnt/plugins";
+		PLUGIN_DIRS[4] = "/var/tuxbox/plugins";
+		PLUGIN_DIRS[5] = PLUGINDIR;
+		PLUGIN_DIRS[6] = "/mnt/plugins";
 	}
 }
 
@@ -165,61 +149,61 @@ void CControlAPI::compatibility_Timer(CyhookHandler *hh)
 const CControlAPI::TyCgiCall CControlAPI::yCgiCallList[]=
 {
 	// channel & bouquet & epg & zapping handling
-	{"getservicesxml", 	&CControlAPI::GetServicesxmlCGI,""},
-	{"getbouquetsxml", 	&CControlAPI::GetBouquetsxmlCGI,""},
-	{"channellist", 	&CControlAPI::ChannellistCGI,	"text/plain"},
-	{"getbouquet", 		&CControlAPI::GetBouquetCGI,	"+xml"},
-	{"getbouquets", 	&CControlAPI::GetBouquetsCGI,	"+xml"},
-	{"getmode", 		&CControlAPI::GetModeCGI,		"text/plain"},
-	{"setmode", 		&CControlAPI::SetModeCGI,		"text/plain"},
-	{"epg", 			&CControlAPI::EpgCGI,			""},
-	{"zapto", 			&CControlAPI::ZaptoCGI,			"text/plain"},
-	{"getonidsid", 		&CControlAPI::GetChannel_IDCGI,	"text/plain"},
+	{"getservicesxml", 	&CControlAPI::GetServicesxmlCGI, ""},
+	{"getbouquetsxml", 	&CControlAPI::GetBouquetsxmlCGI, ""},
+	{"channellist", 	&CControlAPI::ChannellistCGI,	 "text/plain"},
+	{"getbouquet", 		&CControlAPI::GetBouquetCGI,	 "+xml"},
+	{"getbouquets", 	&CControlAPI::GetBouquetsCGI,	 "+xml"},
+	{"getmode", 		&CControlAPI::GetModeCGI,	 "text/plain"},
+	{"setmode", 		&CControlAPI::SetModeCGI,	 "text/plain"},
+	{"epg", 		&CControlAPI::EpgCGI,	         ""},
+	{"zapto", 		&CControlAPI::ZaptoCGI,	 	 "text/plain"},
+	{"getonidsid", 		&CControlAPI::GetChannel_IDCGI,	 "text/plain"},
 	// boxcontrol - system
-	{"standby", 		&CControlAPI::StandbyCGI,		"text/plain"},
-	{"shutdown", 		&CControlAPI::ShutdownCGI,		"text/plain"},
-	{"reboot", 			&CControlAPI::RebootCGI,		"text/plain"},
-	{"getdate", 		&CControlAPI::GetDateCGI,		"text/plain"},
-	{"gettime", 		&CControlAPI::GetTimeCGI,		"text/plain"},
-	{"info", 			&CControlAPI::InfoCGI,			"text/plain"},
-	{"version", 		&CControlAPI::VersionCGI,		""},
+	{"standby", 		&CControlAPI::StandbyCGI,	 "text/plain"},
+	{"shutdown", 		&CControlAPI::ShutdownCGI,	 "text/plain"},
+	{"reboot", 		&CControlAPI::RebootCGI, 	 "text/plain"},
+	{"getdate", 		&CControlAPI::GetDateCGI,	 "text/plain"},
+	{"gettime", 		&CControlAPI::GetTimeCGI,	 "text/plain"},
+	{"info", 		&CControlAPI::InfoCGI,	 	 "text/plain"},
+	{"version", 		&CControlAPI::VersionCGI,	 ""},
 	// boxcontrol - devices
-	{"volume", 			&CControlAPI::VolumeCGI,		"text/plain"},
-	{"lcd", 			&CControlAPI::LCDAction,		"text/plain"},
-	{"system", 			&CControlAPI::SystemCGI,		"text/plain"},
-	{"message", 		&CControlAPI::MessageCGI,		"text/plain"},
-	{"rc", 				&CControlAPI::RCCGI,			"text/plain"},
-	{"rcem", 			&CControlAPI::RCEmCGI,			"text/plain"},
+	{"volume", 		&CControlAPI::VolumeCGI, 	 "text/plain"},
+	{"lcd", 		&CControlAPI::LCDAction, 	 "text/plain"},
+	{"system", 		&CControlAPI::SystemCGI, 	 "text/plain"},
+	{"message", 		&CControlAPI::MessageCGI,	 "text/plain"},
+	{"rc", 			&CControlAPI::RCCGI,	 	 "text/plain"},
+	{"rcem", 		&CControlAPI::RCEmCGI,	 	 "text/plain"},
 	// Start skripts, plugins
-	{"startplugin", 	&CControlAPI::StartPluginCGI,	"text/plain"},
-	{"exec", 			&CControlAPI::ExecCGI,			"+xml"},
-	{"yweb", 			&CControlAPI::YWebCGI,			"text/plain"},
+	{"startplugin", 	&CControlAPI::StartPluginCGI,	 "text/plain"},
+	{"exec", 		&CControlAPI::ExecCGI,	 	 "+xml"},
+	{"yweb", 		&CControlAPI::YWebCGI,	 	 "text/plain"},
 	// video & Audio handling
-	{"aspectratio", 	&CControlAPI::AspectRatioCGI,	"text/plain"},
-	{"videoformat", 	&CControlAPI::VideoFormatCGI,	"text/plain"},
-	{"videooutput", 	&CControlAPI::VideoOutputCGI,	"text/plain"},
-	{"vcroutput", 		&CControlAPI::VCROutputCGI,		"text/plain"},
-	{"scartmode", 		&CControlAPI::ScartModeCGI,		"text/plain"},
-	{"audio", 			&CControlAPI::AudioCGI,			"text/plain"},
-	{"crypt", 			&CControlAPI::CryptCGI,			"text/plain"},
+	{"aspectratio", 	&CControlAPI::AspectRatioCGI,	 "text/plain"},
+	{"videoformat", 	&CControlAPI::VideoFormatCGI,	 "text/plain"},
+	{"videooutput", 	&CControlAPI::VideoOutputCGI,	 "text/plain"},
+	{"vcroutput", 		&CControlAPI::VCROutputCGI,	 "text/plain"},
+	{"scartmode", 		&CControlAPI::ScartModeCGI,	 "text/plain"},
+	{"audio", 		&CControlAPI::AudioCGI,	 	 "text/plain"},
+	{"crypt", 		&CControlAPI::CryptCGI,	 	 "text/plain"},
 	// timer
-	{"timer", 			&CControlAPI::TimerCGI,			"text/plain"},
+	{"timer", 		&CControlAPI::TimerCGI,	 	 "text/plain"},
 	// bouquet editing
-	{"setbouquet", 		&CControlAPI::setBouquetCGI,	"text/plain"},
-	{"savebouquet",		&CControlAPI::saveBouquetCGI,	"text/plain"},
-	{"movebouquet",		&CControlAPI::moveBouquetCGI,	"text/plain"},
-	{"deletebouquet",	&CControlAPI::deleteBouquetCGI,	"text/plain"},
-	{"addbouquet",		&CControlAPI::addBouquetCGI,	"text/plain"},
-	{"renamebouquet",	&CControlAPI::renameBouquetCGI,	"text/plain"},
-	{"changebouquet",	&CControlAPI::changeBouquetCGI,	"text/plain"},
-	{"updatebouquet",	&CControlAPI::updateBouquetCGI,	"text/plain"},
+	{"setbouquet", 		&CControlAPI::setBouquetCGI,	 "text/plain"},
+	{"savebouquet",		&CControlAPI::saveBouquetCGI,	 "text/plain"},
+	{"movebouquet",		&CControlAPI::moveBouquetCGI,	 "text/plain"},
+	{"deletebouquet",	&CControlAPI::deleteBouquetCGI,	 "text/plain"},
+	{"addbouquet",		&CControlAPI::addBouquetCGI,	 "text/plain"},
+	{"renamebouquet",	&CControlAPI::renameBouquetCGI,	 "text/plain"},
+	{"changebouquet",	&CControlAPI::changeBouquetCGI,	 "text/plain"},
+	{"updatebouquet",	&CControlAPI::updateBouquetCGI,	 "text/plain"},
 	// utils
-	{"build_live_url",	&CControlAPI::build_live_url,	""},
-	{"get_logo",		&CControlAPI::logoCGI,	"text/plain"},
+	{"build_live_url",	&CControlAPI::build_live_url,	 ""},
+	{"get_logo",		&CControlAPI::logoCGI,	         "text/plain"},
 	// settings
-	{"config",			&CControlAPI::ConfigCGI,	"text/plain"},
+	{"config",		&CControlAPI::ConfigCGI, 	 "text/plain"},
 	// filehandling
-	{"file",			&CControlAPI::FileCGI,	"+xml"},
+	{"file",		&CControlAPI::FileCGI,	 	 "+xml"},
 
 
 };
@@ -448,12 +432,7 @@ void CControlAPI::StandbyCGI(CyhookHandler *hh)
 			hh->SendError();
 	}
 	else
-#if 0 // FIXME: not implemented
-		if(NeutrinoAPI->Controld->getVideoPowerDown())
-			hh->WriteLn("on");
-		else
-#endif
-			hh->WriteLn("off");
+		hh->WriteLn("off");
 }
 
 //-----------------------------------------------------------------------------
@@ -513,6 +492,7 @@ void CControlAPI::GetTimeCGI(CyhookHandler *hh)
 	else
 		hh->SendError();
 }
+
 //-----------------------------------------------------------------------------
 // send services.xml
 void CControlAPI::GetServicesxmlCGI(CyhookHandler *hh)
@@ -605,19 +585,6 @@ void CControlAPI::RebootCGI(CyhookHandler *hh)
 	FILE *f = fopen("/tmp/.reboot", "w");
 	fclose(f);
 	return ShutdownCGI(hh);
-}
-
-//-----------------------------------------------------------------------------
-int CControlAPI::rc_send(int ev, unsigned int code, unsigned int value)
-{
-	struct input_event iev;
-	iev.type = EV_KEY;
-	if ((code == 0) && (value == 0))
-		iev.type = EV_SYN;
-	iev.code = code;
-	iev.value = value;
-	
-	return write(ev,&iev,sizeof(iev));
 }
 
 // The code here is based on rcsim. Thx Carjay!
@@ -763,63 +730,10 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 		return;
 	}
 	
-	unsigned int repeat = 1;
-	unsigned int delay = 250;
+	//
+	g_RCInput->postMsg((neutrino_msg_t)sendcode, 0);
 	
-	if (hh->ParamList["delay"] != "")
-		delay = atoi(hh->ParamList["delay"].c_str());
-	if (hh->ParamList["duration"] != "")
-		repeat = atoi(hh->ParamList["duration"].c_str()) * 1000 / delay;
-	if (hh->ParamList["repeat"] != "")
-		repeat = atoi(hh->ParamList["repeat"].c_str());
-
-	bool ret = false;
-	for (int i = 0; i < NUMBER_OF_EVENT_DEVICES; i++)
-	{
-		int evd = open(RC_EVENT_DEVICE[i], O_RDWR);
-		if (evd < 0) 
-		{
-			printf("[nhttpd] opening event%d failed\n", i);
-			continue;
-		}
-		
-		if (rc_send(evd, sendcode, KEY_PRESSED) < 0) 
-		{
-			perror("writing 'KEY_PRESSED' event failed");
-			close(evd);
-			continue;
-		}
-		
-		if (rc_send(evd, 0, 0) < 0) 
-		{
-			perror("writing EV_SYN for 'KEY_PRESSED' event failed");
-			close(evd);
-			continue;
-		}
-		
-		if (rc_send(evd, sendcode, KEY_RELEASED) < 0) 
-		{
-			perror("writing 'KEY_RELEASED' event failed");
-			close(evd);
-			continue;
-		}
-		
-		if (rc_send(evd, 0, 0) < 0) 
-		{
-			perror("writing EV_SYN for 'KEY_RELEASED' event failed");
-			close(evd);
-			continue;
-		}
-		
-		ret = true;
-
-		close(evd);
-	}
-	
-	if (ret)
-		hh->SendOk();
-	else
-		hh->SendError();
+	hh->SendOk();
 }
 
 //-----------------------------------------------------------------------------

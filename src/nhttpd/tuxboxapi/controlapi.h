@@ -29,8 +29,6 @@ private:
 	} TyCgiCall;
 	const static TyCgiCall yCgiCallList[];
 
-	int rc_send(int ev, unsigned int code, unsigned int value);
-
 	// send functions for ExecuteCGI (controld api)
 	void SendEventList(CyhookHandler *hh,t_channel_id channel_id);
 	void SendcurrentVAPid(CyhookHandler *hh);
