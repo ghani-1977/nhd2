@@ -196,7 +196,7 @@ extern void tuxtx_pause_subtitle(bool pause, int source);
 extern void tuxtx_stop_subtitle();
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
-extern int tuxtx_main(int _rc, int pid, int page, int source );
+extern int tuxtx_main(int pid, int page, int source );
 
 // dvbsub
 //extern int dvbsub_initialise();
@@ -2793,7 +2793,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				
 				tuxtx_stop_subtitle();
 
-				tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
+				tuxtx_main(g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
 
 				frameBuffer->paintBackground();
 

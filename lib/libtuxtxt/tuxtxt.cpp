@@ -1438,7 +1438,7 @@ static void * reader_thread(void * /*arg*/)
 	pthread_exit(NULL);
 }
 
-int tuxtx_main(int _rc, int pid, int page, int source);
+int tuxtx_main(int pid, int page, int source);
 void tuxtx_pause_subtitle(bool pause, int source)
 {
 	if(!pause) 
@@ -1447,7 +1447,7 @@ void tuxtx_pause_subtitle(bool pause, int source)
 		
 		ttx_paused = 0;
 		if(!reader_running && sub_pid && sub_page)
-			tuxtx_main(0, sub_pid, sub_page, source);
+			tuxtx_main(sub_pid, sub_page, source);
 	}
 	else 
 	{
@@ -1492,7 +1492,7 @@ void tuxtx_set_pid(int pid, int page, const char * cc)
 #if 0
 	ttx_paused = 1;
 	if(sub_pid && sub_page)
-		tuxtx_main(0, sub_pid, sub_page);
+		tuxtx_main(sub_pid, sub_page);
 #endif
 }
 
@@ -1513,7 +1513,7 @@ int tuxtx_subtitle_running(int *pid, int *page, int *running)
 	return ret;
 }
 
-int tuxtx_main(int /*_rc*/, int pid, int page, int source)
+int tuxtx_main(int pid, int page, int source)
 {
 	char cvs_revision[] = "$Revision: 1.95 $";
 	

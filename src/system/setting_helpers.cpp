@@ -103,7 +103,7 @@ extern void tuxtxt_start(int tpid, int source);
 extern void tuxtx_stop_subtitle();
 extern void tuxtx_set_pid(int pid, int page, const char * cc);
 //extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
-extern int tuxtx_main(int _rc, int pid, int page, int source);
+extern int tuxtx_main(int pid, int page, int source);
 
 //extern int tuner_to_scan;		//defined in scan_setup.cpp
 extern CFrontend * live_fe;
@@ -633,7 +633,7 @@ int CSubtitleChangeExec::exec(CMenuTarget */*parent*/, const std::string & actio
 		tuxtx_set_pid(pid, page, ptr);
 		
 		// start tuxtxt
-		tuxtx_main(g_RCInput->getFileHandle(), pid, page, (live_fe)?live_fe->fenumber : 0 ); //FIXME
+		tuxtx_main(pid, page, (live_fe)?live_fe->fenumber : 0 ); //FIXME
 	}
 	
         return menu_return::RETURN_EXIT;
@@ -668,7 +668,7 @@ int CTuxtxtChangeExec::exec(CMenuTarget *parent, const std::string &actionKey)
 				
 	tuxtx_stop_subtitle();
 
-	tuxtx_main(g_RCInput->getFileHandle(), g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
+	tuxtx_main(g_RemoteControl->current_PIDs.PIDs.vtxtpid, 0, live_fe?live_fe->fenumber:0 );
 
 	CFrameBuffer::getInstance()->paintBackground();
 

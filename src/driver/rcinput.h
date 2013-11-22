@@ -405,15 +405,6 @@ class CRCInput
 		
 		bool loadKeyMap(const char * const fileName);
 		bool saveKeyMap(const char * const fileName);
-
-		inline int getFileHandle(void) /* used for tuxtxt and plugins */
-		{
-#if defined (PLATFORM_VIP) || defined (PLATFORM_XTREND) || defined (PLATFORM_HYPERCUBE)
-				return fd_rc[1];
-#else
-				return fd_rc[0];
-#endif				
-		}
 		
 		void stopInput();
 		void restartInput();
