@@ -5461,6 +5461,7 @@ bool CMovieBrowser::showNKMenu()
 	int oldcat = m_settings.nkcategory;
 	int oldmode = m_settings.nkmode;
 	int oldrtmp = m_settings.nkrtmp;
+	int oldresults = m_settings.nkresults;
 
 	mainMenu.exec(NULL, "");
 
@@ -5494,7 +5495,7 @@ bool CMovieBrowser::showNKMenu()
 			*/
 		}
 	} 
-	else if (oldmode != m_settings.nkmode || oldcat != m_settings.nkcategory || oldrtmp != m_settings.nkrtmp) 
+	else if (oldmode != m_settings.nkmode || oldcat != m_settings.nkcategory || oldrtmp != m_settings.nkrtmp || oldresults != m_settings.nkresults) 
 	{
 		reload = true;
 	}
