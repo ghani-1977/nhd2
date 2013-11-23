@@ -5194,7 +5194,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 		
 		if (b.exec(g_settings.logos_dir.c_str())) 
 		{

@@ -50,7 +50,8 @@ class CPlugins
 			P_TYPE_DISABLED = 0x1,
 			P_TYPE_GAME     = 0x2,
 			P_TYPE_TOOL     = 0x4,
-			P_TYPE_SCRIPT   = 0x8
+			P_TYPE_SCRIPT   = 0x8,
+			P_TYPE_NEUTRINO = 0x9
 		}
 		p_type_t;
 
