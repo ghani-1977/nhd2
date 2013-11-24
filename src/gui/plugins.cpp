@@ -498,7 +498,7 @@ void CPlugins::startPlugin(int number, int param)
 	
 		if ( i == argc )		// alles geladen
 		{
-			handle = dlopen ( plugin_list[number].pluginfile.c_str(), RTLD_LOCAL | RTLD_LAZY);
+			handle = dlopen ( plugin_list[number].pluginfile.c_str(), RTLD_NOW);
 			if (!handle)
 			{
 				fputs (dlerror(), stderr);
