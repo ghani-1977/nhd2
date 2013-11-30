@@ -46,6 +46,7 @@
 #include <system/helpers.h>
 
 
+#if defined (__sh__)
 #if defined (PLATFORM_SPARK7162)
 static struct aotom_ioctl_data aotom_data;
 #endif
@@ -58,7 +59,6 @@ static bool hdd_icon = false;
 
 //konfetti: let us share the device with evremote and fp_control
 //it does currently not support more than one user (see e.g. micom)
-#if defined (__sh__)
 bool blocked = false;
 
 void CVFD::openDevice()
@@ -212,6 +212,7 @@ void * CVFD::TimeThread(void *)
 	{
 		sleep(1);
 		struct stat buf;
+		
                 if (stat("/tmp/vfd.locked", &buf) == -1) 
 		{
                         CVFD::getInstance()->showTime();
@@ -240,7 +241,7 @@ void CVFD::init()
 	
 	// set led color
 #if defined (PLATFORM_GIGABLUE)
-	vfd_led(LED_BLUE);  //0:off, 1:blue, 2:red, 3:purple
+	vfd_led(g_settings.lcd_ledcolor));  //0:off, 1:blue, 2:red, 3:purple
 #elif defined (PLATFORM_VENTON)
 	vfd_symbol_network(0);
 	vfd_symbol_circle(0);
@@ -644,7 +645,7 @@ void CVFD::Clear()
 	if(!has_lcd || is4digits) 
 		return;
 	
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_ODIN)
+#if defined (ENABLE_4DIGITS)
 	ShowText("     "); // 5 empty digits
 #elif defined (__sh__)
 	struct vfd_ioctl_data data;

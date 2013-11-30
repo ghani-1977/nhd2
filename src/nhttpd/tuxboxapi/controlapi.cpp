@@ -599,129 +599,98 @@ void CControlAPI::RCEmCGI(CyhookHandler *hh)
 	std::string keyname = hh->ParamList["1"];
 	int sendcode = -1;
 	
-	//FIXME: use keymap.conf this belong to all boxes models
-	CConfigFile * Config = new CConfigFile(',');
-	Config->loadConfig(NEUTRINO_KEYMAP_FILE);
-	
 	if ( !strcmp(keyname.c_str(), "KEY_POWER"))
-		sendcode = Config->getInt32("key_standby", KEY_POWER);
+		sendcode = CRCInput::RC_standby;
 	else if ( !strcmp(keyname.c_str(), "KEY_MUTE"))
-		sendcode = Config->getInt32("key_spkr", KEY_MUTE);
+		sendcode = CRCInput::RC_spkr;
 	else if ( !strcmp(keyname.c_str(), "KEY_1"))
-		sendcode = Config->getInt32("key_1", KEY_1);
+		sendcode = CRCInput::RC_1;
 	else if ( !strcmp(keyname.c_str(), "KEY_2"))
-		sendcode = Config->getInt32("key_2", KEY_2);
+		sendcode = CRCInput::RC_2;
 	else if ( !strcmp(keyname.c_str(), "KEY_3"))
-		sendcode = Config->getInt32("key_3", KEY_3);
+		sendcode = CRCInput::RC_3;
 	else if ( !strcmp(keyname.c_str(), "KEY_4"))
-		sendcode = Config->getInt32("key_4", KEY_4);
+		sendcode = CRCInput::RC_4;
 	else if ( !strcmp(keyname.c_str(), "KEY_5"))
-		sendcode = Config->getInt32("key_5", KEY_5);
+		sendcode = CRCInput::RC_5;
 	else if ( !strcmp(keyname.c_str(), "KEY_6"))
-		sendcode = Config->getInt32("key_6", KEY_6);
+		sendcode = CRCInput::RC_6;
 	else if ( !strcmp(keyname.c_str(), "KEY_7"))
-		sendcode = Config->getInt32("key_7", KEY_7);
+		sendcode = CRCInput::RC_7;
 	else if ( !strcmp(keyname.c_str(), "KEY_8"))
-		sendcode = Config->getInt32("key_8", KEY_8);
+		sendcode = CRCInput::RC_8;
 	else if ( !strcmp(keyname.c_str(), "KEY_9"))
-		sendcode = Config->getInt32("key_9", KEY_9);
+		sendcode = CRCInput::RC_9;
 	else if ( !strcmp(keyname.c_str(), "KEY_0"))
-		sendcode = Config->getInt32("key_0", KEY_0);
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)	
+		sendcode = CRCInput::RC_9;
 	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
-		sendcode = Config->getInt32("key_info", 0x166);
-#else	
-	else if ( !strcmp(keyname.c_str(), "KEY_INFO"))
-		sendcode = Config->getInt32("key_info", KEY_INFO);
-#endif	
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_VUPLUS) || defined (PLATFORM_DGS)
+		sendcode = CRCInput::RC_info;
 	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
-		sendcode = Config->getInt32("key_mode", 0x181);
-#else	
-	else if ( !strcmp(keyname.c_str(), "KEY_MODE"))
-		sendcode = Config->getInt32("key_mode", KEY_MODE);
-#endif	
-#if defined (PLATFORM_DGS)
+		sendcode = CRCInput::RC_mode;
 	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
-		sendcode = Config->getInt32("key_setup", 0x8B);
-#else	
-	else if ( !strcmp(keyname.c_str(), "KEY_SETUP"))
-		sendcode = Config->getInt32("key_setup", KEY_MENU);
-#endif	
-#if defined (PLATFORM_GIGABLUE) || defined (PLATFORM_VUPLUS)
+		sendcode = CRCInput::RC_setup;
 	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
-		sendcode = Config->getInt32("key_epg", 0x8A);
-#else	
-	else if ( !strcmp(keyname.c_str(), "KEY_EPG"))
-		sendcode = Config->getInt32("key_epg", KEY_EPG);
-#endif	
+		sendcode = CRCInput::RC_epg;	
 	else if ( !strcmp(keyname.c_str(), "KEY_FAVORITES"))
-		sendcode = Config->getInt32("key_favorites", KEY_FAVORITES);
-#if defined (PLATFORM_GIGABLUE)	|| defined (PLATFORM_VUPLUS)
+		sendcode = CRCInput::RC_favorites;
 	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
-		sendcode = Config->getInt32("key_home", 0xAE);
-#else	
-	else if ( !strcmp(keyname.c_str(), "KEY_HOME"))
-		sendcode = Config->getInt32("key_home", KEY_HOME);
-#endif	
+		sendcode = CRCInput::RC_home;	
 	else if ( !strcmp(keyname.c_str(), "KEY_UP"))
-		sendcode = Config->getInt32("key_up", KEY_UP);
+		sendcode = CRCInput::RC_up;
 	else if ( !strcmp(keyname.c_str(), "KEY_LEFT"))
-		sendcode = Config->getInt32("key_left", KEY_LEFT);
+		sendcode = CRCInput::RC_left;
 	else if ( !strcmp(keyname.c_str(), "KEY_OK"))
-		sendcode = Config->getInt32("key_ok", KEY_OK);
+		sendcode = CRCInput::RC_ok;
 	else if ( !strcmp(keyname.c_str(), "KEY_RIGHT"))
-		sendcode = Config->getInt32("key_right", KEY_RIGHT);
+		sendcode = CRCInput::RC_right;
 	else if ( !strcmp(keyname.c_str(), "KEY_DOWN"))
-		sendcode = Config->getInt32("key_down", KEY_DOWN);
+		sendcode = CRCInput::RC_down;
 	else if ( !strcmp(keyname.c_str(), "KEY_VOLUMEUP"))
-		sendcode = Config->getInt32("key_plus", KEY_VOLUMEUP);
+		sendcode = CRCInput::RC_plus;
 	else if ( !strcmp(keyname.c_str(), "KEY_VOLUMEDOWN"))
-		sendcode = Config->getInt32("key_minus", KEY_VOLUMEDOWN);
+		sendcode = CRCInput::RC_minus;
 	else if ( !strcmp(keyname.c_str(), "KEY_PAGEUP"))
-		sendcode = Config->getInt32("key_page_up", KEY_PAGEUP);
+		sendcode = CRCInput::RC_page_up;
 	else if ( !strcmp(keyname.c_str(), "KEY_PAGEDOWN"))
-		sendcode = Config->getInt32("key_page_down", KEY_PAGEDOWN);
+		sendcode = CRCInput::RC_page_down;
 	else if ( !strcmp(keyname.c_str(), "KEY_TV"))
-		sendcode = Config->getInt32("key_mode", KEY_MODE);
+		sendcode = CRCInput::RC_mode;
 	else if ( !strcmp(keyname.c_str(), "KEY_TEXT"))
-		sendcode = Config->getInt32("key_text", KEY_TEXT);
+		sendcode = CRCInput::RC_text;
 	else if ( !strcmp(keyname.c_str(), "KEY_RADIO"))
-		sendcode = Config->getInt32("key_mode", KEY_MODE);
+		sendcode = CRCInput::RC_mode;
 	else if ( !strcmp(keyname.c_str(), "KEY_RED"))
-		sendcode = Config->getInt32("key_red", KEY_RED);
+		sendcode = CRCInput::RC_red;
 	else if ( !strcmp(keyname.c_str(), "KEY_GREEN"))
-		sendcode = Config->getInt32("key_green", KEY_GREEN);
+		sendcode = CRCInput::RC_green;
 	else if ( !strcmp(keyname.c_str(), "KEY_YELLOW"))
-		sendcode = Config->getInt32("key_yellow", KEY_YELLOW);
+		sendcode = CRCInput::RC_yellow;
 	else if ( !strcmp(keyname.c_str(), "KEY_BLUE"))
-		sendcode = Config->getInt32("key_blue", KEY_BLUE);
+		sendcode = CRCInput::RC_blue;
 	else if ( !strcmp(keyname.c_str(), "KEY_SAT"))
-		sendcode = Config->getInt32("key_sat", KEY_SAT);
+		sendcode = CRCInput::RC_sat;
 	else if ( !strcmp(keyname.c_str(), "KEY_HELP"))
-		sendcode = Config->getInt32("key_info", KEY_HELP);
+		sendcode = CRCInput::RC_info;
 	else if ( !strcmp(keyname.c_str(), "KEY_NEXT"))
-		sendcode = Config->getInt32("key_next", KEY_NEXT);
+		sendcode = CRCInput::RC_next;
 	else if ( !strcmp(keyname.c_str(), "KEY_PREVIOUS"))
-		sendcode = Config->getInt32("key_prev", KEY_PREVIOUS);
+		sendcode = CRCInput::RC_prev;
 	else if ( !strcmp(keyname.c_str(), "KEY_TIME"))
-		sendcode = Config->getInt32("key_timeshift", KEY_TIME);
+		sendcode = CRCInput::RC_timeshift;
 	else if ( !strcmp(keyname.c_str(), "KEY_AUDIO"))
-		sendcode = Config->getInt32("key_audio", KEY_AUDIO);
+		sendcode = CRCInput::RC_audio;
 	else if ( !strcmp(keyname.c_str(), "KEY_REWIND"))
-		sendcode = Config->getInt32("key_rewind", KEY_REWIND);
+		sendcode = CRCInput::RC_rewind;
 	else if ( !strcmp(keyname.c_str(), "KEY_FORWARD"))
-		sendcode = Config->getInt32("key_forward", KEY_FORWARD);
+		sendcode = CRCInput::RC_forward;
 	else if ( !strcmp(keyname.c_str(), "KEY_PAUSE"))
-		sendcode = Config->getInt32("key_pause", KEY_PAUSE);
+		sendcode = CRCInput::RC_pause;
 	else if ( !strcmp(keyname.c_str(), "KEY_RECORD"))
-		sendcode = Config->getInt32("key_record", KEY_RECORD);
+		sendcode = CRCInput::RC_record;
 	else if ( !strcmp(keyname.c_str(), "KEY_STOP"))
-		sendcode = Config->getInt32("key_stop", KEY_STOP);
+		sendcode = CRCInput::RC_stop;
 	else if ( !strcmp(keyname.c_str(), "KEY_PLAY"))
-		sendcode = Config->getInt32("key_play", KEY_PLAY);
-	
-	delete Config;
+		sendcode = CRCInput::RC_play;
 	
 	if (sendcode == -1) 
 	{

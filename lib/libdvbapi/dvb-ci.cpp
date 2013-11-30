@@ -48,6 +48,7 @@
 #include <zapit/include/zapit/ci.h>
 
 #include <config.h>
+#include <system/debug.h>
 
 
 static const char * FILENAME = "dvb-ci.cpp";
@@ -65,7 +66,7 @@ bool cDvbCi::checkQueueSize(tSlot* slot)
 
 void cDvbCi::CI_MenuAnswer(unsigned char bSlotIndex,unsigned char choice)
 {
-	printf("%s:%s: %d %c\n", FILENAME, __FUNCTION__, bSlotIndex, choice);
+	dprintf(DEBUG_NORMAL, "%s:%s: %d %c\n", FILENAME, __FUNCTION__, bSlotIndex, choice);
 
 	std::list<tSlot*>::iterator it;
 	
@@ -231,18 +232,17 @@ eData waitData(int fd, unsigned char* buffer, int* len)
 
 //send some data on an fd, for a special slot and connection_id
 eData sendData(tSlot* slot, unsigned char* data, int len)
-{
-#ifdef x_debug	
-        printf("%s: %p, %d\n", __func__, data, len);
-#endif
+{	
+        dprintf(DEBUG_DEBUG, "%s: %p, %d\n", __func__, data, len);
        
 	unsigned char *d = (unsigned char*) malloc(len + 5);
 		
 	// only poll connection if we are not awaiting an answer
 	slot->pollConnection = false;	
 		
-	/* should we send a data last ?
-	   */
+	/* 
+	should we send a data last ?
+	*/
 	if (data != NULL)
 	{
 		if ((data[2] >= T_SB) && (data[2] <= T_NEW_T_C))
@@ -257,7 +257,10 @@ eData sendData(tSlot* slot, unsigned char* data, int len)
 			d[0] = slot->slot;
 			d[1] = slot->connection_id;
 			d[2] = T_DATA_LAST; 	
-			d[3] = len + 1; 		/* len */
+			if (len > 127)
+				d[3] = 4; 		/* pointer to next length */
+			else
+				d[3] = len + 1; 	/* len */
 			d[4] = slot->connection_id; 	/* transport connection identifier*/
 
 			len += 5;	
@@ -269,18 +272,14 @@ eData sendData(tSlot* slot, unsigned char* data, int len)
 		d[0] = slot->slot;
 		d[1] = slot->connection_id;
 		d[2] = T_DATA_LAST; 	
-		d[3] = len + 1; 		/* len */
+		if (len > 127)
+			d[3] = 4; 		/* pointer to next length */
+		else
+			d[3] = len + 1; 	/* len */
 		d[4] = slot->connection_id; 	/* transport connection identifier*/
 
 		len = 5;	
 	}
-
-#ifdef x_debug
-	printf("write (%d): > \n", slot->slot);
-	for(int i=0; i < len; i++)
-		printf("%02x ",d[i]);
-	printf("\n");
-#endif
 
 #ifdef direct_write
 	res = write(slot->fd, d, len); 
@@ -362,22 +361,14 @@ void cDvbCi::process_tpdu(tSlot* slot, unsigned char tpdu_tag, __u8* data, int a
 			break;
 		}
 		
-		case T_DATA_LAST:
-#ifdef x_debug	
-			printf("Got \"Data Last\" from Module\n");
-#endif
+		case T_DATA_LAST:	
+			dprintf(DEBUG_NORMAL, "Got \"Data Last\" from Module\n");
 			
 			/* single package */
 			if (slot->receivedData == NULL) 
 			{
 
-				printf("->single package\n");
-#ifdef x_debug	
-				printf("calling receiveData with data (len %d)> \n", asn_data_length);
-				for(int i = 0;i < asn_data_length; i++)
-					printf("%02x ", data[i]);
-				printf("\n");
-#endif
+				dprintf(DEBUG_NORMAL, "->single package\n");
 
 				eDVBCISession::receiveData(slot, data, asn_data_length);
 				eDVBCISession::pollAll();
@@ -396,13 +387,6 @@ void cDvbCi::process_tpdu(tSlot* slot, unsigned char tpdu_tag, __u8* data, int a
 				memcpy(slot->receivedData + slot->receivedLen, data, asn_data_length);
 			
 				slot->receivedLen = new_data_length;
-						
-#ifdef x_debug	
-				printf("calling receiveData with data (len %d)> ", asn_data_length);
-				for(int i = 0;i < slot->receivedLen; i++)
-					printf("%02x ", slot->receivedData[i]);
-				printf("\n");
-#endif
 
 				eDVBCISession::receiveData(slot, slot->receivedData, slot->receivedLen);
 				eDVBCISession::pollAll();
@@ -416,10 +400,8 @@ void cDvbCi::process_tpdu(tSlot* slot, unsigned char tpdu_tag, __u8* data, int a
 			break;
 			
 		case T_SB:
-		{
-#ifdef x_debug	
-			printf("Got \"SB\" from Module\n");
-#endif
+		{	
+			dprintf(DEBUG_NORMAL, "Got \"SB\" from Module\n");
 
 			if (data[0] & 0x80)
 			{
@@ -766,13 +748,7 @@ bool cDvbCi::SendCaPMT(CCaPmt *caPmt, int source)
 			printf(" %d, %d\n", get_length_field_size(size), size);
 			int len = caPmt->writeToBuffer(buffer, 0, 0xff);
 
-			printf("capmt(%d): > \n", len);
-	  
-#ifdef x_debug
-			for(int i=0; i < len; i++)
-				printf("0x%02x ",buffer[i]);
-			printf("\n");
-#endif
+			dprintf(DEBUG_NORMAL, "capmt(%d): > \n", len);
 
 			if ((*it)->hasCAManager)
 				(*it)->camgrSession->sendSPDU(0x90, 0, 0, buffer, len);
@@ -879,10 +855,7 @@ cDvbCi * cDvbCi::getInstance()
 
 bool cDvbCi::CamPresent(int slot)
 {
-
-#ifdef x_debug
-	printf("%s:%s(slot %d)\n", FILENAME, __FUNCTION__, slot);
-#endif
+	dprintf(DEBUG_NORMAL, "%s:%s(slot %d)\n", FILENAME, __FUNCTION__, slot);
 
 	std::list<tSlot*>::iterator it;
 	
@@ -900,13 +873,14 @@ bool cDvbCi::CamPresent(int slot)
 
 bool cDvbCi::GetName(int slot, char * name)
 {
-	printf("%s:%s\n", FILENAME, __FUNCTION__);
+	dprintf(DEBUG_NORMAL, "%s:%s\n", FILENAME, __FUNCTION__);
 
 	std::list<tSlot*>::iterator it;
 	
         for(it = slot_data.begin(); it != slot_data.end(); ++it)
         {
 		//printf("%d. name = %s, %p\n", (*it)->slot, (*it)->name, (*it));
+		
 		if ((*it)->slot == slot) 
 		{
 			strcpy(name, (*it)->name);

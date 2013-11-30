@@ -2661,10 +2661,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	InitLcdSettings(lcdSettings);
 
 	CVFD::getInstance()->setPower(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER]);
-	CVFD::getInstance()->setlcdparameter();
-#if defined (PLATFORM_GIGABLUE) && !defined (ENABLE_LCD)
-	CVFD::getInstance()->vfd_led(g_settings.lcd_ledcolor);
-#endif	
+	CVFD::getInstance()->setlcdparameter();	
 	
 	// audio mute
 	AudioMute(current_muted, true);

@@ -2314,7 +2314,7 @@ static void commandDumpStatusInformation(int /*connfd*/, char* /*data*/, const u
 	char stati[MAX_SIZE_STATI];
 
 	snprintf(stati, MAX_SIZE_STATI,
-		 "$Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch Exp $\n"
+		 "$Id: sectionsd.cpp,v 1.31 2013/08/18 11:23:30 mohousch $\n"
 		 "Current time: %s"
 		 "Hours to cache: %ld\n"
 		 "Hours to cache extended text: %ld\n"
