@@ -25,8 +25,7 @@ libzapit_a_SOURCES = \
 	scan.cpp zapit.cpp cam.cpp ci.cpp frontend.cpp \
 	descriptors.cpp nit.cpp pat.cpp pmt.cpp sdt.cpp
 
-bin_PROGRAMS = pzapit
-sbin_PROGRAMS = udpstreampes
+bin_PROGRAMS = pzapit udpstreampes
 
 pzapit_SOURCES = \
 	pzapit.cpp
