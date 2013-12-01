@@ -88,18 +88,6 @@ function init(){
 			=}
 			</ul>
 		</div>
-	{=if-not-equal:{=global-var-get:boxtype=}~generic~
-		<div class="y_menu_sec_section">{=L:plugins=}</div>
-		<div class="y_menu_sec">
-			<ul id="secmenu_plugins">
-			{=if-empty:{=var-get:management=}~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">VNC</li>
-			~
-				<li><a target="work" href="Y_Settings_VNC.yhtm">VNC</a></li>
-			=}
-			</ul>
-		</div>
-	~=}
 	</div>
 </div>
 

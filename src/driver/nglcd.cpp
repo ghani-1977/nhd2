@@ -51,10 +51,10 @@ nGLCD::nGLCD()
 {
 	lcd = NULL;
 	ChannelID = -1;
-	Channel = "NeutrinoHD";
-	Epg = "NeutrinoHD2";
-	scrollChannel = "NeutrinoHD";
-	scrollEpg = "NeutrinoHD2";
+	Channel = "Neutrino";
+	Epg = "Neutrino";
+	scrollChannel = "Neutrino";
+	scrollEpg = "Neutrino";
 
 	sem_init(&sem, 0, 1);
 
@@ -150,18 +150,6 @@ void nGLCD::Exec()
 
 	if (percent_channel) 
 	{
-		/*
-		off += percent_space;
-		int fw = font_channel.Width(scrollChannel);
-		if (fw && !doStandbyTime)
-			bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2),
-				off * bitmap->Height()/100, bitmap->Width() - 4, scrollChannel,
-				&font_channel, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
-		off += percent_channel;
-		off += percent_space;
-		if (scrollChannel.length() > Channel.length())
-			scrollChannel = scrollChannel.substr(1);
-		*/
 		//
 		char fname[255];
 		bool logo_ok = false;
@@ -222,10 +210,7 @@ void nGLCD::Exec()
 			else
 				doScrollChannel = false;
 		}
-		//
 		else
-			//doScrollChannel = false;
-		//
 		{
 			off += percent_space;
 			int fw = font_channel.Width(scrollChannel);
@@ -240,7 +225,6 @@ void nGLCD::Exec()
 			else
 				doScrollChannel = false;
 		}
-		//
 	}
 
 	if (percent_epg) 
@@ -495,11 +479,8 @@ void* nGLCD::Run(void *)
 				{
 					for (int x = 0; x < fb_width; x++) 
 					{
-						//if (*(fbp + fb_width * y + x) && x < x_min) 
-						//
 						uint32_t cl = *(fbp + fb_stride * y + x);
 						if (cl && x < x_min) 
-						//
 						{
 							x_min = x;
 							
@@ -516,11 +497,8 @@ void* nGLCD::Run(void *)
 				{
 					for (int x = fb_width - 1; x > x_min; x--) 
 					{
-						//if (*(fbp + fb_width * y + x) && x > x_max) 
-						//
 						uint32_t cl = *(fbp + fb_stride * y + x);
 						if (cl && x > x_max) 
-						//
 						{
 							x_max = x;
 							
@@ -539,12 +517,8 @@ void* nGLCD::Run(void *)
 #ifdef GLCD_DEBUG
 				printf("%s:%s(%d) x_min: %d, x_max: %d, fb_w: %d, y_min: %d, y_max: %d, fb_h: %d \n", __FILE__, __FUNCTION__, __LINE__, x_min, x_max, fb_w, y_min, y_max, fb_h);
 #endif				
-
-				//if (!fb_w || !fb_w) 
-				//
 				// Skip empty and infobar
 				if (!fb_w || !fb_w || (y_min*100/fb_height > 66)) 
-				//
 				{
 					usleep(500000);
 					continue;
@@ -575,8 +549,6 @@ void* nGLCD::Run(void *)
 
 				for (int y = 0; y < lcd_height; y++) 
 				{
-					//int ystride = y_min * fb_width;
-					//
 					int ystride = y_min * fb_stride;
 					uint32_t *rp = fbp + ystride + (y * fb_h / lcd_height) * fb_stride;
 					uint32_t cl = 0;
@@ -584,11 +556,8 @@ void* nGLCD::Run(void *)
 					for (int x = 0; x < lcd_width; x++) 
 					{
 						// FIXME: There might be some oscure bug somewhere that invalidate the address of bitmap->DrawPixel()
-						//nglcd->bitmap->DrawPixel(x, y, *(fbp + ystride + (y * fb_h / lcd_height) * fb_width + x_min + (x * fb_w / lcd_width)));
-						//
 						cl = *(rp + x_min + (x * fb_w / lcd_width));
 						nglcd->bitmap->DrawPixel(x, y, cl);
-						//
 					}
 				}
 
@@ -952,9 +921,6 @@ bool nGLCD::load_png_element(const char * const filename, raw_nglcd_element_t * 
 								fbptr = (png_byte *)element->buffer;
 								for (i = 0; i < element->header.height; i++)
 								{
-									//fbptr = row_pointers[i];
-									//png_read_rows(png_ptr, &fbptr, NULL, 1);
-
 									png_read_row(png_ptr, fbptr, NULL);
 									/* if the PNG is smaller, than the display width... */
 									if (width < lcd_width)	/* clear the area right of the PNG */
@@ -983,7 +949,7 @@ void nGLCD::draw_screen_element(const raw_nglcd_element_t * element, int x, int 
 	printf("%s:%s(%d) '%03d' x '%03d' \n", __FILE__, __FUNCTION__, __LINE__, x, y);
 
 	uint32_t cl = 0;
-	/*const*/ uint8_t * data = element->buffer;
+	uint8_t * data = element->buffer;
 
 	int xt, yt;
 	uint32_t alpha;
