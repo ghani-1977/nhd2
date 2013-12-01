@@ -559,7 +559,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 	
 	if (doLoop)
 	{
-		//evtlist.clear();
+		evtlist.clear();
 		
 		sectionsd_getEventsServiceKey(channel_id&0xFFFFFFFFFFFFULL, evtlist);
 		
@@ -659,8 +659,6 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 
 	if (epgData.contentClassification.length()> 0)
 		processTextToArray(GetGenre(epgData.contentClassification[0])); // UTF-8
-		//processTextToArray( epgData.userClassification.c_str() );
-
 
 	// -- display more screenings on the same channel
 	// -- 2002-05-03 rasc
@@ -773,7 +771,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 				case NeutrinoMessages::EVT_TIMER:
 					if (data == g_InfoViewer->lcdUpdateTimer) 
 					{
-						GetEPGData(channel_id, id, &startzeit );
+						GetEPGData(channel_id, id, &startzeit, false);
 						if ( epg_done!= -1 ) 
 						{
 							int pbx = sx + 10 + widthl + 10 + ((ox - 104 - widthr - widthl - 10 - 10 - 20)>>1);
@@ -984,9 +982,10 @@ void CEpgData::hide()
 bool sectionsd_getEPGid(const event_id_t epgID, const time_t startzeit, CEPGData * epgdata);
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
 
-void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, time_t* startzeit )
+void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, time_t* startzeit, bool clear)
 {
-	epgText.clear();
+	if(clear)
+		epgText.clear();
 	emptyLineCount = 0;
 	epgData.title.clear();
 
