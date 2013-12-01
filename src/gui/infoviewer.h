@@ -94,9 +94,7 @@ class CInfoViewer
 		t_channel_id   channel_id;
 
 		char           aspectRatio;
-		
 		uint32_t       sec_timer_id;
-		
 		bool           virtual_zap_mode;
 		
 		CChannelEventList               evtlist;
