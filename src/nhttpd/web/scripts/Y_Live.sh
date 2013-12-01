@@ -12,7 +12,7 @@
 live_lock()
 {
 	# un/lock lcd
-	if [ "$boxtype" != "cuberevo" ]; then
+	if [ "$boxtype" != "generic" ]; then
 		call_webserver "control/lcd?lock=1&clear=1&rect=10,10,110,50,1,0&xpos=20&ypos=27&size=22&font=2&text=%20%20%20%20yWeb%0A%20%20LiveView&update=1" >/dev/null
 	fi
 
@@ -24,7 +24,7 @@ live_lock()
 live_unlock()
 {
 	# un/lock lcd
-	if [ "$boxtype" != "cuberevo" ]; then
+	if [ "$boxtype" != "generic" ]; then
 		call_webserver "control/lcd?lock=0" >/dev/null
 	fi
 
@@ -36,7 +36,7 @@ live_unlock()
 prepare_tv()
 {
 	# SPTS on
-	if [ "$boxtype" != "cuberevo" ]; then
+	if [ "$boxtype" != "generic" ]; then
 		call_webserver "control/system?setAViAExtPlayBack=spts" >/dev/null
 	fi
 }
@@ -45,7 +45,7 @@ prepare_tv()
 prepare_radio()
 {
 	# SPTS off
-	if [ "$boxtype" != "cuberevo" ]; then
+	if [ "$boxtype" != "generic" ]; then
 		call_webserver "control/system?setAViAExtPlayBack=pes" >/dev/null
 	fi
 }

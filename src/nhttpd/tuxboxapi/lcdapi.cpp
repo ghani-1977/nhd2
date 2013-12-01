@@ -47,7 +47,7 @@
 //#include "ylogging.h"
 #include "lcdapi.h"
 
-static char font_name[3][10]={"Micron","Micron","Pakenham"};
+//static char font_name[3][10]={"Micron","Micron","Pakenham"};
 
 //-------------------------------------------------------------------------
 void CLCDAPI::Clear(void)
@@ -55,37 +55,10 @@ void CLCDAPI::Clear(void)
 	vfd->Clear(); // clear lcd
 }
 
-#if 0
-void CLCDAPI::Update(void)
-{
-	vfd->displayUpdate();
-}
-#endif
-
 void CLCDAPI::LockDisplay(int plock)
 {
 	vfd->Lock();
 }
-
-#if 0
-void CLCDAPI::DrawLine(int x1, int y1, int x2, int y2, int col)
-{
-	int color=(col==0)?(CLCDDisplay::PIXEL_OFF):((col==2)?(CLCDDisplay::PIXEL_INV):(CLCDDisplay::PIXEL_ON));
-	display.draw_line(x1,y1,x2,y2,color);
-}
-
-void CLCDAPI::DrawRect(int x1, int y1, int x2, int y2, int coll, int colf)
-{
-	int colorl=(coll==0)?(CLCDDisplay::PIXEL_OFF):((coll==2)?(CLCDDisplay::PIXEL_INV):(CLCDDisplay::PIXEL_ON));
-	int colorf=(colf==0)?(CLCDDisplay::PIXEL_OFF):((colf==2)?(CLCDDisplay::PIXEL_INV):(CLCDDisplay::PIXEL_ON));
-	display.draw_rectangle(x1,y1,x2,y2,colorl,colorf);
-}
-
-void CLCDAPI::DrawText(int px, int py, int psize, int pcolor, int pfont, char *pmsg)
-{
-	vfd->showTextScreen(pmsg, "", 1, false, false);
-}
-#endif
 
 bool CLCDAPI::ShowPng(char *filename)
 {
@@ -98,59 +71,6 @@ bool CLCDAPI::ShowNgPng(char *filename)
 	nGLCD *nglcd = nGLCD::getInstance();
 	if (nglcd)
 		return nglcd->ShowPng(filename);
-}
-#endif
-
-#if 0
-void CLCDAPI::ShowRaw(int xpos, int ypos, int xsize, int ysize, char *ascreen)
-{
-	int sbyte,dbit,dxpos,dypos,wasinc=0,gotval;
-	char *sptr=ascreen;
-	raw_display_t rscreen;
-	
-	unsigned int lcd_width  = display.xres;
-	unsigned int lcd_height = display.yres;
-
-	display.dump_screen(&rscreen);
-	gotval=sscanf(sptr,"%d",&sbyte);
-	for(dypos=ypos; gotval && (dypos<(ypos+ysize)); dypos++)
-	{
-		dbit=7;
-		for(dxpos=xpos; gotval && (dxpos<(xpos+xsize)); dxpos++)
-		{
-			wasinc=0;
-			if((dypos<lcd_height) && (dxpos<lcd_width))
-			{
-				rscreen[(dypos*lcd_width)+dxpos]=(sbyte & (1<<dbit))?1:0;
-			}
-			if(--dbit<0)
-			{
-				dbit=7;
-				if((sptr=strchr(sptr,','))!=NULL)
-				{
-					gotval=sscanf(++sptr,"%d",&sbyte);
-				}
-				else
-				{
-					gotval=0;
-				}
-				wasinc=1;
-			}
-		}
-		if(!wasinc)
-		{
-			if((sptr=strchr(sptr,','))!=NULL)
-			{
-				gotval=sscanf(++sptr,"%d",&sbyte);
-			}
-			else
-			{
-				gotval=0;
-			}
-		}
-	}
-
-	display.load_screen(&rscreen);
 }
 #endif
 
@@ -174,47 +94,12 @@ bool CLCDAPI::ShotNgPng(char *filename)
 
 CLCDAPI::CLCDAPI()
 {
-//	int i;
-	
-
-//	display = new CLCDDisplay();
 	vfd = CLCD::getInstance();
-/*	fontRenderer = new LcdFontRenderClass(&display);
-
-	style_name[0] = fontRenderer->AddFont("/usr/share/fonts/micron.ttf");
-
-	style_name[1] = fontRenderer->AddFont("/usr/share/fonts/micron_bold.ttf");
-	if (!style_name[1])
-		style_name[1] = style_name[0];
-
-	style_name[2] = fontRenderer->AddFont("/usr/share/fonts/pakenham.ttf");
-	if (!style_name[2])
-		style_name[2] = style_name[0];
-
-	fontRenderer->InitFontCache();
-*/
-/*	for(i=0; i<3; i++)
-	{
-		if(font=fontRenderer->getFont(font_name[i], style_name[i], 14))
-		{
-			font->RenderString(10, 10, 30, "X", CLCDDisplay::PIXEL_OFF, 0, true);
-		}
-	}
-*/
 }
 //-------------------------------------------------------------------------
 
 CLCDAPI::~CLCDAPI(void)
 {
-/*	if(fontRenderer)
-	{
-		delete fontRenderer;
-	}
-*/
-/*	if(display)
-	{
-		delete display;
-	}
-*/
+
 }
 

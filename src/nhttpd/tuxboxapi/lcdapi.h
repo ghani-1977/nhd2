@@ -38,23 +38,16 @@ class LcdFontRenderClass;
 class CLCDAPI
 {
 	CLCD				*vfd;
-	LcdFontRenderClass		*fontRenderer;
-	LcdFont				*font;
-	const char 			*style_name[3];
+	//LcdFontRenderClass		*fontRenderer;
+	//LcdFont				*font;
+	//const char 			*style_name[3];
 public:
 	CLCDAPI();
 	~CLCDAPI(void);
 	void LockDisplay(int lock);
-#if 0
-	void DrawText(int px, int py, int psize, int pcolor, int pfont, char *pmsg);
-	void DrawLine(int x1, int y1, int x2, int y2, int col);
-	void DrawRect(int x1, int y1, int x2, int y2, int coll, int colf);
-#endif
+
 	bool ShowPng(char *filename);
-#if 0
-	void ShowRaw(int xpos, int ypos, int xsize, int ysize, char *screen);
-	void Update(void);
-#endif
+
 	void Clear(void);
 	bool ShotPng(char *filename);
 	

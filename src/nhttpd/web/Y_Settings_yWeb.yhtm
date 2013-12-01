@@ -9,7 +9,7 @@ function do_submit(){
 	document.f.submit();
 }
 function do_init(){
-	val = "{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=if-equal:{=global-var-get:boxtype=}~cuberevo~Cuberevo~default=}~open=}";
+	val = "{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=if-equal:{=global-var-get:boxtype=}~generic~Cuberevo~default=}~open=}";
 	var sel=2;
 	switch(val){
 		case "default": sel=0; break;

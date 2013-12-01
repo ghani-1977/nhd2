@@ -112,7 +112,7 @@ const char * _getISO639Description(const char * const iso)
 //=============================================================================
 std::string CNeutrinoAPI::Dbox_Hersteller[4]	= {"none", "Nokia", "Philips", "Sagem"};
 std::string CNeutrinoAPI::videooutput_names[5]	= {"CVBS", "RGB with CVBS", "S-Video", "YUV with VBS", "YUV with CVBS"};
-#ifdef __sh__
+#if defined (__sh__)
 std::string CNeutrinoAPI::videoformat_names[2]	= {"4:3", "16:9"};
 #else
 std::string CNeutrinoAPI::videoformat_names[5]	= {"automatic", "4:3", "14:9", "16:9", "20:9"};
@@ -480,7 +480,7 @@ std::string CNeutrinoAPI::getVideoFramerateAsString(void)
 
 	switch(framerate)
 	{
-#ifndef __sh__
+#if !defined (__sh__)
 		case 2:
 			sframerate="25fps";break;
 		case 5:
@@ -517,18 +517,14 @@ std::string CNeutrinoAPI::getCryptInfoAsString(void)
 	extern int pmt_caids[11];
 	unsigned short i,j;
 	std::stringstream out;
-	//int caids[] = { 0x1700, 0x0100, 0x0500, 0x1800, 0xB00, 0xD00, 0x900, 0x2600, 0x4a00, 0x0E00 };
-	//std::string casys[11]={"Irdeto:","Betacrypt:","Seca:","Viaccess:","Nagra:","Conax: ","Cryptoworks:","Videoguard:","EBU:","XCrypt:","PowerVU:"};
+	
 	std::string casys[11]={"Irdeto:", "Betacrypt:", "Seca:","Viaccess:","Nagra:","Conax: ","Cryptoworks:","Videoguard:","EBU:","XCrypt:","PowerVU:"};
 
-	//for(i = 0; i < 4; i++)
+	for(j = 0; j < 11; j++)
 	{
-		for(j = 0; j < 11; j++)
+		if(pmt_caids[j])
 		{
-			if(pmt_caids[j])
-			{
-				out << casys[j] << hex << pmt_caids[j]<< "\n";
-			}
+			out << casys[j] << hex << pmt_caids[j]<< "\n";
 		}
 	}
 

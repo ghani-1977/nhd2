@@ -3400,7 +3400,7 @@ int startPlayBack(CZapitChannel * thisChannel)
 	return 0;
 }
 
-int stopPlayBack( bool sendPmt)
+int stopPlayBack(bool sendPmt)
 {
 	dprintf(DEBUG_NORMAL, "[zapit] stopPlayBack: standby %d forced %d\n", standby, playbackStopForced);
 	

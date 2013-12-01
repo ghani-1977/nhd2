@@ -7,11 +7,13 @@ var sLog_body;
 var sLog_line_number;
 var epg_data;
 var epg_data_index=0;
+
 function sLog_init()
 {
 	sLog_line_number = 0;
 	sLog_body=document.getElementById("slog_list");
 }
+
 function sLog_clear()
 {
 	while(sLog_body.childNodes.length > 0){
@@ -20,6 +22,7 @@ function sLog_clear()
 	}
 	sLog_line_number =  0;
 }
+
 function sLog_addRow(_body, _date, _rec, _zapit, _start, _end, _title)
 {
 	sLog_line_number++;
@@ -32,32 +35,38 @@ function sLog_addRow(_body, _date, _rec, _zapit, _start, _end, _title)
 	y_add_html_cell_to_row(mycurrent_row, "endtime", _end);
 	y_add_html_cell_to_row(mycurrent_row, "epgtitle", _title);
 }
+
 function set_timer(_channel_id, _start, _stop)
 {
 	var rec = "/control/timer?action=new&type=5&alarm="+_start+"&stop="+_stop+"&announce="+_start+"&channel_id="+_channel_id+"&rs=1";
 	var res = loadSyncURL(rec);
 	alert("{=L:epg.set_timer=}");
 }
+
 function set_zapit(_channel_id, _start)
 {
 	var rec = "/control/timer?action=new&type=3&alarm="+_start+"&channel_id="+_channel_id;
 	var res = loadSyncURL(rec);
 	alert("{=L:epg.zap_to=}");
 }
+
 function show_info(_index)
 {
 	parent.epg_info.show_info(epg_data[_index][0], epg_data[_index][1], epg_data[_index][2]);
 }
+
 function check_logo()
 {
 	{=if-empty:{=logoid=}~~
 		show_obj("logo",true);
 	=}
 }
+
 function show_epg() {
 	show_waitbox(true);
 	window.setTimeout("_show_epg()",100);
 }
+
 function _show_epg()
 {
 	check_logo();

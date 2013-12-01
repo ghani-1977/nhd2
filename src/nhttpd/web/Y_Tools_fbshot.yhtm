@@ -7,6 +7,7 @@ function do_snapshot(){
 	show_waitbox(true);
 	window.setTimeout("do_snapshot2()", 500);
 }
+
 function do_snapshot2(){
 	var _shot = document.getElementById("shot");
 	var filename = id("file").value;
@@ -15,10 +16,12 @@ function do_snapshot2(){
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".png?"+Math.random();
 }
+
 function do_dboxshot(){
 	show_waitbox(true);
 	window.setTimeout("do_dboxshot2()", 500);
 }
+
 function do_dboxshot2(){
 	var _shot = document.getElementById("shot");
 	var filename = id("file").value;
@@ -29,9 +32,11 @@ function do_dboxshot2(){
 	show_obj("shot", true);
 	_shot.src = "/tmp/"+filename+".bmp?"+Math.random();
 }
+
 function do_clearshot(){
 	window.setTimeout("do_clearshot2()", 500);
 }
+
 function do_clearshot2(){
 	dbox_exec_tools("fbshot_clear");
 }
@@ -39,6 +44,7 @@ function do_clearshot2(){
 </script>
 </head>
 <body>
+
 {=var-set:wait_text={=L:bc.osd.shap_wait_text=}=}{=include-block:Y_Blocks.txt;snip_wait=}
 <div class="work_box">
 	<div class="work_box_head"><div class="work_box_head_h2">

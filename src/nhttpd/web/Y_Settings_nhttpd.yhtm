@@ -65,7 +65,7 @@ function do_submit()
 				<td><input type="text" name="port" size="20" value="{=ini-get:/var/tuxbox/config/nhttpd.conf;WebsiteMain.port;80~cache=}" title="{=L:port=}"/>&nbsp;{=L:active_after_boot=}
 				</td>
 			</tr>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+			{=if-not-equal:{=global-var-get:boxtype=}~generic~
 			<tr>
 				<td>{=L:set.nhttpd.threading=}</td>
 				<td>
@@ -96,7 +96,7 @@ function do_submit()
 				<td><input type="text" name="Tuxbox_LogosURL" size="60" value="{=ini-get:/var/tuxbox/config/nhttpd.conf;Tuxbox.LogosURL~cache=}" title="{=L:set.nhttpd.url_of_logos_desc=}"/></td>
 			</tr>
 			<tr><td colspan="2" class="y_form_header">{=L:set.nhttpd.server=}</td></tr>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+			{=if-not-equal:{=global-var-get:boxtype=}~generic~
 			<tr>
 				<td>{=L:set.nhttpd.ips_without_keep_alive=}<br/>{=L:set.nhttpd.ips_without_keep_alive_desc=} </td>
 				<td><input type="text" name="no_keep_alive_ips" size="30" maxsize="254" value="{=ini-get:/var/tuxbox/config/nhttpd.conf;server.no_keep-alive_ips;~cache=}" "/>

@@ -105,14 +105,14 @@ function do_check(){
 	~
 		sLog_addRow(sLog_body, "green", "Programs: fcp is installed at: {=var-get:fcp=}. Image flashing is enabled.", "ok");
 	=}
-	{=var-set:etherwake={=if-equal:{=global-var-get:boxtype=}~cuberevo~{=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~false=}=}~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}
+	{=var-set:etherwake={=if-equal:{=global-var-get:boxtype=}~generic~{=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~false=}=}~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}
 	{=if-equal:{=var-get:etherwake=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: etherwake is not installed. Wake on LAN is disabled. "+y_url("Help-Tools-Wake_on_LAN"), "failed");
 	~
 		sLog_addRow(sLog_body, "green", "Programs: etherwake is installed at: {=var-get:etherwake=}. Wake on LAN is enabled.", "ok");
 	=}
 	/*automount*/
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 	{=var-set:automount={=if-file-exists:/sbin/automount~/sbin/automount~{=if-file-exists:/var/bin/automount~/var/bin/automount~false=}=}=}
 	{=if-equal:{=var-get:automount=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: automount is not installed. AutoMount is disabled. "+y_url("Help-Tools-AutoMount"), "failed");
@@ -127,7 +127,7 @@ function do_check(){
 		sLog_addRow(sLog_body, "green", "Programs: udpstreamts is installed at: {=var-get:udpstreamts=}. udp-streaming is enabled.", "ok");
 	=}
 
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 	/*ucodes*/
 	{=if-file-exists:/var/tuxbox/ucodes/avia500.ux~
 		sLog_addRow(sLog_body, "green", "Ucodes: avia500.ux found", "ok");

@@ -1,5 +1,5 @@
-version=2.8.0.4
-date=09.06.2010
-type=Release
-#info=CubeRevo
+version=2.8.0.5
+date=01.12.2013
+type=snapshot
+info=Generic
 

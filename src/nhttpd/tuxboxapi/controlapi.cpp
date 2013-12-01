@@ -106,16 +106,18 @@ THandleStatus CControlAPI::Hook_SendResponse(CyhookHandler *hh)
 {
 	hh->status = HANDLED_NONE;
 
-//	log_level_printfX(4,"CControlAPI hook start url:%s\n",hh->UrlData["url"].c_str());
+	//log_level_printfX(4,"CControlAPI hook start url:%s\n",hh->UrlData["url"].c_str());
+
 	init(hh);
 
-	if(hh->UrlData["path"] == "/control/"
-		|| hh->UrlData["path"] == "/cgi-bin/")
+	if(hh->UrlData["path"] == "/control/" || hh->UrlData["path"] == "/cgi-bin/")
 		Execute(hh);
+	
 	if(hh->UrlData["path"] == "/fb/")		// fb-compatibility for timer-calls
 		compatibility_Timer(hh);
-//	log_level_printfX(4,"CControlAPI hook ende status:%d\n",(int)hh->status);
-//	log_level_printfX(5,"CControlAPI hook result:%s\n",hh->yresult.c_str());
+	
+	//log_level_printfX(4,"CControlAPI hook ende status:%d\n",(int)hh->status);
+	//log_level_printfX(5,"CControlAPI hook result:%s\n",hh->yresult.c_str());
 
 	return hh->status;
 }
@@ -128,6 +130,7 @@ THandleStatus CControlAPI::Hook_SendResponse(CyhookHandler *hh)
 void CControlAPI::compatibility_Timer(CyhookHandler *hh)
 {
 	log_level_printf(4,"CControlAPI Compatibility Timer Start url:%s\n",hh->UrlData["url"].c_str());
+	
 	if(NeutrinoAPI->Timerd->isTimerdAvailable() && hh->ParamList.size() > 0)
 	{
 		if(hh->ParamList["action"] == "remove")
@@ -140,6 +143,7 @@ void CControlAPI::compatibility_Timer(CyhookHandler *hh)
 		else if(hh->ParamList["action"] == "new")
 			doNewTimer(hh);
 	}
+	
 	hh->SendRedirect("/Y_Timer_List.yhtm");
 }
 
@@ -207,6 +211,7 @@ const CControlAPI::TyCgiCall CControlAPI::yCgiCallList[]=
 
 
 };
+
 //-----------------------------------------------------------------------------
 // Main Dispatcher
 //-----------------------------------------------------------------------------
@@ -216,7 +221,8 @@ void CControlAPI::Execute(CyhookHandler *hh)
 	std::string yresult;
 	std::string filename = hh->UrlData["filename"];
 
-	log_level_printf(4,"ControlAPI.Execute filename:(%s)\n",filename.c_str());
+	log_level_printf(4, "ControlAPI.Execute filename:(%s)\n", filename.c_str());
+	
 	// tolower(filename)
 	for(unsigned int i = 0; i < filename.length(); i++)
 		filename[i] = tolower(filename[i]);
@@ -237,6 +243,7 @@ void CControlAPI::Execute(CyhookHandler *hh)
 			index = i;
 			break;
 		}
+		
 	if(index == -1) // function not found
 	{
 		hh->SetError(HTTP_NOT_IMPLEMENTED, HANDLED_NOT_IMPLEMENTED);
@@ -296,7 +303,8 @@ void CControlAPI::TimerCGI(CyhookHandler *hh)
 					hh->SendError();
 			}
 		}
-		else {
+		else 
+		{
 			if (hh->ParamList["format"] == "xml")
 				SendTimersXML(hh);
 			else
@@ -359,6 +367,7 @@ void CControlAPI::SetModeCGI(CyhookHandler *hh)
 void CControlAPI::GetModeCGI(CyhookHandler *hh)
 {
 	int mode = NeutrinoAPI->Zapit->getMode();
+	
 	if ( mode == CZapitClient::MODE_TV)
 		hh->WriteLn("tv");
 	else if ( mode == CZapitClient::MODE_RADIO)
@@ -372,6 +381,7 @@ void CControlAPI::ExecCGI(CyhookHandler *hh)
 {
 	bool res = false;
 	std::string script, result;
+	
 	// override standard header
 	if (hh->ParamList.size() > 1 && hh->ParamList["xml"].empty())
 		hh->SetHeader(HTTP_OK, "text/html; charset=UTF-8");
@@ -379,16 +389,21 @@ void CControlAPI::ExecCGI(CyhookHandler *hh)
 		hh->SetHeader(HTTP_OK, "text/xml; charset=UTF-8");
 	else
 		hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8");
+	
 	if (hh->ParamList.size() > 0)
 	{
 		script = hh->ParamList["1"];
 		unsigned int len = hh->ParamList.size();
+		
 		for(unsigned int y=2;y<=len;y++)
+		{
 			if(!hh->ParamList[itoa(y)].empty())
 			{
 				script += " ";
 				script += hh->ParamList[itoa(y)];
 			}
+		}
+		
 		result = YexecuteScript(hh, script);
 	}
 	else
@@ -714,10 +729,12 @@ void CControlAPI::AspectRatioCGI(CyhookHandler *hh)
 //-----------------------------------------------------------------------------
 void CControlAPI::VideoFormatCGI(CyhookHandler *hh)
 {
-	if (hh->ParamList.empty() || hh->ParamList["1"] == "status") {
+	if (hh->ParamList.empty() || hh->ParamList["1"] == "status") 
+	{
 		hh->printf("%s",(NeutrinoAPI->getVideoAspectRatioAsString()).c_str());
 		return;
 	}
+	
 	if (NeutrinoAPI->setVideoAspectRatioAsString(hh->ParamList["1"]) != -1)
 		hh->SendOk();
 	else
@@ -748,7 +765,8 @@ void CControlAPI::ScartModeCGI(CyhookHandler *hh)
 //-----------------------------------------------------------------------------
 void CControlAPI::AudioCGI(CyhookHandler *hh)
 {
-	if (hh->ParamList.empty() || hh->ParamList["1"] == "info") {
+	if (hh->ParamList.empty() || hh->ParamList["1"] == "info") 
+	{
 		hh->printf("%s",(NeutrinoAPI->getAudioInfoAsString()).c_str());
 		return;
 	}
@@ -775,12 +793,12 @@ void CControlAPI::VolumeCGI(CyhookHandler *hh)
 		NeutrinoAPI->Zapit->muteAudio(false);
 		hh->SendOk();
 	}
-#if 1
-	else if (hh->ParamList["1"].compare("status") == 0) { // Mute status
+	else if (hh->ParamList["1"].compare("status") == 0) 
+	{ // Mute status
 		(NeutrinoAPI->Zapit->getMuteStatus()) ? hh->Write("1") :  hh->Write("0");
 	}
-#endif
-	else if(hh->ParamList["1"]!="") { //set volume
+	else if(hh->ParamList["1"]!="") 
+	{ //set volume
 		char vol = atol( hh->ParamList["1"].c_str() );
 		NeutrinoAPI->Zapit->setVolume(vol,vol);
 		hh->SendOk();
@@ -792,7 +810,8 @@ void CControlAPI::VolumeCGI(CyhookHandler *hh)
 //-----------------------------------------------------------------------------
 void CControlAPI::CryptCGI(CyhookHandler *hh)
 {
-	if (hh->ParamList.empty() || hh->ParamList["1"] == "info") {
+	if (hh->ParamList.empty() || hh->ParamList["1"] == "info") 
+	{
 		hh->printf("%s",(NeutrinoAPI->getCryptInfoAsString()).c_str());
 		return;
 	}
@@ -807,7 +826,8 @@ void CControlAPI::ChannellistCGI(CyhookHandler *hh)
 
 //-----------------------------------------------------------------------------
 void CControlAPI::_GetBouquetWriteItem(CyhookHandler *hh, CZapitChannel * channel, int bouquetNr, int nr){
-	if (hh->ParamList["format"] == "json"){
+	if (hh->ParamList["format"] == "json")
+	{
 		hh->printf("\t\t{'number': '%u', 'id': '"
 			PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
 			"', 'short_id': '"
@@ -821,7 +841,8 @@ void CControlAPI::_GetBouquetWriteItem(CyhookHandler *hh, CZapitChannel * channe
 			bouquetNr
 		);
 	}
-	else if((hh->ParamList["format"] == "xml") || !(hh->ParamList["xml"].empty()) ){
+	else if((hh->ParamList["format"] == "xml") || !(hh->ParamList["xml"].empty()) )
+	{
 		hh->printf("<channel>\n\t<number>%u</number>\n\t<bouquet>%d</bouquet>\n\t<id>"
 			PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
 			"</id>\n\t<short_id>"
@@ -835,7 +856,8 @@ void CControlAPI::_GetBouquetWriteItem(CyhookHandler *hh, CZapitChannel * channe
 			NeutrinoAPI->getLogoFile(hh->WebserverConfigList["Tuxbox.LogosURL"], channel->channel_id).c_str()
 		);
 	}
-	else{
+	else
+	{
 		hh->printf("%u "
 			PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
 			" %s\n",
@@ -864,8 +886,10 @@ void CControlAPI::GetBouquetCGI(CyhookHandler *hh)
 		if (hh->ParamList["1"] == "actual")
 		{
 			int actual=0;
-			for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
-				if(g_bouquetManager->existsChannelInBouquet(i, live_channel_id)) {
+			for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+			{
+				if(g_bouquetManager->existsChannelInBouquet(i, live_channel_id)) 
+				{
 					actual=i+1;
 					break;
 				}
@@ -875,37 +899,47 @@ void CControlAPI::GetBouquetCGI(CyhookHandler *hh)
 		else
 		{
 			// write header
-			if (hh->ParamList["format"] == "json"){
+			if (hh->ParamList["format"] == "json")
+			{
 				hh->WriteLn("{");
 			}
-			else if((hh->ParamList["format"] == "xml") || !(hh->ParamList["xml"].empty()) ){
+			else if((hh->ParamList["format"] == "xml") || !(hh->ParamList["xml"].empty()) )
+			{
 				hh->WriteLn("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 				hh->WriteLn("<channellist>");
 //				hh->printf("<bouquet>\n\t<bnumber>%s</bnumber>\n</bouquet>\n",hh->ParamList["bouquet"].c_str());
 			}
 
 			ZapitChannelList channels;
-			if(hh->ParamList["bouquet"] != ""){
+			if(hh->ParamList["bouquet"] != "")
+			{
 				// list for given bouquet
 				int BouquetNr = atoi(hh->ParamList["bouquet"].c_str());
 				if(BouquetNr > 0)
 					BouquetNr--;
 				channels = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->Bouquets[BouquetNr]->radioChannels : g_bouquetManager->Bouquets[BouquetNr]->tvChannels;
 				int num = 1 + (mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin().getNrofFirstChannelofBouquet(BouquetNr) : g_bouquetManager->tvChannelsBegin().getNrofFirstChannelofBouquet(BouquetNr)) ;
-				for(int j = 0; j < (int) channels.size(); j++) {
+				for(int j = 0; j < (int) channels.size(); j++) 
+				{
 					CZapitChannel * channel = channels[j];
 					_GetBouquetWriteItem(hh, channel, BouquetNr, num+j);
 				}
-			} else {
+			} 
+			else 
+			{
 				// list all
-				for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
-/*
-				CBouquetManager::ChannelIterator cit = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin() : g_bouquetManager->tvChannelsBegin();
-				for (; !(cit.EndOfChannels()); cit++) {
-					CZapitChannel * channel = *cit;*/
+				for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+				{
+					/*
+					CBouquetManager::ChannelIterator cit = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin() : g_bouquetManager->tvChannelsBegin();
+					for (; !(cit.EndOfChannels()); cit++) 
+					{
+						CZapitChannel * channel = *cit;
+					*/
 					channels = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->Bouquets[i]->radioChannels : g_bouquetManager->Bouquets[i]->tvChannels;
 					int num = 1 + (mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin().getNrofFirstChannelofBouquet(i) : g_bouquetManager->tvChannelsBegin().getNrofFirstChannelofBouquet(i)) ;
-					for(int j = 0; j < (int) channels.size(); j++) {
+					for(int j = 0; j < (int) channels.size(); j++) 
+					{
 						CZapitChannel * channel = channels[j];
 						_GetBouquetWriteItem(hh, channel, i, num+j);
 					}
@@ -953,9 +987,11 @@ void CControlAPI::GetBouquetsCGI(CyhookHandler *hh)
 
 	int mode = NeutrinoAPI->Zapit->getMode();
 	std::string bouquet;
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
+	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+	{
 		ZapitChannelList * channels = mode == CZapitClient::MODE_RADIO ? &g_bouquetManager->Bouquets[i]->radioChannels : &g_bouquetManager->Bouquets[i]->tvChannels;
-		if(!channels->empty() && (!g_bouquetManager->Bouquets[i]->bHidden || show_hidden)){
+		if(!channels->empty() && (!g_bouquetManager->Bouquets[i]->bHidden || show_hidden))
+		{
 			bouquet = std::string(g_bouquetManager->Bouquets[i]->bFav ? g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME) :g_bouquetManager->Bouquets[i]->Name.c_str());
 			if(encode)
 				bouquet = encodeString(bouquet); // encode (URLencode) the bouquetname
@@ -1044,7 +1080,8 @@ void CControlAPI::EpgCGI(CyhookHandler *hh)
 
 		int mode = NeutrinoAPI->Zapit->getMode();
 		CBouquetManager::ChannelIterator cit = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin() : g_bouquetManager->tvChannelsBegin();
-		for (; !(cit.EndOfChannels()); cit++) {
+		for (; !(cit.EndOfChannels()); cit++) 
+		{
 			CZapitChannel * channel = *cit;
 			event = NeutrinoAPI->ChannelListEvents[channel->channel_id];
 			if(event)
@@ -1193,7 +1230,8 @@ void CControlAPI::EpgCGI(CyhookHandler *hh)
 			bouquet = encodeString(bouquet); // encode (URLencode) the bouquetname
 			hh->printf("\t<bouquet>\n\t\t<number>%d</number>\n\t\t<name><![CDATA[%s]]></name>\n\t", bouquetnr+1, bouquet.c_str());
 
-			for(int j = 0; j < (int) channels.size(); j++) {
+			for(int j = 0; j < (int) channels.size(); j++) 
+			{
 				CZapitChannel * channel = channels[j];
 				hh->WriteLn("\t\t<channel>");
 				channelEPGAsXML(hh, bouquetnr+1, channel->channel_id, max, stoptime);
@@ -1207,13 +1245,15 @@ void CControlAPI::EpgCGI(CyhookHandler *hh)
 			ZapitChannelList channels;
 			int mode = NeutrinoAPI->Zapit->getMode();
 
-			for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
+			for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+			{
 				channels = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->Bouquets[i]->radioChannels : g_bouquetManager->Bouquets[i]->tvChannels;
 				std::string bouquet = std::string(g_bouquetManager->Bouquets[i]->bFav ? g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME) :g_bouquetManager->Bouquets[i]->Name.c_str());
 				bouquet = encodeString(bouquet); // encode (URLencode) the bouquetname
 				hh->printf("\t<bouquet>\n\t\t<number>%d</number>\n\t\t<name><![CDATA[%s]]></name>\n\t", i+1, bouquet.c_str());
 
-				for(int j = 0; j < (int) channels.size(); j++) {
+				for(int j = 0; j < (int) channels.size(); j++) 
+				{
 					CZapitChannel * channel = channels[j];
 					hh->WriteLn("\t\t<channel>");
 					channelEPGAsXML(hh, j+1, channel->channel_id, max, stoptime);
@@ -1401,7 +1441,8 @@ void CControlAPI::SendChannelList(CyhookHandler *hh)
 	int mode = NeutrinoAPI->Zapit->getMode();
 	hh->SetHeader(HTTP_OK, "text/html; charset=UTF-8");
 	CBouquetManager::ChannelIterator cit = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin() : g_bouquetManager->tvChannelsBegin();
-	for (; !(cit.EndOfChannels()); cit++) {
+	for (; !(cit.EndOfChannels()); cit++) 
+	{
 		CZapitChannel * channel = *cit;
 		hh->printf(PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
 				" %s\n",
@@ -1482,6 +1523,7 @@ void CControlAPI::SendAllCurrentVAPid(CyhookHandler *hh)
 			}
 		}
 	}
+	
 	if(eit_not_ok)
 	{
 		unsigned short i = 0;
@@ -1529,7 +1571,8 @@ void CControlAPI::SendTimers(CyhookHandler *hh)
 			zAddData[1] = 0;
 		}
 
-		switch(timer->eventType) {
+		switch(timer->eventType) 
+		{
 		case CTimerd::TIMER_NEXTPROGRAM:
 		case CTimerd::TIMER_ZAPTO:
 		case CTimerd::TIMER_RECORD:
@@ -1574,7 +1617,8 @@ void CControlAPI::SendTimers(CyhookHandler *hh)
 }
 
 //-----------------------------------------------------------------------------
-void CControlAPI::_SendTime(CyhookHandler *hh, struct tm *Time, int digits){
+void CControlAPI::_SendTime(CyhookHandler *hh, struct tm *Time, int digits)
+{
 	char zTime[25] = {0};
 	char zDate[25] = {0};
 	strftime(zTime,20,"%H:%M",Time);
@@ -1613,7 +1657,7 @@ void CControlAPI::SendTimersXML(CyhookHandler *hh)
 	// Look for Recording Safety Timers too
 	int pre=0, post=0;
 	NeutrinoAPI->Timerd->getRecordingSafety(pre,post);
-//	hh->printf("\t\t\t<recording_safety>%d</recording_safety>\n",(int)timer->recordingSafety);
+	//hh->printf("\t\t\t<recording_safety>%d</recording_safety>\n",(int)timer->recordingSafety);
 	hh->printf("\t\t\t<pre_delay>%d</pre_delay>\n",pre);
 	hh->printf("\t\t\t<post_delay>%d</post_delay>\n",post);
 	hh->WriteLn("\t</config>\n");
@@ -1661,7 +1705,8 @@ void CControlAPI::SendTimersXML(CyhookHandler *hh)
 		hh->WriteLn("\t\t\t</announce>\n");
 
 		// stoptime
-		if(timer->stopTime > 0){
+		if(timer->stopTime > 0)
+		{
 			hh->WriteLn("\t\t\t<stop>\n");
 			struct tm *stopTime = localtime(&(timer->stopTime));
 			hh->WriteLn("\t\t\t\t<normal>\n");
@@ -1700,7 +1745,8 @@ void CControlAPI::SendTimersXML(CyhookHandler *hh)
 
 		// epg title
 		std::string title = timer->epgTitle;
-		if(timer->epgID!=0){
+		if(timer->epgID!=0)
+		{
 			CSectionsdClient sdc;
 			CEPGData epgdata;
 			if (sdc.getEPGid(timer->epgID, timer->epg_starttime, &epgdata))
@@ -2200,10 +2246,13 @@ void CControlAPI::moveBouquetCGI(CyhookHandler *hh)
 		hh->ParamList["action"] == "down"))
 	{
 		int selected = atoi(hh->ParamList["selected"].c_str());
-		if (hh->ParamList["action"] == "up") {
+		if (hh->ParamList["action"] == "up") 
+		{
 			NeutrinoAPI->Zapit->moveBouquet(selected - 1, (selected - 1) - 1);
 			selected--;
-		} else {
+		} 
+		else 
+		{
 			NeutrinoAPI->Zapit->moveBouquet(selected - 1, (selected + 1) - 1);
 			selected++;
 		}
@@ -2218,7 +2267,8 @@ void CControlAPI::deleteBouquetCGI(CyhookHandler *hh)
 {
 	int selected = -1;
 
-	if (hh->ParamList["selected"] != "") {
+	if (hh->ParamList["selected"] != "") 
+	{
 		selected = atoi(hh->ParamList["selected"].c_str());
 		NeutrinoAPI->Zapit->deleteBouquet(selected - 1);
 		hh->SendOk();
@@ -2411,24 +2461,30 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh)
 		{
 			conf = Config->getConfigDataMap();
 			ConfigDataMap::iterator it;
-			for(it = conf.begin(); it != conf.end(); it++){
+			for(it = conf.begin(); it != conf.end(); it++)
+			{
 				std::string key =it->first;
 				replace(key,".","_dot_");
 				replace(key,"-","_bind_");
-				if(!(hh->ParamList["config"] == "nhttpd" && it->first == "mod_auth.password")){
+				if(!(hh->ParamList["config"] == "nhttpd" && it->first == "mod_auth.password"))
+				{
 					// Output as json (default)
-					if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == ""){
+					if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == "")
+					{
 						result += string_printf("%s: '%s',\n", (key).c_str(), (it->second).c_str());
 					}
 				}
 			}
-		} else {
-			for (CStringList::iterator it = hh->ParamList.begin(); it
-					!= hh->ParamList.end(); it++){
+		} 
+		else 
+		{
+			for (CStringList::iterator it = hh->ParamList.begin(); it != hh->ParamList.end(); it++)
+			{
 				std::string key = it->first;
 				replace(key,"_dot_",".");
 				replace(key,"_bind_","-");
-				if(key != "_dc" && key != "action" && key != "format" && key != "config"){
+				if(key != "_dc" && key != "action" && key != "format" && key != "config")
+				{
 					Config->setString(key, it->second);
 				}
 			}
@@ -2439,14 +2495,19 @@ void CControlAPI::ConfigCGI(CyhookHandler *hh)
 	else
 		error = string_printf("no config defined for: %s", (hh->ParamList["config"]).c_str() );
 
-	if(error == ""){
-		if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == ""){
+	if(error == "")
+	{
+		if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == "")
+		{
 			hh->WriteLn("{success: 'true', data:{");
 			hh->WriteLn(result);
 			hh->WriteLn("}}");
 		}
-	} else {
-		if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == ""){
+	} 
+	else 
+	{
+		if (hh->ParamList["format"] == "json" || hh->ParamList["format"] == "")
+		{
 			hh->WriteLn("{success: 'false', error:{");
 			hh->WriteLn(error);
 			hh->WriteLn("}}");
@@ -2465,7 +2526,8 @@ void CControlAPI::FileCGI(CyhookHandler *hh)
 {
 
 	// directory list: action=list&path=<path>
-	if (hh->ParamList["action"] == "list"){
+	if (hh->ParamList["action"] == "list")
+	{
 		DIR *dirp;
 		struct dirent *entry;
 		struct stat statbuf;
@@ -2479,7 +2541,8 @@ void CControlAPI::FileCGI(CyhookHandler *hh)
 		std::string path = hh->ParamList["path"];
 		if((dirp = opendir( path.c_str() )))
 		{
-			while((entry = readdir(dirp))){
+			while((entry = readdir(dirp)))
+			{
 				hh->WriteLn("\t<item>");
 				hh->printf("\t\t<name>%s</name>\n", entry->d_name);
 				std::string ftype;
@@ -2497,7 +2560,8 @@ void CControlAPI::FileCGI(CyhookHandler *hh)
 				std::string fullname = path + entry->d_name;
 				hh->printf("\t\t<fullname>%s</fullname>", fullname.c_str());
 //entry->d_name
-				if(stat(fullname.c_str(), &statbuf)!=-1){
+				if(stat(fullname.c_str(), &statbuf)!=-1)
+				{
 					hh->printf("\t\t<mode>%xld</mode>", (long)statbuf.st_mode);
 					/* Print out type, permissions, and number of links. */
 //					hh->printf("\t\t<permission>%10.10s</permission>\n", sperm (statbuf.st_mode));
@@ -2527,11 +2591,13 @@ void CControlAPI::FileCGI(CyhookHandler *hh)
 		hh->WriteLn("</filelist>");
 	}
 	// create new folder
-	else if (hh->ParamList["action"] == "new_folder"){
+	else if (hh->ParamList["action"] == "new_folder")
+	{
 		hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8");
 		//TODO
 	}
-	else if (hh->ParamList["action"] == "delete"){
+	else if (hh->ParamList["action"] == "delete")
+	{
 		hh->SetHeader(HTTP_OK, "text/plain; charset=UTF-8");
 		//TODO
 	}

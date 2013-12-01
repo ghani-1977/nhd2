@@ -4,7 +4,7 @@
 //<![CDATA[
 function check_updates()
 {
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 	loadSyncURL("/control/exec?Y_Tools&get_update_version_dbox");
 	~
 	loadSyncURL("/control/exec?Y_Tools&get_update_version_coolstream");

@@ -38,6 +38,7 @@ function init(){
 }
 </script>
 </head>
+
 <body onload="init()">
 {=var-set:management={=if-equal:{=func:get_request_data client_addr=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip;{=func:get_request_data client_addr=}=}~1~=}{=if-equal:{=func:get_request_data client_addr=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip2=}~1~=}=}
 <div class="y_menu_sec_box">
@@ -50,88 +51,44 @@ function init(){
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">yWeb</li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.webserver=}</li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.zapit=}</li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.ucodes=}</li>
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.boot_logo=}</li>
-			~=}
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.timer_settings=}</a></li>
 			~
 				<li><a target="work" href="Y_Settings_yWeb.yhtm">yWeb</a></li>
 				<li><a target="work" href="Y_Settings_nhttpd.yhtm">{=L:set.menue.webserver=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
 				<li><a target="work" href="Y_Settings_zapit.yhtm">{=L:set.menue.zapit=}</a></li>
-				<li><a target="work" href="Y_Settings_ucodes.yhtm">{=L:set.menue.ucodes=}</a></li>
-				<li><a target="work" href="Y_Tools_Bootlogo.yhtm">{=L:set.menue.boot_logo=}</a></li>
-			~=}
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
 				<li><a target="work" href="Y_Settings_Backup.yhtm">{=L:set.menue.backup_restore=}</a></li>
-			~=}
 				<li><a target="work" href="Y_Settings_Timer.yhtm">{=L:set.menue.timer_settings=}</a></li>
 			=}	
 				<!--<li><a title="change layout skin" target="work" href="Y_Settings_Skin.yhtm">Skins</a></li>-->
 			</ul>
 		</div>
+
 		<div class="y_menu_sec_section">Neutrino</div>
 		<div class="y_menu_sec">
 			<ul id="secmenu_neutrino">
 			{=if-empty:{=var-get:management=}~
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.bouquet_editor=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.video_audio=}</a></li>
-			~=}
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.parental=}</a></li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.recording=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.direct_recording=}</a></li>
-			=}
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.audio_player=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.esound_server=}</a></li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.movieplayer=}</a></li>
-			~=}
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.pictureviewer=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.lcd_display=}</a></li>
-			~=}
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.key_settings=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.boot_options=}</a></li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.others=}</a></li>
-			~=}
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:set.menue.peronalization=}</li>
 			~
 				<li><a target="work" href="Y_Boxcontrol_Bouquet_Editor_Main.yhtm">{=L:set.menue.bouquet_editor=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li><a target="work" href="Y_Settings_video_audio.yhtm">{=L:set.menue.video_audio=}</a></li>
-			~=}
 				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_parental">{=L:set.menue.parental=}</a></li>
 				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_record">{=L:set.menue.recording=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_direct_recording">{=L:set.menue.direct_recording=}</a></li>
-			=}
 				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_audioplayer">{=L:set.menue.audio_player=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_esound">{=L:set.menue.esound_server=}</a></li>
 				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_movieplayer">{=L:set.menue.movieplayer=}</a></li>
-			~=}
 				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_pictureviewer">{=L:set.menue.pictureviewer=}</a></li>
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
 				<li><a target="work" href="Y_Settings_lcd.yhtm">{=L:set.menue.lcd_display=}</a></li>
-			~=}
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
 				<li><a target="work" href="Y_Settings_buttons.yhtm">{=L:set.menue.key_settings=}</a></li>
-			~=}
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_bootoptions">{=L:set.menue.boot_options=}</a></li>
-				<li><a target="work" href="Y_Settings_neutrino_forms.yhtm?form=neutrino_form-data_diverse">{=L:set.menue.others=}</a></li>
-			~=}
-			{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
-				<li><a target="work" href="Y_Settings_personalize.yhtm">{=L:set.menue.peronalization=}</a></li>
-			~=}
 			=}
 			</ul>
 		</div>
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 		<div class="y_menu_sec_section">{=L:plugins=}</div>
 		<div class="y_menu_sec">
 			<ul id="secmenu_plugins">

@@ -45,10 +45,12 @@ CNeutrinoYParser::CNeutrinoYParser(CNeutrinoAPI	*_NeutrinoAPI)
 {
 	NeutrinoAPI = _NeutrinoAPI;
 }
+
 //-------------------------------------------------------------------------
 CNeutrinoYParser::~CNeutrinoYParser(void)
 {
 }
+
 //=============================================================================
 // Hooks!
 //=============================================================================
@@ -80,6 +82,7 @@ THandleStatus CNeutrinoYParser::Hook_SendResponse(CyhookHandler *hh)
 
 	return hh->status;
 }
+
 //-----------------------------------------------------------------------------
 // HOOK: webserver_readconfig_hook Handler
 // This hook ist called from ReadCong (webserver)
@@ -127,6 +130,7 @@ const CNeutrinoYParser::TyFuncCall CNeutrinoYParser::yFuncCallList[]=
 	{"set_bouquet_edit_form",		&CNeutrinoYParser::func_set_bouquet_edit_form},
 
 };
+
 //-------------------------------------------------------------------------
 // y-func : dispatching and executing
 //-------------------------------------------------------------------------
@@ -149,6 +153,7 @@ std::string  CNeutrinoYParser::YWeb_cgi_func(CyhookHandler *hh, std::string ycmd
 		yresult = CyParser::YWeb_cgi_func(hh, ycmd);
 	return yresult;
 }
+
 //=============================================================================
 // y-func : Functions for Neutrino
 //=============================================================================
@@ -206,6 +211,7 @@ std::string  CNeutrinoYParser::func_mount_set_values(CyhookHandler *hh, std::str
 	delete Config;
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_bouquets_as_dropdown [<bouquet>] <doshowhidden>
 //-------------------------------------------------------------------------
@@ -219,7 +225,8 @@ std::string  CNeutrinoYParser::func_get_bouquets_as_dropdown(CyhookHandler *, st
 		nr = atoi(nr_str.c_str());
 
 	int mode = NeutrinoAPI->Zapit->getMode();
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
+	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+	{
 		ZapitChannelList * channels = mode == CZapitClient::MODE_RADIO ? &g_bouquetManager->Bouquets[i]->radioChannels : &g_bouquetManager->Bouquets[i]->tvChannels;
 		sel=(nr==(i+1)) ? "selected=\"selected\"" : "";
 		if(!channels->empty() && (!g_bouquetManager->Bouquets[i]->bHidden || do_show_hidden == "true"))
@@ -240,22 +247,27 @@ std::string  CNeutrinoYParser::func_get_bouquets_as_templatelist(CyhookHandler *
 
 	ySplitString(para,"~",ytemplate, do_show_hidden);
 	//ytemplate += "\n"; //FIXME add newline to printf
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
-		if(!g_bouquetManager->Bouquets[i]->bHidden || do_show_hidden == "true") {
+	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+	{
+		if(!g_bouquetManager->Bouquets[i]->bHidden || do_show_hidden == "true") 
+		{
 			yresult += string_printf(ytemplate.c_str(), i + 1, g_bouquetManager->Bouquets[i]->bFav ? g_Locale->getText(LOCALE_FAVORITES_BOUQUETNAME) : g_bouquetManager->Bouquets[i]->Name.c_str());
 			yresult += "\r\n";
 		}
 	}
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_actual_bouquet_number
 //-------------------------------------------------------------------------
 std::string  CNeutrinoYParser::func_get_actual_bouquet_number(CyhookHandler *, std::string)
 {
 	int actual=0;
-	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) {
-		if(g_bouquetManager->existsChannelInBouquet(i, live_channel_id)) {
+	for (int i = 0; i < (int) g_bouquetManager->Bouquets.size(); i++) 
+	{
+		if(g_bouquetManager->existsChannelInBouquet(i, live_channel_id)) 
+		{
 			actual=i+1;
 			break;
 		}
@@ -276,11 +288,13 @@ std::string  CNeutrinoYParser::func_get_channels_as_dropdown(CyhookHandler *, st
 	ySplitString(para," ",abouquet, achannel_id);
 	if(abouquet != "")
 		bnumber = atoi(abouquet.c_str());
-	if(bnumber > 0) {
+	if(bnumber > 0) 
+	{
 		bnumber--;
 		ZapitChannelList channels;
 		channels = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->Bouquets[bnumber]->radioChannels : g_bouquetManager->Bouquets[bnumber]->tvChannels;
-		for(int j = 0; j < (int) channels.size(); j++) {
+		for(int j = 0; j < (int) channels.size(); j++) 
+		{
 			CEPGData epg;
 			CZapitChannel * channel = channels[j];
 			char buf[100],id[20];
@@ -294,6 +308,7 @@ std::string  CNeutrinoYParser::func_get_channels_as_dropdown(CyhookHandler *, st
 	}
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // TODO: clean up code
 // use templates?
@@ -309,11 +324,14 @@ std::string CNeutrinoYParser::func_get_bouquets_with_epg(CyhookHandler *hh, std:
 	ySplitString(para," ",abnumber, tmp);
 	if(abnumber != "")
 		BouquetNr = atoi(abnumber.c_str());
-	if (BouquetNr > 0) {
+	if (BouquetNr > 0) 
+	{
 		BouquetNr--;
 		channels = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->Bouquets[BouquetNr]->radioChannels : g_bouquetManager->Bouquets[BouquetNr]->tvChannels;
 		num = 1 + (mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin().getNrofFirstChannelofBouquet(BouquetNr) : g_bouquetManager->tvChannelsBegin().getNrofFirstChannelofBouquet(BouquetNr)) ;
-	} else {
+	} 
+	else 
+	{
 		CBouquetManager::ChannelIterator cit = mode == CZapitClient::MODE_RADIO ? g_bouquetManager->radioChannelsBegin() : g_bouquetManager->tvChannelsBegin();
 		for (; !(cit.EndOfChannels()); cit++)
 			channels.push_back(*cit);
@@ -466,6 +484,7 @@ std::string  CNeutrinoYParser::func_get_actual_channel_id(CyhookHandler *, std::
 {
 	return string_printf(PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS, live_channel_id /*NeutrinoAPI->Zapit->getCurrentServiceID()*/);
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_mode (returns tv|radio|unknown)
 //-------------------------------------------------------------------------
@@ -502,6 +521,7 @@ std::string  CNeutrinoYParser::func_get_video_pids(CyhookHandler *, std::string 
 		apid = pids.APIDs[apid_idx].pid;
 	return string_printf("0x%04x,0x%04x,0x%04x",pids.PIDs.pmtpid,pids.PIDs.vpid,apid);
 }
+
 //-------------------------------------------------------------------------
 // y-func : get_radio_pids (returns: 0x0000)
 //-------------------------------------------------------------------------
@@ -646,12 +666,120 @@ std::string  CNeutrinoYParser::func_get_partition_list(CyhookHandler *, std::str
 	}
 	return yresult;
 }
+
 //-------------------------------------------------------------------------
 // y-func : get boxtypetext (Nokia, Philips, Sagem)
 //-------------------------------------------------------------------------
 std::string  CNeutrinoYParser::func_get_boxtype(CyhookHandler *, std::string)
 {
-	return "Coolstream";//FIXME
+	//return "generic";//FIXME
+#if defined (BOXMODEL_ATEVIO700)
+	return "atevio700";
+#elif defined (BOXMODEL_ATEVIO7000)
+	return "atevio7000";
+#elif defined (BOXMODEL_ATEVIO7500)
+	return "atevio7500";
+#elif defined (BOXMODEL_ATEVIO7600)
+	return "atevio7600";
+#elif defined (BOXMODEL_AZBOXHD)
+	return "azboxhd";
+#elif defined (BOXMODEL_AZBOXME)
+	return "azboxme";
+#elif defined (BOXMODEL_AZBOXMINIME)
+	return "azboxminime";
+#elif defined (BOXMODEL_DM500)
+	return "dm500";
+#elif defined (BOXMODEL_DM500HD)
+	return "dm500hd";
+#elif defined (BOXMODEL_DM500PLUS)
+	return "dm500plus";
+#elif defined (BOXMODEL_DM56x0)
+	return "dm56x0";
+#elif defined (BOXMODEL_DM600PVR)
+	return "dm600pvr";
+#elif defined (BOXMODEL_DM7000)
+	return "dm7000";
+#elif defined (BOXMODEL_DM7000HD)
+	return "dm7000hd";
+#elif defined (BOXMODEL_DM8000HD)
+	return "dm8000";
+#elif defined (BOXMODEL_DM800HD)
+	return "dm800hd";
+#elif defined (BOXMODEL_DM800SE)
+	return "dm800se";
+#elif defined (BOXMODEL_E3HD)
+	return "e3hd";
+#elif defined (BOXMODEL_ET4X00)
+	return "et4x00";
+#elif defined (BOXMODEL_ET5X00)
+	return "et5x00";
+#elif defined (BOXMODEL_ET6X00)
+	return "et6x00";
+#elif defined (BOXMODEL_ET9X00)
+	return "et9x00";
+#elif defined (BOXMODEL_GB800SE)
+	return "gb800se";
+#elif defined (BOXMODEL_GB800SEPLUS)
+	return "gb800seplus";
+#elif defined (BOXMODEL_GB800SOLO)
+	return "gb800solo";
+#elif defined (BOXMODEL_GB800UE)
+	return "gb800ue";
+#elif defined (BOXMODEL_GB800UEPLUS)
+	return "gb800ueplus";
+#elif defined (BOXMODEL_GBQUAD)
+	return "gbquad";
+#elif defined (BOXMODEL_INIHDE)
+	return "inihde";
+#elif defined (BOXMODEL_INIHDP)
+	return "inihdp";
+#elif defined (BOXMODEL_IQONIOS100HD)
+	return "iqonios100hd";
+#elif defined (BOXMODEL_IQONIOS300HD)
+	return "iqonios300hd";
+#elif defined (BOXMODEL_IXUSSONE)
+	return "ixussone";
+#elif defined (BOXMODEL_IXUSSZERO)
+	return "ixusszero";
+#elif defined (BOXMODEL_MEDIABOX)
+	return "mediabox";
+#elif defined (BOXMODEL_ODINM6)
+	return "odinm6";
+#elif defined (BOXMODEL_ODINM7)
+	return "odinm7";
+#elif defined (BOXMODEL_ODINM9)
+	return "odinm9";
+#elif defined (BOXMODEL_OPTIMUSSOS1)
+	return "optimuss0s1";
+#elif defined (BOXMODEL_OPTIMUSSOS2)
+	return "optimuss0s2";
+#elif defined (BOXMODEL_TM2T)
+	return "tm2t";
+#elif defined (BOXMODEL_TMNANO)
+	return "tmnano";
+#elif defined (BOXMODEL_TMSINGLE)
+	return "tmsingle";
+#elif defined (BOXMODEL_TMTWIN)
+	return "tmtwin";
+#elif defined (BOXMODEL_VENTONHDE)
+	return "ventonhde";
+#elif defined (BOXMODEL_VENTONHDX)
+	return "ventonhdx";
+#elif defined (BOXMODEL_VUDUO)
+	return "vuduo";
+#elif defined (BOXMODEL_VUDUO2)
+	return "vuduo2";
+#elif defined (BOXMODEL_VUSOLO)
+	return "vusolo";
+#elif defined (BOXMODEL_VUSOLO2)
+	return "vusolo2";
+#elif defined (BOXMODEL_VUULTIMO)
+	return "vuultimo";
+#elif defined (BOXMODEL_VUUNO)
+	return "vuuno";
+#else	
+	return "generic";
+#endif
 }
 //-------------------------------------------------------------------------
 // y-func : get stream info
@@ -679,6 +807,7 @@ std::string  CNeutrinoYParser::func_get_current_stream_info(CyhookHandler *hh, s
 	hh->ParamList["Crypt"] = NeutrinoAPI->getCryptInfoAsString();
 	return "";
 }
+
 //-------------------------------------------------------------------------
 // Template 1:classname, 2:zAlarmTime, 3: zStopTime, 4:zRep, 5:zRepCouunt
 //		6:zType, 7:sAddData, 8:timer->eventID, 9:timer->eventID
@@ -801,6 +930,7 @@ std::string  CNeutrinoYParser::func_get_timer_list(CyhookHandler *, std::string 
 
 	return yresult;
 }
+
 /*------------------------------------------------------------------------------
 	CTimerd::TIMER_RECORD = 5
 	CTimerd::TIMER_STANDBY = 4
@@ -811,6 +941,7 @@ std::string  CNeutrinoYParser::func_get_timer_list(CyhookHandler *, std::string 
 	CTimerd::TIMERREPEAT_WEEKDAYS = 256
 	CTimerd::TIMERREPEAT_ONCE = 0
  */
+
 // para ::= <type=new|modify> [timerid]
 std::string  CNeutrinoYParser::func_set_timer_form(CyhookHandler *hh, std::string para)
 {

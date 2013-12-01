@@ -61,6 +61,7 @@ function automount_edit()
 			break;
 	}
 }
+
 function form_init()
 {
 	obj_set_radio_value("type", "nfs");
@@ -69,11 +70,13 @@ function form_init()
 	=}
 	change_type();
 }
+
 function do_save()
 {
 	show_waitbox(true);
 	window.setTimeout("do_save2()",10);
 }
+
 function do_save2()
 {
 	var mountname = document.f.mountname.value;
@@ -112,6 +115,7 @@ function do_save2()
 	var res = loadSyncURL(_url);
 	window.document.location.href="/Y_Settings_automount_liste.yhtm";
 }
+
 function change_type()
 {
 	var fstype = obj_get_radio_value("type")
@@ -126,6 +130,7 @@ function change_type()
 		show_obj("vpassword",true);
 	}
 }
+
 //]]>
 </script>
 </head>

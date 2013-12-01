@@ -2,6 +2,7 @@
 {=include-block:Y_Blocks.txt;head=}
 </head>
 <body>
+
 <div class="work_box">
 	<div class="work_box_head"><div class="work_box_head_h2">
 	{=var-set:help_url=Help-Info-Hilfe=}{=var-set:menu={=L:info.help=}=}{=include-block:Y_Blocks.txt;work_menu=}</div></div>

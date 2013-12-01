@@ -53,13 +53,11 @@
 #include <gui/widget/progressbar.h>
 #include <gui/pictureviewer.h>
 
+
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 		78
 
 static CProgressBar * timescale;
-
-//#define ICON_LARGE_WIDTH 26
-
 
 int findItem(std::string strItem, std::vector<std::string> & vecItems) 
 {
@@ -139,8 +137,8 @@ CEpgData::CEpgData()
 	timescale = new CProgressBar(100, 12, 30, 100, 70, true);
 }
 
-#define MAX_W 460 /*540*/
-#define MAX_H 260
+//#define MAX_W 460
+//#define MAX_H 260
 
 void CEpgData::start()
 {
@@ -162,7 +160,7 @@ void CEpgData::start()
 	medlineheight = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->getHeight();
 	medlinecount  = (oy - topboxheight - botboxheight)/medlineheight;
 	
-	/* this is the text box height - and the height of the scroll bar */
+	// this is the text box height - and the height of the scroll bar
 	sb = medlinecount * medlineheight;
 
 	oy = botboxheight + medlinecount*medlineheight; // recalculate //FIXME
@@ -268,7 +266,7 @@ void CEpgData::showText( int startPos, int ypos )
 
 	frameBuffer->paintBoxRel(sx + ox - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((_textCount - 1)/ medlinecount) + 1;
+	int sbc = ((_textCount - 1)/ medlinecount) + 1;
 	float sbh = (sb - 4)/ sbc;
 	int sbs = (startPos + 1)/ medlinecount;
 
@@ -444,7 +442,6 @@ const char * GetGenre(const unsigned char contentClassification) // UTF-8
 {
 	neutrino_locale_t res;
 
-	//unsigned char i = (contentClassification & 0x0F0);
 	int i = (contentClassification & 0xF0);
 	
 	//printf("GetGenre: contentClassification %X i %X bool %s\n", contentClassification, i, i < 176 ? "yes" : "no"); fflush(stdout);
@@ -484,6 +481,7 @@ void CEpgData::showHead(const t_channel_id channel_id)
 			if ( pos!=-1 )
 				text1 = text1.substr( 0, pos );
 		} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->getRenderWidth(text1, true) > 520 - PIC_W - 5));
+		
 		text2 = epgData.title.substr(text1.length()+ 1, uint(-1) );
 	}
 	int oldtoph= toph;
@@ -518,7 +516,6 @@ void CEpgData::showHead(const t_channel_id channel_id)
 		g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
 		
 		// display logo
-		//g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, PIC_W, topboxheight, true, false, true); //upscale, dont center x, center y
 		g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, (logo_bpp == 4 && logo_w > PIC_W)?  PIC_W: PIC_W_1, topboxheight, (logo_h > topboxheight)? true : false, false, true);
 		
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10 + ( (logo_bpp == 4)? logo_w : PIC_W_1) + 5, sy - toph + topheight + 3, ox - 15 - ( (logo_bpp == 4)? logo_w : PIC_W_1), text1, COL_MENUHEAD, 0, true);
@@ -562,7 +559,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 	
 	if (doLoop)
 	{
-		evtlist.clear();
+		//evtlist.clear();
+		
 		sectionsd_getEventsServiceKey(channel_id&0xFFFFFFFFFFFFULL, evtlist);
 		
 		// Houdini added for Private Premiere EPG start sorted by start date/time 2005-08-15
@@ -787,7 +785,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					break;
 					
 				case NeutrinoMessages::EVT_CURRENTNEXT_EPG:
-					if (/* !id &&*/ ((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL))) 
+					if (((*(t_channel_id *) data) == (channel_id & 0xFFFFFFFFFFFFULL))) 
 					{
 						show(channel_id);
 						showPos = 0;
@@ -807,7 +805,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 						g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ 10, sy+ oy- 3, widthr, "<", COL_MENUCONTENT + 1);
 
 						show(channel_id, prev_id, &prev_zeit, false);
-						showPos=0;
+						showPos = 0;
 					}
 					break;
 

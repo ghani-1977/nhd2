@@ -34,7 +34,7 @@ function goUrl(_url){
 			<td>
 			<input type="button" value="{=L:on=}" onclick='goUrl("/control/standby?on");'/>
 			<input type="button" value="{=L:off=}" onclick='goUrl("/control/standby?off");'/>
-		{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+		{=if-not-equal:{=global-var-get:boxtype=}~generic~
 			<input type="button" value="{=L:bc.control.status=}" onclick='goUrl("/control/exec?Y_Tools&amp;standby_status");'/>
 		~=}
 			</td>
@@ -52,7 +52,7 @@ function goUrl(_url){
 			<input type="button" value="{=L:bc.control.status=}" onclick='goUrl("/control/setmode?status");'/>
 			</td>
 		</tr>
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 		<tr><td class="y_form_header">{=L:bc.control.epg_sectiond=}</td><td class="y_form_header">{=L:bc.control.spts=}</td></tr>
 		<tr>
 			<td>
@@ -81,7 +81,7 @@ function goUrl(_url){
 			<input type="button" value="{=L:bc.control.unlock=}" onclick='live_unlock();' />
 			</td>
 		</tr>
-	{=if-not-equal:{=global-var-get:boxtype=}~cuberevo~
+	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 		<tr><td class="y_form_header">{=L:bc.control.optical_output=}</td><td class="y_form_header">{=L:bc.control.esound_server=}</td></tr>
 		<tr>
 			<td>
