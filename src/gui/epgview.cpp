@@ -769,6 +769,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 			switch ( msg )
 			{
 				case NeutrinoMessages::EVT_TIMER:
+#if defined (ENABLE_LCD)				  
 					if (data == g_InfoViewer->lcdUpdateTimer) 
 					{
 						GetEPGData(channel_id, id, &startzeit, false);
@@ -779,6 +780,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 							timescale->paint(pbx + 2, sy + oy - height + 2, epg_done);
 						}
 					}
+#endif					
 					CNeutrinoApp::getInstance()->handleMsg(msg, data);
 					break;
 					

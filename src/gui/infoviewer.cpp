@@ -194,8 +194,9 @@ void CInfoViewer::start()
 {
 	ChanNumberWidth = 100;
 	ChanNumberHeight = CHANNAME_HEIGHT;
-	
+#if defined (ENABLE_LCD)	
 	lcdUpdateTimer = g_RCInput->addTimer(LCD_UPDATE_TIME_TV_MODE, false, true);
+#endif	
 }
 
 void CInfoViewer::paintTime(bool show_dot, bool firstPaint)
@@ -1409,18 +1410,19 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
   	} 
 	else if (msg == NeutrinoMessages::EVT_TIMER) 
 	{
+#if defined (ENABLE_LCD)	  
 		if (data == lcdUpdateTimer) 
 		{
 			if ( is_visible )
 				show_Data( true );
 
-#if ENABLE_LCD
-	  		showLcdPercentOver();
-#endif			
+	  		showLcdPercentOver();		
 
 	  		return messages_return::handled;
 		}
-		else if (data == sec_timer_id) 
+		else
+#endif		  
+		if (data == sec_timer_id) 
 		{
 			showSNR();
 

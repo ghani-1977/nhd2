@@ -796,23 +796,33 @@ void CLCD::showMenuText(const int position, const char * text, const int highlig
 		return;
 	
 	/* hack, to not have to patch too much in movieplayer.cpp */
-	if (mode == MODE_MOVIE) {
+	if (mode == MODE_MOVIE) 
+	{
 		size_t p;
 		AUDIOMODES m = movie_playmode;
 		std::string mytext = text;
-		if (mytext.find("> ") == 0) {
+		if (mytext.find("> ") == 0) 
+		{
 			mytext = mytext.substr(2);
 			m = AUDIO_MODE_PLAY;
-		} else if (mytext.find("|| ") == 0) {
+		} 
+		else if (mytext.find("|| ") == 0) 
+		{
 			mytext = mytext.substr(3);
 			m = AUDIO_MODE_PAUSE;
-		} else if ((p = mytext.find("s||> ")) < 3) {
+		} 
+		else if ((p = mytext.find("s||> ")) < 3) 
+		{
 			mytext = mytext.substr(p + 5);
 			m = AUDIO_MODE_PLAY;
-		} else if ((p = mytext.find("x>> ")) < 3) {
+		} 
+		else if ((p = mytext.find("x>> ")) < 3) 
+		{
 			mytext = mytext.substr(p + 4);
 			m = AUDIO_MODE_FF;
-		} else if ((p = mytext.find("x<< ")) < 3) {
+		} 
+		else if ((p = mytext.find("x<< ")) < 3) 
+		{
 			mytext = mytext.substr(p + 4);
 			m = AUDIO_MODE_REV;
 		}
@@ -832,7 +842,6 @@ void CLCD::showMenuText(const int position, const char * text, const int highlig
 
 	wake_up();
 	displayUpdate();
-
 }
 
 void CLCD::showAudioTrack(const std::string & artist, const std::string & title, const std::string & album)

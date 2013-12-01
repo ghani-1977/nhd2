@@ -2197,8 +2197,10 @@ void CNeutrinoApp::InitZapper()
 	} 
 	else 
 	{
+#if defined (ENABLE_LCD)	  
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_RADIO_MODE, false );
+#endif		
 		
 		radioMode(false);
 	}
@@ -4481,8 +4483,10 @@ void CNeutrinoApp::tvMode( bool rezap )
 		}
 #endif		
 
+#if defined (ENABLE_LCD)
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_TV_MODE, false );
+#endif		
 
 		CVFD::getInstance()->ShowIcon(VFD_ICON_RADIO, false);
 
@@ -4561,8 +4565,10 @@ void CNeutrinoApp::radioMode( bool rezap)
 
 	if(mode == mode_tv ) 
 	{
+#if defined (ENABLE_LCD)	  
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_RADIO_MODE, false );
+#endif		
 
 		StopSubtitles();
 	}
@@ -4863,8 +4869,10 @@ void CNeutrinoApp::webtvMode( bool rezap)
 
 	if(mode == mode_tv ) 
 	{
+#if defined (ENABLE_LCD)	  
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_RADIO_MODE, false );
+#endif		
 
 		StopSubtitles();
 	}
@@ -4880,8 +4888,10 @@ void CNeutrinoApp::webtvMode( bool rezap)
 		}
 #endif		
 
+#if defined (ENABLE_LCD)
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
 		g_InfoViewer->lcdUpdateTimer = g_RCInput->addTimer( LCD_UPDATE_TIME_TV_MODE, false );
+#endif		
 
 		CVFD::getInstance()->ShowIcon(VFD_ICON_RADIO, false);
 

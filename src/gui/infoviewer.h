@@ -135,7 +135,9 @@ class CInfoViewer
 		bool 		chanready;
 		bool		is_visible;
 
+#if defined (ENABLE_LCD)
 		uint32_t    	lcdUpdateTimer;
+#endif		
 
 		CInfoViewer();
 

@@ -80,6 +80,7 @@ y_format_message_html()
 #	tmp="$tmp <body><div class='y_work_box'><pre>\n$msg\n</pre></div></body></html>"
 	echo -e "$tmp"
 }
+
 y_format_message_html2()
 {
 	tmp="<html><head><meta http-equiv='Content-Type' content='text/html; charset=windows-1252'>"
@@ -88,6 +89,7 @@ y_format_message_html2()
 	tmp="$tmp $msg</div></div></body></html>"
 	echo "$tmp"
 }
+
 y_format_message_html_plain()
 {
 	tmp="<html><head><meta http-equiv='Content-Type' content='text/html; charset=windows-1252'>"
@@ -95,6 +97,7 @@ y_format_message_html_plain()
 	tmp="$tmp <body>$msg</body></html>"
 	echo "$tmp"
 }
+
 # ===========================================================
 # config-Dateien - lesen / schreiben
 # (Zeilenformat: VarName=VarValue)
@@ -109,6 +112,7 @@ config_open()
 	cfg=""
 	cfg=`cat $1`
 }
+
 # -----------------------------------------------------------
 # config-Datei schreiben (Inhalt in $cfg)
 # $1=config-Filename
@@ -117,6 +121,7 @@ config_write()
 {
 	echo "$cfg" >$1
 }
+
 # -----------------------------------------------------------
 # Variablenwert zurueckgeben (vorher open)
 # $1=VarName
@@ -129,6 +134,7 @@ config_get_value()
 	tmp=`echo "$tmp" | $cmd`
 	echo $tmp
 }
+
 # -----------------------------------------------------------
 # Variablenwert zurueckgeben (ohne open)
 # $1=config-Filename
@@ -139,6 +145,7 @@ config_get_value_direct()
 	config_open $1
 	config_get_value $2
 }
+
 # -----------------------------------------------------------
 # Variablenwert setzen (vorher open)
 # $1=VarName)
@@ -155,6 +162,7 @@ config_set_value()
 		cfg=`echo "$cfg" | $cmd`
 	fi
 }
+
 # -----------------------------------------------------------
 # Variablenwert zurueckgeben (ohne open)
 # $1=config-Filename
@@ -167,6 +175,7 @@ config_set_value_direct()
 	config_set_value $2 $3
 	config_write $1
 }
+
 # -----------------------------------------------------------
 # Reboot
 # -----------------------------------------------------------
