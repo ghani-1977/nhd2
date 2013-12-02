@@ -130,8 +130,6 @@ function view_transcode_mode(){
 			<img src="/images/livelock.png"/></button>
 
 		{=if-equal:{=mode=}~tv~
-		<button class="y_live_button"  style="visibility:hidden" type="button" value="set" title="{=L:live.toggle_udp=}" id="udp" onclick="do_udp_toggle()">
-			<img src="/images/udp_switch_on.png"/></button>
 		<button class="y_live_button" type="button" value="set" title="{=L:live.settings=}" id="settings" onclick="view_settings_mode()">
 			<img src="/images/properties.png"/></button>
 		<button class="y_live_button" type="button" value="S" title="{=L:live.snapshot=}" id="snapshot" onclick="V2.snapshot()"  style="visibility:hidden">
@@ -150,8 +148,6 @@ function view_transcode_mode(){
 </div>
 <script type="text/javascript">
 //<![CDATA[
-	haveUDP = ("{=if-file-exists:/sbin/udpstreamts~true~{=if-file-exists:/var/bin/udpstreamts~true~false=}=}" == "true");
-	isUDP = ("{=ini-get:/var/tuxbox/config/Y-Web.conf;udp;false=}" == "true");
 	Mode = "{=mode=}";
 	LiveTyp = "{=typ=}";
 	ClientAddr = "{=func:get_request_data clientaddr=}";

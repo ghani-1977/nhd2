@@ -27,13 +27,6 @@ function do_refresh_liveview()
 				<td><input type="text" name="http_caching" size="5" value="{=ini-get:/var/tuxbox/config/Y-Web.conf;http_caching;1000=}"/></td>
 			</tr>
 			<tr>
-				<td>{=L:live.set.udp_defaul=}</td>
-				<td>
-					<input type="radio" name="udp" value="false"/>{=L:off=}&nbsp;
-					<input type="radio" name="udp" value="true"/>{=L:on=}
-				</td>
-			</tr>
-			<tr>
 				<td>{=L:live.set.slavebox_ip=}</td>
 				<td><input type="text" name="slavebox" size="15" value="{=ini-get:/var/tuxbox/config/Y-Web.conf;slavebox=}" title="{=L:live.set.enter_ip=}"/></td>
 			</tr>
@@ -62,12 +55,8 @@ function form_init()
 		document.f.deinterlace[1].checked = true;
 	else
 		document.f.deinterlace[0].checked = true;
-	val = "{=ini-get:/var/tuxbox/config/Y-Web.conf;udp;false=}";
-	if(val == "true")
-		document.f.udp[1].checked = true;
-	else
-		document.f.udp[0].checked = true;
 }
+
 function do_submit()
 {
 	show_waitbox(true);

@@ -100,27 +100,6 @@ case "$1" in
 	prepare_tv)
 		prepare_tv
 		;;
-		
-	udp_stream)
-		if [ "$2" = "start" ]
-		then
-			shift 2
-			killall streamts
-			killall streampes
-			killall udpstreamts
-			if [ -e /var/bin/udpstreamts ]
-			then
-				/var/bin/udpstreamts $* &
-			else
-				udpstreamts $* &
-			fi
-			pidof udpstreamts >/tmp/udpstreamts.pid
-		fi
-		if [ "$2" = "stop" ]
-		then
-			killall udpstreamts
-		fi
-		;;
 
 	*)
 		echo "Parameter wrong: $*" ;;

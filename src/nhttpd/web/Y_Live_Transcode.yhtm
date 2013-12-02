@@ -135,12 +135,11 @@ function doTranscode()
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 		</tr>
-		<tr><td class="y_form_section"><br/>{=L:live.rec.access=}</td><td class="y_form_section" colspan="3">&nbsp;</td></tr>
+		<tr><td class="y_form_section"><br/>{=L:live.rec.access=}</td><td class="y_form_section" colspan="2">&nbsp;</td></tr>
 		<tr>
 			<td>{=L:live.rec.type=}:</td>
 			<td>
 				<select name="access" class="y_live_button">
-				<option value="udp" selected="selected">udp</option>
 				<option value="http">http</option>
 				<option value="RTP">RTP</option>
 				</select>

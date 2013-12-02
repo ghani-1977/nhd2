@@ -4,7 +4,6 @@
 */
 /*globals*/
 var V2 = null;
-var isUDP = false;
 var IsTimeshift = true; //TEST
 var IsLocked = false;
 var IsMute = false;
@@ -21,10 +20,6 @@ function do_onload(){
 	if(Mode != "tv" && Mode != "radio")
 		Mode = "tv";
 	set_controls("disable");
-	if(isUDP && Mode == "tv")
-		change_button_img('udp',"udp_switch_off");
-	else if(Mode == "tv")
-		change_button_img('udp',"udp_switch_on");
 	window.setTimeout("do_init()",100);
 }
 function do_onresize(){
@@ -138,8 +133,6 @@ function set_controls(state){
 		obj_enable('transcode', play && opt);
 	}
 	if(Mode == "tv"){
-		show_obj('udp',haveUDP);
-		obj_enable('udp', go);
 		obj_enable('fullscreen', play);
 		show_obj('snapshot',(plugin != "moz3"));
 		obj_enable('snapshot', play && (plugin != "moz3"));
@@ -153,9 +146,6 @@ function do_play(){
 			options.push(":vout-filter=deinterlace");
 			options.push(":deinterlace-mode=bob");
 		}
-		if(isUDP && Mode == "tv"){
-			options.push(":access-filter=timeshift");
-		}
 		else
 			if(cachetime > 0)
 				options.push(":http-caching="+cachetime);
@@ -164,13 +154,7 @@ function do_play(){
 	}
 	do_play_state(0, options);
 }
-function start_udp_server(){
-	var pids = loadSyncURL("/control/yweb?video_stream_pids=0&no_commas=true");
-	var args = ClientAddr+" 31330 0 "+pids;
-	var _cmd = "udp_stream start "+args;
-	var __cmd = _cmd.replace(/ /g, "&");
-	loadXMLDoc("/control/exec?Y_Live&"+__cmd, dummy);
-}
+
 function do_stop(){
 	V2.stop();
 	while(V2.is_playing())
@@ -178,30 +162,29 @@ function do_stop(){
 	change_button_img('PlayOrPause',"play");
 	set_controls("stop");
 }
+
 function dummy()
 {
 }
+
 // VCL does not work with prototype.js!
 function do_play_bystring(_str){
 	do_play_state(1,[_str]);
 }
+
 function do_play_state(_state, _options){
 	change_button_img('PlayOrPause',"pause");
 	_options.push(":input-repeat=1");
 //	alert("options:"+_options);
 	V2.options = _options;
 	var mrl = "";
-	if(Mode == "tv" && isUDP)
-		mrl = "udp://@:31330";
-	else
-		mrl = loadSyncURL("/control/build_live_url");
+	mrl = loadSyncURL("/control/build_live_url");
 	V2.set_actual_mrl(mrl);
 	V2.play();
 	V2.next();
 	set_controls("play");
-	if(Mode == "tv" && isUDP)
-		window.setTimeout("start_udp_server()",1000);
 }
+
 function do_play_or_pause(){
 	if(V2.is_playing()) {
 		change_button_img('PlayOrPause',"play");
@@ -211,10 +194,9 @@ function do_play_or_pause(){
 		change_button_img('PlayOrPause',"pause");
 		V2.play();
 		set_controls("play");
-		if(isUDP)
-			window.setTimeout("start_udp_server()",1000);
 	}
 }
+
 /* bouquet & channel panel */
 function change_bouquet(){
 	var dd = id('bouquets');
@@ -228,6 +210,7 @@ function change_bouquet(){
 	obj_update('channels_div', "<img src=\"/images/smallwait.gif\"/> "+Lgetting_channels);
 	window.setTimeout("build_channel_list("+bouquet+", "+channel+")",2000);
 }
+
 function change_channel(){
 	isSubs=false;
 	var dd = id('channels');
@@ -239,6 +222,7 @@ function change_channel(){
 	AudioChannel = 0;
 	window.setTimeout("change_channel_zapto(\""+channel+"\")",100);
 }
+
 function change_sub_channel(){
 	var dd = id('subs');
 	var channel = -1;
@@ -249,10 +233,12 @@ function change_sub_channel(){
 	AudioChannel = 0;
 	window.setTimeout("change_channel_zapto(\""+channel+"\")",100);
 }
+
 function change_channel_zapto(channel){
 	dbox_zapto(channel);
 	window.setTimeout("change_channel_play()",500);
 }
+
 function build_subchannels(){
 	var subs = loadSyncURL("/control/zapto?getallsubchannels");
 	if (subs != "") {
@@ -270,6 +256,7 @@ function build_subchannels(){
 	else
 		display_obj("subsRow", false);
 }
+
 function change_channel_play(){
 	insert_vlc_control();
 	do_play();
@@ -279,11 +266,13 @@ function change_channel_play(){
 			build_subchannels();
 	}
 }
+
 /*other buttons*/
 function do_show_version(){
 	alert("Version:"+V2.version_string+" Generation:"+V2.plugin+"\nlevel1:"+V2.version_level1+" 2:"+V2.version_level2
 		+" 3:"+V2.version_level3+" 4:"+V2.version_level4);
 }
+
 function do_lock_toggle(){
 	if( !IsLocked ) {
 		change_button_img('livelock',"liveunlock");
@@ -295,17 +284,13 @@ function do_lock_toggle(){
 		live_unlock();
 	}
 }
+
 function do_mute_toggle(){
 	change_button_img('mute', (IsMute)?"volumemute":"volumeunmute");
 	IsMute = !IsMute;
 	V2.toggle_mute();
 }
-function do_udp_toggle(){
-	change_button_img('udp', (isUDP)?"udp_switch_on":"udp_switch_off");
-	isUDP = !isUDP;
-	do_stop();
-	do_play();
-}
+
 function view_streaminfo(){
 	window.open("/fb/info.dbox2","streaminfo","width=400,height=400");
 }
@@ -316,6 +301,7 @@ function doChangeAudioPid(){
 //	insert_message_control("... zapping ...");
 	window.setTimeout("change_channel_play()",100);
 }
+
 function build_audio_pid_list(){
 	var audio_pids_url = "/y/cgi?execute=func:get_audio_pids_as_dropdown";
 	var audio_pid_list = loadSyncURL(audio_pids_url);

@@ -111,6 +111,7 @@ function do_check(){
 	~
 		sLog_addRow(sLog_body, "green", "Programs: etherwake is installed at: {=var-get:etherwake=}. Wake on LAN is enabled.", "ok");
 	=}
+
 	/*automount*/
 	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 	{=var-set:automount={=if-file-exists:/sbin/automount~/sbin/automount~{=if-file-exists:/var/bin/automount~/var/bin/automount~false=}=}=}
@@ -120,31 +121,7 @@ function do_check(){
 		sLog_addRow(sLog_body, "green", "Programs: automount is installed at: {=var-get:automount=}. AutoMount is enabled.", "ok");
 	=}
 	~=}
-	{=var-set:udpstreamts={=if-file-exists:/sbin/udpstreamts~/sbin/udpstreamts~{=if-file-exists:/var/bin/udpstreamts~/var/bin/udpstreamts~{=if-file-exists:/usr/bin/udpstreamts~/usr/bin/udpstreamts~false=}=}=}=}
-	{=if-equal:{=var-get:udpstreamts=}~false~
-		sLog_addRow(sLog_body, "red", "Programs: udpstreamts is not installed. udp-streaming is disabled. "+y_url("Help-Live_Timer-UDP_Streaming"), "failed");
-	~
-		sLog_addRow(sLog_body, "green", "Programs: udpstreamts is installed at: {=var-get:udpstreamts=}. udp-streaming is enabled.", "ok");
-	=}
-
-	{=if-not-equal:{=global-var-get:boxtype=}~generic~
-	/*ucodes*/
-	{=if-file-exists:/var/tuxbox/ucodes/avia500.ux~
-		sLog_addRow(sLog_body, "green", "Ucodes: avia500.ux found", "ok");
-	~
-		sLog_addRow(sLog_body, "yellow", "Ucodes: avia500.ux not found. "+wiki_url("Ucodes"), "notice");
-	=}
-	{=if-file-exists:/var/tuxbox/ucodes/avia600.ux~
-		sLog_addRow(sLog_body, "green", "Ucodes: avia600.ux found", "ok");
-	~
-		sLog_addRow(sLog_body, "yellow", "Ucodes: avia600.ux not found. "+wiki_url("Ucodes"), "notice");
-	=}
-	{=if-file-exists:/var/tuxbox/ucodes/cam-alpha.bin~
-		sLog_addRow(sLog_body, "green", "Ucodes: cam-alpha found", "ok");
-	~
-		sLog_addRow(sLog_body, "red", "Ucodes: cam-alpha not found. "+wiki_url("Ucodes"), "failed");
-	=}
-	~=}
+	
 	do_stop();
 }
 //]]>
