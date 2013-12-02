@@ -8,13 +8,14 @@ function do_submit(){
 	yhttpd_cache_clear("");
 	document.f.submit();
 }
+
 function do_init(){
 	val = "{=ini-get:/var/tuxbox/config/Y-Web.conf;fb;{=if-equal:{=global-var-get:boxtype=}~generic~Cuberevo~default=}~open=}";
-	var sel=2;
+	var sel=3;
 	switch(val){
 		case "default": sel=0; break;
 		case "Cuberevo": sel=1; break;
-		case "Dream": sel=3;	break;
+		case "Dream": sel=2;	break;
 	}
 	document.f.fb.selectedIndex = sel;
 	val = "{=ini-get:/var/tuxbox/config/Y-Web.conf;start_page;bouquets~cache=}";

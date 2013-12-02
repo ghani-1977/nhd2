@@ -17,6 +17,7 @@ function sLog_init(){
 	sLog_line_number = 0;
 	sLog_body=document.getElementById("slog_list");
 }
+
 function sLog_clear(){
 	while(sLog_body.childNodes.length > 0)	{
 		aChild=sLog_body.firstChild;
@@ -24,6 +25,7 @@ function sLog_clear(){
 	}
 	sLog_line_number =  0;
 }
+
 function sLog_addRow(_body, state, action_text, state_text){
 	sLog_line_number++;
 	var mycurrent_row = y_add_row_to_table(_body, ((sLog_line_number % 2) ==0)?"a":"b" );
@@ -38,13 +40,16 @@ function sLog_addRow(_body, state, action_text, state_text){
 	y_add_html_cell_to_row(mycurrent_row, "action_text", action_text);
 	y_add_text_cell_to_row(mycurrent_row, "state_text", state_text);
 }
+
 /*check*/
 function wiki_url(_page){
 	return "<a href=\"http://wiki.dbox2-tuning.net/"+_page+"\" target='_blank'><b>[Help]<\/b><\/a>"
 }
+
 function y_url(_page){
 	return "<a href=\"http://www.yjogol.com/"+_page+"\" target='_blank'><b>[Help]<\/b><\/a>"
 }
+
 function do_check(){
 	sLog_init();
 	sLog_clear();
@@ -64,16 +69,19 @@ function do_check(){
 	{=if-equal:{=ini-get:/var/tuxbox/config/nhttpd.conf;mod_auth.authenticate;false=}~false~~
 		sLog_addRow(sLog_body, "yellow", "WebServer: Authentication is on. "+y_url("Help-Settings-Webserver"), "notice");
 	=}
+
 	{=if-equal:{=ini-get:/var/tuxbox/config/nhttpd.conf;WebsiteMain.port;80=}~80~~
 		sLog_addRow(sLog_body, "yellow",
 		"WebServer: not set to Standard-Port. Actual: {=ini-get:/var/tuxbox/config/nhttpd.conf;WebsiteMain.port;80=} "+wiki_url("Neutrino:yWeb#Webserver"), "notice");
 	=}
+
 	/*settings*/
 	{=if-empty:{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip=}~~
 		sLog_addRow(sLog_body, "yellow",
 		"Settings: Management IP(1) is set to {=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip=} ! Your IP is {=func:get_request_data client_addr=}. "
 		+wiki_url("Help-Settings-yWeb"), "notice");
 	=}
+
 	{=if-empty:{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip2=}~~
 		sLog_addRow(sLog_body, "yellow",
 		"Settings: Management IP(2) is set to {=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip2=} ! Your IP is {=func:get_request_data client_addr=}. "
@@ -87,25 +95,22 @@ function do_check(){
 	~
 		sLog_addRow(sLog_body, "green", "Programs: lcshot is installed at: {=var-get:lcshot=}. LCD Screenshot is enabled.", "ok");
 	=}
+
 	{=var-set:fbshot={=if-file-exists:/bin/grab~/bin/grab~{=if-file-exists:/var/bin/grab~/var/bin/grab~{=if-file-exists:/usr/bin/grab~/usr/bin/grab~false=}=}=}=}
 	{=if-equal:{=var-get:fbshot=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: fbshot is not installed. OSD Screenshot is disabled. "+y_url("Help-BoxControl-OSD_Screenshot"), "failed");
 	~
 		sLog_addRow(sLog_body, "green", "Programs: fbshot is installed at: {=var-get:fbshot=}. OSD Screenshot is enabled.", "ok");
 	=}
-//	{=var-set:dboxshot={=if-file-exists:/bin/dboxshot~/bin/dboxshot~{=if-file-exists:/var/bin/dboxshot~/var/bin/dboxshot~false=}=}=}
-//	{=if-equal:{=var-get:dboxshot=}~false~
-//		sLog_addRow(sLog_body, "red", "Programs: dboxshot is not installed. Remote &amp; OSD is disabled. <a href='http://www.yjogol.com/faq-diy' target='_blank'><b>[Download]<\/b><\/a>", "failed");
-//	~
-//		sLog_addRow(sLog_body, "green", "Programs: dboxshot is installed at: {=var-get:dboxshot=}. Remote &amp; OSD is enabled.", "ok");
-//	=}
+
 	{=var-set:fcp={=if-file-exists:/sbin/fcp~/sbin/fcp~{=if-file-exists:/var/bin/fcp~/var/bin/fcp~{=if-file-exists:/bin/fcp~/bin/fcp~false=}=}=}=}
 	{=if-equal:{=var-get:fcp=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: fcp is not installed. Image flashing is disabled. "+y_url("Help-Tools-Image"), "failed");
 	~
 		sLog_addRow(sLog_body, "green", "Programs: fcp is installed at: {=var-get:fcp=}. Image flashing is enabled.", "ok");
 	=}
-	{=var-set:etherwake={=if-equal:{=global-var-get:boxtype=}~generic~{=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~false=}=}~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}
+
+	{=var-set:etherwake={=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}=}
 	{=if-equal:{=var-get:etherwake=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: etherwake is not installed. Wake on LAN is disabled. "+y_url("Help-Tools-Wake_on_LAN"), "failed");
 	~
@@ -113,14 +118,12 @@ function do_check(){
 	=}
 
 	/*automount*/
-	{=if-not-equal:{=global-var-get:boxtype=}~generic~
 	{=var-set:automount={=if-file-exists:/sbin/automount~/sbin/automount~{=if-file-exists:/var/bin/automount~/var/bin/automount~false=}=}=}
 	{=if-equal:{=var-get:automount=}~false~
 		sLog_addRow(sLog_body, "red", "Programs: automount is not installed. AutoMount is disabled. "+y_url("Help-Tools-AutoMount"), "failed");
 	~
 		sLog_addRow(sLog_body, "green", "Programs: automount is installed at: {=var-get:automount=}. AutoMount is enabled.", "ok");
 	=}
-	~=}
 	
 	do_stop();
 }

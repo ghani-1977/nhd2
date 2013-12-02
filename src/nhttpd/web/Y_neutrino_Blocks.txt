@@ -38,85 +38,6 @@ start-block~neutrino_form-data_record
 	<div class="work_box_body">
 	<form name="f" class="y_form" action="/y/cgi">
 		<table cellspacing="0" border="0" cellpadding="2" width="100%">
-		{=if-not-equal:{=global-var-get:boxtype=}~generic~
-			<tr><td colspan="2" class="y_form_header">{=L:set.rec.rec_dest=}</td></tr>
-			<tr>
-				<td width="35%">{=L:set.rec.device=}</td>
-				<td>
-					<select name="rec_type" onchange="change_rec_type()" title="{=L:set.rec.recmode=}">
-					<option value="0" selected="selected">{=L:off=}</option>
-					<option value="1">{=L:set.rec.server=}</option>
-					<option value="2">{=L:set.rec.recorder=}</option>
-					<option value="3">{=L:set.rec.file=}</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.recserver_ip=}</td>
-				<td>	<input type="text" id="ip" name="ip" size="20" title="server ip (xxx.xxx.xxx.xxx)"/>
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.recserver_port=}</td>
-				<td>
-					<input type="text" id="port" name="port" size="6" title="port"/>
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.recserver_wol=}</td>
-				<td>
-					<input type="radio" id="wol0" name="wol" value="0" onchange="change_mac()"/>{=L:off=}&nbsp;
-					<input type="radio" id="wol1" name="wol" value="1" onchange="change_mac()"/>{=L:on=}
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.mac_adress=}</td>
-				<td>
-					<input type="text" id="mac" name="mac" size="20"/>
-				</td>
-			</tr>
-			<tr><td colspan="2" class="y_form_header">{=L:set.rec.rec_behavior=}</td></tr>
-			<tr>
-				<td>{=L:set.rec.stop_playback=}</td>
-				<td>
-					<input type="radio" id="sp0" name="stopplayback" value="false"/>{=L:off=}&nbsp;
-					<input type="radio" id="sp1" name="stopplayback" value="true""/>{=L:on=}
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.epg_sectionsd=}</td>
-				<td>
-					<select id="ss" name="stopsectionsd" title="{=L:set.rec.epg_sectionsd_desc=}">
-					<option value="0" selected="selected">{=L:set.rec.dont_stop=}</option>
-					<option value="1">{=L:set.rec.stop=}</option>
-					<option value="2">{=L:set.rec.restart=}</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.zap=}</td>
-				<td>
-					<input type="radio" name="zap_on_announce" value="false"/>{=L:off=}&nbsp;
-					<input type="radio" name="zap_on_announce" value="true"/>{=L:on=}
-				</td>
-			</tr>
-			<tr>
-				<td>{=L:set.rec.scart=}</td>
-				<td>
-					<input type="radio" id="vcr0" name="vcr_no_scart" value="0"/>{=L:off=}&nbsp;
-					<input type="radio" id="vcr1" name="vcr_no_scart" value="1"/>{=L:on=}
-				</td>
-			</tr>
-		=}
-		{=if-not-equal:{=global-var-get:boxtype=}~generic~
-			<tr>
-				<td>{=L:set.rec.spts=}</td>
-				<td>
-					<input type="radio" id="spts0" name="in_spts_mode" value="false"/>{=L:off=}&nbsp;
-					<input type="radio" id="spts1" name="in_spts_mode" value="true"/>{=L:on=}
-				</td>
-			</tr>
-		~=}
 			<tr><td colspan="2" class="y_form_header">{=L:set.rec.timer_settings=}</td></tr>
 			<tr>
 				<td>{=L:set.rec.start_delay=}</td>
@@ -1080,16 +1001,6 @@ start-block~neutrino_form-data_pictureviewer
 				<td>{=L:set.pv.start_dir=}</td>
 				<td><input type="text" name="picviewer_picturedir" size="20" value="{=ini-get:/var/tuxbox/config/neutrino.conf;picviewer_picturedir~cache=}" /></td>
 			</tr>
-		{=if-not-equal:{=global-var-get:boxtype=}~generic~
-			<tr>
-				<td>{=L:set.pv.decoding_server_ip=}</td>
-				<td><input type="text" name="picviewer_decode_server_ip" size="15" maxlength="15" value="{=ini-get:/var/tuxbox/config/neutrino.conf;picviewer_decode_server_ip~cache=}" /></td>
-			</tr>
-			<tr>
-				<td>{=L:set.pv.decoding_server_port=}</td>
-				<td><input type="text" name="picviewer_decode_server_port" size="5" maxlength="5" value="{=ini-get:/var/tuxbox/config/neutrino.conf;picviewer_decode_server_port~cache=}" /></td>
-			</tr>
-		=}
 		</table>
 		<br/>
 		<input type="hidden" name="tmpl" value="Y_Settings_neutrino_forms.yhtm"/>
