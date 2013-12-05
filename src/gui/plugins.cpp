@@ -414,10 +414,12 @@ void CPlugins::startPlugin(int number, int param)
 			startparam = makeParam(P_ID_RCBLK_ANF, g_settings.repeat_genericblocker, startparam);
 			startparam = makeParam(P_ID_RCBLK_REP, g_settings.repeat_blocker       , startparam);
 		}
+		/*
 		else
 		{
 			g_RCInput->stopInput();
 		}
+		*/
 	
 		// lcd	
 		if (plugin_list[number].lcd)
@@ -522,8 +524,8 @@ void CPlugins::startPlugin(int number, int param)
 			}
 
 			// restart rc
-			if (!plugin_list[number].rc)
-				g_RCInput->restartInput();
+			//if (!plugin_list[number].rc)
+			//	g_RCInput->restartInput();
 			
 			g_RCInput->clearRCMsg();
 
@@ -544,7 +546,8 @@ void CPlugins::startPlugin(int number, int param)
 			}
 		}
 
-		/* unload shared libs */
+		// unload shared libs
+		/*
 		for ( i=0; i<argc; i++ )
 		{
 			if ( libhandle[i] )
@@ -552,6 +555,7 @@ void CPlugins::startPlugin(int number, int param)
 			else
 				break;
 		}
+		*/
 
 		for (par = startparam ; par; )
 		{
