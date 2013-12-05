@@ -125,9 +125,6 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 					description += buffer[pos + i + 2];
 				break;
 
-			case 0x13: /* Defined in ISO/IEC 13818-6 */
-				break;
-
 			case 0x0E:
 				Maximum_bitrate_descriptor(buffer + pos);
 				break;
@@ -138,6 +135,17 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 			case 0x11:
 				STD_descriptor(buffer + pos);
+				break;
+				
+			case 0x1C:
+				isAACPLUS = true;
+				break;
+				
+			case 0x2B:
+				isAAC = true;
+				break;
+				
+			case 0x13: /* Defined in ISO/IEC 13818-6 */
 				break;
 
 			case 0x45:
@@ -209,6 +217,19 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				break;
 
 			case 0x6F: /* unknown, Astra 19.2E */
+				channel->setaitPid(esInfo->elementary_PID);
+				dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setaitPid(0x%x)\n", esInfo->elementary_PID);
+				
+#if 0
+				printf("0x%2X dump:\n", descriptor_tag);
+				for (i = 0; i < descriptor_length; i++) 
+				{
+					printf("0x%2x ", buffer[pos + 2 + i]);
+					if (((i+1) % 8) == 0)
+						printf("\n");
+				}
+				printf("\n");
+#endif				
 				break;
 				
 			case 0x7A: /* ENHANCED_AC3_DESCRIPTOR */
@@ -219,13 +240,8 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				isDTS = true;
 				break;
 
-			case 0x1C:
 			case 0x7C: //FIXME AAC
 				isAACPLUS = true;
-				break;
-				
-			case 0x2B:
-				isAAC = true;
 				break;
 
 			case 0x90: /* unknown, Astra 19.2E */
@@ -333,6 +349,12 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 									tmp |= 2;
 							}
 							//break;??
+						/*	
+						case 0x6F:
+							channel->setaitPid(esInfo->elementary_PID);
+							dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setaitPid(0x%x)\n", esInfo->elementary_PID);
+							break;
+						*/
 							
 						default:
 							break;
@@ -568,14 +590,16 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 	
 	delete dmx;
 	
-	// current pnmt pid
+	// current pmt pid
 	curpmtpid = channel->getPmtPid();
 
-	// pmt.tmp
-	FILE *fout;
 	int pmtlen;
 	
 	pmtlen= ((buffer[1]&0xf)<<8) + buffer[2] + 3;
+	
+	// pmt.tmp
+	#if 0
+	FILE *fout;
 
 	if( !(currentMode & RECORD_MODE) && !scan_runs) 
 	{
@@ -591,6 +615,7 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 			fclose(fout);
 		}
 	}
+	#endif
 
 	//caids[]
 	int ia, dpmtlen, pos;

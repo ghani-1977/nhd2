@@ -2943,7 +2943,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 				
 				if( test == -1)
 				{
-					dprintf(DEBUG_INFO, "[mb] other file: '%s'\r\n", movieInfo.file.Name.c_str());
+					dprintf(DEBUG_DEBUG, "[mb] other file: '%s'\r\n", movieInfo.file.Name.c_str());
 				}
 				else
 				{

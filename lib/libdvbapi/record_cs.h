@@ -22,6 +22,8 @@
 #define __RECORD_TD_H
 
 #include <pthread.h>
+
+#include <frontend_c.h>
 #include "dmx_cs.h"
 
 
@@ -48,7 +50,7 @@ class cRecord
 		~cRecord();
 
 		bool Open();
-		bool Start(int fd, unsigned short vpid, unsigned short *apids, int numpids);
+		bool Start(int fd, unsigned short vpid, unsigned short *apids, int numpids, CFrontend *fe = NULL);
 		bool Stop(void);
 
 		void RecordThread();

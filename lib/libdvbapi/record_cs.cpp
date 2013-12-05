@@ -29,10 +29,7 @@
 
 #include "record_cs.h"
 #include <system/debug.h>
-#include <frontend_c.h>
 
-
-extern CFrontend * record_fe;
 
 static const char * FILENAME = "[record_cs.cpp]";
 
@@ -68,24 +65,20 @@ bool cRecord::Open()
 	return true;
 }
 
-bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int numpids)
+bool cRecord::Start(int fd, unsigned short vpid, unsigned short * apids, int numpids, CFrontend *fe)
 {
-	dprintf(DEBUG_INFO, "%s: fd %d, vpid 0x%02x\n", __FUNCTION__, fd, vpid);
+	dprintf(DEBUG_INFO, "%s %s\n", FILENAME, __FUNCTION__);
 	
 	int i;
 
 	if (!dmx)
 		dmx = new cDemux();
 
-	dmx->Open(DMX_TP_CHANNEL, RECORD_STREAM_BUFFER_SIZE, record_fe );
+	dmx->Open(DMX_TP_CHANNEL, RECORD_STREAM_BUFFER_SIZE, fe);
 	dmx->pesFilter(vpid);
 
 	for (i = 0; i < numpids; i++)
 		dmx->addPid(apids[i]);
-	
-	for (i = 0; i < numpids; i++)
-		printf("apid 0x%02x \n", apids[i]);
-	printf("\n");
 
 	file_fd = fd;
 	exit_flag = RECORD_RUNNING;

@@ -137,6 +137,8 @@ class CZapitChannel
 		unsigned short			videoPid;
 		unsigned short			audioPid;
 		unsigned short			privatePid;
+		unsigned short			aitPid;
+		std::string			hbbtvUrl;
 
 		/* set true when pids are set up */
 		bool pidsFlag;
@@ -194,6 +196,7 @@ class CZapitChannel
 		unsigned char        	getServiceType(bool real = false);
 		bool			isHD();
 		bool			is3DTV();
+		bool 			isHBBTV();
 		t_channel_id         	getChannelID(void)         	const { return channel_id; }
 		transponder_id_t        getTransponderId(void)          const { return CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition,original_network_id,transport_stream_id); }
 		freq_id_t		getFreqId()			const { return freq; }
@@ -212,6 +215,8 @@ class CZapitChannel
 		bool			getPidsFlag(void)		{ return pidsFlag; }
 		CCaPmt *		getCaPmt(void)			{ return caPmt; }
 		unsigned char *		getRawPmt(int &len)		{ len = pmtLen; return rawPmt; };
+		unsigned short		getaitPid(void)			{return aitPid;};
+		std::string		getUrl(void)			{return hbbtvUrl;};
 
 		CZapitAudioChannel * 	getAudioChannel(unsigned char index = 0xFF);
 		unsigned short 		getAudioPid(unsigned char index = 0xFF);
@@ -233,6 +238,7 @@ class CZapitChannel
 		void setPidsFlag(void)					{ pidsFlag = true; }
 		void setCaPmt(CCaPmt * pCaPmt);				//{ caPmt = pCaPmt; }
 		void setRawPmt(unsigned char * pmt, int len = 0);
+		void setaitPid(unsigned short aitPID)			{aitPid = aitPID;};
 		
 		/* cleanup methods */
 		void resetPids(void);

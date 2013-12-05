@@ -71,8 +71,8 @@ extern "C" {
 #include <driver/vcrcontrol.h>
 
 static cRecord * record = NULL;
-extern CZapitChannel * rec_channel;
-extern CFrontend * live_fe;
+//extern CZapitChannel * rec_channel;
+extern CFrontend * record_fe;
 extern t_channel_id live_channel_id;
 extern t_channel_id rec_channel_id;
 
@@ -138,7 +138,7 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 
 	// init record
 	if(!record)
-		record = new cRecord( live_fe? live_fe->fenumber:0);
+		record = new cRecord();
 	
 	// open
 	record->Open();
@@ -147,7 +147,7 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 #if defined (PLATFORM_COOLSTREAM)
 	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids, 0))
 #else	  
-	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids)) 
+	if(!record->Start(fd, (unsigned short ) vpid, (unsigned short *) pids, numpids, record_fe)) 
 #endif	  
 	{
 		record->Stop();
