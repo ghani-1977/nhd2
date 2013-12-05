@@ -598,7 +598,6 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 	pmtlen= ((buffer[1]&0xf)<<8) + buffer[2] + 3;
 	
 	// pmt.tmp
-	#if 0
 	FILE *fout;
 
 	if( !(currentMode & RECORD_MODE) && !scan_runs) 
@@ -615,7 +614,6 @@ int parse_pmt(CZapitChannel * const channel, CFrontend * fe)
 			fclose(fout);
 		}
 	}
-	#endif
 
 	//caids[]
 	int ia, dpmtlen, pos;
