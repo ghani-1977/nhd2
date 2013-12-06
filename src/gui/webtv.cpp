@@ -33,6 +33,8 @@
 
 #include <stdio.h>
 
+#include <algorithm>    // std::sort
+
 #include <global.h>
 #include <neutrino.h>
 #include <driver/screen_max.h>
@@ -227,6 +229,8 @@ void CWebTV::loadChannels(void)
 		default:
 			break;	
 	}
+	
+	sort(channels.begin(), channels.end());
 }
 
 // readxml file

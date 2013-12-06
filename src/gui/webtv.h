@@ -27,11 +27,12 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __webtv_setup_h__
-#define __webtv_setup_h__
+#ifndef __webtv_h__
+#define __webtv_h__
 
 #include <sys/types.h>
-#include <string.h>
+
+#include <string>
 #include <vector>
 
 #include <sys/stat.h>

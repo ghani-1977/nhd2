@@ -122,7 +122,11 @@ void CPlugins::scanDir(const char * dir)
 				{
 					new_plugin.pluginfile.append(".sh");
 				} 
-				else 
+				else if (new_plugin.type == CPlugins::P_TYPE_TOOL)
+				{
+					new_plugin.pluginfile.append(".so");
+				}
+				else if (new_plugin.type == CPlugins::P_TYPE_NEUTRINO)
 				{
 					new_plugin.pluginfile.append(".so");
 				}
@@ -213,13 +217,13 @@ bool CPlugins::parseCfg(plugin *plugin_data)
 	return !reject;
 }
 
-void CPlugins::start_plugin_by_name(const std::string & filename/*, int param*/)
+void CPlugins::start_plugin_by_name(const std::string & filename)
 {
 	for (int i = 0; i <  (int) plugin_list.size(); i++)
 	{
 		if (filename.compare(g_PluginList->getName(i))==0)
 		{
-			startPlugin(i/*,param*/);
+			startPlugin(i);
 			return;
 		}
 	}
@@ -259,13 +263,13 @@ void CPlugins::startScriptPlugin(int number)
 
 void CPlugins::startPlugin(int number)
 {
-	printf("CPlugins::startPlugin: %s\n", plugin_list[number].pluginfile.c_str());
-	
-	g_RCInput->clearRCMsg();
+	printf("CPlugins::startPlugin: %s type:%d\n", plugin_list[number].pluginfile.c_str(), plugin_list[number].type);
 	
 	// script type
 	if (plugin_list[number].type == CPlugins::P_TYPE_SCRIPT)
 	{
+		g_RCInput->clearRCMsg();
+		
 		g_RCInput->stopInput();
 
 		startScriptPlugin(number);
@@ -280,31 +284,22 @@ void CPlugins::startPlugin(int number)
 
 		return;
 	}
-	
-	// .so plugins
-	if (!pluginfile_exists(plugin_list[number].pluginfile))
-	{
-		printf("[CPlugins] could not find %s,\nperhaps wrong plugin type in %s\n", plugin_list[number].pluginfile.c_str(), plugin_list[number].cfgfile.c_str());
-		return;
-	}
-
-	/* export neutrino settings to the environment */
-	char tmp[32];
-	sprintf(tmp, "%d", g_settings.screen_StartX);
-	setenv("SCREEN_OFF_X", tmp, 1);
-	sprintf(tmp, "%d", g_settings.screen_StartY);
-	setenv("SCREEN_OFF_Y", tmp, 1);
-	sprintf(tmp, "%d", g_settings.screen_EndX);
-	setenv("SCREEN_END_X", tmp, 1);
-	sprintf(tmp, "%d", g_settings.screen_EndY);
-	setenv("SCREEN_END_Y", tmp, 1);
 
 	if (plugin_list[number].type == CPlugins::P_TYPE_TOOL)
-	{		
+	{
+		/* export neutrino settings to the environment */
+		char tmp[32];
+		sprintf(tmp, "%d", g_settings.screen_StartX);
+		setenv("SCREEN_OFF_X", tmp, 1);
+		sprintf(tmp, "%d", g_settings.screen_StartY);
+		setenv("SCREEN_OFF_Y", tmp, 1);
+		sprintf(tmp, "%d", g_settings.screen_EndX);
+		setenv("SCREEN_END_X", tmp, 1);
+		sprintf(tmp, "%d", g_settings.screen_EndY);
+		setenv("SCREEN_END_Y", tmp, 1);
+	
 		/* stop rc input */
 		g_RCInput->stopInput();
-		
-		printf("Starting %s\n", plugin_list[number].pluginfile.c_str());
 		
 		safe_system((char *) plugin_list[number].pluginfile.c_str());
 		
@@ -315,12 +310,12 @@ void CPlugins::startPlugin(int number)
 	
 		g_RCInput->restartInput();
 		g_RCInput->clearRCMsg();
+		
+		return;
 	}
 	else if (plugin_list[number].type == CPlugins::P_TYPE_NEUTRINO)
 	{
 		PluginExec execPlugin;
-		void			*libhandle[20];
-		int			argc = 0, i = 0;
 		void			*handle;
 		char *        		error;
 
@@ -343,6 +338,11 @@ void CPlugins::startPlugin(int number)
 			else 
 			{
 				printf("[CPlugins] try exec...\n");
+				
+				frameBuffer->paintBackground();
+#if !defined USE_OPENGL
+				frameBuffer->blit();
+#endif					
 					
 				execPlugin();
 				dlclose(handle);
@@ -351,15 +351,6 @@ void CPlugins::startPlugin(int number)
 		}
 			
 		g_RCInput->clearRCMsg();
-
-		// unload shared libs
-		for ( i=0; i<argc; i++ )
-		{
-			if ( libhandle[i] )
-				dlclose(libhandle[i]);
-			else
-				break;
-		}
 	}
 }
 
@@ -367,7 +358,7 @@ bool CPlugins::hasPlugin(CPlugins::p_type_t type)
 {
 	for (std::vector<plugin>::iterator it=plugin_list.begin(); it!=plugin_list.end(); it++)
 	{
-		if (it->type == type /*&& !it->hide*/)
+		if (it->type == type)
 			return true;
 	}
 	return false;
