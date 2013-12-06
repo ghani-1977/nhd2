@@ -123,7 +123,7 @@ int CPluginList::exec(CMenuTarget * parent, const std::string &)
 	// refill pluginlist items
 	for(unsigned int count = 0; count < (unsigned int)g_PluginList->getNumberOfPlugins(); count++)
 	{
-		if ((g_PluginList->getType(count) & pluginlisttype) && !g_PluginList->isHidden(count))
+		if (g_PluginList->getType(count) & pluginlisttype)
 		{
 			tmp = new pluginitem();
 			tmp->number = count;
@@ -389,7 +389,7 @@ void CPluginList::paintItems()
 
 CPluginList::result_ CPluginList::pluginSelected()
 {
-	g_PluginList->startPlugin(pluginlist[selected]->number, 0);
+	g_PluginList->startPlugin(pluginlist[selected]->number/*, 0*/);
 	
 	paint();
 	

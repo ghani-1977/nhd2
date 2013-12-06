@@ -35,43 +35,120 @@
 #ifndef TPLUGIN_H
 #define TPLUGIN_H
 
-typedef struct _PluginParam
-{
-	const char          * id;
-	char                * val;
-	struct _PluginParam * next;
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-} PluginParam;
+#include <stdio.h>
 
-typedef int (*PluginExec)( PluginParam * par );
-/* das dlsym kann auf PluginExec gecastet werden */
+/* zapit includes */
+#include <client/zapitclient.h>
 
-/* NOTE : alle Plugins haben uebergangs-weise neue und alte schnittstelle */
-/* neues Symbol : plugin_exec */
-/* es muessen nur benutzte ids gesetzt werden : nicht genannt = nicht benutzt */
+#include <sectionsdclient/sectionsdclient.h>
+#include <timerdclient/timerdclient.h>
 
-/* fixed ID definitions */
-#define	P_ID_FBUFFER		"fd_framebuffer"
-#define	P_ID_RCINPUT		"fd_rcinput"
-#define	P_ID_LCD		"fd_lcd"
-#define	P_ID_NOPIG		"no_pig"		// 1: plugin dont show internal pig
-#define P_ID_VTXTPID		"pid_vtxt"
-#define P_ID_PROXY		"proxy"			// set proxy for save into highscore
-#define P_ID_PROXY_USER		"proxy_user"		// format "user:pass"
-#define P_ID_HSCORE		"hscore"		// highscore-server (as url)
-#define P_ID_VFORMAT		"video_format"		// videoformat (0 = auto, 1 = 16:9, 2 = 4:3)
-#define P_ID_OFF_X		"off_x"			// screen-top-offset x
-#define P_ID_OFF_Y		"off_y"			// screen-top-offset y
-#define P_ID_END_X		"end_x"			// screen-end-offset x
-#define P_ID_END_Y		"end_y"			// screen-end-offset y
-#define	P_ID_RCBLK_ANF		"rcblk_anf"		// Key-Repeatblocker Anfang
-#define	P_ID_RCBLK_REP		"rcblk_rep"     	// Key-Repeatblocker Wiederholung
-#define P_ID_LFBUFFER		"lfb_framebuffer"	// framebuffer pointer
-#define P_ID_XRESFBUFFER	"xres_framebuffer"	// xres framebuffer
-#define P_ID_YRESFBUFFER	"yres_framebuffer"	//yres framebuffer
-#define P_ID_STRIDEFBUFFER	"stride_framebuffer"	// stride framebuffer
-#define P_ID_MEMFBUFFER		"mem_framebuffer"	// mem available framebuffer
+#include "driver/fontrenderer.h"
+#include "driver/rcinput.h"
 
+#include "driver/vfd.h"
+
+#include "system/localize.h"
+#include "system/settings.h"
+
+#include "gui/epgview.h"
+#include "gui/infoviewer.h"
+#include "gui/eventlist.h"
+
+#include "driver/radiotext.h"
+
+#include <daemonc/remotecontrol.h>
+
+#include <driver/encoding.h>
+#include <driver/framebuffer.h>
+#include <driver/fontrenderer.h>
+#include <driver/rcinput.h>
+#include <driver/stream2file.h>
+#include <driver/vcrcontrol.h>
+#include <driver/shutdown_count.h>
+
+#include <gui/epgplus.h>
+#include <gui/streaminfo2.h>
+
+#include "gui/widget/colorchooser.h"
+#include "gui/widget/menue.h"
+#include "gui/widget/messagebox.h"
+#include "gui/widget/hintbox.h"
+#include "gui/widget/icons.h"
+#include "gui/widget/vfdcontroler.h"
+#include "gui/widget/keychooser.h"
+#include "gui/widget/stringinput.h"
+#include "gui/widget/stringinput_ext.h"
+#include "gui/widget/mountchooser.h"
+
+#include "gui/color.h"
+
+#include "gui/bedit/bouqueteditor_bouquets.h"
+#include "gui/bouquetlist.h"
+#include "gui/eventlist.h"
+#include "gui/channellist.h"
+#include "gui/screensetup.h"
+//#include "gui/pluginlist.h"
+//#include "gui/plugins.h"
+#include "gui/infoviewer.h"
+#include "gui/epgview.h"
+#include "gui/epg_menu.h"
+#include "gui/update.h"
+#include "gui/scan.h"
+#include "gui/sleeptimer.h"
+#include "gui/rc_lock.h"
+#include "gui/timerlist.h"
+#include "gui/alphasetup.h"
+#include "gui/audioplayer.h"
+#include "gui/imageinfo.h"
+#include "gui/movieplayer.h"
+#include "gui/nfs.h"
+#include "gui/pictureviewer.h"
+#include "gui/motorcontrol.h"
+#include "gui/filebrowser.h"
+#include "gui/widget/progressbar.h"
+
+#include "gui/cam_menu.h"
+
+#include "gui/hdd_menu.h"
+
+#include <system/setting_helpers.h>
+#include <system/settings.h>
+#include <system/debug.h>
+#include <system/flashtool.h>
+#include <system/fsmounter.h>
+#include <system/helpers.h>
+
+#include <timerdclient/timerdmsg.h>
+
+/*zapit includes*/
+#include <frontend_c.h>
+#include <getservices.h>
+#include <satconfig.h>
+
+#include "gui/dboxinfo.h"
+#include "gui/audio_select.h"
+
+#include "gui/scan_setup.h"
+
+
+// libdvbapi
+#include <video_cs.h>
+#include <audio_cs.h>
+
+// dvbsubs selct menu
+#include <gui/dvbsub_select.h>
+
+/* zapit includes */
+#include <channel.h>
+#include <bouquets.h>
+
+
+typedef int (*PluginExec)( void );
 
 typedef enum plugin_type
 {
@@ -82,5 +159,95 @@ typedef enum plugin_type
 	PLUGIN_TYPE_NEUTRINO = 4
 }
 plugin_type_t;
+
+// globals
+extern  SNeutrinoSettings g_settings;
+
+extern  CZapitClient *g_Zapit;
+extern  CSectionsdClient *g_Sectionsd;
+extern  CTimerdClient *g_Timerd;
+
+extern  FBFontRenderClass *g_fontRenderer;
+
+extern  Font * g_Font[FONT_TYPE_COUNT];
+extern  Font * g_SignalFont;
+
+extern  CRCInput *g_RCInput;
+
+extern  CEpgData *g_EpgData;
+extern  CInfoViewer *g_InfoViewer;
+extern  EventList *g_EventList;
+
+extern CLocaleManager *g_Locale;
+
+extern CRadioText *g_Radiotext;
+
+extern tallchans allchans;				// defined in zapit.cpp
+extern CBouquetManager * g_bouquetManager;		// defined in zapit.cpp
+
+extern bool has_hdd;					// defined in gui/hdd_menu.cpp
+
+// tuxtxt
+//extern int  tuxtxt_init();
+//extern void tuxtxt_start(int tpid, int source );
+extern int  tuxtxt_stop();
+extern void tuxtxt_close();
+extern void tuxtx_pause_subtitle(bool pause, int source);
+extern void tuxtx_stop_subtitle();
+extern void tuxtx_set_pid(int pid, int page, const char * cc);
+extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
+extern int tuxtx_main(int pid, int page, int source );
+
+// dvbsub
+//extern int dvbsub_initialise();
+extern int dvbsub_init( /*int source*/);
+extern int dvbsub_stop();
+extern int dvbsub_close();
+extern int dvbsub_start(int pid);
+extern int dvbsub_pause();
+extern int dvbsub_getpid();
+extern void dvbsub_setpid(int pid);
+extern int dvbsub_terminate();
+
+// streamts thread
+extern int streamts_stop;				// defined in streamts.cpp
+// zapit thread
+extern int zapit_ready;					//defined in zapit.cpp
+extern t_channel_id live_channel_id; 			//defined in zapit.cpp
+extern CZapitChannel * live_channel;			// defined in zapit.cpp
+extern CFrontend * live_fe;
+extern CScanSettings * scanSettings;
+
+// sectionsd thread
+extern int sectionsd_stop;				// defined in sectionsd.cpp
+extern bool timeset;
+
+//Audio/Video Decoder
+extern cVideo 		* videoDecoder;		//libcoolstream (video_cs.cpp)
+extern cAudio 		* audioDecoder;		//libcoolstream (audio_cs.cpp)
+
+/* bouquets lists */
+extern CBouquetList   		* bouquetList; 				//current bqt list
+
+extern CBouquetList   		* TVbouquetList;
+extern CBouquetList   		* TVsatList;
+extern CBouquetList   		* TVfavList;
+extern CBouquetList   		* TVallList;
+
+extern CBouquetList   		* RADIObouquetList;
+extern CBouquetList   		* RADIOsatList;
+extern CBouquetList   		* RADIOfavList;
+extern CBouquetList   		* RADIOallList;
+
+//extern CPlugins       		* g_PluginList;
+extern CRemoteControl 		* g_RemoteControl;
+extern SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
+extern CMoviePlayerGui		* moviePlayerGui;
+extern CPictureViewer 		* g_PicViewer;
+extern CCAMMenuHandler 	* g_CamHandler;
+
+// webtv
+extern CWebTV * webtv;
+extern CVCRControl::CDevice * recordingdevice;
 
 #endif

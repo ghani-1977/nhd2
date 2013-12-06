@@ -42,6 +42,7 @@
 #include <string>
 #include <vector>
 
+
 class CPlugins
 {
 	public:
@@ -67,21 +68,8 @@ class CPlugins
 			int version;
 			std::string name;                // UTF-8 encoded
 			std::string description;         // UTF-8 encoded
-			std::string depend;
 			CPlugins::p_type_t type;
-			
 			std::string    icon;		// Icon
-
-			bool fb;
-			bool rc;
-			
-			bool lcd;
-			bool vtxtpid;
-			bool showpig;
-			
-			int posx, posy, sizex, sizey;
-			bool needoffset;
-			bool hide;
 			
 			bool operator< (const plugin& a) const
 			{
@@ -89,7 +77,6 @@ class CPlugins
 			}
 		};
 
-		int fb, rc, lcd, pid;
 		int number_of_plugins;
 
 		std::vector<plugin> plugin_list;
@@ -109,23 +96,19 @@ class CPlugins
 
 		void setPluginDir(const std::string & dir) { plugin_dir = dir; }
 
-		PluginParam * makeParam(const char * const id, const char * const value, PluginParam * const next);
-		PluginParam * makeParam(const char * const id, const int          value, PluginParam * const next);
-
 		inline       int           getNumberOfPlugins  (void            ) const { return plugin_list.size()                    ; }
 		inline const char *        getName             (const int number) const { return plugin_list[number].name.c_str()      ; }
 		inline const char *        getPluginFile       (const int number) const { return plugin_list[number].pluginfile.c_str(); }
 		inline const char *        getFileName         (const int number) const { return plugin_list[number].filename.c_str()  ; }
 		inline const std::string & getDescription      (const int number) const { return plugin_list[number].description       ; }
 		inline       int           getType             (const int number) const { return plugin_list[number].type              ; }
-		inline       bool          isHidden            (const int number) const { return plugin_list[number].hide              ; }
 		inline const char *        getIcon             (const int number) const { return plugin_list[number].icon.c_str()      ; }
 
-		void startPlugin(int number, int param);
-		void start_plugin_by_name(const std::string & filename, int param);	// start plugins by "name=" in .cfg
+		void startPlugin(int number);
+		void start_plugin_by_name(const std::string & filename);	// start plugins by "name=" in .cfg
 		void startScriptPlugin(int number);
 
-		void startPlugin(const char * const filename); 				// start plugins also by name
+		void startPlugin(const char * const filename); 			// start plugins also by name
 		bool hasPlugin(CPlugins::p_type_t type);
 };
 
