@@ -230,7 +230,7 @@ void CWebTV::loadChannels(void)
 			break;	
 	}
 	
-	sort(channels.begin(), channels.end());
+	//sort(channels.begin(), channels.end());
 }
 
 // readxml file
