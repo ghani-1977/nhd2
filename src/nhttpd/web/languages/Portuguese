@@ -266,12 +266,12 @@ set.rec.audio_standard=Gravar audio em modo standard
 set.rec.audio_alternate=Gravar audio em modo alternativo
 set.rec.audio_ac3=Gravar audio ac3
 set.rec.timeshift_desc=Timeshift(pausar Tv ao vivo)
-set.rec.timeshift.directory=Diretório
+set.rec.recording_dir=Diretório
 set.rec.timeshift.recordtime=Tempo de gravação na hora
 set.rec.timeshift.pause=Pausa
 set.rec.timeshift.auto_record=Gravação automática (em Sec, 0=desactivada)
 set.rec.timeshift.auto_delete=Eliminação automática
-set.rec.timeshift.tmp_timeshift=Timeshift temporário
+set.rec.timeshift.permanent_timeshift=Timeshift temporário
 
 ========Definições Movieplayer - Neutrino
 set.mp.sources=Sources

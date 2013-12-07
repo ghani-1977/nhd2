@@ -23,19 +23,7 @@
 			<input type="radio" name="planer" value="slave" disabled="disabled"/>Slave box<br/>
 			<input type="radio" name="planer" value="slave" disabled="disabled"/>Test<br/> -->
 			{=L:live.timer-sync.rec_dir=}:
-				<select name="rec_dir" class="y_live_button">
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_0;/media/sda2/record~open=}" selected="selected">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_0;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_1;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_1;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_2;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_2;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_3;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_3;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_4;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_4;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_5;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_5;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_6;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_6;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_7;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_7;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_8;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_8;/media/sda2/record~cache=}</option>
-				<option value="{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_9;/media/sda2/record~cache=}">{=ini-get:/var/tuxbox/config/neutrino.conf;recording_dir_9;/media/sda2/record~cache=}</option>
-				</select>
-
+			{=include-block:Y_neutrino_Blocks.txt;neutrino_list_record_dirs=}
 			<br/><a href="javascript:top.top_main.prim_menu.nav('settings', 'Y_Settings_Timer.yhtm');" class="inlink">{=L:live.timer-sync.settings=}</a>&nbsp;<input type="checkbox" name="debug" value="1"/>{=L:live.timer-sync.debugging=}</td>
 		</tr>
 		</table>
