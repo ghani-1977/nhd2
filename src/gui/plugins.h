@@ -65,7 +65,6 @@ class CPlugins
 			std::string filename;
 			std::string cfgfile;
 			std::string pluginfile;
-			int version;
 			std::string name;                // UTF-8 encoded
 			std::string description;         // UTF-8 encoded
 			CPlugins::p_type_t type;

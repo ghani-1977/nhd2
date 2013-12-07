@@ -191,11 +191,7 @@ bool CPlugins::parseCfg(plugin *plugin_data)
 		getline(iss, cmd, '=');
 		getline(iss, parm, '=');
 
-		if (cmd == "pluginversion")
-		{
-			plugin_data->version = atoi(parm.c_str());
-		}
-		else if (cmd == "name")
+		if (cmd == "name")
 		{
 			plugin_data->name = parm;
 		}

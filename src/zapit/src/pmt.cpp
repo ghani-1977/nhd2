@@ -102,38 +102,38 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 
 		switch (descriptor_tag) 
 		{
-			case 0x02:
+			case VIDEO_STREAM_DESCRIPTOR:
 				video_stream_descriptor(buffer + pos);
 				break;
 
-			case 0x03:
+			case AUDIO_STREAM_DESCRIPTOR:
 				audio_stream_descriptor(buffer + pos);
 				break;
 
-			case 0x05:	/* REGISTRATION_DESCRIPTOR */
+			case REGISTRATION_DESCRIPTOR:	/* REGISTRATION_DESCRIPTOR */
 				if (descriptor_length >= 3)
 					if (!strncmp((const char*)&buffer[pos + 2], "DTS", 3))
 						isDTS = true;
 				break;
 
-			case 0x09:
+			case CA_DESCRIPTOR:
 				esInfo->addCaDescriptor(buffer + pos);
 				break;
 
-			case 0x0A: /* ISO_639_language_descriptor */
+			case ISO_639_LANGUAGE_DESCRIPTOR: /* ISO_639_language_descriptor */
 				for (i = 0; i < 3; i++)
 					description += buffer[pos + i + 2];
 				break;
 
-			case 0x0E:
+			case MAXIMUM_BITRATE_DESCRIPTOR:
 				Maximum_bitrate_descriptor(buffer + pos);
 				break;
 
-			case 0x0F:
+			case PRIVATE_DATA_INDICATOR_DESCRIPTOR:
 				Private_data_indicator_descriptor(buffer + pos);
 				break;
 
-			case 0x11:
+			case STD_DESCRIPTOR:
 				STD_descriptor(buffer + pos);
 				break;
 				
@@ -145,18 +145,18 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				isAAC = true;
 				break;
 				
-			case 0x13: /* Defined in ISO/IEC 13818-6 */
+			case CAROUSEL_IDENTIFIER_DESCRIPTOR: /* Defined in ISO/IEC 13818-6 */
 				break;
 
-			case 0x45:
+			case VBI_DATA_DESCRIPTOR:
 				VBI_data_descriptor(buffer + pos);
 				break;
 
-			case 0x52: /* stream_identifier_descriptor */
+			case STREAM_IDENTIFIER_DESCRIPTOR: /* stream_identifier_descriptor */
 				componentTag = buffer[pos + 2];
 				break;
 
-			case 0x56: /* teletext descriptor */
+			case TELETEXT_DESCRIPTOR: /* teletext descriptor */
 				for (unsigned char fIdx = 0; fIdx < fieldCount; fIdx++) 
 				{
 					char tmpLang[4];
@@ -182,7 +182,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				descramble = true;//FIXME ORF HD scramble txt ?
 				break;
 
-			case 0x59: /* dvbsub descriptor */
+			case SUBTITLING_DESCRIPTOR: /* dvbsub descriptor */
 				if (esInfo->stream_type == 0x06) 
 				{
 					unsigned char fieldCount1 = descriptor_length/8;
@@ -204,19 +204,19 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				subtitling_descriptor(buffer + pos);
 				break;
 
-			case 0x5F:
+			case PRIVATE_DATA_SPECIFIER_DESCRIPTOR:
 				private_data_specifier_descriptor(buffer + pos);
 				break;
 
-			case 0x66:
+			case DATA_BROADCAST_ID_DESCRIPTOR:
 				data_broadcast_id_descriptor(buffer + pos);
 				break;
 
-			case 0x6A: /* AC3 descriptor */
+			case AC3_DESCRIPTOR: /* AC3 descriptor */
 				isAC3 = true;
 				break;
 
-			case 0x6F: /* unknown, Astra 19.2E */
+			case APPLICATION_SIGNALLING_DESCRIPTOR: /* ait */
 				channel->setaitPid(esInfo->elementary_PID);
 				dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setaitPid(0x%x)\n", esInfo->elementary_PID);
 				
@@ -232,54 +232,21 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 #endif				
 				break;
 				
-			case 0x7A: /* ENHANCED_AC3_DESCRIPTOR */
+			case ENHANCED_AC3_DESCRIPTOR: /* ENHANCED_AC3_DESCRIPTOR */
 				isEAC3 = true;
 				break;
 
-			case 0x7B: /* DTS descriptor */
+			case DTS_DESCRIPTOR: /* DTS descriptor */
 				isDTS = true;
 				break;
 
-			case 0x7C: //FIXME AAC
+			case AAC_DESCRIPTOR: //FIXME AAC
 				isAACPLUS = true;
-				break;
-
-			case 0x90: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xB1: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xC0: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xC1: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xC2: /* User Private descriptor - Canal+ */
-#if 0
-				printf("0xC2 dump:");
-				for (i = 0; i < descriptor_length; i++) 
-				{
-					printf("%c", buffer[pos + 2 + i]);
-					if (((i+1) % 8) == 0)
-						printf("\n");
-				}
-#endif
 				break;
 
 			case 0xC5: /* User Private descriptor - Canal+ Radio */
 				for (i = 0; i < 24; i++)
 					description += buffer[pos + i + 3];
-				break;
-
-			case 0xC6: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xFD: /* unknown, Astra 19.2E */
-				break;
-
-			case 0xFE: /* unknown, Astra 19.2E */
 				break;
 
 			default:
@@ -493,24 +460,6 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				channel->addAudioChannel(esInfo->elementary_PID, CZapitAudioChannel::DTSHD, description, componentTag);
 			
 			dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: apid 0x%x %s\n", esInfo->elementary_PID, description.c_str());
-			break;
-
-		case 0x0B:
-			break;
-
-		case 0x90:
-			break;
-
-		case 0x93:
-			break;
-
-		case 0xC0:
-			break;
-
-		case 0xC1:
-			break;
-
-		case 0xC6:
 			break;
 
 		default:
