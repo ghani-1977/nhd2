@@ -110,7 +110,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				audio_stream_descriptor(buffer + pos);
 				break;
 
-			case REGISTRATION_DESCRIPTOR:	/* REGISTRATION_DESCRIPTOR */
+			case REGISTRATION_DESCRIPTOR:
 				if (descriptor_length >= 3)
 					if (!strncmp((const char*)&buffer[pos + 2], "DTS", 3))
 						isDTS = true;
@@ -120,7 +120,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				esInfo->addCaDescriptor(buffer + pos);
 				break;
 
-			case ISO_639_LANGUAGE_DESCRIPTOR: /* ISO_639_language_descriptor */
+			case ISO_639_LANGUAGE_DESCRIPTOR:
 				for (i = 0; i < 3; i++)
 					description += buffer[pos + i + 2];
 				break;
@@ -145,18 +145,18 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				isAAC = true;
 				break;
 				
-			case CAROUSEL_IDENTIFIER_DESCRIPTOR: /* Defined in ISO/IEC 13818-6 */
+			case CAROUSEL_IDENTIFIER_DESCRIPTOR:
 				break;
 
 			case VBI_DATA_DESCRIPTOR:
 				VBI_data_descriptor(buffer + pos);
 				break;
 
-			case STREAM_IDENTIFIER_DESCRIPTOR: /* stream_identifier_descriptor */
+			case STREAM_IDENTIFIER_DESCRIPTOR:
 				componentTag = buffer[pos + 2];
 				break;
 
-			case TELETEXT_DESCRIPTOR: /* teletext descriptor */
+			case TELETEXT_DESCRIPTOR:
 				for (unsigned char fIdx = 0; fIdx < fieldCount; fIdx++) 
 				{
 					char tmpLang[4];
@@ -182,7 +182,7 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				descramble = true;//FIXME ORF HD scramble txt ?
 				break;
 
-			case SUBTITLING_DESCRIPTOR: /* dvbsub descriptor */
+			case SUBTITLING_DESCRIPTOR:
 				if (esInfo->stream_type == 0x06) 
 				{
 					unsigned char fieldCount1 = descriptor_length/8;
@@ -212,54 +212,34 @@ unsigned short parse_ES_info(const unsigned char * const buffer, CZapitChannel *
 				data_broadcast_id_descriptor(buffer + pos);
 				break;
 
-			case AC3_DESCRIPTOR: /* AC3 descriptor */
+			case AC3_DESCRIPTOR:
 				isAC3 = true;
 				break;
 
-			case APPLICATION_SIGNALLING_DESCRIPTOR: /* ait */
+			case APPLICATION_SIGNALLING_DESCRIPTOR:
 				channel->setaitPid(esInfo->elementary_PID);
-				dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setaitPid(0x%x)\n", esInfo->elementary_PID);
-				
-#if 0
-				printf("0x%2X dump:\n", descriptor_tag);
-				for (i = 0; i < descriptor_length; i++) 
-				{
-					printf("0x%2x ", buffer[pos + 2 + i]);
-					if (((i+1) % 8) == 0)
-						printf("\n");
-				}
-				printf("\n");
-#endif				
+				dprintf(DEBUG_NORMAL, "[pmt]parse_ES_info: channel->setaitPid(0x%x)\n", esInfo->elementary_PID);			
 				break;
 				
-			case ENHANCED_AC3_DESCRIPTOR: /* ENHANCED_AC3_DESCRIPTOR */
+			case ENHANCED_AC3_DESCRIPTOR:
 				isEAC3 = true;
 				break;
 
-			case DTS_DESCRIPTOR: /* DTS descriptor */
+			case DTS_DESCRIPTOR:
 				isDTS = true;
 				break;
 
-			case AAC_DESCRIPTOR: //FIXME AAC
+			case AAC_DESCRIPTOR:
 				isAACPLUS = true;
 				break;
 
-			case 0xC5: /* User Private descriptor - Canal+ Radio */
+			case 0xC5:
 				for (i = 0; i < 24; i++)
 					description += buffer[pos + i + 3];
 				break;
 
 			default:
-				dprintf(DEBUG_INFO, "[pmt]parse_ES_info: descriptor_tag: %02x\n", descriptor_tag);
-#if 0
-				printf("0x%2X dump:\n", descriptor_tag);
-				for (i = 0; i < descriptor_length; i++) 
-				{
-					printf("%c", buffer[pos + 2 + i]);
-					if (((i+1) % 8) == 0)
-						printf("\n");
-				}
-#endif
+				dprintf(DEBUG_INFO, "[pmt]parse_ES_info: descriptor_tag: 0x%02x\n", descriptor_tag);
 				break;
 		}
 	}

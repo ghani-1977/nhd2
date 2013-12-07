@@ -30,7 +30,7 @@ function init(){
 }
 </script>
 </head>
-{=var-set:automount={=if-file-exists:/sbin/automount~true~{=if-file-exists:/var/bin/automount~true~=}=}=}
+
 {=var-set:management={=if-equal:{=func:get_request_data client_addr=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip;{=func:get_request_data client_addr=}=}~1~=}{=if-equal:{=func:get_request_data client_addr=}~{=ini-get:/var/tuxbox/config/Y-Web.conf;management_ip2=}~1~=}=}
 {=var-set:etherwake={=if-file-exists:/bin/ether-wake~/bin/ether-wake~{=if-file-exists:/var/bin/ether-wake~/var/bin/ether-wake~{=if-file-exists:/bin/etherwake~/bin/etherwake~{=if-file-exists:/var/bin/etherwake~/var/bin/etherwake~false=}=}=}=}=}
 <body onload="init()">
@@ -41,15 +41,9 @@ function init(){
 		<div class="y_menu_sec">
 			<ul id="secmenu_tools">
 			{=if-empty:{=var-get:management=}~
-				<li class="disabled" title="{=L:tools.not_installed=}">{=L:tools.automount=}</li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:tools.mounts=}</li>
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:tools.wake_on_lan=}</li>
 			~
-					{=if-empty:{=var-get:automount=}~
-					<li class="disabled" title="{=L:tools.not_installed=}">{=L:tools.automount=}</li>
-					~
-					<li><a target="work" title="{=L:tools.automount_desc=}" href="Y_Settings_automount_liste.yhtm">{=L:tools.automount=}</a></li>
-					=}
 				<li><a target="work" title="{=L:tools.mounts_desc=}" href="Y_Settings_mount_liste.yhtm">{=L:tools.mounts=}</a></li>
 			
 				{=if-empty:{=var-get:etherwake=}~
