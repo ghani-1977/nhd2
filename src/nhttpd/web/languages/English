@@ -272,6 +272,8 @@ set.rec.timeshift.pause=Pause
 set.rec.timeshift.auto_record=Autom. Recording (in Sec, 0=deactivate)
 set.rec.timeshift.auto_delete=Automatic deletion
 set.rec.timeshift.permanent_timeshift=Permanent timeshift
+set.rec.channeldir=Save in channeldir
+set.rec.epg_filename=Filename(with EPG-data)
 
 ========Neutrino Settings - Movieplayer
 set.mp.sources=Sources
@@ -294,6 +296,7 @@ set.mp.only_movieplayer=Only Movieplayer1
 set.mp.used_buffer=Used Buffer (WabberQueue)
 set.mp.number_buffersegments=Number of buffer segs
 set.mp.picture_in_browser=TV Picture in Browser
+set.mp.multi_select=Multi select in filebrowser
 
 ========Neutrino Settings - Parental
 set.parental.activate=Activate

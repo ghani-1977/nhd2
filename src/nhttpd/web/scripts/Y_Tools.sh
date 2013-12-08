@@ -500,10 +500,10 @@ do_fbshot()
 
 	if [ "$1" = "fb" ]; then
 		shift 1
-		$grab -o $*
+		$grab -op $*
 	elif [ "$1" = "tv" ]; then
 		shift 1
-		$grab -v $*
+		$grab -vp $*
 	else
 		$grab $*
 	fi

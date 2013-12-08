@@ -273,6 +273,7 @@ set.rec.timeshift.auto_record=Gravação automática (em Sec, 0=desactivada)
 set.rec.timeshift.auto_delete=Eliminação automática
 set.rec.timeshift.permanent_timeshift=Timeshift temporário
 
+
 ========Definições Movieplayer - Neutrino
 set.mp.sources=Sources
 set.mp.streamingserver_ip=IP do Streamingserver

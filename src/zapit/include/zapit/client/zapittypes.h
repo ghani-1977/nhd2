@@ -176,7 +176,7 @@ enum SiDescriptorTag {
 	FTA_CONTENT_MANAGEMENT_DESCRIPTOR		= 0x7E,
 	EXTENSION_DESCRIPTOR				= 0x7F,
 	/* 0x80 - 0xFE: User defined */
-	LOGICAL_CHANNEL_DESCRIPTOR				= 0x83,	/* IEC 62216-1 */
+	LOGICAL_CHANNEL_DESCRIPTOR			= 0x83,	/* IEC 62216-1 */
 	HD_SIMULCAST_LOGICAL_CHANNEL_DESCRIPTOR		= 0x88,	/* DIGITALEUROPE (former EICTA) extension to IEC 62216-1 */
 	/* 0xFF: Forbidden */
 	FORBIDDEN_DESCRIPTOR				= 0xFF
@@ -279,6 +279,5 @@ typedef enum {
 	FE_LOOP,
 	FE_NOTCONNECTED, // do we really need this
 } fe_mode_t;
-
 
 #endif /* __zapittypes_h__ */

@@ -40,6 +40,7 @@
 #endif
 
 #include <stdio.h>
+#include <dirent.h>
 
 /* zapit includes */
 #include <client/zapitclient.h>
@@ -117,9 +118,9 @@
 #include "gui/filebrowser.h"
 #include "gui/widget/progressbar.h"
 
-#include "gui/cam_menu.h"
+#include <gui/cam_menu.h>
 
-#include "gui/hdd_menu.h"
+#include <gui/hdd_menu.h>
 
 #include <system/setting_helpers.h>
 #include <system/settings.h>
@@ -249,7 +250,7 @@ extern CRemoteControl 		* g_RemoteControl;
 extern SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 extern CMoviePlayerGui		* moviePlayerGui;
 extern CPictureViewer 		* g_PicViewer;
-extern CCAMMenuHandler 	* g_CamHandler;
+//extern CCAMMenuHandler 		* g_CamHandler;
 
 // webtv
 extern CWebTV * webtv;

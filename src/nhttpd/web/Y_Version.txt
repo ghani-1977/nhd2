@@ -1,5 +1,5 @@
-version=2.8.0.6
-date=02.12.2013
+version=2.8.0.7
+date=08.12.2013
 type=snapshot
-info=Generic
+#info=Generic
 

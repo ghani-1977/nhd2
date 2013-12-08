@@ -269,6 +269,8 @@ set.rec.timeshift.pause=Pause
 set.rec.timeshift.auto_record=Autom. Aufnahme (in Sek, 0=deaktiviert)
 set.rec.timeshift.auto_delete=Automatisches Löschen
 set.rec.timeshift.permanent_timeshift=Permanent timeshift
+set.rec.channeldir=Speichere im Kanalverzeichnis
+set.rec.epg_filename=Dateinamen(mit EPG-Daten)
 
 ========Neutrino Settings - Movieplayer
 set.mp.sources=Quellen
@@ -291,6 +293,7 @@ set.mp.only_movieplayer=Nur Movieplayer1
 set.mp.used_buffer=Verwende Buffer (WabberQueue)
 set.mp.number_buffersegments=Anzahl Buffersegmente
 set.mp.picture_in_browser=TV Bild im Browser
+set.mp.multi_select=Mehrfach Auswahl im Browser
 
 ========Neutrino Settings - Parental
 set.parental.activate=Aktivieren
