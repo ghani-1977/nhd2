@@ -46,12 +46,8 @@ function build_menu(){
 			<ul>
 				{=if-empty:{=var-get:management=}~
 				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:main.settings=}</li>
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:ext.installer_updater=}</li>
-				<li class="disabled" title="{=L:restriced_by_management_ip=}">{=L:uninstaller=}</li>
 				~
 				<li><a target="work" title="" href="Y_Ext_Settings.yhtm">{=L:main.settings=}</a></li>
-				<li><a target="work" title="" href="Y_Ext_Update.yhtm">{=L:ext.installer_updater=}</a></li>
-				<li><a target="work" title="" href="Y_Ext_Uninstall.yhtm">{=L:uninstaller=}</a></li>
 				=}
 			</ul>
 		</div>
