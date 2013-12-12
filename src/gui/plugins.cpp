@@ -312,8 +312,8 @@ void CPlugins::startPlugin(int number)
 	else if (plugin_list[number].type == CPlugins::P_TYPE_NEUTRINO)
 	{
 		PluginExec execPlugin;
-		void			*handle;
-		char *        		error;
+		void *handle;
+		char * error;
 
 		g_RCInput->clearRCMsg();
 	

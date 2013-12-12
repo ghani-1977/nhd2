@@ -69,6 +69,8 @@ neutrino_LDADD = \
 	@ID3TAG_LIBS@ \
 	-ljpeg -lungif -lrt -lpthread -lblkid -ldl -lFLAC -lavformat -lavcodec -lavutil
 
+neutrino_LDFLAGS = -Wl,--export-dynamic
+
 if !BOXTYPE_COOLSTREAM
 neutrino_LDADD += $(top_builddir)/lib/libdvbapi/libdvbapi.a
 endif
