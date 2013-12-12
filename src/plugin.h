@@ -42,6 +42,10 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+
 /* zapit includes */
 #include <client/zapitclient.h>
 
@@ -262,5 +266,13 @@ extern CVCRControl::CDevice * recordingdevice;
 
 //
 extern cPlayback *playback;
+
+// record and timeshift
+extern bool autoshift;
+extern uint32_t shift_timer;
+extern uint32_t scrambled_timer;
+extern char recDir[255];
+extern char timeshiftDir[255];
+extern std::string tmode;
 
 #endif
