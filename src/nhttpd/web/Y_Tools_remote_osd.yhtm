@@ -9,6 +9,7 @@ function rcsim(_key) {
 	dbox_rcsim(_key);
 	window.setTimeout("do_dboxshot()",50);
 }
+
 function do_dboxshot(){
 	var res = dbox_exec_tools("fbshot fb /tmp/a.png");
 	var _shot = document.getElementById("shot");
@@ -16,9 +17,11 @@ function do_dboxshot(){
 	$('statusline').hide();
 	$('buttons').show();
 }
+
 function do_clearshot(){
 	window.setTimeout("do_clearshot2()", 500);
 }
+
 function do_clearshot2(){
 	dbox_exec_tools("fbshot_clear");
 }

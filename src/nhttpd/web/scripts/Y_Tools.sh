@@ -489,12 +489,11 @@ do_lcshot()
 # -----------------------------------------------------------
 do_fbshot()
 {
-	grab=/bin/grab
-	if [ -e "/var/bin/grab" ]; then
+	if [ -e "/bin/grab" ]; then
+		grab=/bin/grab
+	elif [ -e "/var/bin/grab" ]; then
 		grab=/var/bin/grab
-	fi
-
-	if [ -e "/usr/bin/grab" ]; then
+	elif [ -e "/usr/bin/grab" ]; then
 		grab=/usr/bin/grab
 	fi
 
