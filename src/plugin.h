@@ -71,6 +71,7 @@
 #include <driver/stream2file.h>
 #include <driver/vcrcontrol.h>
 #include <driver/shutdown_count.h>
+#include <driver/screen_max.h>
 
 #include <gui/epgplus.h>
 #include <gui/streaminfo2.h>
@@ -143,6 +144,7 @@
 
 
 // libdvbapi
+#include <playback_cs.h>
 #include <video_cs.h>
 #include <audio_cs.h>
 
@@ -152,6 +154,8 @@
 /* zapit includes */
 #include <channel.h>
 #include <bouquets.h>
+
+#include <neutrino.h>
 
 
 typedef int (*PluginExec)( void );
@@ -255,5 +259,8 @@ extern CPictureViewer 		* g_PicViewer;
 // webtv
 extern CWebTV * webtv;
 extern CVCRControl::CDevice * recordingdevice;
+
+//
+extern cPlayback *playback;
 
 #endif
