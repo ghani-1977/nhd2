@@ -44,28 +44,15 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 
-/* zapit includes */
+// 
 #include <client/zapitclient.h>
-
 #include <sectionsdclient/sectionsdclient.h>
 #include <timerdclient/timerdclient.h>
 
-#include "driver/fontrenderer.h"
-#include "driver/rcinput.h"
-
-#include "driver/vfd.h"
-
-#include "system/localize.h"
-#include "system/settings.h"
-
-#include "gui/epgview.h"
-#include "gui/infoviewer.h"
-#include "gui/eventlist.h"
-
-#include "driver/radiotext.h"
-
-#include <daemonc/remotecontrol.h>
-
+#include <driver/fontrenderer.h>
+#include <driver/rcinput.h>
+#include <driver/vfd.h>
+#include <driver/radiotext.h>
 #include <driver/encoding.h>
 #include <driver/framebuffer.h>
 #include <driver/fontrenderer.h>
@@ -75,56 +62,62 @@
 #include <driver/shutdown_count.h>
 #include <driver/screen_max.h>
 
+#include <daemonc/remotecontrol.h>
+
+#include <gui/epgview.h>
+#include <gui/infoviewer.h>
+#include <gui/eventlist.h>
 #include <gui/epgplus.h>
 #include <gui/streaminfo2.h>
-
-#include "gui/widget/colorchooser.h"
-#include "gui/widget/menue.h"
-#include "gui/widget/messagebox.h"
-#include "gui/widget/hintbox.h"
-#include "gui/widget/icons.h"
-#include "gui/widget/vfdcontroler.h"
-#include "gui/widget/keychooser.h"
-#include "gui/widget/stringinput.h"
-#include "gui/widget/stringinput_ext.h"
-#include "gui/widget/mountchooser.h"
+#include <gui/widget/colorchooser.h>
+#include <gui/widget/menue.h>
+#include <gui/widget/messagebox.h>
+#include <gui/widget/hintbox.h>
+#include <gui/widget/icons.h>
+#include <gui/widget/vfdcontroler.h>
+#include <gui/widget/keychooser.h>
+#include <gui/widget/stringinput.h>
+#include <gui/widget/stringinput_ext.h>
+#include <gui/widget/mountchooser.h>
 #include <gui/widget/buttons.h>
 #include <gui/widget/helpbox.h>
 #include <gui/widget/msgbox.h>
 #include <gui/widget/listbox.h>
 #include <gui/widget/textbox.h>
-
-#include "gui/color.h"
-
-#include "gui/bedit/bouqueteditor_bouquets.h"
-#include "gui/bouquetlist.h"
-#include "gui/eventlist.h"
-#include "gui/channellist.h"
-#include "gui/screensetup.h"
-//#include "gui/pluginlist.h"
-//#include "gui/plugins.h"
-#include "gui/infoviewer.h"
-#include "gui/epgview.h"
-#include "gui/epg_menu.h"
-#include "gui/update.h"
-#include "gui/scan.h"
-#include "gui/sleeptimer.h"
-#include "gui/rc_lock.h"
-#include "gui/timerlist.h"
-#include "gui/alphasetup.h"
-#include "gui/audioplayer.h"
-#include "gui/imageinfo.h"
-#include "gui/movieplayer.h"
-#include "gui/nfs.h"
-#include "gui/pictureviewer.h"
-#include "gui/motorcontrol.h"
-#include "gui/filebrowser.h"
-#include "gui/widget/progressbar.h"
-
+#include <gui/color.h>
+#include <gui/bedit/bouqueteditor_bouquets.h>
+#include <gui/bouquetlist.h>
+#include <gui/eventlist.h>
+#include <gui/channellist.h>
+#include <gui/screensetup.h>
+//#include <gui/pluginlist.h>
+//#include <gui/plugins.h>
+#include <gui/infoviewer.h>
+#include <gui/epgview.h>
+#include <gui/epg_menu.h>
+#include <gui/update.h>
+#include <gui/scan.h>
+#include <gui/sleeptimer.h>
+#include <gui/rc_lock.h>
+#include <gui/timerlist.h>
+#include <gui/alphasetup.h>
+#include <gui/audioplayer.h>
+#include <gui/imageinfo.h>
+#include <gui/movieplayer.h>
+#include <gui/nfs.h>
+#include <gui/pictureviewer.h>
+#include <gui/motorcontrol.h>
+#include <gui/filebrowser.h>
+#include <gui/widget/progressbar.h>
 #include <gui/cam_menu.h>
-
 #include <gui/hdd_menu.h>
+#include <gui/dboxinfo.h>
+#include <gui/audio_select.h>
+#include <gui/scan_setup.h>
+#include <gui/dvbsub_select.h>
 
+#include <system/localize.h>
+#include <system/settings.h>
 #include <system/setting_helpers.h>
 #include <system/settings.h>
 #include <system/debug.h>
@@ -138,25 +131,15 @@
 #include <frontend_c.h>
 #include <getservices.h>
 #include <satconfig.h>
-
-#include "gui/dboxinfo.h"
-#include "gui/audio_select.h"
-
-#include "gui/scan_setup.h"
-
+#include <channel.h>
+#include <bouquets.h>
 
 // libdvbapi
 #include <playback_cs.h>
 #include <video_cs.h>
 #include <audio_cs.h>
 
-// dvbsubs selct menu
-#include <gui/dvbsub_select.h>
-
-/* zapit includes */
-#include <channel.h>
-#include <bouquets.h>
-
+// neutrino
 #include <neutrino.h>
 
 
