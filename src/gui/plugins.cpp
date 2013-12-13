@@ -122,6 +122,10 @@ void CPlugins::scanDir(const char * dir)
 				{
 					new_plugin.pluginfile.append(".sh");
 				} 
+				else if (new_plugin.type == CPlugins::P_TYPE_GAME)
+				{
+					new_plugin.pluginfile.append(".so");
+				}
 				else if (new_plugin.type == CPlugins::P_TYPE_TOOL)
 				{
 					new_plugin.pluginfile.append(".so");
@@ -281,7 +285,7 @@ void CPlugins::startPlugin(int number)
 		return;
 	}
 
-	if (plugin_list[number].type == CPlugins::P_TYPE_TOOL)
+	if ( (plugin_list[number].type == CPlugins::P_TYPE_TOOL) || (plugin_list[number].type == CPlugins::P_TYPE_GAME) )
 	{
 		/* export neutrino settings to the environment */
 		char tmp[32];
