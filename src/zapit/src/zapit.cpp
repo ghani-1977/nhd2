@@ -1231,52 +1231,6 @@ tune_again:
 	return 0;
 }
 
-int zapit_to_record(const t_channel_id channel_id)
-{
-	bool transponder_change;
-
-	#if 0
-	// find channel
-	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
-	{
-		dprintf(DEBUG_NORMAL, "zapit_to_record: channel_id (%llx) not found\n", channel_id);
-		return -1;
-	}
-	#endif
-	
-	//rec_channel_id = /*rec_channel->getChannelID()*/channel_id;
-	
-	#if 0
-	// find record fe
-	CFrontend * frontend = getFrontend(rec_channel);
-	if(frontend == NULL) 
-	{
-		dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
-		return -1;
-	}
-	
-	record_fe = frontend;
-	#endif
-	
-	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
-	
-	// tune to rec channel
-	if(channel_id != live_channel_id)
-	{
-		if(!tune_to_channel(record_fe, rec_channel, transponder_change))
-			return -1;
-	
-		// parse pat_pmt
-		if(!parse_channel_pat_pmt(rec_channel, record_fe))
-			return -1;
-	
-		// capmt
-		sendCaPmtPlayBackStart(rec_channel, record_fe);
-	}
-
-	return 0;
-}
-
 int zapTo_RecordID(const t_channel_id channel_id)
 {
 	bool transponder_change;
@@ -1308,9 +1262,6 @@ int zapTo_RecordID(const t_channel_id channel_id)
 		}
 		
 		record_fe = frontend;
-
-		//zapit_to_record(rec_channel_id);
-		dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 		
 		// tune to rec channel
 		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && ( (feCanTune(record_fe, rec_channel)) || (loopCanTune(record_fe, rec_channel))) )
@@ -1327,6 +1278,8 @@ int zapTo_RecordID(const t_channel_id channel_id)
 			sendCaPmtPlayBackStart(rec_channel, record_fe);
 		}
 	}
+	
+	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
 	return 0;
 }
