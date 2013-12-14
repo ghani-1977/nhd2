@@ -392,7 +392,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
 	// same tp id
-	if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
+	if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		return true;
 	
 	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
