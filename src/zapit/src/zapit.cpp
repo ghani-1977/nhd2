@@ -368,7 +368,6 @@ void initTuner(CFrontend * fe)
 /* compare polarization and band with fe values */
 bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
-	//if(currentMode & RECORD_MODE)
 	if(fe->mode == (fe_mode_t)FE_LOOP)
 	{
 		if(fe->getInfo()->type != FE_QPSK)
@@ -392,36 +391,23 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 
 bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
-	//if(currentMode & RECORD_MODE)
-	{
-		// same tp id
-		if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
-			return true;
-		else // not same tp id
-		{
-			t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-			sat_iterator_t sit = satellitePositions.find(satellitePosition);
+	// same tp id
+	if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
+		return true;
+	
+	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+	sat_iterator_t sit = satellitePositions.find(satellitePosition);
 				
-			if (sit != satellitePositions.end()) 
-			{
-				// multi
-				if( sit->second.type != live_fe->getDeliverySystem() ) 
-					return true;
-				// twin/loop
-				else
-				{
-					#if 0
-					// if any an other tuner (twin) have same type and is as twin set up
-					for(int i = 0; i < FrontendCount; i++)
-					{
-						if( (i != live_fe->fenumber) && ( ( getFE(i)->mode != (fe_mode_t)FE_LOOP && getFE(i)->mode != (fe_mode_t)FE_NOTCONNECTED )&& ( getFE(i)->getInfo()->type == live_fe->getInfo()->type)) )
-							return true;
-					}
-					#endif
-					if( (fe->mode != (fe_mode_t)FE_LOOP && fe->mode != (fe_mode_t)FE_NOTCONNECTED) && (fe->getInfo()->type == live_fe->getInfo()->type) )
-						return true;
-				}
-			}
+	if (sit != satellitePositions.end()) 
+	{
+		// multi
+		if( sit->second.type != live_fe->getDeliverySystem() ) 
+			return true;
+		// twin/loop
+		else
+		{
+			if( (fe->mode != (fe_mode_t)FE_LOOP && fe->mode != (fe_mode_t)FE_NOTCONNECTED) && (fe->getInfo()->type == live_fe->getInfo()->type) )
+				return true;
 		}
 	}
 	
