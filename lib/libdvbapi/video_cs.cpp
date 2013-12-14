@@ -959,7 +959,7 @@ int cVideo::showSinglePic(const char *filename)
 		if (video_fd >= 0)
 		{
 			bool seq_end_avail = false;
-			size_t pos=0;
+			size_t pos = 0;
 			unsigned char pes_header[] = { 0x00, 0x00, 0x01, 0xE0, 0x00, 0x00, 0x80, 0x00, 0x00 };
 			unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
 			unsigned char iframe[s.st_size];

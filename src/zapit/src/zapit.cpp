@@ -428,7 +428,7 @@ bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 	return false;
 }
 
-CFrontend * getFrontend(CZapitChannel * thischannel)
+CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 {
 	/* check for frontend */
 	CFrontend * free_frontend = NULL;
@@ -437,19 +437,22 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 	
 	// close unused frontend
-	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+	if(!toRecord)
 	{
-		CFrontend * fe = fe_it->second;
-		
-		// skip tuned frontend and have same tid or same type as channel to tune
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		
-		if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
-			continue;
+		for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+		{
+			CFrontend * fe = fe_it->second;
+			
+			// skip tuned frontend and have same tid or same type as channel to tune
+			sat_iterator_t sit = satellitePositions.find(satellitePosition);
+			
+			if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
+				continue;
 
-		// close not locked tuner
-		if( !fe->locked && femap.size() > 1)
-			fe->Close();
+			// close not locked tuner
+			if( !fe->locked && femap.size() > 1)
+				fe->Close();
+		}
 	}
 	
 	// get preferred frontend and initialize it
@@ -1297,7 +1300,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	}
 	else
 	{
-		CFrontend * frontend = getFrontend(rec_channel);
+		CFrontend * frontend = getFrontend(rec_channel, true);
 		if(frontend == NULL) 
 		{
 			dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
