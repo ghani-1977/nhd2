@@ -368,7 +368,8 @@ void initTuner(CFrontend * fe)
 /* compare polarization and band with fe values */
 bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
-	if(currentMode & RECORD_MODE)
+	//if(currentMode & RECORD_MODE)
+	if(fe->mode == (fe_mode_t)FE_LOOP)
 	{
 		if(fe->getInfo()->type != FE_QPSK)
 			return true;
@@ -389,9 +390,9 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
-bool feCanTune(CZapitChannel * thischannel)
+bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
-	if(currentMode & RECORD_MODE)
+	//if(currentMode & RECORD_MODE)
 	{
 		// same tp id
 		if(live_fe->tuned && live_fe->getTsidOnid() == thischannel->getTransponderId())
@@ -409,12 +410,16 @@ bool feCanTune(CZapitChannel * thischannel)
 				// twin/loop
 				else
 				{
+					#if 0
 					// if any an other tuner (twin) have same type and is as twin set up
 					for(int i = 0; i < FrontendCount; i++)
 					{
 						if( (i != live_fe->fenumber) && ( ( getFE(i)->mode != (fe_mode_t)FE_LOOP && getFE(i)->mode != (fe_mode_t)FE_NOTCONNECTED )&& ( getFE(i)->getInfo()->type == live_fe->getInfo()->type)) )
 							return true;
 					}
+					#endif
+					if( (fe->mode != (fe_mode_t)FE_LOOP && fe->mode != (fe_mode_t)FE_NOTCONNECTED) && (fe->getInfo()->type == live_fe->getInfo()->type) )
+						return true;
 				}
 			}
 		}
@@ -436,18 +441,18 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 	{
 		CFrontend * fe = fe_it->second;
 		
-		// skip frontend tuned and have same tid or same type as channel to tune
+		// skip tuned frontend and have same tid or same type as channel to tune
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
 		if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
 			continue;
 
-		// FIXME: skip not locked tuner (single tuner ???
+		// close not locked tuner
 		if( !fe->locked && femap.size() > 1)
 			fe->Close();
 	}
 	
-	// get preferred frontend
+	// get preferred frontend and initialize it
 	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
 	{
 		CFrontend * fe = fe_it->second;
@@ -469,11 +474,11 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
 			continue;
 
-		// same tid
+		// same tid frontend
 		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
 		{
 			same_tid_fe = fe;
-			initTuner(fe);
+			initTuner(same_tid_fe);
 			break;
 		}
 		// first zap/record/other frontend type
@@ -482,7 +487,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel)
 			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				free_frontend = fe;
-				initTuner(fe);
+				initTuner(free_frontend);
 			}
 		}
 	}
@@ -1227,17 +1232,18 @@ int zapit_to_record(const t_channel_id channel_id)
 {
 	bool transponder_change;
 
+	#if 0
 	// find channel
-	/*
 	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
 	{
 		dprintf(DEBUG_NORMAL, "zapit_to_record: channel_id (%llx) not found\n", channel_id);
 		return -1;
 	}
-	*/
+	#endif
 	
 	//rec_channel_id = /*rec_channel->getChannelID()*/channel_id;
 	
+	#if 0
 	// find record fe
 	CFrontend * frontend = getFrontend(rec_channel);
 	if(frontend == NULL) 
@@ -1247,25 +1253,31 @@ int zapit_to_record(const t_channel_id channel_id)
 	}
 	
 	record_fe = frontend;
+	#endif
 	
 	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
 	// tune to rec channel
-	if(!tune_to_channel(record_fe, rec_channel, transponder_change))
-		return -1;
+	if(channel_id != live_channel_id)
+	{
+		if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+			return -1;
 	
-	// parse pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel, record_fe))
-		return -1;
+		// parse pat_pmt
+		if(!parse_channel_pat_pmt(rec_channel, record_fe))
+			return -1;
 	
-	// capmt
-	sendCaPmtPlayBackStart(rec_channel, record_fe);
+		// capmt
+		sendCaPmtPlayBackStart(rec_channel, record_fe);
+	}
 
 	return 0;
 }
 
 int zapTo_RecordID(const t_channel_id channel_id)
 {
+	bool transponder_change;
+	
 	// find channel
 	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
 	{
@@ -1273,14 +1285,45 @@ int zapTo_RecordID(const t_channel_id channel_id)
 		return -1;
 	}
 	
-	rec_channel_id = /*rec_channel->getChannelID()*/channel_id;
+	rec_channel_id = channel_id;
 	
-	// zap
-	/* zapto if we dont have the same channel or not the same TP or fe cant tune */
-	if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) && !(feCanTune(rec_channel)) )
-		zapTo_ChannelID(rec_channel_id, false);
+	// find record fe/tune to channel/parsePAT/PMT
+	if(femap.size() == 1)
+	{
+		record_fe = live_fe;
+		
+		if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
+			zapTo_ChannelID(rec_channel_id, false);
+	}
+	else
+	{
+		CFrontend * frontend = getFrontend(rec_channel);
+		if(frontend == NULL) 
+		{
+			dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
+			return -1;
+		}
+		
+		record_fe = frontend;
 
-	zapit_to_record(rec_channel_id);
+		//zapit_to_record(rec_channel_id);
+		dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
+		
+		// tune to rec channel
+		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && ( (feCanTune(record_fe, rec_channel)) || (loopCanTune(record_fe, rec_channel))) )
+		{
+			//tune to channel
+			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+				return -1;
+		
+			// parse channel pat_pmt
+			if(!parse_channel_pat_pmt(rec_channel, record_fe))
+				return -1;
+		
+			// capmt
+			sendCaPmtPlayBackStart(rec_channel, record_fe);
+		}
+	}
 	
 	return 0;
 }
