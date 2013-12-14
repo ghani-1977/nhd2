@@ -392,7 +392,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
 	// same tp id
-	if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
+	if(fe->locked && fe->getTsidOnid() == thischannel->getTransponderId())
 		return true;
 	
 	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
@@ -401,7 +401,7 @@ bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 	if (sit != satellitePositions.end()) 
 	{
 		// multi
-		if( sit->second.type != live_fe->getDeliverySystem() ) 
+		if( sit->second.type != fe->getDeliverySystem() ) 
 			return true;
 		// twin/loop
 		else
