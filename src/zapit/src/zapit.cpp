@@ -1230,40 +1230,39 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	
 	rec_channel_id = channel_id;
 	
-	// find record fe/tune to channel/parsePAT/PMT
-	if(femap.size() == 1)
+	// find record frontend
+	CFrontend * frontend = getFrontend(rec_channel, true);
+	if(frontend == NULL) 
 	{
-		record_fe = live_fe;
+		dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
+		return -1;
+	}
 		
+	record_fe = frontend;
+	
+	// tune to record channel
+	if(record_fe == live_fe)
+	{
 		if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
 			zapTo_ChannelID(rec_channel_id, false);
 	}
 	else
 	{
-		CFrontend * frontend = getFrontend(rec_channel, true);
-		if(frontend == NULL) 
-		{
-			dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
-			return -1;
-		}
-		
-		record_fe = frontend;
-		
 		// tune to rec channel
 		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && ( (feCanTune(record_fe, rec_channel)) || (loopCanTune(record_fe, rec_channel))) )
 		{
 			//tune to channel
 			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 				return -1;
-		
-			// parse channel pat_pmt
-			if(!parse_channel_pat_pmt(rec_channel, record_fe))
-				return -1;
-		
-			// capmt
-			sendCaPmtPlayBackStart(rec_channel, record_fe);
 		}
 	}
+	
+	// parse channel pat_pmt
+	if(!parse_channel_pat_pmt(rec_channel, record_fe))
+		return -1;
+				
+	// capmt
+	sendCaPmtPlayBackStart(rec_channel, record_fe);
 	
 	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
