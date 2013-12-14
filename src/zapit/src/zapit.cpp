@@ -1228,13 +1228,15 @@ int zapit_to_record(const t_channel_id channel_id)
 	bool transponder_change;
 
 	// find channel
+	/*
 	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
 	{
 		dprintf(DEBUG_NORMAL, "zapit_to_record: channel_id (%llx) not found\n", channel_id);
 		return -1;
 	}
+	*/
 	
-	rec_channel_id = rec_channel->getChannelID();
+	//rec_channel_id = /*rec_channel->getChannelID()*/channel_id;
 	
 	// find record fe
 	CFrontend * frontend = getFrontend(rec_channel);
@@ -1264,12 +1266,21 @@ int zapit_to_record(const t_channel_id channel_id)
 
 int zapTo_RecordID(const t_channel_id channel_id)
 {
+	// find channel
+	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
+	{
+		dprintf(DEBUG_NORMAL, "zapTo_RecordID: channel_id (%llx) not found\n", channel_id);
+		return -1;
+	}
+	
+	rec_channel_id = /*rec_channel->getChannelID()*/channel_id;
+	
 	// zap
-	/* zapto if we dont have the same channel or not the same TP */
-	if( (channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, channel_id) )
-		zapTo_ChannelID(channel_id, false);
+	/* zapto if we dont have the same channel or not the same TP or fe cant tune */
+	if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) && !(feCanTune(rec_channel)) )
+		zapTo_ChannelID(rec_channel_id, false);
 
-	zapit_to_record(channel_id);
+	zapit_to_record(rec_channel_id);
 	
 	return 0;
 }
