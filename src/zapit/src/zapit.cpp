@@ -368,45 +368,44 @@ void initTuner(CFrontend * fe)
 /* compare polarization and band with fe values */
 bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 {
-	if(fe->mode == (fe_mode_t)FE_LOOP)
-	{
-		if(fe->getInfo()->type != FE_QPSK)
-			return true;
 
-		if(fe->tuned && (fe->getCurrentSatellitePosition() != thischannel->getSatellitePosition()))
-			return false;
+	if(fe->getInfo()->type != FE_QPSK)
+		return true;
 
-		bool tp_band = ((int)thischannel->getFreqId()*1000 >= fe->lnbSwitch);
-		uint8_t tp_pol = thischannel->polarization & 1;
-		uint8_t fe_pol = fe->getPolarization() & 1;
+	if(fe->tuned && (fe->getCurrentSatellitePosition() != thischannel->getSatellitePosition()))
+		return false;
 
-		dprintf(DEBUG_DEBUG, "%s fe(%d,%d): locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
+	bool tp_band = ((int)thischannel->getFreqId()*1000 >= fe->lnbSwitch);
+	uint8_t tp_pol = thischannel->polarization & 1;
+	uint8_t fe_pol = fe->getPolarization() & 1;
+
+	dprintf(DEBUG_DEBUG, "%s fe(%d,%d): locked %d pol:band %d:%d vs %d:%d (%d:%d)\n", __FUNCTION__, fe->fe_adapter, fe->fenumber, fe->locked, fe_pol, fe->getHighBand(), tp_pol, tp_band, fe->getFrequency(), thischannel->getFreqId()*1000);
 		
-		if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
-			return true;
-	}
+	if(!fe->tuned || (fe_pol == tp_pol && fe->getHighBand() == tp_band))
+		return true;
 	
 	return false;
 }
 
 bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
-	// same tp id
-	if(fe->locked && fe->getTsidOnid() == thischannel->getTransponderId())
+	// same tp id (single/multi)
+	if(fe->getTsidOnid() == thischannel->getTransponderId())
 		return true;
 	
-	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-	sat_iterator_t sit = satellitePositions.find(satellitePosition);
-				
-	if (sit != satellitePositions.end()) 
+	if(femap.size() > 1)
 	{
-		// multi
-		if( sit->second.type != fe->getDeliverySystem() ) 
-			return true;
 		// twin/loop
-		else
+		if(loopCanTune(fe, thischannel))
+			return true;
+		
+		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+					
+		if (sit != satellitePositions.end()) 
 		{
-			if( (fe->mode != (fe_mode_t)FE_LOOP && fe->mode != (fe_mode_t)FE_NOTCONNECTED) && (fe->getInfo()->type == live_fe->getInfo()->type) )
+			// multi
+			if( sit->second.type != fe->getDeliverySystem() ) 
 				return true;
 		}
 	}

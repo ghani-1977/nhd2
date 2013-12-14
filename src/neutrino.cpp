@@ -898,7 +898,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.channellist_extended	= configfile.getBool("channellist_extended", true);
 	
 	// record screenshot
-	g_settings.recording_screenshot = configfile.getInt32("recording_screenshot", 0);
+	g_settings.recording_screenshot = configfile.getInt32("recording_screenshot", 1);
 	//
 
 	//Filebrowser
