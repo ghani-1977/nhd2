@@ -105,9 +105,10 @@ int info_height = 0;
 bool new_mode_active = 0;
 
 extern int FrontendCount;			// defined in zapit.cpp
-extern CFrontend * getFE(int index);		// defined in zapit.cpp
+//extern CFrontend * getFE(int index);		// defined in zapit.cpp
 extern bool feCanTune(CFrontend *fe, CZapitChannel * thischannel);
-extern CFrontend *record_fe;
+//extern CFrontend *record_fe;
+extern CFrontend *getFrontend(CZapitChannel * thischannel, bool toRecord = false);
 
 extern CBouquetManager * g_bouquetManager;
 
@@ -1695,7 +1696,7 @@ bool CChannelList::canZap(CZapitChannel * channel)
 		if(channel == NULL)
 			channel = chanlist[selected];
 		
-		iscurrent = feCanTune(record_fe, channel);
+		iscurrent = feCanTune(getFrontend(channel), channel);
 	}
 	
 	return iscurrent;

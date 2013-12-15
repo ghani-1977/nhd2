@@ -396,7 +396,7 @@ bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 	if(femap.size() > 1)
 	{
 		// twin/loop
-		if(loopCanTune(fe, thischannel))
+		if(fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))
 			return true;
 		
 		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
@@ -1248,20 +1248,20 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	else
 	{
 		// tune to rec channel
-		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && ( (feCanTune(record_fe, rec_channel)) || (loopCanTune(record_fe, rec_channel))) )
+		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (feCanTune(record_fe, rec_channel)) )
 		{
 			//tune to channel
 			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 				return -1;
+			
+			// parse channel pat_pmt
+			if(!parse_channel_pat_pmt(rec_channel, record_fe))
+				return -1;
+						
+			// capmt
+			sendCaPmtPlayBackStart(rec_channel, record_fe);
 		}
 	}
-	
-	// parse channel pat_pmt
-	if(!parse_channel_pat_pmt(rec_channel, record_fe))
-		return -1;
-				
-	// capmt
-	sendCaPmtPlayBackStart(rec_channel, record_fe);
 	
 	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
