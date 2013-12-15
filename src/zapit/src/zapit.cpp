@@ -387,9 +387,61 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
-// NOTE: this can be used only after we found our record_fe???
-bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
+// getPreferredFrontend
+CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 {
+	/* check for frontend */
+	CFrontend * free_frontend = NULL;
+	
+	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+	
+	// get preferred frontend
+	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+	{
+		CFrontend * fe = fe_it->second;
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		
+		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+				fe->fe_adapter,
+				fe->fenumber,
+				fe->locked,
+				fe->getFrequency(), 
+				fe->getTsidOnid(), 
+				thischannel->getFreqId(), 
+				thischannel->getTransponderId(), 
+				satellitePosition,
+				sit->second.name.c_str(),
+				sit->second.type);
+				
+		// skip not connected frontend
+		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
+			continue;
+
+		// same tid frontend (locked or tuned)
+		if(fe->locked && fe->getTsidOnid() == thischannel->getTransponderId())
+		{
+			free_frontend = fe;
+			break;
+		}
+		// first zap/record/other frontend type
+		else if (sit != satellitePositions.end()) 
+		{
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			{
+				free_frontend = fe;
+			}
+		}
+	}
+	
+	CFrontend * ret = free_frontend;
+	
+	return ret;
+}
+
+// NOTE: this can be used only after we found our record_fe???
+bool feCanTune(CZapitChannel * thischannel)
+{
+	/*
 	// same tp id (single/multi)
 	if(fe->getTsidOnid() == thischannel->getTransponderId())
 		return true;
@@ -417,6 +469,10 @@ bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 	}
 	
 	return false;
+	*/
+	
+	CFrontend * fe = getPreferredFrontend(thischannel);
+	return (fe != NULL);
 }
 
 CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
@@ -492,58 +548,6 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		printf("%s Selected fe: (%d,%d)\n", __FUNCTION__, ret->fe_adapter, ret->fenumber);
 	else
 		printf("%s can not get free frontend\n", __FUNCTION__);
-	
-	return ret;
-}
-
-// getPreferredFrontend
-CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
-{
-	/* check for frontend */
-	CFrontend * free_frontend = NULL;
-	CFrontend * same_tid_fe = NULL;
-	
-	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-	
-	// get preferred frontend and initialize it
-	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
-	{
-		CFrontend * fe = fe_it->second;
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-		
-		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
-				fe->fe_adapter,
-				fe->fenumber,
-				fe->locked,
-				fe->getFrequency(), 
-				fe->getTsidOnid(), 
-				thischannel->getFreqId(), 
-				thischannel->getTransponderId(), 
-				satellitePosition,
-				sit->second.name.c_str(),
-				sit->second.type);
-				
-		// skip not connected frontend
-		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
-			continue;
-
-		// same tid frontend
-		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
-		{
-			same_tid_fe = fe;
-			break;
-		}
-		// first zap/record/other frontend type
-		else if (sit != satellitePositions.end()) 
-		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
-			{
-				free_frontend = fe;
-			}
-		}
-	}
-	
-	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
 	
 	return ret;
 }
@@ -1306,7 +1310,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	else
 	{
 		// tune to rec channel
-		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (feCanTune(record_fe, rec_channel)) )
+		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (feCanTune(rec_channel)) )
 		{
 			//tune to channel
 			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
