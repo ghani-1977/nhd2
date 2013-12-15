@@ -51,7 +51,6 @@
 
 #include <driver/fontrenderer.h>
 #include <driver/rcinput.h>
-#include <driver/vfd.h>
 #include <driver/radiotext.h>
 #include <driver/encoding.h>
 #include <driver/framebuffer.h>
@@ -61,6 +60,15 @@
 #include <driver/vcrcontrol.h>
 #include <driver/shutdown_count.h>
 #include <driver/screen_max.h>
+#if ENABLE_LCD
+#include "driver/lcdd.h"
+#define CVFD CLCD
+#else
+#if defined (PLATFORM_COOLSTREAM)
+#include <cs_vfd.h>
+#endif
+#include "driver/vfd.h"
+#endif
 
 #include <daemonc/remotecontrol.h>
 

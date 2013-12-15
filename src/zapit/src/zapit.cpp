@@ -387,6 +387,38 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
+// NOTE: this can be used only after we found our record_fe???
+bool feCanTune(CFrontend * fe, CZapitChannel * thischannel)
+{
+	// same tp id (single/multi)
+	if(fe->getTsidOnid() == thischannel->getTransponderId())
+		return true;
+	
+	if(femap.size() > 1)
+	{
+		// loop
+		if(fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))
+			return true;
+		
+		// twin
+		if(fe->mode == (fe_mode_t)FE_SINGLE && fe->getInfo()->type == record_fe->getInfo()->type)
+			return true;
+		
+		// other sat
+		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+					
+		if (sit != satellitePositions.end()) 
+		{
+			// multi
+			if( sit->second.type != fe->getDeliverySystem() ) 
+				return true;
+		}
+	}
+	
+	return false;
+}
+
 // getPreferredFrontend
 CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 {
@@ -401,7 +433,7 @@ CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 		CFrontend * fe = fe_it->second;
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 		
-		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		dprintf(DEBUG_DEBUG, "getPreferredFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fe_adapter,
 				fe->fenumber,
 				fe->locked,
@@ -439,38 +471,8 @@ CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 }
 
 // NOTE: this can be used only after we found our record_fe???
-bool feCanTune(CZapitChannel * thischannel)
-{
-	/*
-	// same tp id (single/multi)
-	if(fe->getTsidOnid() == thischannel->getTransponderId())
-		return true;
-	
-	if(femap.size() > 1)
-	{
-		// loop
-		if(fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))
-			return true;
-		
-		// twin
-		if(fe->mode == (fe_mode_t)FE_SINGLE && fe->getInfo()->type == record_fe->getInfo()->type)
-			return true;
-		
-		// other sat
-		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-					
-		if (sit != satellitePositions.end()) 
-		{
-			// multi
-			if( sit->second.type != fe->getDeliverySystem() ) 
-				return true;
-		}
-	}
-	
-	return false;
-	*/
-	
+bool CanZap(CZapitChannel * thischannel)
+{	
 	CFrontend * fe = getPreferredFrontend(thischannel);
 	return (fe != NULL);
 }
@@ -1280,7 +1282,7 @@ tune_again:
 
 int zapTo_RecordID(const t_channel_id channel_id)
 {
-	bool transponder_change;
+	bool transponder_change = false;
 	
 	// find channel
 	if((rec_channel = find_channel_tozap(channel_id, false)) == NULL) 
@@ -1302,22 +1304,22 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	record_fe = frontend;
 	
 	// tune to record channel
-	if(record_fe == live_fe)
+	if(femap.size() > 1)
+	{
+		// tune to rec channel
+		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (feCanTune(record_fe, rec_channel)) )
+		{
+			//tune to channel
+			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+				return -1;
+		}
+	}
+	else
 	{
 		if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
 		{
 			zapTo_ChannelID(rec_channel_id, false);
 			return 0;
-		}
-	}
-	else
-	{
-		// tune to rec channel
-		if( ((rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id)) && (feCanTune(rec_channel)) )
-		{
-			//tune to channel
-			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
-				return -1;
 		}
 	}
 	
