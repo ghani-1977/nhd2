@@ -1305,7 +1305,10 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	if(record_fe == live_fe)
 	{
 		if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
+		{
 			zapTo_ChannelID(rec_channel_id, false);
+			return 0;
+		}
 	}
 	else
 	{
@@ -1315,15 +1318,15 @@ int zapTo_RecordID(const t_channel_id channel_id)
 			//tune to channel
 			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
 				return -1;
-			
-			// parse channel pat_pmt
-			if(!parse_channel_pat_pmt(rec_channel, record_fe))
-				return -1;
-						
-			// capmt
-			sendCaPmtPlayBackStart(rec_channel, record_fe);
 		}
 	}
+	
+	// parse channel pat_pmt
+	if(!parse_channel_pat_pmt(rec_channel, record_fe))
+		return -1;
+						
+	// capmt
+	sendCaPmtPlayBackStart(rec_channel, record_fe);
 	
 	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
