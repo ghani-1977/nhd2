@@ -387,6 +387,7 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
+// NOTE: this can be used only after we found our record_fe???
 bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 {
 	// same tp id (single/multi)
@@ -395,10 +396,15 @@ bool feCanTune(CFrontend *fe, CZapitChannel * thischannel)
 	
 	if(femap.size() > 1)
 	{
-		// twin/loop
+		// loop
 		if(fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))
 			return true;
 		
+		// twin
+		if(fe->mode == (fe_mode_t)FE_SINGLE && fe->getInfo()->type == record_fe->getInfo()->type)
+			return true;
+		
+		// other sat
 		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
 		sat_iterator_t sit = satellitePositions.find(satellitePosition);
 					
@@ -486,6 +492,58 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		printf("%s Selected fe: (%d,%d)\n", __FUNCTION__, ret->fe_adapter, ret->fenumber);
 	else
 		printf("%s can not get free frontend\n", __FUNCTION__);
+	
+	return ret;
+}
+
+// getPreferredFrontend
+CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
+{
+	/* check for frontend */
+	CFrontend * free_frontend = NULL;
+	CFrontend * same_tid_fe = NULL;
+	
+	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+	
+	// get preferred frontend and initialize it
+	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+	{
+		CFrontend * fe = fe_it->second;
+		sat_iterator_t sit = satellitePositions.find(satellitePosition);
+		
+		dprintf(DEBUG_DEBUG, "getFrontend: fe(%d,%d): locked:%d fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+				fe->fe_adapter,
+				fe->fenumber,
+				fe->locked,
+				fe->getFrequency(), 
+				fe->getTsidOnid(), 
+				thischannel->getFreqId(), 
+				thischannel->getTransponderId(), 
+				satellitePosition,
+				sit->second.name.c_str(),
+				sit->second.type);
+				
+		// skip not connected frontend
+		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
+			continue;
+
+		// same tid frontend
+		if(fe->tuned && fe->getTsidOnid() == thischannel->getTransponderId())
+		{
+			same_tid_fe = fe;
+			break;
+		}
+		// first zap/record/other frontend type
+		else if (sit != satellitePositions.end()) 
+		{
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			{
+				free_frontend = fe;
+			}
+		}
+	}
+	
+	CFrontend * ret = same_tid_fe ? same_tid_fe : free_frontend;
 	
 	return ret;
 }
