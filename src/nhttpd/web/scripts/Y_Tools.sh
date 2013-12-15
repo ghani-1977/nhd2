@@ -489,9 +489,8 @@ do_lcshot()
 # -----------------------------------------------------------
 do_fbshot()
 {
-	if [ -e "/bin/grab" ]; then
-		grab=/bin/grab
-	elif [ -e "/var/bin/grab" ]; then
+	grab=/bin/grab
+	if [ -e "/var/bin/grab" ]; then
 		grab=/var/bin/grab
 	elif [ -e "/usr/bin/grab" ]; then
 		grab=/usr/bin/grab
@@ -499,10 +498,10 @@ do_fbshot()
 
 	if [ "$1" = "fb" ]; then
 		shift 1
-		$grab -op $*
+		$grab -o $*
 	elif [ "$1" = "tv" ]; then
 		shift 1
-		$grab -vp $*
+		$grab -v $*
 	else
 		$grab $*
 	fi
