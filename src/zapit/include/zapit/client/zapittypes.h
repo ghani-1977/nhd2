@@ -57,8 +57,6 @@ typedef uint16_t t_network_id;
 typedef uint16_t t_bouquet_id;
 //Introduced by Nirvana 11/05. Didn't check if there are similar types
 
-typedef uint32_t t_transponder_id;
-
 #define CREATE_TRANSPONDER_ID_FROM_ORIGINALNETWORK_TRANSPORTSTREAM_ID(original_network_id, transport_stream_id) ((((t_original_network_id) original_network_id) << 16) | (t_transport_stream_id) transport_stream_id)
 
 /* unique channel identification */

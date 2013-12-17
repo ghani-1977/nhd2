@@ -1,7 +1,7 @@
 #ifndef __sectionsdclient__
 #define __sectionsdclient__
 /*
-  Client-Interface f�r zapit  -   DBoxII-Project
+  Client-Interface f�r sectionsd  -   DBoxII-Project
 
   $Id: sectionsdclient.h,v 1.42 2007/01/12 22:57:57 houdini Exp $
 
@@ -29,6 +29,7 @@
 #include <connection/basicclient.h>
 
 #include <sectionsdclient/sectionsdtypes.h>
+
 
 class CShortEPGData
 {

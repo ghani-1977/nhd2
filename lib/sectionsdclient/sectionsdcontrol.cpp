@@ -28,6 +28,7 @@
 
 #include <sectionsdclient/sectionsdclient.h>
 
+
 CSectionsdClient client;
 
 int main(int argc, char** argv)
