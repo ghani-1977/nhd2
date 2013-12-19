@@ -1615,6 +1615,10 @@ keybinding.key_screenshot Screenshot
 keybinding.savekeymap Keymap speichern
 keybinding.savekeymap_hint keymap wird gespeichert, bitte warten...
 
+keybinding.mb_copy_jump MB kopiere Sprünge Taste
+keybinding.mb_cut_jump MB schneiden Taste
+keybinding.mb_truncate MB kürzen Taste
+
 audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 
 webtv.head WebTV

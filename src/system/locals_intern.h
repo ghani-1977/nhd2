@@ -1627,6 +1627,10 @@ const char * locale_real_names[] = {
 	"keybinding.savekeymap",
 	"keybinding.savekeymap_hint",
 	
+	"keybinding.mb_copy_jump",
+	"keybinding.mb_cut_jump",
+	"keybinding.mb_truncate",
+	
 	"audiomenu.volumebar_audiosteps",
 	
 	"webtv.head",

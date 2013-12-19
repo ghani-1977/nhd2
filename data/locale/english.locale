@@ -1614,6 +1614,10 @@ keybinding.key_screenshot Screenshot
 keybinding.savekeymap save Keymap
 keybinding.savekeymap_hint Saving keymap, please wait...
 
+keybinding.mb_copy_jump MB copy jump key
+keybinding.mb_cut_jump MB cut jump key
+keybinding.mb_truncate MB truncate key
+
 audiomenu.volumebar_audiosteps Volume Step Size
 
 webtv.head WebTV

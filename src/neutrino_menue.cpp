@@ -2165,10 +2165,15 @@ enum keynames {
 	KEY_EXTRAS_MOVIEBROWSER,
 	KEY_EXTRAS_FILEBROWSER,
 	KEY_EXTRAS_WEBTV,
-	KEY_EXTRAS_SCREENSHOT
+	KEY_EXTRAS_SCREENSHOT,
+	
+	// mb
+	KEY_EXTRAS_MB_COPY_JUMP,
+	KEY_EXTRAS_MB_CUT_JUMP,
+	KEY_EXTRAS_MB_TRUNCATE
 };
 
-#define KEYBINDS_COUNT 38
+#define KEYBINDS_COUNT 41
 const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 {
 	// zap
@@ -2213,7 +2218,12 @@ const neutrino_locale_t keydescription_head[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
-	LOCALE_KEYBINDINGMENU_SCREENSHOT
+	LOCALE_KEYBINDINGMENU_SCREENSHOT,
+	
+	// mb
+	LOCALE_KEYBINDINGMENU_MB_COPY_JUMP,
+	LOCALE_KEYBINDINGMENU_MB_CUT_JUMP,
+	LOCALE_KEYBINDINGMENU_MB_TRUNCATE
 };
 
 const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
@@ -2260,7 +2270,12 @@ const neutrino_locale_t keydescription[KEYBINDS_COUNT] =
 	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
 	LOCALE_KEYBINDINGMENU_FILEBROWSER,
 	LOCALE_KEYBINDINGMENU_WEBTV,
-	LOCALE_KEYBINDINGMENU_SCREENSHOT
+	LOCALE_KEYBINDINGMENU_SCREENSHOT,
+	
+	// mb
+	LOCALE_KEYBINDINGMENU_MB_COPY_JUMP,
+	LOCALE_KEYBINDINGMENU_MB_CUT_JUMP,
+	LOCALE_KEYBINDINGMENU_MB_TRUNCATE
 };
 
 void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSettings)
@@ -2340,7 +2355,12 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 		&g_settings.key_webtv,
 		
 		// misc
-		&g_settings.key_screenshot
+		&g_settings.key_screenshot,
+		
+		// mb
+		&g_settings.mb_copy_jump,
+		&g_settings.mb_cut_jump,
+		&g_settings.mb_truncate
 	};
 
 	CKeyChooser * keychooser[KEYBINDS_COUNT];
@@ -2375,6 +2395,11 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
 	// media
 	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MAINMENU_MEDIAPLAYER));
 	for (int i = KEY_EXTRAS_RECORDSBROWSER; i <= KEY_EXTRAS_WEBTV; i++)
+		bindSettings.addItem(new CMenuForwarder(keydescription[i], true, NULL, keychooser[i]));
+	
+	// mb
+	bindSettings.addItem(new CMenuSeparator(CMenuSeparator::LINE | CMenuSeparator::STRING, LOCALE_MOVIEBROWSER_HEAD));
+	for (int i = KEY_EXTRAS_MB_COPY_JUMP; i <= KEY_EXTRAS_MB_TRUNCATE; i++)
 		bindSettings.addItem(new CMenuForwarder(keydescription[i], true, NULL, keychooser[i]));
 
 	// misc

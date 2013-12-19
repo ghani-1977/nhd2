@@ -445,7 +445,6 @@ void CMovieBrowser::init(void)
 	// load settings
 	loadSettings(&m_settings);
 		
-	//restart_mb_timeout = 0;
 	m_file_info_stale = true;
 	m_seriename_stale = true;
 
@@ -732,7 +731,6 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 		settings->storageDirRecUsed = (bool)configfile.getInt32("mb_storageDir_rec", true );
 		settings->storageDirMovieUsed = (bool)configfile.getInt32("mb_storageDir_movie", true );
 
-		//settings->reload = (bool)configfile.getInt32("mb_reload", false );
 		settings->remount = (bool)configfile.getInt32("mb_remount", false );
 
 		char cfg_key[81];
@@ -744,7 +742,7 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 			settings->storageDirUsed[i] = configfile.getInt32( cfg_key, false );
 		}
 		
-		/* these variables are used for the listframes */	
+		// these variables are used for the listframes
 		settings->browserFrameHeight  = configfile.getInt32("mb_browserFrameHeight", 250);
 		settings->browserRowNr  = configfile.getInt32("mb_browserRowNr", 0);
 		for(int i = 0; i < MB_MAX_ROWS && i < settings->browserRowNr; i++)
@@ -830,7 +828,6 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	configfile.setInt32("mb_parentalLockAge", settings->parentalLockAge);
 	configfile.setInt32("mb_parentalLock", settings->parentalLock);
 
-	//configfile.setInt32("mb_reload", settings->reload);
 	configfile.setInt32("mb_remount", settings->remount);
 
 	char cfg_key[81];
@@ -842,7 +839,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 		configfile.setInt32( cfg_key, settings->storageDirUsed[i] ); // do not save this so far
 	}
 	
-	/* these variables are used for the listframes */	
+	// these variables are used for the listframes
 	configfile.setInt32("mb_browserFrameHeight", settings->browserFrameHeight);
 	configfile.setInt32("mb_browserRowNr",settings->browserRowNr);
 	for(int i = 0; i < MB_MAX_ROWS && i < settings->browserRowNr; i++)
@@ -1031,7 +1028,7 @@ int CMovieBrowser::exec(const char * path)
 	// load settings
 	loadSettings(&m_settings);
 	
-	// reset soring/filter
+	// reset sorting/filter
 	if(show_mode != m_settings.show_mode)
 	{
 		// reset filter
@@ -1471,7 +1468,7 @@ void CMovieBrowser::refreshFilterList(void)
 	m_FilterLines.rows = 1;
 	m_FilterLines.lineArray[0].clear();
 	m_FilterLines.rowWidth[0] = 400;
-	m_FilterLines.lineHeader[0]= "";
+	m_FilterLines.lineHeader[0] = "";
 
 	if(m_vMovieInfo.size() <= 0) 
 		return; // exit here if nothing else is to do
@@ -1549,7 +1546,8 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 	}
 	m_vHandlePlayList.clear();
 
-	if(m_vMovieInfo.size() <= 0) {
+	if(m_vMovieInfo.size() <= 0) 
+	{
 		if(m_pcLastPlay != NULL)
 			m_pcLastPlay->setLines(&m_playListLines);
 		return; // exit here if nothing else is to do
@@ -1559,8 +1557,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 	// prepare Browser list for sorting and filtering
 	for(unsigned int file=0; file < m_vMovieInfo.size(); file++)
 	{
-		if(/*isFiltered(m_vMovieInfo[file]) == false &&*/
-			isParentalLock(m_vMovieInfo[file]) == false) 
+		if(/*isFiltered(m_vMovieInfo[file]) == false &&*/ isParentalLock(m_vMovieInfo[file]) == false) 
 		{
 			movie_handle = &(m_vMovieInfo[file]);
 			m_vHandlePlayList.push_back(movie_handle);
@@ -1620,8 +1617,7 @@ void CMovieBrowser::refreshLastRecordList(void) //P2
 	// prepare Browser list for sorting and filtering
 	for(unsigned int file=0; file < m_vMovieInfo.size()  ;file++)
 	{
-		if(	/*isFiltered(m_vMovieInfo[file]) 	   == false &&*/
-				isParentalLock(m_vMovieInfo[file]) == false) 
+		if(/*isFiltered(m_vMovieInfo[file]) == false &&*/ isParentalLock(m_vMovieInfo[file]) == false) 
 		{
 			movie_handle = &(m_vMovieInfo[file]);
 			m_vHandleRecordList.push_back(movie_handle);
@@ -1743,7 +1739,7 @@ void CMovieBrowser::refreshTitle(void)
 	{
 		title = g_Locale->getText(LOCALE_MOVIEPLAYER_YTPLAYBACK);
 		title += " : ";
-		//title += g_Locale->getText(getFeedLocale());
+		
 		neutrino_locale_t loc = getFeedLocale();
 		title += g_Locale->getText(loc);
 		if (loc == LOCALE_MOVIEBROWSER_YT_RELATED || loc == LOCALE_MOVIEBROWSER_YT_SEARCH)
@@ -2423,7 +2419,8 @@ bool CMovieBrowser::onButtonPressFilterList(neutrino_msg_t msg)
 
 bool CMovieBrowser::onButtonPressMovieInfoList(neutrino_msg_t msg) 
 {
-//	dprintf(DEBUG_NORMAL, "[mb]->onButtonPressEPGInfoList %d\r\n",msg);
+	//dprintf(DEBUG_NORMAL, "[mb]->onButtonPressEPGInfoList %d\r\n",msg);
+	
 	bool result = true;
 	
 	if(msg == CRCInput::RC_up)
@@ -2471,7 +2468,6 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 		{
 			delFile(movieSelectionHandler.file);
 			
-#if 1
                         int i = 1;
                         char newpath[1024];
                         do {
@@ -2501,7 +2497,6 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 			}
 			
                         unlink(fname.c_str());
-#endif
 
 			CFile file_xml  = movieSelectionHandler.file; 
 			if(m_movieInfo.convertTs2XmlName(&file_xml.Name) == true)  
@@ -2522,7 +2517,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 			//loadMovies(); // //TODO we might remove the handle from the handle list only, to avoid reload .....
 			refresh();
 		}
-    } 
+	} 
 }
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
@@ -2805,14 +2800,14 @@ bool CMovieBrowser::onSortMovieInfoHandleList(std::vector<MI_MOVIE_INFO*>& handl
 void CMovieBrowser::updateDir(void)
 {
 	m_dir.clear();
-#if 1
+	
 	// check if there is a movie dir and if we should use it
 	if(g_settings.network_nfs_moviedir[0] != 0 )
 	{
 		std::string name = g_settings.network_nfs_moviedir;
 		addDir(name, &m_settings.storageDirMovieUsed);
 	}
-#endif
+	
 	// check if there is a record dir and if we should use it
 	if(g_settings.network_nfs_recordingdir[0] != 0 )
 	{
@@ -2850,9 +2845,7 @@ void CMovieBrowser::loadAllTsFileNamesFromStorage(void)
 	dprintf(DEBUG_NORMAL, "[mb] Dir%d, Files:%d \r\n",m_dirNames.size(),m_vMovieInfo.size());
 }
 
-/************************************************************************
-Note: this function is used recursive, do not add any return within the body due to the recursive counter
-************************************************************************/
+// Note: this function is used recursive, do not add any return within the body due to the recursive counter
 bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 {
 	dprintf(DEBUG_INFO, "[mb]->loadTsFileNamesFromDir %s\r\n", dirname.c_str());
@@ -2867,18 +2860,19 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 		return (false); // do not go deeper than 10 directories
 	}
 
-	/* check if directory was already searched once */
+	// check if directory was already searched once
 	int size = m_dirNames.size();
 	for(int i = 0; i < size; i++)
 	{
-		if(strcmp(m_dirNames[i].c_str(),dirname.c_str()) == 0)	
+		if(strcmp(m_dirNames[i].c_str(), dirname.c_str()) == 0)	
 		{
 			// string is identical to previous one
 			dprintf(DEBUG_INFO, "[mb]Dir already in list: %s\r\n",dirname.c_str()); 
 			return (false); 
 		}
 	}
-	/* !!!!!! no return statement within the body after here !!!!*/
+	
+	// !!!!!! no return statement within the body after here !!!!
 	recursive_counter++;
 
 	CFileList flist;
@@ -3161,7 +3155,7 @@ void CMovieBrowser::updateMovieSelection(void)
 		{
 			old_movie_selection = m_currentRecordSelection;
 			m_currentRecordSelection = m_pcLastRecord->getSelectedLine();
-			//dprintf(DEBUG_NORMAL, "    sel3:%d\r\n",m_currentRecordSelection);
+
 			if(m_currentRecordSelection != old_movie_selection)
 				new_selection = true;
 	
@@ -3172,11 +3166,9 @@ void CMovieBrowser::updateMovieSelection(void)
 	
 	if(new_selection == true)
 	{
-		//dprintf(DEBUG_NORMAL, "new\r\n");
 		refreshMovieInfo();
 		refreshLCD();
 	}
-	//dprintf(DEBUG_NORMAL, "\r\n");
 }
 
 void CMovieBrowser::updateFilterSelection(void)
@@ -3225,8 +3217,11 @@ void CMovieBrowser::updateFilterSelection(void)
 
 bool CMovieBrowser::addDir(std::string& dirname, int* used)
 {
-	if(dirname.empty()) return false;
-	if(dirname == "/") return false;
+	if(dirname.empty()) 
+		return false;
+	
+	if(dirname == "/") 
+		return false;
 	
 	MB_DIR newdir;
 	newdir.name = dirname;
@@ -3656,8 +3651,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	delete movieHelp;
 	delete nfs;
-	  
-	//restart_mb_timeout = 1;
 
 	return(true);
 }
@@ -4008,7 +4001,6 @@ bool CMovieBrowser::getMovieInfoItem(MI_MOVIE_INFO& movie_info, MB_INFO_ITEM ite
 			break;
 	}
 	
-	//dprintf(DEBUG_NORMAL, "   getMovieInfoItem: %d,>%s<",item, *item_string.c_str());
 	return(result);
 }
 
@@ -4058,7 +4050,6 @@ void CMovieBrowser::autoFindSerie(void)
 		{
 			for(unsigned int t = 0; t < m_vHandleSerienames.size(); t++)
 			{
-				//dprintf(DEBUG_NORMAL, "%s ",m_vHandleSerienames[i].serieName);
 				if(m_vMovieInfo[i].epgTitle == m_vHandleSerienames[t]->epgTitle )
 				{
 					 //dprintf(DEBUG_NORMAL, "x");
@@ -4066,8 +4057,6 @@ void CMovieBrowser::autoFindSerie(void)
 					 break; // we  found a maching serie, nothing to do else, leave for(t=0)
 				}
 			}
-			
-			//dprintf(DEBUG_NORMAL, "\n");
 		}
 	}
 }
@@ -4652,17 +4641,20 @@ static off64_t truncate_movie(MI_MOVIE_INFO * minfo)
 	off64_t newsize = secoffset;
 
 	//printf("truncate: name %s size %lld len %d sec truncate to %d sec, new size %lld\n", name, size, len, seconds, secoffset);
+	
 	sprintf(spart, "%s", name);
 	while (!stat64(spart, &s)) 
 	{
 		if(found) 
 		{
 			//printf("truncate: check part %d file %s - TO REMOVE\n", part, spart);
+			
 			unlink(spart);
 		} 
 		else 
 		{
 			//printf("truncate: check part %d file %s - OK\n", part, spart);
+			
 			if(secoffset < s.st_size) 
 			{
 				tpart = part;
@@ -4901,8 +4893,10 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 			bcount++;
 	}
 	
-	for(int book_nr = 0; book_nr < MI_MOVIE_BOOK_USER_MAX; book_nr++) {
-		if( minfo->bookmarks.user[book_nr].pos != 0 && minfo->bookmarks.user[book_nr].length > 0 ) {
+	for(int book_nr = 0; book_nr < MI_MOVIE_BOOK_USER_MAX; book_nr++) 
+	{
+		if( minfo->bookmarks.user[book_nr].pos != 0 && minfo->bookmarks.user[book_nr].length > 0 ) 
+		{
 			books[bcount].pos = (minfo->bookmarks.user[book_nr].pos * secsize)/188 * 188;
 			books[bcount].len = (minfo->bookmarks.user[book_nr].length * secsize)/188 * 188;
 			if(books[bcount].len > SAFE_GOP)
@@ -4913,7 +4907,8 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 		}
 	}
 	
-	if(minfo->bookmarks.end != 0) {
+	if(minfo->bookmarks.end != 0) 
+	{
 			books[bcount].pos = ((off64_t) minfo->bookmarks.end * secsize)/188 * 188;
 			books[bcount].len = size - books[bcount].pos;
 			//if(books[bcount].pos > SAFE_GOP)
@@ -4925,19 +4920,26 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 	printf("\n");
 	if(!bcount) return 0;
 	qsort(books, bcount, sizeof(struct mybook), compare_book);
-	for(i = 0; i < bcount; i++) {
-		if(books[i].ok) {
+	for(i = 0; i < bcount; i++) 
+	{
+		if(books[i].ok) 
+		{
 			printf("cut: bookmark %d at %lld len %lld -> skip to %lld\n", i, books[i].pos, books[i].len, books[i].pos+books[i].len);
 			newsize -= books[i].len;
 			off64_t curend = books[i].pos + books[i].len;
-			for(int j = i + 1; j < bcount; j++) {
-				if((books[j].pos > books[i].pos) && (books[j].pos < curend)) {
+			for(int j = i + 1; j < bcount; j++) 
+			{
+				if((books[j].pos > books[i].pos) && (books[j].pos < curend)) 
+				{
 					off64_t newend = books[j].pos + books[j].len;
-					if(newend > curend) {
+					if(newend > curend) 
+					{
 						printf("cut: bad bookmark %d, position %lld len %lld, ajusting..\n", j, books[j].pos, books[j].len);
 						books[j].pos = curend;
 						books[j].len = newend - curend;
-					} else {
+					} 
+					else 
+					{
 						printf("cut: bad bookmark %d, position %lld len %lld, skipping..\n", j, books[j].pos, books[j].len);
 						books[j].ok = 0;
 					}
@@ -4955,7 +4957,8 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 	
 	dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE, 0x644);
 
-	if(dstfd < 0) {
+	if(dstfd < 0) 
+	{
 		perror(dpart);
 		return 0;
 	}
@@ -4964,21 +4967,24 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 	off64_t offset = 0;
 	spos = 0;
 	sprintf(spart, "%s", name);
-	if(read_psi(spart, &psi[0])) {
+	if(read_psi(spart, &psi[0])) 
+	{
 		perror(spart);
 		goto ret_err;
 	}
 	write(dstfd, psi, PSI_SIZE);
 	bpos = books[i].pos;
 	bskip = books[i].len;
-	while (!stat64(spart, &s)) {
-	printf("cut: open part %d file %s size %lld offset %lld book pos %lld\n", part, spart, s.st_size, offset, bpos);
+	while (!stat64(spart, &s)) 
+	{
+		printf("cut: open part %d file %s size %lld offset %lld book pos %lld\n", part, spart, s.st_size, offset, bpos);
 		srcfd = open (spart, O_RDONLY | O_LARGEFILE);
 		if(srcfd < 0) {
 			perror(spart);
 			goto ret_err;
 		}
-		if(offset >= s.st_size) {
+		if(offset >= s.st_size) 
+		{
 			offset -= s.st_size;
 			bpos -= s.st_size;
 			goto next_file;
@@ -4989,12 +4995,14 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 		{
 			off64_t until = bpos;
 			printf("\ncut: reading from %lld to %lld (%lld) want gop %d\n", sdone, until, until - sdone, need_gop);
-			while(sdone < until) {
+			while(sdone < until) 
+			{
 				bool stop;
 				int msg = get_input(&stop);
 				was_cancel = msg & 2;
 				
-				if(stop) {
+				if(stop) 
+				{
 					close(srcfd);
 					unlink(dpart);
 					retval = 1;
@@ -5012,18 +5020,26 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 #else
 				r = fake_read (srcfd, buf, toread, s.st_size);
 #endif
-				if(r > 0) {
+				if(r > 0) 
+				{
 					int wptr = 0;
-				// FIXME: TEST
-				if(r != BUF_SIZE) printf("****** short read ? %d\n", r);
-				if(buf[0] != 0x47) printf("cut: buffer not aligned at %lld\n", sdone);
-					if(need_gop) {
+					// FIXME: TEST
+					if(r != BUF_SIZE) 
+						printf("****** short read ? %d\n", r);
+					
+					if(buf[0] != 0x47) 
+						printf("cut: buffer not aligned at %lld\n", sdone);
+					
+					if(need_gop) 
+					{
 						int gop = find_gop(buf, r);
-						if(gop >= 0) {
+						if(gop >= 0) 
+						{
 							printf("cut: GOP found at %lld offset %d\n", (off64_t)(sdone+gop), gop);
 							newsize -= gop;
 							wptr = gop;
-						} else
+						} 
+						else
 							printf("cut: GOP needed, but not found\n");
 						need_gop = 0;
 					}
@@ -5033,18 +5049,23 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 					timescale->paint(x + 41, y + 12, percent);
 #if REAL_CUT
 					int wr = write(dstfd, &buf[wptr], r-wptr);
-					if(wr < (r-wptr)) {
+					if(wr < (r-wptr)) 
+					{
 						perror(dpart);
 						close(srcfd);
 						goto ret_err;
 					}
 #endif
-				} else if(sdone < s.st_size) {
+				} 
+				else if(sdone < s.st_size) 
+				{
 					/* read error ? */
 					close(srcfd);
 					perror(spart);
 					goto ret_err;
-				} else {
+				} 
+				else 
+				{
 					printf("cut: next file -> sdone %lld spos %lld bpos %lld\n", sdone, spos, bpos);
 					offset = 0;
 					bpos -= sdone;
@@ -5055,20 +5076,24 @@ static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie)
 			need_gop = 1;
 			offset = bpos + bskip;
 			i++;
-			while(i < bcount) {
+			while(i < bcount) 
+			{
 				if(books[i].ok)
 					break;
 				else
 					i++;
 			}
-			if(i < bcount) {
+			if(i < bcount) 
+			{
 				bpos = books[i].pos;
 				bskip = books[i].len;
-			} else
+			} 
+			else
 				bpos = size;
 			printf("cut: next bookmark pos: %lld abs %lld relative next file pos %lld cur file size %lld\n", bpos, bpos - tdone, offset, s.st_size);
 			bpos -= tdone; /* all books from 0, converting to 0 + total size skipped */
-			if(offset >= s.st_size) {
+			if(offset >= s.st_size) 
+			{
 				offset -= s.st_size;
 				bpos -= s.st_size;
 				goto next_file;
@@ -5120,7 +5145,8 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 	int retval = 0;
 
 	buf = (unsigned char *) malloc(BUF_SIZE);
-	if(buf == 0) {
+	if(buf == 0) 
+	{
 		perror("malloc");
 		return 0;
 	}
@@ -5146,8 +5172,10 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 	timescale->paint(x + 41, y + 12, percent);
 
 	newsize = 0;
-	for(int book_nr = 0; book_nr < MI_MOVIE_BOOK_USER_MAX; book_nr++) {
-		if( minfo->bookmarks.user[book_nr].pos != 0 && minfo->bookmarks.user[book_nr].length > 0 ) {
+	for(int book_nr = 0; book_nr < MI_MOVIE_BOOK_USER_MAX; book_nr++) 
+	{
+		if( minfo->bookmarks.user[book_nr].pos != 0 && minfo->bookmarks.user[book_nr].length > 0 ) 
+		{
 			books[bcount].pos = (minfo->bookmarks.user[book_nr].pos * secsize)/188 * 188;
 			if(books[bcount].pos > SAFE_GOP)
 				books[bcount].pos -= SAFE_GOP;
@@ -5182,8 +5210,10 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 		part = 0;
 		sprintf(spart, "%s", name);
 		int sres;
-		while (!(sres = stat64(spart, &s))) {
-			if(bpos >= s.st_size) {
+		while (!(sres = stat64(spart, &s))) 
+		{
+			if(bpos >= s.st_size) 
+			{
 				bpos -= s.st_size;
 				sprintf(spart, "%s.%03d", name, ++part);
 				//printf("copy: check src part %s\n", spart);
@@ -5195,13 +5225,15 @@ static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefi
 			printf("file for bookmark %d with offset %lld not found\n", i, books[i].pos);
 			continue;
 		}
-		if(!dst_done || !onefile) {
+		if(!dst_done || !onefile) 
+		{
 			find_new_part(npart, dpart);
 			
 			dstfd = open (dpart, O_CREAT|O_WRONLY|O_TRUNC| O_LARGEFILE, 0x644);
 
 			printf("copy: new file %s fd %d\n", dpart, dstfd);
-			if(dstfd < 0) {
+			if(dstfd < 0) 
+			{
 				printf("failed to open %s\n", dpart);
 				goto ret_err;;
 			}
@@ -5214,7 +5246,8 @@ next_file:
 		stat64(spart, &s);
 		printf("copy: open part %d file %s size %lld offset %lld\n", part, spart, s.st_size, bpos);
 		srcfd = open (spart, O_RDONLY | O_LARGEFILE);
-		if(srcfd < 0) {
+		if(srcfd < 0) 
+		{
 			printf("failed to open %s\n", spart);
 			close(dstfd);
 			goto ret_err;
@@ -5251,18 +5284,26 @@ next_file:
 #else
 			r = fake_read (srcfd, buf, toread, s.st_size);
 #endif
-			if(r > 0) {
+			if(r > 0) 
+			{
 				int wptr = 0;
 				// FIXME: TEST
-				if(r != BUF_SIZE) printf("****** short read ? %d\n", r);
-				if(buf[0] != 0x47) printf("copy: buffer not aligned at %lld\n", sdone);
-				if(need_gop) {
+				if(r != BUF_SIZE) 
+					printf("****** short read ? %d\n", r);
+				
+				if(buf[0] != 0x47) 
+					printf("copy: buffer not aligned at %lld\n", sdone);
+				
+				if(need_gop) 
+				{
 					int gop = find_gop(buf, r);
-					if(gop >= 0) {
+					if(gop >= 0) 
+					{
 						printf("cut: GOP found at %lld offset %d\n", (off64_t)(sdone+gop), gop);
 						newsize -= gop;
 						wptr = gop;
-					} else
+					} 
+					else
 						printf("cut: GOP needed, but not found\n");
 					need_gop = 0;
 				}
@@ -5302,7 +5343,8 @@ next_file:
 		} /* while(sdone < until) */
 		close(srcfd);
 
-		if(!onefile) {
+		if(!onefile) 
+		{
 			close(dstfd);
 			save_info(cmovie, minfo, dpart, spos, secsize);
 			time_t tt1 = time(0);
@@ -5310,7 +5352,8 @@ next_file:
 		}
 	} /* for all books */
 	
-	if(onefile) {
+	if(onefile) 
+	{
 		close(dstfd);
 		save_info(cmovie, minfo, dpart, spos, secsize);
 		time_t tt1 = time(0);

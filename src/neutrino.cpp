@@ -766,6 +766,11 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	g_settings.key_screenshot = configfile.getInt32( "key_screenshot", CRCInput::RC_record );
 	
+	// mb
+	g_settings.mb_copy_jump = configfile.getInt32( "mb_copy_jump", CRCInput::RC_nokey );
+	g_settings.mb_cut_jump = configfile.getInt32( "mb_cut_jump", CRCInput::RC_nokey );
+	g_settings.mb_truncate = configfile.getInt32( "mb_truncate", CRCInput::RC_nokey );
+	
 	// webtv
 	strcpy( g_settings.webtv_settings, configfile.getString( "webtv_settings", "").c_str() );
 	
@@ -1256,6 +1261,11 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "key_webtv", g_settings.key_webtv );
 	
 	configfile.setInt32( "key_screenshot", g_settings.key_screenshot );
+	
+	// mb
+	configfile.setInt32( "mb_copy_jump", g_settings.mb_copy_jump );
+	configfile.setInt32( "mb_cut_jump", g_settings.mb_cut_jump );
+	configfile.setInt32( "mb_truncate", g_settings.mb_truncate );
 	
 	// webtv
 	configfile.setString("webtv_settings", g_settings.webtv_settings);
@@ -2514,9 +2524,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	
 	// parentallock
 	InitParentalLockSettings(parentallockSettings);
-	
-	//init scan settings
-	//CScanSetup scansetup;
 
 	dprintf( DEBUG_NORMAL, "CNeutrinoApp::run: registering as event client\n");
 	
@@ -2591,6 +2598,25 @@ int CNeutrinoApp::run(int argc, char **argv)
 	InitKeySettings(keySettings, bindSettings);
 	InitColorSettings(colorSettings);
 
+	// HDD mount devices
+	//assuming that mdev/fstab has mounted devices
+	CHDDDestExec * hdd = new CHDDDestExec();
+	hdd->exec(NULL, "");
+	
+	delete hdd;
+
+	// recordingsettings
+	InitRecordingSettings(recordingSettings);
+
+	// streamingsettings
+	InitStreamingSettings(streamingSettings);
+
+	// lcdsettinsg
+	InitLcdSettings(lcdSettings);
+
+	CVFD::getInstance()->setPower(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER]);
+	CVFD::getInstance()->setlcdparameter();	
+	
 	// start assistant
 	if(loadSettingsErg) 
 	{
@@ -2625,14 +2651,35 @@ int CNeutrinoApp::run(int argc, char **argv)
 		// setup network
 		if(ret != menu_return::RETURN_EXIT_ALL)
 			networkSettings.exec(NULL, "");
-
-		// setup scan settings
-		//if(ret != menu_return::RETURN_EXIT_ALL)
-		//	scansetup.exec(NULL, "");
+		
+		// recordingsettings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			recordingSettings.exec(NULL, "");
+		
+		// streamingsettings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			streamingSettings.exec(NULL, "");
+		
+		// audioplayersettings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			audioplayerSettings.exec(NULL, "");
+		
+		// picviewersettings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			PicViewerSettings.exec(NULL, "");
+		
+		// keysettings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			bindSettings.exec(NULL, "");
 		
 		// misc settings
 		if(ret != menu_return::RETURN_EXIT_ALL)
 			miscSettings.exec(NULL, "");
+		
+		// at least
+		// setup scan settings
+		if(ret != menu_return::RETURN_EXIT_ALL)
+			TunerSetup.exec(NULL, "");
 
 		dprintf(DEBUG_INFO, "config file or options missing\n");
 
@@ -2642,28 +2689,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 
 		saveSetup(NEUTRINO_SETTINGS_FILE);
 	}
-
-	// HDD mount devices
-	//assuming that mdev/fstab has mounted devices
-	CHDDDestExec * hdd = new CHDDDestExec();
-	hdd->exec(NULL, "");
 	
-	delete hdd;
-
 	// zapper
 	InitZapper();
-
-	// recordingsettings
-	InitRecordingSettings(recordingSettings);
-
-	// streamingsettings
-	InitStreamingSettings(streamingSettings);
-
-	// lcdsettinsg
-	InitLcdSettings(lcdSettings);
-
-	CVFD::getInstance()->setPower(g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER]);
-	CVFD::getInstance()->setlcdparameter();	
 	
 	// audio mute
 	AudioMute(current_muted, true);
