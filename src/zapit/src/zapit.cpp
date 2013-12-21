@@ -458,9 +458,10 @@ CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && (!pref_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				pref_frontend = fe;
+				break;
 			}
 		}
 	}
@@ -489,11 +490,11 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		CFrontend * fe = fe_it->second;
 			
 		// skip tuned frontend and have same tid or same type as channel to tune
-		if( fe->tuned && ( fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
+		if( (fe == live_fe) && (fe->tuned && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type)) )
 			continue;
 
 		// close not locked tuner
-		if( !fe->locked && femap.size() > 1)
+		if(!fe->locked && femap.size() > 1)
 			fe->Close();
 	}
 	
@@ -528,7 +529,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if( (sit->second.type == fe->getDeliverySystem()) && (toRecord? !fe->tuned : !fe->locked) && (!free_frontend) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			if( (sit->second.type == fe->getDeliverySystem()) && (toRecord? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				free_frontend = fe;
 				break;
@@ -548,6 +549,24 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		printf("%s can not get free frontend\n", __FUNCTION__);
 	
 	return free_frontend;
+}
+
+void lockFrontend(CFrontend *fe)
+{
+	if(fe)
+	{
+		if(fe->tuned)
+		      fe->locked = true;
+	}
+}
+
+void unlockFrontend(CFrontend *fe)
+{
+	if(fe)
+	{
+		if(fe->locked)
+		      fe->locked = false;
+	}
 }
 
 // borrowed from cst neutrino-hd (femanager.cpp)
@@ -1571,11 +1590,8 @@ void setRecordMode(void)
 
 	currentMode |= RECORD_MODE;
 	
-	if(record_fe)
-	{
-		if(record_fe->tuned)
-		      record_fe->locked = true;
-	}
+	// lock frontend
+	lockFrontend(record_fe);
 	 
 	eventServer->sendEvent(CZapitClient::EVT_RECORDMODE_ACTIVATED, CEventServer::INITID_ZAPIT );
 }
@@ -1591,8 +1607,8 @@ void unsetRecordMode(void)
 	rec_channel_id = 0;
 	rec_channel = NULL;
 	
-	if(record_fe)
-		record_fe->locked = false;
+	// unlock record frontend
+	unlockFrontend(record_fe);
 
 	/* zapit mode */
 	currentMode &= ~RECORD_MODE;
