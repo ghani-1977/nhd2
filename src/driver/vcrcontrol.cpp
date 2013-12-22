@@ -453,7 +453,7 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 	if (epgid != 0)
 	{
 		CShortEPGData epgdata;
-		//if (g_Sectionsd->getEPGidShort(epgid, &epgdata)) {
+
 		if(sectionsd_getEPGidShort(epgid, &epgdata)) 
 		{
 			//#warning fixme sectionsd should deliver data in UTF-8 format
@@ -665,7 +665,7 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 		if(epgid != 0) 
 		{
 			CShortEPGData epgdata;
-			//if (g_Sectionsd->getEPGidShort(epgid, &epgdata))
+
 			if(sectionsd_getEPGidShort(epgid, &epgdata))
 			{
 				if (!(epgdata.title.empty()))

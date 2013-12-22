@@ -159,10 +159,8 @@ stream2file_error_msg_t start_recording(const char * const filename, const char 
 	// take screenshot if !standby
 	if ( (g_settings.recording_screenshot && rec_channel_id == live_channel_id) && !autoshift && !CNeutrinoApp::getInstance()->timeshiftstatus && (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby))
 	{
-		//std::string fname = rec_filename;
 		char fname[512];
 		
-		//strcat((char *)fname.c_str(), ".jpg");
 		sprintf(fname, "%s.jpg", rec_filename);
 		
 		// check if dont exit
