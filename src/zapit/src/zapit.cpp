@@ -386,38 +386,6 @@ bool loopCanTune(CFrontend * fe, CZapitChannel * thischannel)
 	return false;
 }
 
-// NOTE: this can be used only after we found our record_fe???
-bool feCanTune(CFrontend * fe, CZapitChannel * thischannel)
-{
-	// same tp id (single/multi)
-	if(fe->getTsidOnid() == thischannel->getTransponderId())
-		return true;
-	
-	if(femap.size() > 1)
-	{
-		// loop
-		if(fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel))
-			return true;
-		
-		// twin
-		if(fe->mode == (fe_mode_t)FE_SINGLE && fe->getInfo()->type == record_fe->getInfo()->type)
-			return true;
-		
-		// other sat
-		t_satellite_position satellitePosition = thischannel->getSatellitePosition();
-		sat_iterator_t sit = satellitePositions.find(satellitePosition);
-					
-		if (sit != satellitePositions.end()) 
-		{
-			// multi
-			if( sit->second.type != fe->getDeliverySystem() ) 
-				return true;
-		}
-	}
-	
-	return false;
-}
-
 // getPreferredFrontend
 CFrontend * getPreferredFrontend(CZapitChannel * thischannel)
 {
@@ -490,7 +458,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		CFrontend * fe = fe_it->second;
 			
 		// skip tuned frontend and have same tid or same type as channel to tune
-		if( (fe == live_fe) && (fe->tuned && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type)) )
+		if( (fe == live_fe) && (fe->tuned) && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
 			continue;
 
 		// close not locked tuner
@@ -900,7 +868,7 @@ void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe, bool to
 
 void sendcapmtPlayBackStop(bool _sendPmt)
 {
-	dprintf(DEBUG_NORMAL, "%s sending capmtstopplayback....send:%d\n", __FUNCTION__, _sendPmt);
+	dprintf(DEBUG_NORMAL, "%s sending capmtstopplayback... (sendPmt:%d)\n", __FUNCTION__, _sendPmt);
 	
 	if(_sendPmt) 
 	{
@@ -1342,7 +1310,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	// capmt
 	sendCaPmtPlayBackStart(rec_channel, record_fe, true);
 	
-	dprintf(DEBUG_NORMAL, "%s: %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
+	dprintf(DEBUG_NORMAL, "%s: zapped to %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
 	return 0;
 }
@@ -1633,7 +1601,10 @@ int prepare_channels()
 
 	// load services
 	if (LoadServices(false) < 0)
+	{
+		dprintf(DEBUG_NORMAL, "prepare_channels: LoadServices: failed\n");
 		return -1;
+	}
 
 	dprintf(DEBUG_INFO, "prepare_channels: LoadServices: success\n");
 
@@ -2675,9 +2646,6 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 	
 			while (CBasicServer::receive_data(connfd, &msgAddSubService, sizeof(msgAddSubService))) 
 			{
-				//t_original_network_id original_network_id = msgAddSubService.original_network_id;
-				//t_service_id          service_id          = msgAddSubService.service_id;
-				
 				dprintf(DEBUG_DEBUG, "NVOD insert %llx\n", CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(msgAddSubService.service_id, msgAddSubService.original_network_id, msgAddSubService.transport_stream_id));
 				
 				nvodchannels.insert (
@@ -3617,7 +3585,6 @@ void leaveStandby(void)
 
 	// if we have already zapped channel
 	if (live_channel)
-		//zapit(live_channel_id, current_is_nvod, false);
 		zapTo_ChannelID(live_channel_id, current_is_nvod);
 }
 
@@ -4119,10 +4086,7 @@ int zapit_main_thread(void *data)
 	}
 
 	// load services
-	if (prepare_channels() < 0)
-		printf("error parsing services\n");
-	else
-		printf("channels have been loaded succesfully\n");
+	prepare_channels();
 
 	//set basic server
 	CBasicServer zapit_server;
