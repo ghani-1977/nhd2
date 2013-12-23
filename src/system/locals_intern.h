@@ -1491,6 +1491,7 @@ const char * locale_real_names[] = {
 	"osd.corners",
 	"osd.roundedcornersoff",
 	"osd.roundedcornerson",
+	"osd.roundedcornersonly_top",
 	"extra.volume_pos",
 	"progressbar.color",
 	"miscsettings.reset",

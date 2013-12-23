@@ -1480,6 +1480,7 @@ osd.timezone Time Zone
 osd.corners OSD Corners
 osd.roundedcornersoff eckig
 osd.roundedcornerson abgerundet
+osd.roundedcornersonly_top nur Top
 extra.volume_pos Lautstärkeanzeige
 progressbar.color Fortschrittsbalken Farbe
 miscsettings.reset Werkseinstellungen

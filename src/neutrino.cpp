@@ -710,7 +710,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.screen_xres = configfile.getInt32("screen_xres", 120);
 	g_settings.screen_yres = configfile.getInt32("screen_yres", 100);
 	
-	g_settings.rounded_corners = configfile.getInt32("rounded_corners", 1);
+	g_settings.rounded_corners = configfile.getInt32("rounded_corners", ONLY_TOP);
 	// END OSD
 
 	// keysbinding

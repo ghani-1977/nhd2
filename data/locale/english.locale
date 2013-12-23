@@ -1479,6 +1479,7 @@ osd.timezone Time Zone
 osd.corners OSD Corners
 osd.roundedcornersoff angular
 osd.roundedcornerson rounded
+osd.roundedcornersonly_top only top
 extra.volume_pos Volumebar
 progressbar.color Progressbar Color
 miscsettings.reset Factory reset
