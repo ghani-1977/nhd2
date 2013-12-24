@@ -598,13 +598,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 #if ENABLE_LCD
 	showLcdPercentOver();
 #endif	
-
-	/*
-	if ((g_RemoteControl->current_channel_id == channel_id) && !(((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (info_CurrentNext.flags & (CSectionsdClient::epgflags::has_current | CSectionsdClient::epgflags::has_no_current))) || (info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast))) 
-	{
-		g_Sectionsd->setServiceChanged(channel_id & 0xFFFFFFFFFFFFULL, true);
-	}
-	*/
 	
 	// radiotext
 #if ENABLE_RADIOTEXT	

@@ -2008,6 +2008,11 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 
 			if (system(NEUTRINO_RECORDING_START_SCRIPT) != 0)
 				perror(NEUTRINO_RECORDING_START_SCRIPT " failed");
+			
+			//
+			time_t now = time(NULL);
+			int record_end = now + g_settings.record_hours*60*60;
+			int pre = 0, post = 0;
 
 			// get EPG info
 			eventinfo.channel_id = live_channel_id;
@@ -2019,6 +2024,12 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 				eventinfo.epg_starttime = epgData.epg_times.startzeit;
 				strncpy(eventinfo.epgTitle, epgData.title.c_str(), EPG_TITLE_MAXLEN-1);
 				eventinfo.epgTitle[EPG_TITLE_MAXLEN - 1] = 0;
+				
+				// record end time
+				g_Timerd->getRecordingSafety(pre, post);
+				
+				if (epgData.epg_times.startzeit > 0)
+					record_end = epgData.epg_times.startzeit + epgData.epg_times.dauer + post;
 			}
 			else 
 			{
@@ -2050,8 +2061,7 @@ bool CNeutrinoApp::doGuiRecord(char * preselectedDir, bool addTimer)
 			}
 			else if (addTimer) // add timer
 			{
-				time_t now = time(NULL);
-				recording_id = g_Timerd->addImmediateRecordTimerEvent(eventinfo.channel_id, now, now + g_settings.record_hours*60*60, eventinfo.epgID, eventinfo.epg_starttime, eventinfo.apids);
+				recording_id = g_Timerd->addImmediateRecordTimerEvent(eventinfo.channel_id, now, record_end, eventinfo.epgID, eventinfo.epg_starttime, eventinfo.apids);
 			}
 		} 
 		else 

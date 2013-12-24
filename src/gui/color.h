@@ -77,12 +77,9 @@
 #define COL_COLORED_EVENTS_CHANNELLIST	254-8*10
 #define COL_MENUFOOT			254-8*9
 #define COL_COLORED_EVENTS_INFOBAR	254-8*8
-
 #define COL_INFOBAR_SHADOW		254-8*7
 #define COL_INFOBAR			254-8*6
-
 #define COL_MENUHEAD			254-8*5
-
 #define COL_MENUCONTENT			254-8*4
 #define COL_MENUCONTENTDARK		254-8*3
 #define COL_MENUCONTENTSELECTED		254-8*2
@@ -91,12 +88,15 @@
 // 32 bits
 #define COL_INFOBAR_SHADOW_PLUS_0       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 0)])
 #define COL_INFOBAR_SHADOW_PLUS_1       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 1)])
+
 #define COL_INFOBAR_PLUS_0              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 0)])
 #define COL_INFOBAR_PLUS_1              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 1)])
 #define COL_INFOBAR_PLUS_3              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 3)])
 #define COL_INFOBAR_PLUS_7              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 7)])
 
 #define COL_MENUHEAD_PLUS_0             (CFrameBuffer::getInstance()->realcolor[(COL_MENUHEAD + 0)])
+#define COL_MENUHEAD_PLUS_1             (CFrameBuffer::getInstance()->realcolor[(COL_MENUHEAD + 1)])
+#define COL_MENUHEAD_PLUS_2             (CFrameBuffer::getInstance()->realcolor[(COL_MENUHEAD + 2)])
 
 #define COL_MENUCONTENT_PLUS_0          (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENT + 0)])
 #define COL_MENUCONTENT_PLUS_1          (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENT + 1)])
@@ -108,9 +108,11 @@
 #define COL_MENUCONTENT_PLUS_7          (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENT + 7)])
 
 #define COL_MENUCONTENTDARK_PLUS_0      (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTDARK + 0)])
+#define COL_MENUCONTENTDARK_PLUS_1      (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTDARK + 1)])
 #define COL_MENUCONTENTDARK_PLUS_2      (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTDARK + 2)])
 
 #define COL_MENUCONTENTSELECTED_PLUS_0  (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTSELECTED + 0)])
+#define COL_MENUCONTENTSELECTED_PLUS_1  (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTSELECTED + 1)])
 #define COL_MENUCONTENTSELECTED_PLUS_2  (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTSELECTED + 2)])
 
 #define COL_MENUCONTENTINACTIVE_PLUS_0  (CFrameBuffer::getInstance()->realcolor[(COL_MENUCONTENTINACTIVE + 0)])

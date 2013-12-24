@@ -580,29 +580,29 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 
     	if(R) 
 	{
-        	if(--dyy<=0) 
+        	if(--dyy <= 0) 
 		{
-            		dyy=1;
+            		dyy = 1;
         	}
 
-        	if(R==1 || R>(dxx/2) || R>(dyy/2)) 
+        	if(R == 1 || R > (dxx/2) || R > (dyy/2)) 
 		{
-            		R=dxx/10;
-            		F=dyy/10;
+            		R = dxx/10;
+            		F = dyy/10;
 
-            		if(R>F) 
+            		if(R > F) 
 			{
-                		if(R>(dyy/3)) 
+                		if(R > (dyy/3)) 
 				{
-                    			R=dyy/3;
+                    			R = dyy/3;
                 		}
             		} 
 			else 
 			{
-                		R=F;
-                		if(R>(dxx/3)) 
+                		R = F;
+                		if(R > (dxx/3)) 
 				{
-                    			R=dxx/3;
+                    			R = dxx/3;
                 		}
             		}
         	}
@@ -616,8 +616,8 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 
 		if(type & 1) 
 		{
-        		pos1=pos+(ry*stride); // top 1
-        		pos2=pos+(rx*stride); // top 2
+        		pos1 = pos + (ry*stride); // top 1
+        		pos2 = pos + (rx*stride); // top 2
 		}
 
 		if(type & 2) 
@@ -628,37 +628,38 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 
         	while (sx <= sy) 
 		{
-            		rx=R-sx;
-            		ry=R-sy;
-            		wx=rx<<1;
-            		wy=ry<<1;
-            		dest0=(fb_pixel_t *)(pos0+rx*sizeof(fb_pixel_t));
-            		dest1=(fb_pixel_t *)(pos1+rx*sizeof(fb_pixel_t));
+            		rx = R - sx;
+            		ry = R - sy;
+            		wx = rx<<1;
+            		wy = ry<<1;
+			
+            		dest0 = (fb_pixel_t *)(pos0 + rx*sizeof(fb_pixel_t));
+            		dest1=(fb_pixel_t *)(pos1 + rx*sizeof(fb_pixel_t));
 
-            		for (int i=0; i<(dxx-wx); i++) 
+            		for (int i = 0; i < (dxx - wx); i++) 
 			{
 				if(type & 2)
-                			*(dest0++)=col;	//bottom 1
+                			*(dest0++) = col;	//bottom 1
 				if(type & 1)
-                			*(dest1++)=col;	// top 1
+                			*(dest1++) = col;	// top 1
             		}
 
-            		dest0=(fb_pixel_t *)(pos2+ry*sizeof(fb_pixel_t));
-            		dest1=(fb_pixel_t *)(pos3+ry*sizeof(fb_pixel_t));
+            		dest0 = (fb_pixel_t *)(pos2 + ry*sizeof(fb_pixel_t));
+            		dest1 = (fb_pixel_t *)(pos3 + ry*sizeof(fb_pixel_t));
 
-            		for (int i=0; i<(dxx-wy); i++) 
+            		for (int i = 0; i < (dxx - wy); i++) 
 			{
 				if(type & 1)
-                			*(dest0++)=col;	// top 2
+                			*(dest0++) = col;	// top 2
 				if(type & 2)
-                			*(dest1++)=col;	//bottom 2
+                			*(dest1++) = col;	//bottom 2
             		}
             		sx++;
             		pos2 -= stride;
             		pos3 += stride;
-            		if (F<0) 
+            		if (F < 0) 
 			{
-                		F += (sx<<1)-1;
+                		F += (sx<<1) - 1;
             		} 
 			else 
 			{
@@ -670,7 +671,7 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
         	}
         	
 		if(type & 1)
-        		pos+=R*stride;
+        		pos += R*stride;
     	}
 
     	int start = R;
@@ -685,10 +686,10 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
     	for (int count = start; count < end; count++) 
 	{
         	dest0 = (fb_pixel_t *)pos;
-        	for (int i = 0; i<dxx; i++)
-            		*(dest0++)=col;
+        	for (int i = 0; i < dxx; i++)
+            		*(dest0++) = col;
         	pos += stride;
-    	}	
+    	}
 }
 
 void CFrameBuffer::paintVLine(int x, int ya, int yb, const fb_pixel_t col)
@@ -714,7 +715,8 @@ void CFrameBuffer::paintVLineRel(int x, int y, int dy, const fb_pixel_t col)
 
 	uint8_t * pos = ((uint8_t *)getFrameBufferPointer()) + x * sizeof(fb_pixel_t) + stride * y;
 
-	for(int count=0;count<dy;count++) {
+	for(int count = 0; count < dy; count++) 
+	{
 		*(fb_pixel_t *)pos = col;
 		pos += stride;
 	}	
