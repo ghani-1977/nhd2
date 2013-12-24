@@ -265,6 +265,17 @@ void CPlugins::startPlugin(int number)
 {
 	printf("CPlugins::startPlugin: %s type:%d\n", plugin_list[number].pluginfile.c_str(), plugin_list[number].type);
 	
+	/* export neutrino settings to the environment */
+	char tmp[32];
+	sprintf(tmp, "%d", g_settings.screen_StartX);
+	setenv("SCREEN_OFF_X", tmp, 1);
+	sprintf(tmp, "%d", g_settings.screen_StartY);
+	setenv("SCREEN_OFF_Y", tmp, 1);
+	sprintf(tmp, "%d", g_settings.screen_EndX);
+	setenv("SCREEN_END_X", tmp, 1);
+	sprintf(tmp, "%d", g_settings.screen_EndY);
+	setenv("SCREEN_END_Y", tmp, 1);
+	
 	// script type
 	if (plugin_list[number].type == CPlugins::P_TYPE_SCRIPT)
 	{
@@ -287,17 +298,6 @@ void CPlugins::startPlugin(int number)
 
 	if ( (plugin_list[number].type == CPlugins::P_TYPE_TOOL) || (plugin_list[number].type == CPlugins::P_TYPE_GAME) )
 	{
-		/* export neutrino settings to the environment */
-		char tmp[32];
-		sprintf(tmp, "%d", g_settings.screen_StartX);
-		setenv("SCREEN_OFF_X", tmp, 1);
-		sprintf(tmp, "%d", g_settings.screen_StartY);
-		setenv("SCREEN_OFF_Y", tmp, 1);
-		sprintf(tmp, "%d", g_settings.screen_EndX);
-		setenv("SCREEN_END_X", tmp, 1);
-		sprintf(tmp, "%d", g_settings.screen_EndY);
-		setenv("SCREEN_END_Y", tmp, 1);
-	
 		/* stop rc input */
 		g_RCInput->stopInput();
 		

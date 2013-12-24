@@ -44,6 +44,10 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 
+#include <semaphore.h>
+
+#include <system/set_threadname.h>
+
 // 
 #include <client/zapitclient.h>
 #include <sectionsdclient/sectionsdclient.h>
@@ -263,5 +267,8 @@ extern uint32_t scrambled_timer;
 extern char recDir[255];
 extern char timeshiftDir[255];
 extern std::string tmode;
+
+void sectionsd_getEventsServiceKey(t_channel_id serviceUniqueKey, CChannelEventList &eList, char search = 0, std::string search_text = "");
+void sectionsd_getCurrentNextServiceKey(t_channel_id uniqueServiceKey, CSectionsdClient::responseGetCurrentNextInfoChannelID& current_next );
 
 #endif

@@ -457,8 +457,8 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 	{
 		CFrontend * fe = fe_it->second;
 			
-		// skip tuned frontend and have same tid or same type as channel to tune
-		if( (fe == live_fe) && (fe->tuned) && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
+			// skip tuned frontend and have same tid or same type as channel to tune
+		if( (fe->tuned) && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
 			continue;
 
 		// close not locked tuner
@@ -497,26 +497,10 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			bool twin = false;
-			
-			if(fe->getDeliverySystem() == live_fe->getDeliverySystem())
-				twin = true;
-			
-			if(twin)
+			if ( (sit->second.type == fe->getDeliverySystem()) && (toRecord? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
-				if( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
-				{
-					free_frontend = fe;
-					break;
-				}
-			}
-			else
-			{
-				if( (sit->second.type == fe->getDeliverySystem()) && (toRecord? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
-				{
-					free_frontend = fe;
-					break;
-				}
+				free_frontend = fe;
+				break;
 			}
 		}
 	}
@@ -1302,21 +1286,22 @@ int zapTo_RecordID(const t_channel_id channel_id)
 		
 	record_fe = frontend;
 	
-	// tune to rec channel
-	if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
+	// single/multi on the same frontend
+	if(record_fe == live_fe)
 	{
-		if(femap.size() > 1)
-		{
-			//tune to channel
-			if(!tune_to_channel(record_fe, rec_channel, transponder_change))
-				return -1;
-		}
-		else
+		if( (rec_channel_id != live_channel_id) && !SAME_TRANSPONDER(live_channel_id, rec_channel_id) )
 		{
 			// zap to record channel
 			zapTo_ChannelID(rec_channel_id, false);
 			return 0;
 		}
+	}
+	// twin/multi other frontend as live frontend
+	else
+	{
+		// just tune
+		if(!tune_to_channel(record_fe, rec_channel, transponder_change))
+			return -1;
 	}
 	
 	// parse channel pat_pmt

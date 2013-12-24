@@ -850,8 +850,7 @@ static void addEvent(const SIevent &evt, const time_t zeit, bool cn = false)
 					if ((*x)->times.begin()->startzeit + (long)(*x)->times.begin()->dauer <= start_time)
 						break;
 					/* here we have an overlapping event */
-					dprintf(DEBUG_DEBUG, "%s: delete 0x%016llx.%02x time = 0x%016llx.%02x\n", __func__,
-						x_key, (*x)->table_id, e_key, e->table_id);
+					dprintf(DEBUG_DEBUG, "%s: delete 0x%016llx.%02x time = 0x%016llx.%02x\n", __func__, x_key, (*x)->table_id, e_key, e->table_id);
 					to_delete.push_back(x_key);
 				}
 			}
@@ -2095,8 +2094,6 @@ static void commandDumpAllServices(int connfd, char* /*data*/, const unsigned /*
 		if (msgResponse.dataLength)
 			writeNbytes(connfd, serviceList, msgResponse.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	delete[] serviceList;
 
@@ -2257,8 +2254,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, evtList, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (evtList)
 		delete[] evtList;
@@ -2440,8 +2435,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, pResultData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (pResultData)
 		delete[] pResultData;
@@ -2535,8 +2528,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, pResultData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (pResultData)
 		delete[] pResultData;
@@ -2623,14 +2614,15 @@ static void commandserviceChanged(int connfd, char *data, const unsigned dataLen
 
 	if (messaging_current_servicekey != *uniqueServiceKey)
 	{
-		//if (debug) showProfiling("[sectionsd] commandserviceChanged: before events lock");
 		writeLockEvents();
-		//if (debug) showProfiling("[sectionsd] commandserviceChanged: after events lock");
-		if (myCurrentEvent) {
+
+		if (myCurrentEvent) 
+		{
 			delete myCurrentEvent;
 			myCurrentEvent = NULL;
 		}
-		if (myNextEvent) {
+		if (myNextEvent) 
+		{
 			delete myNextEvent;
 			myNextEvent = NULL;
 		}
@@ -2641,7 +2633,8 @@ static void commandserviceChanged(int connfd, char *data, const unsigned dataLen
 		messaging_got_CN = 0x00;
 		messaging_zap_detected = true;
 #ifdef UPDATE_NETWORKS
-		for ( int i = 0; i < MAX_BAT; i++) {
+		for ( int i = 0; i < MAX_BAT; i++) 
+		{
 			messaging_bat_bouquet_id[i] = 0;
 			messaging_bat_last_section[i] = 0;
 			for ( int j= 0; j < MAX_SECTIONS; j++)
@@ -2925,8 +2918,6 @@ out:
 	{
 		if (rc == true)
 			writeNbytes(connfd, pResultData, nResultDataSize, WRITE_TIMEOUT_IN_SECONDS);
-		//else
-		//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 		delete[] pResultData;
 	}
@@ -2941,7 +2932,6 @@ out:
 // Sendet ein EPG, unlocked die events, unpaused dmxEIT
 static void sendEPG(int connfd, const SIevent& e, const SItime& t, int shortepg = 0)
 {
-
 	struct sectionsd::msgResponseHeader responseHeader;
 
 	if (!shortepg)
@@ -2967,7 +2957,7 @@ static void sendEPG(int connfd, const SIevent& e, const SItime& t, int shortepg 
 			e.getText().length() + 1 + 			// Text + del
 			e.getExtendedText().length() + 1 + 1;	// ext + del + 0
 
-	char* msgData = new char[responseHeader.dataLength];
+	char *msgData = new char[responseHeader.dataLength];
 
 	if (!msgData)
 	{
@@ -3034,8 +3024,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, msgData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (msgData)
 		delete[] msgData;
@@ -3188,8 +3176,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, msgData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	} 
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (msgData)
 		delete[] msgData;
@@ -3367,8 +3353,6 @@ out:
 		if (msgResponse.dataLength)
 			writeNbytes(connfd, evtList, msgResponse.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (evtList)
 		delete[] evtList;
@@ -3410,8 +3394,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, msgData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	} 
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (msgData)
 		delete[] msgData;
@@ -3662,8 +3644,6 @@ out:
 		if (responseHeader.dataLength)
 			writeNbytes(connfd, msgData, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 
 	if (msgData)
 		delete[] msgData;

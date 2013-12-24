@@ -106,8 +106,6 @@ bool new_mode_active = 0;
 
 extern int FrontendCount;			// defined in zapit.cpp
 extern bool CanZap(CZapitChannel * thischannel);
-//extern CFrontend *getPreferredFrontend(CZapitChannel * thischannel);
-//extern CFrontend *record_fe;
 
 extern CBouquetManager * g_bouquetManager;
 

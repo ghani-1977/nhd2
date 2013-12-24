@@ -223,8 +223,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 
 	if ( msg == NeutrinoMessages::EVT_CURRENTEPG )
 	{
-		if ((*(t_channel_id *)data) != (current_channel_id & 0xFFFFFFFFFFFFULL) &&
-		    (*(t_channel_id *)data) != (current_sub_channel_id & 0xFFFFFFFFFFFFULL))
+		if ((*(t_channel_id *)data) != (current_channel_id & 0xFFFFFFFFFFFFULL) && (*(t_channel_id *)data) != (current_sub_channel_id & 0xFFFFFFFFFFFFULL))
 			return messages_return::handled;
 
 		const CSectionsdClient::CurrentNextInfo info_CN = g_InfoViewer->getCurrentNextInfo();
@@ -301,6 +300,10 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 	{
 		if ((*(t_channel_id *)data) == ((msg == NeutrinoMessages::EVT_ZAP_COMPLETE) ? current_channel_id : current_sub_channel_id))
 		{
+			//TEST
+			// tell sectionsd to start epg on the zapped channel
+			g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, false );
+		
 			// show servicename in VFD
 			// don't show service name in standby mode
 			if( CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_standby )
@@ -778,7 +781,7 @@ void CRemoteControl::zapTo_ChannelID(const t_channel_id channel_id, const std::s
 		g_Zapit->zapTo_serviceID_NOWAIT(channel_id);
 		
 		// tell sectionsd to start epg on the zapped channel
-		g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, false );
+		//g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, false );
 		
 		abort_zapit = 0;
 
