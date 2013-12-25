@@ -1024,7 +1024,7 @@ int CTimerList::modifyTimer()
 		timerSettings.addItem( new CMenuForwarder(LOCALE_TIMERLIST_APIDS, true, NULL, &timerSettings_apids ));
 	}
 
-	return timerSettings.exec(this,"");
+	return timerSettings.exec(this, "");
 }
 
 int CTimerList::newTimer()
