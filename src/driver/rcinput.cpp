@@ -1012,19 +1012,19 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								
 							case NeutrinoMessages::EVT_POPUP :
 								*msg = NeutrinoMessages::EVT_POPUP;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
 							case NeutrinoMessages::EVT_EXTMSG :
 								*msg = NeutrinoMessages::EVT_EXTMSG;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
 							case NeutrinoMessages::CHANGEMODE :	// Change
 								*msg = NeutrinoMessages::CHANGEMODE;
-								*data = *(unsigned*) p;
+								*data = *(size_t*) p;
 								break;
 								
 							case NeutrinoMessages::STANDBY_TOGGLE :
@@ -1043,7 +1043,7 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								
 							case NeutrinoMessages::EVT_START_PLUGIN :
 								*msg = NeutrinoMessages::EVT_START_PLUGIN;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
@@ -1279,23 +1279,11 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 					{					  
 						dprintf(DEBUG_DEBUG, "CRCInput::getMsg_us: event - from TIMERD %x %x\n", emsg.eventID, *(unsigned*) p);					
 						
-						/*
-						if (emsg.eventID==CTimerdClient::EVT_ANNOUNCE_NEXTPROGRAM)
-						{
-						}
-
-						if (emsg.eventID==CTimerdClient::EVT_NEXTPROGRAM)
-						{
-							*msg = NeutrinoMessages::EVT_NEXTPROGRAM;
-							*data = (neutrino_msg_data_t) p;
-							dont_delete_p = true;
-						}
-						*/
 						switch(emsg.eventID)
 						{
 							case CTimerdClient::EVT_ANNOUNCE_RECORD :
 								*msg = NeutrinoMessages::ANNOUNCE_RECORD;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
@@ -1321,19 +1309,19 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								
 							case CTimerdClient::EVT_RECORD_START :
 								*msg = NeutrinoMessages::RECORD_START;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
 							case CTimerdClient::EVT_RECORD_STOP :
 								*msg = NeutrinoMessages::RECORD_STOP;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
 							case CTimerdClient::EVT_ZAPTO :
 								*msg = NeutrinoMessages::ZAPTO;
-								*data = (unsigned)  p;
+								*data = (size_t)  p;
 								dont_delete_p = true;
 								break;
 								
@@ -1354,13 +1342,13 @@ void CRCInput::getMsg_us(neutrino_msg_t * msg, neutrino_msg_data_t * data, unsig
 								
 							case CTimerdClient::EVT_REMIND :
 								*msg = NeutrinoMessages::REMIND;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 								
 							case CTimerdClient::EVT_EXEC_PLUGIN :
 								*msg = NeutrinoMessages::EVT_START_PLUGIN;
-								*data = (unsigned) p;
+								*data = (size_t) p;
 								dont_delete_p = true;
 								break;
 

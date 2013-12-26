@@ -706,13 +706,13 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 		{
 			pos += sizeof(MI_XML_TAG_AUDIO);
 
-			int pos2;
+			size_t pos2;
 			char *ptr;
 
 			pos2 = -1;
 			ptr = strstr(&text[pos], MI_XML_TAG_PID);
 			if (ptr)
-				pos2 = (int)ptr - (int)&text[pos];
+				pos2 = (size_t)ptr - (size_t)&text[pos];
 			//pos2 = strcspn(&text[pos],MI_XML_TAG_PID);
 			if (pos2 >= 0) 
 			{
@@ -728,7 +728,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 			pos2 = -1;
 			ptr = strstr(&text[pos], MI_XML_TAG_ATYPE);
 			if (ptr)
-				pos2 = (int)ptr - (int)&text[pos];
+				pos2 = (size_t)ptr - (size_t)&text[pos];
 			//pos2 = strcspn(&text[pos],MI_XML_TAG_ATYPE);
 			if (pos2 >= 0) 
 			{
@@ -743,7 +743,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 			pos2 = -1;
 			ptr = strstr(&text[pos], MI_XML_TAG_SELECTED);
 			if (ptr)
-				pos2 = (int)ptr - (int)&text[pos];
+				pos2 = (size_t)ptr - (size_t)&text[pos];
 			//pos2 = strcspn(&text[pos],MI_XML_TAG_SELECTED);
 			if (pos2 >= 0) 
 			{
@@ -759,7 +759,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 			pos2 = -1;
 			ptr = strstr(&text[pos], MI_XML_TAG_NAME);
 			if (ptr)
-				pos2 = (int)ptr - (int)&text[pos];
+				pos2 = (size_t)ptr - (size_t)&text[pos];
 			if (pos2 >= 0) 
 			{
 				pos2 += sizeof(MI_XML_TAG_PID);
@@ -767,7 +767,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 					pos2++;
 				if (text[pos + pos2] == '\"') 
 				{
-					int pos3 = pos2 + 1;
+					size_t pos3 = pos2 + 1;
 					while (text[pos + pos3] != '\"' && text[pos + pos3] != 0 && text[pos + pos3] != '/')
 						pos3++;
 					if (text[pos + pos3] == '\"')
@@ -790,7 +790,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 				//int pos2 = strcspn(&text[pos],MI_XML_TAG_BOOKMARK_USER_POS);
 				if (strcspn(&text[pos], MI_XML_TAG_BOOKMARK_USER_POS) == 0) 
 				{
-					int pos2 = 0;
+					size_t pos2 = 0;
 					pos2 += sizeof(MI_XML_TAG_BOOKMARK_USER_POS);
 					while (text[pos + pos2] != '\"' && text[pos + pos2] != 0 && text[pos + pos2] != '/')
 						pos2++;
@@ -820,7 +820,7 @@ bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 										pos2++;
 									if (text[pos + pos2] == '\"') 
 									{
-										int pos3 = pos2 + 1;
+										size_t pos3 = pos2 + 1;
 										while (text[pos + pos3] != '\"' && text[pos + pos3] != 0 && text[pos + pos3] != '/')
 											pos3++;
 										if (text[pos + pos3] == '\"')

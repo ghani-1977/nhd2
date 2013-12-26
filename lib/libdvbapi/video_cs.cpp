@@ -236,6 +236,9 @@ int cVideo::setAspectRatio(int ratio, int format)
 
 void cVideo::getPictureInfo(int &width, int &height, int &rate) 
 {
+	rate = 25;
+	height = 576;
+	width = 720;
 #if !defined (USE_OPENGL)	  
 	dprintf(DEBUG_INFO, "%s:%s\n", FILENAME, __FUNCTION__); 
 
@@ -243,8 +246,6 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 	int n, fd;	
 
 	// framerate
-	rate = 0;
-	
 	fd = open("/proc/stb/vmpeg/0/framerate", O_RDONLY);
 	
 	if(fd > 0)
@@ -264,7 +265,6 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 	}
 
 	// width (xres)
-	width = 0;
 	fd = open("/proc/stb/vmpeg/0/xres", O_RDONLY);
 	
 	if(fd > 0)
@@ -279,7 +279,6 @@ void cVideo::getPictureInfo(int &width, int &height, int &rate)
 	}
 
 	// height  (yres)
-	height = 0;
 	fd = open("/proc/stb/vmpeg/0/yres", O_RDONLY);
 	
 	if(fd > 0)

@@ -18,7 +18,7 @@
 #include "ytypes_globals.h"
 #include "ywebserver.h"
 
-//-----------------------------------------------------------------------------
+//
 class Cyhttpd {
 	private:
 		CWebserver *webserver; 			// Aggregation of Webserver (now: only one)

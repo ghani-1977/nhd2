@@ -1,9 +1,9 @@
-//=============================================================================
+//
 // YHTTPD
 // Global System Configuration
-//=============================================================================
+//
 
-//-----------------------------------------------------------------------------
+//
 #ifndef __yconfig_h__
 #define __yconfig_h__
 
@@ -13,19 +13,19 @@
 #include <map>
 #include <vector>
 
-//=============================================================================
+//
 // Base Configuration
-//=============================================================================
-//-----------------------------------------------------------------------------
+//
+//
 // System Choice <configure!> ONE choice
-//-----------------------------------------------------------------------------
+//
 #ifndef CONFIG_SYSTEM_BY_COMPILER 				// use Compiler directive to set CONFIG_SYSTEM
 //#define CONFIG_SYSTEM_TUXBOX	y				// Tuxbox project
 #define CONFIG_SYSTEM_TUXBOX_COOLSTREAM	y			// Tuxbox project for coolstream
 #endif
-//-----------------------------------------------------------------------------
+//
 // General central Definitions <configure!>
-//-----------------------------------------------------------------------------
+//
 #define HTTPD_VERSION 		"3.3.2"				// Webserver version  (can be overloaded)
 #define YHTTPD_VERSION 		"1.3.1"			// Webserver version  (Version of yhttpd-core!)
 #define IADDR_LOCAL 		"127.0.0.1"			// local IP
@@ -34,21 +34,21 @@
 #define AUTH_NAME_MSG		"yhhtpd"			// Name in Authentication Dialogue
 #define CONF_VERSION		4					// Version of yhttpd-conf file
 #define HTTPD_KEEPALIVE_TIMEOUT	500000			// Timeout for Keep-Alive in mircoseconds
-//=============================================================================
+//
 // Features wanted <configure!>
-//=============================================================================
-//-----------------------------------------------------------------------------
+//
+//
 // modules
-//-----------------------------------------------------------------------------
+//
 //#define Y_CONFIG_USE_TESTHOOK y				// Add mod: "Test-Hook" (hook example)
 #define Y_CONFIG_USE_YPARSER y					// Add mod: "y-Parsing"
 #define Y_CONFIG_USE_AUTHHOOK y				// Add mod: "Authentication"
 #define Y_CONFIG_USE_WEBLOG y					// Add mod: "WebLogging"
 #define Y_CONFIG_USE_CACHE y					// Add mod: Can cache production pages
 #define Y_CONFIG_USE_SENDFILE y					// Add mod: can send static files (mandantory)
-//-----------------------------------------------------------------------------
+//
 // Features & Build
-//-----------------------------------------------------------------------------
+//
 #define Y_CONFIG_FEATURE_CHECK_PORT_AUTORITY y	// System: Port < 1024 need Admin-Privileges-Check
 #define Y_CONFIG_HAVE_SENDFILE y				// System: Have *IX SendFile
 #define Y_CONFIG_FEATURE_UPLOAD y				// Add Feature: File Upload POST Command
@@ -60,10 +60,10 @@
 //#define Y_CONFIG_FEATURE_CHROOT y				// Add Feature: Use Change Root for Security
 //#define Y_CONFIG_FEATURE_HTTPD_USER y			// Add Feature: Set User for yhttpd-Process
 #define Y_CONFIG_BUILD_AS_DAEMON y				// Build as a Daemon with possibility for multi threading
-//-----------------------------------------------------------------------------
+//
 // Define/Undefine Features forced by CONFIG_SYSTEM_xxx
 // Dependencies
-//-----------------------------------------------------------------------------
+//
 #ifdef Y_CONFIG_USE_OPEN_SSL
 #undef Y_CONFIG_HAVE_SENDFILE					// Sendfile does not work for SSL
 #endif
@@ -80,12 +80,12 @@
 #define HTTP_PROTOCOL "HTTP/1.0"
 #endif
 
-//=============================================================================
+//
 // Configurations for systems/OSs <configure!>
-//=============================================================================
-//-----------------------------------------------------------------------------
+//
+//
 // Configurations for LINUX (Tuxbox dbox2, coolstream, cuberevo)
-//-----------------------------------------------------------------------,js:text/plain------
+//js:text/plain
 #undef HTTPD_NAME
 #define HTTPD_NAME 					"nhttpd"
 #define HTTPD_STANDARD_PORT				80
@@ -127,9 +127,9 @@
 #undef Y_CONFIG_BUILD_AS_DAEMON		// No Daemon
 #endif
 
-//-----------------------------------------------------------------------------
+//
 // Aggregated definitions
-//-----------------------------------------------------------------------------
+//
 #define WEBSERVERNAME HTTPD_NAME "/" HTTPD_VERSION " (" YHTTPD_NAME "/" YHTTPD_VERSION ")"
 
 #endif // __yconfig_h__

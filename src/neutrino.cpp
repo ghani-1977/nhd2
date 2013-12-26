@@ -3455,7 +3455,7 @@ int CNeutrinoApp::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 			int old_b = bouquetList->getActiveBouquetNumber();
 			int old_mode = g_settings.channel_mode;
 			
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: ZAP START: bouquetList %x size %d old_b %d\n", (int) bouquetList, bouquetList->Bouquets.size(), old_b);
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: ZAP START: bouquetList %x size %d old_b %d\n", (size_t) bouquetList, bouquetList->Bouquets.size(), old_b);
 
 			if(bouquetList->Bouquets.size()) 
 			{
@@ -3496,7 +3496,8 @@ _repeat:
 			else if(nNewChannel == -3) 
 			{ 
 				// list mode changed
-				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: bouquetList %x size %d\n", (int) bouquetList, bouquetList->Bouquets.size());
+				dprintf(DEBUG_NORMAL, "CNeutrinoApp::handleMsg: bouquetList %x size %d\n", (size_t) bouquetList, bouquetList->Bouquets.size());
+				
 				nNewChannel = bouquetList->exec(true);
 				goto _repeat;
 			}

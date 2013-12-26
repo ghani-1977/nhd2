@@ -23,15 +23,15 @@
 static CyParser yParser;
 #endif
 
-//-----------------------------------------------------------------------------
+//
 // Setting yhttpd Instance
-//-----------------------------------------------------------------------------
+//
 #include "yhttpd.h"
 static Cyhttpd *yhttpd = NULL;
 CStringList Cyhttpd::ConfigList;
-//=============================================================================
+//
 // HOOKS: Definition & Instance for Hooks, attach/detach Hooks
-//=============================================================================
+//
 
 #ifdef Y_CONFIG_USE_AUTHHOOK
 #include "mod_auth.h"
@@ -59,13 +59,13 @@ static CmodCache mod_cache; // static instance
 static CNeutrinoAPI *NeutrinoAPI;
 #endif
 
-//=============================================================================
+//
 // Main: Main Entry, Command line passing, Webserver Instance creation & Loop
-//=============================================================================
+//
 volatile sig_atomic_t Cyhttpd::sig_do_shutdown = 0;
-//-----------------------------------------------------------------------------
+//
 // Signal Handling
-//-----------------------------------------------------------------------------
+//
 #ifdef Y_CONFIG_BUILD_AS_DAEMON
 static void sig_catch(int msignal)
 {
@@ -96,15 +96,16 @@ static void sig_catch(int msignal)
 }
 #endif
 
-//-----------------------------------------------------------------------------
+//
 void yhttpd_reload_config() 
 {
 	if (yhttpd)
 		yhttpd->ReadConfig();
 }
-//-----------------------------------------------------------------------------
+
+//
 // Main Entry
-//-----------------------------------------------------------------------------
+//
 #ifndef Y_CONFIG_BUILD_AS_DAEMON
 void * nhttpd_main_thread(void *) 
 {
@@ -140,6 +141,7 @@ void * nhttpd_main_thread(void *)
 	return (void *) EXIT_SUCCESS;
 }
 #endif
+
 #ifdef Y_CONFIG_BUILD_AS_DAEMON
 int main(int argc, char **argv)
 {
@@ -231,24 +233,29 @@ int main(int argc, char **argv)
 	return EXIT_SUCCESS;
 }
 #endif
-//=============================================================================
+
+//
 // Class yhttpd
-//=============================================================================
-Cyhttpd::Cyhttpd() {
+//
+Cyhttpd::Cyhttpd() 
+{
 	webserver = new CWebserver();
 	flag_threading_off = false;
 }
-//-----------------------------------------------------------------------------
-Cyhttpd::~Cyhttpd() {
+
+//
+Cyhttpd::~Cyhttpd() 
+{
 	if (webserver)
 		delete webserver;
 	webserver = NULL;
 }
 
-//-----------------------------------------------------------------------------
+//
 // Change to Root
-//-----------------------------------------------------------------------------
-bool Cyhttpd::Configure() {
+//
+bool Cyhttpd::Configure() 
+{
 
 	if (!getuid()) // you must be root to do that!
 	{
@@ -319,9 +326,10 @@ bool Cyhttpd::Configure() {
 	}
 	return true;
 }
-//-----------------------------------------------------------------------------
+
+//
 // Main Webserver call
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::run() 
 {
 	if (webserver) 
@@ -334,17 +342,19 @@ void Cyhttpd::run()
 		aprintf("Error initializing WebServer\n");
 }
 
-//-----------------------------------------------------------------------------
+//
 // Show Version Text and Number
-//-----------------------------------------------------------------------------
-void Cyhttpd::version(FILE *dest) {
+//
+void Cyhttpd::version(FILE *dest) 
+{
 	fprintf(dest, "%s - Webserver v%s\n", HTTPD_NAME, HTTPD_VERSION);
 }
 
-//-----------------------------------------------------------------------------
+//
 // Show Usage
-//-----------------------------------------------------------------------------
-void Cyhttpd::usage(FILE *dest) {
+//
+void Cyhttpd::usage(FILE *dest) 
+{
 	version(dest);
 	fprintf(dest, "command line parameters:\n");
 	fprintf(dest, "-d, --debug    enable debugging code (implies -f)\n");
@@ -355,9 +365,9 @@ void Cyhttpd::usage(FILE *dest) {
 	fprintf(dest, "-t, --thread-off  set threading off\n");
 }
 
-//-----------------------------------------------------------------------------
+//
 // Stop WebServer
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::stop_webserver() 
 {
 	aprintf("stop requested......\n");
@@ -368,9 +378,9 @@ void Cyhttpd::stop_webserver()
 	}
 }
 
-//-----------------------------------------------------------------------------
+//
 // Attach hooks (use hook order carefully)
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::hooks_attach() 
 {
 #ifdef Y_CONFIG_USE_AUTHHOOK
@@ -408,9 +418,9 @@ void Cyhttpd::hooks_attach()
 #endif
 }
 
-//-----------------------------------------------------------------------------
+//
 // Detach hooks & Destroy
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::hooks_detach() 
 {
 #ifdef Y_CONFIG_USE_AUTHHOOK
@@ -445,10 +455,10 @@ void Cyhttpd::hooks_detach()
 #endif
 }
 
-//-----------------------------------------------------------------------------
+//
 // Read Webserver Configurationfile
 // Call "Hooks_ReadConfig" so Hooks can read/write own Configuration Values
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::ReadConfig(void) 
 {
 	log_level_printf(3, "ReadConfig Start\n");
@@ -576,9 +586,9 @@ void Cyhttpd::ReadConfig(void)
 	delete Config;
 }
 
-//-----------------------------------------------------------------------------
+//
 // Read Webserver Configurationfile for languages
-//-----------------------------------------------------------------------------
+//
 void Cyhttpd::ReadLanguage(void) 
 {
 	// Init Class vars

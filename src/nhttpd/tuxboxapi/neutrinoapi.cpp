@@ -65,9 +65,9 @@ extern CZapitClient::SatelliteList satList;
 
 void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode = true, t_channel_id *chidlist = NULL, int clen = 0);
 
-//=============================================================================
+//
 // No Class Helpers
-//=============================================================================
+//
 
 #ifndef initialize_iso639_map
 bool _initialize_iso639_map(void)
@@ -107,9 +107,9 @@ const char * _getISO639Description(const char * const iso)
 		return it->second.c_str();
 }
 
-//=============================================================================
+//
 // Initialization of static variables
-//=============================================================================
+//
 std::string CNeutrinoAPI::Dbox_Hersteller[4]	= {"none", "Nokia", "Philips", "Sagem"};
 std::string CNeutrinoAPI::videooutput_names[5]	= {"CVBS", "RGB with CVBS", "S-Video", "YUV with VBS", "YUV with CVBS"};
 #if defined (__sh__)
@@ -121,9 +121,9 @@ std::string CNeutrinoAPI::audiotype_names[5] 	= {"none", "single channel","dual 
 std::string CNeutrinoAPI::mpegmodes[] 			= { "stereo", "joint_st", "dual_ch", "single_ch" };
 std::string CNeutrinoAPI::ddmodes[] 			= { "CH1/CH2", "C", "L/R", "L/C/R", "L/R/S", "L/C/R/S", "L/R/SL/SR", "L/C/R/SL/SR" };
 
-//=============================================================================
+//
 // Constructor & Destructor
-//=============================================================================
+//
 CNeutrinoAPI::CNeutrinoAPI()
 {
 	Sectionsd = new CSectionsdClient();
@@ -258,9 +258,9 @@ t_channel_id CNeutrinoAPI::ChannelNameToChannelId(std::string search_channel_nam
 	return channel_id;
 }
 
-//-------------------------------------------------------------------------
+//
 // Get functions
-//-------------------------------------------------------------------------
+//
 bool CNeutrinoAPI::GetStreamInfo(int bitInfo[10])
 {
 	char *key, *tmpptr, buf[100];

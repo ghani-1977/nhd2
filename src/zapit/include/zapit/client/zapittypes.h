@@ -29,8 +29,6 @@
 #include <config.h>
 #endif
 
-#include <stdint.h>
-
 #include <inttypes.h>
 #include <string>
 #include <map>

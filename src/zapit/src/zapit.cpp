@@ -444,8 +444,14 @@ bool CanZap(CZapitChannel * thischannel)
 	return (fe != NULL);
 }
 
-CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
+CFrontend * getFrontend(CZapitChannel * thischannel)
 {
+	const char *FEMODE[] = {
+		"SINGLE",
+		"LOOP",
+		"NOTCONNECTED"
+	 };
+	 
 	/* check for frontend */
 	CFrontend * free_frontend = NULL;
 	
@@ -457,7 +463,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 	{
 		CFrontend * fe = fe_it->second;
 			
-			// skip tuned frontend and have same tid or same type as channel to tune
+		// skip tuned frontend and have same tid or same type as channel to tune
 		if( (fe->tuned) && (fe->getTsidOnid() == thischannel->getTransponderId() || fe->getDeliverySystem() == sit->second.type) )
 			continue;
 
@@ -471,9 +477,10 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 	{
 		CFrontend * fe = fe_it->second;
 		
-		dprintf(DEBUG_INFO, "getFrontend: fe(%d,%d): tuned:%d (locked:%d) fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+		dprintf(DEBUG_INFO, "getFrontend: fe(%d,%d): (%s) tuned:%d (locked:%d) fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
 				fe->fe_adapter,
 				fe->fenumber,
+				FEMODE[fe->mode],
 				fe->tuned,
 				fe->locked,
 				fe->getFrequency(), 
@@ -497,7 +504,7 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 		// first zap/record/other frontend type
 		else if (sit != satellitePositions.end()) 
 		{
-			if ( (sit->second.type == fe->getDeliverySystem()) && (toRecord? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			if ( (sit->second.type == fe->getDeliverySystem()) && (!fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				free_frontend = fe;
 				break;
@@ -518,6 +525,77 @@ CFrontend * getFrontend(CZapitChannel * thischannel, bool toRecord = false)
 	
 	return free_frontend;
 }
+
+//
+CFrontend * getRecordFrontend(CZapitChannel * thischannel)
+{
+	 const char *FEMODE[] = {
+		"SINGLE",
+		"LOOP",
+		"NOTCONNECTED"
+	 };
+	 
+	/* check for frontend */
+	CFrontend * rec_frontend = NULL;
+	
+	t_satellite_position satellitePosition = thischannel->getSatellitePosition();
+	sat_iterator_t sit = satellitePositions.find(satellitePosition);
+	
+	// get record frontend
+	for(fe_map_iterator_t fe_it = femap.begin(); fe_it != femap.end(); fe_it++) 
+	{
+		CFrontend * fe = fe_it->second;
+		
+		dprintf(DEBUG_INFO, "getRecordFrontend: fe(%d,%d): (%s) tuned:%d (locked:%d) fe_freq: %d fe_TP: %llx - chan_freq: %d chan_TP: %llx sat-position: %d sat-name:%s input-type:%d\n",
+				fe->fe_adapter,
+				fe->fenumber,
+				FEMODE[fe->mode],
+				fe->tuned,
+				fe->locked,
+				fe->getFrequency(), 
+				fe->getTsidOnid(), 
+				thischannel->getFreqId(), 
+				thischannel->getTransponderId(), 
+				satellitePosition,
+				sit->second.name.c_str(),
+				sit->second.type);
+				
+		// skip not connected frontend
+		if( fe->mode == (fe_mode_t)FE_NOTCONNECTED )
+			continue;
+		
+		// frontend on same tid
+		if( (fe->tuned) && (fe->getTsidOnid() == thischannel->getTransponderId()) )
+		{
+			rec_frontend = fe;
+			break;
+		}
+		
+		// second tuner (twin)
+		if (sit != satellitePositions.end()) 
+		{
+			if ( (fe->getDeliverySystem() == sit->second.type) && (fe->standby? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			{
+				rec_frontend = fe;
+				break;
+			}
+		}
+	}
+	
+	if(rec_frontend)
+	{
+		printf("%s Selected fe: (%d,%d)\n", __FUNCTION__, rec_frontend->fe_adapter, rec_frontend->fenumber);
+		
+		if(rec_frontend->standby)
+			initTuner(rec_frontend);
+		
+	}
+	else
+		printf("%s can not get record frontend\n", __FUNCTION__);
+	
+	return rec_frontend;
+}
+//
 
 void lockFrontend(CFrontend *fe)
 {
@@ -1277,7 +1355,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	rec_channel_id = channel_id;
 	
 	// find record frontend
-	CFrontend * frontend = getFrontend(rec_channel, true);
+	CFrontend * frontend = getRecordFrontend(rec_channel);
 	if(frontend == NULL) 
 	{
 		dprintf(DEBUG_NORMAL, "%s can not allocate record frontend\n", __FUNCTION__);
