@@ -193,7 +193,11 @@ cDvbSubtitleConverter::cDvbSubtitleConverter(void)
 		return;
 	}
 
-	avctx = avcodec_alloc_context3(avcodec); // smogm: avcodec_alloc_context() is deprecated!
+#if LIBAVCODEC_VERSION_MAJOR < 54
+	avctx = avcodec_alloc_context();
+#else
+	avctx = avcodec_alloc_context3(avcodec);
+#endif	
 
 	if (!avctx) 
 	{
@@ -201,7 +205,11 @@ cDvbSubtitleConverter::cDvbSubtitleConverter(void)
 		return;
 	}
 
-	if (avcodec_open2(avctx, avcodec, NULL) < 0) // smogm: avcodec_open() is deprecated!
+#if LIBAVCODEC_VERSION_MAJOR < 54
+	if (avcodec_open(avctx, avcodec) < 0)
+#else	  
+	if (avcodec_open2(avctx, avcodec, NULL) < 0) 
+#endif	  
 		dbgconverter("cDvbSubtitleConverter: unable to open codec !\n");
 
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
