@@ -572,12 +572,17 @@ CFrontend * getRecordFrontend(CZapitChannel * thischannel)
 		}
 		
 		// second tuner (twin)
-		if (sit != satellitePositions.end()) 
+		else if (sit != satellitePositions.end()) 
 		{
-			if ( (fe->getDeliverySystem() == sit->second.type) && (fe->standby? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
+			bool twin = false;
+			
+			if( (fe->getInfo()->type == live_fe->getInfo()->type) && (fe->fenumber != live_fe->fenumber) )
+				twin = true;
+			
+			if ( (fe->getDeliverySystem() == sit->second.type) && (twin? !fe->tuned : !fe->locked) && ( fe->mode == (fe_mode_t)FE_SINGLE || (fe->mode == (fe_mode_t)FE_LOOP && loopCanTune(fe, thischannel)) ) )
 			{
 				rec_frontend = fe;
-				break;
+				//break;
 			}
 		}
 	}

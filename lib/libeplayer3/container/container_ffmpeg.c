@@ -38,7 +38,13 @@
 #include <pthread.h>
 
 #include <libavutil/avutil.h>
+#if LIBAVCODEC_VERSION_MAJOR > 54
+#include <libavutil/time.h>
+#endif
 #include <libavformat/avformat.h>
+#if LIBAVCODEC_VERSION_MAJOR > 54
+#include <libavutil/opt.h>
+#endif
 
 #include "common.h"
 #include "misc.h"
@@ -47,6 +53,11 @@
 #include "pcm.h"
 #include "ffmpeg_metadata.h"
 #include "subtitle.h"
+
+
+#if LIBAVCODEC_VERSION_MAJOR > 54
+#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
+#endif
 
 /* ***************************** */
 /* Makros/Constants              */
@@ -131,9 +142,9 @@ void releaseMutex(const char *filename, const const char *function, int line)
 	ffmpeg_printf(100, "::%d released mutex\n", line);
 }
 
-static char *Codec2Encoding(enum CodecID id, int* version)
+static char* Codec2Encoding(AVCodecContext *codec, int* version)
 {
-	switch (id)
+	switch (codec->codec_id)
 	{
 		case CODEC_ID_MPEG1VIDEO:
 			return "V_MPEG1";
@@ -255,7 +266,7 @@ static char *Codec2Encoding(enum CodecID id, int* version)
 #endif 
 
 		default:
-			ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",id);
+			ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",codec->codec_id);
 	}
 	
 	return NULL;
@@ -637,7 +648,7 @@ static void FFMPEGThread(Context_t *context)
 							avOut.len        = decoded_data_size;
 
 							avOut.pts        = pts;
-							avOut.extradata  = &extradata;
+							avOut.extradata  = (unsigned char *) &extradata;
 							avOut.extralen   = sizeof(extradata);
 							avOut.frameRate  = 0;
 							avOut.timeScale  = 0;
@@ -805,7 +816,7 @@ static void FFMPEGThread(Context_t *context)
 							SubtitleData_t data;
 							data.data      = line;
 							data.len       = strlen((char*)line);
-							data.extradata = DEFAULT_ASS_HEAD;
+							data.extradata = (unsigned char *) DEFAULT_ASS_HEAD;
 							data.extralen  = strlen(DEFAULT_ASS_HEAD);
 							data.pts       = pts;
 							data.duration  = duration;
@@ -900,6 +911,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 	}
 	
 	avContext->flags |= AVFMT_FLAG_GENPTS;
+	
+	if ( strstr(filename, ".ts") )
+		avContext->max_analyze_duration = 5;
 
 	ffmpeg_printf(20, "find_streaminfo\n");
 
@@ -940,7 +954,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 		AVStream * stream = avContext->streams[n];
 		int version = 0;
 
-		char * encoding = Codec2Encoding(stream->codec->codec_id, &version);
+		char * encoding = Codec2Encoding(stream->codec, &version);
 
 		if (encoding != NULL)
 			ffmpeg_printf(1, "%d. encoding = %s - version %d\n", n, encoding, version);
@@ -1089,7 +1103,11 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
 					AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
 
+#if LIBAVCODEC_VERSION_MAJOR < 54
 					if(codec != NULL && !avcodec_open(stream->codec, codec))
+#else
+					if(codec != NULL && !avcodec_open2(stream->codec, codec, NULL))
+#endif					  
 						printf("AVCODEC__INIT__SUCCESS\n");
 					else
 						printf("AVCODEC__INIT__FAILED\n");

@@ -579,7 +579,6 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 	TIMER_INIT();
 	
 	int msec = TIME_STEP;
-	//int tmsec = msec;
 
 	pfd.fd = fd;
 	pfd.events = POLLIN | POLLPRI;
@@ -614,13 +613,10 @@ struct dvb_frontend_event CFrontend::getEvent(void)
 
 			memset(&event, 0, sizeof(struct dvb_frontend_event));
 
-			//ret = ::ioctl(fd, FE_GET_EVENT, &event);
-
-			//if (ret < 0)
 			if( ioctl(fd, FE_GET_EVENT, &event) < 0 )
 			{
 				perror("CFrontend::getEvent ioctl");
-				dprintf(DEBUG_DEBUG, "FD=%d RET=%d errno=%d\n", fd, ret, errno);
+				dprintf(DEBUG_INFO, "FD=%d RET=%d errno=%d\n", fd, ret, errno);
 				continue;
 			}
 
@@ -935,7 +931,7 @@ void CFrontend::setFrontend(const struct dvb_frontend_parameters * feparams, boo
 	
 	memset(&event, 0, sizeof(struct dvb_frontend_event));
 	
-	if(ret>0)
+	if(ret > 0)
 	{	
 		if(ioctl(fd, FE_GET_EVENT, &event) < 0)
 			perror("FE_GET_EVENT");
