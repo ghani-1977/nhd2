@@ -1374,8 +1374,8 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// psi setup
 #if defined (__sh__)	
-	CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
-	miscSettings.addItem( new CMenuForwarderItemMenuIcon(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutMiscSettings++), NULL, NEUTRINO_ICON_MAINSETTINGS, LOCALE_HELPTEXT_MISCSETTINGSPSISETUP ));
+	//CPSISetup * chPSISetup = new CPSISetup(LOCALE_VIDEOMENU_PSISETUP, &g_settings.contrast, &g_settings.saturation, &g_settings.brightness, &g_settings.tint);
+	//miscSettings.addItem( new CMenuForwarderItemMenuIcon(LOCALE_VIDEOMENU_PSISETUP, true, NULL, chPSISetup, NULL, CRCInput::convertDigitToKey(shortcutMiscSettings++), NULL, NEUTRINO_ICON_MAINSETTINGS, LOCALE_HELPTEXT_MISCSETTINGSPSISETUP ));
 #endif
 }
 
