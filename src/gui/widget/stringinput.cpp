@@ -553,6 +553,13 @@ CStringInputSMS::CStringInputSMS(const neutrino_locale_t Name, char* Value, int 
 	initSMS(Valid_Chars);
 }
 
+//
+CStringInputSMS::CStringInputSMS(char * Head, char* Value, int Size, const neutrino_locale_t Hint_1, const neutrino_locale_t Hint_2, const char * const Valid_Chars, CChangeObserver* Observ, const char * const Icon)
+   		: CStringInput(Head, Value, Size, Hint_1, Hint_2, Valid_Chars, Observ, Icon)
+{
+	initSMS(Valid_Chars);
+}
+
 void CStringInputSMS::initSMS(const char * const Valid_Chars)
 {
 	last_digit = -1;				// no key pressed yet
