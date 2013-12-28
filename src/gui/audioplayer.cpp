@@ -482,7 +482,19 @@ int CAudioPlayerGui::show()
 							{
 								_selected++;
 
-								g_PicViewer->DisplayImage(filename);
+								//g_PicViewer->DisplayImage(filename);
+								//
+								g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
+								g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
+
+								if(g_settings.video_Ratio == 1)
+									g_PicViewer->SetAspectRatio(16.0/9);
+								else
+									g_PicViewer->SetAspectRatio(4.0/3);
+
+
+								g_PicViewer->ShowImage(filename, true);
+								//
 							}
 							else if(_selected) // when all pics are shown show the mp3 pic once again
 							{
