@@ -271,7 +271,11 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void StartSubtitles(bool show = true);
 		void SelectSubtitles();
 		
+		// 0 - restart 
+		// 1 - halt
+		// 2 - reboot
 		enum {
+			RESTART = 0,
 			SHUTDOWN,
 			REBOOT
 		};

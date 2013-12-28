@@ -4210,6 +4210,11 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 		dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
 		
+		if(retcode == RESTART)
+		{
+			execvp(global_argv[0], global_argv); // no return if successful
+		}
+		
 		_exit(retcode);	
 	}
 }
@@ -4995,14 +5000,12 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	else if(actionKey=="reboot")
 	{
-		FILE *f = fopen("/tmp/.reboot", "w");
-		fclose(f);
-
 		ExitRun(REBOOT);
-
-		unlink("/tmp/.reboot");
-		returnval = menu_return::RETURN_NONE;
 	}
+	else if(actionKey == "restart") 
+	{		
+		ExitRun(RESTART);
+	}	
 	else if(actionKey=="tv") 
 	{
 		tvMode();
@@ -5083,44 +5086,6 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 		hintBox->hide();
 		delete hintBox;
-	}
-	else if(actionKey == "restart") 
-	{
-		// break silently autotimeshift
-		if(autoshift) 
-		{
-			stopAutoRecord();
-			recordingstatus = 0;
-			timeshiftstatus = 0;
-		}
-	
-		if (recordingstatus)
-			DisplayErrorMessage(g_Locale->getText(LOCALE_SERVICEMENU_RESTART_REFUSED_RECORDING));
-		else 
-		{
-			CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RESTART_HINT));
-			hintBox->paint();
-
-			stop_daemons();
-
-			delete g_RCInput;
-			delete g_Sectionsd;
-			delete g_Timerd;
-			delete g_RemoteControl;
-			delete g_fontRenderer;
-			delete g_Zapit;
-			delete CVFD::getInstance();
-
-			networkConfig.automatic_start = (network_automatic_start == 1);
-			networkConfig.commitConfig();
-			
-			saveSetup(NEUTRINO_SETTINGS_FILE);
-
-			delete frameBuffer;
-			
-			execvp(global_argv[0], global_argv); // no return if successful
-			exit(1);
-		}
 	}
 	else if(actionKey=="osd.def") 
 	{

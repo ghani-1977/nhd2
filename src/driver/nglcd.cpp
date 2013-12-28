@@ -183,16 +183,14 @@ void nGLCD::Exec()
 					logo_top = (off-percent_space) * bitmap->Height()/100;
 					logo_max_height = (percent_space*2+percent_channel) * bitmap->Height()/100;
 					logo_top = logo_top + (logo_max_height-channel_logo.header.height*2)/2;
-					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width*2)/2, 
-						logo_top, true);
+					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width*2)/2, logo_top, true);
 				}
 				else
 				{
 					logo_top = (off-percent_space/2) * bitmap->Height()/100;
 					logo_max_height = (percent_space+percent_channel) * bitmap->Height()/100;
 					logo_top = logo_top + (logo_max_height-channel_logo.header.height)/2;
-					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width)/2, 
-						logo_top, false);
+					draw_screen_element(&channel_logo, (bitmap->Width() - channel_logo.header.width)/2, logo_top, false);
 				}
 			}
 			if (channel_logo.buffer)
@@ -215,9 +213,7 @@ void nGLCD::Exec()
 			off += percent_space;
 			int fw = font_channel.Width(scrollChannel);
 			if (fw && !doStandbyTime)
-				bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2),
-					off * bitmap->Height()/100, bitmap->Width() - 4, scrollChannel,
-					&font_channel, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
+				bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2), off * bitmap->Height()/100, bitmap->Width() - 4, scrollChannel, &font_channel, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
 			off += percent_channel;
 			off += percent_space;
 			if (scrollChannel.length() > Channel.length())
@@ -232,9 +228,7 @@ void nGLCD::Exec()
 		off += percent_space;
 		int fw = font_epg.Width(scrollEpg);
 		if (fw && !doStandbyTime)
-			bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2),
-				off * bitmap->Height()/100, bitmap->Width() - 4, scrollEpg,
-				&font_epg, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
+			bitmap->DrawText(max(0,(bitmap->Width() - 4 - fw)/2), off * bitmap->Height()/100, bitmap->Width() - 4, scrollEpg, &font_epg, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
 		off += percent_epg;
 		off += percent_space;
 		if (scrollEpg.length() > Epg.length())
@@ -254,8 +248,7 @@ void nGLCD::Exec()
 			bitmap->DrawHLine(0, bar_top, bitmap->Width(), g_settings.glcd_color_fg);
 			bitmap->DrawHLine(0, bar_bottom, bitmap->Width(), g_settings.glcd_color_fg);
 			if (Scale)
-				bitmap->DrawRectangle(0, bar_top + 1, Scale * (bitmap->Width() - 1)/100,
-					bar_bottom - 1, g_settings.glcd_color_bar, true);
+				bitmap->DrawRectangle(0, bar_top + 1, Scale * (bitmap->Width() - 1)/100, bar_bottom - 1, g_settings.glcd_color_bar, true);
 		}
 		off += percent_space;
 	}
@@ -268,9 +261,7 @@ void nGLCD::Exec()
 
 		std::string Time = std::string(timebuf);
 
-		bitmap->DrawText(max(0,(bitmap->Width() - 4 - font_time.Width(Time))/2),
-			off * bitmap->Height()/100, bitmap->Width() - 1, Time,
-			&font_time, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
+		bitmap->DrawText(max(0,(bitmap->Width() - 4 - font_time.Width(Time))/2), off * bitmap->Height()/100, bitmap->Width() - 1, Time, &font_time, g_settings.glcd_color_fg, GLCD::cColor::Transparent);
 	}
 
 	lcd->SetScreen(bitmap->Data(), bitmap->Width(), bitmap->Height());
