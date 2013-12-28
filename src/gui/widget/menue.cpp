@@ -1764,10 +1764,12 @@ const char * CMenuForwarderItemMenuIcon::getOption(void)
 	if (option)
 		return option;
 	else
+	{
 		if (option_string)
 			return option_string->c_str();
 		else
 			return NULL;
+	}
 }
 
 const char * CMenuForwarderItemMenuIcon::getName(void)
@@ -1909,18 +1911,18 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 	return y + height;
 }
 
-// CMenuForwarderNonLocalizedItemMenuIcon
-const char * CMenuForwarderNonLocalizedItemMenuIcon::getName(void)
+// CMenuForwarderItemMenuIconNonLocalized
+const char * CMenuForwarderItemMenuIconNonLocalized::getName(void)
 {
 	return the_text.c_str();
 }
 
-CMenuForwarderNonLocalizedItemMenuIcon::CMenuForwarderNonLocalizedItemMenuIcon(const char * const Text, const bool Active, const char * const Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
+CMenuForwarderItemMenuIconNonLocalized::CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active, const char * const Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
 {
 	the_text = Text;
 }
 
-CMenuForwarderNonLocalizedItemMenuIcon::CMenuForwarderNonLocalizedItemMenuIcon(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
+CMenuForwarderItemMenuIconNonLocalized::CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target, const char * const ActionKey, neutrino_msg_t DirectKey, const char * const IconName, const char * const ItemIcon) : CMenuForwarderItemMenuIcon(NONEXISTANT_LOCALE, Active, Option, Target, ActionKey, DirectKey, IconName, ItemIcon)
 {
 	the_text = Text;
 }
