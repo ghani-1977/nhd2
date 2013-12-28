@@ -386,6 +386,9 @@ int CAudioPlayerGui::show()
 	bool update = true;
 	bool clear_before_update = false;
 	m_key_level = 0;
+	
+	//
+	bool usedBackground = m_frameBuffer->getuseBackground();
 
 	// control loop
 	while(loop)
@@ -477,6 +480,17 @@ int CAudioPlayerGui::show()
 							int ret1 = access(filename, F_OK);
 								
 							dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", filename, ret1 ? "not found" : "found");
+							
+							// hide radiomode background pic
+							if (usedBackground) 
+							{
+								m_frameBuffer->saveBackgroundImage();
+								m_frameBuffer->ClearFrameBuffer();
+
+#if !defined USE_OPENGL
+								m_frameBuffer->blit();
+#endif
+							}
 								
 							if(ret1 == 0) 
 							{
@@ -493,7 +507,7 @@ int CAudioPlayerGui::show()
 									g_PicViewer->SetAspectRatio(4.0/3);
 
 
-								g_PicViewer->ShowImage(filename, true);
+								g_PicViewer->ShowImage(filename);
 								//
 							}
 							else if(_selected) // when all pics are shown show the mp3 pic once again
@@ -522,6 +536,18 @@ int CAudioPlayerGui::show()
 			if(m_screensaver > NONE)
 			{
 				screensaver(NONE);
+				
+				// Restore previous background
+				if (usedBackground) 
+				{
+					m_frameBuffer->restoreBackgroundImage();
+					m_frameBuffer->useBackground(true);
+					m_frameBuffer->paintBackground();
+
+#if !defined USE_OPENGL
+					m_frameBuffer->blit();
+#endif
+				}
 			}
 		}
 
