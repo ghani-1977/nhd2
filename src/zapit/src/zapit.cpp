@@ -901,7 +901,7 @@ CZapitClient::responseGetLastChannel load_settings(void)
 	return lastchannel;
 }
  
-void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe, bool toRecord = false)
+void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe)
 {
 	if(!thischannel)
 		return;
@@ -924,7 +924,7 @@ void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe, bool to
 	ca_mask |= 1 << demux_index;
 #endif	
 
-	if(toRecord) 
+	if(currentMode & RECORD_MODE) 
 	{
 		if(rec_channel_id != live_channel_id) 
 		{
@@ -1392,7 +1392,7 @@ int zapTo_RecordID(const t_channel_id channel_id)
 		return -1;
 						
 	// capmt
-	sendCaPmtPlayBackStart(rec_channel, record_fe, true);
+	sendCaPmtPlayBackStart(rec_channel, record_fe);
 	
 	dprintf(DEBUG_NORMAL, "%s: zapped to %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
