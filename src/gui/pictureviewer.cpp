@@ -116,16 +116,16 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 	height = frameBuffer->getScreenHeight(true) - 10;
 
 	if((g_settings.screen_EndX- g_settings.screen_StartX) < width)
-		width=(g_settings.screen_EndX- g_settings.screen_StartX);
+		width = (g_settings.screen_EndX- g_settings.screen_StartX);
 	if((g_settings.screen_EndY- g_settings.screen_StartY) < height)
-		height=(g_settings.screen_EndY- g_settings.screen_StartY);
+		height = (g_settings.screen_EndY- g_settings.screen_StartY);
 
 	sheight      = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
 	buttonHeight = std::min(25, sheight);
 	theight      = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	fheight      = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight();
-	listmaxshow  = (height-theight-2*buttonHeight)/(fheight);
-	height 	     = theight+2*buttonHeight+listmaxshow*fheight;	// recalc height
+	listmaxshow  = (height - theight - 2*buttonHeight)/(fheight);
+	height 	     = theight + 2*buttonHeight + listmaxshow*fheight;	// recalc height
 
 	x = (((g_settings.screen_EndX- g_settings.screen_StartX)-width) / 2) + g_settings.screen_StartX;
 	y = (((g_settings.screen_EndY- g_settings.screen_StartY)-height)/ 2) + g_settings.screen_StartY;
@@ -708,20 +708,20 @@ void CPictureViewerGui::paint()
 
 	paintHead();
 	
-	for(unsigned int count=0;count<listmaxshow;count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 	{
 		paintItem(count);
 	}
 
-	int ypos = y+ theight;
+	int ypos = y + theight;
 	int sb = fheight* listmaxshow;
-	frameBuffer->paintBoxRel(x+ width- 15,ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((playlist.size()- 1)/ listmaxshow)+ 1;
-	float sbh= (sb- 4)/ sbc;
-	int sbs= (selected/listmaxshow);
+	int sbc = ((playlist.size()- 1)/ listmaxshow)+ 1;
+	float sbh = (sb- 4)/ sbc;
+	int sbs = (selected/listmaxshow);
 
-	frameBuffer->paintBoxRel(x+ width- 13, ypos+ 2+ int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 
 	paintFoot();
 	paintInfo();
