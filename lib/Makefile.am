@@ -8,7 +8,8 @@ SUBDIRS = \
 	libnet \
 	libxmltree \
 	libtuxtxt \
-	libdvbsub
+	libdvbsub \
+	libupnpclient
 
 if !BOXTYPE_COOLSTREAM
 SUBDIRS += libdvbapi
@@ -20,10 +21,6 @@ endif
 
 if ENABLE_LCD
 SUBDIRS += liblcddisplay
-endif
-
-if ENABLE_UPNP
-SUBDIRS += libupnpclient
 endif
 
 if ENABLE_NETZKINO

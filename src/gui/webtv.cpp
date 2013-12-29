@@ -562,7 +562,9 @@ void CWebTV::zapTo(int pos, bool rezap)
 		
 #ifdef ENABLE_GRAPHLCD
 	nGLCD::unlockChannel();
-	nGLCD::lockChannel(channels[pos]->title);
+	
+	std::string c = channels[pos]->title;
+	nGLCD::lockChannel(c);
 #endif		
 	
 	//infoviewer

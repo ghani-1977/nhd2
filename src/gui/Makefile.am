@@ -21,6 +21,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libxmltree \
+	-I$(top_srcdir)/lib/libupnpclient \
 	@CURL_CFLAGS@ \
 	@FREETYPE_CFLAGS@ 
 
@@ -33,10 +34,6 @@ endif
 
 if ENABLE_LIBEPLAYER3
 INCLUDES += -I$(top_srcdir)/lib/libeplayer3/include
-endif
-
-if ENABLE_UPNP
-INCLUDES += -I$(top_srcdir)/lib/libupnpclient
 endif
 
 noinst_LIBRARIES = libtimerlist.a libneutrino_gui.a libneutrino_gui2.a
@@ -54,11 +51,7 @@ libneutrino_gui_a_SOURCES = \
 
 libneutrino_gui2_a_SOURCES = \
 	color.cpp motorcontrol.cpp hdd_menu.cpp \
-	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp webtv.cpp
-
-if ENABLE_UPNP
-libneutrino_gui2_a_SOURCES += upnpbrowser.cpp
-endif
+	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp webtv.cpp upnpbrowser.cpp
 
 if ENABLE_CI
 libneutrino_gui2_a_SOURCES += cam_menu.cpp

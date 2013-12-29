@@ -127,6 +127,7 @@
 #include <gui/audio_select.h>
 #include <gui/scan_setup.h>
 #include <gui/dvbsub_select.h>
+#include <gui/upnpbrowser.h>
 
 #include <system/localize.h>
 #include <system/settings.h>

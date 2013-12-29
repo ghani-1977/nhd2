@@ -113,16 +113,6 @@ if test "$enable_radiotext" = "yes"; then
 AC_DEFINE(ENABLE_RADIOTEXT,1,[include radiotext support])
 fi
 
-# upnp
-AC_ARG_ENABLE(upnp,
-	AS_HELP_STRING(--enable-upnp,include upnp support),
-	,[enable_upnp=no])
-AM_CONDITIONAL(ENABLE_UPNP,test "$enable_upnp" = "yes")
-
-if test "$enable_upnp" = "yes"; then
-AC_DEFINE(ENABLE_UPNP,1,[include upnp support])
-fi
-
 # freesatepg
 AC_ARG_ENABLE(freesatepg,
 	AS_HELP_STRING(--enable-freesatepg,include freesatepg support),

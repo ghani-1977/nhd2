@@ -8,6 +8,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libmd5sum \
 	-I$(top_srcdir)/lib/libxmltree \
+	-I$(top_srcdir)/lib/libupnpclient \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
