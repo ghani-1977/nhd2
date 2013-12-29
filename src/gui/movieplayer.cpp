@@ -55,6 +55,7 @@
 #include <gui/infoviewer.h>
 #include <gui/nfs.h>
 #include <gui/timeosd.h>
+#include <gui/webtv.h>
 
 #include <gui/widget/buttons.h>
 #include <gui/widget/icons.h>

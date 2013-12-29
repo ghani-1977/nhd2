@@ -284,6 +284,7 @@ CCAMMenuHandler 	* g_CamHandler;
 #endif
 
 // webtv
+class CWebTV;
 CWebTV * webtv;
 
 // timezone for wizard

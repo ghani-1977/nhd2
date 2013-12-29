@@ -166,6 +166,8 @@ void CStringInput::init()
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) >>1 );
 	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 1 );
 	
+	smstimer = 0;
+	
 	selected = 0;
 }
 
@@ -340,12 +342,17 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
+		
+		//
+		if (!(msg & CRCInput::RC_Release))
+			g_RCInput->killTimer(smstimer);
 
 		if (msg == CRCInput::RC_left)
 		{
 			keyLeftPressed();
 		}
-		else if (msg == CRCInput::RC_right)
+		//else if (msg == CRCInput::RC_right)
+		else if ((msg == CRCInput::RC_right) || (msg == NeutrinoMessages::EVT_TIMER && data == smstimer))
 		{
 			keyRightPressed();
 		}
@@ -395,7 +402,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 		{
 			loop = false;
 		}
-		else if ( (msg == CRCInput::RC_home) || (msg==CRCInput::RC_timeout) )
+		else if ( (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout) )
 		{
 			if ( ( strcmp(value, oldval) != 0) && (ShowLocalizedMessage(name, LOCALE_MESSAGEBOX_DISCARD, CMessageBox::mbrYes, CMessageBox::mbYes | CMessageBox::mbCancel) == CMessageBox::mbrCancel))
 				continue;
@@ -609,6 +616,8 @@ void CStringInputSMS::NormalKeyPressed(const neutrino_msg_t key)
 		value[selected] = Chars[numericvalue][keyCounter];
 		last_digit = numericvalue;
 		paintChar(selected);
+		//
+		smstimer = g_RCInput->addTimer(2*1000*1000);
 	}
 	else
 	{
@@ -621,9 +630,14 @@ void CStringInputSMS::NormalKeyPressed(const neutrino_msg_t key)
 void CStringInputSMS::keyRedPressed()		// switch between lower & uppercase
 {
 	if (((value[selected] | 32) >= 'a') && ((value[selected] | 32) <= 'z'))
+	{
 		value[selected] ^= 32;
+		//
+		paintChar(selected);
+	}
 
-	paintChar(selected);
+	//paintChar(selected);
+	smstimer = g_RCInput->addTimer(2*1000*1000);
 }
 
 void CStringInputSMS::keyYellowPressed()		// clear all

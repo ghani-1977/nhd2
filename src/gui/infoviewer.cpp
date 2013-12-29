@@ -63,6 +63,7 @@
 #include <gui/pictureviewer.h>
 
 #include <gui/movieplayer.h>
+#include <gui/webtv.h>
 
 
 #include <sys/timeb.h>
@@ -638,7 +639,10 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			else if ( msg == CRCInput::RC_info )
 			{
 				if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
-					webtv->showFileInfoWebTV(webtv->getTunedChannel());
+				{
+					if(webtv)
+						webtv->showFileInfoWebTV(webtv->getTunedChannel());
+				}
 				else
 					g_RCInput->postMsg (NeutrinoMessages::SHOW_EPG, 0);
 				
@@ -731,7 +735,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 extern bool isMovieBrowser;
 extern bool isVlc;
 extern bool cdDvd;
-extern bool isWebTV;
+//extern bool isWebTV;
 extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;

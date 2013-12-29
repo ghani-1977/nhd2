@@ -57,6 +57,8 @@ class CStringInput : public CMenuTarget
 		int hheight; // head font height
 		int mheight; // menu font height
 		int iheight;
+		
+		uint32_t smstimer;
 
 		char * head;
 		neutrino_locale_t name;

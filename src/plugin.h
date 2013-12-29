@@ -128,6 +128,7 @@
 #include <gui/scan_setup.h>
 #include <gui/dvbsub_select.h>
 #include <gui/upnpbrowser.h>
+#include <gui/webtv.h>
 
 #include <system/localize.h>
 #include <system/settings.h>
