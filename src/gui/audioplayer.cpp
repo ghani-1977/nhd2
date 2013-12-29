@@ -308,7 +308,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->stopPlayBack();
+	{
+		if(webtv)
+			webtv->stopPlayBack();
+	}
 	else
 	{
 		// stop/lock live playback	
@@ -344,7 +347,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->startPlayBack(webtv->getTunedChannel());
+	{
+		if(webtv)
+			webtv->startPlayBack(webtv->getTunedChannel());
+	}
 	else
 	{
 		// unlock playback	

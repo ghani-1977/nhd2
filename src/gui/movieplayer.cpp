@@ -400,7 +400,10 @@ void CMoviePlayerGui::cutNeutrino()
 	m_LastMode = (CNeutrinoApp::getInstance()->getLastMode() | NeutrinoMessages::norezap);
 	
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->stopPlayBack();
+	{
+		if(webtv)
+			webtv->stopPlayBack();
+	}
 	else
 	{
 		// pause epg scanning
@@ -439,7 +442,10 @@ void CMoviePlayerGui::restoreNeutrino()
 		return;
 
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->startPlayBack(webtv->getTunedChannel());
+	{
+		if(webtv)
+			webtv->startPlayBack(webtv->getTunedChannel());
+	}
 	else
 	{
 		// unlock playback

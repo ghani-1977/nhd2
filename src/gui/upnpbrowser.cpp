@@ -136,7 +136,10 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->stopPlayBack();
+	{
+		if(webtv)
+			webtv->stopPlayBack();
+	}
 	else
 	{
 		// stop playback
@@ -157,7 +160,10 @@ int CUpnpBrowserGui::exec(CMenuTarget* parent, const std::string & /*actionKey*/
 	
 	//
 	if(CNeutrinoApp::getInstance()->getLastMode() == NeutrinoMessages::mode_iptv)
-		webtv->startPlayBack(webtv->getTunedChannel());
+	{
+		if(webtv)
+			webtv->startPlayBack(webtv->getTunedChannel());
+	}
 	else
 	{
 		// start playback
