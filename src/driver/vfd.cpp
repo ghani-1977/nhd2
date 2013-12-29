@@ -468,9 +468,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 				
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
-				
-			std::string c = servicename;
-			nGLCD::lockChannel(c);
+			nGLCD::lockChannel(servicename);
 #endif			
 			break;
 
