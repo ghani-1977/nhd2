@@ -255,5 +255,6 @@ std::string freesatHuffmanDecoder::decode(const unsigned char *src, size_t size)
 			}
 		} while (lastch != STOP && value != 0);
 	}
+	
 	return uncompressed;
 }

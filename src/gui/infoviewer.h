@@ -75,15 +75,13 @@ class CInfoViewer
 		int freqStartX;
 		int freqWidth;
 		
-		// dimensions of radiotext window
-#if ENABLE_RADIOTEXT		
+		// dimensions of radiotext window		
 		int             rt_dx;
 		int             rt_dy;
 		int             rt_x;
 		int             rt_y;
 		int             rt_h;
-		int             rt_w;
-#endif		
+		int             rt_w;	
 
 		int		asize;
 
@@ -106,10 +104,8 @@ class CInfoViewer
 		void showButton_Audio();
 		void showButton_SubServices();
 		
-		void showIcon_16_9();
-#if ENABLE_RADIOTEXT		
-		void showIcon_RadioText(bool rt_available) const;
-#endif		
+		void showIcon_16_9();		
+		void showIcon_RadioText(bool rt_available) const;		
 	
 		void showIcon_CA_Status(int);
 		void paint_ca_icons(int, char*);
@@ -163,11 +159,9 @@ class CInfoViewer
 		void clearVirtualZapMode() {virtual_zap_mode = false;}
 		
 		void showEpgInfo();
-		
-#if ENABLE_RADIOTEXT		
+				
 		void showRadiotext();
 		void killRadiotext();
-#endif
 
 		// movie infoviewer
 		CProgressBar *moviescale;

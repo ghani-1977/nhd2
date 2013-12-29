@@ -98,10 +98,8 @@
 // Zeit die fuer die gewartet wird, bevor der Filter weitergeschaltet wird, falls es automatisch nicht klappt
 #define TIME_EIT_SKIPPING 90
 
-#ifdef ENABLE_FREESATEPG
 // a little more time for freesat epg
 #define TIME_FSEIT_SKIPPING 240
-#endif
 
 static bool sectionsd_ready = false;
 static bool reader_ready = true;
@@ -214,9 +212,8 @@ extern CFrontend * live_fe;
 static DMX dmxEIT(0x12, 3000 );
 static DMX dmxCN(0x12, 512, false);
 
-#ifdef ENABLE_FREESATEPG
+// freesat
 static DMX dmxFSEIT(3842, 320);
-#endif
 
 #ifdef UPDATE_NETWORKS
 static DMX dmxSDT(0x11, 512, true);
@@ -1952,9 +1949,9 @@ static void commandPauseScanning(int connfd, char *data, const unsigned dataLeng
 	{
 		dmxCN.request_pause();
 		dmxEIT.request_pause();
-#ifdef ENABLE_FREESATEPG
+		//freesat
 		dmxFSEIT.request_pause();
-#endif
+
 #ifdef UPDATE_NETWORKS
 		dmxNIT.request_pause();
 		dmxSDT.request_pause();
@@ -1972,9 +1969,9 @@ static void commandPauseScanning(int connfd, char *data, const unsigned dataLeng
 		dmxSDT.request_unpause();
 #endif
 		dmxEIT.request_unpause();
-#ifdef ENABLE_FREESATEPG
+		// freesat
 		dmxFSEIT.request_unpause();
-#endif
+
 #ifdef ENABLE_PPT
 		dmxPPT.request_unpause();
 #endif
@@ -2003,9 +2000,8 @@ static void commandPauseScanning(int connfd, char *data, const unsigned dataLeng
 		scanning = 1;
 		dmxCN.change(0);
 		dmxEIT.change(0);
-#ifdef ENABLE_FREESATEPG
+		// freesat
 		dmxFSEIT.change(0);
-#endif
 	}
 
 	struct sectionsd::msgResponseHeader msgResponse;
@@ -2324,11 +2320,7 @@ static void commandDumpStatusInformation(int /*connfd*/, char* /*data*/, const u
 		 "handed out by malloc: %d (%dkb)\n"
 		 "Total bytes memory allocated with `sbrk' by malloc,\n"
 		 "in bytes: %d (%dkb)\n"
-#ifdef ENABLE_FREESATEPG
 		 "FreeSat enabled\n"
-#else
-		 ""
-#endif
 		 ,ctime(&zeit),
 		 secondsToCache / (60*60L), secondsExtendedTextCache / (60*60L), oldEventsAre / 60, anzServices, anzNVODservices, anzEvents, anzNVODevents, anzMetaServices,
 		 //    resourceUsage.ru_maxrss, resourceUsage.ru_ixrss, resourceUsage.ru_idrss, resourceUsage.ru_isrss,
@@ -2336,19 +2328,7 @@ static void commandDumpStatusInformation(int /*connfd*/, char* /*data*/, const u
 		 speicherinfo.arena, speicherinfo.arena / 1024
 		);
 	printf("%s\n", stati);
-#if 0
-	struct sectionsd::msgResponseHeader responseHeader;
 
-	responseHeader.dataLength = strlen(stati) + 1;
-
-	if (writeNbytes(connfd, (const char *)&responseHeader, sizeof(responseHeader), WRITE_TIMEOUT_IN_SECONDS) == true)
-	{
-		if (responseHeader.dataLength)
-			writeNbytes(connfd, stati, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
-	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
-#endif
 	return ;
 }
 
@@ -2645,9 +2625,8 @@ static void commandserviceChanged(int connfd, char *data, const unsigned dataLen
 		unlockMessaging();
 		dmxCN.setCurrentService(messaging_current_servicekey & 0xffff);
 		dmxEIT.setCurrentService(messaging_current_servicekey & 0xffff);
-#ifdef ENABLE_FREESATEPG
+		// freesat
 		dmxFSEIT.setCurrentService(messaging_current_servicekey & 0xffff);
-#endif
 	}
 	else
 		printf("[sectionsd] commandserviceChanged: no change...\n");
@@ -6383,11 +6362,11 @@ int eit_stop_update_filter(int *fd)
 	return 0;
 }
 
-#ifdef ENABLE_FREESATEPG
-//---------------------------------------------------------------------
-//			Freesat EIT-thread
+
+//
+// Freesat EIT-thread
 // reads Freesat EPG-data
-//---------------------------------------------------------------------
+//
 static void *fseitThread(void *)
 {
 
@@ -6421,12 +6400,15 @@ static void *fseitThread(void *)
 	waitForTimeset();
 	dmxFSEIT.lastChanged = time_monotonic();
 
-	while(!sectionsd_stop) {
-		while (!scanning) {
+	while(!sectionsd_stop) 
+	{
+		while (!scanning) 
+		{
 			if(sectionsd_stop)
 				break;
 			sleep(1);
 		}
+		
 		if(sectionsd_stop)
 			break;
 		time_t zeit = time_monotonic();
@@ -6447,7 +6429,8 @@ static void *fseitThread(void *)
 				timeoutsDMX = 0;
 				dmxFSEIT.change(dmxFSEIT.filter_index + 1);
 			}
-			else {
+			else 
+			{
 				sendToSleepNow = true;
 				timeoutsDMX = 0;
 			}
@@ -6525,7 +6508,8 @@ static void *fseitThread(void *)
 			unlockMessaging();
 
 #ifdef UPDATE_NETWORKS
-			if (auto_scanning) {
+			if (auto_scanning) 
+			{
 				pthread_mutex_unlock( &dmxNIT.start_stop_mutex );
 				dmxNIT.change( 0 );
 			}
@@ -6648,12 +6632,11 @@ static void *fseitThread(void *)
 
 	pthread_exit(NULL);
 }
-#endif
 
-//---------------------------------------------------------------------
-//			EIT-thread
+//
+//EIT-thread
 // reads EPG-datas
-//---------------------------------------------------------------------
+//
 static void *eitThread(void *)
 {
 
@@ -7904,9 +7887,9 @@ void sectionsd_main_thread(void */*data*/)
 #ifdef UPDATE_NETWORKS
 	pthread_t threadSDT, threadNIT;
 #endif
-#ifdef ENABLE_FREESATEPG
+	// freesat
 	pthread_t threadFSEIT;
-#endif
+
 #ifdef ENABLE_PPT
 	pthread_t threadPPT;
 #endif
@@ -7990,7 +7973,7 @@ void sectionsd_main_thread(void */*data*/)
 		return;
 	}
 
-#ifdef ENABLE_FREESATEPG
+	// freesat
 	// EIT-Thread3 starten
 	rc = pthread_create(&threadFSEIT, 0, fseitThread, 0);
 
@@ -7998,7 +7981,6 @@ void sectionsd_main_thread(void */*data*/)
 		fprintf(stderr, "[sectionsd] failed to create fseit-thread (rc=%d)\n", rc);
 		return;
 	}
-#endif
 
 #ifdef ENABLE_PPT
 	// premiere private epg -Thread starten
@@ -8119,9 +8101,9 @@ void sectionsd_main_thread(void */*data*/)
 #ifdef ENABLE_PPT
 	dmxPPT.request_pause();
 #endif
-#ifdef ENABLE_FREESATEPG
+	// freesat
 	dmxFSEIT.request_pause();
-#endif
+
 #ifdef UPDATE_NETWORKS
 	dmxSDT.request_pause();
 	dmxNIT.request_pause();
@@ -8162,9 +8144,9 @@ void sectionsd_main_thread(void */*data*/)
 	dmxEIT.close();
 	printf("close 3\n");
 	dmxCN.close();
-#ifdef ENABLE_FREESATEPG
+	// freesat
 	dmxFSEIT.close();
-#endif
+
 #ifdef ENABLE_PPT
 	dmxPPT.close();
 #endif

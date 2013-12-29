@@ -602,8 +602,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	showLcdPercentOver();
 #endif	
 	
-	// radiotext
-#if ENABLE_RADIOTEXT	
+	// radiotext	
 	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio)
 	{
 		if ((g_settings.radiotext_enable) && (!recordModeActive) && (!calledFromNumZap))
@@ -611,7 +610,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		else
 			showIcon_RadioText(false);
 	}
-#endif	
 
 	// loop msg
 	neutrino_msg_t msg;
@@ -658,11 +656,9 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 				showRecordIcon (show_dot);
 				show_dot = !show_dot;
 				
-				// radiotext
-#if ENABLE_RADIOTEXT				
+				// radiotext		
 				if ((g_settings.radiotext_enable) && (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio))
-					showRadiotext();
-#endif				
+					showRadiotext();			
 
 				showIcon_16_9();
 				
@@ -679,12 +675,10 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			{
 				if ((msg == (neutrino_msg_t) g_settings.key_quickzap_up) || (msg == (neutrino_msg_t) g_settings.key_quickzap_down) || (msg == CRCInput::RC_0) || (msg == NeutrinoMessages::SHOW_INFOBAR)) 
 				{
-					// radiotext
-#if ENABLE_RADIOTEXT					
+					// radiotext					
 					if ((g_settings.radiotext_enable) && (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio))
 						hideIt =  true;
-					else
-#endif					  
+					else				  
 						hideIt = false;
 					
 					g_RCInput->postMsg (msg, data);
@@ -1099,7 +1093,6 @@ void CInfoViewer::showSubchan()
 }
 
 // radiotext
-#if ENABLE_RADIOTEXT
 void CInfoViewer::showIcon_RadioText(bool rt_available) const
 {
 	if (showButtonBar)
@@ -1118,7 +1111,6 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 		frameBuffer->paintIcon(rt_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY - BUTTON_BAR_HEIGHT + (BUTTON_BAR_HEIGHT - icon_h_rt)/2);
 	}
 }
-#endif
 
 void CInfoViewer::showIcon_16_9()
 {			
@@ -1280,7 +1272,6 @@ void CInfoViewer::showMotorMoving (int duration)
 }
 
 // radiotext
-#if ENABLE_RADIOTEXT
 void CInfoViewer::killRadiotext()
 {
 	frameBuffer->paintBackgroundBox(rt_x, rt_y, rt_w, rt_h);
@@ -1386,7 +1377,6 @@ void CInfoViewer::showRadiotext()
 	
 	g_Radiotext->RT_MsgShow = false;
 }
-#endif
 
 int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 {
@@ -1440,11 +1430,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 	  		if ( is_visible && showButtonBar )
 				showButton_Audio();
 			
-			// radiotext
-#if ENABLE_RADIOTEXT			
+			// radiotext			
 			//if (g_settings.radiotext_enable && g_Radiotext && ((CNeutrinoApp::getInstance()->getMode()) == NeutrinoMessages::mode_radio))
-			//	g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
-#endif			
+			//	g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);			
 		}
 		return messages_return::handled;
   	} 
@@ -2059,14 +2047,13 @@ void CInfoViewer::killTitle()
 		frameBuffer->blit();
 #endif
 
-		// hide radiotext
-#if ENABLE_RADIOTEXT		
+		// hide radiotext	
 		if (g_settings.radiotext_enable && g_Radiotext) 
 		{
 			g_Radiotext->S_RtOsd = g_Radiotext->haveRadiotext() ? 1 : 0;
 			killRadiotext();
 		}
-#endif
+
 		if(sigscale)
 		{
 			delete sigscale;

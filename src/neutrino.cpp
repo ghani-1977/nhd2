@@ -327,10 +327,7 @@ static void initGlobals(void)
 	g_CamHandler 	= NULL;
 #endif	
 
-#if ENABLE_RADIOTEXT
 	g_Radiotext     = NULL;
-#endif
-
 	webtv = NULL;
 }
 
@@ -914,10 +911,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 		g_settings.filebrowser_sortmethod = 0;
 	g_settings.filebrowser_denydirectoryleave = configfile.getBool("filebrowser_denydirectoryleave", false);
 	
-	// radiotext
-#if ENABLE_RADIOTEXT	
+	// radiotext	
 	g_settings.radiotext_enable = configfile.getBool("radiotext_enable", false);
-#endif	
 	
 	// logos_dir
 	g_settings.logos_dir = configfile.getString("logos_dir", "/var/tuxbox/logos");
@@ -1378,10 +1373,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32("startchannelradio_nr", g_settings.startchannelradio_nr);
 	configfile.setInt32("uselastchannel", g_settings.uselastchannel);
 	
-	// radiotext
-#if ENABLE_RADIOTEXT	
-	configfile.setBool("radiotext_enable", g_settings.radiotext_enable);
-#endif	
+	// radiotext	
+	configfile.setBool("radiotext_enable", g_settings.radiotext_enable);	
 	
 	// logos_dir
 	configfile.setString("logos_dir", g_settings.logos_dir);
@@ -3283,13 +3276,11 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				channelList->numericZap( msg );
 				
 				StartSubtitles();
-			}
-#if ENABLE_RADIOTEXT			
+			}			
 			else if (CRCInput::isNumeric(msg) && (mode == mode_radio && g_settings.radiotext_enable && g_Radiotext != NULL && g_Radiotext->Rass_Show) ) 
 			{
 				g_Radiotext->RassImage(0, msg, true);
-			}
-#endif			
+			}			
 			else if((msg == CRCInput::RC_info) || ( msg == NeutrinoMessages::SHOW_INFOBAR ))
 			{
 				if(mode == mode_iptv)
@@ -4046,14 +4037,12 @@ skip_message:
 	else if( msg == NeutrinoMessages::CHANGEMODE ) 
 	{
 		if((data & mode_mask) != mode_radio)
-		{
-#if ENABLE_RADIOTEXT		  
+		{		  
 			if (g_Radiotext)
 			{
 				delete g_Radiotext;
 				g_Radiotext = NULL;
 			}
-#endif			
 		}
 
 		if((data & mode_mask) == mode_radio) 
@@ -4064,11 +4053,10 @@ skip_message:
 					radioMode(false);
 				else
 					radioMode(true);
-#if ENABLE_RADIOTEXT	
+	
 				//FIXME: this sucks when no DVB device is present
 				if (g_settings.radiotext_enable && g_Radiotext)
-					g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);
-#endif				
+					g_Radiotext->setPid(g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].pid);				
 			}
 		}
 		
@@ -4540,16 +4528,14 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 void CNeutrinoApp::tvMode( bool rezap )
 {
 	if(mode == mode_radio ) 
-	{
-#if ENABLE_RADIOTEXT	  
+	{	  
 		if (g_settings.radiotext_enable && g_Radiotext) 
 		{
 			videoDecoder->finishShowSinglePic();
 			
 			delete g_Radiotext;
 			g_Radiotext = NULL;
-		}
-#endif		
+		}		
 
 #if defined (ENABLE_LCD)
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
@@ -4708,12 +4694,10 @@ void CNeutrinoApp::radioMode( bool rezap)
 	frameBuffer->blit();
 #endif	
 
-#if ENABLE_RADIOTEXT
 	if (g_settings.radiotext_enable) 
 	{
 		g_Radiotext = new CRadioText;
-	}
-#endif	
+	}	
 }
 
 // Scart Mode
@@ -4792,13 +4776,11 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 			// do not things
 		}
 		
-#if ENABLE_RADIOTEXT		
 		if (mode == mode_radio && g_settings.radiotext_enable && g_Radiotext != NULL)
 		{
 			delete g_Radiotext;
 			g_Radiotext = NULL;
 		}
-#endif		
 
 		StopSubtitles();
 
@@ -4953,16 +4935,14 @@ void CNeutrinoApp::webtvMode( bool rezap)
 		StopSubtitles();
 	}
 	else if( mode == mode_radio ) 
-	{
-#if ENABLE_RADIOTEXT	  
+	{  
 		if (g_settings.radiotext_enable && g_Radiotext) 
 		{
 			videoDecoder->finishShowSinglePic();
 			
 			delete g_Radiotext;
 			g_Radiotext = NULL;
-		}
-#endif		
+		}	
 
 #if defined (ENABLE_LCD)
 		g_RCInput->killTimer(g_InfoViewer->lcdUpdateTimer);
@@ -5393,7 +5373,6 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		g_Locale->loadLocale(g_settings.language);
 		return true;
 	}
-#if ENABLE_RADIOTEXT	
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT)) 
 	{
 		bool usedBackground = frameBuffer->getuseBackground();
@@ -5441,7 +5420,6 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		
 		return true;
 	}
-#endif	
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_CHANNELLIST_MAKE_HDLIST)) 
 	{
 		channelsInit();

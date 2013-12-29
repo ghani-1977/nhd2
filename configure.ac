@@ -103,26 +103,6 @@ if test "$enable_graphlcd" = "yes"; then
 AC_DEFINE(ENABLE_GRAPHLCD,1,[include graph lcd support])
 fi
 
-# radiotext
-AC_ARG_ENABLE(radiotext,
-	AS_HELP_STRING(--enable-radiotext,include radiotext support),
-	,[enable_radiotext=no])
-AM_CONDITIONAL(ENABLE_RADIOTEXT,test "$enable_radiotext" = "yes")
-
-if test "$enable_radiotext" = "yes"; then
-AC_DEFINE(ENABLE_RADIOTEXT,1,[include radiotext support])
-fi
-
-# freesatepg
-AC_ARG_ENABLE(freesatepg,
-	AS_HELP_STRING(--enable-freesatepg,include freesatepg support),
-	,[enable_freesatepg=no])
-AM_CONDITIONAL(ENABLE_FREESATEPG,test "$enable_freesatepg" = "yes")
-
-if test "$enable_freesatepg" = "yes"; then
-AC_DEFINE(ENABLE_FREESATEPG,1,[include freesatepg support])
-fi
-
 # scart output
 AC_ARG_ENABLE(scart,
 	AS_HELP_STRING(--enable-scart,enable scart output),

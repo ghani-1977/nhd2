@@ -7,9 +7,7 @@
 
 #include <config.h>
 
-#if defined (ENABLE_FREESATEPG)
 #include "freesatv2.h"
-#endif
 
 
 std::map<std::string, int> CountryCodeDefaultMapping;
@@ -606,9 +604,8 @@ static inline unsigned int recode(unsigned char d, int cp)
 	}
 }
 
-#if defined (ENABLE_FREESATEPG)
+// freesatepg handler
 static freesatHuffmanDecoder huffmanDecoder;
-#endif
 
 std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 {
@@ -671,7 +668,6 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 		break;
 	case 0x15: // UTF-8 encoding of ISO/IEC 10646-1
 			return std::string((char*)data+1, len-1);
-#if defined (ENABLE_FREESATEPG)
 	case 0x1F:
 		{
 			std::string decoded_string = huffmanDecoder.decode((const unsigned char *)data, len);
@@ -680,14 +676,9 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 		}
 		++i;
 		break;
-#endif
 	case 0x0:
 	case 0xD ... 0xF:
-#if defined (ENABLE_FREESATEPG)
-	case 0x16 ... 0x1E:
-#else
-	case 0x16 ... 0x1F:
-#endif	  
+	case 0x16 ... 0x1E:	  
 	{} //printf("reserved %d\n", data[0]);
 	++i;
 	break;
@@ -738,10 +729,8 @@ std::string convertDVBUTF8(const char *data, int len, int table, int tsidonid)
 			res[t++]= 0x20;
 		else if ((code == 0x8A))
 			res[t++]= '\n'; // 0x8a is vertical tab. Just use newline for now.
-#if defined (ENABLE_FREESATEPG)
 		else if((code >= 0x80) && (code <= 0x9F))
 			continue;
-#endif
 		else if (code < 0x800) // two byte mapping
 		{
 			res[t++] = (code>>6)|0xC0;

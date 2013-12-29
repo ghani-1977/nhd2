@@ -18,10 +18,16 @@ endif
 
 noinst_LIBRARIES = libsectionsd.a
 
-libsectionsd_a_SOURCES = abstime.c sectionsd.cpp dmxapi.cpp dmx.cpp SIsections.cpp SIevents.cpp SIutils.cpp SIlanguage.cpp edvbstring.cpp
-
-if ENABLE_FREESATEPG
-libsectionsd_a_SOURCES += \
+libsectionsd_a_SOURCES = \
+	abstime.c \
+	sectionsd.cpp \
+	dmxapi.cpp \
+	dmx.cpp \
+	SIsections.cpp \
+	SIevents.cpp \
+	SIutils.cpp \
+	SIlanguage.cpp \
+	edvbstring.cpp \
 	freesatv2.cpp
 
 installdir = $(CONFIGDIR)
@@ -29,4 +35,3 @@ installdir = $(CONFIGDIR)
 install_DATA = \
 	freesat.t1 \
 	freesat.t2
-endif
