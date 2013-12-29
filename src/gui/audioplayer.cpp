@@ -1763,7 +1763,9 @@ void CAudioPlayerGui::paintItem(int pos)
 				
 #ifdef ENABLE_GRAPHLCD
 				nGLCD::unlockChannel();
-				nGLCD::lockChannel(m_playlist[pos + m_liststart].MetaData.title);
+				
+				string c = m_playlist[pos + m_liststart].MetaData.title + "/" + m_playlist[pos + m_liststart].MetaData.artist + "/" + m_playlist[pos + m_liststart].MetaData.album;
+				nGLCD::lockChannel(/*m_playlist[pos + m_liststart].MetaData.title*/c);
 #endif				
 			}
 		}		
@@ -2520,7 +2522,9 @@ void CAudioPlayerGui::paintLCD()
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
-			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+			
+			string c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
+			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
 #endif			
 						
 			
@@ -2546,7 +2550,8 @@ void CAudioPlayerGui::paintLCD()
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
-			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+			string c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
+			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
 #endif			
 			break;
 			
@@ -2559,7 +2564,8 @@ void CAudioPlayerGui::paintLCD()
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
-			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+			string c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
+			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
 #endif			
 			break;
 			
@@ -2572,7 +2578,8 @@ void CAudioPlayerGui::paintLCD()
 			
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
-			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+			string c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
+			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
 #endif			
 			break;
 	}
