@@ -52,6 +52,9 @@
 #include <driver/rcinput.h>
 #include <driver/audioplay.h>
 #include <driver/audiometadata.h>
+#ifdef ENABLE_GRAPHLCD
+#include <driver/nglcd.h>
+#endif
 
 #include <daemonc/remotecontrol.h>
 
@@ -1752,10 +1755,16 @@ void CAudioPlayerGui::paintItem(int pos)
 		{
 			if (m_state == CAudioPlayerGui::STOP)
 			{
+				//VFD/LCD
 				if (CVFD::getInstance()->is4digits)
 					CVFD::getInstance()->LCDshowText(m_selected + 1);
 				else
 					CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);				
+				
+#ifdef ENABLE_GRAPHLCD
+				nGLCD::unlockChannel();
+				nGLCD::lockChannel(m_playlist[pos + m_liststart].MetaData.title);
+#endif				
 			}
 		}		
 	}
@@ -2509,6 +2518,12 @@ void CAudioPlayerGui::paintLCD()
 			else
 				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
 			
+#ifdef ENABLE_GRAPHLCD
+			nGLCD::unlockChannel();
+			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+#endif			
+						
+			
 #if ENABLE_LCD
 			if(m_curr_audiofile.FileType != CFile::STREAM_AUDIO && m_time_total != 0)
 				CVFD::getInstance()->showAudioProgress(100 * m_time_played / m_time_total, current_muted);
@@ -2528,6 +2543,11 @@ void CAudioPlayerGui::paintLCD()
 				CVFD::getInstance()->LCDshowText(m_selected + 1);
 			else
 				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			
+#ifdef ENABLE_GRAPHLCD
+			nGLCD::unlockChannel();
+			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+#endif			
 			break;
 			
 		case CAudioPlayerGui::FF:
@@ -2536,6 +2556,11 @@ void CAudioPlayerGui::paintLCD()
 				CVFD::getInstance()->LCDshowText(m_selected + 1);
 			else
 				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			
+#ifdef ENABLE_GRAPHLCD
+			nGLCD::unlockChannel();
+			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+#endif			
 			break;
 			
 		case CAudioPlayerGui::REV:
@@ -2544,6 +2569,11 @@ void CAudioPlayerGui::paintLCD()
 				CVFD::getInstance()->LCDshowText(m_selected + 1);
 			else
 				CVFD::getInstance()->showAudioTrack(m_curr_audiofile.MetaData.artist, m_curr_audiofile.MetaData.title, m_curr_audiofile.MetaData.album);			
+			
+#ifdef ENABLE_GRAPHLCD
+			nGLCD::unlockChannel();
+			nGLCD::lockChannel(m_curr_audiofile.MetaData.title);
+#endif			
 			break;
 	}
 }

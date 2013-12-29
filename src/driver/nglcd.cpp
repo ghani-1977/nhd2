@@ -608,6 +608,7 @@ void* nGLCD::Run(void *)
 					else
 						nglcd->scrollEpg = nglcd->Epg;
 				}
+				
 				if (nglcd->Channel.compare(nglcd->stagingChannel)) 
 				{
 					nglcd->Channel = nglcd->stagingChannel;

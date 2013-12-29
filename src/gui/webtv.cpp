@@ -38,6 +38,9 @@
 #include <global.h>
 #include <neutrino.h>
 #include <driver/screen_max.h>
+#ifdef ENABLE_GRAPHLCD
+#include <driver/nglcd.h>
+#endif
 #include "movieplayer.h"
 #include "webtv.h"
 #include <gui/widget/buttons.h>
@@ -556,6 +559,11 @@ void CWebTV::zapTo(int pos, bool rezap)
 		CVFD::getInstance()->LCDshowText(pos + 1);
 	else
 		CVFD::getInstance()->showServicename(channels[pos]->title); // UTF-8
+		
+#ifdef ENABLE_GRAPHLCD
+	nGLCD::unlockChannel();
+	nGLCD::lockChannel(channels[pos]->title);
+#endif		
 	
 	//infoviewer
 	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
