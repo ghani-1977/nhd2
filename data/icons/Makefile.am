@@ -76,7 +76,7 @@ install_DATA += \
 
 # yt
 install_DATA += \
-	hint_ytplay.png youtube.png 
+	youtube.png youtube_small.png 
 
 # webtv
 install_DATA += \
@@ -84,7 +84,7 @@ install_DATA += \
 
 # netzkino.de
 install_DATA += \
-	netzkino.png hint_netzkino.png
+	netzkino.png netzkino_small.png
 
 
 

@@ -161,11 +161,11 @@
 #define NEUTRINO_ICON_RADIOTEXTGET		"radiotextget"
 #define NEUTRINO_ICON_RADIOTEXTWAIT		"radiotextwait"
 
-#define NEUTRINO_ICON_YT      			"hint_ytplay"
-#define NEUTRINO_ICON_YT_SMALL			"youtube"
+#define NEUTRINO_ICON_YT      			"youtube"
+#define NEUTRINO_ICON_YT_SMALL			"youtube_small"
 
 #define NEUTRINO_ICON_NETZKINO			"netzkino"
-#define NEUTRINO_ICON_NETZKINO_SMALL		"hint_netzkino"
+#define NEUTRINO_ICON_NETZKINO_SMALL		"netzkino_small"
 
 #define NEUTRINO_ICON_WEBTV			"webtv"
 #define NEUTRINO_ICON_WEBTV_SMALL		"iptv"
