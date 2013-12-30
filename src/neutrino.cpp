@@ -232,6 +232,7 @@ void getZapitConfig(Zapit_config * Cfg);
 extern CZapitChannel * live_channel;			// defined in zapit.cpp
 extern CFrontend * live_fe;
 extern CScanSettings * scanSettings;
+extern int FrontendCount;				// defined in zapit.cpp
 
 //nhttpd thread
 void * nhttpd_main_thread(void *data);
@@ -2237,7 +2238,7 @@ void CNeutrinoApp::InitZapper()
 		g_Zapit->getPIDS(g_RemoteControl->current_PIDs);
 		g_RemoteControl->processAPIDnames();
 		
-		//TEST
+		// permenant timeshift
 		if(g_settings.auto_timeshift)
 			startAutoRecord(true);
 		
@@ -2700,9 +2701,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// audio mute
 	AudioMute(current_muted, true);
 
-	// init shutdown count
-	SHTDCNT::getInstance()->init();
-
 	// Cam-Ci
 #if defined (ENABLE_CI)	
 	cDvbCi::getInstance()->SetHook(CISendMessage);	
@@ -2710,6 +2708,16 @@ int CNeutrinoApp::run(int argc, char **argv)
 
 	// init webtv
 	webtv = new CWebTV();
+	
+	// set webtv as default mode if we dont have dvb devices
+	if(FrontendCount == 0)
+	{
+		if(webtv)
+			webtvMode();
+	}
+	
+	// init shutdown count
+	SHTDCNT::getInstance()->init();
 
 	// real run ;-)
 	RealRun(mainMenu);
