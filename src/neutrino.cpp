@@ -4168,21 +4168,27 @@ void CNeutrinoApp::ExitRun(int retcode)
 			g_Timerd->stopTimerEvent(recording_id);
 		}
 
-		// vfd mode shutdown
-		CVFD::getInstance()->setMode(CVFD::MODE_SHUTDOWN);
+		if(retcode > RESTART)
+		{
+			// vfd mode shutdown
+			CVFD::getInstance()->setMode(CVFD::MODE_SHUTDOWN);
 		
-		// show good bye in VFD
-		if (!CVFD::getInstance()->is4digits)
-			CVFD::getInstance()->ShowText((char *) "BYE");
+			// show good bye in VFD
+			if (!CVFD::getInstance()->is4digits)
+				CVFD::getInstance()->ShowText((char *) "BYE");
+		}
 
 		// stop playback
 		g_Zapit->stopPlayBack();
 
-		frameBuffer->loadBackgroundPic("shutdown.jpg");
+		if(retcode > RESTART)
+		{
+			frameBuffer->loadBackgroundPic("shutdown.jpg");
 		
 #if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+			frameBuffer->blit();
+#endif
+		}
 
 		// network down
 		networkConfig.automatic_start = (network_automatic_start == 1);
