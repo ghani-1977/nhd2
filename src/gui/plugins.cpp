@@ -154,6 +154,7 @@ void CPlugins::scanDir(const char * dir)
 
 void CPlugins::loadPlugins()
 {
+	dprintf(DEBUG_NORMAL, "CPlugins::loadPlugins\n");
 	frameBuffer = CFrameBuffer::getInstance();
 	number_of_plugins = 0;
 	plugin_list.clear();

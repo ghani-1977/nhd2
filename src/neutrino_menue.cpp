@@ -879,9 +879,9 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 
 
 	// reload Plugins
-	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	//service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_GETPLUGINS, true, NULL, this, "reloadplugins", CRCInput::convertDigitToKey(shortcutService++), NULL, NEUTRINO_ICON_PLUGINS, LOCALE_HELPTEXT_RELOADPLUGINS ));
+	//service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_GETPLUGINS, true, NULL, this, "reloadplugins", CRCInput::convertDigitToKey(shortcutService++), NULL, NEUTRINO_ICON_PLUGINS, LOCALE_HELPTEXT_RELOADPLUGINS ));
 
 	// Image Info 
 	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
