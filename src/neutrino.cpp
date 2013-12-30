@@ -4237,10 +4237,12 @@ void CNeutrinoApp::ExitRun(int retcode)
 
 		dprintf(DEBUG_NORMAL, ">>> CNeutrinoApp::ExitRun: Good bye <<<\n");
 		
+#if defined (USE_OPENGL)		
 		if(retcode == RESTART)
-		{
+		{		  
 			execvp(global_argv[0], global_argv); // no return if successful
 		}
+#endif		
 		
 		_exit(retcode);	
 	}

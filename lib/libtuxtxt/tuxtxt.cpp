@@ -2728,6 +2728,7 @@ void ConfigMenu(int Init, int source)
 
 			if (CRCInput::isNumeric(RCCode))
 				rc_num = CRCInput::getNumericValue(RCCode) -1; /* valid: 1 to M_MaxDirect */
+				
 			if (rc_num >= 0 && rc_num <= M_MaxDirect) /* direct access */
 			{
 				Menu_HighlightLine(menu, MenuLine[menuitem], 0);
@@ -6114,9 +6115,9 @@ void DecodePage()
 	return ;
 }
 
-/*
- * GetRCCode
-*/
+//
+// GetRCCode
+//
 int GetRCCode()
 {
 	neutrino_msg_t msg;
