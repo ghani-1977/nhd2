@@ -2682,9 +2682,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 			miscSettings.exec(NULL, "");
 		
 		// at least
-		// setup scan settings
+		// service settings
 		if(ret != menu_return::RETURN_EXIT_ALL)
-			TunerSetup.exec(NULL, "");
+			service.exec(NULL, "");
 
 		dprintf(DEBUG_INFO, "config file or options missing\n");
 
