@@ -133,6 +133,7 @@ class CWebTV
 		void showAudioDialog();
 		
 		unsigned int getTunedChannel() {return tuned;};
+		unsigned int getlastSelectedChannel() { return selected;};
 		
 		void loadChannels(void);
 		void ClearChannels(void);

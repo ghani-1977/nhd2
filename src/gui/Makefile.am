@@ -3,7 +3,7 @@ AM_CPPFLAGS = -fno-strict-aliasing
 BUILT_SOURCES  = svn_version.h
 
 svn_version.h:
-	@if test -d .svn ; then \
+	@if test -d ../../.svn ; then \
 		sleep 180 && rm svn_version.h & echo "#define SVNVERSION \"$$(svnversion -n || echo svn_oops!)\" " > svn_version.h ; \
 	else \
 		rm svn_version.h; echo '#define BUILT_DATE "'`date`'"' > svn_version.h ; \

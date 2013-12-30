@@ -156,9 +156,9 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		
 		void tvMode( bool rezap = true );
 		void radioMode( bool rezap = true );
-		void scartMode( bool bOnOff );
-		void standbyMode( bool bOnOff );
 		void webtvMode(bool rezap = true);
+		void standbyMode( bool bOnOff );
+		void scartMode( bool bOnOff );		// not used
 		
 		void setvol(int vol);
 		
