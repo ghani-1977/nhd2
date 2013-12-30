@@ -45,10 +45,6 @@
 #include <system/debug.h>
 #include <system/helpers.h>
 
-#ifdef ENABLE_GRAPHLCD
-#include <driver/nglcd.h>
-#endif
-
 
 #if defined (__sh__)
 #if defined (PLATFORM_SPARK7162)
@@ -464,12 +460,7 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_STANDBY, false);	
 #endif		
 			showclock = true;
-			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
-				
-#ifdef ENABLE_GRAPHLCD
-			nGLCD::unlockChannel();
-			nGLCD::lockChannel(servicename);
-#endif			
+			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */			
 			break;
 
 		case MODE_AUDIO:
