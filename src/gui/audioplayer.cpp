@@ -1017,6 +1017,10 @@ int CAudioPlayerGui::show()
 	if(m_state != CAudioPlayerGui::STOP)
 		stop();
 	
+#ifdef ENABLE_GRAPHLCD
+	nGLCD::unlockChannel();
+#endif	
+	
 	if(!filelist.empty())
 		filelist.clear();
 
@@ -1765,14 +1769,7 @@ void CAudioPlayerGui::paintItem(int pos)
 				if (CVFD::getInstance()->is4digits)
 					CVFD::getInstance()->LCDshowText(m_selected + 1);
 				else
-					CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);				
-				
-#ifdef ENABLE_GRAPHLCD
-				nGLCD::unlockChannel();
-				
-				std::string c = m_playlist[pos + m_liststart].MetaData.title + "/" + m_playlist[pos + m_liststart].MetaData.artist + "/" + m_playlist[pos + m_liststart].MetaData.album;
-				nGLCD::lockChannel(/*m_playlist[pos + m_liststart].MetaData.title*/c);
-#endif				
+					CVFD::getInstance()->showAudioTrack(m_playlist[pos + m_liststart].MetaData.artist, m_playlist[pos + m_liststart].MetaData.title, m_playlist[pos + m_liststart].MetaData.album);
 			}
 		}		
 	}
@@ -2533,7 +2530,7 @@ void CAudioPlayerGui::paintLCD()
 			nGLCD::unlockChannel();
 			
 			c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
-			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
+			nGLCD::lockChannel(c);
 #endif			
 						
 			
@@ -2560,7 +2557,7 @@ void CAudioPlayerGui::paintLCD()
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
 			c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
-			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
+			nGLCD::lockChannel(c);
 #endif			
 			break;
 			
@@ -2574,7 +2571,7 @@ void CAudioPlayerGui::paintLCD()
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
 			c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
-			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
+			nGLCD::lockChannel(c);
 #endif			
 			break;
 			
@@ -2588,7 +2585,7 @@ void CAudioPlayerGui::paintLCD()
 #ifdef ENABLE_GRAPHLCD
 			nGLCD::unlockChannel();
 			c = m_curr_audiofile.MetaData.title + "/" + m_curr_audiofile.MetaData.artist + "/" + m_curr_audiofile.MetaData.album;
-			nGLCD::lockChannel(/*m_curr_audiofile.MetaData.title*/c);
+			nGLCD::lockChannel(c);
 #endif			
 			break;
 	}

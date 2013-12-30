@@ -1092,8 +1092,7 @@ void updateLcd(const std::string & sel_filename)
 	
 	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);
 	
-#ifdef ENABLE_GRAPHLCD
-	nGLCD::unlockChannel();
+#if defined (ENABLE_GRAPHLCD)
 	nGLCD::lockChannel(lcd);
 #endif	
 }
@@ -2834,6 +2833,10 @@ void CMoviePlayerGui::PlayFile(void)
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
+	
+#if defined (ENABLE_GRAPHLCD)
+	nGLCD::unlockChannel();
+#endif	
 
 	if (was_file || m_loop) 
 	{
