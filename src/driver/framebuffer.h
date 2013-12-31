@@ -146,11 +146,9 @@ class CFrameBuffer
 
 		static CFrameBuffer * getInstance();
 
-#if !defined USE_OPENGL
 		void enableManualBlit();
 		void disableManualBlit();
 		void blit();
-#endif
 
 		void init(const char * const fbDevice = "/dev/fb0");		
 		void setFrameBufferMode(unsigned int xRes, unsigned int yRes, unsigned int bpp);

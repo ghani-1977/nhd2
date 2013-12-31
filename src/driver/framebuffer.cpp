@@ -346,7 +346,7 @@ void CFrameBuffer::setActive(bool enable)
 {
 	active = enable;
 		
-#if !defined (__sh__) && !defined (USE_OPENGL)
+#if !defined (__sh__) /*&& !defined (USE_OPENGL)*/
 	if(enable)
 	{
 		// set manual blit when fb is activ
@@ -465,9 +465,7 @@ int CFrameBuffer::setMode()
 	// clear frameBuffer
 	paintBackground();
 	
-#if !defined (USE_OPENGL)
 	blit();
-#endif
 
 	return 0;
 }
@@ -1881,8 +1879,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 	return fbbuff;
 }
 
-#if !defined (USE_OPENGL)
-
+//
 #ifndef FBIO_WAITFORVSYNC
 #define FBIO_WAITFORVSYNC _IOW('F', 0x20, __u32)
 #endif
@@ -1894,6 +1891,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 
 void CFrameBuffer::enableManualBlit()
 {
+#if !defined USE_OPENGL  
 	unsigned char tmp = 1;
 	
 	if (ioctl(fd,FBIO_SET_MANUAL_BLIT, &tmp) < 0) 
@@ -1905,10 +1903,12 @@ void CFrameBuffer::enableManualBlit()
 	{
 		m_manual_blit = 1;
 	}
+#endif	
 }
 
 void CFrameBuffer::disableManualBlit()
 {
+#if !defined USE_OPENGL  
 	unsigned char tmp = 0;
 	
 	if (ioctl(fd,FBIO_SET_MANUAL_BLIT, &tmp) < 0) 
@@ -1920,11 +1920,13 @@ void CFrameBuffer::disableManualBlit()
 	{
 		m_manual_blit = 0;
 	}
+#endif	
 }
 
 void CFrameBuffer::blit()
 {
-#ifdef __sh__  
+#if !defined USE_OPENGL  
+#if defined (__sh__)
 	STMFBIO_BLT_DATA  bltData; 
 	memset(&bltData, 0, sizeof(STMFBIO_BLT_DATA)); 
 
@@ -1978,11 +1980,12 @@ void CFrameBuffer::blit()
 	if (m_manual_blit == 1) 
 	{
 		if (ioctl(fd, FBIO_BLIT) < 0)
-			perror("FBIO_BLIT");	
+			perror("FBIO_BLIT");		
 	}
+#endif	
 #endif
 }
-#endif
+
 
 
 
