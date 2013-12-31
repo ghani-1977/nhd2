@@ -1764,20 +1764,21 @@ void CMovieBrowser::refreshTitle(void)
 	int icon_w, icon_h;
 	m_pcWindow->getIconSize(mb_icon.c_str(), &icon_w, &icon_h);
 	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + (m_cBoxFrameTitleRel.iHeight - icon_h)/2);
-	
-	// head title
-	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
 
-	// icon
+	// setup icon
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);
 	int xpos1 = m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + m_cBoxFrameTitleRel.iWidth - 10;
 	int ypos = m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY + (m_cBoxFrameTitleRel.iHeight - icon_w)/2;
 
-	// setup icon
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1 - icon_w, ypos);
 
 	// help icon
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - icon_w - 2 - icon_w, ypos);
+	int icon_h_w, icon_h_h;
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_h_w, &icon_h_h);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - icon_w - 2 - icon_h_w, ypos);
+	
+	// head title
+	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1) - 2*icon_w - 10 - icon_h_w, title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
 }
 
 #define ADD_FOOT_HEIGHT 4
