@@ -3295,7 +3295,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				if(mode == mode_iptv)
 				{
 					if(webtv)
-						webtv->showInfo();
+					{
+						//if(webtv->getTunedChannel() > -1)
+							webtv->showInfo();
+					}
 				}
 				else
 				{
@@ -5328,21 +5331,6 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		StartSubtitles();
 				
 		return menu_return::RETURN_REPAINT;	
-	}
-	else if(actionKey == "webtv_settings")
-	{
-		CFileBrowser fileBrowser;
-		CFileFilter fileFilter;
-		fileFilter.addFilter("xml");
-		fileBrowser.Filter = &fileFilter;
-						
-		if (fileBrowser.exec(CONFIGDIR) == true)
-		{
-			strcpy(g_settings.webtv_settings, fileBrowser.getSelectedFile()->Name.c_str());
-			printf("[webtv] webtv settings file %s\n", fileBrowser.getSelectedFile()->Name.c_str());
-		}
-		
-		return menu_return::RETURN_REPAINT;
 	}
 	else if(actionKey=="webtv") 
 	{

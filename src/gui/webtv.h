@@ -139,6 +139,7 @@ class CWebTV
 		void ClearChannels(void);
 		
 		bool readChannellist(std::string filename);
+		void openFilebrowser(void);
 };
 
 class CWebTVAPIDSelectExec : public CMenuTarget

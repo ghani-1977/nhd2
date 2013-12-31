@@ -503,7 +503,7 @@ void CWebTV::zapTo(int pos, bool rezap)
 	// show emty channellist error msg
 	if (channels.empty()) 
 	{
-		DisplayErrorMessage(g_Locale->getText(LOCALE_CHANNELLIST_NONEFOUND)); // UTF-8
+		DisplayErrorMessage(g_Locale->getText(LOCALE_WEBTVCHANNELLIST_NONEFOUND)); // UTF-8
 		return;
 	}
 
@@ -704,7 +704,7 @@ showList:
 		}
 		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
 		{
-			showFileInfoWebTV(selected);
+			openFilebrowser();
 			res = -1;
 			
 			goto showList;
@@ -844,7 +844,7 @@ void CWebTV::paintItem(int pos)
 #define NUM_LIST_BUTTONS 4
 struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 {
-	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_WEBTV_INFO},
+	{ NEUTRINO_ICON_BUTTON_RED, LOCALE_WEBTV_ADD_BOUQUETS},
 	{NEUTRINO_ICON_BUTTON_GREEN , LOCALE_FILEBROWSER_NEXTPAGE},
 	{NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_FILEBROWSER_PREVPAGE},
 	{ NEUTRINO_ICON_BUTTON_BLUE, LOCALE_WEBTV_BOUQUETS}
@@ -903,6 +903,12 @@ void CWebTV::paintHead()
 	}
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10 + icon_w + 10, y + theight, width - 20 - icon_w - timestr_len, title.c_str(), COL_MENUHEAD, 0, true); // UTF-8
+	
+	// help icon
+	int icon_w_h, icon_h_h;
+	
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w_h, &icon_h_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - 10 - icon_w_h , y + (theight - icon_h_h)/2 );
 }
 
 // infos
@@ -1015,3 +1021,30 @@ void CWebTV::showFileInfoWebTV(int pos)
 	if(pos > -1)
 		ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
 }
+
+void CWebTV::openFilebrowser(void)
+{
+	CFileBrowser filebrowser;
+	CFileFilter fileFilter;
+	fileFilter.addFilter("xml");
+
+	filebrowser.Multi_Select    = true;
+	filebrowser.Dirs_Selectable = true;
+	filebrowser.Filter          = &fileFilter;
+
+	if (filebrowser.exec(CONFIGDIR))
+	{
+		// select file
+		strcpy(g_settings.webtv_settings, filebrowser.getSelectedFile()->Name.c_str());
+		printf("[webtv] webtv settings file %s\n", filebrowser.getSelectedFile()->Name.c_str());
+		
+		// change mode to user mode
+		mode = USER;
+		
+		// load channels
+		loadChannels();
+	}
+}
+
+
+

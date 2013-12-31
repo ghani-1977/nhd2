@@ -1165,9 +1165,6 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	// audioplayer screensaver dir
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
 	
-	// webtv settings
-	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_WEBTVUSER, true, g_settings.webtv_settings, this, "webtv_settings" ) );
-	
 	// epgplus logos
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_EPGPLUS_SHOW_LOGOS, &g_settings.epgplus_show_logo, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
 	

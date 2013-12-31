@@ -766,7 +766,6 @@ miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after they ti
 miscsettings.epg_old_events_hint2 Set in hours
 miscsettings.epg_save Save/Restore epg on reboot
 miscsettings.epgplus_show_logos Channel Logo(EPGPlus)
-miscsettings.webtv_user_bouquet WebTV User Bouquet
 miscsettings.audioplayer_screensaver_dir Audioplayer diashow
 miscsettings.fb_destination Expert! Boot-Console
 miscsettings.general General
@@ -1627,6 +1626,7 @@ webtvchannellist.info Info
 webtv.netzkino Netzkino.de
 webtv.user User bouquet
 webtv.bouquets Favorites
+webtv.add_bouquets add User bouquet
 
 menu.hint_ytplay Play selected youtube feeds
 moviebrowser.yt_error Failed to load youtube feed

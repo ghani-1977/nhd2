@@ -766,7 +766,6 @@ miscsettings.epg_old_events_hint1 Wie lange abgelaufene EPG-Daten aufheben?
 miscsettings.epg_old_events_hint2 Angabe in Stunden
 miscsettings.epg_save EPG zwischenspeichern?
 miscsettings.epgplus_show_logos Kanal Logo(EPGPlus)
-miscsettings.webtv_user_bouquet WebTV User Bouquet
 miscsettings.audioplayer_screensaver_dir Audioplayer Diashow
 miscsettings.fb_destination EXPERTE! Boot-Konsole
 miscsettings.general Allgemein
@@ -1624,10 +1623,10 @@ audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 
 webtv.head WebTV
 webtvchannellist.nonefound Es wurden keine WebTV Kanäle gefunden!
-webtvchannellist.info Info
 webtv.netzkino NetzKino.de
 webtv.user User Bouquet
 webtv.bouquets Favoriten
+webtv.add_bouquets User Bouquet einfügen
 
 menu.hint_ytplay Wiedergabe von ausgewählten Youtube Feeds
 moviebrowser.yt_error Fehler beim laden des Youtube Feed

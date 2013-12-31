@@ -630,7 +630,6 @@ const char * locale_real_names[] = {
 	"miscsettings.epg_old_events_hint2",
 	"miscsettings.epg_save",
 	"miscsettings.epgplus_show_logos",
-	"miscsettings.webtv_user_bouquet",
 	"miscsettings.audioplayer_screensaver_dir",
 	"motorcontrol.head",
 	"motorcontrol.user_menu",
@@ -1636,10 +1635,10 @@ const char * locale_real_names[] = {
 	
 	"webtv.head",
 	"webtvchannellist.nonefound",
-	"webtvchannellist.info",
 	"webtv.netzkino",
 	"webtv.user",
 	"webtv.bouquets",
+	"webtv.add_bouquets",
 	
 	// youtube
 	"menu.hint_ytplay",
