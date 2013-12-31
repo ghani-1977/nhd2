@@ -777,12 +777,12 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	if(!access(IconName.c_str(), F_OK))
 	{
-		frameBuffer->getIconSize((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_WEBTV : NEUTRINO_ICON_MP, &m_icon_w, &m_icon_h);
+		frameBuffer->getIconSize((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_IPTV : NEUTRINO_ICON_MP, &m_icon_w, &m_icon_h);
 
 		int m_icon_x = BoxStartX + 5;
 		int m_icon_y = BoxStartY + (BoxHeight - m_icon_h) / 2;
 		
-		frameBuffer->paintIcon((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_WEBTV : NEUTRINO_ICON_MP, m_icon_x, m_icon_y);
+		frameBuffer->paintIcon((CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)? NEUTRINO_ICON_IPTV : NEUTRINO_ICON_MP, m_icon_x, m_icon_y);
 	}
 	
 	// paint buttons

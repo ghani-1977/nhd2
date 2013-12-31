@@ -865,8 +865,8 @@ void CWebTV::paintHead()
 	
 	// head icon
 	int icon_w, icon_h;
-	frameBuffer->getIconSize(NEUTRINO_ICON_STREAMING, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_STREAMING, x + 10, y + ( theight - icon_h)/2 );
+	frameBuffer->getIconSize(NEUTRINO_ICON_WEBTV_SMALL, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_WEBTV_SMALL, x + 10, y + ( theight - icon_h)/2 );
 	
 	// paint time/date
 	int timestr_len = 0;

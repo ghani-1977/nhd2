@@ -157,7 +157,7 @@
 #include <neutrino.h>
 
 
-typedef int (*PluginExec)( void );
+typedef uint64_t (*PluginExec)( void );
 
 typedef enum plugin_type
 {

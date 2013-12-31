@@ -80,7 +80,7 @@ install_DATA += \
 
 # webtv
 install_DATA += \
-	webtv.png iptv.png
+	webtv.png webtv_small.png iptv.png
 
 # netzkino.de
 install_DATA += \
