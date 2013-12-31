@@ -1038,11 +1038,10 @@ void CWebTV::openFilebrowser(void)
 		strcpy(g_settings.webtv_settings, filebrowser.getSelectedFile()->Name.c_str());
 		printf("[webtv] webtv settings file %s\n", filebrowser.getSelectedFile()->Name.c_str());
 		
-		// change mode to user mode
-		mode = USER;
-		
 		// load channels
-		loadChannels();
+		mode = USER;
+		readChannellist(g_settings.webtv_settings);
+		selected = 0;
 	}
 }
 
