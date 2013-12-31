@@ -51,13 +51,9 @@ class GLThreadObj;
 
 typedef struct fb_var_screeninfo t_fb_var_screeninfo;
 
-#define ANGULAR				0
-#define ROUNDED				1
-#define ONLY_TOP			2
-
 #define CORNER_TOP		0x1
-#define CORNER_BOTTOM		((g_settings.rounded_corners == ONLY_TOP) ? 0x0: 0x2) //0x2
-#define CORNER_BOTH		((g_settings.rounded_corners == ONLY_TOP) ? 0x1: 0x3) //0x3
+#define CORNER_BOTTOM		0x2 
+#define CORNER_BOTH		0x3 
 
 // resolution
 #define DEFAULT_XRES		1280

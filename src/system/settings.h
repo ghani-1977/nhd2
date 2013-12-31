@@ -557,6 +557,10 @@ extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 #define BORDER_LEFT			10
 #define BORDER_RIGHT			10
 #define SCROLLBAR_WIDTH			15
+
+#define ANGULAR				0
+#define ROUNDED				1
+#define ONLY_TOP			2
 /* end default values */
 
 // parentallock
