@@ -97,6 +97,7 @@ class CWebTV
 		void paintItem(int pos);
 		void paint();
 		void paintHead();
+		void paintFoot();
 		void hide();
 		
 	public:

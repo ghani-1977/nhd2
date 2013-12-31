@@ -1403,14 +1403,14 @@ void CFileBrowser::paintHead()
 	// icon
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_FOLDER, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_FOLDER, x +10, y +8);
+	frameBuffer->paintIcon(NEUTRINO_ICON_FOLDER, x + 10, y + 8);
 
 	if(m_Mode == ModeSC)
 		snprintf(l_name, sizeof(l_name), "%s %s", g_Locale->getText(LOCALE_AUDIOPLAYER_ADD_SC), FILESYSTEM_ENCODING_TO_UTF8_STRING(name).c_str()); // UTF-8
 	else
 		snprintf(l_name, sizeof(l_name), "%s %s", g_Locale->getText(LOCALE_FILEBROWSER_HEAD), FILESYSTEM_ENCODING_TO_UTF8_STRING(name).c_str()); // UTF-8
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + 10 + icon_w + 5, y + theight + 1, width - 11, l_name, COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->RenderString(x + 10 + icon_w + 5, y + theight + 1, width - 10 - icon_w - 5, l_name, COL_MENUHEAD, 0, true); // UTF-8
 }
 
 const struct button_label FileBrowserButtons[3] =

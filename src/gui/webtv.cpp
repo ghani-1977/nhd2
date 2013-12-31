@@ -624,6 +624,9 @@ showList:
 	
 	// head
 	paintHead();
+	
+	// foot
+	paintFoot();
 		
 	// paint all
 	paint();
@@ -856,17 +859,16 @@ void CWebTV::paintHead()
 	// head
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
 	
-	// foot
-	int ButtonWidth = (width - 20) / 4;
-	
-	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
-	
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
-	
 	// head icon
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_WEBTV_SMALL, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_WEBTV_SMALL, x + 10, y + ( theight - icon_h)/2 );
+	
+	// help icon
+	int icon_w_h, icon_h_h;
+	
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w_h, &icon_h_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - 10 - icon_w_h , y + (theight - icon_h_h)/2 );
 	
 	// paint time/date
 	int timestr_len = 0;
@@ -882,7 +884,7 @@ void CWebTV::paintHead()
 		strftime(timestr, 18, "%d.%m.%Y %H:%M", tm);
 		timestr_len = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getRenderWidth(timestr, true); // UTF-8
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->RenderString(x + width - 20 - timestr_len, y + g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight() + 5, timestr_len+1, timestr, COL_MENUHEAD, 0, true); // UTF-8 // 100 is pic_w refresh box
+		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->RenderString(x + width - 20 - icon_w_h - timestr_len, y + g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight() + 5, timestr_len+1, timestr, COL_MENUHEAD, 0, true); // UTF-8 // 100 is pic_w refresh box
 	}
 	
 	//head title
@@ -904,11 +906,22 @@ void CWebTV::paintHead()
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10 + icon_w + 10, y + theight, width - 20 - icon_w - timestr_len, title.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 	
-	// help icon
-	int icon_w_h, icon_h_h;
+	// foot
+	//int ButtonWidth = (width - 20) / 4;
 	
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w_h, &icon_h_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - 10 - icon_w_h , y + (theight - icon_h_h)/2 );
+	//frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	
+	//::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
+}
+
+void CWebTV::paintFoot()
+{
+	// foot
+	int ButtonWidth = (width - 20) / 4;
+	
+	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 }
 
 // infos
