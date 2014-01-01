@@ -7,16 +7,15 @@ install_DATA = \
 	ellinika.png english.png francais.png french.png hungarian.png italiano.png norsk.png \
 	polski.png portugues.png romania.png russkij.png nederlands.png slovak.png suomi.png svenska.png \
 	blau.png gelb.png gruen.png rot.png \
-	bookmarkmanager.png \
 	ca.png ca2.png ca2_gray.png colors.png dbox.png dbox_small.png \
-	dd.png dd_avail.png dd_gray.png ddfill.png \
+	dd.png dd_avail.png dd_gray.png \
 	down.png up.png right.png left.png \
 	error.png features.png file.png folder.png games.png \
 	help.png help_small.png hidden.png home.png info.png \
-	keybinding.png lcd.png local.png lock.png mainmenue.png \
+	keybinding.png lcd.png lock.png mainmenue.png \
 	mounted.png movie.png \
 	mp3.png mute.png mute_small.png mute_zap_gray.png mute_zap_green.png \
-	network.png not_mounted.png notyet.png numericpad.png ok.png power.png \
+	network.png not_mounted.png numericpad.png ok.png power.png \
 	rec.png recording.png \
 	settings.png shell.png softupdate.png streaming.png \
 	subt.png subt_gray.png timer.png video.png \
@@ -46,8 +45,8 @@ install_DATA += \
 
 # mp icons
 install_DATA += \
-	ico_mp_rewind.png ico_mp_play.png ico_mp_pause.png ico_mp_forward.png ico_mp_stop.png \
-	mp_play.png mp_pause.png mp_b-skip.png mp_f-skip.png mp.png
+	mp_rew_small.png mp_play_small.png mp_pause_small.png mp_ff_small.png mp_stop_small.png \
+	mp_play.png mp_pause.png mp_rew.png mp_ff.png mp.png
 
 
 # resolution

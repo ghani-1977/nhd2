@@ -84,9 +84,14 @@
 #define NEUTRINO_ICON_MULTIMEDIA		"multimedia"
 #define NEUTRINO_ICON_NOT_MOUNTED		"not_mounted"
 #define NEUTRINO_ICON_PAUSE			"mp_pause"
+#define NEUTRINO_ICON_PAUSE_SMALL		"mp_pause_small"
 #define NEUTRINO_ICON_PLAY 			"mp_play"
-#define NEUTRINO_ICON_REW			"mp_b-skip"
-#define NEUTRINO_ICON_FF 			"mp_f-skip"
+#define NEUTRINO_ICON_PLAY_SMALL 		"mp_play_small"
+#define NEUTRINO_ICON_REW			"mp_rew"
+#define NEUTRINO_ICON_REW_SMALL			"mp_rew_small"
+#define NEUTRINO_ICON_FF 			"mp_ff"
+#define NEUTRINO_ICON_FF_SMALL 			"mp_ff_small"
+#define NEUTRINO_ICON_STOP_SMALL 		"mp_stop_small"
 #define NEUTRINO_ICON_PROTECTING		"protecting"
 #define NEUTRINO_ICON_QUESTION			"question"
 #define NEUTRINO_ICON_RECORDING			"recording"
@@ -115,7 +120,6 @@
 #define NEUTRINO_ICON_SCRAMBLED			"ca"
 #define NEUTRINO_ICON_SCRAMBLED2		"ca2"
 #define NEUTRINO_ICON_SCRAMBLED2_GREY		"ca2_gray"
-#define NEUTRINO_ICON_BOOKMARK_MANAGER		"bookmarkmanager"
 #define NEUTRINO_ICON_BORDER_UL			"border_ul"
 #define NEUTRINO_ICON_BORDER_LR			"border_lr"
 #define NEUTRINO_ICON_MAINMENU			"mainmenue"
@@ -203,13 +207,10 @@
 #define NEUTRINO_ICON_HDDSETTINGS		"hddsettings"
 #define NEUTRINO_ICON_CAM			"cam"
 
+#define NEUTRINO_ICON_USB			"usb"
+#define NEUTRINO_ICON_USB_GREY			"usb_gray"
+
 // misc
 #define DUMMY_ICON				"dummy"
-
-// icon widths 
-#define NEUTRINO_ICON_BUTTON_BLUE_WIDTH		16
-#define NEUTRINO_ICON_BUTTON_GREEN_WIDTH	16
-#define NEUTRINO_ICON_BUTTON_RED_WIDTH		16
-#define NEUTRINO_ICON_BUTTON_YELLOW_WIDTH	16
 
 #endif /* __gui_widget_icons_h__ */

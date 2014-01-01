@@ -735,7 +735,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 extern bool isMovieBrowser;
 extern bool isVlc;
 extern bool cdDvd;
-//extern bool isWebTV;
 extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
@@ -837,23 +836,24 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	/* mp keys */
 	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
-		frameBuffer->getIconSize("ico_mp_rewind", &icon_w, &icon_h);
-		frameBuffer->paintIcon("ico_mp_rewind", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_play", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_pause", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_stop", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
-		frameBuffer->paintIcon("ico_mp_forward", BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->getIconSize(NEUTRINO_ICON_FF_SMALL, &icon_w, &icon_h);
+		
+		frameBuffer->paintIcon(NEUTRINO_ICON_REW_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 5*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_PLAY_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 4*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_PAUSE_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 3*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_STOP_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 2*icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_FF_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - icon_w, BoxStartY + BoxHeight - 20 + (20 - icon_h)/2);
 	}
 		
 	//playstate
-	const char *icon = "mp_play";
+	const char *icon = NEUTRINO_ICON_PLAY;
 		
 	switch(playstate)
 	{
-		case CMoviePlayerGui::PAUSE: icon = "mp_pause"; break;
-		case CMoviePlayerGui::PLAY: icon = "mp_play"; break;
-		case CMoviePlayerGui::REW: icon = "mp_b-skip"; break;
-		case CMoviePlayerGui::FF: icon = "mp_f-skip"; break;
+		case CMoviePlayerGui::PAUSE: icon = NEUTRINO_ICON_PAUSE; break;
+		case CMoviePlayerGui::PLAY: icon = NEUTRINO_ICON_PLAY; break;
+		case CMoviePlayerGui::REW: icon = NEUTRINO_ICON_REW; break;
+		case CMoviePlayerGui::FF: icon = NEUTRINO_ICON_FF; break;
 		case CMoviePlayerGui::SOFTRESET: break;
 		case CMoviePlayerGui::SLOW: break;
 		case CMoviePlayerGui::STOPPED: break;

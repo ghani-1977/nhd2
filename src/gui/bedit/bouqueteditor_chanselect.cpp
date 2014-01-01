@@ -131,10 +131,15 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool _selec
 		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 	}
 
-
+	//
+	int icon_w = 16;
+	int icon_h = 16;
+	
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MARK, &icon_w, &icon_h);
+	
 	if(itemNr < getItemCount())
 	{
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 8 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 8, ypos+ fheight, width - (8 + NEUTRINO_ICON_BUTTON_GREEN_WIDTH + 8 + 8), Channels[itemNr]->getName(), color, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 8 + icon_w + 8, ypos+ fheight, width - (8 + icon_w + 8 + 8), Channels[itemNr]->getName(), color, 0, true);
 
 		if( isChannelInBouquet(itemNr))
 		{
@@ -142,7 +147,7 @@ void CBEChannelSelectWidget::paintItem(uint32_t itemNr, int paintNr, bool _selec
 		}
 		else
 		{
-			frameBuffer->paintBoxRel(x + 8, ypos + 4, NEUTRINO_ICON_BUTTON_GREEN_WIDTH, fheight - 4, bgcolor);
+			frameBuffer->paintBoxRel(x + 8, ypos + 4, icon_w, fheight - 4, bgcolor);
 		}
 		
 		//FIXME???
