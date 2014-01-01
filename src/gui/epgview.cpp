@@ -715,11 +715,11 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 			
                         if( tags[i].streamContent == 1 && (tags[i].componentType == 2 || tags[i].componentType == 3) )
                         {
-                                frameBuffer->paintIcon(NEUTRINO_ICON_16_9, ox + sx - 2 - icon_w_aspect, sy + oy + 5 );
+                                frameBuffer->paintIcon(NEUTRINO_ICON_16_9, ox + sx - 5 - icon_w_aspect, sy + oy + 5 );
                         }
                         else if( tags[i].streamContent == 2 && tags[i].componentType == 5 )
                         {
-                                frameBuffer->paintIcon(NEUTRINO_ICON_DD, ox + sx - 2 - icon_w_dd - 2 - icon_w_aspect, sy + oy + 5);
+                                frameBuffer->paintIcon(NEUTRINO_ICON_DD, ox + sx - 2 - icon_w_dd - 5 - icon_w_aspect, sy + oy + 5);
                         }
                 }
         }

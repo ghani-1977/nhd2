@@ -69,11 +69,14 @@ class CInfoViewer
 		int ChanNumberWidth;
 		int ChanNumberHeight;
 		int ChanInfoX;
+		int ChanInfoY;
 		
 		int satNameWidth;
 		
 		int freqStartX;
 		int freqWidth;
+		
+		int buttonBarHeight;
 		
 		// dimensions of radiotext window		
 		int             rt_dx;

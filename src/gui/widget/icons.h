@@ -122,7 +122,7 @@
 #define NEUTRINO_ICON_SCRAMBLED2_GREY		"ca2_gray"
 #define NEUTRINO_ICON_BORDER_UL			"border_ul"
 #define NEUTRINO_ICON_BORDER_LR			"border_lr"
-#define NEUTRINO_ICON_MAINMENU			"mainmenue"
+#define NEUTRINO_ICON_MAINMENU			"mainmenu"
 #define NEUTRINO_ICON_LANGUAGE			"language"
 #define NEUTRINO_ICON_NETWORK			"network"
 #define NEUTRINO_ICON_LCD			"lcd"

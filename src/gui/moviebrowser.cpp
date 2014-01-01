@@ -5350,7 +5350,7 @@ void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp
 	//
 	videoListsize = ylist.size();
 	
-	for (unsigned i = 0; i < m_settings.nkresults && m_settings.nkresults <= ylist.size(); i++) 
+	for (int i = 0; i < m_settings.nkresults && m_settings.nkresults <= ylist.size(); i++) 
 	{
 		MI_MOVIE_INFO movieInfo;
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure

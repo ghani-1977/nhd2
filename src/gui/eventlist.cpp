@@ -771,6 +771,7 @@ void EventList::paint(t_channel_id channel_id)
 #endif	
 }
 
+// footer
 void  EventList::showFunctionBar(bool show)
 {
 	int bx = x + 8;
