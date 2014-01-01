@@ -37,7 +37,7 @@ void paintButtons(CFrameBuffer * const frameBuffer, Font * const font, const CLo
 		int f_h = font->getHeight();
 		
 		frameBuffer->paintIcon(content[i].button, x + i * buttonwidth, y);
-		font->RenderString(x + iw + 5 + i * buttonwidth, /*y + f_h*/y + (ih - f_h)/2 + f_h, buttonwidth - iw - 5, localemanager->getText(content[i].locale), COL_INFOBAR, 0, true); // UTF-8
+		font->RenderString(x + iw + 5 + i * buttonwidth, y + (ih - f_h)/2 + f_h, buttonwidth - iw - 5, localemanager->getText(content[i].locale), COL_INFOBAR, 0, true); // UTF-8
 	}
 }
 

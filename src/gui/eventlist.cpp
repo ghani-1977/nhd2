@@ -808,8 +808,8 @@ void  EventList::showFunctionBar(bool show)
 	
 		if ( g_settings.key_channelList_addrecord == CRCInput::RC_red ) 		  
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTLISTBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, bx + cellwidth*pos, by + (bh - icon_h)/2);
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTLISTBAR_RECORDEVENT), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 	
@@ -818,8 +818,8 @@ void  EventList::showFunctionBar(bool show)
 	{
 		pos = 1;
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTFINDER_SEARCH), COL_INFOBAR, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, bx + cellwidth*pos, by + (bh - icon_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTFINDER_SEARCH), COL_INFOBAR, 0, true); // UTF-8
 	}
 
 	// Button: Timer Channelswitch	
@@ -831,8 +831,8 @@ void  EventList::showFunctionBar(bool show)
 		// FIXME : display other icons depending on g_settings.key_channelList_addremind		
 		if (g_settings.key_channelList_addremind == CRCInput::RC_yellow) 		  
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTLISTBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, bx + cellwidth*pos, by + (bh - icon_h)/2);
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_EVENTLISTBAR_CHANNELSWITCH), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 
@@ -845,8 +845,8 @@ void  EventList::showFunctionBar(bool show)
 		//FIXME: display other icons depending on g_settings.key_channelList_sort value
 		if (g_settings.key_channelList_sort == CRCInput::RC_blue) 
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, (sort_mode == SORT_DESCRIPTION)?g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTALPHA) : g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTTIME), COL_INFOBAR, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, bx + cellwidth*pos, by + (bh - icon_h)/2);
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, (sort_mode == SORT_DESCRIPTION)?g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTALPHA) : g_Locale->getText(LOCALE_EVENTLISTBAR_EVENTSORTTIME), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 	
@@ -858,8 +858,8 @@ void  EventList::showFunctionBar(bool show)
 		
 		if (g_settings.key_channelList_reload == CRCInput::RC_setup) 
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX_SMALL, bx + cellwidth*pos, by + (iheight - icon_h)/2);
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + bh - (iheight - fh)/2, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_KEYBINDINGMENU_RELOAD), COL_INFOBAR, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX_SMALL, bx + cellwidth*pos, by + (bh - icon_h)/2);
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_KEYBINDINGMENU_RELOAD), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}
 }
