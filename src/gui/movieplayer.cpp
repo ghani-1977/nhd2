@@ -142,7 +142,7 @@ static int slow = 0;
 
 static int position = 0;
 static int duration = 0;
-static int file_prozent = 0;
+/*static*/ int file_prozent = 0;
 
 static int startposition;
 int timeshift;

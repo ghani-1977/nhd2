@@ -743,10 +743,12 @@ extern bool cdDvd;
 extern bool isDVD;
 extern bool isBlueRay;
 extern bool isURL;
+extern int file_prozent;
 
-void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, const int file_prozent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, const int /*file_prozent*/, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
 {
 	m_visible = true;
+	bool show_dot = true;
 	
 	// get dimension
 	BoxHeight = 100;
@@ -757,8 +759,11 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
 	
+	if (!gotTime)
+		gotTime = timeset;
+	
 	// init progressbar
-	moviescale = new CProgressBar( BoxWidth - 15, TIMESCALE_BAR_HEIGHT, 40, 100, 70, true );
+	moviescale = new CProgressBar( BoxWidth - 10, TIMESCALE_BAR_HEIGHT, 40, 100, 70, true );
 	
 	moviescale->reset();
 	
@@ -773,6 +778,13 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		
 	// bottum bar
 	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + BoxHeight, BoxWidth, buttonBarHeight, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM); 
+	
+	//time
+	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+	{
+		paintTime(show_dot, true);
+		show_dot = !show_dot;
+	}
 	
 	//
 	// show date
@@ -790,6 +802,13 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	int height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
 			
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - widthtime, BoxStartY + (SAT_INFOBOX_HEIGHT -height)/2 + height, widthtime, datestr, COL_INFOBAR, 0, true); // UTF-8
+	
+	std::string title = "neutrinoHD2";
+	int widthtitle = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(title.c_str(), true); //UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 5, BoxStartY + (SAT_INFOBOX_HEIGHT - height)/2 + height, widthtitle, (char *)title.c_str(), COL_INFOBAR, 0, true); // UTF-8
+	
+	// add sec timer
+	sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
 	
 	// mp icon
 	int m_icon_w = 0;
@@ -898,7 +917,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		sprintf(strSpeed, "%d", speed);
 		
 		//FIXME:??? position
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, BoxStartY + (BoxHeight/3)*2, BoxWidth/5, strSpeed, COL_INFOBAR ); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->RenderString(icon_x + icon_w + 5, icon_y + (icon_h - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_NUMBER]->getHeight(), BoxWidth/5, strSpeed, COL_INFOBAR ); // UTF-8
 	}
 	
 	time_t tDisplayTime = duration/1000;
@@ -928,7 +947,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, TitleHeight, durationWidth, cDisplayTime, COL_INFOBAR);
 	
 	// progressbar
-	moviescale->paint(BoxStartX + 10, /*BoxStartY + 15*/BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
+	moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -952,6 +971,17 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		{
 			res = messages_return::cancel_info;
 		} 
+		else if ( (msg == NeutrinoMessages::EVT_TIMER) && (data == sec_timer_id) )
+		{
+			if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
+			{
+				paintTime(show_dot, false);
+				show_dot = !show_dot;
+			}
+			
+			// progressbar
+			moviescale->paint(BoxStartX + 10, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
+		} 
 		else if(msg == CRCInput::RC_info)
 		{
 			if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
@@ -970,7 +1000,12 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 			}
 		}
 		else 
-		{		
+		{
+			if (msg == CRCInput::RC_standby) 
+			{
+				g_RCInput->killTimer (sec_timer_id);
+			}
+					
 			res = neutrino->handleMsg (msg, data);
 					
 			if (res & messages_return::unhandled) 
@@ -988,6 +1023,9 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	if (hideIt)
 		killTitle();
+	
+	g_RCInput->killTimer(sec_timer_id);
+		sec_timer_id = 0;
 }
 
 void CInfoViewer::showSubchan()
