@@ -91,7 +91,9 @@ class cNKFeedParser
 		{
 			CATEGORY,
 			SEARCH,
-			MODE_LAST
+			MODE_LAST,
+			NEXT,
+			PREV
 		};
 		cNKFeedParser();
 		~cNKFeedParser();

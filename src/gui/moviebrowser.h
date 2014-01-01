@@ -354,6 +354,7 @@ class CMovieBrowser : public CMenuTarget
 		
 		void loadNKTitles(int mode, std::string search, int id, bool rtmp = true);
 		bool showNKMenu();
+		int videoListsize;
 		//
 	public:  // Functions //////////////////////////////////////////////////////////7
 		CMovieBrowser(const char * path); //P1 

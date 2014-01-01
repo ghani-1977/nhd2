@@ -510,7 +510,6 @@ bool cYTFeedParser::ParseFeed(std::string &url)
 	return parseFeedXml(answer);
 }
 
-//bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::string vid)
 bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::string vid, yt_feed_orderby_t orderby)
 {
 	std::string url = "http://gdata.youtube.com/feeds/api/standardfeeds/";

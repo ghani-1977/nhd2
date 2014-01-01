@@ -705,7 +705,14 @@ showList:
 			zapOnExit = true;
 			loop = false;
 		}
-		else if (msg == CRCInput::RC_info || msg == CRCInput::RC_red) 
+		else if (msg == CRCInput::RC_info) 
+		{
+			showFileInfoWebTV(selected);
+			res = -1;
+			
+			goto showList;
+		}
+		else if (msg == CRCInput::RC_red) 
 		{
 			openFilebrowser();
 			res = -1;

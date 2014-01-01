@@ -1970,7 +1970,9 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
 		}		
 		else if(show_mode == MB_SHOW_NETZKINO)
-			onButtonPress(CRCInput::RC_page_down);	
+		{
+			onButtonPress(CRCInput::RC_page_down);
+		}
 		else if(m_settings.gui == MB_GUI_MOVIE_INFO)
 			onSetGUIWindow(MB_GUI_FILTER);
 		else if(m_settings.gui == MB_GUI_FILTER)
@@ -2024,7 +2026,9 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			}
 		}		
 		else if(show_mode == MB_SHOW_NETZKINO)
-			onButtonPress(CRCInput::RC_page_up);	
+		{
+			onButtonPress(CRCInput::RC_page_up);
+		}
 		else if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 		{
 			// sorting is not avialable for last play and record
@@ -5343,7 +5347,10 @@ void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp
 	m_vMovieInfo.clear();
 	nk_video_list_t &ylist = nkparser.GetVideoList();
 	
-	for (unsigned i = 0; i < ylist.size(); i++) 
+	//
+	videoListsize = ylist.size();
+	
+	for (unsigned i = 0; i < m_settings.nkresults && m_settings.nkresults <= ylist.size(); i++) 
 	{
 		MI_MOVIE_INFO movieInfo;
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
