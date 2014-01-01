@@ -3972,6 +3972,30 @@ _repeat:
 		}
 		return messages_return::handled;
 	}
+	else if( msg == NeutrinoMessages::REBOOT ) 
+	{
+		if(!skipShutdownTimer) 
+		{
+			ExitRun(REBOOT);
+		}
+		else 
+		{
+			skipShutdownTimer = false;
+		}
+		return messages_return::handled;
+	}
+	else if( msg == NeutrinoMessages::RESTART ) 
+	{
+		if(!skipShutdownTimer) 
+		{
+			ExitRun(RESTART);
+		}
+		else 
+		{
+			skipShutdownTimer = false;
+		}
+		return messages_return::handled;
+	}
 	else if ( msg == NeutrinoMessages::EVT_POPUP ) 
 	{
 		if (mode != mode_scart)
@@ -5048,7 +5072,12 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		radioMode();
 		returnval = menu_return::RETURN_EXIT_ALL;
-	}	
+	}
+	else if(actionKey=="webtv") 
+	{
+		webtvMode();
+		return menu_return::RETURN_EXIT_ALL;
+	}
 	else if(actionKey=="scart") 
 	{
 		g_RCInput->postMsg( NeutrinoMessages::VCR_ON, 0 );
@@ -5331,11 +5360,6 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		StartSubtitles();
 				
 		return menu_return::RETURN_REPAINT;	
-	}
-	else if(actionKey=="webtv") 
-	{
-		webtvMode();
-		return menu_return::RETURN_EXIT_ALL;
 	}
 	else if(actionKey == "audioplayer_screensaver_dir") 
 	{
