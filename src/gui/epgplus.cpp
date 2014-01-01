@@ -535,16 +535,20 @@ struct button_label buttonLabels[] = {
 
 void EpgPlus::Footer::paintButtons(button_label * _buttonLabels, int numberOfButtons)
 {
-	int yPos = this->y + this->getUsedHeight () - this->fontButtons->getHeight ();
+	int yPos = this->y + this->getUsedHeight() - this->fontButtons->getHeight();
 	
 	int buttonWidth = (this->width - 20) / 4;
 	
-	int buttonHeight = 7 + std::min (16, this->fontButtons->getHeight ());
+	//
+	int icon_w = 16;
+	int icon_h = 16;
+	this->frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
+	int buttonHeight = 6 + std::min (icon_h, this->fontButtons->getHeight());
 	
 	// paint foot box
-	this->frameBuffer->paintBoxRel (this->x, yPos, this->width, this->fontButtons->getHeight(), COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	this->frameBuffer->paintBoxRel(this->x, yPos, this->width, this->fontButtons->getHeight(), COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
-	::paintButtons (this->frameBuffer, this->fontButtons, g_Locale, this->x + 10, yPos + this->fontButtons->getHeight() - buttonHeight + 3, buttonWidth, numberOfButtons, _buttonLabels);
+	::paintButtons(this->frameBuffer, this->fontButtons, g_Locale, this->x + 10, yPos, buttonWidth, numberOfButtons, _buttonLabels);
 }
 
 EpgPlus::EpgPlus ()
