@@ -525,11 +525,11 @@ int CChannelList::show()
 	// display channame in vfd	
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );	
 
-	//buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
-	int icon_w = 16;
-	int icon_h = 16;
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-	buttonHeight = 7 + std::min(icon_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
+	//buttonHeight
+	icon_bf_w = 16;
+	icon_bf_h = 16;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
+	buttonHeight = 8 + std::min(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 
@@ -1944,10 +1944,12 @@ void CChannelList::paintHead()
 	}
 
 	// foot
-	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	int f_x = x;
+	int f_y = y + (height - buttonHeight);
+	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
 	// foot buttons
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + 10, f_y + (buttonHeight - icon_bf_h)/2, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);
 
 	// help icon
 	//int icon_w_h, icon_h_h;

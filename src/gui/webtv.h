@@ -74,6 +74,9 @@ class CWebTV
 		int            	theight; 	// title font height
 		int            	fheight; 	// foot font height (buttons???)
 		
+		int icon_bf_w;
+		int icon_bf_h;
+		
 		unsigned int   	selected;
 		unsigned int oldselected;
 		int tuned;

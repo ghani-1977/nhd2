@@ -609,11 +609,11 @@ int CWebTV::Show()
 	// display channame in vfd	
 	CVFD::getInstance()->setMode(CVFD::MODE_IPTV);
 	
-	//buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
-	int icon_w = 16;
-	int icon_h = 16;
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-	buttonHeight = 7 + std::min(icon_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
+	//
+	icon_bf_w = 16;
+	icon_bf_h = 16;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
+	buttonHeight = 8 + std::min(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
 	
 	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 
@@ -917,23 +917,18 @@ void CWebTV::paintHead()
 	}
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10 + icon_w + 10, y + theight, width - 20 - icon_w - timestr_len, title.c_str(), COL_MENUHEAD, 0, true); // UTF-8
-	
-	// foot
-	//int ButtonWidth = (width - 20) / 4;
-	
-	//frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
-	
-	//::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 }
 
 void CWebTV::paintFoot()
 {
 	// foot
 	int ButtonWidth = (width - 20) / 4;
+	int f_x = x;
+	int f_y = y + (height - buttonHeight);
 	
-	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
+	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + 10, f_y + (buttonHeight - icon_bf_h)/2, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 }
 
 // infos
