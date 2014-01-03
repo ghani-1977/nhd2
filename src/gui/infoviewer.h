@@ -62,21 +62,74 @@ class CInfoViewer
 		int BoxEndY;
 		int BoxStartX;
 		int BoxStartY;
-		
 		int BoxHeight;
 		int BoxWidth;
 
+		// channel Name
+		int ChanNumberX;
+		int ChanNumberY;
 		int ChanNumberWidth;
 		int ChanNumberHeight;
+		int ChanNameX;
+		int ChanNameY;
+		int ChanNameWidth;
+		int ChanNameHeight;
+		
+		// channel info
 		int ChanInfoX;
 		int ChanInfoY;
+		int ChanInfoHeight;
 		
+		// sta info
 		int satNameWidth;
-		
+		int SatNameHeight;
 		int freqStartX;
 		int freqWidth;
 		
+		// buttonbar
 		int buttonBarHeight;
+		
+		// icons
+		int icon_w_subt, icon_h_subt;
+		int icon_w_vtxt, icon_h_vtxt;
+		int icon_w_aspect, icon_h_aspect;
+		int icon_w_dd, icon_h_dd;
+		int icon_w_sd, icon_h_sd;
+		int icon_w_reso, icon_h_reso;
+		int icon_w_ca, icon_h_ca;
+		int icon_w_rt, icon_h_rt;
+		int icon_w_rec, icon_h_rec;
+		int icon_red_w, icon_red_h;
+		int icon_green_w, icon_green_h;
+		int icon_yellow_w, icon_yellow_h;
+		int icon_blue_w, icon_blue_h;
+		
+		int icn_red_posx;
+		int icon_green_posx;
+		int icon_yellow_posx;
+		int icon_blue_posx;
+		
+		// tuner
+		int TunerNumWidth;
+		int TunerNumHeight;
+		
+		// channel logo
+		int PIC_W;
+		int PIC_H;
+		int logo_w; 
+		int logo_h;
+		int logo_bpp;
+		
+		// date
+		int dateWidth;
+		int dateHeight;
+		
+		// timescale
+		int timescale_posx;
+		int timescale_posy;
+		
+		// ca
+		int m_CA_Status;
 		
 		// dimensions of radiotext window		
 		int             rt_dx;

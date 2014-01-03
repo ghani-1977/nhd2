@@ -56,10 +56,6 @@
 #include <string>
 
 
-#define widest_number "2"
-
-#define ANNOUNCETIME (1 * 60)
-
 // CNeutrinoApp -  main run-class
 typedef struct neutrino_font_descr
 {

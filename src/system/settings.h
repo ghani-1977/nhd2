@@ -569,4 +569,9 @@ const int PARENTALLOCK_PROMPT_ONSTART        = 1;
 const int PARENTALLOCK_PROMPT_CHANGETOLOCKED = 2;
 const int PARENTALLOCK_PROMPT_ONSIGNAL       = 3;
 
+//
+#define widest_number "2"
+
+#define ANNOUNCETIME (1 * 60)
+
 #endif
