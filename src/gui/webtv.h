@@ -72,10 +72,12 @@ class CWebTV
 		int            	y;
 		
 		int            	theight; 	// title font height
-		int            	fheight; 	// foot font height (buttons???)
+		int            	iheight; 	// item font height (buttons???)
 		
 		int icon_bf_w;
 		int icon_bf_h;
+		int icon_hd_w;
+		int icon_hd_h;
 		
 		unsigned int   	selected;
 		unsigned int oldselected;

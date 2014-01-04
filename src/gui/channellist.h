@@ -65,7 +65,7 @@ class CChannelList
 		unsigned int		liststart;
 		unsigned int		listmaxshow;
 		unsigned int		numwidth;
-		int			fheight; 	// Fonthoehe Channellist-Inhalt
+		int			iheight; 	// Fonthoehe Channellist-Inhalt
 		int			theight; 	// Fonthoehe Channellist-Titel
 		int			buttonHeight;
 
@@ -80,6 +80,12 @@ class CChannelList
 		
 		int icon_bf_w;
 		int icon_bf_h;
+		int icon_head_w;
+		int icon_head_h;
+		int icon_ca_w;
+		int icon_ca_h;
+		int icon_hd_w;
+		int icon_hd_h;
 
 		bool historyMode;
 		bool vlist; 				// "virtual" list, not bouquet

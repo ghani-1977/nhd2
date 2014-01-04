@@ -529,14 +529,20 @@ int CChannelList::show()
 	icon_bf_w = 16;
 	icon_bf_h = 16;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
-	buttonHeight = 8 + std::min(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
+	buttonHeight = std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 8;
 	
-	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+	// title height
+	//theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE, &icon_headd_w, &icon_head_h);
+	theight = 6 + std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight());
 
-	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
-	listmaxshow = (height - theight - buttonHeight -0)/fheight;
-	height = theight + buttonHeight + listmaxshow * fheight;
-	info_height = fheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	//item/listbox
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_ca_w, &icon_ca_h);
+	//iheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	iheight = std::max(icon_hd_h, g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight()) + 6;
+	listmaxshow = (height - theight - buttonHeight -0)/iheight;
+	height = theight + buttonHeight + listmaxshow * iheight;
+	info_height = iheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
 	
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height+ info_height)) / 2;
@@ -1617,7 +1623,7 @@ void CChannelList::paintDetails(int index)
 				text3= text3+ " - ";
 
 			xstart += g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text3, true);
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + 2*fheight, width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + 2*iheight, width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
 		}
 
 		if (!(text2.empty())) 
@@ -1626,12 +1632,12 @@ void CChannelList::paintDetails(int index)
 				text2 = text2.substr( 1 );
 
 			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + 2*fheight, width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + 2*iheight, width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
 		}
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + fheight, width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10 - seit_len, y+ height + 5 + fheight   , seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10 - noch_len, y+ height + 5 + 2*fheight - 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + iheight, width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10 - seit_len, y+ height + 5 + iheight   , seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10 - noch_len, y+ height + 5 + 2*iheight - 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
 	}
 }
 
@@ -1645,9 +1651,9 @@ void CChannelList::paintItem2DetailsLine(int pos, int /*ch_index*/)
 #define ConnectLineBox_Width	16
 
 	int xpos  = x - ConnectLineBox_Width;
-	int ypos1 = y + theight+0 + pos*fheight;
+	int ypos1 = y + theight+0 + pos*iheight;
 	int ypos2 = y + height;
-	int ypos1a = ypos1 + (fheight/2)-2;
+	int ypos1a = ypos1 + (iheight/2)-2;
 	int ypos2a = ypos2 + (info_height/2)-2;
 	fb_pixel_t col1 = COL_MENUCONTENT_PLUS_6;
 	fb_pixel_t col2 = COL_MENUCONTENT_PLUS_1;
@@ -1662,7 +1668,7 @@ void CChannelList::paintItem2DetailsLine(int pos, int /*ch_index*/)
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 
 	{ 
-		int fh = fheight > 10 ? fheight - 10: 5;
+		int fh = iheight > 10 ? iheight - 10: 5;
 			
 		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 4, fh, col1);
 		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 4, ypos1 + 5, 1, fh, col2);			
@@ -1704,7 +1710,7 @@ bool CChannelList::canZap(CZapitChannel * channel)
 
 void CChannelList::paintItem(int pos)
 {
-	int ypos = y + theight + 0 + pos*fheight;
+	int ypos = y + theight + 0 + pos*iheight;
 	uint8_t    color;
 	fb_pixel_t bgcolor;
 	bool iscurrent = true;
@@ -1726,7 +1732,7 @@ void CChannelList::paintItem(int pos)
 		paintDetails(curr);
 
 		// refresh logo box
-		frameBuffer->paintBoxRel(x + width - /*90*/(OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
+		frameBuffer->paintBoxRel(x + width - (OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 		// paint logo
 		int PIC_W_1 = theight*1.67;
@@ -1744,7 +1750,7 @@ void CChannelList::paintItem(int pos)
 		g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - /*90*/(OFFSET_LEFT + icon_w_h + 2 + icon_w_s + 2 + icon_w_z + 2) - PIC_W + ((logo_bpp == 4)? 0 : (PIC_W - 2 - PIC_W_1)/2), y, (logo_bpp == 4)? PIC_W : PIC_W_1, theight, true);
 
 		// infobox
-		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - 15, iheight, bgcolor);
 	} 
 	else 
 	{
@@ -1752,7 +1758,7 @@ void CChannelList::paintItem(int pos)
 		bgcolor = iscurrent ? COL_MENUCONTENT_PLUS_0 : COL_MENUCONTENTINACTIVE_PLUS_0;
 		
 		// infobox
-		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - 15, iheight, bgcolor);
 	}
 
 	//name and description
@@ -1764,7 +1770,7 @@ void CChannelList::paintItem(int pos)
 		int prg_offset = 0;
 		int title_offset = 0;
 		uint8_t tcolor = (liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
-		int xtheight = fheight-2;
+		int xtheight = iheight - 2;
 		
 		// due to extended info
 		//prg_offset = 42;
@@ -1792,8 +1798,8 @@ void CChannelList::paintItem(int pos)
 		// setup icon
 		int icon_hd_w = 0;
 		int icon_hd_h = 0;
-		int icon_ca_w = 0;
-		int icon_ca_h = 0;
+		//int icon_ca_w = 0;
+		//int icon_ca_h = 0;
 		
 		if (g_settings.channellist_ca)
 		{
@@ -1801,19 +1807,19 @@ void CChannelList::paintItem(int pos)
 			if(chan->scrambled) 
 			{
 				frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_ca_w, &icon_ca_h);
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w, ypos + (fheight - icon_ca_h)/2);
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w, ypos + (iheight - icon_ca_h)/2);
 			}
 			
 			// hd icon
 			if(chan->isHD() ) 
 			{
 				frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_hd_w, &icon_hd_h);
-				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w - 2 - icon_hd_w, ypos + (fheight - icon_hd_h)/2);
+				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w - 2 - icon_hd_w, ypos + (iheight - icon_hd_h)/2);
 			}
 		}
 
 		int numpos = x + 5 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + fheight, numwidth + 5, tmp, color, fheight);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), numwidth + 5, tmp, color, iheight);
 
 		int l = 0;
 		if (this->historyMode)
@@ -1841,7 +1847,7 @@ void CChannelList::paintItem(int pos)
 				
 					sprintf((char*) tmp, "%02d:%02d", pStartZeit->tm_hour, pStartZeit->tm_min);
 					
-					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos + xtheight, width - numwidth - 20 - 15 - prg_offset, tmp, tcolor, 0, true);
+					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + 5 + numwidth+ 6, ypos + /*xtheight*/(iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), width - numwidth - 20 - 15 - prg_offset, tmp, tcolor, 0, true);
 				}
 				else
 				{
@@ -1859,18 +1865,18 @@ void CChannelList::paintItem(int pos)
 							runningPercent = 30;	// later on which can be fatal...
 					}
 					
-					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + iheight/4, 34, iheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + iheight/4, 30, iheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 					
-					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+					frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + iheight/4, runningPercent, iheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 				}
 			}
 
 			// name and description
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10 + prg_offset, ypos + fheight, width - numwidth - 40 - 15 - prg_offset, nameAndDescription, color, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10 + prg_offset, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width - numwidth - 40 - 15 - prg_offset, nameAndDescription, color, 0, true);
 
 			// epg-txt (left)
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len + 5 + prg_offset, ypos + fheight, ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + 5 + numwidth + 10 + ch_name_len + 5 + prg_offset, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), ch_desc_len, p_event->description, (curr == selected)?COL_MENUCONTENTSELECTED:(!displayNext ? COL_COLORED_EVENTS_CHANNELLIST : COL_MENUCONTENTINACTIVE) , 0, true);
 		}
 		else 
 		{
@@ -1878,16 +1884,16 @@ void CChannelList::paintItem(int pos)
 			{
 				// extended info
 				short runningPercent = 0;
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + fheight/4, 34, fheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, 30, fheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset, ypos + iheight/4, 34, iheight/2, COL_MENUCONTENT_PLUS_3, 0);//fill passive
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + iheight/4, 30, iheight/2 - 4, COL_MENUCONTENT_PLUS_1, 0);//frame(passive)
 
-				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + fheight/4, runningPercent, fheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
+				frameBuffer->paintBoxRel(x + 5 + numwidth + title_offset + 2, ypos + 2 + iheight/4, runningPercent, iheight/2 - 4, COL_MENUCONTENT_PLUS_3, 0);//fill(active)
 					
-				frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos + fheight/4 + 1, x + 5 + numwidth + title_offset + 32, ypos + fheight/4 + fheight/2 - 3, COL_MENUCONTENT_PLUS_3);
+				frameBuffer->paintLine(x + 5 + numwidth + title_offset, ypos + iheight/4 + 1, x + 5 + numwidth + title_offset + 32, ypos + iheight/4 + iheight/2 - 3, COL_MENUCONTENT_PLUS_3);
 			}
 			
 			//name
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x+ 5+ numwidth+ 10+prg_offset, ypos+ fheight, width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true); // UTF-8
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth+ 10 + prg_offset, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width- numwidth- 40- 15-prg_offset, nameAndDescription, color, 0, true); // UTF-8
 		}
 
 		// show channame/event info in vfd
@@ -2008,7 +2014,7 @@ void CChannelList::paint()
 
 	// scroll bar
 	int ypos = y + theight;
-	int sb = fheight*listmaxshow;
+	int sb = iheight*listmaxshow;
 	
 	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 

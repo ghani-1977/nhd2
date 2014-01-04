@@ -146,8 +146,6 @@ extern uint32_t shift_timer;
 #define CHANNUMBER_HEIGHT	35
 #define CHANNUMBER_WIDTH	100
 
-//#define MOVIE_TIMEBAR_H		40
-
 // infoboxheight
 #define BOXHEIGHT_CHANNELINFO	140
 #define BOXHEIGHT_MOVIEINFO	100
@@ -198,10 +196,10 @@ void CInfoViewer::Init()
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
 	
 	// buttonbarheight
-	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 4;
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - (BoxHeight);
 	BoxWidth = BoxEndX - BoxStartX;
@@ -348,7 +346,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - (BoxHeight);
 	BoxWidth = BoxEndX - BoxStartX;
@@ -507,11 +505,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// features
 	if(!timeshift)
 	{
-		//int icon_w;
-		//int icon_h;
-			
-		//frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_blue_w, &icon_blue_h);
-		
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_blue_h)/2);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize + icon_blue_w + 5, BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_blue_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	}
@@ -528,11 +521,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// sub services/help for timeshift
 		if(timeshift)
 		{
-			//int icon_w;
-			//int icon_h;
-		
-			//frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_yellow_w, &icon_yellow_h);
-	
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_yellow_h)/2 );
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5, BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_yellow_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 		}
@@ -774,7 +762,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
-	BoxEndY = g_settings.screen_EndY - 10 - SHADOW_OFFSET;
+	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - (BoxHeight);
 	BoxWidth = BoxEndX - BoxStartX;
@@ -828,7 +816,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	std::string title = "neutrinoHD2";
 	int widthtitle = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(title.c_str(), true); //UTF-8
-	/*g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]*/g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(BoxStartX + 5, BoxStartY + (SAT_INFOBOX_HEIGHT - height)/2 + height, widthtitle, (char *)title.c_str(), COL_INFOBAR, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]->RenderString(BoxStartX + 5, BoxStartY + (SAT_INFOBOX_HEIGHT - height)/2 + height, widthtitle, (char *)title.c_str(), COL_INFOBAR, 0, true); // UTF-8
 	
 	// add sec timer
 	sec_timer_id = g_RCInput->addTimer(1*1000*1000, false);
