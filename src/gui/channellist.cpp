@@ -558,10 +558,12 @@ int CChannelList::show()
 	
 	listmaxshow = (height - theight - buttonHeight -0)/iheight;
 	height = theight + buttonHeight + listmaxshow * iheight;
-	info_height = iheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	
+	// info height
+	info_height = 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 5;
 	
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
-	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height+ info_height)) / 2;
+	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - (height + info_height)) / 2;
 
 	displayNext = false;
 
@@ -1636,10 +1638,10 @@ void CChannelList::paintDetails(int index)
 			std::string text3 = p_event->description.substr(text1.length()+ 1);
 
 			if (!(text2.empty()))
-				text3= text3+ " - ";
+				text3 = text3+ " - ";
 
 			xstart += g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text3, true);
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + BORDER_LEFT, y + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() , width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + BORDER_LEFT, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
 		}
 
 		if (!(text2.empty())) 
@@ -1648,12 +1650,12 @@ void CChannelList::paintDetails(int index)
 				text2 = text2.substr( 1 );
 
 			text2 = text2.substr( 0, text2.find('\n') );
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString(x + xstart, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - xstart- 20- noch_len, text2, COL_MENUCONTENTDARK, 0, true);
 		}
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10 - seit_len, y + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10 - noch_len, y + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width - 30 - seit_len, text1, COL_MENUCONTENTDARK, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + width - 10 - seit_len, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), seit_len, cSeit, COL_MENUCONTENTDARK, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(x + width - 10 - noch_len, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() - 2, noch_len, cNoch, COL_MENUCONTENTDARK, 0, true); // UTF-8
 	}
 }
 
