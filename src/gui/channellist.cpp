@@ -533,7 +533,7 @@ int CChannelList::show()
 	
 	// title height
 	//theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE, &icon_headd_w, &icon_head_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE, &icon_head_w, &icon_head_h);
 	theight = 6 + std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight());
 
 	//item/listbox
