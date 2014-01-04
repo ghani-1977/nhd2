@@ -86,6 +86,10 @@ class CChannelList
 		int icon_ca_h;
 		int icon_hd_w;
 		int icon_hd_h;
+		int icon_help_w;
+		int icon_help_h;
+		int icon_setup_w;
+		int icon_setup_h;
 
 		bool historyMode;
 		bool vlist; 				// "virtual" list, not bouquet
