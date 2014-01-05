@@ -787,10 +787,11 @@ extern bool isBlueRay;
 extern bool isURL;
 extern int file_prozent;
 
-void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, const int /*file_prozent*/, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, short Percent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
 {
 	m_visible = true;
 	bool show_dot = true;
+	char runningPercent = 0;
 	
 	// recalculate dimension
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
@@ -981,11 +982,9 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	int InfoStartX = BoxStartX + 5 + m_icon_w + 10 + icon_w + 5 + speedWidth + 20;
 	int InfoWidth = durationTextPos - InfoStartX;
 	
-	printf("rest:%d\n", BoxHeight - SAT_INFOBOX_HEIGHT - TIMESCALE_BAR_HEIGHT);
-	//int height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+	// title
 	int TitleHeight = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + (BoxHeight - (SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT) -2*height)/2 + height;	//40???
 		
-	// Title
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, TitleHeight, InfoWidth, Title.c_str(), COL_INFOBAR, 0, true);
 
 	// Info
@@ -996,7 +995,15 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, TitleHeight, durationWidth, cDisplayTime, COL_INFOBAR);
 	
 	// progressbar
-	moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
+	runningPercent = Percent;
+	
+	if(Percent < 0)
+		runningPercent = 0;
+	
+	if(runningPercent > 100)
+		runningPercent = 100;
+	
+	moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, runningPercent);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -1028,8 +1035,8 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 				show_dot = !show_dot;
 			}
 			
-			// progressbar
-			moviescale->paint(BoxStartX + 10, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
+			//
+			updatePos();
 		} 
 		else if(msg == CRCInput::RC_info)
 		{
@@ -1074,7 +1081,29 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 		killTitle();
 	
 	g_RCInput->killTimer(sec_timer_id);
-		sec_timer_id = 0;
+	sec_timer_id = 0;
+}
+
+void CInfoViewer::updatePos()
+{
+	// recalculate dimension
+	BoxHeight = BOXHEIGHT_MOVIEINFO;
+	
+	// buttonbarheight
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
+	
+	BoxEndX = g_settings.screen_EndX - 10;
+	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
+	BoxStartX = g_settings.screen_StartX + 10;
+	BoxStartY = BoxEndY - (BoxHeight);
+	BoxWidth = BoxEndX - BoxStartX;
+	
+	//FIXME: file_prozent cant be at this way updated
+	if(m_visible)
+	{
+		if(moviescale->getPercent() != file_prozent)
+			moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
+	}
 }
 
 void CInfoViewer::showSubchan()
@@ -1813,10 +1842,12 @@ void CInfoViewer::showSNR()
 						
 				//show aktiv tuner
 				if( FrontendCount > 1 )
-				{
+				{	
+					char AktivTuner[255] = "T0";
+					
 					int Index = 0;
 					
-					for(int i = 0; i < FrontendCount; i++)
+					for(unsigned int i = 0; i < FrontendCount; i++)
 					{
 						CFrontend * fe = getFE(i);
 						
@@ -1828,8 +1859,6 @@ void CInfoViewer::showSNR()
 						else
 							Index = 0;
 					}
-						
-					char AktivTuner[255];
 					
 					if(live_fe != NULL)
 						sprintf(AktivTuner, "T%d", (Index + 1));

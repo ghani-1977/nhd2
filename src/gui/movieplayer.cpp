@@ -2116,9 +2116,6 @@ void CMoviePlayerGui::PlayFile(void)
 				g_InfoViewer->showMovieInfo(g_file_epg, g_file_epg1, file_prozent, duration, ac3state, speed, playstate, false);
 			}
 		}
-		
-		// control loop
-		g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
 
 		//get position/duration/speed during playing
 		if ( playstate >= CMoviePlayerGui::PLAY )
@@ -2134,13 +2131,16 @@ void CMoviePlayerGui::PlayFile(void)
 
 				playback->GetSpeed(speed);
 							
-				dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d (%d%%)\n", speed, position, duration, file_prozent);					
+				dprintf(DEBUG_DEBUG, "CMoviePlayerGui::PlayFile: speed %d position %d duration %d percent(%d%%)\n", speed, position, duration, file_prozent);					
 			}
 			else
 			{
 				g_RCInput->postMsg((neutrino_msg_t) g_settings.mpkey_stop, 0);
 			}
 		}
+		
+		// loop msg
+		g_RCInput->getMsg(&msg, &data, 10);	// 1 secs
 		
 		if (msg == (neutrino_msg_t) g_settings.mpkey_stop) 
 		{
@@ -2940,5 +2940,3 @@ void CMoviePlayerGui::showFileInfo()
 	else
 		ShowMsg2UTF(g_file_epg.c_str(), g_file_epg1.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
 }
-
-
