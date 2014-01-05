@@ -820,7 +820,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight + buttonBarHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? CORNER_TOP : CORNER_BOTH );
 		
 	// paint info box
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? CORNER_TOP : CORNER_BOTH); 
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP); 
 		
 	// timescale bg
 	frameBuffer->paintBoxRel(BoxStartX + 10, BoxStartY + SAT_INFOBOX_HEIGHT, BoxWidth - 20, TIMESCALE_BAR_HEIGHT, COL_INFOBAR_SHADOW_PLUS_1 ); 
