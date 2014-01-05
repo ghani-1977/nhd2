@@ -1988,10 +1988,10 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		{
 	  		// found some epg
 	  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
-	  		int duration1TextPos = BoxEndX - duration1Width - LEFT_OFFSET;
+	  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
 
 	  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
-	  		int duration2TextPos = BoxEndX - duration2Width - LEFT_OFFSET;
+	  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
 
 	  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
 			{
