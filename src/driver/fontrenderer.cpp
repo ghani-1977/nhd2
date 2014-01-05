@@ -486,16 +486,18 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	for (; *text; text++)
 	{
 		FTC_SBit glyph;
-		if (*text=='\n')
-		{
-			x  = left;
-			y += step_y;
-		}
 
 		int unicode_value = UTF8ToUnicode(text, utf8_encoded);
 
 		if (unicode_value == -1)
 			break;
+		
+		if (*text == '\n')
+		{
+			//x  = left;
+			//y += step_y;
+			unicode_value = ' ';
+		}
 
 		int index = FT_Get_Char_Index(face, unicode_value);
 

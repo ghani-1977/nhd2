@@ -214,13 +214,10 @@ void CInfoViewer::Init()
 	// channel number
 	ChanNumberX = BoxStartX + 10;
 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
-	//ChanNumberWidth = CHANNUMBER_WIDTH;
-	//ChanNumberHeight = CHANNEL_LOGO_HEIGHT_HEIGHT;
 	
 	// channel name
 	ChanNameX = BoxStartX + CHANNUMBER_WIDTH + 10;
 	ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
-	//ChanNameHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight();
 	
 	// channel logo
 	PIC_W = CHANNEL_LOGO_HEIGHT*1.67;
@@ -235,28 +232,17 @@ void CInfoViewer::Init()
 	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
 	
 	// time dimension
-	time_height = /*g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight() + 5*/(CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
+	time_height = (CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
 	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(widest_number);
 	time_dot_width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(":");
 	time_width = time_left_width*2 + time_dot_width;
 	
 	// satname
 	SatNameHeight = g_SignalFont->getHeight();
-	//freqWidth = g_SignalFont->getRenderWidth(freq);
-	//freqStartX = BoxStartX + ChanNumberWidth + 80;
 	
 	//
 	TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T9", true);
 	TunerNumHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	
-	
-	// timescale position
-	//timescale_posx = BoxStartX + 5;
-	//timescale_posy = BoxStartY + SAT_INFOBOX_HEIGHT;
-	
-	// date
-	//widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
-	//dateHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
 }
 
 void CInfoViewer::start()
@@ -350,6 +336,23 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	
 	newfreq = true;
 	
+	// icons dimension
+	frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
+	frameBuffer->getIconSize(NEUTRINO_ICON_VTXT, &icon_w_vtxt, &icon_h_vtxt);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_w_reso, &icon_h_reso);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_sd, &icon_h_sd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SUBT, &icon_w_subt, &icon_h_subt);
+	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2_GREY, &icon_w_ca, &icon_h_ca);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RADIOTEXTOFF, &icon_w_rt, &icon_h_rt);
+	frameBuffer->getIconSize(NEUTRINO_ICON_REC, &icon_w_rec, &icon_h_rec);
+	
+	// colored user icons
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_red_w, &icon_red_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_green_w, &icon_green_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_yellow_w, &icon_yellow_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_blue_w, &icon_blue_h);
+	
 	// recalculate dimensions, anywhere if we change our screensetup
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
 	
@@ -369,8 +372,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// channel number
 	ChanNumberX = BoxStartX + 10;
 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
-	//ChanNumberWidth = CHANNUMBER_WIDTH;
-	//ChanNumberHeight = CHANNAME_HEIGHT;
 	
 	// channel name
 	ChanNameX = BoxStartX + CHANNUMBER_WIDTH + 10;
@@ -383,7 +384,19 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	
 	// button cell width
 	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
+	
+	// time dimension
+	time_height = (CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
+	time_left_width = 2 * g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(widest_number);
+	time_dot_width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(":");
+	time_width = time_left_width*2 + time_dot_width;
+	
+	// satname
+	SatNameHeight = g_SignalFont->getHeight();
+	
 	//
+	TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T9", true);
+	TunerNumHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
 	
 	// init progressbar
 	sigscale = new CProgressBar(BAR_WIDTH, SIGSCALE_BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
@@ -470,7 +483,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		}
 	}
 
-	// channel logo/number/name
+	// channel number/logo/name
 	if (satellitePosition != 0 && satellitePositions.size() ) 
 	{
 		// ChannelNumber
@@ -793,6 +806,16 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	bool show_dot = true;
 	char runningPercent = 0;
 	
+	// icons dimension
+	frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
+	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
+	
+	// colored user icons
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_red_w, &icon_red_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_green_w, &icon_green_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_yellow_w, &icon_yellow_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_blue_w, &icon_blue_h);
+	
 	// recalculate dimension
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
 	
@@ -985,10 +1008,10 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	// title
 	int TitleHeight = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + (BoxHeight - (SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT) -2*height)/2 + height;	//40???
 		
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, TitleHeight, InfoWidth, Title.c_str(), COL_INFOBAR, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, TitleHeight, InfoWidth, (char *)Title.c_str(), COL_INFOBAR, 0, true);
 
 	// Info
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, TitleHeight + height, InfoWidth, Info.c_str(), COL_INFOBAR, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, height + TitleHeight, InfoWidth, (char *)Info.c_str(), COL_INFOBAR, 0, true);
 
 	// duration
 	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )
@@ -2027,6 +2050,8 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				// there are later events available - yet no current
 				//refresh box current
 				frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + ChanInfoHeight, COL_INFOBAR_PLUS_0);
+				
+				// current infos
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
 
 				// next
