@@ -68,12 +68,12 @@ class CInfoViewer
 		// channel Name
 		int ChanNumberX;
 		int ChanNumberY;
-		int ChanNumberWidth;
-		int ChanNumberHeight;
+		//int ChanNumberWidth;
+		//int ChanNumberHeight;
 		int ChanNameX;
 		int ChanNameY;
 		int ChanNameWidth;
-		int ChanNameHeight;
+		//int ChanNameHeight;
 		
 		// channel info
 		int ChanInfoX;
@@ -126,10 +126,6 @@ class CInfoViewer
 		int dateWidth;
 		int dateHeight;
 		
-		// timescale
-		//int timescale_posx;
-		//int timescale_posy;
-		
 		// ca
 		int m_CA_Status;
 		
@@ -157,7 +153,7 @@ class CInfoViewer
 		CChannelEventList::iterator     eli;
 
 		void show_Data( bool calledFromEvent = false );
-		void paintTime( bool show_dot, bool firstPaint );
+		void paintTime( bool show_dot, bool firstPaint, int posx, int posy );
 		
 		void showButton_Audio();
 		void showButton_SubServices();
