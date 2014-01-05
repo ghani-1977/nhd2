@@ -92,6 +92,12 @@ extern int FrontendCount;				// defined in zapit.cpp
 extern CWebTV * webtv;					// defined in neutrino.cpp
 extern CMoviePlayerGui * moviePlayerGui;
 
+extern int timeshift;
+extern bool autoshift;
+extern uint32_t shift_timer;
+
+extern std::string ext_channel_name;	// defined in vcrcontrol.cpp
+extern bool timeset;			// defined in sectionsd.cpp
 
 #define COL_INFOBAR_BUTTONS            (COL_INFOBAR_SHADOW + 1)
 #define COL_INFOBAR_BUTTONS_BACKGROUND (COL_INFOBAR_SHADOW_PLUS_1)
@@ -104,23 +110,7 @@ extern CMoviePlayerGui * moviePlayerGui;
 // in us
 #define LCD_UPDATE_TIME_TV_MODE (60 * 1000 * 1000)
 
-int time_left_width;
-int time_dot_width;
-int time_width;
-int time_height;
-bool newfreq = true;
-char old_timestr[10];
-static event_id_t last_curr_id = 0, last_next_id = 0;
-
-static bool sortByDateTime(const CChannelEvent& a, const CChannelEvent& b)
-{
-        return a.startTime < b.startTime;
-}
-
-extern int timeshift;
-extern bool autoshift;
-extern uint32_t shift_timer;
-
+//
 #define RED_BAR 		40
 #define YELLOW_BAR 		70
 #define GREEN_BAR 		100
@@ -150,8 +140,18 @@ extern uint32_t shift_timer;
 #define BOXHEIGHT_CHANNELINFO	140
 #define BOXHEIGHT_MOVIEINFO	100
 
-extern std::string ext_channel_name;	// defined in vcrcontrol.cpp
-extern bool timeset;			// defined in sectionsd.cpp
+int time_left_width;
+int time_dot_width;
+int time_width;
+int time_height;
+bool newfreq = true;
+char old_timestr[10];
+static event_id_t last_curr_id = 0, last_next_id = 0;
+
+static bool sortByDateTime(const CChannelEvent& a, const CChannelEvent& b)
+{
+        return a.startTime < b.startTime;
+}
 
 CInfoViewer::CInfoViewer()
 {
@@ -201,16 +201,16 @@ void CInfoViewer::Init()
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
-	BoxStartY = BoxEndY - (BoxHeight);
+	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
+	
+	// infobar
+	buttonBarStartX = BoxStartX;
+	buttonBarStartY = BoxStartY + BoxHeight;
 	
 	//
 	TunerNumWidth = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth("T9", true);
 	TunerNumHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight();
-	
-	// channel logo
-	PIC_W = CHANNAME_HEIGHT*1.67;
-	PIC_H = CHANNAME_HEIGHT;
 	
 	// channel number
 	ChanNumberX = BoxStartX + 10;
@@ -221,6 +221,10 @@ void CInfoViewer::Init()
 	// channel name
 	ChanNameX = BoxStartX + ChanNumberWidth + 10;
 	ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+	
+	// channel logo
+	PIC_W = CHANNAME_HEIGHT*1.67;
+	PIC_H = CHANNAME_HEIGHT;
 	
 	// channel info
 	ChanInfoX = BoxStartX + ChanNumberWidth + 10;
@@ -242,8 +246,8 @@ void CInfoViewer::Init()
 	//freqStartX = BoxStartX + ChanNumberWidth + 80;
 	
 	// timescale position
-	timescale_posx = BoxStartX + 5;
-	timescale_posy = BoxStartY + SAT_INFOBOX_HEIGHT;
+	//timescale_posx = BoxStartX + 5;
+	//timescale_posy = BoxStartY + SAT_INFOBOX_HEIGHT;
 	
 	// date
 	//widthtime = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(datestr, true); //UTF-8
@@ -341,16 +345,36 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	
 	newfreq = true;
 	
-	// recalculate dimensions
-	#if 1
+	// recalculate dimensions, anywhere if we change our screensetup
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
+	
+	// buttonbarheight
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
-	BoxStartY = BoxEndY - (BoxHeight);
+	BoxStartY = BoxEndY - BoxHeight;
 	BoxWidth = BoxEndX - BoxStartX;
-	#endif
+	
+	// infobar
+	buttonBarStartX = BoxStartX;
+	buttonBarStartY = BoxStartY + BoxHeight;
+	
+	// channel number
+	ChanNumberX = BoxStartX + 10;
+	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+	ChanNumberWidth = CHANNUMBER_WIDTH;
+	ChanNumberHeight = CHANNAME_HEIGHT;
+	
+	// channel name
+	ChanNameX = BoxStartX + ChanNumberWidth + 10;
+	ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+	
+	// channel info
+	ChanInfoX = BoxStartX + ChanNumberWidth + 10;
+	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + ChanNumberHeight + 3;
+	ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
 	
 	// init progressbar
 	sigscale = new CProgressBar(BAR_WIDTH, SIGSCALE_BAR_HEIGHT, RED_BAR, GREEN_BAR, YELLOW_BAR);
@@ -403,9 +427,11 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	frameBuffer->paintBoxRel(BoxStartX + SHADOW_OFFSET, BoxStartY + SHADOW_OFFSET, BoxWidth, BoxHeight + buttonBarHeight, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? CORNER_TOP : CORNER_BOTH);
 	
 	// infobar box
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? CORNER_TOP : CORNER_BOTH);
+	frameBuffer->paintBoxRel(BoxStartX, BoxStartY, BoxWidth, BoxHeight, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// event progressbar bg
+	int timescale_posx = BoxStartX + 5;
+	int timescale_posy = BoxStartY + SAT_INFOBOX_HEIGHT;
 	frameBuffer->paintBoxRel(timescale_posx, timescale_posy, BoxWidth - 10, TIMESCALE_BAR_HEIGHT, COL_INFOBAR_BUTTONS_BACKGROUND);
 
 	//time
@@ -496,7 +522,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxEndX - 5 - dateWidth, BoxStartY + (SAT_INFOBOX_HEIGHT - dateHeight)/2 + dateHeight, dateWidth, datestr, COL_INFOBAR, 0, true); // UTF-8
 		
 	// botton bar
-	frameBuffer->paintBoxRel(BoxStartX, BoxEndY, BoxWidth, buttonBarHeight, COL_INFOBAR_BUTTONS_BACKGROUND, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM);
+	frameBuffer->paintBoxRel(buttonBarStartX, buttonBarStartY, BoxWidth, buttonBarHeight, COL_INFOBAR_BUTTONS_BACKGROUND, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM);
 
 	//signal
 	showSNR();
@@ -505,8 +531,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// features
 	if(!timeshift)
 	{
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_blue_h)/2);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize + icon_blue_w + 5, BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_blue_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_blue_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize + icon_blue_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_blue_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	}
 
 	if( showButtonBar )
@@ -521,8 +547,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		// sub services/help for timeshift
 		if(timeshift)
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_yellow_h)/2 );
-			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5, BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_yellow_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_yellow_h)/2 );
+			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_yellow_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 		}
 		else
 			showButton_SubServices();
@@ -758,15 +784,20 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	bool show_dot = true;
 	
 	// recalculate dimension
-	#if 1
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
+	
+	// buttonbarheight
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
 	BoxStartX = g_settings.screen_StartX + 10;
 	BoxStartY = BoxEndY - (BoxHeight);
 	BoxWidth = BoxEndX - BoxStartX;
-	#endif
+	
+	// infobar
+	buttonBarStartX = BoxStartX;
+	buttonBarStartY = BoxStartY + BoxHeight;
 	
 	if (!gotTime)
 		gotTime = timeset;
@@ -786,7 +817,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	frameBuffer->paintBoxRel(BoxStartX + 10, BoxStartY + SAT_INFOBOX_HEIGHT, BoxWidth - 20, TIMESCALE_BAR_HEIGHT, COL_INFOBAR_SHADOW_PLUS_1 ); 
 		
 	// bottum bar
-	frameBuffer->paintBoxRel(BoxStartX, BoxStartY + BoxHeight, BoxWidth, buttonBarHeight, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM); 
+	frameBuffer->paintBoxRel(buttonBarStartX, buttonBarStartY, BoxWidth, buttonBarHeight, COL_INFOBAR_SHADOW_PLUS_1,  RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM); 
 	
 	//time
 	/*
@@ -842,39 +873,39 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	// movie info
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + RIGHT_OFFSET, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + RIGHT_OFFSET, buttonBarStartY + (buttonBarHeight - icon_h)/2);
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, /*BoxEndY + buttonBarHeight + 2*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, (char *)"Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + RIGHT_OFFSET + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, (char *)"Info", (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// green
 	// audio
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + BoxWidth/5, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 2, /*BoxEndY + buttonBarHeight + 2*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5) + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// yellow	
 	// help
 	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, /*BoxEndY + buttonBarHeight + 2*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + (BoxWidth/5)*2, buttonBarStartY+ (buttonBarHeight - icon_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*2 + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, (char *)"help", (COL_INFOBAR_SHADOW * 1), 0, true); // UTF-8
 	}
 	
 	// blue
 	// bookmark
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + (BoxWidth/5)*3, buttonBarStartY+ (buttonBarHeight - icon_h)/2);
 	
 	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, /*BoxEndY + buttonBarHeight + 2*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 	else if(isMovieBrowser)
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, /*BoxEndY + buttonBarHeight + 2*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// ac3
 	int icon_w_ac3, icon_h_ac3;
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_ac3, &icon_h_ac3);
-	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3, BoxStartY + BoxHeight + (buttonBarHeight - icon_h_ac3)/2);
+	frameBuffer->paintIcon( (ac3state == CInfoViewer::AC3_ACTIVE)?NEUTRINO_ICON_DD : NEUTRINO_ICON_DD_GREY, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3, buttonBarStartY + (buttonBarHeight - icon_h_ac3)/2);
 		
 	// 4:3/16:9
 	const char * aspect_icon = NEUTRINO_ICON_16_9_GREY;
@@ -884,18 +915,18 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	int icon_w_asp, icon_h_asp;
 	frameBuffer->getIconSize(aspect_icon, &icon_w_asp, &icon_h_asp);
-	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp, BoxStartY + BoxHeight + (buttonBarHeight - icon_h_asp)/2);
+	frameBuffer->paintIcon(aspect_icon, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp, buttonBarStartY + (buttonBarHeight - icon_h_asp)/2);
 	
 	/* mp keys */
 	if (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv)
 	{
 		frameBuffer->getIconSize(NEUTRINO_ICON_FF_SMALL, &icon_w, &icon_h);
 		
-		frameBuffer->paintIcon(NEUTRINO_ICON_REW_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 5*icon_w, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-		frameBuffer->paintIcon(NEUTRINO_ICON_PLAY_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 4*icon_w, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-		frameBuffer->paintIcon(NEUTRINO_ICON_PAUSE_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 3*icon_w, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-		frameBuffer->paintIcon(NEUTRINO_ICON_STOP_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 2*icon_w, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
-		frameBuffer->paintIcon(NEUTRINO_ICON_FF_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - icon_w, BoxStartY + BoxHeight + (buttonBarHeight - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_REW_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 5*icon_w, buttonBarStartY + (buttonBarHeight - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_PLAY_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 4*icon_w, buttonBarStartY + (buttonBarHeight - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_PAUSE_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 3*icon_w, buttonBarStartY + (buttonBarHeight - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_STOP_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - 2*icon_w, buttonBarStartY + (buttonBarHeight - icon_h)/2);
+		frameBuffer->paintIcon(NEUTRINO_ICON_FF_SMALL, BoxStartX + BoxWidth - LEFT_OFFSET - icon_w_ac3 - 2 - icon_w_asp - 2 - icon_w, buttonBarStartY + (buttonBarHeight - icon_h)/2);
 	}
 		
 	//playstate
@@ -1190,7 +1221,7 @@ void CInfoViewer::showIcon_RadioText(bool rt_available) const
 			}
 		}
 		
-		frameBuffer->paintIcon(rt_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), BoxEndY + (buttonBarHeight - icon_h_rt)/2);
+		frameBuffer->paintIcon(rt_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt), buttonBarStartY + (buttonBarHeight - icon_h_rt)/2);
 	}
 }
 
@@ -1202,12 +1233,12 @@ void CInfoViewer::showIcon_16_9()
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	if (is_visible)
-		frameBuffer->paintIcon(aspect_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), BoxEndY + (buttonBarHeight - icon_h_aspect)/2 );
+		frameBuffer->paintIcon(aspect_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), buttonBarStartY + (buttonBarHeight - icon_h_aspect)/2 );
 }
 
 void CInfoViewer::showIcon_VTXT() const
 {
-	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt), BoxEndY + (buttonBarHeight - icon_h_vtxt)/2 );
+	frameBuffer->paintIcon((g_RemoteControl->current_PIDs.PIDs.vtxtpid != 0) ? NEUTRINO_ICON_VTXT : NEUTRINO_ICON_VTXT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt), buttonBarStartY + (buttonBarHeight - icon_h_vtxt)/2 );
 }
 
 void CInfoViewer::showIcon_Resolution() const
@@ -1252,8 +1283,8 @@ void CInfoViewer::showIcon_Resolution() const
 				break;	
 		}
 		
-		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY + (buttonBarHeight - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
-		frameBuffer->paintIcon(icon_name_res, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), BoxEndY + (buttonBarHeight - icon_h_sd)/2 );
+		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), buttonBarStartY + (buttonBarHeight - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintIcon(icon_name_res, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), buttonBarStartY + (buttonBarHeight - icon_h_sd)/2 );
 		
 		// resolution
 		switch (yres) 
@@ -1316,8 +1347,8 @@ void CInfoViewer::showIcon_Resolution() const
 				break;
 		}
 	
-		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY + (buttonBarHeight - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
-		frameBuffer->paintIcon(icon_name, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), BoxEndY + (buttonBarHeight - icon_h_reso)/2 );
+		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), buttonBarStartY + (buttonBarHeight - icon_h_reso)/2, icon_w_reso, icon_h_reso, COL_INFOBAR_BUTTONS_BACKGROUND);
+		frameBuffer->paintIcon(icon_name, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso), buttonBarStartY + (buttonBarHeight - icon_h_reso)/2 );
 	}
 }
 
@@ -1329,7 +1360,7 @@ void CInfoViewer::showIcon_SubT() const
 	if(cc && cc->getSubtitleCount())
 		have_sub = true;
 
-	frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt), BoxEndY + (buttonBarHeight - icon_h_subt)/2 );
+	frameBuffer->paintIcon(have_sub ? NEUTRINO_ICON_SUBT : NEUTRINO_ICON_SUBT_GREY, BoxEndX - (LEFT_OFFSET + icon_w_subt), buttonBarStartY + (buttonBarHeight - icon_h_subt)/2 );
 }
 
 void CInfoViewer::showFailure()
@@ -1671,8 +1702,8 @@ void CInfoViewer::showButton_SubServices()
 		
 		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
 	
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_h)/2 );
-        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5, /*BoxEndY + buttonBarHeight*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_h)/2 );
+        	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5 + asize + icon_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize, g_Locale->getText((g_RemoteControl->are_subchannels) ? LOCALE_INFOVIEWER_SUBSERVICE : LOCALE_INFOVIEWER_SELECTTIME), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 }
 
@@ -1798,7 +1829,7 @@ void CInfoViewer::showSNR()
 					if(live_fe != NULL)
 						sprintf(AktivTuner, "T%d", (Index + 1));
 					
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth), BoxEndY + (buttonBarHeight - TunerNumHeight)/2 + TunerNumHeight, TunerNumWidth, AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth), buttonBarStartY + (buttonBarHeight - TunerNumHeight)/2 + TunerNumHeight, TunerNumWidth, AktivTuner, COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 				}
 
 				//sig = (ssig & 0xFFFF) * 100 / 65535;
@@ -1808,11 +1839,12 @@ void CInfoViewer::showSNR()
 				
 				posy = BoxStartY + (SAT_INFOBOX_HEIGHT - SatNameHeight)/2 + SatNameHeight;
 
+				// sig
 				if (sigscale->getPercent() != sig) 
 				{
 					posx = freqStartX + freqWidth + 10;
 
-					sigscale->paint(posx, BoxStartY + 15, sig);
+					sigscale->paint(posx, BoxStartY + (SAT_INFOBOX_HEIGHT - SIGSCALE_BAR_HEIGHT)/2, sig);
 
 					sprintf (percent, "SIG:%d%%S", sig);
 					posx = posx + barwidth + 2;
@@ -1821,12 +1853,12 @@ void CInfoViewer::showSNR()
 					g_SignalFont->RenderString (posx, posy, sw, percent, COL_INFOBAR );
 				}
 
-				//SNR
+				// snr
 				if (snrscale->getPercent() != snr) 
 				{
 					int snr_posx = posx + sw + 10;
 
-					snrscale->paint(snr_posx, BoxStartY + 15, snr);
+					snrscale->paint(snr_posx, BoxStartY + (SAT_INFOBOX_HEIGHT - SIGSCALE_BAR_HEIGHT)/2, snr);
 
 					sprintf (percent, "SNR:%d%%Q", snr);
 					snr_posx = snr_posx + barwidth + 2;
@@ -1834,7 +1866,6 @@ void CInfoViewer::showSNR()
 					
 					g_SignalFont->RenderString (snr_posx, posy, sw, percent, COL_INFOBAR );
 				}
-			
 			}
 		}
   	} 	
@@ -1933,27 +1964,15 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 	  		if (info_CurrentNext.flags & CSectionsdClient::epgflags::has_anything) 
 			{
 				// red button
-				// events text
-				//int icon_w;
-				//int icon_h;
-		
-				//frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
-				
-				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, BoxEndY + (buttonBarHeight - icon_red_h)/2 );
-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5, BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+				frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_RED, BoxStartX + 5, buttonBarStartY + (buttonBarHeight - icon_red_h)/2 );
+				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
 	  		}
 		}
 
 		// paint epg infos
-		// recalculate height
-		//int height = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
-		//int xStart = BoxStartX + ChanNumberWidth + 10;
-
 		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
 		{
-	  		// no EPG available
-	  		//ChanInfoY += ChanInfoHeight;
-			
+	  		// no EPG available	
 			// refresh box
 	  		frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY + ChanInfoHeight, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
 			
@@ -1977,8 +1996,6 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
 
 				// next
-				//ChanInfoY += ChanInfoHeight;
-
 				if(last_next_id != info_CurrentNext.next_uniqueKey) 
 				{
 					// refresh box
@@ -2010,8 +2027,6 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
 
 				// next 
-				//ChanInfoY += ChanInfoHeight;
-
 				if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
 				{
 					if(last_next_id != info_CurrentNext.next_uniqueKey) 
@@ -2051,7 +2066,7 @@ void CInfoViewer::showIcon_Audio(const int ac3state) const
 			break;
 	}
 
-	frameBuffer->paintIcon(dd_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), BoxEndY + (buttonBarHeight - icon_h_dd)/2 );
+	frameBuffer->paintIcon(dd_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd), buttonBarStartY + (buttonBarHeight - icon_h_dd)/2 );
 	
 	if (ac3state == AC3_ACTIVE)
 	{
@@ -2082,13 +2097,13 @@ void CInfoViewer::showButton_Audio()
 		
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_GREEN, &icon_w, &icon_h);
 
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + 5 + icon_w + 5 + asize, BoxEndY + (buttonBarHeight - icon_h)/2 );
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, BoxStartX + 5 + icon_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_h)/2 );
 
   	if (count > 0) 
 	{
 		int sx = BoxStartX + 5 + icon_w + 5 + asize + icon_w + 5;
 
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, /*BoxEndY + buttonBarHeight*/BoxEndY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_w, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_w, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 
   	//const char *dd_icon;
@@ -2118,7 +2133,7 @@ void CInfoViewer::killTitle()
 	{
 		is_visible = false;
 
-		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY - 30, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET + buttonBarHeight);
+		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY - 30, BoxEndX + SHADOW_OFFSET, buttonBarStartY + SHADOW_OFFSET + buttonBarHeight);
 				
 #if !defined USE_OPENGL
 		frameBuffer->blit();
@@ -2218,7 +2233,7 @@ void CInfoViewer::showIcon_CA_Status(int notfirst)
 			}
 		}
 		
-		frameBuffer->paintIcon( fta ? NEUTRINO_ICON_SCRAMBLED2_GREY : NEUTRINO_ICON_SCRAMBLED2, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca), BoxEndY + (buttonBarHeight - icon_h_ca)/2 );
+		frameBuffer->paintIcon( fta ? NEUTRINO_ICON_SCRAMBLED2_GREY : NEUTRINO_ICON_SCRAMBLED2, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca), buttonBarStartY + (buttonBarHeight - icon_h_ca)/2 );
 #if !defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->ShowIcon(VFD_ICON_LOCK, !fta);
 #endif			

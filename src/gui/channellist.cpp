@@ -551,12 +551,12 @@ int CChannelList::show()
 	buttonHeight = std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 8;
 	
 	// title height
-	theight = 6 + std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight());
+	theight = std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
 
 	//item/listbox
 	iheight = std::max(icon_ca_h, g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight()) + 6;
 	
-	listmaxshow = (height - theight - buttonHeight -0)/iheight;
+	listmaxshow = (height - theight - buttonHeight)/iheight;
 	height = theight + buttonHeight + listmaxshow * iheight;
 	
 	// info height
@@ -1635,13 +1635,13 @@ void CChannelList::paintDetails(int index)
 					text1 = text1.substr( 0, pos );
 			} while ( ( pos != -1 ) && (g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text1, true) > (width - 30 - seit_len) ) );
 
-			std::string text3 = p_event->description.substr(text1.length()+ 1);
+			std::string text3 = p_event->description.substr(text1.length() + 1);
 
 			if (!(text2.empty()))
-				text3 = text3+ " - ";
+				text3 = text3 + " - ";
 
 			xstart += g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getRenderWidth(text3, true);
-			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + BORDER_LEFT, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + BORDER_LEFT, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - 30 - noch_len, text3, COL_MENUCONTENTDARK, 0, true);
 		}
 
 		if (!(text2.empty())) 
@@ -1669,15 +1669,15 @@ void CChannelList::paintItem2DetailsLine(int pos, int /*ch_index*/)
 #define ConnectLineBox_Width	16
 
 	int xpos  = x - ConnectLineBox_Width;
-	int ypos1 = y + theight+0 + pos*iheight;
+	int ypos1 = y + theight + pos*iheight;
 	int ypos2 = y + height;
-	int ypos1a = ypos1 + (iheight/2)-2;
-	int ypos2a = ypos2 + (info_height/2)-2;
+	int ypos1a = ypos1 + (iheight/2) - 2;
+	int ypos2a = ypos2 + (info_height/2) - 2;
 	fb_pixel_t col1 = COL_MENUCONTENT_PLUS_6;
 	fb_pixel_t col2 = COL_MENUCONTENT_PLUS_1;
 
 	// Clear
-	frameBuffer->paintBackgroundBoxRel(xpos - 10, y - 10, ConnectLineBox_Width + 10, height+info_height + 10);
+	frameBuffer->paintBackgroundBoxRel(xpos - 10, y - 10, ConnectLineBox_Width + 10, height + info_height + 10);
 
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -1728,7 +1728,7 @@ bool CChannelList::canZap(CZapitChannel * channel)
 
 void CChannelList::paintItem(int pos)
 {
-	int ypos = y + theight + 0 + pos*iheight;
+	int ypos = y + theight + pos*iheight;
 	uint8_t    color;
 	fb_pixel_t bgcolor;
 	bool iscurrent = true;
@@ -1788,7 +1788,6 @@ void CChannelList::paintItem(int pos)
 		int prg_offset = 0;
 		int title_offset = 0;
 		uint8_t tcolor = (liststart + pos == selected) ? color : COL_MENUCONTENTINACTIVE;
-		//int xtheight = iheight - 2;
 		
 		// due to extended info
 		if(g_settings.channellist_extended)
@@ -2014,12 +2013,12 @@ void CChannelList::paint()
 	int ypos = y + theight;
 	int sb = iheight*listmaxshow;
 	
-	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - SCROLLBAR_WIDTH, ypos, SCROLLBAR_WIDTH, sb,  COL_MENUCONTENT_PLUS_1);
 
 	int sbc = ((chanlist.size()- 1)/ listmaxshow)+ 1;
 	int sbs = (selected/listmaxshow);
 
-	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + sbs*(sb-4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
 }
 
 int CChannelList::getSize() const

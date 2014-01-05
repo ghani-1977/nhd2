@@ -88,6 +88,8 @@ class CInfoViewer
 		
 		// buttonbar
 		int buttonBarHeight;
+		int buttonBarStartX;
+		int buttonBarStartY;
 		
 		// icons
 		int icon_w_subt, icon_h_subt;
@@ -125,8 +127,8 @@ class CInfoViewer
 		int dateHeight;
 		
 		// timescale
-		int timescale_posx;
-		int timescale_posy;
+		//int timescale_posx;
+		//int timescale_posy;
 		
 		// ca
 		int m_CA_Status;

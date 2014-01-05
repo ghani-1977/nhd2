@@ -610,19 +610,21 @@ int CWebTV::Show()
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	
 	// head height
-	//theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_hd_w, &icon_hd_h);
-	theight = 6 + std::max(icon_hd_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight());
+	theight = std::max(icon_hd_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
 	
 	// buttonheight
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
-	buttonHeight = 8 + std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
+	buttonHeight = std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 8;
 
 	// listbox/items
 	iheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	listmaxshow = (height - theight - buttonHeight)/iheight;
 	height = theight + buttonHeight + listmaxshow * iheight;
-	info_height = iheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	
+	// info height
+	//info_height = iheight + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
+	info_height = 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 5;
 	
 	// x/y
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
@@ -931,7 +933,7 @@ void CWebTV::paintFoot()
 	
 	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + 10, f_y + (buttonHeight - icon_bf_h)/2, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + BORDER_LEFT, f_y + (buttonHeight - icon_bf_h)/2, ButtonWidth, NUM_LIST_BUTTONS, CWebTVButtons);
 }
 
 // infos
@@ -944,8 +946,8 @@ void CWebTV::paintDetails(int index)
 		return;
 	
 	// name/description
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + 5 + iheight, width - 30, channels[index]->title, COL_MENUCONTENTDARK, 0, true);
-	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + 10, y+ height + 5 + 2* iheight- 2, width - 30, channels[index]->description, COL_MENUCONTENTDARK, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + BORDER_LEFT, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width - 30, channels[index]->title, COL_MENUCONTENTDARK, 0, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->RenderString (x + BORDER_LEFT, y + height + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight() + 5 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight(), width - 30, channels[index]->description, COL_MENUCONTENTDARK, 0, true); // UTF-8
 }
 
 void CWebTV::clearItem2DetailsLine()
@@ -1031,12 +1033,12 @@ void CWebTV::paint()
 	int ypos = y + theight;
 	int sb = iheight*listmaxshow;
 	
-	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - SCROLLBAR_WIDTH, ypos, SCROLLBAR_WIDTH, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc = ((channels.size()- 1)/ listmaxshow)+ 1;
+	int sbc = ((channels.size() - 1)/ listmaxshow) + 1;
 	int sbs = (selected/listmaxshow);
 
-	frameBuffer->paintBoxRel(x + width- 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + sbs*(sb - 4)/sbc, 11, (sb - 4)/sbc, COL_MENUCONTENT_PLUS_3);
 }
 
 void CWebTV::showFileInfoWebTV(int pos)
