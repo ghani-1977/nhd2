@@ -508,7 +508,11 @@ class CMenuSeparatorItemMenuIcon : public CMenuItem
 extern CMenuSeparator * const GenericMenuSeparator;
 extern CMenuSeparator * const GenericMenuSeparatorLine;
 extern CMenuForwarder * const GenericMenuBack;
-//extern CMenuForwarder * const GenericMenuCancel;
+extern CMenuForwarder * const GenericMenuCancel;
 
+//
+extern CMenuSeparatorItemMenuIcon * const GenericMenuSeparatorItemMenuIcon;
+extern CMenuSeparatorItemMenuIcon * const GenericMenuSeparatorLineItemMenuIcon;
+extern CMenuForwarderItemMenuIcon * const GenericMenuBackItemMenuIcon;
 
 #endif

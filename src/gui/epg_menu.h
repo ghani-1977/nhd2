@@ -23,9 +23,7 @@
 #ifndef __epg_menu__
 #define __epg_menu__
 
-
 #include "widget/menue.h"
-
 
 
 using namespace std;
@@ -35,7 +33,6 @@ class CEPGMenuHandler : public CMenuTarget
 	public:
 		int  exec( CMenuTarget* parent,  const std::string &actionkey);
 		int  doMenu();
-
 };
 
 

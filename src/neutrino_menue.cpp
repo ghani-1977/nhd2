@@ -1125,11 +1125,15 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitMiscSettings\n");
 	
 	int shortcutMiscSettings = 1;
+	
+	//
+	miscSettings.addItem(GenericMenuBackItemMenuIcon);
+	miscSettings.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 
 	// general
 	// intros
 	miscSettingsGeneral.addItem(GenericMenuBack);
-	miscSettingsGeneral.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+	miscSettingsGeneral.addItem( new CMenuSeparator(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	// save settings
 	miscSettingsGeneral.addItem(new CMenuForwarder(LOCALE_MAINSETTINGS_SAVESETTINGSNOW, true, NULL, this, "savesettings", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));

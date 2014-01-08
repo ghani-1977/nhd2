@@ -137,9 +137,6 @@ CEpgData::CEpgData()
 	timescale = new CProgressBar(100, 12, 30, 100, 70, true);
 }
 
-//#define MAX_W 460
-//#define MAX_H 260
-
 void CEpgData::start()
 {
 	// dimension
@@ -194,16 +191,16 @@ void CEpgData::processTextToArray(std::string text) // UTF-8
 	std::string	aktWord = "";
 	int	aktWidth = 0;
 	text += ' ';
-	char* text_= (char*) text.c_str();
+	char * text_= (char*) text.c_str();
 
 	while(*text_!=0)
 	{
-		if ( (*text_==' ') || (*text_=='\n') || (*text_=='-') || (*text_=='.') )
+		if ( (*text_ == ' ') || (*text_ == '\n') || (*text_ == '-') || (*text_ == '.') )
 		{
 			// Houdini: if there is a newline (especially in the Premiere Portal EPGs) do not forget to add aktWord to aktLine 
 			// after width check, if width check failes do newline, add aktWord to next line 
 			// and "reinsert" i.e. reloop for the \n
-			if(*text_!='\n')
+			if(*text_ != '\n')
 				aktWord += *text_;
 
 			// check the wordwidth - add to this line if size ok
@@ -214,7 +211,7 @@ void CEpgData::processTextToArray(std::string text) // UTF-8
 				aktWidth += aktWordWidth;
 				aktLine += aktWord;
 			
-				if(*text_=='\n')
+				if(*text_ == '\n')
 				{	//enter-handler
 					addTextToArray( aktLine );
 					aktLine = "";
@@ -241,6 +238,7 @@ void CEpgData::processTextToArray(std::string text) // UTF-8
 		}
 		text_++;
 	}
+	
 	//add the rest
 	addTextToArray( aktLine + aktWord );
 }

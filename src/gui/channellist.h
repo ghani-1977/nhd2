@@ -78,10 +78,10 @@ class CChannelList
 		int 			x;
 		int 			y;
 		
-		int icon_bf_w;
-		int icon_bf_h;
 		int icon_head_w;
 		int icon_head_h;
+		int icon_footer_w;
+		int icon_footer_h;
 		int icon_ca_w;
 		int icon_ca_h;
 		int icon_hd_w;

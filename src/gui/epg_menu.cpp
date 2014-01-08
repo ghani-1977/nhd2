@@ -56,18 +56,16 @@ int CEPGMenuHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 
 
 	if (parent) 
-	{
 		parent->hide();
-	}
 
-	doMenu ();
+	doMenu();
 	
 	return res;
 }
 
 int CEPGMenuHandler::doMenu()
 {
-	CMenuWidget EPGSelector(LOCALE_EPGMENU_HEAD, NEUTRINO_ICON_FEATURES, 350);
+	CMenuWidget EPGSelector(LOCALE_EPGMENU_HEAD, NEUTRINO_ICON_FEATURES);
 
 	// intros
 	//EPGSelector.addItem(GenericMenuSeparator);

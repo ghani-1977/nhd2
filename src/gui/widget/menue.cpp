@@ -69,6 +69,14 @@ CMenuForwarder CGenericMenuBack(LOCALE_MENU_BACK, true, NULL, NULL, NULL, CRCInp
 //CMenuForwarder CGenericMenuCancel(LOCALE_MENU_CANCEL, true, NULL, NULL, NULL, CRCInput::RC_nokey, NEUTRINO_ICON_BUTTON_HOME);
 //CMenuForwarder CGenericMenuNext(LOCALE_MENU_NEXT, true, NULL, NULL, NULL, CRCInput::RC_nokey, NEUTRINO_ICON_BUTTON_HOME);
 
+//
+CMenuForwarderItemMenuIcon CGenericMenuBackItemMenuIcon(LOCALE_MENU_BACK, true, NULL, NULL, NULL, CRCInput::RC_nokey, NEUTRINO_ICON_BUTTON_LEFT);
+
+//
+CMenuSeparatorItemMenuIcon CGenericMenuSeparatorItemMenuIcon;
+CMenuSeparatorItemMenuIcon CGenericMenuSeparatorLineItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE);;
+
+// globals
 CMenuSeparator * const GenericMenuSeparator = &CGenericMenuSeparator;
 CMenuSeparator * const GenericMenuSeparatorLine = &CGenericMenuSeparatorLine;
 
@@ -76,6 +84,12 @@ CMenuForwarder * const GenericMenuBack = &CGenericMenuBack;
 //CMenuForwarder * const GenericMenuCancel = &CGenericMenuCancel;
 //CMenuForwarder * const GenericMenuNext = &CGenericMenuNext;
 
+//
+CMenuForwarderItemMenuIcon * const GenericMenuBackItemMenuIcon = &CGenericMenuBackItemMenuIcon;
+
+//
+CMenuSeparatorItemMenuIcon * const GenericMenuSeparatorItemMenuIcon = &CGenericMenuSeparatorItemMenuIcon;
+CMenuSeparatorItemMenuIcon * const GenericMenuSeparatorLineItemMenuIcon = &CGenericMenuSeparatorLineItemMenuIcon;
 
 // CMenuItem
 void CMenuItem::init(const int X, const int Y, const int DX, const int OFFX)
@@ -703,7 +717,7 @@ CMenuOptionNumberChooser::CMenuOptionNumberChooser(const neutrino_locale_t name,
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
-	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 
 	optionName           = name;
 	active               = Active;
@@ -830,7 +844,7 @@ CMenuOptionChooser::CMenuOptionChooser(const neutrino_locale_t OptionName, int *
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
-	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 	
 	optionNameString  = g_Locale->getText(OptionName);
 	optionName        = OptionName;
@@ -849,7 +863,7 @@ CMenuOptionChooser::CMenuOptionChooser(const char *OptionName, int *const Option
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
-	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 
 	optionNameString  = OptionName;
 	optionName        = NONEXISTANT_LOCALE;
@@ -1086,7 +1100,7 @@ CMenuOptionStringChooser::CMenuOptionStringChooser(const neutrino_locale_t Optio
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
-	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 
 	optionName  = OptionName;
 	active      = Active;
@@ -1287,7 +1301,7 @@ CMenuOptionLanguageChooser::CMenuOptionLanguageChooser(char* OptionValue, CChang
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
-	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	height = std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 	
 	optionValue = OptionValue;
 	observ      = Observ;
@@ -1426,7 +1440,7 @@ int CMenuForwarder::getHeight(void) const
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
 	
-	return std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	return std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 }
 
 int CMenuForwarder::getWidth(void) const
@@ -1623,7 +1637,7 @@ int CMenuSeparator::getHeight(void) const
 		int iconName_w, iconName_h;
 		CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
 		
-		return std::max(iconName_h, (text == NONEXISTANT_LOCALE) ? BORDER_LEFT : g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+		return std::max(iconName_h, (text == NONEXISTANT_LOCALE) ? BORDER_LEFT : g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 	}
 }
 
@@ -1783,7 +1797,7 @@ int CMenuForwarderItemMenuIcon::getHeight(void) const
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
 	
-	return std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+	return std::max(iconName_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 }
 
 int CMenuForwarderItemMenuIcon::getWidth(void) const
@@ -2005,7 +2019,7 @@ int CMenuSeparatorItemMenuIcon::getHeight(void) const
 		int iconName_w, iconName_h;
 		CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
 		
-		return std::max(iconName_h, (text == NONEXISTANT_LOCALE) ? BORDER_LEFT : g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 6;
+		return std::max(iconName_h, (text == NONEXISTANT_LOCALE) ? BORDER_LEFT : g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight()) + 3;
 	}
 	
 }

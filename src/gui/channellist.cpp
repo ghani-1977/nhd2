@@ -123,9 +123,9 @@ CChannelList::CChannelList(const char * const Name, bool _historyMode, bool _vli
 	vlist = _vlist;
 	
 	//buttonHeight icons (red)
-	icon_bf_w = 16;
-	icon_bf_h = 16;
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
+	icon_footer_w = 16;
+	icon_footer_h = 16;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_footer_w, &icon_footer_h);
 	
 	// head icons (zap_mute)
 	icon_head_w = 16;
@@ -548,13 +548,13 @@ int CChannelList::show()
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8 );	
 
 	//buttonHeight
-	buttonHeight = std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 8;
+	buttonHeight = std::max(icon_footer_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 6;
 	
 	// title height
 	theight = std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
 
 	//item/listbox
-	iheight = std::max(icon_ca_h, g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight()) + 6;
+	iheight = std::max(icon_ca_h, g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight()) + 2;
 	
 	listmaxshow = (height - theight - buttonHeight)/iheight;
 	height = theight + buttonHeight + listmaxshow * iheight;
@@ -1958,7 +1958,7 @@ void CChannelList::paintHead()
 	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
 	// foot buttons
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + BORDER_RIGHT, f_y + (buttonHeight - icon_bf_h)/2, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + BORDER_RIGHT, f_y + (buttonHeight - icon_footer_h)/2, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);
 
 	// help icon
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - BORDER_RIGHT - icon_help_w , y + (theight - icon_help_h)/2 );

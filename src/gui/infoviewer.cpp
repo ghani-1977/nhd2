@@ -116,7 +116,7 @@ extern bool timeset;			// defined in sectionsd.cpp
 #define GREEN_BAR 		100
 
 #define BAR_WIDTH 		72
-#define TIMESCALE_BAR_HEIGHT	6
+#define TIMESCALE_BAR_HEIGHT	7
 #define SIGSCALE_BAR_HEIGHT	8
 #define SNRSCALE_BAR_HEIGHT	8
 
@@ -142,6 +142,8 @@ extern bool timeset;			// defined in sectionsd.cpp
 // infoboxheight
 #define BOXHEIGHT_CHANNELINFO	140
 #define BOXHEIGHT_MOVIEINFO	100
+
+#define CHANINFO_HEIGHT		24
 
 int time_left_width;
 int time_dot_width;
@@ -199,7 +201,7 @@ void CInfoViewer::Init()
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
 	
 	// buttonbarheight
-	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 6;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
@@ -210,6 +212,10 @@ void CInfoViewer::Init()
 	// infobar
 	buttonBarStartX = BoxStartX;
 	buttonBarStartY = BoxStartY + BoxHeight;
+	
+	// channel logo
+	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
 	
 	// channel number
 	ChanNumberX = BoxStartX + 10;
@@ -225,8 +231,8 @@ void CInfoViewer::Init()
 	
 	// channel info
 	ChanInfoX = BoxStartX +  + 10;
-	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 5;
-	ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 5; //PIC_Y + CHANNEL_LOGO_HEIGHT + 5
+	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
 
 	// button cell width
 	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
@@ -357,7 +363,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	BoxHeight = BOXHEIGHT_CHANNELINFO;
 	
 	// buttonbarheight
-	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 6;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
@@ -368,6 +374,10 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// infobar
 	buttonBarStartX = BoxStartX;
 	buttonBarStartY = BoxStartY + BoxHeight;
+	
+	// channel logo
+	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
 	
 	// channel number
 	ChanNumberX = BoxStartX + 10;
@@ -380,7 +390,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	// channel info
 	ChanInfoX = BoxStartX + CHANNUMBER_WIDTH + 10;
 	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 5;
-	ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+	//ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
 	
 	// button cell width
 	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
@@ -488,9 +499,6 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	{
 		// ChannelNumber
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(ChanNumberX, ChanNameY + time_height, CHANNUMBER_WIDTH, strChanNum, col_NumBoxText);
-			
-		PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
-		PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
 		
 		ChanNameWidth = BoxWidth - (LEFT_OFFSET + time_width + CHANNUMBER_WIDTH + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
 
@@ -820,7 +828,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
 	
 	// buttonbarheight
-	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 6;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
@@ -1113,7 +1121,7 @@ void CInfoViewer::updatePos()
 	BoxHeight = BOXHEIGHT_MOVIEINFO;
 	
 	// buttonbarheight
-	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 8;
+	buttonBarHeight = (icon_h_vtxt? icon_h_vtxt : BUTTON_BAR_HEIGHT) + 6;
 	
 	BoxEndX = g_settings.screen_EndX - 10;
 	BoxEndY = g_settings.screen_EndY - (10 + SHADOW_OFFSET + buttonBarHeight);
@@ -1870,7 +1878,7 @@ void CInfoViewer::showSNR()
 					
 					int Index = 0;
 					
-					for(unsigned int i = 0; i < FrontendCount; i++)
+					for(int i = 0; i < FrontendCount; i++)
 					{
 						CFrontend * fe = getFE(i);
 						
@@ -2031,10 +2039,10 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		{
 	  		// no EPG available	
 			// refresh box
-	  		frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY + ChanInfoHeight, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+	  		frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
 			
 			// noepg/waiting for time
-	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
+	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
 		} 
 		else 
 		{
@@ -2049,7 +2057,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 			{
 				// there are later events available - yet no current
 				//refresh box current
-				frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + ChanInfoHeight, COL_INFOBAR_PLUS_0);
+				frameBuffer->paintBox(ChanInfoX + 10, ChanInfoY, BoxEndX, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
 				
 				// current infos
 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
@@ -2058,11 +2066,11 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 				if(last_next_id != info_CurrentNext.next_uniqueKey) 
 				{
 					// refresh box
-					frameBuffer->paintBox(BoxStartX + 10, ChanInfoY + ChanInfoHeight, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+					frameBuffer->paintBox(BoxStartX + 10, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
 
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, EPGTimeWidth, nextStart, COL_INFOBAR );
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, duration2Width, nextDuration, COL_INFOBAR );
 
 					last_next_id = info_CurrentNext.next_uniqueKey;
 				}
@@ -2073,7 +2081,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
 				{
 					// refresh box
-			  		frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + ChanInfoHeight, COL_INFOBAR_PLUS_0);
+			  		frameBuffer->paintBox(BoxStartX + 10, ChanInfoY, BoxEndX, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
 					
 			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
 			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
@@ -2082,7 +2090,7 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 		  		}
 		  		
 		  		// refresh box
-		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + ChanInfoHeight, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
+		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
 		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
 
 				// next 
@@ -2091,11 +2099,11 @@ void CInfoViewer::show_Data(bool calledFromEvent)
 					if(last_next_id != info_CurrentNext.next_uniqueKey) 
 					{
 						// refresh
-						frameBuffer->paintBox(BoxStartX + 10, ChanInfoY + ChanInfoHeight, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+						frameBuffer->paintBox(BoxStartX + 10, ChanInfoY + /*ChanInfoHeight*/CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
 
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, EPGTimeWidth, nextStart, COL_INFOBAR);
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight/*(CHANINFO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight()*/, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
 
 						last_next_id = info_CurrentNext.next_uniqueKey;
 					}
