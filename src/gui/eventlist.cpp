@@ -225,6 +225,8 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	fwidth2 = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMSMALL]->getRenderWidth("[999 min] ");
 
 	listmaxshow = (height - theight - iheight)/fheight;
+	
+	// recalculate height
 	height = theight + iheight + listmaxshow*fheight; // recalc height
 
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
@@ -314,7 +316,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			else
 				paintItem(selected - liststart, channel_id);
 		}
-
 		// sort
 		else if (msg == (neutrino_msg_t)g_settings.key_channelList_sort)
 		{
@@ -325,13 +326,6 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				sort_mode++;
 				sort(evtlist.begin(), evtlist.end(), sortByDescription);
 			}
-#if 0
-			else if(sort_mode == SORT_ID) //by id
-			{
-				sort_mode++;
-				sort(evtlist.begin(),evtlist.end(),sortById);
-			}
-#endif
 			else// datetime
 			{
 				sort_mode = SORT_DESCRIPTION;
@@ -695,7 +689,6 @@ void EventList::paintHead(t_channel_id channel_id)
 		g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
 		
 		// display logo
-		//g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, PIC_W, theight, true, false, true); //upscale, dont center x, center y
 		g_PicViewer->DisplayLogo(channel_id, x + BORDER_LEFT, y, (logo_bpp == 4 && logo_w > PIC_W)?  PIC_W: PIC_W_1, theight, (logo_h > theight)? true : false, false, true);
 		
 		// title
@@ -863,13 +856,15 @@ int EventList::findEvents(void)
 	
 	CEventFinderMenu menu(&event, &m_search_epg_item, &m_search_keyword, &m_search_list, &m_search_channel_id, &m_search_bouquet_id);
 	hide();
-	menu.exec(NULL,"");
+	menu.exec(NULL, "");
 	
 	if(event == 1)
 	{
 		res = 1;
 		m_showChannel = true;   // force the event list to paint the channel name
+		
 		evtlist.clear();
+		
 		if(m_search_list == SEARCH_LIST_CHANNEL)
 		{
 			sectionsd_getEventsServiceKey(m_search_channel_id & 0xFFFFFFFFFFFFULL, evtlist, m_search_epg_item,m_search_keyword);
@@ -936,9 +931,11 @@ int EventList::findEvents(void)
 		name += m_search_keyword;
 		name += "'";
 	}
+	
 	paintHead(0);
 	paint();
 	showFunctionBar(true);
+	
 	return(res);
 }
   
@@ -1069,11 +1066,11 @@ int CEventFinderMenu::showMenu(void)
 	
 	CStringInputSMS stringInput(LOCALE_EVENTFINDER_KEYWORD, m_search_keyword);
 	
-	CMenuForwarder * mf2	= new CMenuForwarder(LOCALE_EVENTFINDER_KEYWORD, true, *m_search_keyword, &stringInput, NULL, CRCInput::RC_1 );
-	CMenuOptionChooser * mo0 	= new CMenuOptionChooser(LOCALE_EVENTFINDER_SEARCH_WITHIN_LIST, m_search_list, SEARCH_LIST_OPTIONS, SEARCH_LIST_OPTION_COUNT, true, NULL, CRCInput::RC_2);
-	CMenuForwarderNonLocalized * mf1	= new CMenuForwarderNonLocalized("", *m_search_list != EventList::SEARCH_LIST_ALL, m_search_channelname, this, "3", CRCInput::RC_3 );
-	CMenuOptionChooser * mo1 	= new CMenuOptionChooser(LOCALE_EVENTFINDER_SEARCH_WITHIN_EPG, m_search_epg_item, SEARCH_EPG_OPTIONS, SEARCH_EPG_OPTION_COUNT, true, NULL, CRCInput::RC_4);
-	CMenuForwarder * mf0 		= new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, this, "1", CRCInput::RC_5 );
+	CMenuForwarder * mf2 = new CMenuForwarder(LOCALE_EVENTFINDER_KEYWORD, true, *m_search_keyword, &stringInput, NULL, CRCInput::RC_1 );
+	CMenuOptionChooser * mo0 = new CMenuOptionChooser(LOCALE_EVENTFINDER_SEARCH_WITHIN_LIST, m_search_list, SEARCH_LIST_OPTIONS, SEARCH_LIST_OPTION_COUNT, true, NULL, CRCInput::RC_2);
+	CMenuForwarderNonLocalized * mf1 = new CMenuForwarderNonLocalized("", *m_search_list != EventList::SEARCH_LIST_ALL, m_search_channelname, this, "3", CRCInput::RC_3 );
+	CMenuOptionChooser * mo1 = new CMenuOptionChooser(LOCALE_EVENTFINDER_SEARCH_WITHIN_EPG, m_search_epg_item, SEARCH_EPG_OPTIONS, SEARCH_EPG_OPTION_COUNT, true, NULL, CRCInput::RC_4);
+	CMenuForwarder * mf0 = new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, this, "1", CRCInput::RC_5 );
 	
 	CMenuWidget searchMenu(LOCALE_EVENTFINDER_HEAD, NEUTRINO_ICON_FEATURES);
 
