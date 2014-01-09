@@ -184,7 +184,8 @@ void CInfoViewer::Init()
 	frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
 	frameBuffer->getIconSize(NEUTRINO_ICON_VTXT, &icon_w_vtxt, &icon_h_vtxt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_w_reso, &icon_h_reso);
-	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_sd, &icon_h_sd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_SD2, &icon_w_sd, &icon_h_sd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD2, &icon_hd_w, &icon_hd_h);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SUBT, &icon_w_subt, &icon_h_subt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2_GREY, &icon_w_ca, &icon_h_ca);
@@ -235,7 +236,7 @@ void CInfoViewer::Init()
 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
 
 	// button cell width
-	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
+	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + 2*TunerNumWidth + 2))/4;
 	
 	// time dimension
 	time_height = (CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
@@ -346,7 +347,8 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	frameBuffer->getIconSize(NEUTRINO_ICON_16_9, &icon_w_aspect, &icon_h_aspect);
 	frameBuffer->getIconSize(NEUTRINO_ICON_VTXT, &icon_w_vtxt, &icon_h_vtxt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_000, &icon_w_reso, &icon_h_reso);
-	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_sd, &icon_h_sd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_SD2, &icon_w_sd, &icon_h_sd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD2, &icon_hd_w, &icon_hd_h);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SUBT, &icon_w_subt, &icon_h_subt);
 	frameBuffer->getIconSize(NEUTRINO_ICON_DD, &icon_w_dd, &icon_h_dd);
 	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2_GREY, &icon_w_ca, &icon_h_ca);
@@ -394,7 +396,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
 	
 	// button cell width
-	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + TunerNumWidth + 2))/4;
+	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + 2*TunerNumWidth + 2))/4;
 	
 	// time dimension
 	time_height = (CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
@@ -1325,7 +1327,7 @@ void CInfoViewer::showIcon_Resolution() const
 			case 1088:
 			case 1080:
 			case 720:
-				icon_name_res = NEUTRINO_ICON_RESOLUTION_HD;
+				icon_name_res = NEUTRINO_ICON_RESOLUTION_HD2;
 				//test
 				CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true); //FIXME: remove this to remotecontrol
 				break;
@@ -1338,7 +1340,7 @@ void CInfoViewer::showIcon_Resolution() const
 			case 382:
 			case 352:
 			case 288:
-				icon_name_res = NEUTRINO_ICON_RESOLUTION_SD;
+				icon_name_res = NEUTRINO_ICON_RESOLUTION_SD2;
 				CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 				break;
 				
@@ -1348,7 +1350,10 @@ void CInfoViewer::showIcon_Resolution() const
 				break;	
 		}
 		
+		// refresh
 		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), buttonBarStartY + (buttonBarHeight - icon_h_sd)/2, icon_w_sd, icon_h_sd, COL_INFOBAR_BUTTONS_BACKGROUND);
+		
+		// icon
 		frameBuffer->paintIcon(icon_name_res, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd), buttonBarStartY + (buttonBarHeight - icon_h_sd)/2 );
 		
 		// resolution

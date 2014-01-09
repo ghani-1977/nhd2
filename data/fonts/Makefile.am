@@ -1,14 +1,14 @@
 installdir = $(FONTDIR)
 
 install_DATA = \
-	micron.ttf \
 	neutrino.ttf \
-	pakenham.ttf \
 	tuxtxt.ttf \
 	tuxtxt.otb
 
 
 install_DATA += \
+	micron.ttf \
+	pakenham.ttf \
 	md_khmurabi_10.ttf \
 	micron_bold.ttf \
 	micron_italic.ttf \
@@ -21,5 +21,6 @@ install_DATA += \
 	lcd.ttf \
 	nmsbd.ttf \
 	tuxcal.ttf \
-	tuxmail.ttf
+	tuxmail.ttf \
+	nmsbd_3d.ttf
 	

@@ -2220,6 +2220,7 @@ void CNeutrinoApp::InitZapper()
 		radioMode(false);
 	}
 
+	// zap
 	if(channelList->getSize() && live_channel_id) 
 	{
 		channelList->adjustToChannelID(live_channel_id);
@@ -5310,7 +5311,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		fontscale.enableSaveScreen(true);
 
 		fontscale.addItem(new CMenuOptionNumberChooser(LOCALE_FONTMENU_SCALING_X, &g_settings.screen_xres, true, 50, 200, NULL) );
-		//fontscale.addItem(new CMenuOptionNumberChooser(LOCALE_FONTMENU_SCALING_Y, &g_settings.screen_yres, true, 50, 200, NULL) );
+		fontscale.addItem(new CMenuOptionNumberChooser(LOCALE_FONTMENU_SCALING_Y, &g_settings.screen_yres, true, 50, 200, NULL) );
 		
 		fontscale.exec(NULL, "");
 		
@@ -5452,7 +5453,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_CHANNELLIST_MAKE_HDLIST)) 
 	{
 		channelsInit();
-		channelList->adjustToChannelID(live_channel_id);//FIXME what if deleted ?
+		channelList->adjustToChannelID(live_channel_id);//FIXME
 		
 		return true;
 	}
@@ -5461,7 +5462,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		setZapitConfig(&zapitCfg);
 		
 		channelsInit();
-		channelList->adjustToChannelID(live_channel_id);//FIXME what if deleted ?
+		channelList->adjustToChannelID(live_channel_id);//FIXME
 		
 		return true;
 	}

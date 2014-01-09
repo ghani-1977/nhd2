@@ -97,6 +97,7 @@ class CInfoViewer
 		int icon_w_aspect, icon_h_aspect;
 		int icon_w_dd, icon_h_dd;
 		int icon_w_sd, icon_h_sd;
+		int icon_hd_w, icon_hd_h;
 		int icon_w_reso, icon_h_reso;
 		int icon_w_ca, icon_h_ca;
 		int icon_w_rt, icon_h_rt;

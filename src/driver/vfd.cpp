@@ -135,7 +135,7 @@ CVFD::CVFD()
 						
 						if(fd < 0)
 						{
-							dprintf(DEBUG_NORMAL, "no VFD detected\n");
+							dprintf(DEBUG_NORMAL, "CVFD::init no VFD/LCD detected\n");
 							has_lcd = 0;
 						}
 					}

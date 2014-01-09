@@ -841,7 +841,7 @@ void CWebTV::paintItem(int pos)
 		
 		// nummer
 		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + iheight, numwidth + 5, tmp, color, iheight);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + iheight, numwidth + 5, tmp, color, /*iheight*/0, true);
 		
 		// description
 		std::string Descr = channels[curr]->description;

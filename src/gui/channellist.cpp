@@ -135,7 +135,7 @@ CChannelList::CChannelList(const char * const Name, bool _historyMode, bool _vli
 	// scrambled
 	icon_ca_w = 16;
 	icon_ca_h = 16;
-	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_ca_w, &icon_ca_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED, &icon_ca_w, &icon_ca_h);
 	
 	// hd
 	icon_hd_w = 16;
@@ -1028,7 +1028,7 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 		if (chanlist[i]->channel_id == channel_id) 
 		{
 			selected = i;
-			lastChList.store (selected, channel_id, false);
+			lastChList.store(selected, channel_id, false);
 
 			tuned = i;
 			if (bToo && (bouquetList != NULL)) 
@@ -1063,7 +1063,7 @@ bool CChannelList::adjustToChannelID(const t_channel_id channel_id, bool bToo)
 
 int CChannelList::hasChannel(int nChannelNr)
 {
-	for (uint32_t i = 0; i<chanlist.size(); i++) 
+	for (uint32_t i = 0; i < chanlist.size(); i++) 
 	{
 		if (getKey(i) == nChannelNr)
 			return(i);
@@ -1150,11 +1150,7 @@ void CChannelList::zapTo(int pos, bool /*forceStoreToLastChannels*/)
 	if(!new_mode_active) 
 	{
 		selected = pos;
-#if 0
-		/* TODO lastChList.store also called in adjustToChannelID, which is called
-		   only from "whole" channel list. Why here too ? */
-		lastChList.store (selected, chan->channel_id, forceStoreToLastChannels);
-#endif
+
 		/* remove recordModeActive from infobar */
 		if(g_settings.auto_timeshift && !CNeutrinoApp::getInstance()->recordingstatus) 
 		{
@@ -1814,16 +1810,18 @@ void CChannelList::paintItem(int pos)
 		{
 			// scrambled icon
 			if(chan->scrambled) 
-				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED2, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w, ypos + (iheight - icon_ca_h)/2);
+				frameBuffer->paintIcon(NEUTRINO_ICON_SCRAMBLED, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w, ypos + (iheight - icon_ca_h)/2);
 			
 			// hd icon
 			if(chan->isHD() ) 
 				frameBuffer->paintIcon(NEUTRINO_ICON_RESOLUTION_HD, x + width - SCROLLBAR_WIDTH - 2 - icon_ca_w - 2 - icon_hd_w, ypos + (iheight - icon_hd_h)/2);
 		}
 
+		// channel number
 		int numpos = x + 5 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), numwidth + 5, tmp, color, iheight);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), numwidth + 5, tmp, color, /*iheight*/0, true);
 
+		// name and description
 		int l = 0;
 		if (this->historyMode)
 			l = snprintf(nameAndDescription, sizeof(nameAndDescription), ": %d %s", chan->number, chan->name.c_str());
@@ -1940,7 +1938,7 @@ void CChannelList::paintHead()
 	// head
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
 	
-	int ButtonWidth = (width - 20) / 4;
+	int ButtonWidth = (width - BORDER_LEFT - BORDER_RIGHT) / 4;
 
 	// foot
 	if (displayNext) 

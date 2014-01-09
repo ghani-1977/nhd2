@@ -211,11 +211,15 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	// radio modus
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_RADIOMODE, true, NULL, this, "radio", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, NEUTRINO_ICON_RADIO, LOCALE_HELPTEXT_RADIOMODE ));	
 
-	//MediaPlayer e.g internet radio/audioplayer/movieplayer/picplayer/upnp
+	// media center
 	// Media player main menu
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_MEDIAPLAYER, true, NULL, &MediaPlayer, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, NEUTRINO_ICON_MOVIEPLAYER, LOCALE_HELPTEXT_MEDIAPLAYER ));
 	
 	int shortcutMediaPlayer = 1;
+	
+	//
+	MediaPlayer.addItem(GenericMenuBackItemMenuIcon);
+	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 #if defined (ENABLE_PCMDECODER) || defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	//Internet Radio
@@ -302,6 +306,10 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	// main settings
 	int shortcutMainSettings = 1;
+	
+	//
+	mainSettings.addItem(GenericMenuBackItemMenuIcon);
+	mainSettings.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 
 	// video settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_VIDEO, true, NULL, &videoSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_TV, LOCALE_HELPTEXT_VIDEOSETTINGS ));
@@ -837,7 +845,9 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitServiceSettings\n");
 	
-	int shortcutService = 1;
+	//
+	service.addItem(GenericMenuBackItemMenuIcon);
+	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	// scan setup
 	if(FrontendCount > 1)
@@ -2686,6 +2696,10 @@ bool CNeutrinoApp::showUserMenu(int button)
         CMenuWidget * menu = new CMenuWidget(txt.c_str() , NEUTRINO_ICON_FEATURES);
         if (menu == NULL)
                 return 0;
+	
+	//
+	menu->addItem(GenericMenuBack);
+	menu->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 
         /* go through any postition number */
         for(int pos = 0; pos < SNeutrinoSettings::ITEM_MAX ; pos++) 
