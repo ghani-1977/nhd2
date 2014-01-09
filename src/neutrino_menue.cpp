@@ -845,6 +845,8 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitServiceSettings\n");
 	
+	int shortcutService = 1;
+	
 	//
 	service.addItem(GenericMenuBackItemMenuIcon);
 	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
