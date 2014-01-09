@@ -941,12 +941,7 @@ void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe)
 	else 
 	{
 		cam0->setCaPmt(thischannel, thischannel->getCaPmt(), demux_index, ca_mask); //start cam0
-	}
-	
-	// ci cam
-#if defined (ENABLE_CI)	
-	ci->SendCaPMT(thischannel->getCaPmt(), fe->fenumber);
-#endif	
+	}	
 }
 
 void sendcapmtPlayBackStop(bool _sendPmt)
@@ -1332,8 +1327,13 @@ tune_again:
 	// start playback (live)
 	startPlayBack(live_channel);
 
-	// send ca pmt
+	// cam
 	sendCaPmtPlayBackStart(live_channel, live_fe);
+	
+	// ci cam
+#if defined (ENABLE_CI)	
+	ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
+#endif		
 	
 	// send caid
 	int caid = 1;
@@ -1391,8 +1391,13 @@ int zapTo_RecordID(const t_channel_id channel_id)
 	if(!parse_channel_pat_pmt(rec_channel, record_fe))
 		return -1;
 						
-	// capmt
+	// cam
 	sendCaPmtPlayBackStart(rec_channel, record_fe);
+	
+	// ci cam
+#if defined (ENABLE_CI)	
+	ci->SendCaPMT(rec_channel->getCaPmt(), record_fe->fenumber);
+#endif		
 	
 	dprintf(DEBUG_NORMAL, "%s: zapped to %s (%llx) fe(%d,%d)\n", __FUNCTION__, rec_channel->getName().c_str(), rec_channel_id, record_fe->fe_adapter, record_fe->fenumber);
 	
@@ -2647,8 +2652,13 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 
 			startPlayBack(live_channel);
 			
-			//start cam
+			// cam
 			sendCaPmtPlayBackStart(live_channel, live_fe);
+			
+			// ci cam
+#if defined (ENABLE_CI)	
+			ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
+#endif				
 			
 			// ugly and dirty://FIXME
 #if defined (USE_OPENGL)
@@ -4256,6 +4266,12 @@ int zapit_main_thread(void *data)
 					else 
 					{
 						sendCaPmtPlayBackStart(live_channel, live_fe);
+						
+						// ci cam
+#if defined (ENABLE_CI)	
+						ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
+#endif	
+
 						pmt_set_update_filter(live_channel, &pmt_update_fd, live_fe);
 					}
 						

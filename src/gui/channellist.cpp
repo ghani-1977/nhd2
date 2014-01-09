@@ -557,6 +557,8 @@ int CChannelList::show()
 	iheight = std::max(icon_ca_h, g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight()) + 2;
 	
 	listmaxshow = (height - theight - buttonHeight)/iheight;
+	
+	// recalculate height
 	height = theight + buttonHeight + listmaxshow * iheight;
 	
 	// info height

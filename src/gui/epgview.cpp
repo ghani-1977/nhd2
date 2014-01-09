@@ -143,7 +143,7 @@ void CEpgData::start()
 	ox  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 	oy = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 	
-	sx = (((g_settings.screen_EndX - g_settings.screen_StartX) -ox) / 2) + g_settings.screen_StartX;
+	sx = (((g_settings.screen_EndX - g_settings.screen_StartX) - ox) / 2) + g_settings.screen_StartX;
 
 	//top
 	topheight     = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->getHeight();

@@ -130,17 +130,7 @@ void EventList::readEvents(const t_channel_id channel_id)
 				{
 					CChannelEventList evtlist2; // stores the temporary eventlist of the subchannel channelid
 					t_channel_id channel_id2;
-#if 0				
-					for (e = evtlist.begin(); e!=evtlist.end(); ++e )
-					{
-						if ( e->startTime > azeit ) 
-						{
-							break;
-						}
-					}
-					// next line is to have a valid e
-					if (evtlist.end() == e) --e;
-#endif				
+				
 					for (unsigned int i = 0; i < linkedServices.size(); i++)
 					{
 						channel_id2 = CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(
@@ -156,15 +146,8 @@ void EventList::readEvents(const t_channel_id channel_id)
 
 							for (unsigned int loop = 0 ; loop < evtlist2.size(); loop++ )
 							{
-								// check if event is in the range of the portal parent event
-#if 0								
-								if ( (evtlist2[loop].startTime >= azeit) /*&& 
-								     (evtlist2[loop].startTime < e->startTime + (int)e->duration)*/ )
-#endif								
-								{
-									//FIXME: bad ?evtlist2[loop].sub = true;
-									evtlist.push_back(evtlist2[loop]);
-								}
+								//FIXME: bad ?evtlist2[loop].sub = true;
+								evtlist.push_back(evtlist2[loop]);
 							}
 							evtlist2.clear();
 						}
@@ -227,7 +210,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 17), (frameBuffer->getScreenWidth() / 20 ));
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 16), (frameBuffer->getScreenHeight() / 20));
 
-	iheight = 30;	// info bar height (see below, hard coded at this time)
+	iheight = 30;	// FIXME: info bar height (see below, hard coded at this time)
 	theight  = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_TITLE]->getHeight();
 
 	fheight1 = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight();
@@ -242,7 +225,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	fwidth2 = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMSMALL]->getRenderWidth("[999 min] ");
 
 	listmaxshow = (height - theight - iheight)/fheight;
-	height = theight+iheight + listmaxshow*fheight; // recalc height
+	height = theight + iheight + listmaxshow*fheight; // recalc height
 
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
@@ -605,7 +588,7 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 	}
 
 	// paint  item box
-	frameBuffer->paintBoxRel(x, ypos, width- 15, fheight, bgcolor);
+	frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 
 	if(liststart+pos<evtlist.size())
 	{
@@ -613,7 +596,6 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 		{
 			char tmpstr[256];
 			struct tm *tmStartZeit = localtime(&evtlist[liststart+pos].startTime);
-
 
 			datetime1_str = g_Locale->getText(CLocaleManager::getWeekday(tmStartZeit));
 
@@ -636,25 +618,13 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 
 			sprintf(tmpstr, "[%d min]", evtlist[liststart+pos].duration / 60 );
 			duration_str = tmpstr;
-#if 0
-			CTimerd::TimerList::iterator timer = timerlist.begin();
-			for(; timer != timerlist.end(); timer++) {
-				if(timer->channel_id == channel_id && (timer->eventType == CTimerd::TIMER_ZAPTO || timer->eventType == CTimerd::TIMER_RECORD)) {
-					if(timer->epgID == evtlist[liststart+pos].eventID) {
-						if(timer->epg_starttime == evtlist[liststart+pos].startTime)
-						  icontype = timer->eventType == CTimerd::TIMER_ZAPTO ? NEUTRINO_ICON_BUTTON_YELLOW : NEUTRINO_ICON_BUTTON_RED;
-						break;
-					}
-				}
-			}
-#endif
 		}
 		CTimerd::CTimerEventTypes etype = isScheduled(channel_id, &evtlist[liststart+pos]);
 		icontype = etype == CTimerd::TIMER_ZAPTO ? NEUTRINO_ICON_BUTTON_YELLOW : etype == CTimerd::TIMER_RECORD ? NEUTRINO_ICON_BUTTON_RED : 0;
 
 		// 1st line
-		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_DATETIME]->RenderString(x+5,         ypos+ fheight1+3, fwidth1+5,            datetime1_str, color, 0, true); // UTF-8
-		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_DATETIME]->RenderString(x+5+fwidth1, ypos+ fheight1+3, width-fwidth1-10- 20, datetime2_str, color, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_DATETIME]->RenderString(x + 5, ypos + fheight1 + 3, fwidth1 + 5, datetime1_str, color, 0, true); // UTF-8
+		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_DATETIME]->RenderString(x + 5 + fwidth1, ypos+ fheight1 + 3, width - fwidth1 - 10 - 20, datetime2_str, color, 0, true); // UTF-8
 
 		int seit = ( evtlist[liststart+pos].startTime - time(NULL) ) / 60;
 		if ( (seit> 0) && (seit<100) && (duration_str.length()!=0) )
@@ -751,7 +721,7 @@ void EventList::paint(t_channel_id channel_id)
 
 	frameBuffer->paintBoxRel(x, y + theight, width, height - theight - iheight, COL_MENUCONTENT_PLUS_0);
 	
-	for(unsigned int count = 0;count < listmaxshow;count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 	{
 		paintItem(count, channel_id);
 	}
