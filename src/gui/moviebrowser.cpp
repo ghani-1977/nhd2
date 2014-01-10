@@ -1766,15 +1766,15 @@ void CMovieBrowser::refreshTitle(void)
 	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + (m_cBoxFrameTitleRel.iHeight - icon_h)/2);
 
 	// setup icon
-	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_w, &icon_h);
 	int xpos1 = m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + m_cBoxFrameTitleRel.iWidth - 10;
 	int ypos = m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY + (m_cBoxFrameTitleRel.iHeight - icon_w)/2;
 
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, xpos1 - icon_w, ypos);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, xpos1 - icon_w, ypos);
 
 	// help icon
 	int icon_h_w, icon_h_h;
-	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_h_w, &icon_h_h);
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_h_w, &icon_h_h);
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - icon_w - 2 - icon_h_w, ypos);
 	
 	// head title
@@ -4324,7 +4324,7 @@ int CMovieHelp::exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, "Filterfenster einblenden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_DBOX, "Hauptmenü");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "Hauptmenü");
 	helpbox.addLine("'+/-'  Ansicht wechseln");
 	helpbox.addLine("'Rec'  Screenshot");
 	helpbox.addLine("'Audio' Cut Jumps from Movie");
