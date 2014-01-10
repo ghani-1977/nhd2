@@ -1801,7 +1801,7 @@ void CAudioPlayerGui::paintHead()
 		ypos = (m_theight - 26) / 2 + m_y + m_title_height;
 
 	if (!m_inetmode)
-		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, m_x + m_width - 30, ypos);
+		m_frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, m_x + m_width - 30, ypos);
 
 #if 1
 	if( current_muted )

@@ -150,7 +150,7 @@ CChannelList::CChannelList(const char * const Name, bool _historyMode, bool _vli
 	// icon setup
 	icon_setup_w = 16;
 	icon_setup_h = 16;
-	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_setup_w, &icon_setup_h);
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_setup_w, &icon_setup_h);
 	
 	//printf("CChannelList::CChannelList: add %s : %x\n", name.c_str(), this);fflush(stdout);
 }
@@ -1966,7 +1966,7 @@ void CChannelList::paintHead()
 	// setup icon
 	if (bouquetList != NULL)
 	{
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x + width - BORDER_RIGHT - icon_setup_w - 2 - icon_help_w, y + (theight - icon_setup_h)/2); // icon for bouquet list button
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x + width - BORDER_RIGHT - icon_setup_w - 2 - icon_help_w, y + (theight - icon_setup_h)/2); // icon for bouquet list button
 	}
 
 	// mute zap

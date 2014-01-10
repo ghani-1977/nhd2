@@ -51,7 +51,7 @@ CProgressWindow::CProgressWindow()
 	statusText = "";
 
 	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width ) >> 1 );
-	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >>1 );
+	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 1 );
 
 	caption = NONEXISTANT_LOCALE;
 }
@@ -82,10 +82,11 @@ void CProgressWindow::showGlobalStatus(const unsigned int prog)
 
 		pos += int( float(width - 20)/100.0 * global_progress);
 		//vordergrund
-		frameBuffer->paintBox(x + 10, globalstatusY,pos, globalstatusY + 10, COL_MENUCONTENT_PLUS_7);
+		frameBuffer->paintBox(x + 10, globalstatusY, pos, globalstatusY + 10, COL_MENUCONTENT_PLUS_7);
 	}
+	
 	//hintergrund
-	frameBuffer->paintBox(pos, globalstatusY, x+width-10, globalstatusY + 10, COL_MENUCONTENT_PLUS_2);
+	frameBuffer->paintBox(pos, globalstatusY, x + width - 10, globalstatusY + 10, COL_MENUCONTENT_PLUS_2);
 	
 #if !defined USE_OPENGL
 	frameBuffer->blit();
@@ -184,7 +185,7 @@ void CProgressWindow::paint()
 	showStatusMessageUTF(statusText);
 
 	// local status
-	ypos+= mheight;
+	ypos += mheight;
 	localstatusY = ypos + mheight - 20;
 	showLocalStatus(0);
 	ypos += mheight +10;
@@ -193,7 +194,7 @@ void CProgressWindow::paint()
 	ypos+= mheight;
 
 	// global status
-	globalstatusY = ypos+ mheight-20;
+	globalstatusY = ypos + mheight - 20;
 	ypos += mheight >>1;
 	showGlobalStatus(global_progress);
 }

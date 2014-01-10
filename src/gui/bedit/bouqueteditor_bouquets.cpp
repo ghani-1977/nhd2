@@ -177,7 +177,7 @@ void CBEBouquetWidget::paintFoot()
 			break;
 	}
 	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 5, y + height + 4, (width - 28 - 10) / 4, 4, Button);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x+width - 28, y+height);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x+width - 28, y+height);
 }
 
 void CBEBouquetWidget::hide()

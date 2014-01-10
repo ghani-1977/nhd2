@@ -658,7 +658,7 @@ void CPictureViewerGui::paintHead()
 		ypos = (theight-26) / 2 + y ;
 	
 	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 60, ypos );
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x+ width- 30, ypos );
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x+ width- 30, ypos );
 }
 
 const struct button_label PictureViewerButtons[4] =

@@ -305,7 +305,7 @@ class CMenuOptionLanguageChooser : public CMenuItem
 			return true;
 		}
 
-		int exec(CMenuTarget* parent);
+		int exec(CMenuTarget *parent);
 };
 
 // CMenuWidget

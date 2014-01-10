@@ -288,7 +288,7 @@ void CWebTV::showUserBouquet(void)
 {
 	static int old_select = 0;
 	char cnt[5];
-	CMenuWidget InputSelector(LOCALE_WEBTV_HEAD, NEUTRINO_ICON_STREAMING);
+	CMenuWidget InputSelector(LOCALE_WEBTV_HEAD, NEUTRINO_ICON_WEBTV_SMALL);
 	int count = 0;
 	int select = -1;
 					
@@ -839,9 +839,9 @@ void CWebTV::paintItem(int pos)
 		sprintf((char*) tmp, "%d", curr + 1);
 		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr]->title);
 		
-		// nummer
+		// number
 		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + iheight, numwidth + 5, tmp, color, /*iheight*/0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), numwidth + 5, tmp, color, 0, true);
 		
 		// description
 		std::string Descr = channels[curr]->description;

@@ -24,13 +24,13 @@
 
 
 // icon files
-#define NEUTRINO_ICON_BUTTON_BLUE		"blau"
-#define NEUTRINO_ICON_BUTTON_GREEN		"gruen"
-#define NEUTRINO_ICON_BUTTON_RED		"rot"
-#define NEUTRINO_ICON_BUTTON_YELLOW		"gelb"
+#define NEUTRINO_ICON_BUTTON_BLUE		"blue"
+#define NEUTRINO_ICON_BUTTON_GREEN		"green"
+#define NEUTRINO_ICON_BUTTON_RED		"red"
+#define NEUTRINO_ICON_BUTTON_YELLOW		"yellow"
 
-#define NEUTRINO_ICON_BUTTON_DBOX		"dbox"
-#define NEUTRINO_ICON_BUTTON_DBOX_SMALL		"dbox_small"
+#define NEUTRINO_ICON_BUTTON_SETUP		"setup"
+#define NEUTRINO_ICON_BUTTON_SETUP_SMALL		"setup_small"
 #define NEUTRINO_ICON_BUTTON_HELP		"help"
 #define NEUTRINO_ICON_BUTTON_HELP_SMALL		"help_small"
 #define NEUTRINO_ICON_BUTTON_HOME		"home"

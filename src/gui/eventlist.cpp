@@ -817,11 +817,11 @@ void  EventList::showFunctionBar(bool show)
 	if ((unsigned int) g_settings.key_channelList_reload != CRCInput::RC_nokey)
 	{
 		pos = 4;
-		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_DBOX_SMALL, &icon_w, &icon_h);
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP_SMALL, &icon_w, &icon_h);
 		
 		if (g_settings.key_channelList_reload == CRCInput::RC_setup) 
 		{
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX_SMALL, bx + cellwidth*pos, by + (bh - icon_h)/2);
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP_SMALL, bx + cellwidth*pos, by + (bh - icon_h)/2);
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(bx + icon_w + 8 + cellwidth*pos, by + (bh - fh)/2 + fh, cellwidth - icon_w - 8, g_Locale->getText(LOCALE_KEYBINDINGMENU_RELOAD), COL_INFOBAR, 0, true); // UTF-8
 		}
 	}

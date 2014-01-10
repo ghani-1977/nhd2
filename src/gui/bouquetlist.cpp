@@ -620,8 +620,8 @@ void CBouquetList::paintHead()
 	if(CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_FAV || CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_PROV)
 	{
 		int icon_w, icon_h;
-		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_DBOX, &icon_w, &icon_h);
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_DBOX, x + width - 10 - icon_w, y + 5); // setup icon
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_w, &icon_h);
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x + width - 10 - icon_w, y + 5); // setup icon
 	}
 	
 	// head title
