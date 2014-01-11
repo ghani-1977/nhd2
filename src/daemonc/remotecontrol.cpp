@@ -780,9 +780,6 @@ void CRemoteControl::zapTo_ChannelID(const t_channel_id channel_id, const std::s
 		// zapto baby
 		g_Zapit->zapTo_serviceID_NOWAIT(channel_id);
 		
-		// tell sectionsd to start epg on the zapped channel
-		//g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, false );
-		
 		abort_zapit = 0;
 
 		zap_completion_timeout = now + 2 * (long long) 1000000;

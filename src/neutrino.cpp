@@ -3538,8 +3538,6 @@ _repeat:
 		}
 		else if(mode == mode_iptv)
 		{
-			StopSubtitles();
-			
 			if(webtv)
 			{
 				if(webtv->playstate == CWebTV::STOPPED)
@@ -3547,8 +3545,6 @@ _repeat:
 				else
 					webtv->exec();
 			}
-			
-			StartSubtitles();
 			
 			return messages_return::handled;
 		}
@@ -4311,7 +4307,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 	dx += offset;
 	dy += offset;
 
-	int x = g_settings.screen_EndX - dx;
+	int x = g_settings.screen_EndX - 10 - dx;
 	int y = g_settings.screen_StartY + 10;
 
 #if ENABLE_LCD
@@ -4344,7 +4340,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 			}
 		
 			frameBuffer->paintBoxRel(x, y, dx, dy, COL_MENUCONTENT_PLUS_0);
-			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x + (offset/2), y + (offset/2) );
+			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_MUTE, x + offset/2, y + offset/2 );
 		}
 		else
 		{
@@ -5669,7 +5665,7 @@ void sighandler (int signum)
 int main(int argc, char *argv[])
 {
 	// build date
-	printf(">>> NeutrinoHD2 (compiled %s %s) <<<\n", __DATE__, __TIME__);
+	printf(">>> neutrinoHD2 (compiled %s %s) <<<\n", __DATE__, __TIME__);
 	
 	// set debug level (default normal)
 	setDebugLevel(DEBUG_INFO);

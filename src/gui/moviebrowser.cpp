@@ -1740,7 +1740,7 @@ void CMovieBrowser::refreshTitle(void)
 	// netzkino
 	else if (show_mode == MB_SHOW_NETZKINO) 
 	{
-		title = g_Locale->getText(LOCALE_WEBTV_NETZKINO);
+		title = g_Locale->getText(LOCALE_MOVIEPLAYER_NETZKINO);
 		if (m_settings.nkmode == cNKFeedParser::SEARCH) 
 		{
 			title += ": ";
@@ -3238,7 +3238,7 @@ void CMovieBrowser::loadMovies(void)
 #endif		
 
 	//CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_NETZKINO)?LOCALE_WEBTV_NETZKINO : (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_NETZKINO)?LOCALE_MOVIEPLAYER_NETZKINO : (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 	
 	loadBox.paint();
 
@@ -5435,7 +5435,7 @@ bool CMovieBrowser::showNKMenu()
 {
 	m_pcWindow->paintBackground();
 
-	CMenuWidget mainMenu(LOCALE_WEBTV_NETZKINO, NEUTRINO_ICON_NETZKINO_SMALL);
+	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_NETZKINO, NEUTRINO_ICON_NETZKINO_SMALL);
 
 	int select = -1;
 	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
@@ -5509,7 +5509,7 @@ bool CMovieBrowser::showNKMenu()
 	
 	if (reload) 
 	{
-		CHintBox loadBox(LOCALE_WEBTV_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+		CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 		loadBox.paint();
 		nkparser.Cleanup();
 		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp);

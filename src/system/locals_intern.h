@@ -1635,7 +1635,6 @@ const char * locale_real_names[] = {
 	
 	"webtv.head",
 	"webtvchannellist.nonefound",
-	"webtv.netzkino",
 	"webtv.user",
 	"webtv.bouquets",
 	"webtv.add_bouquets",
@@ -1667,6 +1666,7 @@ const char * locale_real_names[] = {
 	"moviebrowser.yt_concurrent_connections",
 	
 	// netzkino
+	"movieplayer.netzkino",
 	"moviebrowser.netzkino_error",
 	"moviebrowser.nk_categories",
 	"moviebrowser.nk_error",

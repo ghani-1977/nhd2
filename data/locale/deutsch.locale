@@ -1623,7 +1623,6 @@ audiomenu.volumebar_audiosteps Lautstärke Schrittweite
 
 webtv.head WebTV
 webtvchannellist.nonefound Es wurden keine WebTV Kanäle gefunden!
-webtv.netzkino NetzKino.de
 webtv.user User Bouquet
 webtv.bouquets Favoriten
 webtv.add_bouquets User Bouquet einfügen
@@ -1653,6 +1652,7 @@ moviebrowser.yt_orderby.relevance Relevanz
 moviebrowser.yt_orderby.viewcount Zahl der Views
 moviebrowser.yt_concurrent_connections Gleichzeitige Verbindungen 
 
+movieplayer.netzkino NetzKino.de
 moviebrowser.netzkino_error Fehler beim laden des Netzkino Kategorien
 moviebrowser.nk_categories Kategorie-Auswahl
 moviebrowser.nk_error Fehler beim Laden des Netzkino-Feeds
