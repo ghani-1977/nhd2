@@ -1297,7 +1297,7 @@ int CMenuOptionStringChooser::paint( bool selected )
 }
 
 // CMenuOptionLanguageChooser
-CMenuOptionLanguageChooser::CMenuOptionLanguageChooser(char* OptionValue, CChangeObserver* Observ, const char * const IconName)
+CMenuOptionLanguageChooser::CMenuOptionLanguageChooser(char *OptionValue, CChangeObserver *Observ, const char * const IconName)
 {
 	int iconName_w, iconName_h;
 	CFrameBuffer::getInstance()->getIconSize(NEUTRINO_ICON_BUTTON_RED, &iconName_w, &iconName_h);
@@ -1376,8 +1376,9 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 		frameBuffer->paintIcon(iconName, x + BORDER_LEFT + ICON_OFFSET, y+ ((height - icon_h)/2) );
 	}
 
+	// locale
 	int stringstartposOption = x + BORDER_LEFT + ICON_OFFSET + (icon_w? icon_w + LOCAL_OFFSET: 0);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + (height - g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight(), dx- (stringstartposOption - x), optionValue, color);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(stringstartposOption, y + (height - g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getHeight(), dx- (stringstartposOption - x), optionValue, color, 0, true); //UTF-8
 
 	if (selected)
 	{
