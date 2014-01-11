@@ -65,7 +65,7 @@ CFormathandler * fh_root;
 void init_handlers(void);
 void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
 
-
+//
 static uint32_t * virtual_fb = NULL;
 
 inline unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
@@ -523,16 +523,16 @@ void CFrameBuffer::paletteGenFade(int in, __u32 rgb1, __u32 rgb2, int num, int t
 	for (int i = 0; i < num; i++) 
 	{
 		paletteFade(in + i, rgb1, rgb2, i*(255/(num-1)));
-		cmap.transp[in+i] = tr;
+		cmap.transp[in + i] = tr;
 		tr--; //FIXME
 	}
 }
 
 void CFrameBuffer::paletteSetColor(int i, __u32 rgb, int tr)
 {
-	cmap.red[i] =(rgb&0xFF0000)>>8;
-	cmap.green[i] =(rgb&0x00FF00)   ;
-	cmap.blue[i] =(rgb&0x0000FF)<<8;
+	cmap.red[i] = (rgb&0xFF0000)>>8;
+	cmap.green[i] = (rgb&0x00FF00)   ;
+	cmap.blue[i] = (rgb&0x0000FF)<<8;
 	cmap.transp[i] = tr;
 }
 

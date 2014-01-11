@@ -1839,9 +1839,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 {
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitColorSettings\n");
 	
-	// init screensetup objekt
-	//CScreenSetup  * ScreenSetup = new CScreenSetup();
-	
 	int shortcutOSD = 1;
 	
 	// intros

@@ -99,7 +99,7 @@ void CColorChooser::setColor()
 
 	fb_pixel_t col = ((tAlpha << 24) & 0xFF000000) | color;
 	
-	frameBuffer->paintBoxRel(x + /*3 *(width/4)*/startx + 2, y + hheight + 2 + 5,  mheight*4 - 4 ,mheight*4 - 4 -10, col);
+	frameBuffer->paintBoxRel(x + startx + 2, y + hheight + 2 + 5,  mheight*4 - 4 ,mheight*4 - 4 -10, col);
 }
 
 int CColorChooser::exec(CMenuTarget* parent, const std::string &)
@@ -108,6 +108,7 @@ int CColorChooser::exec(CMenuTarget* parent, const std::string &)
 	neutrino_msg_data_t data;
 
 	int res = menu_return::RETURN_REPAINT;
+	
 	if (parent)
 		parent->hide();
 
@@ -263,8 +264,8 @@ void CColorChooser::paint()
 		paintSlider(x + 10, y + hheight + mheight * i, value[i], colorchooser_names[i], iconnames[i], (i == 0));
 
 	//color preview
-	frameBuffer->paintBoxRel(x + /*3*(width/4)*/startx, y + hheight + 5, mheight*4, mheight*4-10, COL_MENUHEAD_PLUS_0);
-	frameBuffer->paintBoxRel(x + /*3*(width/4)*/startx + 2, y + hheight + 2 + 5, mheight*4 - 4, mheight*4 - 4 -10, 254);
+	frameBuffer->paintBoxRel(x + startx, y + hheight + 5, mheight*4, mheight*4-10, COL_MENUHEAD_PLUS_0);
+	frameBuffer->paintBoxRel(x + startx + 2, y + hheight + 2 + 5, mheight*4 - 4, mheight*4 - 4 -10, 254);
 }
 
 void CColorChooser::paintSlider(int _x, int _y, unsigned char *spos, const neutrino_locale_t text, const char * const iconname, const bool selected)
