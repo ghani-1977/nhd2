@@ -352,6 +352,7 @@ std::string getNowTimeStr(const char* format)
 	struct timeval tv;
 	gettimeofday(&tv, NULL);        
 	strftime(tmpStr, sizeof(tmpStr), format, localtime(&tv.tv_sec));
+	
 	return (std::string)tmpStr;
 }
 
@@ -367,6 +368,7 @@ std::string replace_all(const std::string &in, const std::string &entity, const 
 	std::string::size_type loc = 0;
 	while (( loc = out.find(entity, loc)) != std::string::npos )
 	out.replace(loc, entity.length(), symbol);
+	
 	return out;
 }
 
@@ -379,7 +381,7 @@ unsigned long long getcurrenttime()
 
 CFileHelpers::CFileHelpers()
 {
-	doCopyFlag	= true;
+	doCopyFlag = true;
 }
 
 CFileHelpers::~CFileHelpers()
@@ -403,7 +405,9 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 	unlink(Dst);
 	if ((fd1 = open(Src, O_RDONLY)) < 0)
 		return false;
-	if ((fd2 = open(Dst, O_WRONLY | O_CREAT, mode)) < 0) {
+	
+	if ((fd2 = open(Dst, O_WRONLY | O_CREAT, mode)) < 0) 
+	{
 		close(fd1);
 		return false;
 	}
@@ -412,11 +416,14 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 	uint32_t block;
 	off64_t fsizeSrc64 = lseek64(fd1, 0, SEEK_END);
 	lseek64(fd1, 0, SEEK_SET);
-	if (fsizeSrc64 > 0x7FFFFFF0) { // > 2GB
+	
+	if (fsizeSrc64 > 0x7FFFFFF0) 
+	{ // > 2GB
 		off64_t fsize64 = fsizeSrc64;
 		block = FileBufSize;
 		//printf("#####[%s] fsizeSrc64: %lld 0x%010llX - large file\n", __FUNCTION__, fsizeSrc64, fsizeSrc64);
-		while(fsize64 > 0) {
+		while(fsize64 > 0) 
+		{
 			if(fsize64 < (off64_t)FileBufSize)
 				block = (uint32_t)fsize64;
 			read(fd1, FileBuf, block);
@@ -425,7 +432,9 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 			if (!doCopyFlag)
 				break;
 		}
-		if (doCopyFlag) {
+		
+		if (doCopyFlag) 
+		{
 			lseek64(fd2, 0, SEEK_SET);
 			off64_t fsizeDst64 = lseek64(fd2, 0, SEEK_END);
 			if (fsizeSrc64 != fsizeDst64){
@@ -436,13 +445,15 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 			}
 		}
 	}
-	else { // < 2GB
+	else 
+	{ // < 2GB
 		off_t fsizeSrc = lseek(fd1, 0, SEEK_END);
 		lseek(fd1, 0, SEEK_SET);
 		off_t fsize = fsizeSrc;
 		block = FileBufSize;
 		//printf("#####[%s] fsizeSrc: %ld 0x%08lX - normal file\n", __FUNCTION__, fsizeSrc, fsizeSrc);
-		while(fsize > 0) {
+		while(fsize > 0) 
+		{
 			if(fsize < (off_t)FileBufSize)
 				block = (uint32_t)fsize;
 			read(fd1, FileBuf, block);
@@ -451,10 +462,13 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 			if (!doCopyFlag)
 				break;
 		}
-		if (doCopyFlag) {
+		
+		if (doCopyFlag) 
+		{
 			lseek(fd2, 0, SEEK_SET);
 			off_t fsizeDst = lseek(fd2, 0, SEEK_END);
-			if (fsizeSrc != fsizeDst){
+			if (fsizeSrc != fsizeDst)
+			{
 				close(fd1);
 				close(fd2);
 				delete [] FileBuf;
@@ -466,7 +480,8 @@ bool CFileHelpers::copyFile(const char *Src, const char *Dst, mode_t mode)
 	close(fd2);
 	delete [] FileBuf;
 
-	if (!doCopyFlag) {
+	if (!doCopyFlag) 
+	{
 		sync();
 		unlink(Dst);
 		return false;
@@ -487,22 +502,27 @@ bool CFileHelpers::copyDir(const char *Src, const char *Dst, bool backupMode)
 	//open directory
 	if ((Directory = opendir(Src)) == NULL)
 		return false;
-	if (lstat(Src, &FileInfo) == -1) {
+	if (lstat(Src, &FileInfo) == -1) 
+	{
 		closedir(Directory);
 		return false;
 	}
 	// create directory
 		// is symlink
-	if (S_ISLNK(FileInfo.st_mode)) {
+	if (S_ISLNK(FileInfo.st_mode)) 
+	{
 		int len = readlink(Src, buf, sizeof(buf)-1);
-		if (len != -1) {
+		if (len != -1) 
+		{
 			buf[len] = '\0';
 			symlink(buf, Dst);
 		}
 	}
-	else {
+	else 
+	{
 		// directory
-		if (createDir(Dst, FileInfo.st_mode & 0x0FFF) == false) {
+		if (createDir(Dst, FileInfo.st_mode & 0x0FFF) == false) 
+		{
 			if (errno != EEXIST) {
 				closedir(Directory);
 				return false;
@@ -511,7 +531,8 @@ bool CFileHelpers::copyDir(const char *Src, const char *Dst, bool backupMode)
 	}
 
 	// read directory
-	while ((CurrentFile = readdir(Directory)) != NULL) {
+	while ((CurrentFile = readdir(Directory)) != NULL) 
+	{
 		// ignore '.' and '..'
 		if (strcmp(CurrentFile->d_name, ".") && strcmp(CurrentFile->d_name, "..")) {
 			srcPath = std::string(Src) + "/" + std::string(CurrentFile->d_name);
@@ -559,10 +580,12 @@ bool CFileHelpers::createDir(const char *Dir, mode_t mode)
 	}
 
 	int ret = -1;
-	while (ret == -1) {
+	while (ret == -1) 
+	{
 		strcpy(dirPath, Dir);
 		ret = mkdir(dirPath, mode);
-		if ((errno == ENOENT) && (ret == -1)) {
+		if ((errno == ENOENT) && (ret == -1)) 
+		{
 			char * pos = strrchr(dirPath,'/');
 			if (pos != NULL) {
 				pos[0] = '\0';
@@ -583,12 +606,16 @@ bool CFileHelpers::removeDir(const char *Dir)
 	char path[PATH_MAX];
 
 	dir = opendir(Dir);
-	if (dir == NULL) {
+	if (dir == NULL) 
+	{
 		printf("Error opendir()\n");
 		return false;
 	}
-	while ((entry = readdir(dir)) != NULL) {
-		if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, "..")) {
+	
+	while ((entry = readdir(dir)) != NULL) 
+	{
+		if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, "..")) 
+		{
 			snprintf(path, (size_t) PATH_MAX, "%s/%s", Dir, entry->d_name);
 			if (entry->d_type == DT_DIR)
 				removeDir(path);

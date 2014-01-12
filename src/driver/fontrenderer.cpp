@@ -371,33 +371,42 @@ int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on 
 #if defined (ENABLE_FRIBIDI)
 std::string fribidiShapeChar(const char * text)
 {
-	// init to utf-8
-	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
 	int len = strlen(text);
 	
-	// tell bidi that we need bidirectionnel
-	FriBidiCharType Base = FRIBIDI_TYPE_LTR;
-	
-	// our buffer
-	FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-	FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-	
-	// convert from the selected charset to Unicode
-	int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
-	char *Rtl = NULL;
-	
-	if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
+	if(len > 0)
 	{
-		Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
+		// init to utf-8
+		FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
 		
-		// // convert back from Unicode to the charset
-		fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+		// tell bidi that we need bidirectionnel
+		FriBidiCharType Base = FRIBIDI_TYPE_LTR;
+		
+		// our buffer
+		FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+		FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+		
+		// convert from the selected charset to Unicode
+		int RtlLen = fribidi_charset_to_unicode(fribidiCharset, /*const_cast<char *>(text)*/(char *)text, len, Logical);
+		char *Rtl = NULL;
+		
+		if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
+		{
+			// removes bidirectional marks
+			//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
+			
+			Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
+			
+			// // convert back from Unicode to the charset
+			fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+		}
+		
+		free(Logical);
+		free(Visual);
+		
+		return Rtl;
 	}
-	
-	free(Logical);
-	free(Visual);
-	
-	return Rtl;
+	else
+		return text;
 }
 #endif
 //
