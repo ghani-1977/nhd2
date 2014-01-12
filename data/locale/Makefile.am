@@ -19,7 +19,7 @@ installdir = $(DATADIR)/neutrino/locale
 install_DATA = \
 	deutsch.locale \
 	english.locale \
-					العربية.locale
+	arabic.locale
 
 if MAINTAINER_MODE
 
