@@ -381,7 +381,11 @@ std::string fribidiShapeChar(const char * text)
 	//
 	fribidi_set_mirroring(true);
 	fribidi_set_reorder_nsm(false);
+#if FRIBIDI_MAJOR_VERSION == 0 && FRIBIDI_MINOR_VERSION == 10 && FRIBIDI_MICRO_VERSION == 4
+	FriBidiCharSet fribidiCharset = FRIBIDI_CHARSET_UTF8;
+#else
 	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;
+#endif	
 	int len = strlen(text);
 	
 	//
