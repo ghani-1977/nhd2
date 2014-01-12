@@ -41,6 +41,11 @@
 #include <system/debug.h>
 #include <global.h>
 
+// fribidi
+#if defined (ENABLE_FRIBIDI)
+#include <fribidi/fribidi.h>
+#endif
+
 
 FT_Error FBFontRenderClass::myFTC_Face_Requester(FTC_FaceID  face_id,
         FT_Library  /*library*/,
@@ -369,12 +374,55 @@ int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on 
 	return unicode_value;
 }
 
+//
+#if defined (ENABLE_FRIBIDI)
+std::string fribidiShapeChar(const char * text)
+{
+	//
+	fribidi_set_mirroring(true);
+	fribidi_set_reorder_nsm(false);
+	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;
+	int len = strlen(text);
+	
+	//
+	FriBidiCharType Base = FRIBIDI_TYPE_L;
+	FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+	
+	//
+	int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
+	FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+	char *Rtl = NULL;
+	
+	//
+	bool ok = fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL);
+	
+	if (ok) 
+	{
+		fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
+		Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
+		fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+	}
+	
+	free(Logical);
+	free(Visual);
+	
+	return Rtl;
+}
+#endif
+//
+
 void Font::RenderString(int x, int y, const int width, const char *text, const unsigned char color, const int boxheight, const bool utf8_encoded)
 {
 	if (!frameBuffer->getActive())
 		return;
 
 	pthread_mutex_lock( &renderer->render_mutex );
+	
+	// fribidi
+#if defined (ENABLE_FRIBIDI)	
+	std::string Text = fribidiShapeChar(text);
+	text = Text.c_str();
+#endif	
 	
 	FT_Error err = FTC_Manager_LookupSize(renderer->cacheManager, &scaler, &size);
 	
@@ -494,8 +542,6 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		
 		if (*text == '\n')
 		{
-			//x  = left;
-			//y += step_y;
 			unicode_value = ' ';
 		}
 
@@ -517,7 +563,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		//kerning
 		if(use_kerning)
 		{
-			FT_Get_Kerning(face,lastindex,index,0,&kerning);
+			FT_Get_Kerning(face, lastindex, index, 0, &kerning);
 			x += (kerning.x) >> 6; // kerning!
 		}
 		
@@ -525,6 +571,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		if (x + glyph->xadvance + spread_by > left + width)
 			break;
 
+		// render text
 		int stride  = frameBuffer->getStride();
 		int ap = (x + glyph->left) * sizeof(fb_pixel_t) + stride * (y - glyph->top);
 		uint8_t * d = ((uint8_t *)frameBuffer->getFrameBufferPointer()) + ap;
@@ -603,6 +650,12 @@ void Font::RenderString(int x, int y, const int width, const std::string & text,
 int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 {
 	pthread_mutex_lock( &renderer->render_mutex );
+	
+	// fribidi
+#if defined (ENABLE_FRIBIDI)	
+	std::string Text = fribidiShapeChar(text);
+	text = Text.c_str();
+#endif	
 
 	FT_Error err = FTC_Manager_LookupSize(renderer->cacheManager, &scaler, &size);
 	
@@ -628,7 +681,7 @@ int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 		int unicode_value = UTF8ToUnicode(text, utf8_encoded);
 
 		if (unicode_value == -1)
-			break;
+			break;		
 
 		int index = FT_Get_Char_Index(face, unicode_value);
 

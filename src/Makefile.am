@@ -107,7 +107,9 @@ neutrino_LDADD += \
 	-lglut -lGL -lGLU -lGLEW -lOpenThreads -lgstinterfaces-0.10 
 endif
 
-
+if ENABLE_FRIBIDI
+neutrino_LDADD += -lfribidi
+endif
 
 
 
