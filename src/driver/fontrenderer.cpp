@@ -385,6 +385,12 @@ std::string fribidiShapeChar(const char * text)
 		FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
 		FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
 		
+		if(!Visual)
+		{
+			free(Visual);
+			goto out;
+		}
+		
 		// convert from the selected charset to Unicode
 		int RtlLen = fribidi_charset_to_unicode(fribidiCharset, /*const_cast<char *>(text)*/(char *)text, len, Logical);
 		char *Rtl = NULL;
@@ -396,7 +402,7 @@ std::string fribidiShapeChar(const char * text)
 			
 			Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
 			
-			// // convert back from Unicode to the charset
+			// convert back from Unicode to the charset
 			fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
 		}
 		
@@ -405,8 +411,9 @@ std::string fribidiShapeChar(const char * text)
 		
 		return Rtl;
 	}
-	else
-		return text;
+	
+out:	
+	return text;
 }
 #endif
 //
