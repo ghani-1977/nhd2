@@ -1622,8 +1622,6 @@ audiomenu.volumebar_audiosteps Volume Step Size
 
 webtv.head إسلام يا عايش
 webtvchannellist.nonefound No WebTV channels were found!
-webtvchannellist.info Info
-webtv.netzkino Netzkino.de
 webtv.user User bouquet
 webtv.bouquets Favorites
 webtv.add_bouquets add User bouquet
@@ -1653,6 +1651,7 @@ moviebrowser.yt_orderby.relevance relevance
 moviebrowser.yt_orderby.viewcount view count
 moviebrowser.yt_concurrent_connections Concurrent connections
 
+movieplayer.netzkino Netzkino.de
 moviebrowser.netzkino_error Failed to load Netzkino categories
 moviebrowser.nk_categories Select category
 moviebrowser.nk_error Failed to load Netzkino feed

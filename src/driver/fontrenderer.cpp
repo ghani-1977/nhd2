@@ -373,47 +373,48 @@ std::string fribidiShapeChar(const char * text)
 {
 	int len = strlen(text);
 	
-	if(len > 0)
-	{
-		// init to utf-8
-		FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
-		
-		// tell bidi that we need bidirectionnel
-		FriBidiCharType Base = FRIBIDI_TYPE_LTR;
-		
-		// our buffer
-		FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-		FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-		
-		if(!Visual)
-		{
-			free(Visual);
-			goto out;
-		}
-		
-		// convert from the selected charset to Unicode
-		int RtlLen = fribidi_charset_to_unicode(fribidiCharset, /*const_cast<char *>(text)*/(char *)text, len, Logical);
-		char *Rtl = NULL;
-		
-		if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
-		{
-			// removes bidirectional marks
-			//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
-			
-			Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
-			
-			// convert back from Unicode to the charset
-			fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
-		}
-		
-		free(Logical);
-		free(Visual);
-		
-		return Rtl;
-	}
+	if(len == 0)
+		return text;
 	
-out:	
-	return text;
+	//
+	fribidi_set_mirroring(true);
+	fribidi_set_reorder_nsm(false);
+	
+	// init to utf-8
+	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
+		
+	// tell bidi that we need bidirectionnel
+	FriBidiCharType Base = FRIBIDI_TYPE_LTR;
+		
+	// our buffer
+	FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+	FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
+		
+	if(!Visual)
+	{
+		free(Visual);
+		return text;
+	}
+		
+	// convert from the selected charset to Unicode
+	int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
+	char *Rtl = NULL;
+		
+	if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
+	{
+		// removes bidirectional marks
+		//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
+			
+		Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
+			
+		// convert back from Unicode to the charset
+		fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+	}
+		
+	free(Logical);
+	free(Visual);
+		
+	return Rtl;
 }
 #endif
 //

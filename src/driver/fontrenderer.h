@@ -64,11 +64,11 @@ class Font
 		};
 		fontmodifier stylemodifier;
 
-		void RenderString(int x, int y, const int width, const char * text, const unsigned char color, const int boxheight = 0, const bool utf8_encoded = true);
-		void RenderString(int x, int y, const int width, const std::string & text, const unsigned char color, const int boxheight = 0, const bool utf8_encoded = true);
+		void RenderString(int x, int y, const int width, const char * text, const unsigned char color, const int boxheight = 0, const bool utf8_encoded = false);
+		void RenderString(int x, int y, const int width, const std::string & text, const unsigned char color, const int boxheight = 0, const bool utf8_encoded = false);
 
-		int getRenderWidth(const char *        text, const bool utf8_encoded = true);
-		int getRenderWidth(const std::string & text, const bool utf8_encoded = true);
+		int getRenderWidth(const char *        text, const bool utf8_encoded = false);
+		int getRenderWidth(const std::string & text, const bool utf8_encoded = false);
 		int getHeight(void);
 		int getWidth(void);
 		int getSize(){return font.width;}
