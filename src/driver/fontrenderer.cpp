@@ -301,10 +301,10 @@ int Font::setSize(int isize)
 
 	ascender = tM;
 	descender = tg - hg; //this is a negative value!
-	int halflinegap = -(descender>>1); // |descender/2| - we use descender as linegap, half at top, half at bottom
-	upper = halflinegap+ascender+3;   // we add 3 at top
-	lower = -descender+halflinegap+1; // we add 1 at bottom
-	height = upper+lower;               // this is total height == distance of lines
+	int halflinegap = - (descender>>1); // |descender/2| - we use descender as linegap, half at top, half at bottom
+	upper = halflinegap + ascender+3;   // we add 3 at top
+	lower = -descender + halflinegap+1; // we add 1 at bottom
+	height = upper + lower;               // this is total height == distance of lines
 	// hack end
 
 	return temp;
@@ -369,52 +369,38 @@ int UTF8ToUnicode(const char * &text, const bool utf8_encoded) // returns -1 on 
 
 //
 #if defined (ENABLE_FRIBIDI)
-std::string fribidiShapeChar(const char * text)
+static std::string fribidiShapeChar(const char * text)
 {
-	int len = strlen(text);
-	
-	if(len == 0)
-		return text;
-	
-	//
-	fribidi_set_mirroring(true);
-	fribidi_set_reorder_nsm(false);
-	
-	// init to utf-8
-	FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
-		
-	// tell bidi that we need bidirectionnel
-	FriBidiCharType Base = FRIBIDI_TYPE_LTR;
-		
-	// our buffer
-	FriBidiChar *Logical = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-	FriBidiChar *Visual = (FriBidiChar *)malloc(sizeof(FriBidiChar)*(len + 1)) ;
-		
-	if(!Visual)
+	if(text && *text)
 	{
-		free(Visual);
-		return text;
-	}
-		
-	// convert from the selected charset to Unicode
-	int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
-	char *Rtl = NULL;
-		
-	if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
-	{
-		// removes bidirectional marks
-		//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
+		int len = strlen(text);
+		fribidi_set_mirroring(true);
+		fribidi_set_reorder_nsm(false);
 			
-		Rtl = (char *)malloc(sizeof(char)*(RtlLen * 4 + 1));
+		// init to utf-8
+		FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
+		// tell bidi that we need bidirectional
+		FriBidiCharType Base = FRIBIDI_TYPE_LTR;
+		// our buffer
+		FriBidiChar *Logical = (FriBidiChar *)alloca(sizeof(FriBidiChar)*(len + 1));
+		FriBidiChar *Visual = (FriBidiChar *)alloca(sizeof(FriBidiChar)*(len + 1));
+		
+		// convert from the selected charset to Unicode
+		int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
+		
+		// logical to visual
+		if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
+		{
+			// removes bidirectional marks
+			//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
 			
-		// convert back from Unicode to the charset
-		fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+			char *Rtl = (char *)alloca(sizeof(char)*(RtlLen * 4 + 1));
+			fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+			return std::string(Rtl);
+		}
 	}
-		
-	free(Logical);
-	free(Visual);
-		
-	return Rtl;
+	
+	return std::string(text);
 }
 #endif
 //
@@ -538,7 +524,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		if (spread_by < 1)
 			spread_by = 1;
 	}
-
+	
 	for (; *text; text++)
 	{
 		FTC_SBit glyph;

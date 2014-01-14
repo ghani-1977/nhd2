@@ -35,7 +35,6 @@
 #include <gui/widget/icons.h>
 
 
-
 CListBox::CListBox(const char * const Caption)
 {
 	frameBuffer = CFrameBuffer::getInstance();

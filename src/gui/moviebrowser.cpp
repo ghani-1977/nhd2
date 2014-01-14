@@ -165,7 +165,7 @@ const CMenuOptionChooser::keyval MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS[MESSAGEBOX_
 #define INTER_FRAME_SPACE 4  // space between e.g. upper and lower window
 #define TEXT_BORDER_WIDTH 8
 
-const neutrino_locale_t m_localizedItemName[MB_INFO_MAX_NUMBER+1] =
+const neutrino_locale_t m_localizedItemName[MB_INFO_MAX_NUMBER + 1] =
 {
 	LOCALE_MOVIEBROWSER_SHORT_FILENAME,
 	LOCALE_MOVIEBROWSER_SHORT_PATH,

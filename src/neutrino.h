@@ -72,14 +72,6 @@ typedef struct font_sizes
         const unsigned int      size_offset;
 } font_sizes_struct;
 
-typedef struct font_sizes_groups
-{
-        const neutrino_locale_t                     groupname;
-        const unsigned int                          count;
-        const SNeutrinoSettings::FONT_TYPES * const content;
-        const char * const                          actionkey;
-} font_sizes_groups_struct;
-
 class CNeutrinoApp : public CMenuTarget, CChangeObserver
 {
  	private:
@@ -209,8 +201,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void CmdParser(int argc, char **argv);
 	
 		bool doGuiRecord(char * preselectedDir, bool addTimer = false);
-		void loadKeys(const char * fname);
-		void saveKeys(const char * fname);
+		
 		CNeutrinoApp();
 
 	public:

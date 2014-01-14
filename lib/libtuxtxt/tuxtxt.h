@@ -187,6 +187,7 @@ const char *ObjectSource[] =
 	"POP",
 	"GPOP"
 };
+
 const char *ObjectType[] =
 {
 	"Passive",
@@ -310,6 +311,7 @@ const unsigned short int nationaltable23[14][2] =
         { '#',    0x00A4 }, /* C SV/FI/HU */
         { 0x20A4, 0x011F }, /* D    TR    */
 };
+
 const unsigned short int nationaltable40[14] =
 {
         '@',    /* 0          */
@@ -327,6 +329,7 @@ const unsigned short int nationaltable40[14] =
         0x00C9, /* C SV/FI/HU */
         0x0130, /* D    TR    */
 };
+
 const unsigned short int nationaltable5b[14][6] =
 {
         {    '[',   '\\',    ']',    '^',    '_',    '`' }, /* 0          */
@@ -344,6 +347,7 @@ const unsigned short int nationaltable5b[14][6] =
         { 0x00C4, 0x00D6, 0x00C5, 0x00DC,    '_', 0x00E9 }, /* C SV/FI/HU */
         { 0x015E, 0x00D6, 0x00C7, 0x00DC, 0x011E, 0x0131 }, /* D    TR    */
 };
+
 const unsigned short int nationaltable7b[14][4] =
 {
         { '{',       '|',    '}',    '~' }, /* 0          */
@@ -1552,6 +1556,5 @@ void eval_object(int iONr, tstCachedPage *pstCachedPage,
 					  unsigned char *pAPx, unsigned char *pAPy,
 					  unsigned char *pAPx0, unsigned char *pAPy0,
 					  tObjType ObjType, unsigned char* pagedata);
-
 
 #endif

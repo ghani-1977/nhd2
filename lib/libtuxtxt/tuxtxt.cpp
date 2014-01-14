@@ -320,9 +320,9 @@ void setcolors(unsigned short *pcolormap, int offset, int number)
 		g = (g * (0x3f+(color_mode<<3))) >> 8;
 		b = (b * (0x3f+(color_mode<<3))) >> 8;
 
-		bgra[j][2]=r;
-		bgra[j][1]=g;
-		bgra[j][0]=b;
+		bgra[j][2] = r;
+		bgra[j][1] = g;
+		bgra[j][0] = b;
 		
 		j++;
 	}
@@ -3965,15 +3965,15 @@ void RenderDRCS( //FIXME
 //					memset(d + ax[x], f1, ax[x+1] - ax[x]);
 					for (ltmp=0 ; ltmp < (ax[x+1]-ax[x]); ltmp++)
 					{
-						memcpy(d + ax[x]*4 +ltmp*4,bgra[f1],4);
+						memcpy(d + ax[x]*4 + ltmp*4, bgra[f1], 4);
 					}
 				}
 				if (ax[x+7] > ax[x+6])
 				{
 					//memset(d + ax[x+6], f2, ax[x+7] - ax[x+6]); /* 2nd byte 6 pixels to the right */
-					for (ltmp=0 ; ltmp < (ax[x+7]-ax[x+6]); ltmp++)
+					for (ltmp=0 ; ltmp < (ax[x + 7]-ax[x+6]); ltmp++)
 					{
-						memcpy(d + ax[x+6]*4 +ltmp*4,bgra[f2],4);
+						memcpy(d + ax[x+6]*4 +ltmp*4, bgra[f2], 4);
 					}
 
 				}
@@ -4315,11 +4315,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	}
 	else
 		bgcolor = Attribute->bg;
-
-	/*
-	fprintf(stderr, "charset = %d\n", Attribute->charset);		
-	fprintf(stderr, "national_subset_local = %d\n", national_subset_local);		
-	*/
 	
 	/* handle mosaic ->space*/
 	if ((Attribute->charset == C_G1C || Attribute->charset == C_G1S) && ((Char&0xA0) == 0x20))
@@ -4348,7 +4343,7 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 			}
 		}
 		PosX += curfontwidth;
-		/*fprintf(stderr, "hier passierts 5\n");		*/
+
 		return;
 	}
 
@@ -4367,19 +4362,19 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 			}
 			else if (*aShapes[Char - 0x20] == S_ADT)
 			{
-				int x,y,f,c;
+				int x, y, f, c;
 				
-				unsigned char* p = lfb + PosX*4 + (PosY+yoffset)*CFrameBuffer::getInstance()->getStride();
+				unsigned char *p = lfb + PosX*4 + (PosY + yoffset)*CFrameBuffer::getInstance()->getStride();
 				
-				for (y=0; y<fontheight;y++)
+				for (y = 0; y < fontheight; y++)
 				{
-					for (f=0; f<factor; f++)
+					for (f = 0; f < factor; f++)
 					{
-						for (x=0; x<curfontwidth*xfactor;x++)
+						for (x = 0; x < curfontwidth*xfactor; x++)
 						{
 							c = (y&4 ? (x/3)&1 :((x+3)/3)&1);
 							
-							memcpy((p+x*4),bgra[(c ? fgcolor : bgcolor)],4);
+							memcpy((p + x*4), bgra[(c ? fgcolor : bgcolor)], 4);
 						}
 						
 						p += CFrameBuffer::getInstance()->getStride();
