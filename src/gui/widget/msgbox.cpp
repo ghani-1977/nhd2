@@ -55,9 +55,9 @@
 #include <gui/widget/icons.h>
 #include <neutrino.h>
 
-#define WINDOW_FRAME_BORDER_WIDTH	 4
+#define WINDOW_FRAME_BORDER_WIDTH	 	4
 #define ADD_FOOT_HEIGHT	 			20
-#define	TEXT_BORDER_WIDTH			 8
+#define	TEXT_BORDER_WIDTH			8
 #define	TITLE_ICON_WIDTH			(40 - TEXT_BORDER_WIDTH)
 
 #define MAX_WINDOW_WIDTH  (g_settings.screen_EndX - g_settings.screen_StartX )
@@ -131,8 +131,8 @@ CMsgBox::CMsgBox(  const char * text,
 
 	if(_mode & CENTER)
 	{
-		m_cBoxFrame.iX		= g_settings.screen_StartX + ((g_settings.screen_EndX - g_settings.screen_StartX - m_cBoxFrame.iWidth) >>1);
-		m_cBoxFrame.iY		= g_settings.screen_StartY + ((g_settings.screen_EndY - g_settings.screen_StartY - m_cBoxFrame.iHeight) >>2);
+		m_cBoxFrame.iX = g_settings.screen_StartX + ((g_settings.screen_EndX - g_settings.screen_StartX - m_cBoxFrame.iWidth) >>1);
+		m_cBoxFrame.iY = g_settings.screen_StartY + ((g_settings.screen_EndY - g_settings.screen_StartY - m_cBoxFrame.iHeight) >>2);
 	}
 
 	m_nResult = default_result;
@@ -151,7 +151,8 @@ CMsgBox::CMsgBox(const char * text)
 {
 	initVar();
 
-	m_pcTextBox = new CTextBox(	text);
+	m_pcTextBox = new CTextBox(text);
+	
 	/* Initialise the window frames first */
 	initFramesRel();
 }
@@ -193,7 +194,6 @@ CMsgBox::~CMsgBox()
 		delete m_pcTextBox;
 		m_pcTextBox = NULL;
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -298,20 +298,19 @@ void CMsgBox::initFramesRel(void)
 void CMsgBox::refreshFoot(void)
 {
 	int color,bgcolor;
-	if(	!(m_nMode & FOOT)) return;
+	if(!(m_nMode & FOOT)) 
+		return;
 
 	// draw the background first
-	m_pcWindow->paintBoxRel(	m_cBoxFrameFootRel.iX+m_cBoxFrame.iX, 
-								m_cBoxFrameFootRel.iY+m_cBoxFrame.iY, 
+	m_pcWindow->paintBoxRel(m_cBoxFrameFootRel.iX+m_cBoxFrame.iX, 
+								m_cBoxFrameFootRel.iY + m_cBoxFrame.iY, 
 								m_cBoxFrameFootRel.iWidth, 
 								m_cBoxFrameFootRel.iHeight,  
 								(CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
 
-	//const char *text;
-
 	int MaxButtonTextWidth = m_pcFontFoot->getRenderWidth(g_Locale->getText(LOCALE_MESSAGEBOX_CANCEL), true); // UTF-8
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth;
-	int ButtonSpacing = (m_cBoxFrameFootRel.iWidth - 20- (ButtonWidth*3) ) / 2;
+	int ButtonSpacing = (m_cBoxFrameFootRel.iWidth - 20 - (ButtonWidth*3) ) / 2;
 	int xpos = m_cBoxFrameFootRel.iX;
 
 	// draw Button mbYes
@@ -327,10 +326,10 @@ void CMsgBox::refreshFoot(void)
 			color   = COL_INFOBAR_SHADOW;
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
+		
 		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
-		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, xpos + 14+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
-		/*m_pcWindow->RenderString(*/
-		m_pcFontFoot->RenderString(xpos + 43+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_YES), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, xpos + 14 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_YES), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
 	xpos += ButtonWidth + ButtonSpacing;
@@ -349,10 +348,9 @@ void CMsgBox::refreshFoot(void)
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
 
-		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
-		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, xpos + 14+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
-		/*m_pcWindow->RenderString(*/
-		m_pcFontFoot->RenderString(xpos + 43+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText(LOCALE_MESSAGEBOX_NO), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcWindow->paintBoxRel(xpos + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, xpos + 14 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY);
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_NO), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 
 	xpos += ButtonWidth + ButtonSpacing;
@@ -373,7 +371,6 @@ void CMsgBox::refreshFoot(void)
 
 		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HOME, xpos+10+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
-		/*m_pcWindow->RenderString(*/
 		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 2 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText((m_nFootButtons & mbCancel) ? LOCALE_MESSAGEBOX_CANCEL : LOCALE_MESSAGEBOX_BACK), (CFBWindow::color_t)color, 0, true); // UTF-8
 	}
 }
@@ -389,7 +386,7 @@ void CMsgBox::refreshFoot(void)
 void CMsgBox::refreshTitle(void)
 {
 	// first check if title is configured
-	if(	!(m_nMode & TITLE)) 
+	if(!(m_nMode & TITLE)) 
 		return;
 
 	// draw the background
@@ -398,16 +395,14 @@ void CMsgBox::refreshTitle(void)
 	if (!m_cIcon.empty())
 	{
 		// draw icon and title text
-		m_pcWindow->paintIcon(m_cIcon.c_str(), m_cBoxFrameTitleRel.iX + 8+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY + 5+m_cBoxFrame.iY);
+		m_pcWindow->paintIcon(m_cIcon.c_str(), m_cBoxFrameTitleRel.iX + 8 + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY + 5 + m_cBoxFrame.iY);
 		
-		/*m_pcWindow->RenderString(*/	
-		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 	}
 	else
 	{
 		// no icon available, just draw the title text
-		/*m_pcWindow->RenderString(*/
-		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight+3+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
 	}
 }
 
@@ -459,14 +454,12 @@ bool CMsgBox::hide(void)
 		m_pcTextBox->hide();
 	}
 
-	// delete window
-	// delete m_pcWindow;
 	m_pcWindow->paintBackgroundBoxRel(m_cBoxFrame.iX, m_cBoxFrame.iY, m_cBoxFrame.iWidth, m_cBoxFrame.iHeight);
 	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
+
 	m_pcWindow = NULL;
+	
 	return (true);
 }
 
@@ -531,6 +524,7 @@ bool CMsgBox::paint(void)
 
 	// create new window
 	m_pcWindow = CFrameBuffer::getInstance();
+	
 	if(m_pcTextBox != NULL)
 	{
 		m_pcTextBox->paint();
@@ -604,9 +598,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
 	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
 
 	bool loop = true;
 	while (loop)
@@ -646,11 +638,11 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 		}
 		else if (msg == CRCInput::RC_up )
 		{
-				scrollPageUp(1);
+			scrollPageUp(1);
 		}
 		else if (msg == CRCInput::RC_down)
 		{
-				scrollPageDown(1);
+			scrollPageDown(1);
 		}
 		else if(msg==CRCInput::RC_left)
 		{
@@ -673,9 +665,7 @@ int CMsgBox::exec( int timeout, int returnDefaultOnTimeout)
 			loop = false;
 		}
 
-#if !defined USE_OPENGL
 		m_pcWindow->blit();
-#endif
 	}
 
 	hide();
@@ -722,7 +712,6 @@ bool CMsgBox::setText(const std::string* newText)
 	
 	return(_result);
 };
-
 
 //////////////////////////////////////////////////////////////////////
 // Function Name:	SetText	

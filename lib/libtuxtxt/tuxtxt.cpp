@@ -3994,7 +3994,7 @@ void DrawVLine(int x, int y, int l, int color)
 
 	for ( ; l > 0 ; l--)
 	{
-		memmove(p,bgra[color],4);
+		memmove(p, bgra[color], 4);
 		p += CFrameBuffer::getInstance()->getStride();
 	}
 }
