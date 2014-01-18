@@ -4572,9 +4572,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 	
 	if (Char <= 0x20)
 	{
-#if TUXTXT_DEBUG
-		printf("TuxTxt found control char: %x \"%c\" \n", Char, Char);
-#endif
 		FillRect(PosX, PosY + yoffset, curfontwidth, factor*fontheight, bgcolor);
 		PosX += curfontwidth;
 		return;
@@ -4583,8 +4580,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	if (!(glyph = FT_Get_Char_Index(face, Char)))
 	{
-		dprintf(DEBUG_NORMAL, "TuxTxt <FT_Get_Char_Index for Char %d %x \"%c\" failed\n", Char, Char, Char & 0xFF );
-
 		FillRect(PosX, PosY + yoffset, curfontwidth, factor*fontheight, bgcolor);
 		PosX += curfontwidth;
 		return;
@@ -4592,8 +4587,6 @@ void RenderChar(int Char, tstPageAttr *Attribute, int zoom, int yoffset)
 
 	if ((error = FTC_SBitCache_Lookup(cache, &typettf, glyph, &sbit, NULL)) != 0)
 	{
-		dprintf(DEBUG_NORMAL, "TuxTxt <FTC_SBitCache_Lookup: 0x%x> c%x a%x g%x w%d h%d x%d y%d\n", error, Char, Attribute, glyph, curfontwidth, fontheight, PosX, PosY);
-
 		FillRect(PosX, PosY + yoffset, curfontwidth, fontheight, bgcolor);
 		PosX += curfontwidth;
 		return;

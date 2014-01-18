@@ -204,7 +204,6 @@ const char *ObjectType[] =
 
 /* framebuffer stuff */
 static unsigned char * lfb = 0;
-struct fb_var_screeninfo var_screeninfo;
 
 /* freetype stuff */
 FT_Library      library;

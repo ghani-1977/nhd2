@@ -14,6 +14,8 @@ else
 INCLUDES += -I$(top_srcdir)/lib/libdvbapi
 endif
 
+AM_CPPFLAGS = -Wno-multichar
+
 noinst_LIBRARIES = libtuxtxt.a
 
 libtuxtxt_a_SOURCES = libtuxtxt.cpp tuxtxt.cpp

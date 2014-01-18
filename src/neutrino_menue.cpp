@@ -1109,7 +1109,7 @@ const CMenuOptionChooser::keyval SECTIONSD_SCAN_OPTIONS[SECTIONSD_SCAN_OPTIONS_C
 	{ 1, LOCALE_OPTIONS_ON, NULL }
 };
 
-/* volbar position */
+// volumebar position
 #define VOLUMEBAR_DISP_POS_OPTIONS_COUNT 6
 const CMenuOptionChooser::keyval  VOLUMEBAR_DISP_POS_OPTIONS[VOLUMEBAR_DISP_POS_OPTIONS_COUNT]=
 {

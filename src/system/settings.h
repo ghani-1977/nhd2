@@ -34,7 +34,9 @@
 
 #include <system/localize.h>
 #include <configfile.h>
-#include <client/zapitclient.h> /*zapit*/
+
+/* zapit */
+#include <client/zapitclient.h>
 
 #include <string>
 
@@ -110,13 +112,9 @@ struct SNeutrinoSettings
 	// RECORDING
 	char record_safety_time_before[3];
 	char record_safety_time_after[3];
-
 	char network_nfs_recordingdir[100];
-
 	int auto_timeshift; 	// permanent timeshift
-
 	int record_hours;
-
 	unsigned char recording_audio_pids_default;
 	int recording_audio_pids_std;
 	int recording_audio_pids_alt;
@@ -282,7 +280,7 @@ struct SNeutrinoSettings
 	char repeat_genericblocker[4];
 
 	int key_tvradio_mode;
-
+	
 	int key_channelList_pageup;
 	int key_channelList_pagedown;
 	int key_channelList_cancel;
@@ -396,7 +394,7 @@ struct SNeutrinoSettings
 	int   audioplayer_screensaver_type;
 	int   audioplayer_enable_sc_metadata;
 	
-	//shoutcast(without gui setup)
+	//shoutcast
 	std::string shoutcast_dev_id;
 	// END AUDIOPLAYER
 
@@ -523,8 +521,8 @@ struct SNeutrinoSettings
 #define FILESYSTEM_ENCODING_TO_UTF8_STRING(a) (g_settings.filesystem_is_utf8 ? (a) : Latin1_to_UTF8(a))	
 };
 
-/* some default Values */
-extern const int               default_timing     [TIMING_SETTING_COUNT];
+//
+extern const int default_timing     [TIMING_SETTING_COUNT];
 extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 
 // lcdd
@@ -561,7 +559,6 @@ extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
 #define ANGULAR				0
 #define ROUNDED				1
 #define ONLY_TOP			2
-/* end default values */
 
 // parentallock
 const int PARENTALLOCK_PROMPT_NEVER          = 0;
@@ -571,7 +568,6 @@ const int PARENTALLOCK_PROMPT_ONSIGNAL       = 3;
 
 //
 #define widest_number "2"
-
 #define ANNOUNCETIME (1 * 60)
 
 #endif
