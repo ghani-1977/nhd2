@@ -563,24 +563,21 @@ void CFrameBuffer::paletteSet(struct fb_cmap *map)
 	}
 }
 
-void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, const fb_pixel_t col, int radius, int type)
+void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius, int type, bool shading)
 {
-    	if (!getActive())
-        	return;
+	if (!getActive())
+		return;
 
-    	int F, R = radius, sx, sy, dxx = dx, dyy = dy, rx, ry, wx, wy;
+	int F, R = radius, sx, sy, dxx = dx, dyy = dy, rx, ry, wx, wy;
+	uint8_t *pos = ((uint8_t *)getFrameBufferPointer()) + x*sizeof(fb_pixel_t) + stride*y;
+	uint8_t *pos0 = 0, *pos1 = 0, *pos2 = 0, *pos3 = 0;
+	fb_pixel_t *dest0, *dest1;
 
-    	uint8_t *pos = ((uint8_t *)getFrameBufferPointer()) + x*sizeof(fb_pixel_t) + stride*y;
-	
-    	uint8_t *pos0 = 0, *pos1 = 0, *pos2 = 0, *pos3 = 0;
-
-    	fb_pixel_t *dest0, *dest1;
-
-    	if(R) 
+	if(R) 
 	{
-        	if(--dyy <= 0) 
+		if(--dyy <= 0) 
 		{
-            		dyy = 1;
+			dyy = 1;
         	}
 
         	if(R == 1 || R > (dxx/2) || R > (dyy/2)) 
@@ -632,8 +629,9 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
             		wy = ry<<1;
 			
             		dest0 = (fb_pixel_t *)(pos0 + rx*sizeof(fb_pixel_t));
-            		dest1=(fb_pixel_t *)(pos1 + rx*sizeof(fb_pixel_t));
+            		dest1 = (fb_pixel_t *)(pos1 + rx*sizeof(fb_pixel_t));
 
+			// top1/bottom1
             		for (int i = 0; i < (dxx - wx); i++) 
 			{
 				if(type & 2)
@@ -645,6 +643,7 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
             		dest0 = (fb_pixel_t *)(pos2 + ry*sizeof(fb_pixel_t));
             		dest1 = (fb_pixel_t *)(pos3 + ry*sizeof(fb_pixel_t));
 
+			// top2/bottom2
             		for (int i = 0; i < (dxx - wy); i++) 
 			{
 				if(type & 1)
@@ -652,9 +651,11 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 				if(type & 2)
                 			*(dest1++) = col;	//bottom 2
             		}
+            		
             		sx++;
             		pos2 -= stride;
             		pos3 += stride;
+			
             		if (F < 0) 
 			{
                 		F += (sx<<1) - 1;
@@ -679,14 +680,19 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 		start = 0;
 	
     	if(!(type & 2))
-		end = dyy+ (R ? 1 : 0);
+		end = dyy + (R ? 1 : 0);
 
     	for (int count = start; count < end; count++) 
 	{
         	dest0 = (fb_pixel_t *)pos;
+		
         	for (int i = 0; i < dxx; i++)
             		*(dest0++) = col;
+		
         	pos += stride;
+		
+		if(shading)
+			realcolor[col++];
     	}
 }
 

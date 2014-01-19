@@ -817,7 +817,7 @@ void CWebTV::paintItem(int pos)
 		paintDetails(curr);
 
 		// itembox
-		frameBuffer->paintBoxRel(x, ypos, width - 15, iheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, iheight, bgcolor);
 	} 
 	else 
 	{
@@ -825,7 +825,7 @@ void CWebTV::paintItem(int pos)
 		bgcolor = COL_MENUCONTENT_PLUS_0;
 		
 		// itembox
-		frameBuffer->paintBoxRel(x, ypos, width - 15, iheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, iheight, bgcolor);
 	}
 
 	//name and description
@@ -873,7 +873,7 @@ struct button_label CWebTVButtons[NUM_LIST_BUTTONS] =
 void CWebTV::paintHead()
 {
 	// head
-	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP); //round
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, true); //round
 	
 	// head icon
 	int icon_webtv_w, icon_webtv_h;
@@ -939,7 +939,7 @@ void CWebTV::paintFoot()
 void CWebTV::paintDetails(int index)
 {
 	// infobox refresh
-	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
+	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0, 0, 0, true);
 	
 	if(channels.empty() )
 		return;
@@ -969,9 +969,8 @@ void CWebTV::paintItem2DetailsLine(int pos, int /*ch_index*/)
 	// Clear
 	frameBuffer->paintBackgroundBoxRel(xpos, y, ConnectLineBox_Width, height + info_height);
 
-#if !defined USE_OPENGL
+	// blit
 	frameBuffer->blit();
-#endif
 
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 
@@ -997,7 +996,7 @@ void CWebTV::paintItem2DetailsLine(int pos, int /*ch_index*/)
 		frameBuffer->paintBoxRel(xpos + ConnectLineBox_Width - 12, ypos2a, 8, 1, col2);
 
 		// untere info box lines
-		frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1);
+		frameBuffer->paintBoxRel(x, ypos2, width, info_height, col1, true);
 	}
 }
 
