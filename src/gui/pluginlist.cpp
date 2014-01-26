@@ -141,9 +141,7 @@ reload:
 
 	paint();
 	
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
+	frameBuffer->blit();	
 
 	unsigned long long int timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
@@ -236,7 +234,7 @@ reload:
 			hide();
 			goto reload;
 		}
-		else if( /*(msg== CRCInput::RC_red) || (msg==CRCInput::RC_green) ||*/ (msg==CRCInput::RC_yellow) || (msg==CRCInput::RC_blue)  || (CRCInput::isNumeric(msg)) )
+		else if( (msg==CRCInput::RC_yellow) || (msg==CRCInput::RC_blue)  || (CRCInput::isNumeric(msg)) )
 		{
 			g_RCInput->postMsg(msg, data);
 			loop = false;
@@ -247,9 +245,7 @@ reload:
 			res = menu_return::RETURN_EXIT_ALL;
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();		
 	}
 	
 	hide();
@@ -259,11 +255,9 @@ reload:
 
 void CPluginList::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, width + 15, height + ((RADIUS_MID * 2) + 1));	//15:sb
+	frameBuffer->paintBackgroundBoxRel(x, y, width + SCROLLBAR_WIDTH, height + theight);	//15:sb
 
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
+	frameBuffer->blit();	
 }
 
 void CPluginList::paintItem(int pos)
@@ -426,9 +420,7 @@ CPluginList::result_ CPluginList::pluginSelected()
 	
 	paint();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 	
 	return resume;
 }
