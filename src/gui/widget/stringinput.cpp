@@ -153,17 +153,9 @@ void CStringInput::init()
 	iheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_INFO]->getHeight();
 
 	height = hheight + mheight + 50 + 2*iheight;
-	
-	/*
-	if (hint_1 != NONEXISTANT_LOCALE)
-	{
-		height += iheight;
-		if (hint_2 != NONEXISTANT_LOCALE)
-			height += iheight;
-	}
-	*/
 
-	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) >>1 );
+	// coordinate
+	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) >> 1 );
 	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) >> 1 );
 	
 	smstimer = 0;
@@ -229,7 +221,7 @@ void CStringInput::keyBluePressed()
 void CStringInput::keyUpPressed()
 {
 	int npos = 0;
-	for(int count=0;count<(int)strlen(validchars);count++)
+	for(int count = 0; count < (int)strlen(validchars);count++)
 		if(value[selected]==validchars[count])
 			npos = count;
 	npos++;
@@ -490,14 +482,14 @@ void CStringInput::paint()
 	{
 		frameBuffer->getIconSize(iconfile.c_str(), &icol_w, &icol_h);
 		
-		frameBuffer->paintIcon(iconfile, x + 8, y + 5); //not correct fixme
+		frameBuffer->paintIcon(iconfile, x + 8, y + (hheight - icol_h)/2); //not correct fixme
 
-		iconoffset = icol_w + 10;
+		iconoffset = icol_w + BORDER_LEFT;
 	}
 	else
 		iconoffset = 0;
 
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + iconoffset + 10, y + hheight, width - 10 - iconoffset, head ? head : g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + iconoffset + BORDER_LEFT, y + hheight, width - 10 - iconoffset, head ? head : g_Locale->getText(name), COL_MENUHEAD, 0, true); // UTF-8
 
 	if (hint_1 != NONEXISTANT_LOCALE)
 	{
@@ -706,15 +698,18 @@ void CStringInputSMS::paint()
 	CStringInput::paint();
 
 	//numeric pad
-	int icol_w = 28;
-	int icol_h = 16;
+	int icol_w, icol_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_NUMERIC_PAD, &icol_w, &icol_h);
 	frameBuffer->paintIcon(NEUTRINO_ICON_NUMERIC_PAD, x + (width - icol_w)/2, y + hheight + mheight + iheight*3 + 20, COL_MENUCONTENT);
 
-	frameBuffer->paintBoxRel(x, y + height - 25, width, 25, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
-	frameBuffer->paintHLine(x, x + width,  y + height - 25, COL_INFOBAR_SHADOW_PLUS_0);
+	// foot
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
+	int ButtonHeight = std::max(g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), icon_h) + 6;
+	frameBuffer->paintBoxRel(x, y + height - ButtonHeight, width, ButtonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 8, y + height - 25 + 1, ((width - 20)/4)*2, 2, CStringInputSMSButtons);
+	// foot buttons
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + height - ButtonHeight + (ButtonHeight - icon_h)/2, ((width - 20)/4)*2, 2, CStringInputSMSButtons);
 }
 
 void CPINInput::paintChar(int pos)

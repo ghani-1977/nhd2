@@ -99,6 +99,11 @@ class CPictureViewerGui : public CMenuTarget
 		long        		m_time;
 
 		int         		m_LastMode;
+		
+		int icon_foot_w;
+		int icon_foot_h;
+		int icon_head_w;
+		int icon_head_h;
 
 		void paintItem(int pos);
 		void paint();

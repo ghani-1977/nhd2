@@ -85,8 +85,6 @@ class CBEBouquetWidget : public CMenuWidget
 		int			theight; // Fonthoehe Bouquetlist-Titel
 
 		int 			ButtonHeight;
-		//std::string		name;
-		//test
 		int			iconoffset;
 		int			iheight; // item height
 		
@@ -95,6 +93,11 @@ class CBEBouquetWidget : public CMenuWidget
 		int		height;
 		int		x;
 		int		y;
+		
+		int icon_head_w;
+		int icon_head_h;
+		int icon_foot_w;
+		int icon_foot_h;
 
 		void paintItem(int pos);
 		void paint();

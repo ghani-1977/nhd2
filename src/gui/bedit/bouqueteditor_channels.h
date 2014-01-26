@@ -83,6 +83,16 @@ class CBEChannelWidget : public CMenuWidget
 		int		height;
 		int		x;
 		int		y;
+		
+		int icon_w_hd;
+		int icon_h_hd;
+		int icon_w_s;
+		int icon_h_s;
+		
+		int icon_head_w;
+		int icon_head_h;
+		int icon_foot_w;
+		int icon_foot_h;
 
 		void paintItem(int pos);
 		void paint();

@@ -334,10 +334,17 @@ int CBouquetList::show(bool bShowChannelList)
 	width  = w_max ( (frameBuffer->getScreenWidth() / 20 * 16), (frameBuffer->getScreenWidth() / 20 ));
 	height = h_max ( (frameBuffer->getScreenHeight() / 20 * 15), (frameBuffer->getScreenHeight() / 20));
 
-	buttonHeight = 7 + std::min(16, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight());
-	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+	// foot height
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_foot_w, &icon_foot_h);
+	buttonHeight = std::min(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 6;
+	
+	// head height
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_head_w, &icon_head_h);
+	theight = std::max(g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight(), icon_head_h) + 6;
+	
+	//
 	listmaxshow = (height - theight - buttonHeight)/fheight;
-	height      = theight + buttonHeight + listmaxshow * fheight; // recalc height
+	height = theight + buttonHeight + listmaxshow*fheight; // recalc height
 
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height) / 2;
@@ -349,7 +356,7 @@ int CBouquetList::show(bool bShowChannelList)
 		maxpos1++;
 	
 	// paint shadow
-	frameBuffer->paintBoxRel(x + SHADOW_OFFSET, y + SHADOW_OFFSET, width, height, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH);
+	//frameBuffer->paintBoxRel(x + SHADOW_OFFSET, y + SHADOW_OFFSET, width, height, COL_INFOBAR_SHADOW_PLUS_0, RADIUS_MID, CORNER_BOTH);
 
 	paintHead();
 	paint();
@@ -619,13 +626,11 @@ void CBouquetList::paintHead()
 	// setup icon
 	if(CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_FAV || CNeutrinoApp::getInstance()->GetChannelMode() == LIST_MODE_PROV)
 	{
-		int icon_w, icon_h;
-		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_w, &icon_h);
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x + width - 10 - icon_w, y + 5); // setup icon
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x + width - BORDER_RIGHT - icon_head_w, y + (theight - icon_head_h)/2); // setup icon
 	}
 	
 	// head title
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, name, COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + BORDER_LEFT, y + theight, width, name, COL_MENUHEAD, 0, true); // UTF-8
 }
 
 void CBouquetList::paint()
@@ -647,10 +652,12 @@ void CBouquetList::paint()
 
 	frameBuffer->paintBoxRel(x, y + theight, width, height - theight - buttonHeight, COL_MENUCONTENT_PLUS_0);
 
+	// foot
 	int ButtonWidth = (width - 20) / 4;
 
-	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight - 1, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + (height - buttonHeight) + 3, ButtonWidth, sizeof(CBouquetListButtons)/sizeof(CBouquetListButtons[0]), CBouquetListButtons);
+	frameBuffer->paintBoxRel(x, y + (height - buttonHeight), width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + (height - buttonHeight) + (buttonHeight - icon_foot_h)/2, ButtonWidth, sizeof(CBouquetListButtons)/sizeof(CBouquetListButtons[0]), CBouquetListButtons);
 
 	if(Bouquets.size()) 
 	{
@@ -663,7 +670,7 @@ void CBouquetList::paint()
 	int ypos = y + theight;
 	int sb = fheight*listmaxshow;
 	
-	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - SCROLLBAR_WIDTH, ypos, SCROLLBAR_WIDTH, sb,  COL_MENUCONTENT_PLUS_1);
 
 	int sbc = ((bsize - 1)/ listmaxshow)+ 1;
 	float sbh = (sb - 4)/ sbc;

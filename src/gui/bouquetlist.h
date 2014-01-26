@@ -95,6 +95,11 @@ class CBouquetList
 		int		height;
 		int		x;
 		int		y;
+		
+		int icon_head_w;
+		int icon_head_h;
+		int icon_foot_w;
+		int icon_foot_h;
 
 		void paintItem(int pos);
 		void paint();

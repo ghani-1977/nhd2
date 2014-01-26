@@ -139,12 +139,17 @@ class CAudioPlayerGui : public CMenuTarget
 		int            m_x;
 		int            m_y;
 		int            m_title_w;
+		
+		int icon_foot_w;
+		int icon_foot_h;
+		int icon_head_w;
+		int icon_head_h;
 
 		int            m_LastMode;
 		int            m_idletime;
-		int          m_screensaver;
-		bool          m_vol_ost;
-		bool          m_inetmode;
+		int            m_screensaver;
+		bool           m_vol_ost;
+		bool           m_inetmode;
 		uint32_t       stimer;
 		
 		bool 		info_visible;

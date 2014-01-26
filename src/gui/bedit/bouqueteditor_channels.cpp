@@ -61,30 +61,29 @@
 extern tallchans allchans;
 extern CBouquetManager * g_bouquetManager;
 
-static int icon_w_hd = 0;
-static int icon_h_hd = 0;
-static int icon_w_s = 0;
-static int icon_h_s = 0;
-
 CBEChannelWidget::CBEChannelWidget(const std::string & Caption, unsigned int Bouquet)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	selected = 0;
-	ButtonHeight = 25;
+	
+	// foot
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_foot_w, &icon_foot_h);
+	ButtonHeight = std::max(g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), icon_foot_h) + 6;
 
-	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-	fheight     = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	// head
+	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
+	
+	// item height
+	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_hd, &icon_h_hd);
+	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_w_s, &icon_h_s);
+	
+	fheight = std::max(g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), icon_h_s) + 2;
 
 	liststart = 0;
 	state = beDefault;
 	caption = Caption;
 	bouquet = Bouquet;
 	mode = CZapitClient::MODE_TV;
-	
-	//
-	frameBuffer->getIconSize(NEUTRINO_ICON_RESOLUTION_HD, &icon_w_hd, &icon_h_hd);
-	frameBuffer->getIconSize(NEUTRINO_ICON_SCRAMBLED2, &icon_w_s, &icon_h_s);
-	//
 }
 
 void CBEChannelWidget::paintItem(int pos)
@@ -99,33 +98,33 @@ void CBEChannelWidget::paintItem(int pos)
 		color   = COL_MENUCONTENTSELECTED;
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
 		
-		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, COL_MENUCONTENT_PLUS_0);
-		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, fheight, COL_MENUCONTENT_PLUS_0);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, fheight, bgcolor);
 		
-		//
 		// itemlines	
 		paintItem2DetailsLine(pos, current);		
 		
 		// details
 		paintDetails(current);
-		//
 	} 
 	else 
 	{
 		color   = COL_MENUCONTENT;
 		bgcolor = COL_MENUCONTENT_PLUS_0;
 		
-		frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, fheight, bgcolor);
 	}
 
 	if ((current == selected) && (state == beMoving))
 	{
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x + 8, ypos + 4);
+		int icon_w, icon_h;
+		frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, x + 8, ypos + (fheight - icon_h)/2);
 	}
 	
 	if(current < Channels->size())
 	{
-		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + 10, ypos + fheight, width - numwidth - 20 - 15, (*Channels)[current]->getName(), color, 0, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 5 + numwidth + BORDER_LEFT, ypos + (fheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight(), width - numwidth - 20 - 15, (*Channels)[current]->getName(), color, 0, true);
 	}
 	
 	//FIXME???
@@ -161,13 +160,13 @@ void CBEChannelWidget::paint()
 	else // if(lastnum<100000)
 		numwidth = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth("00000");
 
-	for(unsigned int count=0;count<listmaxshow;count++)
+	for(unsigned int count = 0; count < listmaxshow; count++)
 	{
 		paintItem(count);
 	}
 
 	int ypos = y + theight;
-	int sb = fheight* listmaxshow;
+	int sb = fheight*listmaxshow;
 	frameBuffer->paintBoxRel(x + width - 15, ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
 	int sbc= ((Channels->size() - 1)/ listmaxshow) + 1;
@@ -179,8 +178,8 @@ void CBEChannelWidget::paint()
 
 void CBEChannelWidget::paintHead()
 {
-	frameBuffer->paintBoxRel(x,y, width,theight+0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, caption.c_str() , COL_MENUHEAD, 0, true);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, caption.c_str() , COL_MENUHEAD, 0, true);
 }
 
 const struct button_label CBEChannelWidgetButtons[4] =
@@ -195,7 +194,7 @@ void CBEChannelWidget::paintFoot()
 {
 	frameBuffer->paintBoxRel(x, y + height, width, ButtonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + height + 4, (width - 20) / 4, 4, CBEChannelWidgetButtons);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + height + (ButtonHeight - icon_foot_h)/2, (width - 20) / 4, 4, CBEChannelWidgetButtons);
 }
 
 //
@@ -208,27 +207,6 @@ void CBEChannelWidget::paintDetails(int index)
 	transponder_id_t ct = (*Channels)[index]->getTransponderId();
 	transponder_list_t::iterator tpI = transponders.find(ct);
 	int len = snprintf(buf, sizeof(buf), "%d ", (*Channels)[index]->getFreqId());
-
-	#if 0
-	if(tpI != transponders.end()) 
-	{
-		char * f, *s, *m;
-		switch(frontend->getInfo()->type) 
-		{
-			case FE_QPSK:
-				frontend->getDelSys(tpI->second.feparams.u.qpsk.fec_inner, dvbs_get_modulation(tpI->second.feparams.u.qpsk.fec_inner),  f, s, m);
-				len += snprintf(&buf[len], sizeof(buf) - len, "%c %d %s %s %s ", tpI->second.polarization ? 'V' : 'H', tpI->second.feparams.u.qpsk.symbol_rate/1000, f, s, m);
-				break;
-			case FE_QAM:
-				frontend->getDelSys(tpI->second.feparams.u.qam.fec_inner, tpI->second.feparams.u.qam.modulation, f, s, m);
-				len += snprintf(&buf[len], sizeof(buf) - len, "%d %s %s %s ", tpI->second.feparams.u.qam.symbol_rate/1000, f, s, m);
-				break;
-			case FE_OFDM:
-			case FE_ATSC:
-				break;
-		}
-	}
-	#endif
 	
 	// infobox refresh
 	frameBuffer->paintBoxRel(x + 2, y + height + ButtonHeight + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
@@ -242,7 +220,6 @@ void CBEChannelWidget::paintDetails(int index)
 	}
 	
 	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, y + height + ButtonHeight + 5 + fheight, width - 30, buf, COL_MENUCONTENTDARK, 0, true);
-	//
 }
 
 void CBEChannelWidget::clearItem2DetailsLine()
@@ -265,9 +242,7 @@ void CBEChannelWidget::paintItem2DetailsLine(int pos, int /*ch_index*/)
 	// Clear
 	frameBuffer->paintBackgroundBoxRel(xpos, y, ConnectLineBox_Width, height + ButtonHeight + info_height);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 
@@ -307,9 +282,7 @@ void CBEChannelWidget::hide()
 	
 	clearItem2DetailsLine();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 int CBEChannelWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
@@ -328,20 +301,20 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/
 	listmaxshow = (height - theight)/fheight;
 	height = theight + listmaxshow*fheight; // recalc height
 	
-	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	// info height
 	info_height = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
 	
+	// coordinate
 	x = frameBuffer->getScreenX() + (frameBuffer->getScreenWidth() - width) / 2;
 	y = frameBuffer->getScreenY() + (frameBuffer->getScreenHeight() - height -ButtonHeight - 2 - info_height) / 2;
 
 	Channels = mode == CZapitClient::MODE_TV ? &(g_bouquetManager->Bouquets[bouquet]->tvChannels) : &(g_bouquetManager->Bouquets[bouquet]->radioChannels);
+	
 	paintHead();
 	paint();
 	paintFoot();
 	
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
+	frameBuffer->blit();	
 
 	channelsChanged = false;
 
@@ -501,9 +474,7 @@ int CBEChannelWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();

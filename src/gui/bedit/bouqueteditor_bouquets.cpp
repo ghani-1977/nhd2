@@ -61,10 +61,13 @@ CBEBouquetWidget::CBEBouquetWidget()
 {
 	frameBuffer = CFrameBuffer::getInstance();
 
-	ButtonHeight = 25;
+	// foot
+	//ButtonHeight = 25;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_foot_w, &icon_foot_h);
+	ButtonHeight = std::max(g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), icon_foot_h) + 6;
 
-	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
-	fheight     = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
+	theight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight() + 6;
+	fheight = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 
 	selected = 0;
 	liststart = 0;
@@ -140,9 +143,9 @@ void CBEBouquetWidget::paint()
 
 void CBEBouquetWidget::paintHead()
 {
-	frameBuffer->paintBoxRel(x,y, width,theight+0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, g_Locale->getText(LOCALE_BOUQUETLIST_HEAD), COL_MENUHEAD, 0, true); // UTF-8
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + BORDER_LEFT, y + (theight - g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight() , width, g_Locale->getText(LOCALE_BOUQUETLIST_HEAD), COL_MENUHEAD, 0, true); // UTF-8
 }
 
 const struct button_label CBEBouquetWidgetButtons[3] =
@@ -176,17 +179,19 @@ void CBEBouquetWidget::paintFoot()
 			Button[3].locale = LOCALE_BOUQUETEDITOR_LOCK;
 			break;
 	}
-	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 5, y + height + 4, (width - 28 - 10) / 4, 4, Button);
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x+width - 28, y+height);
+	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + height + (ButtonHeight - icon_foot_h)/2, (width - icon_foot_w - BORDER_LEFT) / 4, 4, Button);
+	
+	// setup icon
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_SETUP, x + width - icon_w - BORDER_RIGHT, y + height + (ButtonHeight - icon_h)/2);
 }
 
 void CBEBouquetWidget::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height + ButtonHeight);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
@@ -214,9 +219,7 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/
 	paint();
 	paintFoot();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	bouquetsChanged = false;
 
@@ -439,9 +442,7 @@ int CBEBouquetWidget::exec(CMenuTarget* parent, const std::string &/*actionKey*/
 			// kein canceling...
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
