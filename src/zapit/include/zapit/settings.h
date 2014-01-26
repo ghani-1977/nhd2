@@ -59,5 +59,4 @@
 #define DVBADAPTER_MAX			2
 #define FRONTEND_MAX			4
 
-
 #endif /* __zapit__settings_h__ */

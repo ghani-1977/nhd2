@@ -68,13 +68,13 @@ class CVCRControl
 		class CDevice			// basisklasse f�r die devices
 		{
 			public:
-				int sock_fd;
+				//int sock_fd;
 				int last_mode;
 				time_t start_time;
 				virtual CVCRDevices getDeviceType(void) const = 0;
 				CVCRStates  deviceState;
 				virtual bool Stop() = 0;
-				virtual bool Record(const t_channel_id channel_id = 0, int mode=1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0) = 0; // epg_time added for .xml (MovieBrowser)
+				virtual bool Record(const t_channel_id channel_id = 0, int mode = 1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0) = 0; // epg_time added for .xml (MovieBrowser)
 				virtual bool Pause() = 0;
 				virtual bool Resume() = 0;
 				virtual bool IsAvailable() = 0;
@@ -100,8 +100,9 @@ class CVCRControl
 				{
 					return DEVICE_VCR;
 				};
+				
 				virtual bool Stop(); 
-				virtual bool Record(const t_channel_id channel_id = 0, int mode=1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0); // epg_time added for .xml (MovieBrowser)
+				virtual bool Record(const t_channel_id channel_id = 0, int mode = 1, const event_id_t epgid = 0, const std::string& epgTitle = "", unsigned char apids = 0, const time_t epg_time=0); // epg_time added for .xml (MovieBrowser)
 				virtual bool Pause();
 				virtual bool Resume();
 				virtual bool IsAvailable() { return true; };
@@ -133,6 +134,15 @@ class CVCRControl
 					return true;
 				};
 				
+				//
+				unsigned short g_vpid;
+				unsigned short g_vtype;
+				unsigned short g_apids[10];
+				unsigned short g_ac3flags[10];
+				unsigned short g_numpida;
+				unsigned int g_currentapid, g_currentac3;
+				//
+				
 				unsigned long long            record_EPGid;
 				unsigned long long            record_next_EPGid;
 				CZapitClient::responseGetPIDs pids;
@@ -143,7 +153,7 @@ class CVCRControl
 		{
 			public:
 				std::string  Directory;
-					
+	
 				virtual CVCRDevices getDeviceType(void) const
 				{
 					return DEVICE_FILE;
@@ -182,6 +192,5 @@ class CVCRControl
 		bool Resume(){return Device->Resume();};
 		bool Screenshot(const t_channel_id channel_id, char * fname = NULL, bool msg = true);
 };
-
 
 #endif

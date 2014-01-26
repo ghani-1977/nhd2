@@ -77,6 +77,7 @@ size_t cNKFeedParser::CurlWriteToString(void *ptr, size_t size, size_t nmemb, vo
 		std::string* pStr = (std::string*) data;
 		pStr->append((char*) ptr, nmemb);
 	}
+	
         return size*nmemb;
 }
 

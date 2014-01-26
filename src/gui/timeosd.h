@@ -27,7 +27,6 @@
 
 #include <time.h>
 #include <driver/framebuffer.h>
-#include "movieplayer.h"
 
 
 class CTimeOSD

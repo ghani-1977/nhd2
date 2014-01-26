@@ -46,6 +46,9 @@
 #include <system/helpers.h>
 
 
+extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
+extern CZapitChannel * live_channel;			/* zapit.cpp */
+
 #if defined (__sh__)
 #if defined (PLATFORM_SPARK7162)
 static struct aotom_ioctl_data aotom_data;
@@ -458,7 +461,16 @@ void CVFD::setMode(const MODES m, const char * const title)
 			ShowIcon(VFD_ICON_USB, usb_icon);	
 			ShowDiskLevel();
 			ShowIcon(VFD_ICON_STANDBY, false);	
-#endif		
+#endif
+			if (g_RemoteControl->has_ac3)
+				CVFD::getInstance()->ShowIcon(VFD_ICON_DOLBY, true);
+
+			/* show HD Icon */
+			if(live_channel)
+			{
+				if(live_channel->isHD())
+					CVFD::getInstance()->ShowIcon(VFD_ICON_HD, true);
+			}
 			showclock = true;
 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */			
 			break;
@@ -488,6 +500,8 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_MENU_UTF8:
+			ShowIcon(VFD_ICON_DOLBY, false);
+			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 			showclock = false;
 			break;
 

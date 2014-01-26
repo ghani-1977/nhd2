@@ -73,6 +73,7 @@
 #endif
 #include "driver/vfd.h"
 #endif
+#include <driver/file.h>
 
 #include <daemonc/remotecontrol.h>
 
@@ -129,6 +130,7 @@
 #include <gui/dvbsub_select.h>
 #include <gui/upnpbrowser.h>
 #include <gui/webtv.h>
+#include <gui/timeosd.h>
 
 #include <system/localize.h>
 #include <system/settings.h>

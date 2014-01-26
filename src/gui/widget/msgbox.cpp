@@ -55,6 +55,8 @@
 #include <gui/widget/icons.h>
 #include <neutrino.h>
 
+#include <system/debug.h>
+
 #define WINDOW_FRAME_BORDER_WIDTH	 	4
 #define ADD_FOOT_HEIGHT	 			20
 #define	TEXT_BORDER_WIDTH			8
@@ -445,7 +447,7 @@ bool CMsgBox::hide(void)
 
 	if (m_pcWindow == NULL)
 	{
-		TRACE("  return -> window does not exists\r\n");
+		dprintf(DEBUG_DEBUG, "  return -> window does not exists\r\n");
 		return (false);
 	}
 	
@@ -518,7 +520,7 @@ bool CMsgBox::paint(void)
 
 	if (m_pcWindow != NULL)
 	{
-		TRACE("  return -> window already exists\r\n");
+		dprintf(DEBUG_DEBUG, "  return -> window already exists\r\n");
 		return (false);
 	}
 
@@ -549,7 +551,7 @@ void CMsgBox::refresh(void)
 
 	if (m_pcWindow == NULL)
 	{
-		TRACE("  return -> no window\r\n");
+		dprintf(DEBUG_DEBUG, "  return -> no window\r\n");
 		return;
 	}
 	

@@ -37,15 +37,24 @@
 #include <config.h>
 #include <configfile.h>
 
-#include "driver/framebuffer.h"
-#include "gui/filebrowser.h"
-#include "gui/widget/menue.h"
-#include "gui/moviebrowser.h"
-#include "gui/movieinfo.h"
+#include <driver/framebuffer.h>
+#include <gui/filebrowser.h>
+#include <gui/widget/menue.h>
+#include <gui/moviebrowser.h>
+#include <gui/movieinfo.h>
+#include <gui/timeosd.h>
           	
 #include <stdio.h>
 #include <string>
 #include <vector>
+
+/* curl */
+#include <curl/curl.h>
+#include <curl/easy.h>
+
+#if !defined (__USE_FILE_OFFSET64) && !defined (_DARWIN_USE_64_BIT_INODE)
+#error not using 64 bit file offsets
+#endif /* __USE_FILE__OFFSET64 */
 
 
 class CMoviePlayerGui : public CMenuTarget
@@ -61,12 +70,93 @@ class CMoviePlayerGui : public CMenuTarget
 			SLOW        =  5,
 			SOFTRESET   = 99
 		};
+		
+		enum {
+			NO_TIMESHIFT = 0,
+			TIMESHIFT,
+			P_TIMESHIFT,	//paused timeshift
+			R_TIMESHIFT	// rewind timeshift
+		};
+		
+		//
+		int playstate;
+		
+		bool isMovieBrowser;
+		bool isVlc;
+		bool cdDvd;
+		bool isDVD;
+		bool isBlueRay;
+		bool isURL;
+
+		int speed;
+		int slow;
+
+		int position;
+		int duration;
+		int file_prozent;
+
+		int startposition;
+		int timeshift;
+		off64_t minuteoffset;
+		off64_t secondoffset;
+		
+		int g_jumpseconds;
+
+		unsigned short g_apids[10];
+		unsigned short m_apids[10]; // needed to get language from mb
+		unsigned short g_ac3flags[10];
+		unsigned short g_numpida;
+		unsigned short g_vpid;
+		unsigned short g_vtype;
+		std::string    g_language[10];
+
+		unsigned int g_currentapid;
+		unsigned int g_currentac3;
+		unsigned int apidchanged;
+
+		unsigned int ac3state;
+
+		std::string g_file_epg;
+		std::string g_file_epg1;
+
+		bool showaudioselectdialog;
+		
+		int streamtype;
+		int skt;
+		
+		const char *filename;
+		
+		// global flags
+		bool update_lcd;
+		bool open_filebrowser;	//always default true (true valeue is needed for file/moviebrowser)
+		bool start_play;
+		bool exit;
+		bool was_file;
+		bool m_loop;
+		
+		bool is_file_player;
+		
+		// timeosd
+		bool time_forced;
+		
+		// timeshift
+		bool timesh;
+		
+		// vlc
+		std::string stream_url;
+		char mrl[200];
+		CFileList _filelist;
+		unsigned int selected;
+		std::string title;
+		
+		std::string sel_filename;
+		CTimeOSD FileTime;
+		//
 
 	private:
 		void Init(void);
 		CFrameBuffer * frameBuffer;
 		int            m_LastMode;	
-		const char     * filename;
 		bool		stopped;
 
 		std::string Path_local;
@@ -95,12 +185,24 @@ class CMoviePlayerGui : public CMenuTarget
 		~CMoviePlayerGui();
 		int exec(CMenuTarget* parent, const std::string & actionKey);
 		
+		// vlc
+		static size_t CurlDummyWrite (void *ptr, size_t size, size_t nmemb, void *data);
+		CURLcode sendGetRequest (const std::string & url, std::string & response) ;
+		bool VlcRequestStream(char *_mrl, int  transcodeVideo, int transcodeAudio);
+		int VlcGetStreamTime();
+		int VlcGetStreamLength();
+		bool VlcReceiveStreamStart(void * mrl);
+		
+		// lcd
+		void updateLcd(const std::string & sel_filename);
+		//
+		
 		// show infos
 		void showFileInfoVLC(void);
 		void showFileInfo();
 };
 
-class CAPIDSelectExec : public CMenuTarget
+class CAPIDSelectExec : public CMoviePlayerGui
 {
 	public:
 		int exec(CMenuTarget * parent, const std::string & actionKey);

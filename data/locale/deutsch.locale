@@ -1119,6 +1119,8 @@ ping.unreachable ist nicht erreichbar (unreachable)
 pinprotection.head PIN-Abfrage
 pinprotection.wrongcode Geben Sie den Code nocheinmal ein!
 plugins.result Pluginausgabe
+pluginlist.remove_plugin plugin deinstallieren
+pluginlist.start_plugin start Plugin
 rclock.lockmsg Die Fernbedienung wird gesperrt.\n Um die Sperre aufzuheben, bitte\n <ROT> und <MENU> auf der Fernbedienung\n druecken.
 rclock.menueadd FB sperren
 rclock.title Fernbedienung sperren

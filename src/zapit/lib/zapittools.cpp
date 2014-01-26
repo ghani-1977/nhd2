@@ -23,6 +23,7 @@
 
 #include <zapit/client/zapittools.h>
 
+
 namespace ZapitTools {
 
 	std::string UTF8_to_Latin1(const char * s)

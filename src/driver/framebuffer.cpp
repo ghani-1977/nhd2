@@ -691,8 +691,8 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 		
         	pos += stride;
 		
-		if(shading)
-			realcolor[col++];
+		//if(shading)
+		//	col++;
     	}
 }
 
@@ -1059,7 +1059,7 @@ void CFrameBuffer::loadPal(const std::string & filename, const unsigned char off
 	while(readb) 
 	{
 		__u32 rgb = (rgbdata.r<<16) | (rgbdata.g<<8) | (rgbdata.b);
-		int colpos = offset+pos;
+		int colpos = offset + pos;
 		if( colpos > endidx)
 			break;
 
@@ -1358,7 +1358,6 @@ void CFrameBuffer::saveBackgroundImage(void)
 		delete[] backupBackground;
 
 	backupBackground = background;
-	//useBackground(false); 		// <- necessary since no background is available
 	useBackgroundPaint = false;
 	background = NULL;
 }
@@ -1434,8 +1433,8 @@ void CFrameBuffer::SaveScreen(int x, int y, int dx, int dy, fb_pixel_t * const m
 	{
 		fb_pixel_t * dest = (fb_pixel_t *)pos;
 		for (int i = 0; i < dx; i++)
-			//*(dest++) = col;
 			*(bkpos++) = *(dest++);
+		
 		pos += stride;
 	}
 }

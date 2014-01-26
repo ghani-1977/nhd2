@@ -558,7 +558,7 @@ void CWebTV::zapTo(int pos, bool rezap)
 		CVFD::getInstance()->showServicename(channels[pos]->title); // UTF-8		
 	
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
+	g_InfoViewer->showMovieInfo(channels[pos]->title, channels[pos]->description, file_prozent, duration, w_ac3state, speed, playstate, false, false);
 }
 
 void CWebTV::quickZap(int key)
@@ -581,7 +581,7 @@ void CWebTV::quickZap(int key)
 void CWebTV::showInfo()
 {
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[tuned]->title, channels[tuned]->description, file_prozent, duration, w_ac3state, speed, playstate, false);
+	g_InfoViewer->showMovieInfo(channels[tuned]->title, channels[tuned]->description, file_prozent, duration, w_ac3state, speed, playstate, false, false);
 }
 
 void CWebTV::getInfos()
@@ -640,9 +640,7 @@ showList:
 	// paint all
 	paint();
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	oldselected = selected;
 	int zapOnExit = false;

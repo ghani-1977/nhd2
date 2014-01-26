@@ -615,7 +615,6 @@ void CMenuWidget::paint()
 /* paint items */
 void CMenuWidget::paintItems()
 {
-	//int fheight = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	int icon_foot_w, icon_foot_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_foot_w, &icon_foot_h);
 	int fheight = std::max(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
@@ -641,7 +640,7 @@ void CMenuWidget::paintItems()
 
 		//scrollbar
 		frameBuffer->paintBoxRel(x + width, item_start_y, SCROLLBAR_WIDTH, item_height, COL_MENUCONTENT_PLUS_1); //15 = sb width
-		frameBuffer->paintBoxRel(x + width + 2, item_start_y + 2 + current_page * sbh, 11, sbh, COL_MENUCONTENT_PLUS_3);
+		frameBuffer->paintBoxRel(x + width + 2, item_start_y + 2 + current_page * sbh, SCROLLBAR_WIDTH - 4, sbh, COL_MENUCONTENT_PLUS_3);
 	}
 	
 	// paint items background

@@ -285,8 +285,7 @@ CCAMMenuHandler 	* g_CamHandler;
 #endif
 
 // webtv
-class CWebTV;
-CWebTV * webtv;
+CWebTV 			* webtv;
 
 // timezone for wizard
 extern CMenuOptionStringChooser * tzSelect;
@@ -330,6 +329,7 @@ static void initGlobals(void)
 #endif	
 
 	g_Radiotext     = NULL;
+	
 	webtv = NULL;
 }
 

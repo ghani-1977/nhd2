@@ -92,7 +92,6 @@ extern int FrontendCount;				// defined in zapit.cpp
 extern CWebTV * webtv;					// defined in neutrino.cpp
 extern CMoviePlayerGui * moviePlayerGui;
 
-extern int timeshift;
 extern bool autoshift;
 extern uint32_t shift_timer;
 
@@ -561,7 +560,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 
 	// blue button
 	// features/info
-	if(!timeshift)
+	if(!moviePlayerGui->timeshift)
 	{
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_blue_h)/2);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize + icon_blue_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_blue_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
@@ -577,7 +576,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			
 		// yellow
 		// sub services/help for timeshift
-		if(timeshift)
+		if(moviePlayerGui->timeshift)
 		{
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_yellow_h)/2 );
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_yellow_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
@@ -745,7 +744,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 				res = messages_return::cancel_all;
 				hideIt = true;
 			} 
-			else if ( !timeshift ) 
+			else if ( !moviePlayerGui->timeshift ) 
 			{
 				if ((msg == (neutrino_msg_t) g_settings.key_quickzap_up) || (msg == (neutrino_msg_t) g_settings.key_quickzap_down) || (msg == CRCInput::RC_0) || (msg == NeutrinoMessages::SHOW_INFOBAR)) 
 				{
@@ -802,15 +801,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 }
 
 //showMovieInfo
-extern bool isMovieBrowser;
-extern bool isVlc;
-extern bool cdDvd;
-extern bool isDVD;
-extern bool isBlueRay;
-extern bool isURL;
-extern int file_prozent;
-
-void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, short Percent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow)
+void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Info, short Percent, const int duration, const unsigned int ac3state, const int speed, const int playstate, bool lshow, bool show_bookmark)
 {
 	m_visible = true;
 	bool show_dot = true;
@@ -940,7 +931,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	if (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_iptv)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
-	else if(isMovieBrowser)
+	else if(show_bookmark)
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString( BoxStartX + (BoxWidth/5)*3 + icon_w + 2, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), BoxWidth/5, g_Locale->getText(LOCALE_MOVIEPLAYER_BOOKMARK), (COL_INFOBAR_SHADOW + 1), 0, true); // UTF-8
 		
 	// ac3
@@ -1024,7 +1015,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(InfoStartX, height + TitleHeight, InfoWidth, (char *)Info.c_str(), COL_INFOBAR, 0, true);
 
 	// duration
-	if( (CNeutrinoApp::getInstance()->getMode() != NeutrinoMessages::mode_iptv) && !isVlc && lshow )
+	if(lshow )
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(durationTextPos, TitleHeight, durationWidth, cDisplayTime, COL_INFOBAR);
 	
 	// progressbar
@@ -1132,11 +1123,13 @@ void CInfoViewer::updatePos()
 	BoxWidth = BoxEndX - BoxStartX;
 	
 	//FIXME: file_prozent cant be at this way updated
+	/*
 	if(m_visible)
 	{
 		if(moviescale->getPercent() != file_prozent)
 			moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, file_prozent);
 	}
+	*/
 }
 
 void CInfoViewer::showSubchan()

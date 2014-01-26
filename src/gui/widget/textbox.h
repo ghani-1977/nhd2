@@ -64,8 +64,6 @@
 #include <global.h>
 #include <driver/fb_window.h>
 
-#define TRACE  printf
-#define TRACE_1 printf
 
 class CBox
 {
@@ -114,7 +112,7 @@ class CTextBox
 		int m_nNrOfPages;
 		int m_nNrOfLines;
 		int m_nNrOfNewLine;
-		int	m_nMaxLineWidth;
+		int m_nMaxLineWidth;
 		int m_nLinesPerPage;
 		int m_nCurrentLine;
 		int m_nCurrentPage;
@@ -146,7 +144,7 @@ class CTextBox
 		inline	bool 	isPainted(void){if( frameBuffer == NULL) return (false); else return (true);};
 
 		inline	CBox	getWindowsPos(void)			{return(m_cFrame);};
-		inline	int		getMaxLineWidth(void)		{return(m_nMaxLineWidth);};
+		inline	int	getMaxLineWidth(void)		{return(m_nMaxLineWidth);};
 		inline  int     getLines(void)				{return(m_nNrOfLines);};
 		inline  int     getPages(void)				{return(m_nNrOfPages);};
 		inline	void	movePosition(int x, int y){m_cFrame.iX = x; m_cFrame.iY = y;};
@@ -165,7 +163,5 @@ class CTextBox
 			NO_AUTO_LINEBREAK = 0x80
 		}mode;
 };
-
-						
 
 #endif // !defined(AFX_TEXTBOX_H__208DED01_ABEC_491C_A632_5B21057DC5D8__INCLUDED_)

@@ -30,7 +30,7 @@
 #define NEUTRINO_ICON_BUTTON_YELLOW		"yellow"
 
 #define NEUTRINO_ICON_BUTTON_SETUP		"setup"
-#define NEUTRINO_ICON_BUTTON_SETUP_SMALL		"setup_small"
+#define NEUTRINO_ICON_BUTTON_SETUP_SMALL	"setup_small"
 #define NEUTRINO_ICON_BUTTON_HELP		"help"
 #define NEUTRINO_ICON_BUTTON_HELP_SMALL		"help_small"
 #define NEUTRINO_ICON_BUTTON_HOME		"home"

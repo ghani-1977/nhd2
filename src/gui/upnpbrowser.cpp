@@ -601,17 +601,16 @@ void CUpnpBrowserGui::playnext(void)
 					CAudioPlayer::getInstance()->play(&mp3, g_settings.audioplayer_highprio == 1);
 					return;
 				}
-				/*
+				#if 0
 				else if (mime.substr(0,6) == "video/")
 				{
-					g_settings.streaming_server_url = std::string((*entries)[0].resources[preferred].url); //FIXME
+					// /*g_settings.streaming_server_url*/moviePlayerGui->filename = std::string((*entries)[0].resources[preferred].url); //FIXME
+					moviePlayerGui->filename = (*entries)[0].resources[preferred].url.c_str(); //FIXME
 					if (CAudioPlayer::getInstance()->getState() != CBaseDec::STOP)
 						CAudioPlayer::getInstance()->stop();
 					moviePlayerGui->exec(NULL, "urlplayback");
 					return;
 				}
-				*/
-				/*
 				else if (mime.substr(0,6) == "image/")
 				{
 					g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
@@ -626,7 +625,7 @@ void CUpnpBrowserGui::playnext(void)
 					
 					return;
 				}
-				*/
+				#endif
 			}
 		} 
 		else 
@@ -880,7 +879,8 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						m_frameBuffer->blit();
 #endif						
 						
-						g_settings.streaming_server_url = std::string((*entries)[selected - index].resources[preferred].url); //FIXME
+						// /*g_settings.streaming_server_url*/moviePlayerGui->filename = /*std::string*/((*entries)[selected - index].resources[preferred].url); //FIXME
+						moviePlayerGui->filename = (*entries)[selected - index].resources[preferred].url.c_str(); //FIXME
 						moviePlayerGui->exec(NULL, "urlplayback");
 						
 						//test

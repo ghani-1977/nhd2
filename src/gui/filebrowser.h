@@ -216,9 +216,9 @@ class CFileBrowser
 		~CFileBrowser();
 
 		bool exec(const char * const dirname);
-		CFile * getSelectedFile();
+		CFile *getSelectedFile();
 		
-		inline const CFileList & getSelectedFiles(void) const
+		inline const CFileList &getSelectedFiles(void) const
 		{
 			return selected_filelist;
 		}

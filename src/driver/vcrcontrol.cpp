@@ -852,13 +852,6 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, bool m
 	return true;
 }
 
-extern unsigned short g_vpid;
-extern unsigned short g_vtype;
-extern unsigned short g_apids[10];
-extern unsigned short g_ac3flags[10];
-extern unsigned short g_numpida;
-extern unsigned int g_currentapid, g_currentac3;
-
 std::string CVCRControl::CFileAndServerDevice::getMovieInfoString(const CVCRCommand command, const t_channel_id channel_id, const event_id_t epgid, const std::string& epgTitle, APIDList apid_list, const time_t epg_time)
 {
 	std::string extMessage;

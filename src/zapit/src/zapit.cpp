@@ -238,7 +238,6 @@ fe_map_t femap;
 
 // frontend config
 CConfigFile fe_configfile(',', false);
-//#define FRONTEND_CONFIGFILE CONFIGDIR "/zapit/frontend.conf"
 CFrontend * live_fe = NULL;
 CFrontend * record_fe = NULL;
 
