@@ -625,7 +625,7 @@ infoviewer.noepg Keine EPG-Information verfügbar
 infoviewer.notavailable Kanal (zur Zeit) nicht verfügbar.
 infoviewer.now jetzt
 infoviewer.selecttime Startzeiten
-infoviewer.features Features
+infoviewer.features Erweiterungen
 infoviewer.subchan_disp_pos Unterkanalanzeige
 infoviewer.subservice Bildregie
 infoviewer.waittime Warte auf Uhrzeit...
@@ -1478,7 +1478,7 @@ hddmenu.hddumount HDD Umount
 hddmenu.hddumounted HDD Umounted
 mainmenu.mediaplayer Media Center
 osd.timezone Time Zone
-osd.corners OSD Corners
+osd.corners OSD Ecken
 osd.roundedcornersoff eckig
 osd.roundedcornerson abgerundet
 osd.roundedcornersonly_top nur Top

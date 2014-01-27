@@ -488,8 +488,9 @@ void CVFD::setMode(const MODES m, const char * const title)
 			break;
 
 		case MODE_MENU_UTF8:
+			ShowIcon(VFD_ICON_TV, false);			
+			ShowIcon(VFD_ICON_HD, false);
 			ShowIcon(VFD_ICON_DOLBY, false);
-			CVFD::getInstance()->ShowIcon(VFD_ICON_HD, false);
 			showclock = false;
 			break;
 

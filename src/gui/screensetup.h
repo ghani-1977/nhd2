@@ -42,24 +42,31 @@
 
 class CScreenSetup : public CMenuTarget
 {
- private:
-    CFrameBuffer * frameBuffer;
-    int	selected;
-    int x_coord[2];
-    int y_coord[2];
+	private:
+		CFrameBuffer * frameBuffer;
+		int	selected;
+		int x_coord[2];
+		int y_coord[2];
+		
+		int icon_w;
+		int icon_h;
+		
+		int x;
+		int y;
+		int BoxHeight;
+		int BoxWidth;
 
-    void paint();
-    void paintBorderUL();
-    void paintBorderLR();
-    void paintCoords();
-    void paintBorder(int selected);
-    void paintIcons();
-	
- public:
-    CScreenSetup();
-    void hide();
-    int exec(CMenuTarget* parent, const std::string & actionKey);
-
+		void paint();
+		void paintBorderUL();
+		void paintBorderLR();
+		void paintCoords();
+		void paintBorder(int selected);
+		void paintIcons();
+		
+	public:
+		CScreenSetup();
+		void hide();
+		int exec(CMenuTarget* parent, const std::string & actionKey);
 };
 
 
