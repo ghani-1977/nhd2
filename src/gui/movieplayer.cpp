@@ -114,8 +114,6 @@ static const char FILENAME[] = "movieplayer.cpp";
 cPlayback * playback = NULL;
 
 //
-extern CRemoteControl * g_RemoteControl;		/* neutrino.cpp */
-extern CZapitChannel * live_channel;			/* zapit.cpp */
 extern CInfoViewer * g_InfoViewer;
 extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 
@@ -124,6 +122,7 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 #define MINUTEOFFSET 117*262072
 #define MP_TS_SIZE 262072				// ~0.5 sec
 
+int timeshift = CMoviePlayerGui::NO_TIMESHIFT;
 extern char rec_filename[512];				// defined in stream2file.cpp
 
 // for timeshift epg infos
@@ -438,7 +437,38 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else 
 		filebrowser->Multi_Select = false;
 	
+	//
+	//
+	position = 0;
+	duration = 0;
+	file_prozent = 0;
 	startposition = 0;
+	
+	// global flags
+	update_lcd = false;
+	open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
+	start_play = false;
+	exit = false;
+	was_file = false;
+	m_loop = false;
+	
+	// clear filelist
+	if(!_filelist.empty())
+		_filelist.clear();
+	
+	// for playing
+	playstate = CMoviePlayerGui::STOPPED;
+	is_file_player = false;
+	
+	// timeosd
+	time_forced = false;
+	
+	// timeshift
+	//timesh = timeshift;
+	
+	// vlc
+	selected = 0;
+	//
 
 	isMovieBrowser = false;
 	isVlc = false;
@@ -457,11 +487,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	speed = 1;
 	slow = 0;
 	
-	position = 0;
-	duration = 0;
-	file_prozent = 0;
-	startposition = 0;
-	
 	ac3state = CInfoViewer::NO_AC3;
 	showaudioselectdialog = false;
 	
@@ -478,8 +503,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-
-		PlayFile();
 	}
 	else if (actionKey == "moviebrowser") 
 	{
@@ -491,23 +514,18 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if (actionKey == "timeshift") 
 	{
 		timeshift = TIMESHIFT;
-		PlayFile();
 	} 
 	else if (actionKey == "ptimeshift") 
 	{
 		timeshift = P_TIMESHIFT;
-		PlayFile();
 	} 
 	else if (actionKey == "rtimeshift") 
 	{
 		timeshift = R_TIMESHIFT;
-		PlayFile();
 	} 
 	else if(actionKey == "urlplayback")
 	{
@@ -517,10 +535,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = true;
-		
-		PlayFile();
 	}
-	//
 	else if (actionKey == "ytplayback") 
 	{
 		isMovieBrowser = true;
@@ -531,8 +546,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
  	}
  	else if (actionKey == "netzkinoplayback") 
 	{
@@ -544,8 +557,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
  	}
 	else if (actionKey == "fileplayback") 
 	{
@@ -555,8 +566,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if ( actionKey == "vlcplayback" ) 
 	{
@@ -567,8 +576,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if ( actionKey == "vlcdvdplayback" ) 
 	{
@@ -579,8 +586,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if ( actionKey == "vlcsvcdplayback" ) 
 	{
@@ -591,8 +596,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = false;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if(actionKey == "dvdplayback")
 	{
@@ -602,8 +605,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isBlueRay = false;
 		isDVD = true;
 		isURL = false;
-		
-		PlayFile();
 	}
 	else if(actionKey == "bluerayplayback")
 	{
@@ -613,9 +614,13 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isDVD = false;
 		isBlueRay = true;
 		isURL = false;
-		
-		PlayFile();
 	}
+	
+	// timeshift
+	timesh = timeshift;
+	
+	//
+	PlayFile();
 	
 	// Restore previous background
 	if (usedBackground) 
@@ -1074,8 +1079,6 @@ void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
-
-	//CTimeOSD FileTime;
 	
 	//
 	position = 0;
@@ -1090,6 +1093,10 @@ void CMoviePlayerGui::PlayFile(void)
 	exit = false;
 	was_file = false;
 	m_loop = false;
+	
+	// clear filelist
+	if(!_filelist.empty())
+		_filelist.clear();
 	
 	// for playing
 	playstate = CMoviePlayerGui::STOPPED;

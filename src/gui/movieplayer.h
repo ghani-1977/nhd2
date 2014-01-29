@@ -96,10 +96,9 @@ class CMoviePlayerGui : public CMenuTarget
 		int file_prozent;
 
 		int startposition;
-		int timeshift;
+		//int timeshift;
 		off64_t minuteoffset;
 		off64_t secondoffset;
-		
 		int g_jumpseconds;
 
 		unsigned short g_apids[10];
@@ -151,7 +150,6 @@ class CMoviePlayerGui : public CMenuTarget
 		
 		std::string sel_filename;
 		CTimeOSD FileTime;
-		//
 
 	private:
 		void Init(void);
@@ -195,7 +193,6 @@ class CMoviePlayerGui : public CMenuTarget
 		
 		// lcd
 		void updateLcd(const std::string & sel_filename);
-		//
 		
 		// show infos
 		void showFileInfoVLC(void);

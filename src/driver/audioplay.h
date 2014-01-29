@@ -44,7 +44,7 @@ class CAudioPlayer
 		pthread_t	thrPlay;
 		FILE		*fp;
 		CBaseDec::State state;
-		static void* PlayThread(void*);
+		static void *PlayThread(void*);
 		void clearFileData();
 		unsigned int m_SecondsToSkip;
 

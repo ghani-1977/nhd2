@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <cdrdec.h>
 
+
 CCdrDec* CCdrDec::getInstance()
 {
 	static CCdrDec* CdrDec = NULL;

@@ -95,6 +95,8 @@ extern CMoviePlayerGui * moviePlayerGui;
 extern bool autoshift;
 extern uint32_t shift_timer;
 
+extern int timeshift;					// defined in movieplayer.cpp
+
 extern std::string ext_channel_name;	// defined in vcrcontrol.cpp
 extern bool timeset;			// defined in sectionsd.cpp
 
@@ -560,7 +562,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 
 	// blue button
 	// features/info
-	if(!moviePlayerGui->timeshift)
+	if(!timeshift)
 	{
 		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_blue_h)/2);
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5 + asize + icon_blue_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_blue_w, g_Locale->getText(LOCALE_INFOVIEWER_FEATURES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
@@ -576,7 +578,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 			
 		// yellow
 		// sub services/help for timeshift
-		if(moviePlayerGui->timeshift)
+		if(timeshift)
 		{
 			frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize, buttonBarStartY + (buttonBarHeight - icon_yellow_h)/2 );
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5 + asize + icon_green_w + 5 + asize + icon_yellow_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_yellow_w, (char *)"help", COL_INFOBAR_BUTTONS, 0, true); // UTF-8
@@ -744,7 +746,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 				res = messages_return::cancel_all;
 				hideIt = true;
 			} 
-			else if ( !moviePlayerGui->timeshift ) 
+			else if ( !timeshift ) 
 			{
 				if ((msg == (neutrino_msg_t) g_settings.key_quickzap_up) || (msg == (neutrino_msg_t) g_settings.key_quickzap_down) || (msg == CRCInput::RC_0) || (msg == NeutrinoMessages::SHOW_INFOBAR)) 
 				{
