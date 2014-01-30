@@ -581,7 +581,8 @@ void CWebTV::quickZap(int key)
 void CWebTV::showInfo()
 {
 	//infoviewer
-	g_InfoViewer->showMovieInfo(channels[tuned]->title, channels[tuned]->description, file_prozent, duration, w_ac3state, speed, playstate, false, false);
+	if(tuned)
+		g_InfoViewer->showMovieInfo(channels[tuned]->title, channels[tuned]->description, file_prozent, duration, w_ac3state, speed, playstate, false, false);
 }
 
 void CWebTV::getInfos()

@@ -58,8 +58,6 @@
 
 #define VLC_URI "vlc://"
 
-
-
 /**
  * Converts input of numeric keys to SMS style char input.
  */

@@ -49,6 +49,7 @@
 
 #include <string>
 
+
 class CBouquetList;
 class ConfigFile;
 struct button_label;

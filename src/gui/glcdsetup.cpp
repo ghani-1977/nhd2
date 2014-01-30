@@ -236,6 +236,7 @@ bool GLCD_Menu_Notifier::changeNotify(const neutrino_locale_t OptionName, void *
 {
 	if (!Data)
 		return false;
+	
 	nGLCD *nglcd = nGLCD::getInstance();
 	
 	switch(OptionName) 
@@ -281,8 +282,8 @@ bool GLCD_Menu_Notifier::changeNotify(const neutrino_locale_t OptionName, void *
 
 #define ONOFF_OPTION_COUNT 2
 static const CMenuOptionChooser::keyval ONOFF_OPTIONS[ONOFF_OPTION_COUNT] = {
-	{ 0, LOCALE_OPTIONS_OFF },
-	{ 1, LOCALE_OPTIONS_ON }
+	{ 0, LOCALE_OPTIONS_OFF, NULL},
+	{ 1, LOCALE_OPTIONS_ON, NULL}
 };
 
 void GLCD_Menu::GLCD_Menu_Settings()

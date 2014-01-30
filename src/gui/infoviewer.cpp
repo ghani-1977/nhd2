@@ -237,7 +237,7 @@ void CInfoViewer::Init()
 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
 
 	// button cell width
-	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + 2*TunerNumWidth + 2))/4;
+	asize = (BoxWidth - ( BORDER_RIGHT + BORDER_LEFT + 2 + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect + 2 + icon_w_sd + 2 + icon_w_reso + 2 + icon_w_ca + 2 + icon_w_rt + 2 + 3*TunerNumWidth + BORDER_RIGHT))/4;
 	
 	// time dimension
 	time_height = (CHANNEL_LOGO_HEIGHT - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getHeight(); //FIXME
@@ -666,9 +666,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 		show_Data();
 	}
 		
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
+	frameBuffer->blit();	
 
 #if ENABLE_LCD
 	showLcdPercentOver();
@@ -785,9 +783,7 @@ void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, cons
 				}
 			}
 				
-#if !defined USE_OPENGL
-			frameBuffer->blit();
-#endif			
+			frameBuffer->blit();		
 		}
 
 		if (hideIt)
@@ -1031,9 +1027,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 	
 	moviescale->paint(BoxStartX + 5, BoxStartY + SAT_INFOBOX_HEIGHT, runningPercent);
 	
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif		
+	frameBuffer->blit();	
 	
 	// loop msg
 	neutrino_msg_t msg;
@@ -1098,9 +1092,7 @@ void CInfoViewer::showMovieInfo(const std::string &Title, const std::string &Inf
 			}
 		}
 	
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif			
+		frameBuffer->blit();	
 	}
 	
 	if (hideIt)
@@ -1223,9 +1215,7 @@ void CInfoViewer::showSubchan()
 	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString (x + 30 - icon_w + icon_w, y + dy - 2, dx - 40, g_Locale->getText (LOCALE_NVODSELECTOR_DIRECTORMODE), COL_MENUCONTENT, 0, true);	// UTF-8
 		}
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 
 		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(2);
 		int res = messages_return::none;
@@ -1256,9 +1246,7 @@ void CInfoViewer::showSubchan()
 
 		frameBuffer->RestoreScreen(x - borderwidth, y - borderwidth, dx + 2 * borderwidth, dy + 2 * borderwidth, pixbuf);
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
   		
 	} 
 	else 
@@ -1452,9 +1440,7 @@ void CInfoViewer::killRadiotext()
 {
 	frameBuffer->paintBackgroundBox(rt_x, rt_y, rt_w, rt_h);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CInfoViewer::showRadiotext()
@@ -1488,9 +1474,7 @@ void CInfoViewer::showRadiotext()
 		{
 			frameBuffer->paintBackgroundBox(rt_x, rt_y, rt_w, rt_h);
 		
-#if !defined USE_OPENGL
 			frameBuffer->blit();
-#endif
 		}
 
 		if (g_Radiotext->RT_MsgShow) 
@@ -1507,9 +1491,7 @@ void CInfoViewer::showRadiotext()
 					frameBuffer->paintBoxRel(rt_x, rt_y, rt_dx, rt_dy, COL_INFOBAR_PLUS_0, RADIUS_MID, CORNER_TOP);
 					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(rt_x + 10, rt_y + 30, rt_dx - 20, stext[0], COL_INFOBAR, 0, RTisIsUTF); // UTF-8
 					
-#if !defined USE_OPENGL
 					frameBuffer->blit();
-#endif
 				}
 				yoff = 17;
 				ii = 1;
@@ -1544,9 +1526,7 @@ void CInfoViewer::showRadiotext()
 						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(rts_x, rts_y + (ii++)*rt_dy, rts_dx, g_Radiotext->RT_Text[i], COL_INFOBAR, 0, RTisIsUTF); // UTF-8
 				}
 				
-#if !defined USE_OPENGL
-					frameBuffer->blit();
-#endif				
+					frameBuffer->blit();	
 			}
 		}
 	}
@@ -2202,9 +2182,7 @@ void CInfoViewer::killTitle()
 
 		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY - 30, BoxEndX + SHADOW_OFFSET, buttonBarStartY + SHADOW_OFFSET + buttonBarHeight);
 				
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 
 		// hide radiotext	
 		if (g_settings.radiotext_enable && g_Radiotext) 
@@ -2238,9 +2216,7 @@ void CInfoViewer::killTitle()
 
 		frameBuffer->paintBackgroundBox(BoxStartX, BoxStartY, BoxEndX + SHADOW_OFFSET, BoxEndY + SHADOW_OFFSET + buttonBarHeight);
 				
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 		
 		if(moviescale)
 		{

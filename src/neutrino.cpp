@@ -2629,9 +2629,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 		// startup pic
 		frameBuffer->loadBackgroundPic("start.jpg");	
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif				
+	
 		// setup languages
 		int ret = languageSettings.exec(NULL, "");
 
@@ -2840,9 +2839,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 
 				frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif
 				
 				g_RCInput->clearRCMsg();
 				
@@ -3179,9 +3176,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					if (!g_settings.radiotext_enable)
 						frameBuffer->loadBackgroundPic("radiomode.jpg");
 						
-#if !defined USE_OPENGL
-					frameBuffer->blit();
-#endif						
+					frameBuffer->blit();	
 				}
 					
 				StartSubtitles();
@@ -3206,9 +3201,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 					if (!g_settings.radiotext_enable)
 						frameBuffer->loadBackgroundPic("radiomode.jpg");
 						
-#if !defined USE_OPENGL
-					frameBuffer->blit();
-#endif						
+					frameBuffer->blit();	
 				}
 					
 				StartSubtitles();
@@ -3232,9 +3225,8 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					if (!g_settings.radiotext_enable)
 						frameBuffer->loadBackgroundPic("radiomode.jpg");						
-#if !defined USE_OPENGL
-					frameBuffer->blit();
-#endif						
+
+					frameBuffer->blit();	
 				}
 					
 				StartSubtitles();
@@ -3297,7 +3289,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					if(webtv)
 					{
-						//if(webtv->getTunedChannel() > -1)
+						if(webtv->getTunedChannel() > -1)
 							webtv->showInfo();
 					}
 				}
@@ -4209,9 +4201,7 @@ void CNeutrinoApp::ExitRun(int retcode)
 		{
 			frameBuffer->loadBackgroundPic("shutdown.jpg");
 		
-#if !defined USE_OPENGL
 			frameBuffer->blit();
-#endif
 		}
 
 		// network down
@@ -4334,9 +4324,7 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 			{
 				frameBuffer->SaveScreen(x, y, dx, dy, mute_pixbuf);
 			
-#if !defined USE_OPENGL
-				frameBuffer->blit();			
-#endif			
+				frameBuffer->blit();						
 			}
 		
 			frameBuffer->paintBoxRel(x, y, dx, dy, COL_MENUCONTENT_PLUS_0);
@@ -4348,18 +4336,15 @@ void CNeutrinoApp::AudioMute( int newValue, bool isEvent )
 			{
 				frameBuffer->RestoreScreen(x, y, dx, dy, mute_pixbuf);
 
-#if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif		
+	
 				delete [] mute_pixbuf;
 			}
 			else
 				frameBuffer->paintBackgroundBoxRel(x, y, dx, dy);
 		}
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 }
 
@@ -4426,9 +4411,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 		{
 			frameBuffer->SaveScreen(x, y, dx, dy, pixbuf);
 			
-#if !defined USE_OPENGL
-			frameBuffer->blit();			
-#endif			
+			frameBuffer->blit();				
 		}
 
 		// background box
@@ -4455,9 +4438,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p1, COL_MENUCONTENT );
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 
 	neutrino_msg_data_t data;
@@ -4527,9 +4508,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 
 				g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(x + dx - 45, y + dy/2 + 14, 36, p, COL_MENUCONTENT);
 				
-#if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif
+
 				//FIXME
 				if (mode != mode_scart && mode != mode_pic && (g_settings.current_volume == 0) )
 					AudioMute(true, true);
@@ -4545,9 +4525,7 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 			g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd );
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	} while (msg != CRCInput::RC_timeout);
 	
 #ifdef ENABLE_GRAPHLCD
@@ -4558,9 +4536,8 @@ void CNeutrinoApp::setVolume(const neutrino_msg_t key, const bool bDoPaint, bool
 	{
 		frameBuffer->RestoreScreen(x, y, dx, dy, pixbuf);
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif		
+	
 		delete [] pixbuf;
 	}
 }
@@ -4640,9 +4617,7 @@ void CNeutrinoApp::tvMode( bool rezap )
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	g_RemoteControl->tvMode();
 	
@@ -4731,9 +4706,7 @@ void CNeutrinoApp::radioMode( bool rezap)
 	if (!g_settings.radiotext_enable)
 		frameBuffer->loadBackgroundPic("radiomode.jpg");
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	if (g_settings.radiotext_enable) 
 	{
@@ -4752,9 +4725,7 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 		frameBuffer->useBackground(false);
 		frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 
 		CVFD::getInstance()->setMode(CVFD::MODE_SCART);
 
@@ -4828,9 +4799,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		frameBuffer->useBackground(false);
 		frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif		
+	
 #if defined (PLATFORM_COOLSTREAM)
 		CVFD::getInstance()->Clear();
 #endif		
@@ -5024,9 +4994,7 @@ void CNeutrinoApp::webtvMode( bool rezap)
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	// pause epg scanning
 	g_Sectionsd->setPauseScanning(true);
@@ -5411,9 +5379,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 				frameBuffer->saveBackgroundImage();
 				frameBuffer->ClearFrameBuffer();
 
-#if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif
 			}
 			
 			//
@@ -5431,9 +5397,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 				frameBuffer->useBackground(true);
 				frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 				frameBuffer->blit();
-#endif
 			}
 			
 			if (g_Radiotext)
@@ -5556,9 +5520,7 @@ void CNeutrinoApp::StopSubtitles()
 		
 		frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 	
 #if ENABLE_GRAPHLCD	

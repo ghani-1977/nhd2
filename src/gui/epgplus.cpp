@@ -864,9 +864,7 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 
 		this->paint ();
 
-#if !defined USE_OPENGL
 		this->frameBuffer->blit();
-#endif
 
 		unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd (g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
 		bool loop = true;
@@ -1218,9 +1216,7 @@ int EpgPlus::exec (CChannelList * _channelList, int selectedChannelIndex, CBouqu
 	  		else if (this->refreshFooterButtons)
 				this->footer->paintButtons (buttonLabels, sizeof (buttonLabels) / sizeof (button_label));
 			
-#if !defined USE_OPENGL
-			this->frameBuffer->blit();
-#endif			
+			this->frameBuffer->blit();		
 		}
 
 		this->hide ();
@@ -1256,9 +1252,7 @@ void EpgPlus::hide ()
 {
   	this->frameBuffer->paintBackgroundBoxRel(this->usableScreenX, this->usableScreenY, this->usableScreenWidth, this->usableScreenHeight);	
 
-#if !defined USE_OPENGL
 	this->frameBuffer->blit();
-#endif
 }
 
 void EpgPlus::paintChannelEntry (int position)
@@ -1289,9 +1283,7 @@ void EpgPlus::paint()
 	// clear
 	this->frameBuffer->paintBackgroundBoxRel (this->channelsTableX, this->channelsTableY, this->usableScreenWidth, this->channelsTableHeight);
 	
-#if !defined USE_OPENGL
 	this->frameBuffer->blit();
-#endif
 	
 	// paint the gaps
 	this->frameBuffer->paintBoxRel (this->horGap1X, this->horGap1Y, this->horGap1Width, horGap1Height, horGap1Color);

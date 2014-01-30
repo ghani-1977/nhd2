@@ -490,13 +490,30 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	{
 		frameBuffer->paintBackgroundBox (sx, sy - oldtoph - 1, sx + ox, sy );
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 
 	//show the epg title
 	frameBuffer->paintBoxRel(sx, sy - toph, ox, toph, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
+	
+	//
+	// paint time/date
+	int timestr_len = 0;
+	char timestr[18];
+	
+	time_t now = time(NULL);
+	struct tm *tm = localtime(&now);
+	
+	bool gotTime = g_Sectionsd->getIsTimeSet();
+
+	if(gotTime)
+	{
+		strftime(timestr, 18, "%d.%m.%Y %H:%M", tm);
+		timestr_len = g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getRenderWidth(timestr, true); // UTF-8
+		
+		g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->RenderString(sx + ox - BORDER_RIGHT - timestr_len, sy - toph + (toph - g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight())/2  + g_Font[SNeutrinoSettings::FONT_TYPE_EVENTLIST_ITEMLARGE]->getHeight(), timestr_len + 1, timestr, COL_MENUHEAD, 0, true); // UTF-8
+	}
+	//
 	
 	//channel logo
 	int PIC_W_1 = topboxheight*1.67;
@@ -514,21 +531,21 @@ void CEpgData::showHead(const t_channel_id channel_id)
 		g_PicViewer->getLogoSize(channel_id, &logo_w, &logo_h, &logo_bpp);
 		
 		// display logo
-		g_PicViewer->DisplayLogo(channel_id, sx + 10, sy - toph, (logo_bpp == 4 && logo_w > PIC_W)?  PIC_W: PIC_W_1, topboxheight, (logo_h > topboxheight)? true : false, false, true);
+		g_PicViewer->DisplayLogo(channel_id, sx + BORDER_LEFT, sy - toph, (logo_bpp == 4 && logo_w > PIC_W)?  PIC_W: PIC_W_1, topboxheight, (logo_h > topboxheight)? true : false, false, true);
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10 + ( (logo_bpp == 4)? logo_w : PIC_W_1) + 5, sy - toph + topheight + 3, ox - 15 - ( (logo_bpp == 4)? logo_w : PIC_W_1), text1, COL_MENUHEAD, 0, true);
+		// title
+		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + BORDER_LEFT + ( (logo_bpp == 4)? logo_w : PIC_W_1) + 5, sy - toph + topheight + 3, ox - BORDER_LEFT - timestr_len - 5 - ( (logo_bpp == 4)? logo_w : PIC_W_1), text1, COL_MENUHEAD, 0, true);
 		
 		if (!(text2.empty()))
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 15 + (logo_ok? PIC_W + 10 : 0), sy - toph + 2*topheight + 3, ox - 10 - (logo_ok ? PIC_W + 5 : 0), text2, COL_MENUHEAD, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + BORDER_LEFT + 5 + (logo_ok? PIC_W + BORDER_LEFT : 0), sy - toph + 2*topheight + 3, ox - BORDER_LEFT - (logo_ok ? PIC_W + 5 : 0), text2, COL_MENUHEAD, 0, true);
 	}
 	else
 	{
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10, sy - toph + topheight + 3, ox - 10, text1, COL_MENUHEAD, 0, true);
 	
 		if (!(text2.empty()))
-			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10, sy - toph + 2*topheight + 3, ox - 10, text2, COL_MENUHEAD, 0, true);
+			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_TITLE]->RenderString(sx + 10, sy - toph + 2*topheight + 3, ox - BORDER_RIGHT, text2, COL_MENUHEAD, 0, true);
 	}
-
 }
 
 int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_t * a_startzeit, bool doLoop )
@@ -566,9 +583,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		
 		frameBuffer->paintBackgroundBoxRel(g_settings.screen_StartX, g_settings.screen_StartY, 50, height + 5);
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 
 	if (epgData.title.empty()) /* no epg info found */
@@ -743,9 +758,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ ox- botboxheight+ 8, sy+ oy- 3, widthr, ">", COL_MENUCONTENT + 3);
 	}
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	if ( doLoop )
 	{
@@ -796,9 +809,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					{
 						frameBuffer->paintBoxRel(sx + 5, sy + oy - botboxheight + 4, botboxheight - 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
 						
-#if !defined USE_OPENGL
 						frameBuffer->blit();
-#endif
 
 						g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ 10, sy+ oy- 3, widthr, "<", COL_MENUCONTENT + 1);
 
@@ -812,9 +823,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					{
 						frameBuffer->paintBoxRel(sx + ox- botboxheight + 8 - 5, sy + oy- botboxheight + 4, botboxheight- 8, botboxheight- 8,  COL_MENUCONTENT_PLUS_1);
 						
-#if !defined USE_OPENGL
 						frameBuffer->blit();
-#endif
 
 						g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ ox- botboxheight+ 8, sy+ oy- 3, widthr, ">", COL_MENUCONTENT + 1);
 
@@ -903,9 +912,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 					bigFonts = bigFonts ? false : true;
 					
 					frameBuffer->paintBackgroundBox(sx, sy- toph, sx + ox, sy + oy + 30);
-#if !defined USE_OPENGL
+
 					frameBuffer->blit();
-#endif
 					
 					showTimerEventBar(false);
 					start();
@@ -949,9 +957,8 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 						}
 					}
 			}
-#if !defined USE_OPENGL
-			frameBuffer->blit();
-#endif			
+
+			frameBuffer->blit();	
 		}
 		
 		hide();
@@ -972,9 +979,7 @@ void CEpgData::hide()
 
 	frameBuffer->paintBackgroundBox (sx, sy - toph, sx + ox, sy + oy); 	// 30: button bar height
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 	
         showTimerEventBar(false);
 }
@@ -1157,9 +1162,8 @@ void CEpgData::showTimerEventBar(bool _show)
 		// hide
 		frameBuffer->paintBackgroundBoxRel(x, y, w, h);
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
+		
 		return;
 	}
 

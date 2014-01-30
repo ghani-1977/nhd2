@@ -347,7 +347,7 @@ void CVFD::showTime(bool force)
 		} 
 	}
 
-	if (CNeutrinoApp::getInstance ()->recordingstatus) 
+	if (CNeutrinoApp::getInstance()->recordingstatus) 
 	{
 		if(clearClock) 
 		{

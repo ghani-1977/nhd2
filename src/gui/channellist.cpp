@@ -578,9 +578,7 @@ int CChannelList::show()
 	// paint all
 	paint();
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int oldselected = selected;
 	int zapOnExit = false;
@@ -912,9 +910,7 @@ int CChannelList::show()
 			}
 		}
 			
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
@@ -942,9 +938,8 @@ void CChannelList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width + 5, height + info_height + 5);
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
+
         clearItem2DetailsLine();
 }
 
@@ -1217,9 +1212,8 @@ int CChannelList::numericZap(int key)
 				
 				this->frameBuffer->paintBackground();
 				
-#if !defined USE_OPENGL
 				this->frameBuffer->blit();
-#endif
+
 				res = channelList->exec();
 			}
 			
@@ -1248,9 +1242,8 @@ int CChannelList::numericZap(int key)
 			{
 				this->frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 				this->frameBuffer->blit();
-#endif
+
 				res = channelList->exec();
 			}
 			delete channelList;
@@ -1281,9 +1274,8 @@ int CChannelList::numericZap(int key)
 			channelList->adjustToChannelID(orgList->getActiveChannel_ChannelID(), false);
 			this->frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 			this->frameBuffer->blit();
-#endif
+
 			res = channelList->exec();
 		}
 		delete channelList;
@@ -1320,9 +1312,7 @@ int CChannelList::numericZap(int key)
 				g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->RenderString(ox + 7 + i*((sx - 14)>>2), oy + sy - 3, sx, &valstr[i], COL_INFOBAR);
 			}
 			
-#if !defined USE_OPENGL
 			frameBuffer->blit();
-#endif
 
 			// show infobar
 			showInfo(chn - 1);
@@ -1400,9 +1390,7 @@ int CChannelList::numericZap(int key)
 
 	frameBuffer->paintBackgroundBoxRel(ox, oy, sx, sy);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	chn--;
 	
@@ -1677,9 +1665,7 @@ void CChannelList::paintItem2DetailsLine(int pos, int /*ch_index*/)
 	// Clear
 	frameBuffer->paintBackgroundBoxRel(xpos - 10, y - 10, ConnectLineBox_Width + 10, height + info_height + 10);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	// paint Line if detail info (and not valid list pos)
 	if (pos >= 0) 

@@ -55,7 +55,6 @@ extern int tuxtx_subtitle_running(int *pid, int *page, int *running);
 // -- it make sence only for boxes with dvbsub rc-key
 //
 
-
 int CDVBSubSelectMenuHandler::exec(CMenuTarget * parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;

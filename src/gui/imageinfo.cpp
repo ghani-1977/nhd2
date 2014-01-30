@@ -44,12 +44,7 @@
 #define SVN_REV "SVN Rev.:"
 #define GIT_REV "GIT Build:"
 
-#include <gui/pictureviewer.h>
-extern CPictureViewer * g_PicViewer;
-
 extern cVideo * videoDecoder;
-
-extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 
 CImageInfo::CImageInfo()
 {
@@ -69,8 +64,8 @@ CImageInfo::CImageInfo()
 	width = frameBuffer->getScreenWidth() - 10;
 	height = frameBuffer->getScreenHeight() - 10;
 
-	x=(((g_settings.screen_EndX- g_settings.screen_StartX)-width) / 2) + g_settings.screen_StartX;
-	y=(((g_settings.screen_EndY- g_settings.screen_StartY)-height) / 2) + g_settings.screen_StartY;
+	x = (((g_settings.screen_EndX- g_settings.screen_StartX)-width) / 2) + g_settings.screen_StartX;
+	y = (((g_settings.screen_EndY- g_settings.screen_StartY)-height) / 2) + g_settings.screen_StartY;
 }
 
 CImageInfo::~CImageInfo()
@@ -78,7 +73,7 @@ CImageInfo::~CImageInfo()
 	videoDecoder->Pig(-1, -1, -1, -1);
 }
 
-int CImageInfo::exec(CMenuTarget* parent, const std::string &)
+int CImageInfo::exec(CMenuTarget *parent, const std::string &)
 {
 	if (parent)
  		parent->hide();
@@ -87,9 +82,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 
 	paint_pig( (width - width/3), y, width/3, height/3);	
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();	
-#endif
 
 	neutrino_msg_t msg;
 
@@ -109,9 +102,7 @@ int CImageInfo::exec(CMenuTarget* parent, const std::string &)
 			CNeutrinoApp::getInstance()->handleMsg( msg, data );
 		}
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();	
-#endif		
+		frameBuffer->blit();		
 	}
 
 	hide();
@@ -125,9 +116,7 @@ void CImageInfo::hide()
 	
 	frameBuffer->paintBackgroundBoxRel(0 , 0, max_width, max_height);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 }
 
 void CImageInfo::paint_pig(int _x, int _y, int w, int h)
@@ -135,7 +124,7 @@ void CImageInfo::paint_pig(int _x, int _y, int w, int h)
 	frameBuffer->paintBackgroundBoxRel(_x, _y, w, h);	
 		
 	//dont pig if we have 1980 x 1080
-#ifdef __sh__	
+#if defined (__sh__)
 	int xres, yres, framerate;
 	videoDecoder->getPictureInfo(xres, yres, framerate);
 	
@@ -151,23 +140,26 @@ void CImageInfo::paintLine(int xpos, int font, const char* text)
 	char buf[100];
 	sprintf((char*) buf, "%s", text);
 	
-	g_Font[font]->RenderString(xpos, ypos, width-10, buf, COL_INFOBAR, 0, true);
+	g_Font[font]->RenderString(xpos, ypos, width - BORDER_RIGHT, buf, COL_INFOBAR, 0, true);
 }
 
 void CImageInfo::paint()
 {
 	const char * head_string;
 	char imagedate[18] = "";
- 	int  xpos = x+10;
+ 	int  xpos = x + BORDER_LEFT;
 
-	ypos = y+5;
+	ypos = y + 5;
 
 	head_string = g_Locale->getText(LOCALE_IMAGEINFO_HEAD);
 
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, head_string);
 
+	//
 	frameBuffer->paintBoxRel(0, 0, max_width, max_height, COL_INFOBAR_PLUS_0);
-	g_Font[font_head]->RenderString(xpos, ypos+ hheight+1, width, head_string, COL_MENUHEAD, 0, true);
+	
+	// title
+	g_Font[font_head]->RenderString(xpos, ypos + hheight + 1, width, head_string, COL_MENUHEAD, 0, true);
 
 	ypos += hheight;
 	ypos += (iheight >>1);
@@ -196,7 +188,7 @@ void CImageInfo::paint()
 	// image name
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_IMAGE));
-	paintLine(xpos+125, font_info, imagename);
+	paintLine(xpos + 125, font_info, imagename);
 
 	// image date
 	ypos += iheight;
@@ -206,7 +198,7 @@ void CImageInfo::paint()
 	// release cycle
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_VERSION));
-	paintLine(xpos+125, font_info, releaseCycle);
+	paintLine(xpos + 125, font_info, releaseCycle);
 	
 	// svn/git built date
 	ypos += iheight;
@@ -220,60 +212,60 @@ void CImageInfo::paint()
 	// image type
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_TYPE));
-	paintLine(xpos+125, font_info, imageType);
+	paintLine(xpos + 125, font_info, imageType);
 
 	// image creator
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_CREATOR));
-	paintLine(xpos+125, font_info, creator);
+	paintLine(xpos + 125, font_info, creator);
 
 	// homepage
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_HOMEPAGE));
-	paintLine(xpos+125, font_info, homepage);
+	paintLine(xpos + 125, font_info, homepage);
 
 	/* doko */
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DOKUMENTATION));
-	paintLine(xpos+125, font_info, docs);
+	paintLine(xpos + 125, font_info, docs);
 
 	// forum
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_FORUM));
-	paintLine(xpos+125, font_info, forum);
+	paintLine(xpos + 125, font_info, forum);
 
 	// license
 	ypos += iheight;
 	paintLine(xpos, font_info,g_Locale->getText(LOCALE_IMAGEINFO_LICENSE));
-	paintLine(xpos+125, font_small, "This program is free software; you can redistribute it and/or modify");
+	paintLine(xpos + 125, font_small, "This program is free software; you can redistribute it and/or modify");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "it under the terms of the GNU General Public License as published by");
+	paintLine(xpos + 125, font_small, "it under the terms of the GNU General Public License as published by");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "the Free Software Foundation; either version 2 of the License, or");
+	paintLine(xpos + 125, font_small, "the Free Software Foundation; either version 2 of the License, or");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "(at your option) any later version.");
+	paintLine(xpos + 125, font_small, "(at your option) any later version.");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "This program is distributed in the hope that it will be useful,");
+	paintLine(xpos + 125, font_small, "This program is distributed in the hope that it will be useful,");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
+	paintLine(xpos + 125, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+	paintLine(xpos + 125, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "See the GNU General Public License for more details.");
+	paintLine(xpos + 125, font_small, "See the GNU General Public License for more details.");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "You should have received a copy of the GNU General Public License");
+	paintLine(xpos + 125, font_small, "You should have received a copy of the GNU General Public License");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "along with this program; if not, write to the Free Software");
+	paintLine(xpos + 125, font_small, "along with this program; if not, write to the Free Software");
 
 	ypos += sheight;
-	paintLine(xpos+125, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
+	paintLine(xpos + 125, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
 }

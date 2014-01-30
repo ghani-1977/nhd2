@@ -866,9 +866,7 @@ bool CFileBrowser::exec(const char * const dirname)
 	paintHead();
 	paintFoot();
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int oldselected = selected;
 
@@ -1129,9 +1127,7 @@ bool CFileBrowser::exec(const char * const dirname)
 			}
 		}
 	
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -1240,9 +1236,7 @@ void CFileBrowser::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CFileBrowser::paintItem(unsigned int pos)
@@ -1471,9 +1465,7 @@ void CFileBrowser::paintFoot()
 			char cKey[2]={m_SMSKeyInput.getOldKey(),0};
 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + width - 16, by2 , 16, cKey, COL_MENUHEAD, 0, true); // UTF-8
 	
-#if !defined USE_OPENGL
-			frameBuffer->blit();
-#endif			
+			frameBuffer->blit();	
 		}
 	}
 }
@@ -1482,20 +1474,17 @@ void CFileBrowser::paint()
 {
 	liststart = (selected/listmaxshow)*listmaxshow;
 
-	//if (filelist[0].Name.length() != 0)
-	//	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width- 30, y + 5 );
-
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_FILEBROWSER_HEAD));	
 
 	// paint items
 	for(unsigned int count = 0; count < listmaxshow; count++)
 		paintItem(count);
 
-	int ypos = y+ theight;
+	int ypos = y + theight;
 	int sb = fheight* listmaxshow;
-	frameBuffer->paintBoxRel(x+ width- 15,ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width - SCROLLBAR_WIDTH, ypos, SCROLLBAR_WIDTH, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((filelist.size()- 1)/ listmaxshow)+ 1;
+	int sbc= ((filelist.size() - 1)/ listmaxshow) + 1;
 	int sbs= (selected/listmaxshow);
 
 	// scroll bar
@@ -1507,15 +1496,15 @@ void CFileBrowser::SMSInput(const neutrino_msg_t msg)
 	unsigned char key = m_SMSKeyInput.handleMsg(msg);
 
 	unsigned int i;
-	for(i=(selected+1) % filelist.size(); i != selected ; i= (i+1) % filelist.size())
+	for(i = (selected+1) % filelist.size(); i != selected ; i= (i+1) % filelist.size())
 	{
 		if(tolower(filelist[i].getFileName()[0]) == key)
 		{
 			break;
 		}
 	}
-	int prevselected=selected;
-	selected=i;
+	int prevselected = selected;
+	selected = i;
 	paintItem(prevselected - liststart);
 	unsigned int oldliststart = liststart;
 	liststart = (selected/listmaxshow)*listmaxshow;
@@ -1530,7 +1519,7 @@ void CFileBrowser::SMSInput(const neutrino_msg_t msg)
 	}
 }
 
-void CFileBrowser::recursiveDelete(const char* file)
+void CFileBrowser::recursiveDelete(const char *file)
 {
 	stat_struct statbuf;
 	dirent_struct **namelist;

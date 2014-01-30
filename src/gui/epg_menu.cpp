@@ -54,7 +54,6 @@ int CEPGMenuHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 {
 	int res = menu_return::RETURN_EXIT_ALL;
 
-
 	if (parent) 
 		parent->hide();
 

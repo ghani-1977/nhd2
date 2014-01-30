@@ -75,6 +75,8 @@ CFrontend * getFE(int index);
 #include <sys/mount.h>
 
 
+#define SHADOW_OFFSET	5
+
 static int my_filter(const struct dirent * dent)
 {
 	if(dent->d_name[0] == 's' && dent->d_name[1] == 'd')
@@ -100,15 +102,11 @@ CDBoxInfoWidget::CDBoxInfoWidget()
 int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 {
 	if (parent)
-	{
 		parent->hide();
-	}
 	
 	paint();
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int res = g_RCInput->messageLoop();
 
@@ -117,14 +115,11 @@ int CDBoxInfoWidget::exec(CMenuTarget * parent, const std::string &)
 	return res;
 }
 
-#define SHADOW_OFFSET	5
 void CDBoxInfoWidget::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width + SHADOW_OFFSET, height + SHADOW_OFFSET);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CDBoxInfoWidget::paint()
@@ -139,7 +134,9 @@ void CDBoxInfoWidget::paint()
 	frameBuffer->paintBoxRel(x, ypos, width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// icon
-	frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + 8, ypos + 8);
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_INFO, x + BORDER_LEFT, ypos + (hheight - icon_h)/2);
 	
 	// title
 	int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth("Box info", true); // UTF-8
@@ -176,15 +173,15 @@ void CDBoxInfoWidget::paint()
 				if (p)
 					hw = ++p;
 				hw += " Info";
-				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + hheight + 1, width - 10, hw.c_str(), COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
+				g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + BORDER_LEFT, y + hheight + 1, width - 10, hw.c_str(), COL_MENUCONTENTINACTIVE, 0, true); // UTF-8
 				break;
 			}
 			i++;
 			if (i > 4)
 				continue;
 
-			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width - 10, buffer, COL_MENUCONTENTINACTIVE, true);
-			ypos+= mheight;
+			g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT, ypos + mheight, width - BORDER_LEFT, buffer, COL_MENUCONTENTINACTIVE, true);
+			ypos += mheight;
 		}
 		fclose(fd);
 
@@ -193,9 +190,8 @@ void CDBoxInfoWidget::paint()
 	}
 	
 	// separator
-	//ypos += mheight;
-	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
-	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + BORDER_LEFT, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + BORDER_LEFT, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
 
 	// up time
 	ypos += mheight/2;
@@ -239,7 +235,7 @@ void CDBoxInfoWidget::paint()
 
 	strcat(sbuf, ubuf);
 	
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos + mheight, width, sbuf, COL_MENUCONTENT, true);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT, ypos + mheight, width, sbuf, COL_MENUCONTENT, true);
 	
 	// mem
 	ypos += mheight;
@@ -249,8 +245,8 @@ void CDBoxInfoWidget::paint()
 	
 	// separator
 	ypos += mheight/2;
-	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
-	frameBuffer->paintHLineRel(x + 10, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + BORDER_LEFT, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1), COL_MENUCONTENTDARK_PLUS_0 );
+	frameBuffer->paintHLineRel(x + BORDER_LEFT, width - BORDER_LEFT - BORDER_RIGHT, ypos + (mheight >> 1) + 1, COL_MENUCONTENTDARK_PLUS_0 );
     	
     	//hdd devices
 	FILE * f;
@@ -333,9 +329,8 @@ void CDBoxInfoWidget::paint()
 		
 		int offset = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth((char *)"HDD: ", true); // UTF-8
 		
-		//g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, str, COL_MENUCONTENT, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10, ypos + mheight, width, (char *)"HDD:", COL_MENUCONTENTINACTIVE, true);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x+ 10 + offset, ypos + mheight, width, str, COL_MENUCONTENT, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT, ypos + mheight, width, (char *)"HDD:", COL_MENUCONTENTINACTIVE, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT + offset, ypos + mheight, width, str, COL_MENUCONTENT, true);
 	}
 	
 	//frontend
@@ -348,14 +343,12 @@ void CDBoxInfoWidget::paint()
 		char tbuf[255];
 		char tbuf1[255];
 		
-		//sprintf(tbuf, "Tuner-%d: %s", i2 + 1, fe->getInfo()->name);
-		//g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENT, true);
 		sprintf(tbuf, "Tuner-%d: ", i2 + 1);
 		int offset1 = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tbuf, true); // UTF-8
 		
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10, ypos+ mheight, width, tbuf, COL_MENUCONTENTINACTIVE, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT, ypos + mheight, width, tbuf, COL_MENUCONTENTINACTIVE, true);
 		
 		sprintf(tbuf1, "%s", fe->getInfo()->name);
-		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + 10 + offset1, ypos+ mheight, width, tbuf1, COL_MENUCONTENT, true);
+		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(x + BORDER_LEFT + offset1, ypos + mheight, width, tbuf1, COL_MENUCONTENT, true);
 	}	
 }

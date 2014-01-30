@@ -497,9 +497,7 @@ int CAudioPlayerGui::show()
 								m_frameBuffer->saveBackgroundImage();
 								m_frameBuffer->ClearFrameBuffer();
 
-#if !defined USE_OPENGL
 								m_frameBuffer->blit();
-#endif
 							}
 								
 							if(ret1 == 0) 
@@ -554,9 +552,7 @@ int CAudioPlayerGui::show()
 					m_frameBuffer->useBackground(true);
 					m_frameBuffer->paintBackground();
 
-#if !defined USE_OPENGL
 					m_frameBuffer->blit();
-#endif
 				}
 			}
 		}
@@ -1008,9 +1004,7 @@ int CAudioPlayerGui::show()
 			//paintLCD();
 		}
 			
-#if !defined USE_OPENGL
-		m_frameBuffer->blit();
-#endif		
+		m_frameBuffer->blit();	
 	}
 	
 	hide();
@@ -1676,9 +1670,8 @@ void CAudioPlayerGui::hide()
 		// title
 		m_frameBuffer->paintBackgroundBoxRel(m_x, m_y, m_width, m_title_height);
 
-#if !defined USE_OPENGL
 		m_frameBuffer->blit();
-#endif		
+	
 		m_visible = false;
 		info_visible = false;
 	}

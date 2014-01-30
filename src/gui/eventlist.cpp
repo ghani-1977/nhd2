@@ -257,9 +257,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	paint(channel_id);
 	showFunctionBar(true);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	int oldselected = selected;
 
@@ -515,9 +513,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			}
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -529,9 +525,8 @@ void EventList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
+
 	showFunctionBar(false);
 
 }
@@ -565,7 +560,7 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 	std::string datetime1_str, datetime2_str, duration_str;
 	const char * icontype = 0;
 
-	if (liststart+pos==selected)
+	if (liststart + pos == selected)
 	{
 		color   = COL_MENUCONTENTSELECTED;
 		bgcolor = COL_MENUCONTENTSELECTED_PLUS_0;
@@ -729,9 +724,7 @@ void EventList::paint(t_channel_id channel_id)
 
 	frameBuffer->paintBoxRel(x + width- 13, ypos+ 2+ int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);	
 	
-#if !defined USE_OPENGL
-	frameBuffer->blit();
-#endif	
+	frameBuffer->blit(); //FIXME:???
 }
 
 // footer
@@ -749,9 +742,8 @@ void  EventList::showFunctionBar(bool show)
 	{
 		frameBuffer->paintBackgroundBoxRel(x, by, width, bh);
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit(); //FIXME:???
+		
 		return;
 	}
 

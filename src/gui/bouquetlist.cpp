@@ -361,9 +361,7 @@ int CBouquetList::show(bool bShowChannelList)
 	paintHead();
 	paint();
 		
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int oldselected = selected;
 	int firstselected = selected + 1;
@@ -541,9 +539,7 @@ int CBouquetList::show(bool bShowChannelList)
 			}
 		}
 			
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
@@ -560,9 +556,7 @@ void CBouquetList::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width + SHADOW_OFFSET, height + SHADOW_OFFSET);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CBouquetList::paintItem(int pos)
