@@ -172,6 +172,7 @@ class CMoviePlayerGui : public CMenuTarget
 		void PlayFile();
 		void cutNeutrino();
 		void restoreNeutrino();
+		bool get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_info, std::string * apidtitle);
 
 		CFileFilter tsfilefilter;
 		CFileFilter vlcfilefilter;

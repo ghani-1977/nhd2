@@ -109,6 +109,8 @@ class CPlugins
 
 		void startPlugin(const char * const filename); 			// start plugins also by name
 		bool hasPlugin(CPlugins::p_type_t type);
+		
+		void removePlugin(int number);
 };
 
 #endif

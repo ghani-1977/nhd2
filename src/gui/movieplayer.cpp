@@ -133,6 +133,7 @@ extern CWebTV * webtv;
 
 #define TIMESHIFT_SECONDS 	3
 
+//
 extern CVideoSetupNotifier * videoSetupNotifier;	/* defined neutrino.cpp */
 // aspect ratio
 #if defined (__sh__)
@@ -198,23 +199,6 @@ const CMenuOptionChooser::keyval AC3_OPTIONS[AC3_OPTION_COUNT] =
 };
 #endif
 
-bool get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_info, std::string * apidtitle)
-{
-	if (movie_info == NULL || apidtitle == NULL)
-		return false;
-
-	for (int i = 0; i < (int)movie_info->audioPids.size(); i++) 
-	{
-		if (movie_info->audioPids[i].epgAudioPid == apid && !movie_info->audioPids[i].epgAudioPidName.empty()) 
-		{
-			*apidtitle = movie_info->audioPids[i].epgAudioPidName;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey)
 {
 	apidchanged = 0;
@@ -232,6 +216,7 @@ int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey
 	return menu_return::RETURN_EXIT;
 }
 
+// movieplayer
 CMoviePlayerGui::CMoviePlayerGui()
 {
 	Init();
@@ -402,6 +387,23 @@ void CMoviePlayerGui::restoreNeutrino()
 		perror("Datei " MOVIEPLAYER_END_SCRIPT " fehlt. Bitte erstellen, wenn gebraucht.\nFile " MOVIEPLAYER_END_SCRIPT " not found. Please create if needed.\n");
 
 	stopped = false;
+}
+
+bool CMoviePlayerGui::get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_info, std::string * apidtitle)
+{
+	if (movie_info == NULL || apidtitle == NULL)
+		return false;
+
+	for (int i = 0; i < (int)movie_info->audioPids.size(); i++) 
+	{
+		if (movie_info->audioPids[i].epgAudioPid == apid && !movie_info->audioPids[i].epgAudioPidName.empty()) 
+		{
+			*apidtitle = movie_info->audioPids[i].epgAudioPidName;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
@@ -631,6 +633,10 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 
 		frameBuffer->blit();
 	}
+	
+	// clear filelist
+	if(!_filelist.empty())
+		_filelist.clear();
 
 	// restore neutrino
 	restoreNeutrino();

@@ -72,6 +72,9 @@ class CTimerList : public CMenuTarget
 		int 			height;
 		int 			x;
 		int 			y;
+		
+		int icon_foot_w;
+		int icon_foot_h;
 
 		int skipEventID;
 

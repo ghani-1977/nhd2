@@ -355,6 +355,21 @@ void CPlugins::startPlugin(int number)
 	}
 }
 
+void CPlugins::removePlugin(int number)
+{
+	printf("CPlugins::removePlugin: %s type:%d\n", plugin_list[number].pluginfile.c_str(), plugin_list[number].type);
+	
+	// remove plugin
+	unlink(plugin_list[number].pluginfile.c_str());
+	
+	// remove plugin config file
+	unlink(plugin_list[number].cfgfile.c_str());
+	
+	// remove plugin icon
+	//if(!plugin_list[number].icon.empty())
+	//	unlink(plugin_list[number].icon.c_str());
+}
+
 bool CPlugins::hasPlugin(CPlugins::p_type_t type)
 {
 	for (std::vector<plugin>::iterator it=plugin_list.begin(); it!=plugin_list.end(); it++)

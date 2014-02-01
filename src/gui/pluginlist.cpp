@@ -229,7 +229,7 @@ reload:
 		else if ( msg == CRCInput::RC_red)
 		{
 			// delete selected plugin
-			unlink((char *)pluginlist[selected]);
+			g_PluginList->removePlugin(pluginlist[selected]->number);
 			
 			hide();
 			goto reload;

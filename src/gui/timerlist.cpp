@@ -259,7 +259,10 @@ CTimerList::CTimerList()
 	liststart = 0;
 	Timer = new CTimerdClient();
 	skipEventID = 0;
-	buttonHeight = 25;
+	
+	//
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &icon_foot_w, &icon_foot_h);
+	buttonHeight = icon_foot_h? icon_foot_h + 6 : 30;
 }
 
 CTimerList::~CTimerList()
@@ -758,11 +761,22 @@ void CTimerList::paintItem(int pos)
 
 void CTimerList::paintHead()
 {
+	//
 	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
-	frameBuffer->paintIcon(NEUTRINO_ICON_TIMER, x + 5, y + 4);
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+35,y+theight+0, width- 45, g_Locale->getText(LOCALE_TIMERLIST_NAME), COL_MENUHEAD, 0, true); // UTF-8
+	
+	// icon
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_TIMER, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_TIMER, x + BORDER_LEFT, y + (theight - icon_h)/2);
+	
+	// title
+	int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(g_Locale->getText(LOCALE_TIMERLIST_NAME), true); // UTF-8
+	int stringstartposX = x + (width >> 1) - (neededWidth >> 1);
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(stringstartposX, y + theight, width - (stringstartposX - x), g_Locale->getText(LOCALE_TIMERLIST_NAME), COL_MENUHEAD, 0, true); // UTF-8
 
-	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x+ width- 30, y+ 5 );
+	// help icon
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_HELP, &icon_w, &icon_h);
+	frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_HELP, x + width - BORDER_RIGHT - icon_w, y + (theight - icon_h)/2);
 }
 
 const struct button_label TimerListButtons[3] =
@@ -776,15 +790,18 @@ void CTimerList::paintFoot()
 {
 	int ButtonWidth = (width - 20) / 4;
 	frameBuffer->paintBoxRel(x, y + height, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
+	
+	int icon_w, icon_h;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 
 	if (timerlist.empty())
-		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + ButtonWidth + 10, y + height + 4, ButtonWidth, 2, &(TimerListButtons[1]));
+		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + ButtonWidth + BORDER_LEFT, y + height + (buttonHeight - icon_h)/2, ButtonWidth, 2, &(TimerListButtons[1]));
 	else
 	{
-		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + 10, y + height + 4, ButtonWidth, 3, TimerListButtons);
+		::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + height + (buttonHeight - icon_h)/2, ButtonWidth, 3, TimerListButtons);
 
-		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x+width- 1* ButtonWidth + 10, y+height);
-		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x+width-1 * ButtonWidth + 38, y+height+24 - 2, ButtonWidth- 28, g_Locale->getText(LOCALE_TIMERLIST_MODIFY), COL_INFOBAR, 0, true); // UTF-8
+		frameBuffer->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, x + width - 1*ButtonWidth + BORDER_LEFT, y + height + (buttonHeight - icon_foot_h)/2);
+		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(x + width - 1*ButtonWidth + BORDER_RIGHT + icon_foot_w, y + height + (buttonHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), ButtonWidth - icon_foot_w, g_Locale->getText(LOCALE_TIMERLIST_MODIFY), COL_INFOBAR, 0, true); // UTF-8
 	}
 }
 
@@ -1067,11 +1084,7 @@ int CTimerList::newTimer()
 	strcpy(m_weekdaysStr,"-------");
 	CMenuOptionChooser* m3 = new CMenuOptionChooser(LOCALE_TIMERLIST_REPEAT, (int *)&timerNew.eventRepeat, TIMERLIST_REPEAT_OPTIONS, TIMERLIST_REPEAT_OPTION_COUNT, true, &notifier);
 
-	//CMenuWidget mm(LOCALE_TIMERLIST_MODESELECT, NEUTRINO_ICON_SETTINGS);
-	//mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODETV, (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv) ? true : false, NULL, new CSelectChannel(), "tv"));
-	//mm.addItem(new CMenuForwarder(LOCALE_TIMERLIST_MODERADIO, (CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_radio) ? true : false, NULL, new CSelectChannel(), "radio"));
 	strcpy((char *)timerNew_channel_name.c_str(), "---");
-	//CMenuForwarder *m6 = new CMenuForwarder(LOCALE_TIMERLIST_CHANNEL, true, timerNew_channel_name, &mm);
 	
 	CMenuForwarder *m6 = new CMenuForwarder(LOCALE_TIMERLIST_CHANNEL, true, timerNew_channel_name, new CSelectChannel(), CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_tv? "tv" : "radio");
 
@@ -1088,7 +1101,7 @@ int CTimerList::newTimer()
 	CMenuForwarder *m9 = new CMenuForwarder(LOCALE_TIMERLIST_MESSAGE, false, timerNew.message, &timerSettings_msg );
 
 	strcpy(timerNew.pluginName, "---");
-	CPluginChooser plugin_chooser(LOCALE_TIMERLIST_PLUGIN, CPlugins::P_TYPE_SCRIPT | CPlugins::P_TYPE_TOOL, timerNew.pluginName);
+	CPluginChooser plugin_chooser(LOCALE_TIMERLIST_PLUGIN, CPlugins::P_TYPE_SCRIPT | CPlugins::P_TYPE_TOOL | CPlugins::P_TYPE_NEUTRINO, timerNew.pluginName);
 	CMenuForwarder *m10 = new CMenuForwarder(LOCALE_TIMERLIST_PLUGIN, false, timerNew.pluginName, &plugin_chooser);
 
 
