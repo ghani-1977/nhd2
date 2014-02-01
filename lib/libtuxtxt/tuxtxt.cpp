@@ -73,8 +73,8 @@ void FillBorder(int color)
 	int ys =  0;
 
 	FillRect(0, ys, StartX, CFrameBuffer::getInstance()->getScreenHeight(true), color);
-	FillRect(StartX, ys,displaywidth,StartY,color);
-	FillRect(StartX, ys+StartY+25*fontheight,displaywidth, CFrameBuffer::getInstance()->getScreenHeight(true)-(StartY+25*fontheight), color);
+	FillRect(StartX, ys, displaywidth, StartY,color);
+	FillRect(StartX, ys + StartY + 25*fontheight, displaywidth, CFrameBuffer::getInstance()->getScreenHeight(true) - (StartY + 25*fontheight), color);
 
 	if (screenmode == 0 )
 		FillRect(StartX + displaywidth, ys, CFrameBuffer::getInstance()->getScreenWidth(true) - (StartX+displaywidth),CFrameBuffer::getInstance()->getScreenHeight(true), color);
@@ -239,25 +239,21 @@ void RenderClearMenuLineBB(char *p, tstPageAttr *attrcol, tstPageAttr *attr)
 		RenderCharBB(*p++, attr);
 	}
 	PosY += fontheight;
-	memset(p-TOPMENUCHARS, ' ', TOPMENUCHARS); /* init with spaces */
+	memset(p - TOPMENUCHARS, ' ', TOPMENUCHARS); /* init with spaces */
 }
 
 void ClearBB(int /*color*/)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 		
-#if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif	
+	CFrameBuffer::getInstance()->blit();	
 }
 
 void ClearFB(int /*color*/)
 {
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 		
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 }
 
 int  GetCurFontWidth()
@@ -2107,9 +2103,7 @@ void CleanUp()
 	/* clear screen */
 	CFrameBuffer::getInstance()->ClearFrameBuffer();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 
 	/* close freetype */
 	FTC_Manager_Done(manager);
@@ -2480,7 +2474,7 @@ void charpage()
 	}
 
 	atr.setX26 = 1;
-	PosY = StartY+fontheight;
+	PosY = StartY + fontheight;
 
 	for (row = 0; row < 16; row++)
 	{
@@ -2492,7 +2486,7 @@ void charpage()
 		}
 	}
 
-	PosY = StartY+fontheight;
+	PosY = StartY + fontheight;
 	atr.charset = C_G2;
 	atr.setX26 = 0;
 
@@ -2665,9 +2659,7 @@ void Menu_Init(char *menu, int current_pid, int menuitem, int hotindex)
 	Menu_HighlightLine(menu, MenuLine[menuitem], 1);
 	Menu_UpdateHotlist(menu, hotindex, menuitem);
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 }
 
 void ConfigMenu(int Init, int source)
@@ -3963,7 +3955,7 @@ void RenderDRCS( //FIXME
 				if (ax[x+1] > ax[x])
 				{
 //					memset(d + ax[x], f1, ax[x+1] - ax[x]);
-					for (ltmp=0 ; ltmp < (ax[x+1]-ax[x]); ltmp++)
+					for (ltmp = 0 ; ltmp < (ax[x+1]-ax[x]); ltmp++)
 					{
 						memcpy(d + ax[x]*4 + ltmp*4, bgra[f1], 4);
 					}
@@ -4004,7 +3996,7 @@ void DrawHLine(int x, int y, int l, int color)
 	int ltmp;
 	if (l > 0)
 	{
-		for (ltmp=0; ltmp <= l; ltmp++)
+		for (ltmp = 0; ltmp <= l; ltmp++)
 		{
 			memmove(lfb + x*4 + ltmp*4 + y * CFrameBuffer::getInstance()->getStride(), bgra[color], 4);
 		}
@@ -4016,7 +4008,7 @@ void FillRectMosaicSeparated(int x, int y, int w, int h, int fgcolor, int bgcolo
 	FillRect(x, y, w, h, bgcolor);
 	if (set)
 	{
-		FillRect(x+1, y+1, w-2, h-2, fgcolor);
+		FillRect(x + 1, y + 1, w - 2, h - 2, fgcolor);
 	}
 }
 
@@ -4030,11 +4022,11 @@ void FillTrapez(int x0, int y0, int l0, int xoffset1, int h, int l1, int color)
 
 	for (yoffset = 0; yoffset < h; yoffset++)
 	{
-		l = l0 + ((l1-l0) * yoffset + h/2) / h;
+		l = l0 + ((l1 - l0) * yoffset + h/2) / h;
 		xoffset = (xoffset1 * yoffset + h/2) / h;
 		if (l > 0)
 		{
-			for (ltmp=0; ltmp < l; ltmp++)
+			for (ltmp = 0; ltmp < l; ltmp++)
 			{
 				memcpy(p + xoffset * 4 + ltmp * 4, bgra[color], 4);
 			}
@@ -4059,7 +4051,8 @@ void FlipHorz(int x, int y, int w, int h)
 		{
 			if (w1 + x > (int)CFrameBuffer::getInstance()->getScreenWidth(true))
 				fprintf(stderr, "%s !!!!!!!!! out of bounds x %d\n", __func__, w1 + x);
-			memcpy(p+w1*4,buf+((w-w1)*4)-4,4);
+			
+			memcpy(p + w1*4, buf + ((w - w1)*4) - 4, 4);
 		}
 		
 		p += CFrameBuffer::getInstance()->getStride();
@@ -4092,9 +4085,9 @@ void FlipVert(int x, int y, int w, int h)
 		if (h1 + y > (int)CFrameBuffer::getInstance()->getScreenHeight(true))
 			fprintf(stderr, "%s !!!!!!!!! out of bounds y1 %d\n", __func__, h1 + y);
 		
-		memcpy(buf,p1,w*4);
-		memcpy(p1,p2,w*4);
-		memcpy(p2,buf,w*4);
+		memcpy(buf, p1, w*4);
+		memcpy(p1, p2, w*4);
+		memcpy(p2, buf, w*4);
 	}
 }
 

@@ -60,22 +60,13 @@
 #define ICON_CACHE_SIZE 1024*1024*2 // 2mb
 
 
-// png/jpg/bmp/gif/crw
+// png/jpg/bmp/gif/crw handling
 CFormathandler * fh_root;
 void init_handlers(void);
 void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
 
 //
 static uint32_t * virtual_fb = NULL;
-
-inline unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
-                                  uint32_t  /*rl*/ = 0, uint32_t  /*ro*/ = 0,
-                                  uint32_t  /*gl*/ = 0, uint32_t  /*go*/ = 0,
-                                  uint32_t  /*bl*/ = 0, uint32_t  /*bo*/ = 0,
-                                  uint32_t  /*tl*/ = 0, uint32_t  /*to*/ = 0)
-{
-        return ((t << 24) & 0xFF000000) | ((r << 8) & 0xFF0000) | ((g << 0) & 0xFF00) | (b >> 8 & 0xFF);
-}
 
 CFrameBuffer::CFrameBuffer()
 : active ( true )
@@ -544,26 +535,14 @@ void CFrameBuffer::paletteSet(struct fb_cmap *map)
 	if(map == NULL)
 		map = &cmap;
 
-	// 32 bit palette
-	uint32_t  rl, ro, gl, go, bl, bo, tl, to;
-	
-        rl = screeninfo.red.length;
-        ro = screeninfo.red.offset;
-        gl = screeninfo.green.length;
-        go = screeninfo.green.offset;
-        bl = screeninfo.blue.length;
-        bo = screeninfo.blue.offset;
-        tl = screeninfo.transp.length;
-        to = screeninfo.transp.offset;
-
 	// 256 real color
 	for (int i = 0; i < 256; i++) 
 	{
-                realcolor[i] = make16color(cmap.red[i], cmap.green[i], cmap.blue[i], cmap.transp[i], rl, ro, gl, go, bl, bo, tl, to);
+                realcolor[i] = make16color(cmap.red[i], cmap.green[i], cmap.blue[i], cmap.transp[i]);
 	}
 }
 
-void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius, int type, bool shading)
+void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius, int type, int mode, int spot)
 {
 	if (!getActive())
 		return;
@@ -691,8 +670,10 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 		
         	pos += stride;
 		
-		//if(shading)
-		//	col++;
+		if(mode = PAINT_SHADING)
+			col += spot;
+		else if(mode = PAINT_LIGHTING)
+			col -= spot;
     	}
 }
 
@@ -1928,7 +1909,7 @@ void CFrameBuffer::disableManualBlit()
 #endif	
 }
 
-void CFrameBuffer::blit()
+void CFrameBuffer::blit(int mode3d)
 {
 #if !defined USE_OPENGL  
 #if defined (__sh__)
@@ -1962,9 +1943,19 @@ void CFrameBuffer::blit()
 	bltData.dstPitch   = screeninfo.xres * 4;
 
 	bltData.dst_left   = 0; 
-	bltData.dst_top    = 0; 
-	bltData.dst_right  = screeninfo.xres; 
-	bltData.dst_bottom = screeninfo.yres;
+	bltData.dst_top    = 0;
+	
+	// right
+	if(mode3d == THREE_SIDE_BY_SIDE)
+		bltData.dst_right  = screeninfo.xres/2; 
+	else
+		bltData.dst_right  = screeninfo.xres; 
+	
+	// buttom
+	if(mode3d == THREE_TOP_AND_BUTTOM)
+		bltData.dst_bottom = screeninfo.yres/2;
+	else
+		bltData.dst_bottom = screeninfo.yres;
 
 	bltData.dstFormat = SURF_ARGB8888;		
 	bltData.dstMemBase = STMFBGP_FRAMEBUFFER;
@@ -1980,6 +1971,26 @@ void CFrameBuffer::blit()
 	// sync bliter
 	if(ioctl(fd, STMFBIO_SYNC_BLITTER) < 0)
 		perror("ioctl STMFBIO_SYNC_BLITTER");
+	
+	if(mode3d != 0)
+	{
+		if(mode3d == THREE_SIDE_BY_SIDE)
+			bltData.dst_left = screeninfo.xres/2;
+		if(mode3d == THREE_TOP_AND_BUTTOM)
+			bltData.dst_top = screeninfo.yres/2;
+		
+		
+		bltData.dst_right  = screeninfo.xres;
+		bltData.dst_bottom = screeninfo.yres;
+
+		if (ioctl(fd, STMFBIO_BLT, &bltData) < 0)
+			perr("ioctl STMFBIO_BLT");
+		
+		}
+		
+		if(ioctl(fd, STMFBIO_SYNC_BLITTER) < 0)
+			perr("ioctl STMFBIO_SYNC_BLITTER");
+	}
 #else
 	// blit
 	if (m_manual_blit == 1) 
