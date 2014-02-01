@@ -305,6 +305,55 @@ void CMoviePlayerGui::Init(void)
 	vlcfilefilter.addFilter ("flv");
 	vlcfilefilter.addFilter ("m2v");
 	vlcfilefilter.addFilter ("wmv");
+	
+	//
+	position = 0;
+	duration = 0;
+	file_prozent = 0;
+	startposition = 0;
+	
+	// global flags
+	update_lcd = false;
+	open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
+	start_play = false;
+	exit = false;
+	was_file = false;
+	m_loop = false;
+	
+	// clear filelist
+	if(!_filelist.empty())
+		_filelist.clear();
+	
+	// for playing
+	playstate = CMoviePlayerGui::STOPPED;
+	is_file_player = false;
+	
+	// timeosd
+	time_forced = false;
+	
+	// vlc
+	selected = 0;
+	//
+
+	isMovieBrowser = false;
+	isVlc = false;
+	isDVD = false;
+	isBlueRay = false;
+	isURL = false;
+	
+	// vlc
+	cdDvd = false;
+	skt = -1; //dirty hack to close socket when stop playing
+
+	minuteoffset = MINUTEOFFSET;
+	secondoffset = minuteoffset / 60;
+	
+	//
+	speed = 1;
+	slow = 0;
+	
+	ac3state = CInfoViewer::NO_AC3;
+	showaudioselectdialog = false;
 }
 
 CMoviePlayerGui::~CMoviePlayerGui()
@@ -439,7 +488,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	else 
 		filebrowser->Multi_Select = false;
 	
-	//
 	//
 	position = 0;
 	duration = 0;
