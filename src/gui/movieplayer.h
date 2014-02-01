@@ -96,7 +96,6 @@ class CMoviePlayerGui : public CMenuTarget
 		int file_prozent;
 
 		int startposition;
-		//int timeshift;
 		off64_t minuteoffset;
 		off64_t secondoffset;
 		int g_jumpseconds;
@@ -144,9 +143,19 @@ class CMoviePlayerGui : public CMenuTarget
 		// vlc
 		std::string stream_url;
 		char mrl[200];
+		std::string title;
+		
+		//
+		std::string base_url;
+		CURLcode _httpres;
+		std::string pauseurl;
+		std::string unpauseurl;
+		std::string stopurl;
+		std::string _response;
+		
+		// multi select
 		CFileList _filelist;
 		unsigned int selected;
-		std::string title;
 		
 		std::string sel_filename;
 		CTimeOSD FileTime;
@@ -188,8 +197,6 @@ class CMoviePlayerGui : public CMenuTarget
 		static size_t CurlDummyWrite (void *ptr, size_t size, size_t nmemb, void *data);
 		CURLcode sendGetRequest (const std::string & url, std::string & response) ;
 		bool VlcRequestStream(char *_mrl, int  transcodeVideo, int transcodeAudio);
-		int VlcGetStreamTime();
-		int VlcGetStreamLength();
 		bool VlcReceiveStreamStart(void * mrl);
 		
 		// lcd

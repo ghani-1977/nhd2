@@ -139,16 +139,6 @@ if test "$enable_4digits" = "yes"; then
 AC_DEFINE(ENABLE_4DIGITS,1,[include 5 segment lcd support])
 fi
 
-# fribidi for testing
-AC_ARG_ENABLE(fribidi,
-	AS_HELP_STRING(--enable-fribidi,include fribidi support),
-	,[enable_fribidi=no])
-AM_CONDITIONAL(ENABLE_FRIBIDI,test "$enable_fribidi" = "yes")
-
-if test "$enable_fribidi" = "yes"; then
-AC_DEFINE(ENABLE_FRIBIDI,1,[include fribidi support])
-fi
-
 AC_OUTPUT([
 Makefile
 lib/Makefile
