@@ -670,9 +670,9 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 		
         	pos += stride;
 		
-		if(mode = PAINT_SHADING)
+		if(mode == PAINT_SHADING)
 			col += spot;
-		else if(mode = PAINT_LIGHTING)
+		else if(mode == PAINT_LIGHTING)
 			col -= spot;
     	}
 }
@@ -1985,8 +1985,6 @@ void CFrameBuffer::blit(int mode3d)
 
 		if (ioctl(fd, STMFBIO_BLT, &bltData) < 0)
 			perror("ioctl STMFBIO_BLT");
-		
-		}
 		
 		if(ioctl(fd, STMFBIO_SYNC_BLITTER) < 0)
 			perror("ioctl STMFBIO_SYNC_BLITTER");
