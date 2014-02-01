@@ -1984,12 +1984,12 @@ void CFrameBuffer::blit(int mode3d)
 		bltData.dst_bottom = screeninfo.yres;
 
 		if (ioctl(fd, STMFBIO_BLT, &bltData) < 0)
-			perr("ioctl STMFBIO_BLT");
+			perror("ioctl STMFBIO_BLT");
 		
 		}
 		
 		if(ioctl(fd, STMFBIO_SYNC_BLITTER) < 0)
-			perr("ioctl STMFBIO_SYNC_BLITTER");
+			perror("ioctl STMFBIO_SYNC_BLITTER");
 	}
 #else
 	// blit
