@@ -504,7 +504,6 @@ int CAudioPlayerGui::show()
 							{
 								_selected++;
 
-								//g_PicViewer->DisplayImage(filename);
 								//
 								g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
 								g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
@@ -516,7 +515,6 @@ int CAudioPlayerGui::show()
 
 
 								g_PicViewer->ShowImage(filename);
-								//
 							}
 							else if(_selected) // when all pics are shown show the mp3 pic once again
 							{
@@ -546,6 +544,7 @@ int CAudioPlayerGui::show()
 				screensaver(NONE);
 				
 				// Restore previous background
+				/*
 				if (usedBackground) 
 				{
 					m_frameBuffer->restoreBackgroundImage();
@@ -554,6 +553,7 @@ int CAudioPlayerGui::show()
 
 					m_frameBuffer->blit();
 				}
+				*/
 			}
 		}
 
@@ -1774,13 +1774,14 @@ void CAudioPlayerGui::paintItem(int pos)
 void CAudioPlayerGui::paintHead()
 {
 	std::string strCaption;
+	
 	if (m_inetmode)
 		strCaption = g_Locale->getText(LOCALE_INETRADIO_NAME);
 	else 
 		strCaption = g_Locale->getText(LOCALE_AUDIOPLAYER_HEAD);
 	
 	// head box
-	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
 	
 	// head icon
 	m_frameBuffer->getIconSize(NEUTRINO_ICON_MP3, &icon_head_w, &icon_head_h);
@@ -1855,7 +1856,7 @@ void CAudioPlayerGui::paintFoot()
 	int ButtonWidth2 = (m_width - 50) / 2;
 	
 	// foot
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
 	
 	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);
@@ -1935,8 +1936,11 @@ void CAudioPlayerGui::paintInfo()
 	}
 	else
 	{
+		// infobox
 		m_frameBuffer->paintBoxRel(m_x, m_y, m_width, m_title_height - 10, COL_MENUCONTENT_PLUS_6 );
-		m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2 , m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0 );
+		
+		// infobox refresh
+		m_frameBuffer->paintBoxRel(m_x + 2, m_y + 2 , m_width - 4, m_title_height - 14, COL_MENUCONTENTSELECTED_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING, 2);
 
 		// first line (Track number)
 		std::string tmp;
@@ -1959,7 +1963,7 @@ void CAudioPlayerGui::paintInfo()
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x + xstart, m_y + 4 + 1*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8
 
 		// second line (Artist/Title...)
-		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO /*&& !m_curr_audiofile.MetaData.bitrate*/) //FIXME: need to relaod id3tag
+		if (m_curr_audiofile.FileType != CFile::STREAM_AUDIO) //FIXME: need to relaod id3tag
 		{
 			GetMetaData(m_curr_audiofile);
 		}
@@ -2351,7 +2355,7 @@ void CAudioPlayerGui::updateMetaData()
 	if(updateMeta || updateScreen)
 	{
 		// refresh box
-		m_frameBuffer->paintBoxRel(m_x + 10 + m_title_height, m_y + 4 + 2*m_fheight, m_width - 20 - m_title_height, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0);
+		m_frameBuffer->paintBoxRel(m_x + 10 + m_title_height, m_y + 4 + 2*m_fheight, m_width - 20 - m_title_height, m_sheight, COL_MENUCONTENTSELECTED_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING, 2);
 		
 		int xstart = ((m_width - 20 - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getRenderWidth(m_metainfo))/2)+10;
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(m_x + xstart, m_y + 4 + 2*m_fheight + m_sheight, m_width- 2*xstart, m_metainfo, COL_MENUCONTENTSELECTED);
@@ -2831,9 +2835,6 @@ void CAudioPlayerGui::printSearchTree()
 
 void CAudioPlayerGui::buildSearchTree()
 {
-	//printf("before\n");
-	//printSearchTree();
-
 #ifdef AUDIOPLAYER_TIME_DEBUG
 	timeval start;
 	gettimeofday(&start,NULL);
@@ -2914,6 +2915,7 @@ void CAudioPlayerGui::savePlaylist()
 	CFileFilter dirFilter;
 	dirFilter.addFilter("m3u");
 	browser.Filter = &dirFilter;
+	
 	// select preferred directory if exists
 	if (strlen(g_settings.network_nfs_audioplayerdir) != 0)
 		path = g_settings.network_nfs_audioplayerdir;
@@ -2993,6 +2995,7 @@ void CAudioPlayerGui::savePlaylist()
 		absPlaylistFilename += ".m3u";		
 		std::ofstream playlistFile(absPlaylistFilename.c_str());
 		std::cout << "CAudioPlayerGui: writing playlist to " << absPlaylistFilename << std::endl;
+		
 		if (!playlistFile) 
 		{
 			// an error occured

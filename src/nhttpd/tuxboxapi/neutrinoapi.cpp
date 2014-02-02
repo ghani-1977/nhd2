@@ -118,8 +118,8 @@ std::string CNeutrinoAPI::videoformat_names[2]	= {"4:3", "16:9"};
 std::string CNeutrinoAPI::videoformat_names[5]	= {"automatic", "4:3", "14:9", "16:9", "20:9"};
 #endif
 std::string CNeutrinoAPI::audiotype_names[5] 	= {"none", "single channel","dual channel","joint stereo","stereo"};
-std::string CNeutrinoAPI::mpegmodes[] 			= { "stereo", "joint_st", "dual_ch", "single_ch" };
-std::string CNeutrinoAPI::ddmodes[] 			= { "CH1/CH2", "C", "L/R", "L/C/R", "L/R/S", "L/C/R/S", "L/R/SL/SR", "L/C/R/SL/SR" };
+std::string CNeutrinoAPI::mpegmodes[] 		= { "stereo", "joint_st", "dual_ch", "single_ch" };
+std::string CNeutrinoAPI::ddmodes[] 		= { "CH1/CH2", "C", "L/R", "L/C/R", "L/R/S", "L/C/R/S", "L/R/SL/SR", "L/C/R/SL/SR" };
 
 //
 // Constructor & Destructor

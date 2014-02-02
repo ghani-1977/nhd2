@@ -42,6 +42,7 @@
 #include <sstream>
 #include <upnpclient.h>
 
+
 struct UPnPResource
 {
 	std::string	url;
@@ -74,7 +75,7 @@ class CUpnpBrowserGui : public CMenuTarget
 		UPnPEntry      m_playing_entry;
 		CUPnPSocket  * m_socket;
 		CFrameBuffer * m_frameBuffer;
-		bool           m_vol_ost;
+		//bool           m_vol_ost;
 		int            m_LastMode;
 		int            m_width;
 		int            m_height;
@@ -95,6 +96,11 @@ class CUpnpBrowserGui : public CMenuTarget
 		int            m_playid;
 		time_t         m_time_played;
 		bool           m_playing_entry_is_shown;
+		
+		int icon_head_w;
+		int icon_head_h;
+		int icon_foot_w;
+		int icon_foot_h;
 
 		void selectDevice();
 		bool selectItem(std::string);
