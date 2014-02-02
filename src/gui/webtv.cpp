@@ -816,7 +816,7 @@ void CWebTV::paintItem(int pos)
 		paintDetails(curr);
 
 		// itembox
-		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, iheight, bgcolor);
+		frameBuffer->paintBoxRel(x, ypos, width - SCROLLBAR_WIDTH, iheight, bgcolor, 0, 0, CFrameBuffer::PAINT_LIGHTING, 2);
 	} 
 	else 
 	{

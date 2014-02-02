@@ -587,7 +587,7 @@ void CMenuWidget::paint()
 		saveScreen();
 
 	// paint head
-	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
 	
 	//paint icon
 	frameBuffer->paintIcon(iconfile, x + BORDER_LEFT, y + (hheight - icon_head_h)/2);
