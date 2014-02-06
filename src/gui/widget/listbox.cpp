@@ -81,7 +81,7 @@ void CListBox::paint()
 
 void CListBox::paintHead()
 {
-	frameBuffer->paintBoxRel(x,y, width,theight+0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);//round
+	frameBuffer->paintBoxRel(x,y, width,theight+0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);//round
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, caption.c_str() , COL_MENUHEAD, 0, true);
 }
 
@@ -114,9 +114,7 @@ void CListBox::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height+ButtonHeight);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 unsigned int CListBox::getItemCount()
@@ -168,9 +166,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 	paint();
 	paintFoot();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	bool loop = true;
 	modified = false;
@@ -258,9 +254,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 			// kein canceling...
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();

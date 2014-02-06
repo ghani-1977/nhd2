@@ -946,7 +946,8 @@ movieplayer.buffering Puffern...
 movieplayer.defdir Start-Verz.
 movieplayer.defplugin Start-Plugin
 movieplayer.vlcplayback VLC Player
-movieplayer.dvdplayback DVD Player
+movieplayer.vlcdvdplayback VLC (DVD) Player
+movieplayer.vlcsvcdplayback VLC (SVCD) Player
 movieplayer.records Aufnahmen Player
 movieplayer.movies Movies Player
 movieplayer.fileplayback Datei Player
@@ -974,7 +975,7 @@ movieplayer.tshelp7 ca. 1 Minute vor
 movieplayer.tshelp8 ca. 5 Minuten zurück
 movieplayer.tshelp9 ca. 5 Minuten vor
 movieplayer.tsplayback TS Abspielen
-movieplayer.vcdplayback (S)VCD
+movieplayer.dvdplayback DVD Player
 movieplayer.bluerayplayback Blueray Player
 movieplayer.vlchelp1 Stop
 movieplayer.vlchelp10 ca. 10 Minuten zurück

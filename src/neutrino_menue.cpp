@@ -245,11 +245,8 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	// file player
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MOVIEPLAYER, LOCALE_HELPTEXT_FILEPLAYBACK ));	
 	
-	// vlc/yt/netzkino
+	// yt/netzkino
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	// vlc client player
-	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_VLC, LOCALE_HELPTEXT_NETSTREAM ));
 	
 	// youtube player
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_YTPLAYBACK, true, NULL, moviePlayerGui, "ytplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_YT, LOCALE_HELPTEXT_NETSTREAM ));
@@ -257,11 +254,26 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	// netzkino
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_NETZKINO, true, NULL, moviePlayerGui, "netzkinoplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_NETZKINO, LOCALE_HELPTEXT_NETSTREAM ));
 	
+	// vlc player
+	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	
+	// vlc client player
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_VLC, LOCALE_HELPTEXT_NETSTREAM ));
+	
+	// dvd
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCDVDPLAYBACK, true, NULL, moviePlayerGui, "vlcdvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_VLC, LOCALE_HELPTEXT_NETSTREAM ));
+	
+	// svcd
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCSVCDPLAYBACK, true, NULL, moviePlayerGui, "vlcsvcdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_VLC, LOCALE_HELPTEXT_NETSTREAM ));
+	
+	// dvd/blueray iso image
+	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	
 	// dvd player
-	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, NULL, moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_DVD, LOCALE_HELPTEXT_DVD ));
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, NULL, moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_DVD, LOCALE_HELPTEXT_DVD ));
 	
 	// blueray player
-	//MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_BLUERAYPLAYBACK, true, NULL, moviePlayerGui, "bluerayplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_DVD, LOCALE_HELPTEXT_BLUERAY ));
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_BLUERAYPLAYBACK, true, NULL, moviePlayerGui, "bluerayplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_DVD, LOCALE_HELPTEXT_BLUERAY ));
 #endif	
 
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
