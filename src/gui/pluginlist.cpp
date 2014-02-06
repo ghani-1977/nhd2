@@ -338,17 +338,15 @@ void CPluginList::paintHead()
 	int sb_width = 0;
 	if(listmaxshow <= pluginlist.size()+1)
 		sb_width = 15;
-
-	//frameBuffer->paintBoxRel(x, y + height - ((RADIUS_MID * 2) + 1) + (RADIUS_MID / 3 * 2), width + sb_width, ((RADIUS_MID * 2) + 1), COL_MENUCONTENT_PLUS_0, RADIUS_MID, CORNER_BOTTOM);
 	
 	// head
-	frameBuffer->paintBoxRel(x, y, width + sb_width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
+	frameBuffer->paintBoxRel(x, y, width + sb_width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
 	
 	// body
-	frameBuffer->paintBoxRel(x, y + theight, width, height - theight/* - ((RADIUS_MID * 2) + 1) + (RADIUS_MID / 3 * 2)*/, COL_MENUCONTENT_PLUS_0);
+	frameBuffer->paintBoxRel(x, y + theight, width, height - theight, COL_MENUCONTENT_PLUS_0);
 	
 	// foot
-	frameBuffer->paintBoxRel(x, y + height, width + sb_width, theight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM);
+	frameBuffer->paintBoxRel(x, y + height, width + sb_width, theight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
 	
 	// foot bottons
 	int icon_w, icon_h;
