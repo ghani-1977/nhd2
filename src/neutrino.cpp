@@ -707,7 +707,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.screen_width = configfile.getInt32("screen_width", frameBuffer->getScreenWidth(true) );
 	g_settings.screen_height = configfile.getInt32("screen_height", frameBuffer->getScreenHeight(true) );
 	g_settings.screen_xres = configfile.getInt32("screen_xres", 120);
-	g_settings.screen_yres = configfile.getInt32("screen_yres", 100);
+	g_settings.screen_yres = configfile.getInt32("screen_yres", 90);
 	
 	g_settings.rounded_corners = configfile.getInt32("rounded_corners", ONLY_TOP);
 	// END OSD
