@@ -502,11 +502,13 @@ void CMenuWidget::paint()
 
 	height = wanted_height;
 
-	if(height > ((int)frameBuffer->getScreenHeight() - 10))
-		height = frameBuffer->getScreenHeight() - 10;
+	// recalculate height
+	if(height > ((int)frameBuffer->getScreenHeight() - 20))
+		height = frameBuffer->getScreenHeight() - 20;
 
 	int neededWidth = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getRenderWidth(l_name, true); // UTF-8
 
+	// recalculate width
 	if (neededWidth > width - 48) 
 	{
 		width = neededWidth + 49;
@@ -515,32 +517,35 @@ void CMenuWidget::paint()
 			width = frameBuffer->getScreenWidth();
 	}
 
-	// add items
+	// head height
 	int icon_head_w, icon_head_h;
 	frameBuffer->getIconSize(iconfile.c_str(), &icon_head_w, &icon_head_h);
 	int hheight = std::max(icon_head_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
+	
+	// globals
 	int itemHeightTotal = 0;
 	int item_height = 0;
 	int heightCurrPage = 0;
 	page_start.clear();
 	page_start.push_back(0);
 	total_pages = 1;
+	int sp_height = 5;
 	
 	// foot height
 	int icon_foot_w, icon_foot_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_foot_w, &icon_foot_h);
 	int fheight = std::max(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
-	
-	// sep
-	int sp_height = 5;
 
+	//
+	heightCurrPage = hheight + sp_height + fheight;
+	
 	for (unsigned int i = 0; i < items.size(); i++) 
 	{
 		item_height = items[i]->getHeight();
 		itemHeightTotal += item_height;
 		heightCurrPage += item_height;
 
-		if(heightCurrPage > (height - hheight - 2*sp_height - fheight)) 
+		if(heightCurrPage > height)
 		{
 			page_start.push_back(i);
 			total_pages++;
@@ -618,10 +623,10 @@ void CMenuWidget::paintItems()
 	int icon_foot_w, icon_foot_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_INFO, &icon_foot_w, &icon_foot_h);
 	int fheight = std::max(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
+	int sp_height = 5;
+	int sb_width = 0;
 	
-	int item_height = height - fheight - (item_start_y - y); // all items height without sep up/down
-	
-	//printf("CMenuWidget::paintItems: y(%d) item_start_y(%d) item_height(%d)\n", y, item_start_y, item_height);
+	int item_height = height - sp_height - fheight - (item_start_y - y); // all items height without sep up/down
 
 	//Item not currently on screen
 	if (selected >= 0)
@@ -636,15 +641,22 @@ void CMenuWidget::paintItems()
 	// paint right scroll bar if we have more then one page
 	if(total_pages > 1)
 	{
+		sb_width = SCROLLBAR_WIDTH;
 		int sbh = ((item_height - 4) / total_pages);
 
 		//scrollbar
 		frameBuffer->paintBoxRel(x + width, item_start_y, SCROLLBAR_WIDTH, item_height, COL_MENUCONTENT_PLUS_1); //15 = sb width
 		frameBuffer->paintBoxRel(x + width + 2, item_start_y + 2 + current_page * sbh, SCROLLBAR_WIDTH - 4, sbh, COL_MENUCONTENT_PLUS_3);
+		
+		// paint items background under sb
+		frameBuffer->paintBoxRel(x + width, y + (height - fheight - sp_height), SCROLLBAR_WIDTH, sp_height, COL_MENUCONTENTDARK_PLUS_0);
 	}
 	
 	// paint items background
-	frameBuffer->paintBoxRel(x, item_start_y, width, item_height, COL_MENUCONTENTDARK_PLUS_0);
+	frameBuffer->paintBoxRel(x, item_start_y, width, item_height + sp_height, COL_MENUCONTENTDARK_PLUS_0);
+	
+	//paint foot
+	frameBuffer->paintBoxRel(x, y + (height - fheight), width + sb_width, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
 
 	// paint items
 	int ypos = item_start_y;

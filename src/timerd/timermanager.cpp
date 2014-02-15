@@ -993,7 +993,7 @@ void CTimerEvent::printEvent(void)
 	{
 		case CTimerd::TIMER_ZAPTO :
 			dprintf(DEBUG_DEBUG, " [timermanager] Zapto: "
-				PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+				PRINTF_CHANNEL_ID_TYPE
 				" epg: %llx\n",
 				static_cast<CTimerEvent_Zapto*>(this)->eventInfo.channel_id,
 				static_cast<CTimerEvent_Zapto*>(this)->eventInfo.epgID);
@@ -1001,7 +1001,7 @@ void CTimerEvent::printEvent(void)
 
 		case CTimerd::TIMER_RECORD :
 			dprintf(DEBUG_DEBUG, " [timermanager] Record: "
-				PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+				PRINTF_CHANNEL_ID_TYPE
 				" epg: %s(%llx) apids: 0x%X\n dir: %s\n",
 					  static_cast<CTimerEvent_Record*>(this)->eventInfo.channel_id,
 					  static_cast<CTimerEvent_Record*>(this)->epgTitle.c_str(),

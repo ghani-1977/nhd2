@@ -264,7 +264,7 @@ bool CVCRControl::CVCRDevice::Stop()
 
 bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, const event_id_t epgid, const std::string& epgTitle, unsigned char apids, const time_t epg_time)
 {
-	printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS " epg: %llx, apids %x mode\n", channel_id, epgid, apids);
+	printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE " epg: %llx, apids %x mode\n", channel_id, epgid, apids);
 	
 	// leave menu (if in any)
 	g_RCInput->postMsg( CRCInput::RC_timeout, 0 );
@@ -470,7 +470,7 @@ std::string CVCRControl::CFileAndServerDevice::getCommandString(const CVCRComman
 	
 	extMessage += "</epgtitle>\n\t\t<id>";
 	
-	sprintf(tmp, PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS, channel_id);
+	sprintf(tmp, PRINTF_CHANNEL_ID_TYPE, channel_id);
 	extMessage += tmp;
 	
 	extMessage += "</id>\n\t\t<info1>";
@@ -553,7 +553,7 @@ bool CVCRControl::CFileDevice::Stop()
 std::string ext_channel_name;
 bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, const event_id_t epgid, const std::string& epgTitle, unsigned char apids, const time_t epg_time) 
 {
-	//printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS " epg: %llx, apids %x mode %d\n", channel_id, epgid, apids, mode);
+	//printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE " epg: %llx, apids %x mode %d\n", channel_id, epgid, apids, mode);
 
 	// cut neutrino
 	CutBackNeutrino(channel_id, mode);

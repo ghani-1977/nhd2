@@ -2050,7 +2050,7 @@ static void commandDumpAllServices(int connfd, char* /*data*/, const unsigned /*
 	for (MySIservicesOrderUniqueKey::iterator s = mySIservicesOrderUniqueKey.begin(); s != mySIservicesOrderUniqueKey.end(); ++s)
 	{
 		count += 1 + snprintf(daten, MAX_SIZE_DATEN,
-				      PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+				      PRINTF_CHANNEL_ID_TYPE
 				      " %hu %hhu %d %d %d %d %u ",
 				      s->first,
 				      s->second->service_id, s->second->serviceTyp,
@@ -6298,7 +6298,7 @@ int eit_set_update_filter(int *fd)
 
 	unsigned char cur_eit = dmxCN.get_eit_version();
 	dprintf(DEBUG_DEBUG, "eit_set_update_filter, servicekey = 0x"
-		PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+		PRINTF_CHANNEL_ID_TYPE
 		", current version 0x%x got events %d\n",
 		messaging_current_servicekey, cur_eit, messaging_have_CN);
 
@@ -6456,7 +6456,7 @@ static void *fseitThread(void *)
 				{
 					timeoutsDMX = 0;
 					dprintf(DEBUG_DEBUG, "[freesatEitThread] timeoutsDMX for 0x"
-						PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+						PRINTF_CHANNEL_ID_TYPE
 						" reset to 0 (not broadcast)\n", messaging_current_servicekey );
 
 					dprintf(DEBUG_DEBUG, "New Filterindex: %d (ges. %d)\n", dmxFSEIT.filter_index + 1, (signed) dmxFSEIT.filters.size() );
@@ -6803,7 +6803,7 @@ static void *eitThread(void *)
 				{
 					timeoutsDMX = 0;
 					dprintf(DEBUG_DEBUG, "[eitThread] timeoutsDMX for 0x"
-						PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
+						PRINTF_CHANNEL_ID_TYPE
 						" reset to 0 (not broadcast)\n", messaging_current_servicekey );
 
 					dprintf(DEBUG_DEBUG, "New Filterindex: %d (ges. %d)\n", dmxEIT.filter_index + 1, (signed) dmxEIT.filters.size() );
@@ -6983,9 +6983,9 @@ static void *eitThread(void *)
 	pthread_exit(NULL);
 }
 
-//---------------------------------------------------------------------
+//
 // CN-thread: eit thread, but only current/next
-//---------------------------------------------------------------------
+//
 static void *cnThread(void *)
 {
 
@@ -6996,7 +6996,7 @@ static void *cnThread(void *)
 	bool sendToSleepNow = false;
 	pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, 0);
 
-	// -- set EIT filter  0x4e
+	// set EIT filter  0x4e
 	dmxCN.addfilter(0x4e, 0xff); //0  current TS, current/next
 
 	dprintf(DEBUG_DEBUG, "[%sThread] pid %d (%lu) start\n", "cn", getpid(), pthread_self());
@@ -7014,6 +7014,7 @@ static void *cnThread(void *)
 	}
 
 	dmxCN.start(); // -> unlock
+	
 	if (!scanning)
 		dmxCN.request_pause();
 
@@ -7081,15 +7082,6 @@ static void *cnThread(void *)
 					unlockMessaging();
 					sendToSleepNow = true;
 				}
-#if 0 // 2009-09-14
-				else if (timeoutsDMX >= TIMEOUTS_EIT_VERSION_WAIT) {
-					dprintf(DEBUG_DEBUG, "more than %d EIT DMX timeouts - bail out...\n", TIMEOUTS_EIT_VERSION_WAIT);
-					writeLockMessaging();
-					messaging_need_eit_version = false;
-					unlockMessaging();
-					sendToSleepNow = true;
-				}
-#endif
 			}
 
 		} // if (update_eit)
@@ -7124,185 +7116,117 @@ static void *cnThread(void *)
 			unlockMessaging();
 		}
 
-#if 0
-		if (timeoutsDMX >= CHECK_RESTART_DMX_AFTER_TIMEOUTS - 1)
+		if ((sendToSleepNow && !messaging_need_eit_version) || channel_is_blacklisted)
 		{
-			fprintf(stderr, "!!!timeoutsDMX >= CHECK_RESTART_DMX_AFTER_TIMEOUTS!!!!!!\n");
-			readLockServices();
-			readLockMessaging();
+			sendToSleepNow = false;
 
-			MySIservicesOrderUniqueKey::iterator si = mySIservicesOrderUniqueKey.end();
-			//dprintf(DEBUG_DEBUG, "timeoutsDMX %x\n",currentServiceKey);
+			dmxCN.real_pause();
+			
+			dprintf(DEBUG_DEBUG, "dmxCN: going to sleep...\n");
 
-			if (messaging_current_servicekey)
-				si = mySIservicesOrderUniqueKey.find(messaging_current_servicekey);
-
-			if (si != mySIservicesOrderUniqueKey.end())
-			{
-				if (!si->second->eitPresentFollowingFlag())
-				{
-					timeoutsDMX = 0;
-					printf("[cnThread] timeoutsDMX for 0x"
-					       PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS
-					       " reset to 0 (not broadcast)\n", messaging_current_servicekey );
-				}
-				else
-				{
-					sendToSleepNow = true;
-					dprintf(DEBUG_DEBUG, "sendToSleepNow = true\n");
-				}
-			}
+			writeLockMessaging();
+			messaging_eit_is_busy = false;
 			unlockMessaging();
-			unlockServices();
-		}
-		else 
-		{
-#endif
-#if 0 // 2009-09-14
-			if (timeoutsDMX > 0)
-				usleep(timeoutsDMX*1000);
-			//			}
 
-			if (timeoutsDMX >= CHECK_RESTART_DMX_AFTER_TIMEOUTS && scanning)
+			/* 
+			re-fetch time if transponder changed
+			Why I'm doing this here and not from commandserviceChanged?
+			commandserviceChanged is called on zap *start*, not after zap finished
+			this would lead to often actually fetching the time on the transponder
+			you are switching away from, not the one you are switching onto.
+			Doing it here at least gives us a good chance to have actually tuned
+			to the channel we want to get the time from...
+			*/
+			if (time_trigger_last != (messaging_current_servicekey & 0xFFFFFFFF0000ULL))
 			{
-				dprintf(DEBUG_DEBUG, "timeoutsDMX (%d) >= CHECK_RESTART_DMX_AFTER_TIMEOUTS (%d) && scanning => sendtosleepnow=true\n",
-					timeoutsDMX, CHECK_RESTART_DMX_AFTER_TIMEOUTS);
-				sendToSleepNow = true;
-				timeoutsDMX = 0;
+				time_trigger_last = messaging_current_servicekey & 0xFFFFFFFF0000ULL;
+				pthread_mutex_lock(&timeThreadSleepMutex);
+				pthread_cond_broadcast(&timeThreadSleepCond);
+				pthread_mutex_unlock(&timeThreadSleepMutex);
 			}
-#endif
-			if ((sendToSleepNow && !messaging_need_eit_version) || channel_is_blacklisted)
+
+			int rs;
+			do {
+				pthread_mutex_lock( &dmxCN.start_stop_mutex );
+				if (!channel_is_blacklisted)
+					eit_set_update_filter(&eit_update_fd);
+				rs = pthread_cond_wait(&dmxCN.change_cond, &dmxCN.start_stop_mutex);
+				eit_stop_update_filter(&eit_update_fd);
+				pthread_mutex_unlock(&dmxCN.start_stop_mutex);
+			} while (channel_is_blacklisted);
+
+			writeLockMessaging();
+			messaging_need_eit_version = false;
+			messaging_eit_is_busy = true;
+			unlockMessaging();
+
+			if (rs == 0)
 			{
-				sendToSleepNow = false;
-
-				dmxCN.real_pause();
-				dprintf(DEBUG_DEBUG, "dmxCN: going to sleep...\n");
-
-				writeLockMessaging();
-				messaging_eit_is_busy = false;
-				unlockMessaging();
-
-				/* re-fetch time if transponder changed
-				   Why I'm doing this here and not from commandserviceChanged?
-				   commandserviceChanged is called on zap *start*, not after zap finished
-				   this would lead to often actually fetching the time on the transponder
-				   you are switching away from, not the one you are switching onto.
-				   Doing it here at least gives us a good chance to have actually tuned
-				   to the channel we want to get the time from...
-				 */
-				if (time_trigger_last != (messaging_current_servicekey & 0xFFFFFFFF0000ULL))
-				{
-					time_trigger_last = messaging_current_servicekey & 0xFFFFFFFF0000ULL;
-					pthread_mutex_lock(&timeThreadSleepMutex);
-					pthread_cond_broadcast(&timeThreadSleepCond);
-					pthread_mutex_unlock(&timeThreadSleepMutex);
-				}
-
-				int rs;
-				do {
-					pthread_mutex_lock( &dmxCN.start_stop_mutex );
-					if (!channel_is_blacklisted)
-						eit_set_update_filter(&eit_update_fd);
-					rs = pthread_cond_wait(&dmxCN.change_cond, &dmxCN.start_stop_mutex);
-					eit_stop_update_filter(&eit_update_fd);
-					pthread_mutex_unlock(&dmxCN.start_stop_mutex);
-				} while (channel_is_blacklisted);
-
-				writeLockMessaging();
-				messaging_need_eit_version = false;
-				messaging_eit_is_busy = true;
-				unlockMessaging();
-
-				if (rs == 0)
-				{
-					dprintf(DEBUG_DEBUG, "dmxCN: waking up again - requested from .change()\n");
-					// fix EPG problems on IPBox
-					// http://tuxbox-forum.dreambox-fan.de/forum/viewtopic.php?p=367937#p367937
+				dprintf(DEBUG_DEBUG, "dmxCN: waking up again - requested from .change()\n");
+				
+				// fix EPG problems on IPBox
+				// http://tuxbox-forum.dreambox-fan.de/forum/viewtopic.php?p=367937#p367937
 #if 1 //FIXME
-					dmxCN.change(0);
+				dmxCN.change(0);
 #endif
-				}
-				else
-				{
-					dprintf(DEBUG_DEBUG, "dmxCN:  waking up again - unknown reason %d\n",rs);
-					dmxCN.real_unpause();
-				}
-				zeit = time_monotonic();
 			}
-			else if (zeit > dmxCN.lastChanged + TIME_EIT_VERSION_WAIT && !messaging_need_eit_version)
+			else
 			{
-				dprintf(DEBUG_DEBUG, "zeit > dmxCN.lastChanged + TIME_EIT_VERSION_WAIT\n");
-				sendToSleepNow = true;
-				/* we can get here if we got the EIT version but no events */
-				/* send a "no epg" event anyway before going to sleep */
-				if (messaging_have_CN == 0x00)
-					eventServer->sendEvent(CSectionsdClient::EVT_GOT_CN_EPG,
-							       CEventServer::INITID_SECTIONSD,
-							       &messaging_current_servicekey,
-							       sizeof(messaging_current_servicekey));
-				continue;
+				dprintf(DEBUG_DEBUG, "dmxCN:  waking up again - unknown reason %d\n",rs);
+				dmxCN.real_unpause();
 			}
+			zeit = time_monotonic();
+		}
+		else if (zeit > dmxCN.lastChanged + TIME_EIT_VERSION_WAIT && !messaging_need_eit_version)
+		{
+			dprintf(DEBUG_DEBUG, "zeit > dmxCN.lastChanged + TIME_EIT_VERSION_WAIT\n");
+			sendToSleepNow = true;
+			/* we can get here if we got the EIT version but no events */
+			/* send a "no epg" event anyway before going to sleep */
+			if (messaging_have_CN == 0x00)
+				eventServer->sendEvent(CSectionsdClient::EVT_GOT_CN_EPG,
+								CEventServer::INITID_SECTIONSD,
+								&messaging_current_servicekey,
+								sizeof(messaging_current_servicekey));
+			continue;
+		}
 
-			if (rc < 0)
-				continue;
+		if (rc < 0)
+			continue;
 
-			if (rc < (int)sizeof(struct SI_section_header))
+		if (rc < (int)sizeof(struct SI_section_header))
+		{
+			dprintf(DEBUG_DEBUG, "%s: rc < sizeof(SI_Section_header) (%d < %d)\n", __FUNCTION__, rc, sizeof(struct SI_section_header));
+			continue;
+		}
+
+		header = (SI_section_header *)static_buf;
+		unsigned short section_length = (header->section_length_hi << 8) | header->section_length_lo;
+
+		if (!header->current_next_indicator)
+		{
+			// Wir wollen nur aktuelle sections
+			//dprintf(DEBUG_DEBUG, "[cnThread] skipped sections for table 0x%x\n", header->table_id);
+			continue;
+		}
+
+		SIsectionEIT eit(section_length + 3, static_buf);
+		// Houdini: if section is not parsed (too short) -> no need to check events
+		if (!eit.is_parsed() || !eit.header())
+			continue;
+
+		// == 0 -> kein event
+		//dprintf(DEBUG_DEBUG, "[cnThread] adding %d events [table 0x%x] (begin)\n", eit.events().size(), header->table_id);
+		zeit = time(NULL);
+		// Nicht alle Events speichern
+		for (SIevents::iterator e = eit.events().begin(); e != eit.events().end(); e++)
+		{
+			if (!(e->times.empty()))
 			{
-				dprintf(DEBUG_DEBUG, "%s: rc < sizeof(SI_Section_header) (%d < %d)\n", __FUNCTION__, rc, sizeof(struct SI_section_header));
-				continue;
+				addEvent(*e, zeit, true); /* cn = true => fill in current / next event */
 			}
-
-			header = (SI_section_header *)static_buf;
-			unsigned short section_length = (header->section_length_hi << 8) | header->section_length_lo;
-
-			if (!header->current_next_indicator)
-			{
-				// Wir wollen nur aktuelle sections
-				//dprintf(DEBUG_DEBUG, "[cnThread] skipped sections for table 0x%x\n", header->table_id);
-				continue;
-			}
-
-			SIsectionEIT eit(section_length + 3, static_buf);
-			// Houdini: if section is not parsed (too short) -> no need to check events
-			if (!eit.is_parsed() || !eit.header())
-				continue;
-
-			// == 0 -> kein event
-			//dprintf(DEBUG_DEBUG, "[cnThread] adding %d events [table 0x%x] (begin)\n", eit.events().size(), header->table_id);
-			zeit = time(NULL);
-			// Nicht alle Events speichern
-			for (SIevents::iterator e = eit.events().begin(); e != eit.events().end(); e++)
-			{
-				if (!(e->times.empty()))
-				{
-					addEvent(*e, zeit, true); /* cn = true => fill in current / next event */
-				}
-#if 0
-				/* I don't think there are NVOD events in CN tables, so we can skip that */
-				else
-				{
-					/* this actually happens sometimes... */
-					dprintf(DEBUG_DEBUG, "e->times.empty in CN-THREAD!!\n");
-					// pruefen ob nvod event
-					readLockServices();
-					MySIservicesNVODorderUniqueKey::iterator si = mySIservicesNVODorderUniqueKey.find(e->get_channel_id());
-					if (si != mySIservicesNVODorderUniqueKey.end())
-					{
-						/* if this never happens in reality, we can remove the whole "else" clause here */
-						printdate_ms(stderr);
-						fprintf(stderr, "NVOD-EVENT in CN-THREAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-						// Ist ein nvod-event
-						writeLockEvents();
-						for (SInvodReferences::iterator i = si->second->nvods.begin(); i != si->second->nvods.end(); i++)
-							mySIeventUniqueKeysMetaOrderServiceUniqueKey.insert(std::make_pair(i->uniqueKey(), e->uniqueKey()));
-						unlockEvents();
-						addNVODevent(*e);
-					}
-					unlockServices();
-				}
-#endif
-			} // for
-			//dprintf(DEBUG_DEBUG, "[cnThread] added %d events (end)\n",  eit.events().size());
+		} // for
+		//dprintf(DEBUG_DEBUG, "[cnThread] added %d events (end)\n",  eit.events().size());
 	} // for
 	
 	delete[] static_buf;
@@ -7313,12 +7237,10 @@ static void *cnThread(void *)
 }
 
 #ifdef ENABLE_PPT
-
-//---------------------------------------------------------------------
+//
 // Premiere Private EPG Thread
 // reads EPG-datas
-//---------------------------------------------------------------------
-
+//
 static void *pptThread(void *)
 {
 	struct SI_section_header *header;
@@ -7368,27 +7290,7 @@ static void *pptThread(void *)
 
 				// sectionsd ist zu langsam, da zu viele events -> cache kleiner machen
 				dmxPPT.stop(); // -> lock
-				/*lockEvents();
-				if(secondsToCache>24*60L*60L && mySIeventsOrderUniqueKey.size()>3000)
-				{
-					// kleiner als 1 Tag machen wir den Cache nicht,
-					// da die timeouts ja auch von einem Sender ohne EPG kommen koennen
-					// Die 3000 sind ne Annahme und beruhen auf (wenigen) Erfahrungswerten
-					// Man koennte auch ab 3000 Events nur noch jedes 3 Event o.ae. einsortieren
-					dmxSDT.real_pause();
-					lockServices();
-					unsigned anzEventsAlt=mySIeventsOrderUniqueKey.size();
-					secondsToCache-=5*60L*60L; // 5h weniger
-					dprintf(DEBUG_DEBUG, "[eitThread] decreasing cache 5h (now %ldh)\n", secondsToCache/(60*60L));
-					removeNewEvents();
-					removeOldEvents(oldEventsAre);
-					if(anzEventsAlt>mySIeventsOrderUniqueKey.size())
-					dprintf(DEBUG_DEBUG, "[eitThread] Removed %u Events (%u -> %u)\n", anzEventsAlt-mySIeventsOrderUniqueKey.size(), anzEventsAlt, mySIeventsOrderUniqueKey.size());
-					unlockServices();
-					dmxSDT.real_unpause();
-				}
-				unlockEvents();
-				*/
+				
 				dmxPPT.start(); // -> unlock
 				//dprintf(DEBUG_DEBUG, "[pptThread] dmxPPT restarted\n");
 
@@ -7569,15 +7471,6 @@ static void *pptThread(void *)
 									//									unlockEvents();
 									break; // only add the event once
 								}
-#if 0
-								// why is the following not compiling, fuXX STL
-								else {
-									// remove unusable times in event
-									SItimes::iterator kt = t;
-									t--; // the iterator t points to the last element
-									e->times.erase(kt);
-								}
-#endif
 							}
 						}
 						else
@@ -7624,10 +7517,10 @@ static void print_meminfo(void)
 		meminfo.uordblks, meminfo.arena, meminfo.arena / 1024);
 }
 
-//---------------------------------------------------------------------
+//
 // housekeeping-thread
 // does cleaning on fetched datas
-//---------------------------------------------------------------------
+//
 static void *houseKeepingThread(void *)
 {
 	int count = 0;
@@ -7639,7 +7532,8 @@ static void *houseKeepingThread(void *)
 
 	while (!sectionsd_stop)
 	{
-		if (count == META_HOUSEKEEPING) {
+		if (count == META_HOUSEKEEPING) 
+		{
 			dprintf(DEBUG_DEBUG, "meta housekeeping - deleting all transponders, services, bouquets.\n");
 			deleteSIexceptEPG();
 			count = 0;
@@ -7650,7 +7544,8 @@ static void *houseKeepingThread(void *)
 		while (rc)
 			rc = sleep(rc);
 
-		while (!scanning) {
+		while (!scanning) 
+		{
 			sleep(1);	// wait for streaming to end...
 			if(sectionsd_stop)
 				break;
@@ -7713,7 +7608,8 @@ static void *houseKeepingThread(void *)
 
 		xmlDocPtr bouquet_parser = NULL;
 		xmlDocPtr current_parser = NULL;
-		for (MySIservicesOrderUniqueKey::iterator s = mySIservicesOrderUniqueKey.begin(); s !=  mySIservicesOrderUniqueKey.end(); s++) {
+		for (MySIservicesOrderUniqueKey::iterator s = mySIservicesOrderUniqueKey.begin(); s !=  mySIservicesOrderUniqueKey.end(); s++) 
+		{
 			dprintf(DEBUG_DEBUG, "ONID: %04x TSID: %04x SID: %04x Prov: %s Name: %s actual: %d\n",
 				s->second->original_network_id,
 				s->second->transport_stream_id,
@@ -7722,11 +7618,14 @@ static void *houseKeepingThread(void *)
 				s->second->serviceName.c_str(),
 				(int) s->second->is_actual);
 			readLockMessaging();
-			if (((s->second->is_actual & 8) == 8) && (!messaging_zap_detected)) {
+			if (((s->second->is_actual & 8) == 8) && (!messaging_zap_detected)) 
+			{
 				unlockMessaging();
 
-				if (!bouquet_parser) {
-					if (!access(CURRENTBOUQUETS_XML, R_OK)) {
+				if (!bouquet_parser) 
+				{
+					if (!access(CURRENTBOUQUETS_XML, R_OK)) 
+					{
 						if (current_parser)
 							xmlFreeDoc(current_parser);
 						current_parser =
@@ -7741,9 +7640,11 @@ static void *houseKeepingThread(void *)
 							s->second->transport_stream_id,
 							s->second->service_id,
 							bouquet_parser,
-							current_parser)) {
+							current_parser)) 
+				{
 					readLockMessaging();
-					if (!messaging_zap_detected) {
+					if (!messaging_zap_detected) 
+					{
 						unlockMessaging();
 						if (current_parser)
 							xmlFreeDoc(current_parser);
@@ -7769,38 +7670,6 @@ static void *houseKeepingThread(void *)
 		if (current_parser)
 			xmlFreeDoc(current_parser);
 #endif
-		/*
-		lockTransponders();
-		for (MySItranspondersOrderUniqueKey::iterator s = mySItranspondersOrderUniqueKey.begin(); s != mySItranspondersOrderUniqueKey.end(); s++)
-		{
-			//				tsid = s->second->transport_stream_id;
-			//				onid = s->second->original_network_id;
-			const char *ddp = &s->second->delivery_descriptor[0];
-
-			//printf("Descriptor_type: %02x\n", s->second->delivery_type);
-
-			switch (s->second->delivery_type) 
-			{
-			case 0x43:
-			struct satellite_delivery_descriptor *sdd = (struct satellite_delivery_descriptor *)ddp;
-			printf("Sat TP - Orbital %04x ONID: %04x TSID: %04x\n",
-			(sdd->orbital_pos_hi << 8) | sdd->orbital_pos_lo,
-			s->second->original_network_id,
-			s->second->transport_stream_id);
-
-			//	if (!sdd->west_east_flag)
-			//		position = -position;
-			//	provider = getProvbyPosition(xmlDocGetRootElement(service_parser)->xmlChildrenNode, //position);
-			break;
-			case 0x44:
-			//provider = xmlDocGetRootElement(service_parser)->xmlChildrenNode;
-			break;
-			default:
-			break;
-			}
-		}
-		unlockTransponders();
-		*/
 
 		print_meminfo();
 
@@ -7831,8 +7700,8 @@ static void readEPGFilter(void)
 			epg_filter_except_current_next = true;
 		filter = filter->xmlChildrenNode;
 
-		while (filter) {
-
+		while (filter) 
+		{
 			onid = xmlGetNumericAttribute(filter, "onid", 16);
 			tsid = xmlGetNumericAttribute(filter, "tsid", 16);
 			sid  = xmlGetNumericAttribute(filter, "serviceID", 16);
@@ -7862,8 +7731,8 @@ static void readDVBTimeFilter(void)
 		xmlNodePtr filter = xmlDocGetRootElement(filter_parser);
 		filter = filter->xmlChildrenNode;
 
-		while (filter) {
-
+		while (filter) 
+		{
 			onid = xmlGetNumericAttribute(filter, "onid", 16);
 			tsid = xmlGetNumericAttribute(filter, "tsid", 16);
 			sid  = xmlGetNumericAttribute(filter, "serviceID", 16);

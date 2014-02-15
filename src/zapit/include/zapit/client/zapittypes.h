@@ -64,8 +64,8 @@ typedef uint64_t t_channel_id;
 #define CREATE_CHANNEL_ID CREATE_CHANNEL_ID_FROM_SERVICE_ORIGINALNETWORK_TRANSPORTSTREAM_ID(service_id, original_network_id, transport_stream_id)
 #define GET_ORIGINAL_NETWORK_ID_FROM_CHANNEL_ID(channel_id) ((t_original_network_id)((channel_id) >> 16))
 #define GET_SERVICE_ID_FROM_CHANNEL_ID(channel_id) ((t_service_id)(channel_id))
-#define PRINTF_CHANNEL_ID_TYPE "%16llx"
-#define PRINTF_CHANNEL_ID_TYPE_NO_LEADING_ZEROS "%llx"
+
+#define PRINTF_CHANNEL_ID_TYPE "%llx"
 #define SCANF_CHANNEL_ID_TYPE "%llx"
 
 /* same transponder */
@@ -75,7 +75,7 @@ typedef uint64_t transponder_id_t;
 typedef uint16_t freq_id_t;
 
 #define PRINTF_TRANSPONDER_ID_TYPE "%12llx"
-#define TRANSPONDER_ID_NOT_TUNED 0
+//#define TRANSPONDER_ID_NOT_TUNED 0
 
 #define CREATE_TRANSPONDER_ID_FROM_SATELLITEPOSITION_ORIGINALNETWORK_TRANSPORTSTREAM_ID(freq, satellitePosition, original_network_id, transport_stream_id) ( ((uint64_t)freq << 48) |  ((uint64_t) ( satellitePosition >= 0 ? satellitePosition : (uint64_t)(0xF000+ abs(satellitePosition))) << 32) | ((uint64_t)transport_stream_id << 16) | (uint64_t)original_network_id)
 
