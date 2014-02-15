@@ -916,12 +916,7 @@ void sendCaPmtPlayBackStart(CZapitChannel * thischannel, CFrontend * fe)
 	// cam
 	demux_index = fe->fenumber;
 	
-#if defined (PLATFORM_GIGABLUE)
-	ca_mask = 1;
-
-#else
 	ca_mask |= 1 << demux_index;
-#endif	
 
 	if(currentMode & RECORD_MODE) 
 	{
@@ -957,12 +952,7 @@ void sendcapmtPlayBackStop(bool _sendPmt)
 			if(record_fe != NULL)
 				demux_index = record_fe->fenumber;
 
-#if defined (PLATFORM_GIGABLUE)
-			ca_mask = 1;
-
-#else
 			ca_mask |= 1 << demux_index;
-#endif	
 
 			if(live_channel_id == rec_channel_id)
 				cam0->setCaPmt(rec_channel, rec_channel->getCaPmt(), demux_index, ca_mask, true); //update cam0
@@ -990,11 +980,7 @@ void sendCaPmtRecordStop(void)
 	if(live_fe != NULL)
 		demux_index = live_fe->fenumber;
 
-#if defined (PLATFORM_GIGABLUE)
-	ca_mask = 1;
-#else
 	ca_mask |= 1 << demux_index;
-#endif	
 	
 	if(standby)
 		cam0->sendMessage(0, 0); // cam0 stop
