@@ -4582,10 +4582,10 @@ void CNeutrinoApp::tvMode( bool rezap )
 	{
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 		
-#if !defined (PLATFORM_COOLSTREAM)		
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_ENCODER);
-#endif		
+//#if !defined (PLATFORM_COOLSTREAM)		
+//		if(videoDecoder)
+//			videoDecoder->SetInput(INPUT_ENCODER);
+//#endif		
 	}
 	else if(mode == mode_iptv)
 	{
@@ -4663,10 +4663,10 @@ void CNeutrinoApp::radioMode( bool rezap)
 	{	  
 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
-#if !defined (PLATFORM_COOLSTREAM)
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_ENCODER);
-#endif		
+//#if !defined (PLATFORM_COOLSTREAM)
+//		if(videoDecoder)
+//			videoDecoder->SetInput(INPUT_ENCODER);
+//#endif		
 	}
 	if(mode == mode_iptv)
 	{
@@ -4739,10 +4739,10 @@ void CNeutrinoApp::scartMode( bool bOnOff )
 	} 
 	else 
 	{
-#if !defined (PLATFORM_COOLSTREAM)	  
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_ENCODER);
-#endif		
+//#if !defined (PLATFORM_COOLSTREAM)	  
+//		if(videoDecoder)
+//			videoDecoder->SetInput(INPUT_ENCODER);
+//#endif		
 		
 		mode = mode_unknown;
 		
@@ -4808,8 +4808,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 		// show time in vfd
 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
 		
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_ENCODER);
+		//if(videoDecoder)
+		//	videoDecoder->SetInput(INPUT_ENCODER);
 		
 		if(mode == mode_iptv)
 		{
@@ -4845,6 +4845,7 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		//run script
 		puts("CNeutrinoApp::standbyMode: executing " NEUTRINO_ENTER_STANDBY_SCRIPT ".");
+		
 		if (system(NEUTRINO_ENTER_STANDBY_SCRIPT) != 0)
 			perror(NEUTRINO_ENTER_STANDBY_SCRIPT " failed");
 
@@ -4879,8 +4880,8 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 			CVFD::getInstance()->LCDshowText(channelList->getActiveChannelNumber());
 		
 		// video wake up
-		if(videoDecoder)
-			videoDecoder->SetInput(INPUT_SCART);
+		//if(videoDecoder)
+		//	videoDecoder->SetInput(INPUT_SCART);
 		
 		// setmode?radio:tv/iptv
 		mode = mode_unknown;
