@@ -35,7 +35,7 @@
 
 class CPictureViewer
 {
-		private:
+	private:
 		CFrameBuffer::ScalingMode m_scaling;
 		float m_aspect;
 		std::string m_NextPic_Name;

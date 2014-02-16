@@ -60,7 +60,7 @@
 #define ICON_CACHE_SIZE 1024*1024*2 // 2mb
 
 
-// png/jpg/bmp/gif/crw handling
+// png/jpg handling
 CFormathandler * fh_root;
 void init_handlers(void);
 void add_format(int (*picsize)(const char *,int *,int*,int,int),int (*picread)(const char *,unsigned char **,int*,int*), int (*id)(const char*));
@@ -1693,21 +1693,6 @@ extern int fh_jpeg_getsize (const char *, int *, int *, int, int);
 extern int fh_jpeg_load (const char *, unsigned char **, int *, int *);
 extern int fh_jpeg_id (const char *);
 
-// GIF
-extern int fh_gif_getsize (const char *, int *, int *, int, int);
-extern int fh_gif_load (const char *, unsigned char **, int *, int *);
-extern int fh_gif_id (const char *);
-
-// BMP
-extern int fh_bmp_getsize (const char *, int *, int *, int, int);
-extern int fh_bmp_load (const char *, unsigned char **, int *, int *);
-extern int fh_bmp_id (const char *);
-
-// CRW
-extern int fh_crw_getsize (const char *, int *, int *, int, int);
-extern int fh_crw_load (const char *, unsigned char **, int *, int *);
-extern int fh_crw_id (const char *);
-
 void add_format (int (*picsize) (const char *, int *, int *, int, int), int (*picread) (const char *, unsigned char **, int *, int *), int (*id) (const char *))
 {
 	CFormathandler * fhn;
@@ -1726,15 +1711,6 @@ void init_handlers (void)
 	
 	// add jpg format
 	add_format (fh_jpeg_getsize, fh_jpeg_load, fh_jpeg_id);
-	
-	// add gif
-	add_format (fh_gif_getsize, fh_gif_load, fh_gif_id);
-	
-	// add bmp
-	add_format (fh_bmp_getsize, fh_bmp_load, fh_bmp_id);
-	
-	// add crw
-	add_format (fh_crw_getsize, fh_crw_load, fh_crw_id);
 }
 
 CFormathandler * fh_getsize(const char *name, int *x, int *y, int width_wanted, int height_wanted)
