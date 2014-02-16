@@ -587,7 +587,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end network
 
 	// recording
-	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/sda1/record" ).c_str() );
+	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/hdd/record" ).c_str() );
 
 	// permanent timeshift
 #if defined (USE_OPENGL)
@@ -609,7 +609,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end recording
 
 	// movieplayer
-	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/sda1/movie" ).c_str() );
+	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/hdd/movie" ).c_str() );
 	
 	//streaming (server)
 	g_settings.streaming_type = configfile.getInt32( "streaming_type", 0 );
@@ -827,7 +827,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end keysbinding
 
 	// audioplayer
-	strcpy( g_settings.network_nfs_audioplayerdir, configfile.getString( "network_nfs_audioplayerdir", "/media/sda1/music" ).c_str() );
+	strcpy( g_settings.network_nfs_audioplayerdir, configfile.getString( "network_nfs_audioplayerdir", "/media/hdd/music" ).c_str() );
 
 	g_settings.audioplayer_display = configfile.getInt32("audioplayer_display",(int)CAudioPlayerGui::ARTIST_TITLE);
 	g_settings.audioplayer_follow  = configfile.getInt32("audioplayer_follow",0);
@@ -843,7 +843,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// end audioplayer
 
 	// pictureviewer
-	strcpy( g_settings.network_nfs_picturedir, configfile.getString( "network_nfs_picturedir", "/media/sda1/picture" ).c_str() );
+	strcpy( g_settings.network_nfs_picturedir, configfile.getString( "network_nfs_picturedir", "/media/hdd/picture" ).c_str() );
 
 	strcpy( g_settings.picviewer_slide_time, configfile.getString( "picviewer_slide_time", "10" ).c_str() );
 	g_settings.picviewer_scaling = configfile.getInt32("picviewer_scaling", 1 /*(int)CPictureViewer::SIMPLE*/);
@@ -883,7 +883,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
         g_settings.epg_extendedcache    = configfile.getString("epg_extendedcache_time", "360");
         g_settings.epg_old_events       = configfile.getString("epg_old_events", "1");
         g_settings.epg_max_events       = configfile.getString("epg_max_events", "50000");
-        g_settings.epg_dir              = configfile.getString("epg_dir", "/media/sda1/epg");
+        g_settings.epg_dir              = configfile.getString("epg_dir", "/media/hdd/epg");
 	g_settings.epg_save = configfile.getBool("epg_save", false);
 	
 	for(int i = 0; i < 3; i++) 
