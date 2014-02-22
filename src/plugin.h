@@ -255,7 +255,7 @@ extern CRemoteControl 		* g_RemoteControl;
 extern SMSKeyInput 		* c_SMSKeyInput;	//defined in filebrowser and used in ChanneList
 extern CMoviePlayerGui		* moviePlayerGui;
 extern CPictureViewer 		* g_PicViewer;
-//extern CCAMMenuHandler 		* g_CamHandler;
+//extern CCAMMenuHandler 	* g_CamHandler;
 
 // webtv
 extern CWebTV * webtv;

@@ -373,12 +373,12 @@ void CStreamInfo2::paint_signal_fe_box(int _x, int _y, int w, int h)
 	sigBox_w = w;
 	sigBox_h = h-iheight*3;
 
-	frameBuffer->paintBoxRel(sigBox_x,sigBox_y,sigBox_w+2,sigBox_h, COL_BLACK);
+	frameBuffer->paintBoxRel(sigBox_x, sigBox_y, sigBox_w + 2, sigBox_h, COL_BLACK);
 
-	y1 = _y + h + iheight + iheight+iheight-8;
+	y1 = _y + h + iheight + iheight + iheight - 8;
 	y2 = _y + h - sheight+8;
 	
-	frameBuffer->paintBoxRel(_x+xd*0,y2- 12,16,2, COL_RED); //red
+	frameBuffer->paintBoxRel(_x+xd*0, y2 - 12, 16, 2, COL_RED); //red
 	g_Font[font_small]->RenderString(_x+20+xd*0, y2, 50, "BER", COL_MENUCONTENTDARK, 0, true);
 
 	frameBuffer->paintBoxRel(_x+xd*1,y2- 12,16,2,COL_BLUE); //blue

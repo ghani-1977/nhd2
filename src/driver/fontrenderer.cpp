@@ -400,7 +400,7 @@ static std::string fribidiShapeChar(const char * text)
 	return std::string(text);
 }
 
-void Font::RenderString(int x, int y, const int width, const char *text, const unsigned char color, const int boxheight, const bool utf8_encoded)
+void Font::RenderString(int x, int y, const int width, const char *text, const uint8_t color, const int boxheight, const bool utf8_encoded)
 {
 	if (!frameBuffer->getActive())
 		return;
@@ -472,12 +472,13 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	static fb_pixel_t colors[256] = {0};
 
 	fb_pixel_t bgcolor = frameBuffer->realcolor[color];
-	fb_pixel_t fgcolor = frameBuffer->realcolor[(((((int)color) + 2) | 7) - 2)];
+	fb_pixel_t fgcolor = frameBuffer->realcolor[((((color) + 2) | 7) - 2)];
 
 	if((oldbgcolor != bgcolor) || (oldfgcolor != fgcolor)) 
 	{
 		oldbgcolor = bgcolor;
 		oldfgcolor = fgcolor;
+		
 		t_fb_var_screeninfo * screeninfo = frameBuffer->getScreenInfo();
 		int rl = screeninfo->red.length;
 		int ro = screeninfo->red.offset;
@@ -487,14 +488,24 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 		int bo = screeninfo->blue.offset;
 		int tl = screeninfo->transp.length;
 		int to = screeninfo->transp.offset;
+		
+		// font colors
 		int fgr = (((int)fgcolor >> ro) & ((1 << rl) - 1));
 		int fgg = (((int)fgcolor >> go) & ((1 << gl) - 1));
 		int fgb = (((int)fgcolor >> bo) & ((1 << bl) - 1));
 		int fgt = (((int)fgcolor >> to) & ((1 << tl) - 1));
-		int deltar = (((int)bgcolor >> ro) & ((1 << rl) - 1)) - fgr;
-		int deltag = (((int)bgcolor >> go) & ((1 << gl) - 1)) - fgg;
-		int deltab = (((int)bgcolor >> bo) & ((1 << bl) - 1)) - fgb;
-		int deltat = (((int)bgcolor >> to) & ((1 << tl) - 1)) - fgt;
+		
+		// bg colors
+		int bgr = (((int)bgcolor >> ro) & ((1 << rl) - 1));
+		int bgg = (((int)bgcolor >> go) & ((1 << gl) - 1));
+		int bgb = (((int)bgcolor >> bo) & ((1 << bl) - 1));
+		int bgt = (((int)bgcolor >> to) & ((1 << tl) - 1));
+
+		// delta between font and bg
+		int deltar = bgr - fgr;
+		int deltag = bgg - fgg;
+		int deltab = bgb - fgb;
+		int deltat = bgt - fgt;
 
 		for (int i = 0; i < 256; i++) 
 		{
@@ -629,7 +640,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	pthread_mutex_unlock( &renderer->render_mutex );
 }
 
-void Font::RenderString(int x, int y, const int width, const std::string & text, const unsigned char color, const int boxheight, const bool utf8_encoded)
+void Font::RenderString(int x, int y, const int width, const std::string & text, const uint8_t color, const int boxheight, const bool utf8_encoded)
 {
 	RenderString(x, y, width, text.c_str(), color, boxheight, utf8_encoded);
 }

@@ -98,8 +98,6 @@ CPictureViewerGui::CPictureViewerGui()
 	picture_filter.addFilter("bmp");
 	picture_filter.addFilter("jpg");
 	picture_filter.addFilter("jpeg");
-	picture_filter.addFilter("gif");
-	picture_filter.addFilter("crw");
 }
 
 CPictureViewerGui::~CPictureViewerGui()

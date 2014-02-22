@@ -125,7 +125,7 @@ class CFrameBuffer
 		fb_cmap cmap;
 		__u16 red[256], green[256], blue[256], trans[256];
 
-		bool	active;
+		bool active;
 
 		// icon cache map
 		std::map<std::string, Icon> icon_cache;
