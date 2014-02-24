@@ -416,6 +416,10 @@ AC_ARG_WITH(boxtype,
 			BOXTYPE="atevio"
 			BOXMODEL="$withval"
 			;;
+		oct*)
+			BOXTYPE="octagon"
+			BOXMODEL="$withval"
+			;;
 		vu*)
 			BOXTYPE="vuplus"
 			BOXMODEL="$withval"
@@ -463,6 +467,7 @@ AC_ARG_WITH(boxmodel,
 				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
 				valid for ipbox: ipbox55, ipbox99, ipbox9900
 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+				valid for octagon: octagon1008
 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo
 				valid for azbox: azboxhd,azboxme,azboxminime
 				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
@@ -522,6 +527,13 @@ AC_ARG_WITH(boxmodel,
 			;;
 		atevio700|atevio7000|atevio7500|atevio7600)
 			if test "$BOXTYPE" = "atevio"; then
+				BOXMODEL="$withval"
+			else
+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+			fi
+			;;
+		octagon1008)
+			if test "$BOXTYPE" = "octagon"; then
 				BOXMODEL="$withval"
 			else
 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
@@ -622,7 +634,7 @@ AC_ARG_WITH(boxmodel,
 			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
 			;;
 	esac],
-	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" && test -z "$BOXMODEL"; then
+	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" && test -z "$BOXMODEL"; then
 		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
 	fi])
 
@@ -709,6 +721,8 @@ AM_CONDITIONAL(BOXMODEL_ATEVIO700, test "$BOXMODEL" = "atevio700")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
 AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
+
+AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
 
 AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
 AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
@@ -893,6 +907,9 @@ elif test "$BOXMODEL" = "atevio7500"; then
 	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [building for atevio7500])
 elif test "$BOXMODEL" = "atevio7600"; then
 	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
+
+elif test "$BOXMODEL" = "octagon1008"; then
+	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
 
 elif test "$BOXMODEL" = "vusolo2"; then
 	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])

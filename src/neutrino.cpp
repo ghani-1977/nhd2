@@ -2336,6 +2336,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	
 	current_volume = g_settings.current_volume;
 
+	// zapit
 	pthread_create (&zapit_thread, NULL, zapit_main_thread, (void *) &ZapStart_arg);	
 
 	// wait until zapit is ready
@@ -2345,7 +2346,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::run: zapit ready\n\n");
 	
 	// dvbsub thread
-	dvbsub_init();
+	if(FrontendCount)
+		dvbsub_init();
 
 	// audio volume (default)
 	if(audioDecoder)
@@ -2380,8 +2382,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// nhttpd thread
 	pthread_create(&nhttpd_thread, NULL, nhttpd_main_thread, (void *) NULL);	
 
-	// streamts thread: disabled we use streamts	
-	pthread_create (&stream_thread, NULL, streamts_main_thread, (void *) NULL);	
+	// streamts thread
+	pthread_create(&stream_thread, NULL, streamts_main_thread, (void *) NULL);	
 
 	// sectionsd thread
 	pthread_create(&sections_thread, NULL, sectionsd_main_thread, (void *) NULL);
@@ -2696,7 +2698,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	}
 	
 	// zapper
-	InitZapper();
+	if(FrontendCount)
+		InitZapper();
 	
 	// audio mute
 	AudioMute(current_muted, true);
@@ -5007,7 +5010,9 @@ void CNeutrinoApp::webtvMode( bool rezap)
 
 	// show streams channel list
 	if(webtv)
+	{
 		webtv->exec(rezap);
+	}
 }
 
 // exec, menuitem callback (shutdown)

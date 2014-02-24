@@ -112,9 +112,7 @@ int CStreamInfo2::exec()
 	
 	doSignalStrengthLoop();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 		
 	hide();
 
@@ -130,9 +128,7 @@ int CStreamInfo2::exec(CMenuTarget * parent, const std::string &)
 
 	doSignalStrengthLoop ();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif
 
 	hide();
 	
@@ -163,9 +159,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 	int mm = g_Font[font_info]->getRenderWidth ("Max");//max min lenght
 	maxb = minb = lastb = 0;
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 	
 	//channel
 	//CChannelList *channelList = CNeutrinoApp::getInstance ()->channelList;
@@ -309,9 +303,7 @@ int CStreamInfo2::doSignalStrengthLoop()
 			CNeutrinoApp::getInstance ()->handleMsg (msg, data);
 		}
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	if(sigscale)
@@ -337,18 +329,15 @@ void CStreamInfo2::hide ()
 	
   	frameBuffer->paintBackgroundBoxRel(0, 0, max_width, max_height);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CStreamInfo2::paint_pig(int _x, int _y, int w, int h)
 {
   	frameBuffer->paintBackgroundBoxRel (_x, _y, w, h);	
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
+	
 	//dont pig if we have 1980 x 1080
 #ifdef __sh__	
 	int xres, yres, framerate;

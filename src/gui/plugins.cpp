@@ -341,9 +341,8 @@ void CPlugins::startPlugin(int number)
 				printf("[CPlugins] try exec...\n");
 				
 				frameBuffer->paintBackground();
-#if !defined USE_OPENGL
-				frameBuffer->blit();
-#endif					
+
+				frameBuffer->blit();				
 					
 				execPlugin();
 				dlclose(handle);

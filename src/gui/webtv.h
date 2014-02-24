@@ -123,7 +123,7 @@ class CWebTV
 		void showUserBouquet();
 		
 		//
-		void zapTo(int pos, bool rezap = false);
+		void zapTo(int pos = 0, bool rezap = false);
 		void quickZap(int key);
 		
 		// playback
@@ -146,6 +146,8 @@ class CWebTV
 		
 		bool readChannellist(std::string filename);
 		void openFilebrowser(void);
+		
+		unsigned int hasChannels() { return channels.size();};
 };
 
 class CWebTVAPIDSelectExec : public CMenuTarget

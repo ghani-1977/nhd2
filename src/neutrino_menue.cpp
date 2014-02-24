@@ -206,10 +206,14 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitMainMenu\n");
 
 	// tv modus
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_TVMODE, true, NULL, this, "tv", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_TV, LOCALE_HELPTEXT_TVMODE ), true);
+	if(FrontendCount)
+	{
+		// tv modus
+		mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_TVMODE, true, NULL, this, "tv", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_TV, LOCALE_HELPTEXT_TVMODE ), true);
 
-	// radio modus
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_RADIOMODE, true, NULL, this, "radio", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, NEUTRINO_ICON_RADIO, LOCALE_HELPTEXT_RADIOMODE ));	
+		// radio modus
+		mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_RADIOMODE, true, NULL, this, "radio", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, NEUTRINO_ICON_RADIO, LOCALE_HELPTEXT_RADIOMODE ));	
+	}
 
 	// media center
 	// Media player main menu
@@ -867,52 +871,50 @@ void CNeutrinoApp::InitServiceSettings(CMenuWidget &service, CMenuWidget & Tuner
 	service.addItem(GenericMenuBackItemMenuIcon);
 	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
-	// scan setup
-	if(FrontendCount > 1)
+	if(FrontendCount)
 	{
-		// intros
-		TunerSetup.addItem(GenericMenuBack);
-		TunerSetup.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
-		
-		for(int i = 0; i < FrontendCount; i++)
+		// scan setup
+		if(FrontendCount > 1)
 		{
-			CFrontend * fe = getFE(i);
-			char tbuf[255];
-		
-			sprintf(tbuf, "Tuner-%d: %s", i + 1, fe->getInfo()->name);
-			TunerSetup.addItem(new CMenuForwarderNonLocalized(tbuf, true, NULL, new CScanSetup(i) ));
-		}	
-		
-		// scan settings
-		service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_SCANTS, true, NULL, &TunerSetup, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_SCANSETUP ));
-	}
-	else
-	{
-		// scan settings
-		service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_SCANTS, true, NULL, new CScanSetup(), "", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_SCANSETUP ));
-	}
+			// intros
+			TunerSetup.addItem(GenericMenuBack);
+			TunerSetup.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+			
+			for(int i = 0; i < FrontendCount; i++)
+			{
+				CFrontend * fe = getFE(i);
+				char tbuf[255];
+			
+				sprintf(tbuf, "Tuner-%d: %s", i + 1, fe->getInfo()->name);
+				TunerSetup.addItem(new CMenuForwarderNonLocalized(tbuf, true, NULL, new CScanSetup(i) ));
+			}	
+			
+			// scan settings
+			service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_SCANTS, true, NULL, &TunerSetup, NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_SCANSETUP ));
+		}
+		else
+		{
+			// scan settings
+			service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_SCANTS, true, NULL, new CScanSetup(), "", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_SCANSETUP ));
+		}
 
-	// reload Channels
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_RELOAD, true, NULL, this, "reloadchannels", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_RELOADCHANNELS ));
+		// reload Channels
+		service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_RELOAD, true, NULL, this, "reloadchannels", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_RELOADCHANNELS ));
 
-	// Bouquets Editor
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_BOUQUETEDITOR_NAME, true, NULL, new CBEBouquetWidget(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_BOUQUETSEDITOR ));
+		// Bouquets Editor
+		service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_BOUQUETEDITOR_NAME, true, NULL, new CBEBouquetWidget(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, NEUTRINO_ICON_SERVICE, LOCALE_HELPTEXT_BOUQUETSEDITOR ));
 	
 	// CI Cam 	
 #if defined (ENABLE_CI)
-	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_CAM_SETTINGS, true, NULL, g_CamHandler, NULL, CRCInput::convertDigitToKey(shortcutService++), NULL, NEUTRINO_ICON_CAM, LOCALE_HELPTEXT_CAM ));
+		service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	  
+		service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_CAM_SETTINGS, true, NULL, g_CamHandler, NULL, CRCInput::convertDigitToKey(shortcutService++), NULL, NEUTRINO_ICON_CAM, LOCALE_HELPTEXT_CAM ));
 #endif
 
 
-	// reload Plugins
-	//service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	//service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_GETPLUGINS, true, NULL, this, "reloadplugins", CRCInput::convertDigitToKey(shortcutService++), NULL, NEUTRINO_ICON_PLUGINS, LOCALE_HELPTEXT_RELOADPLUGINS ));
-
-	// Image Info 
-	service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+		// Image Info 
+		service.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	}
 	
 	service.addItem(new CMenuForwarderItemMenuIcon(LOCALE_SERVICEMENU_IMAGEINFO,  true, NULL, new CImageInfo(), NULL, CRCInput::RC_info, NEUTRINO_ICON_BUTTON_HELP_SMALL, NEUTRINO_ICON_BOXINFO, LOCALE_HELPTEXT_IMAGEINFO), false);
 
