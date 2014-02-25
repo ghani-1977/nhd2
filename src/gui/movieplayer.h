@@ -94,7 +94,6 @@ class CMoviePlayerGui : public CMenuTarget
 		int position;
 		int duration;
 		int file_prozent;
-
 		int startposition;
 		off64_t minuteoffset;
 		off64_t secondoffset;
@@ -137,15 +136,7 @@ class CMoviePlayerGui : public CMenuTarget
 		// timeosd
 		bool time_forced;
 		
-		// timeshift
-		bool timesh;
-		
 		// vlc
-		std::string stream_url;
-		char mrl[200];
-		std::string title;
-		
-		//
 		std::string base_url;
 		CURLcode _httpres;
 		std::string pauseurl;
@@ -157,7 +148,10 @@ class CMoviePlayerGui : public CMenuTarget
 		CFileList _filelist;
 		unsigned int selected;
 		
+		// lcd
 		std::string sel_filename;
+		
+		// timeosd
 		CTimeOSD FileTime;
 
 	private:

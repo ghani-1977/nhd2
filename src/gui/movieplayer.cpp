@@ -438,6 +438,12 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	duration = 0;
 	file_prozent = 0;
 	startposition = 0;
+	minuteoffset = MINUTEOFFSET;
+	secondoffset = minuteoffset / 60;
+	
+	//
+	speed = 1;
+	slow = 0;
 	
 	// global flags
 	update_lcd = false;
@@ -447,18 +453,20 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	was_file = false;
 	m_loop = false;
 	
-	// clear filelist
-	if(!_filelist.empty())
-		_filelist.clear();
-	
 	// for playing
 	playstate = CMoviePlayerGui::STOPPED;
 	is_file_player = false;
 	
+	ac3state = CInfoViewer::NO_AC3;
+	showaudioselectdialog = false;
+	
 	// timeosd
 	time_forced = false;
 	
-	// vlc
+	// multi select
+	if(!_filelist.empty())
+		_filelist.clear();
+	
 	selected = 0;
 	//
 
@@ -472,17 +480,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	cdDvd = false;
 	skt = -1; //dirty hack to close socket when stop playing
 	
-	memset(mrl, 0, sizeof(mrl));
-
-	minuteoffset = MINUTEOFFSET;
-	secondoffset = minuteoffset / 60;
-	
-	//
-	speed = 1;
-	slow = 0;
-	
-	ac3state = CInfoViewer::NO_AC3;
-	showaudioselectdialog = false;
+	//memset(mrl, 0, sizeof(mrl));
 	
 	// cutneutrino
 	cutNeutrino();
@@ -611,7 +609,7 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	
 	// timeshift
-	timesh = timeshift;
+	//timesh = timeshift;
 	
 	//
 	PlayFile();
@@ -1010,6 +1008,11 @@ void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
+	
+	bool timesh = timeshift;
+	std::string title = "";
+	std::string stream_url;
+	char mrl[200];
 
 	// vlc
 	if (isVlc == true)
