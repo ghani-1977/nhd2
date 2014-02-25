@@ -161,7 +161,6 @@ class CMoviePlayerGui : public CMenuTarget
 		CTimeOSD FileTime;
 
 	private:
-		void Init(void);
 		CFrameBuffer * frameBuffer;
 		int            m_LastMode;	
 		bool		stopped;

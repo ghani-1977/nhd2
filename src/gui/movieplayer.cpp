@@ -219,11 +219,6 @@ int CAPIDSelectExec::exec(CMenuTarget */*parent*/, const std::string & actionKey
 // movieplayer
 CMoviePlayerGui::CMoviePlayerGui()
 {
-	Init();
-}
-
-void CMoviePlayerGui::Init(void)
-{
 	stopped = false;
 
 	frameBuffer = CFrameBuffer::getInstance();
@@ -305,55 +300,6 @@ void CMoviePlayerGui::Init(void)
 	vlcfilefilter.addFilter ("flv");
 	vlcfilefilter.addFilter ("m2v");
 	vlcfilefilter.addFilter ("wmv");
-	
-	//
-	position = 0;
-	duration = 0;
-	file_prozent = 0;
-	startposition = 0;
-	
-	// global flags
-	update_lcd = false;
-	open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
-	start_play = false;
-	exit = false;
-	was_file = false;
-	m_loop = false;
-	
-	// clear filelist
-	if(!_filelist.empty())
-		_filelist.clear();
-	
-	// for playing
-	playstate = CMoviePlayerGui::STOPPED;
-	is_file_player = false;
-	
-	// timeosd
-	time_forced = false;
-	
-	// vlc
-	selected = 0;
-	//
-
-	isMovieBrowser = false;
-	isVlc = false;
-	isDVD = false;
-	isBlueRay = false;
-	isURL = false;
-	
-	// vlc
-	cdDvd = false;
-	skt = -1; //dirty hack to close socket when stop playing
-
-	minuteoffset = MINUTEOFFSET;
-	secondoffset = minuteoffset / 60;
-	
-	//
-	speed = 1;
-	slow = 0;
-	
-	ac3state = CInfoViewer::NO_AC3;
-	showaudioselectdialog = false;
 }
 
 CMoviePlayerGui::~CMoviePlayerGui()
@@ -457,7 +403,7 @@ bool CMoviePlayerGui::get_movie_info_apid_name(int apid, MI_MOVIE_INFO * movie_i
 
 int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 {
-	dprintf(DEBUG_NORMAL, "[movieplayer] actionKey=%s\n", actionKey.c_str());
+	dprintf(DEBUG_NORMAL, "[movieplayer] actionKey = %s\n", actionKey.c_str());
 	
 	// chek vlc path again
 	if(Path_vlc_settings != g_settings.streaming_server_startdir)
@@ -478,11 +424,10 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		frameBuffer->saveBackgroundImage();
 		frameBuffer->ClearFrameBuffer();
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 	
+	// filebrowser multi select
 	if (g_settings.streaming_allow_multiselect)
 		filebrowser->Multi_Select = true;
 	else 
@@ -512,9 +457,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	
 	// timeosd
 	time_forced = false;
-	
-	// timeshift
-	//timesh = timeshift;
 	
 	// vlc
 	selected = 0;
@@ -1068,37 +1010,6 @@ void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
-	
-	//
-	position = 0;
-	duration = 0;
-	file_prozent = 0;
-	startposition = 0;
-	
-	// global flags
-	update_lcd = false;
-	open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
-	start_play = false;
-	exit = false;
-	was_file = false;
-	m_loop = false;
-	
-	// clear filelist
-	if(!_filelist.empty())
-		_filelist.clear();
-	
-	// for playing
-	playstate = CMoviePlayerGui::STOPPED;
-	is_file_player = false;
-	
-	// timeosd
-	time_forced = false;
-	
-	// timeshift
-	timesh = timeshift;
-	
-	// vlc
-	selected = 0;
 
 	// vlc
 	if (isVlc == true)
@@ -1160,12 +1071,7 @@ void CMoviePlayerGui::PlayFile(void)
 		g_file_epg = std::string(rindex(filename, '/') + 1);
 		g_file_epg1 = std::string(rindex(filename, '/') + 1);
 		
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// hide ts icon
-		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);		
 	}
 	
 	// dvd
@@ -1178,12 +1084,7 @@ void CMoviePlayerGui::PlayFile(void)
 		update_lcd = true;
 		start_play = true;
 		
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// hide ts icon
-		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);	
 	}
 	
 	if(isURL)
@@ -1201,12 +1102,7 @@ void CMoviePlayerGui::PlayFile(void)
 		was_file = false;
 		is_file_player = true;
 						
-		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-		
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)		
-		// hide ts icon
-		CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif		
+		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);	
 	}
 
 	// bookmarks menu
@@ -1526,9 +1422,6 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = moviebrowser->getSelectedFile()) != NULL) 
 					{
-						//CFile::FileType ftype;
-						//ftype = file->getType();
-						
 						if (moviebrowser->getMode() == MB_SHOW_YT || moviebrowser->getMode() == MB_SHOW_NETZKINO) 
 						{
 							filename = file->Url.c_str();
@@ -1608,12 +1501,7 @@ void CMoviePlayerGui::PlayFile(void)
 					break;
 				}
 				
-				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-				
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-				// hide ts icon
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif				
+				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);	
 			} 
 			else if(isVlc && !cdDvd) // vlc (file not dvd)
 			{
@@ -1682,8 +1570,8 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = filebrowser->getSelectedFile()) != NULL) 
 					{
-						CFile::FileType ftype;
-						ftype = file->getType();
+						//CFile::FileType ftype;
+						//ftype = file->getType();
 
 						filename = file->Name.c_str();
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
@@ -1726,8 +1614,8 @@ void CMoviePlayerGui::PlayFile(void)
 
 					if ((file = filebrowser->getSelectedFile()) != NULL) 
 					{
-						CFile::FileType ftype;
-						ftype = file->getType();
+						//CFile::FileType ftype;
+						//ftype = file->getType();
 
 						filename = file->Name.c_str();
 						sel_filename = filebrowser->getSelectedFile()->getFileName();
@@ -1790,11 +1678,6 @@ void CMoviePlayerGui::PlayFile(void)
 				}
 
 				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-				
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-				// hide ts icon
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif				
 			}
 		}
 
@@ -1945,10 +1828,7 @@ void CMoviePlayerGui::PlayFile(void)
 				delete APIDChanger;
 				showaudioselectdialog = false;
 				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-				// hide ts icon
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif				
+	
 				update_lcd = true;
 			} 
 			else 
@@ -2775,10 +2655,7 @@ void CMoviePlayerGui::PlayFile(void)
 			else if ( msg <= CRCInput::RC_MaxRC ) 
 			{
 				CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
-#if defined (PLATFORM_CUBEREVO) || defined (PLATFORM_CUBEREVO_MINI) || defined (PLATFORM_CUBEREVO_MINI2) || defined (PLATFORM_CUBEREVO_MINI_FTA) || defined (PLATFORM_CUBEREVO_250HD) || defined (PLATFORM_CUBEREVO_2000HD) || defined (PLATFORM_CUBEREVO_9500HD)
-				// hide ts icon
-				CVFD::getInstance()->ShowIcon(VFD_ICON_TV, false);
-#endif				
+	
 				update_lcd = true;
 			}
 		}
