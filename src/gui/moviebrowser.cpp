@@ -90,7 +90,6 @@ static off64_t get_full_len(char * startname);
 static off64_t truncate_movie(MI_MOVIE_INFO * minfo);
 static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie);
 static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefile);
-void strReplace(std::string& orig, const char* fstr, const std::string rstr);		//defined in movieinfo.cpp
 
 #define TRACE  printf
 #define TRACE_1 printf

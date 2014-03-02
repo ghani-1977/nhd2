@@ -287,9 +287,8 @@ void CPlugins::startPlugin(int number)
 		startScriptPlugin(number);
 		
 		frameBuffer->paintBackground();
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif			
+
+		frameBuffer->blit();	
 		
 		g_RCInput->restartInput();
 		g_RCInput->clearRCMsg();
@@ -297,6 +296,7 @@ void CPlugins::startPlugin(int number)
 		return;
 	}
 
+	// neutrinoHD plugins (standalone)
 	if ( (plugin_list[number].type == CPlugins::P_TYPE_TOOL) || (plugin_list[number].type == CPlugins::P_TYPE_GAME) )
 	{
 		/* stop rc input */
@@ -305,9 +305,8 @@ void CPlugins::startPlugin(int number)
 		safe_system((char *) plugin_list[number].pluginfile.c_str());
 		
 		frameBuffer->paintBackground();
-#if !defined USE_OPENGL
+
 		frameBuffer->blit();
-#endif	
 	
 		g_RCInput->restartInput();
 		g_RCInput->clearRCMsg();

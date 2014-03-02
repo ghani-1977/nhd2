@@ -372,6 +372,20 @@ std::string replace_all(const std::string &in, const std::string &entity, const 
 	return out;
 }
 
+void strReplace(std::string & orig, const char *fstr, const std::string rstr)
+{
+	//replace all occurrence of fstr with rstr and, and returns a reference to itself
+	size_t index = 0;
+	size_t fstrlen = strlen(fstr);
+	size_t rstrlen = rstr.size();
+
+	while ((index = orig.find(fstr, index)) != std::string::npos) 
+	{
+		orig.replace(index, fstrlen, rstr);
+		index += rstrlen;
+	}
+}
+
 unsigned long long getcurrenttime()
 {
 	struct timeval tv;
@@ -629,4 +643,6 @@ bool CFileHelpers::removeDir(const char *Dir)
 	errno = 0;
 	return true;
 }
+
+
 

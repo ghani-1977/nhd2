@@ -34,11 +34,6 @@
 #include "ytparser.h"
 #include "debug.h"
 
-//#if LIBCURL_VERSION_NUM < 0x071507
-//#error
-//#include <curl/types.h>
-//#endif
-
 
 #define URL_TIMEOUT 60
 
@@ -476,7 +471,19 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 
 			cYTVideoUrl yurl;
 			yurl.url = smap["url"];
-			yurl.sig = smap["sig"];
+			//yurl.sig = smap["sig"];
+			//
+			std::string::size_type ptr = smap["url"].find("signature=");
+			if (ptr != std::string::npos)
+			{
+				ptr = smap["url"].find("=", ptr);
+				smap["url"].erase(0, ptr + 1);
+
+				if((ptr = smap["url"].find("&")) != std::string::npos)
+					yurl.sig = smap["url"].substr(0,ptr);
+			}
+			//
+			
 			int id = atoi(smap["itag"].c_str());
 			if (supportedFormat(id) && !yurl.url.empty() && !yurl.sig.empty()) 
 			{

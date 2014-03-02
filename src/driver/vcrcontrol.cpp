@@ -734,8 +734,6 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
 
-void strReplace(std::string & orig, const char *fstr, const std::string rstr);	//defined in movieinfo.cpp
-
 bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, bool msg) 
 {
 	char filename[512]; // UTF-8

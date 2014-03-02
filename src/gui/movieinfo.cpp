@@ -62,6 +62,7 @@
 #endif
 
 #include <system/debug.h>
+#include <system/helpers.h>
 
 
 #define VLC_URI "vlc://"
@@ -647,20 +648,6 @@ int find_next_char(char to_find, char *text, int start_pos, int end_pos)
 		_dest_ = atoll(&_text_[pos_prev]);\
 		continue;\
 	}
-
-void strReplace(std::string & orig, const char *fstr, const std::string rstr)
-{
-	//replace all occurrence of fstr with rstr and, and returns a reference to itself
-	size_t index = 0;
-	size_t fstrlen = strlen(fstr);
-	size_t rstrlen = rstr.size();
-
-	while ((index = orig.find(fstr, index)) != std::string::npos) 
-	{
-		orig.replace(index, fstrlen, rstr);
-		index += rstrlen;
-	}
-}
 
 bool CMovieInfo::parseXmlQuickFix(char *text, MI_MOVIE_INFO * movie_info)
 {
