@@ -432,13 +432,7 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 {
 	bool ret = false;
 	decodeUrl(answer);
-#if 0
-	std::string infofile = thumbnail_dir;
-	infofile += "/";
-	infofile += vinfo.id;
-	infofile += ".txt"
-	saveToFile(infofile.c_str(), answer);
-#endif
+
 	if(answer.find("token=") == std::string::npos)
 		return ret;
 
@@ -449,12 +443,9 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 	{
 		fmt = answer.find("=", fmt);
 		splitString(answer, ",", ulist, fmt+1);
+		
 		for (unsigned i = 0; i < ulist.size(); i++) 
 		{
-#if 0 // to decode all params
-			decodeUrl(ulist[i]);
-			printf("URL: %s\n", ulist[i].c_str());
-#endif
 			std::map<std::string,std::string> smap;
 			std::vector<std::string> uparams;
 			splitString(ulist[i], "&", uparams);
@@ -480,7 +471,7 @@ bool cYTFeedParser::decodeVideoInfo(std::string &answer, cYTVideoInfo &vinfo)
 				smap["url"].erase(0, ptr + 1);
 
 				if((ptr = smap["url"].find("&")) != std::string::npos)
-					yurl.sig = smap["url"].substr(0,ptr);
+					yurl.sig = smap["url"].substr(0, ptr);
 			}
 			//
 			
@@ -507,13 +498,10 @@ bool cYTFeedParser::ParseFeed(std::string &url)
 	curfeedfile += "/";
 	curfeedfile += curfeed;
 	curfeedfile += ".xml";
-#ifdef CACHE_FILES
-	if(!DownloadUrl(url, cfile))
-		return false;
-#else
+
 	if (!getUrl(url, answer))
 		return false;
-#endif
+
 	return parseFeedXml(answer);
 }
 
