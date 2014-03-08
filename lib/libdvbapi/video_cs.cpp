@@ -955,6 +955,9 @@ int cVideo::showSinglePic(const char *filename)
 		struct stat s;
 		fstat(f, &s);
 		
+		// open video device
+		Open();
+		
 		if (video_fd >= 0)
 		{
 			bool seq_end_avail = false;

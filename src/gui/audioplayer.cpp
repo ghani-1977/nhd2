@@ -95,6 +95,9 @@ extern CPictureViewer * g_PicViewer;
 extern int current_muted;
 extern CWebTV * webtv;
 
+#include <video_cs.h>
+extern cVideo * videoDecoder;
+
 #ifdef ConnectLineBox_Width
 #undef ConnectLineBox_Width
 #endif
@@ -298,9 +301,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_frameBuffer->saveBackgroundImage();
 	
 	//show audio background pic
+#if defined (USE_OPENGL)	
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
-	
 	m_frameBuffer->blit();
+#endif	
 	
 	// tell neutrino we're in audio mode
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_audio );
@@ -322,6 +326,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		//pause epg scanning
 		g_Sectionsd->setPauseScanning(true);
 	}
+	
+#if !defined (USE_OPENGL)	
+	videoDecoder->showSinglePic(DATADIR "/neutrino/icons/mp3.m2v");
+#endif	
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -336,9 +344,11 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_frameBuffer->restoreBackgroundImage();
 	
 	m_frameBuffer->useBackground(usedBackground);
-	m_frameBuffer->paintBackground();
 	
+#if defined (USE_OPENGL)	
+	m_frameBuffer->paintBackground();
 	m_frameBuffer->blit();	
+#endif	
 
 	// end-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_END_SCRIPT "."); 
@@ -359,6 +369,10 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		//start epg scanning
 		g_Sectionsd->setPauseScanning(false);
 	}
+	
+#if !defined (USE_OPENGL)	
+	videoDecoder->finishShowSinglePic();
+#endif	
 
 	//set last saved mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE, m_LastMode );
@@ -395,9 +409,6 @@ int CAudioPlayerGui::show()
 	bool update = true;
 	bool clear_before_update = false;
 	m_key_level = 0;
-	
-	//
-	bool usedBackground = m_frameBuffer->getuseBackground();
 
 	// control loop
 	while(loop)
@@ -491,13 +502,13 @@ int CAudioPlayerGui::show()
 							dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", filename, ret1 ? "not found" : "found");
 							
 							// hide radiomode background pic
-							if (usedBackground) 
-							{
-								m_frameBuffer->saveBackgroundImage();
-								m_frameBuffer->ClearFrameBuffer();
-
-								m_frameBuffer->blit();
-							}
+#if defined (USE_OPENGL)								
+							m_frameBuffer->ClearFrameBuffer();
+							m_frameBuffer->blit();
+#else	
+							videoDecoder->finishShowSinglePic();
+#endif
+							
 								
 							if(ret1 == 0) 
 							{
@@ -541,18 +552,6 @@ int CAudioPlayerGui::show()
 			if(m_screensaver > NONE)
 			{
 				screensaver(NONE);
-				
-				// Restore previous background
-				/*
-				if (usedBackground) 
-				{
-					m_frameBuffer->restoreBackgroundImage();
-					m_frameBuffer->useBackground(true);
-					m_frameBuffer->paintBackground();
-
-					m_frameBuffer->blit();
-				}
-				*/
 			}
 		}
 
@@ -2533,7 +2532,11 @@ void CAudioPlayerGui::screensaver(int type)
 		if (usedBackground)
 			m_frameBuffer->saveBackgroundImage();
 
-		m_frameBuffer->loadBackgroundPic("mp3.jpg");		
+#if defined (USE_OPENGL)
+		m_frameBuffer->loadBackgroundPic("mp3.jpg");
+#else
+		videoDecoder->showSinglePic(DATADIR "/neutrino/icons/mp3.m2v");
+#endif
 
 		paint();		
 		
@@ -2542,7 +2545,11 @@ void CAudioPlayerGui::screensaver(int type)
 	else
 	{
 		m_screensaver = type;
+#if defined (USE_OPENGL)		
 		m_frameBuffer->ClearFrameBuffer();
+#else
+		videoDecoder->finishShowSinglePic();
+#endif
 		info_visible = false;
 
 		stimer = g_RCInput->addTimer(10*1000*1000, false);

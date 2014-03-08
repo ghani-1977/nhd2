@@ -34,11 +34,11 @@ install_DATA += \
 
 # audio player background
 install_DATA += \
-	mp3.jpg mp3-0.jpg mp3-1.jpg mp3-2.jpg mp3-3.jpg mp3-4.jpg mp3-5.jpg mp3-6.jpg mp3-7.jpg
+	mp3.jpg mp3-0.jpg mp3-1.jpg mp3-2.jpg mp3-3.jpg mp3-4.jpg mp3-5.jpg mp3-6.jpg mp3-7.jpg mp3.m2v
 
 # background
 install_DATA += \
-	radiomode.jpg scan.jpg shutdown.jpg start.jpg
+	radiomode.jpg scan.jpg shutdown.jpg start.jpg radiomode.m2v
 
 # mp icons
 install_DATA += \

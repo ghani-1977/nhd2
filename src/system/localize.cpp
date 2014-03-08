@@ -128,11 +128,13 @@ CLocaleManager::loadLocale_ret_t CLocaleManager::loadLocale(const char * const l
 	}
 
 	for (unsigned j = 0; j < (sizeof(locale_real_names)/sizeof(const char *)); j++)
+	{
 		if (localeData[j] != locale_real_names[j])
 		{
 			free(localeData[j]);
 			localeData[j] = (char *)locale_real_names[j];
 		}
+	}
 
 	char buf[1000];
 
@@ -188,11 +190,14 @@ CLocaleManager::loadLocale_ret_t CLocaleManager::loadLocale(const char * const l
 		}
 	}
 	fclose(fd);
+	
 	for (unsigned j = 1; j < (sizeof(locale_real_names)/sizeof(const char *)); j++)
+	{
 		if (localeData[j] == locale_real_names[j])
 		{
 			printf("[%s.locale] missing entry: %s\n", locale, locale_real_names[j]);
 		}
+	}
 
 	return (
 		(strcmp(locale, "bosanski") == 0) ||
