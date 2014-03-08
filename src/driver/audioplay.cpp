@@ -40,19 +40,18 @@
 #include <driver/audioplay.h>
 #include <driver/netfile.h>
 
-//#if !defined (ENABLE_PCMDECODER)
 #include <playback_cs.h>
-extern cPlayback *playback;
-//#endif
 
+
+extern cPlayback *playback;
 
 void CAudioPlayer::stop()
 {
 	state = CBaseDec::STOP_REQ;
 	
-//#if !defined (ENABLE_PCMDECODER)
 	playback->Close();
-//#endif	
+
+	//
 	if(thrPlay)
 		pthread_join(thrPlay, NULL);
 	
@@ -64,16 +63,14 @@ void CAudioPlayer::pause()
 	if(state == CBaseDec::PLAY || state == CBaseDec::FF || state == CBaseDec::REV)
 	{
 		state = CBaseDec::PAUSE;
-//#if !defined (ENABLE_PCMDECODER)
+
 		playback->SetSpeed(0);
-//#endif
 	}
 	else if(state == CBaseDec::PAUSE)
 	{
 		state = CBaseDec::PLAY;
-//#if !defined (ENABLE_PCMDECODER)
-		playback->SetSpeed(1);
-//#endif		
+
+		playback->SetSpeed(1);		
 	}
 }
 
@@ -84,17 +81,14 @@ void CAudioPlayer::ff(unsigned int seconds)
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::REV)
 	{
 		state = CBaseDec::FF;
-//#if !defined (ENABLE_PCMDECODER)
+
 		playback->SetSpeed(2);
-//#endif
 	}
 	else if(state == CBaseDec::FF)
 	{
 		state = CBaseDec::PLAY;
 		
-//#if !defined (ENABLE_PCMDECODER)
 		playback->SetSpeed(1);
-//#endif
 	}
 }
 
@@ -105,17 +99,14 @@ void CAudioPlayer::rev(unsigned int seconds)
 	if(state == CBaseDec::PLAY || state == CBaseDec::PAUSE || state == CBaseDec::FF)
 	{
 		state = CBaseDec::REV;
-//#if !defined (ENABLE_PCMDECODER)
+
 		playback->SetSpeed(-2);
-//#endif
 	}
 	else if(state == CBaseDec::REV)
 	{
 		state = CBaseDec::PLAY;
 		
-//#if !defined (ENABLE_PCMDECODER)
 		playback->SetSpeed(1);
-//#endif
 	}
 }
 
@@ -135,7 +126,6 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 {
 	int soundfd = -1;
 	
-//#if !defined (ENABLE_PCMDECODER)
 	int position = 0;
 	int duration = 0;
 	
@@ -153,24 +143,6 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 		}
 		getInstance()->m_played_time = position/1000;	// in sec				  
 	}while(getInstance()->state != CBaseDec::STOP_REQ);
-/*#else	
-	// Decode stdin to stdout.
-	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
-
-	if (Status != CBaseDec::OK)
-	{
-		fprintf( stderr, "Error during decoding: %s.\n",
-				( Status == CBaseDec::READ_ERR ) ? "READ_ERR" :
-				( Status == CBaseDec::WRITE_ERR ) ? "WRITE_ERR" :
-				( Status == CBaseDec::DSPSET_ERR ) ? "DSPSET_ERR" :
-				( Status == CBaseDec::DATA_ERR ) ? "DATA_ERR" :
-				( Status == CBaseDec::INTERNAL_ERR ) ? "INTERNAL_ERR" :
-				"unknown" );
-	}
-	
-	getInstance()->state = CBaseDec::STOP;
-#endif
-*/
 	
 	pthread_exit(0);
 
@@ -208,7 +180,6 @@ bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 
 	bool ret = true;
 	
-//#if !defined (ENABLE_PCMDECODER)
 	playback->Close();
 	
 	FILE * fp = fopen( file->Filename.c_str(), "r" );
@@ -244,9 +215,8 @@ bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 	if(!playback->Start( (char *)file->Filename.c_str(), 0, 0, 0, 0, 0 ))
 #else		
 	if(!playback->Start( (char *)file->Filename.c_str() ))
-		ret = false;
-#endif	
-//#endif		
+#endif
+		ret = false;		
 
 	// play thread (retrieve position/duration etc...)
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )

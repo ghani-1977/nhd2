@@ -56,10 +56,7 @@
 #include <neutrino.h>
 #include <driver/netfile.h>
 
-#if defined (ENABLE_PCMDECODER)
-#include <audio_cs.h>
-extern cAudio * audioDecoder;
-#endif
+#include <system/debug.h>
 
 /* libid3tag extension: This is neccessary in order to call fclose
    on the file. Normally libid3tag closes the file implicit.
@@ -455,19 +452,13 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 			{
 				if(ferror(InputFp))
 				{
-					fprintf(stderr,"%s: read error on bitstream (%s)\n", ProgName,strerror(errno));
+					dprintf(DEBUG_NORMAL, "%s: read error on bitstream\n", ProgName);
 					Status = READ_ERR;
 				}
 				
 				if(feof(InputFp))
 				{
-					fprintf(stderr,"%s: end of input stream\n", ProgName);
-					
-					// Lets flush the remaining seconds through the decoder matrix	
-#if defined (ENABLE_PCMDECODER)					
-					if(audioDecoder)
-						audioDecoder->Flush();	
-#endif					
+					dprintf(DEBUG_NORMAL, "%s: end of input stream\n", ProgName);	
 				}
 				break;
 			}
@@ -627,9 +618,8 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 				// no errrors in FF mode
 				if(*state!=FF && *state!=REV)
 				{
-					fprintf(stderr,"%s: recoverable frame level error (%s)\n", ProgName,MadErrorString(&Stream));
-					fflush(stderr);
-				 }
+					dprintf(DEBUG_NORMAL, "%s: recoverable frame level error (%s)\n", ProgName, MadErrorString(&Stream));
+				}
 				continue;
 			}
 			else
@@ -638,8 +628,8 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 					continue;
 				else
 				{
-					fprintf(stderr,"%s: unrecoverable frame level error (%s).\n", ProgName,MadErrorString(&Stream));
-					Status=DATA_ERR;
+					dprintf(DEBUG_NORMAL, "%s: unrecoverable frame level error (%s).\n", ProgName, MadErrorString(&Stream));
+					Status = DATA_ERR;
 					break;
 				}
 			}
@@ -652,21 +642,11 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 		FrameCount++;
 		if (FrameCount == 1)
 		{
-#if defined (ENABLE_PCMDECODER)		  
-			if(audioDecoder)
-			{
-				if(audioDecoder->PrepareClipPlay(2, Frame.header.samplerate, 16, 1) < 0)
-				{
-					Status = DSPSET_ERR;
-					break;
-				}
-			}
-#endif			
-
 			if ( !meta_data )
 			{
 				meta_data = new CAudioMetaData;
 			}
+			
 			meta_data->samplerate = Frame.header.samplerate;
 			meta_data->bitrate = Frame.header.bitrate;
 			meta_data->mode = Frame.header.mode;
@@ -744,19 +724,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{
-#if defined (ENABLE_PCMDECODER)					  
-						if(audioDecoder)
-						{
-							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
-							{
-								fprintf(stderr,"%s: PCM write error in stereo (%s).\n", ProgName, strerror(errno));
-								Status = WRITE_ERR;
-								break;
-							}
-						}
-#endif						
-						
+					{	
 						OutputPtr = OutputBuffer;
 					}
 				}
@@ -778,22 +746,7 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 					
 					/* Flush the buffer if it is full. */
 					if (OutputPtr == OutputBufferEnd)
-					{
-#if defined (ENABLE_PCMDECODER)					  
-						if(audioDecoder)
-						{
-							if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
-							{
-								if(audioDecoder->WriteClip(OutputBuffer, OUTPUT_BUFFER_SIZE) != OUTPUT_BUFFER_SIZE)
-								{
-									fprintf(stderr,"%s: PCM write error in mono (%s).\n", ProgName, strerror(errno));
-									Status = WRITE_ERR;
-									break;
-								}
-							}
-						}
-#endif						
-						
+					{	
 						OutputPtr = OutputBuffer;
 					}
 				}
@@ -823,24 +776,8 @@ CBaseDec::RetCode CMP3Dec::Decoder(FILE * InputFp, const int OutputFd, State* co
 	*/
 	if(OutputPtr != OutputBuffer && Status != WRITE_ERR)
 	{
-		ssize_t	BufferSize = OutputPtr-OutputBuffer;
-		
-#if defined (ENABLE_PCMDECODER)		
-		if(audioDecoder)
-		{
-			if(audioDecoder->WriteClip(OutputBuffer, BufferSize) != BufferSize)
-			{
-				fprintf(stderr,"%s: PCM write error at the end (%s).\n", ProgName,strerror(errno));
-				Status = WRITE_ERR;
-			}
-		}
-#endif		
+		ssize_t	BufferSize = OutputPtr-OutputBuffer;	
 	}
-	
-#if defined (ENABLE_PCMDECODER)	
-	if(audioDecoder)
-		audioDecoder->StopClip();
-#endif	
 	
 	CVFD::getInstance()->Unlock ();
 	
@@ -1041,7 +978,7 @@ long CMP3Dec::scanHeader( FILE* input, struct mad_header* const header,
  */
 bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const meta )
 {
-	printf("CMP3Dec::GetMP3Info\n");
+	dprintf(DEBUG_NORMAL, "CMP3Dec::GetMP3Info\n");
 	
 	struct mad_header header;
 	struct tag ftag;
@@ -1114,7 +1051,7 @@ bool CMP3Dec::GetMP3Info( FILE* input, const bool nice, CAudioMetaData* const me
 
 void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 {
-	printf("CMP3Dec::GetID3\n");
+	dprintf(DEBUG_NORMAL, "CMP3Dec::GetID3\n");
 	
 	unsigned int i;
 	struct id3_frame const *frame;
@@ -1148,9 +1085,7 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 
 	/* text information */
 	struct id3_file * id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
-	if(id3file == 0)
-		printf("error open id3 file\n");
-	else
+	if(id3file != 0)
 	{
 		id3_tag * tag = id3_file_tag(id3file);
 		if(tag)
@@ -1281,8 +1216,6 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 #endif
 			id3_tag_delete(tag);
 		}
-		else
-			printf("error open id3 tag\n");
 
 		id3_finish_file(id3file);
 	}
@@ -1290,13 +1223,13 @@ void CMP3Dec::GetID3(FILE* in, CAudioMetaData * const m)
 	if(0)
 	{
 		fail:
-			printf("id3: not enough memory to display tag\n");
+			dprintf(DEBUG_NORMAL, "id3: not enough memory to display tag\n");
 	}
 }
 
 bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 {
-	printf("CMP3Dec::SaveCover\n");
+	dprintf(DEBUG_NORMAL, "CMP3Dec::SaveCover\n");
 	
 	struct id3_frame const *frame;
 	const char * coverfile = "/tmp/cover.jpg";
@@ -1304,12 +1237,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 	/* text information */
 	struct id3_file *id3file = id3_file_fdopen(fileno(in), ID3_FILE_MODE_READONLY);
     
-	if(id3file == 0)
-	{
-		printf("CMP3Dec::SaveCover: error open id3 file\n");
-		return false;
-	}
-	else
+	if(id3file != 0)
 	{
 		id3_tag * tag = id3_file_tag(id3file);
 		if(tag)
@@ -1333,7 +1261,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 							data = id3_field_getbinarydata(field, &size);
 							if ( data )
 							{
-								printf("CMP3Dec::SaveCover: Cover found\n");
+								dprintf(DEBUG_NORMAL, "CMP3Dec::SaveCover: Cover found\n");
 								
 								m->cover = coverfile;
 								FILE * pFile;
@@ -1357,7 +1285,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
 		}
 		else
 		{
-			printf("CMP3Dec::SaveCover: error open id3 tag\n");
+			dprintf(DEBUG_NORMAL, "CMP3Dec::SaveCover: error open id3 tag\n");
 			return false;
 		}
 
@@ -1366,7 +1294,7 @@ bool CMP3Dec::SaveCover(FILE * in, CAudioMetaData * const m)
     
 	if(0)
 	{
-		printf("CMP3Dec::SaveCover:id3: not enough memory to display tag\n");
+		dprintf(DEBUG_NORMAL, "CMP3Dec::SaveCover:id3: not enough memory to display tag\n");
 		return false;
 	}
 	

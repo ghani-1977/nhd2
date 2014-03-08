@@ -108,8 +108,8 @@ static const char FILENAME[] = "movieplayer.cpp";
 #define STREAMTYPE_FILE	3
 
 // scripts
-#define MOVIEPLAYER_START_SCRIPT CONFIGDIR "/movieplayer.start" 
-#define MOVIEPLAYER_END_SCRIPT CONFIGDIR "/movieplayer.end"
+#define MOVIEPLAYER_START_SCRIPT 	CONFIGDIR "/movieplayer.start" 
+#define MOVIEPLAYER_END_SCRIPT 		CONFIGDIR "/movieplayer.end"
 
 cPlayback * playback = NULL;
 
@@ -123,7 +123,7 @@ extern t_channel_id live_channel_id; 			//defined in zapit.cpp
 #define MP_TS_SIZE 262072				// ~0.5 sec
 
 int timeshift = CMoviePlayerGui::NO_TIMESHIFT;
-extern char rec_filename[512];				// defined in stream2file.cpp
+extern char rec_filename[1024];				// defined in stream2file.cpp
 
 // for timeshift epg infos
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
@@ -464,8 +464,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	time_forced = false;
 	
 	// multi select
-	if(!_filelist.empty())
-		_filelist.clear();
+	if(!filelist.empty())
+		filelist.clear();
 	
 	selected = 0;
 	//
@@ -480,7 +480,13 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	cdDvd = false;
 	skt = -1; //dirty hack to close socket when stop playing
 	
-	//memset(mrl, 0, sizeof(mrl));
+	//
+	g_numpida = 0;
+	g_vpid = 0;
+	g_vtype = 0;
+	g_currentapid = 0;
+	g_currentac3 = 0;
+	apidchanged = 0;
 	
 	// cutneutrino
 	cutNeutrino();
@@ -608,9 +614,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		isURL = false;
 	}
 	
-	// timeshift
-	//timesh = timeshift;
-	
 	//
 	PlayFile();
 	
@@ -625,8 +628,8 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	}
 	
 	// clear filelist
-	if(!_filelist.empty())
-		_filelist.clear();
+	if(!filelist.empty())
+		filelist.clear();
 
 	// restore neutrino
 	restoreNeutrino();
@@ -1004,17 +1007,45 @@ void CMoviePlayerGui::updateLcd(const std::string & lcd_filename)
 #endif	
 }
 
+// moviebrowser
+// filebrowser
+// timeshift
+// vlc
+
 void CMoviePlayerGui::PlayFile(void)
 {
 	neutrino_msg_t msg;
 	neutrino_msg_data_t data;
 	
+	//
+	position = 0;
+	duration = 0;
+	file_prozent = 0;
+	startposition = 0;
+	
+	// global flags
+	update_lcd = false;
+	open_filebrowser = true;	//always default true (true valeue is needed for file/moviebrowser)
+	start_play = false;
+	exit = false;
+	was_file = false;
+	m_loop = false;
+	
+	// for playing
+	playstate = CMoviePlayerGui::STOPPED;
+	is_file_player = false;
+	
+	// timeosd
+	time_forced = false;
+	
+	// timeshift
 	bool timesh = timeshift;
+	
+	// vlc
 	std::string title = "";
 	std::string stream_url;
 	char mrl[200];
 
-	// vlc
 	if (isVlc == true)
 	{
 		stream_url = "http://";
@@ -1090,6 +1121,7 @@ void CMoviePlayerGui::PlayFile(void)
 		CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);	
 	}
 	
+	// url
 	if(isURL)
 	{
 		open_filebrowser = false;
@@ -1151,16 +1183,16 @@ void CMoviePlayerGui::PlayFile(void)
 		// multi select
 		if (playstate == CMoviePlayerGui::STOPPED && was_file) 
 		{
-			if(selected + 1 < _filelist.size()) 
+			if(selected + 1 < filelist.size()) 
 			{
 				selected++;
-				filename = _filelist[selected].Name.c_str();
-				sel_filename = _filelist[selected].getFileName();
+				filename = filelist[selected].Name.c_str();
+				sel_filename = filelist[selected].getFileName();
 				
 				if(isVlc)
 				{
-					int namepos = _filelist[selected].Name.rfind("vlc://");
-					std::string mrl_str = _filelist[selected].Name.substr(namepos + 6);
+					int namepos = filelist[selected].Name.rfind("vlc://");
+					std::string mrl_str = filelist[selected].Name.substr(namepos + 6);
 					char * tmp = curl_escape(mrl_str.c_str (), 0);
 					strncpy(mrl, tmp, sizeof (mrl) - 1);
 					curl_free(tmp);
@@ -1515,14 +1547,14 @@ void CMoviePlayerGui::PlayFile(void)
 				{
 					Path_vlc = filebrowser->getCurrentDir();
 					
-					_filelist = filebrowser->getSelectedFiles();
+					filelist = filebrowser->getSelectedFiles();
 
-					if(!_filelist.empty())
+					if(!filelist.empty())
 					{
-						filename = _filelist[selected].Name.c_str();
-						sel_filename = _filelist[selected].getFileName();
+						filename = filelist[selected].Name.c_str();
+						sel_filename = filelist[selected].getFileName();
 						
-						int namepos = _filelist[selected].Name.rfind("vlc://");
+						int namepos = filelist[selected].Name.rfind("vlc://");
 						std::string mrl_str = "";
 						
 						if (g_settings.streaming_vlc10 > 1)
@@ -1532,7 +1564,7 @@ void CMoviePlayerGui::PlayFile(void)
 								mrl_str += "/";
 						}
 						
-						mrl_str += _filelist[selected].Name.substr(namepos + 6);
+						mrl_str += filelist[selected].Name.substr(namepos + 6);
 						char * tmp = curl_escape(mrl_str.c_str (), 0);
 						strncpy(mrl, tmp, sizeof (mrl) - 1);
 						curl_free (tmp);
@@ -1649,19 +1681,19 @@ void CMoviePlayerGui::PlayFile(void)
 					
 					if (g_settings.streaming_allow_multiselect) 
 					{
-						_filelist = filebrowser->getSelectedFiles();
+						filelist = filebrowser->getSelectedFiles();
 					} 
 					else 
 					{
 						CFile *file = filebrowser->getSelectedFile();
-						_filelist.clear();
-						_filelist.push_back(*file);
+						filelist.clear();
+						filelist.push_back(*file);
 					}
 
-					if(!_filelist.empty())
+					if(!filelist.empty())
 					{
-						filename = _filelist[selected].Name.c_str();
-						sel_filename = _filelist[selected].getFileName();
+						filename = filelist[selected].Name.c_str();
+						sel_filename = filelist[selected].getFileName();
 						
 						g_file_epg = sel_filename;
 						g_file_epg1 = sel_filename;
@@ -2614,11 +2646,11 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 		else if(msg == CRCInput::RC_left || msg == CRCInput::RC_prev)
 		{
-			if(!_filelist.empty() && selected > 0 && playstate == CMoviePlayerGui::PLAY) 
+			if(!filelist.empty() && selected > 0 && playstate == CMoviePlayerGui::PLAY) 
 			{
 				selected--;
-				filename = _filelist[selected].Name.c_str();
-				sel_filename = _filelist[selected].getFileName();
+				filename = filelist[selected].Name.c_str();
+				sel_filename = filelist[selected].getFileName();
 				g_file_epg = sel_filename;
 				g_file_epg1 = sel_filename;
 				update_lcd = true;
@@ -2627,11 +2659,11 @@ void CMoviePlayerGui::PlayFile(void)
 		}
 		else if(msg == CRCInput::RC_right || msg == CRCInput::RC_next)
 		{
-			if(!_filelist.empty() && selected + 1 < _filelist.size() && playstate == CMoviePlayerGui::PLAY) 
+			if(!filelist.empty() && selected + 1 < filelist.size() && playstate == CMoviePlayerGui::PLAY) 
 			{
 				selected++;
-				filename = _filelist[selected].Name.c_str();
-				sel_filename = _filelist[selected].getFileName();
+				filename = filelist[selected].Name.c_str();
+				sel_filename = filelist[selected].getFileName();
 				g_file_epg = sel_filename;
 				g_file_epg1 = sel_filename;
 				update_lcd = true;

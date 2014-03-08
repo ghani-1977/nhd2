@@ -65,16 +65,6 @@ AC_DEFINE(ENABLE_GSTREAMER,1,[include gstreamer as player engine support])
 TUXBOX_APPS_LIB_PKGCONFIG(GST,gstreamer-0.10)
 fi
 
-# pcm decoder
-AC_ARG_ENABLE(pcmdecoder,
-	AS_HELP_STRING(--enable-pcmdecoder,enable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)),
-	,[enable_pcmdecoder=no])
-AM_CONDITIONAL(ENABLE_PCMDECODER,test "$enable_pcmdecoder" = "yes")
-
-if test "$enable_pcmdecoder" = "yes"; then
-AC_DEFINE(ENABLE_PCMDECODER,1,[disable soft pcm decoder as audio player engine and use media player engine(gstreamer/libeplayer3)])
-fi
-
 # lcd
 AC_ARG_ENABLE(lcd,
 	AS_HELP_STRING(--enable-lcd,include lcd support),

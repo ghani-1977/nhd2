@@ -73,15 +73,7 @@ class cAudio
 	private:
 		int audio_fd;
 		int audio_num;
-		int audio_adapter;
-		
-		// for pcm playback
-#if defined (ENABLE_PCMDECODER)		
-		int uNoOfChannels;
-		int uSampleRate;
-		int uBitsPerSample;
-		int bLittleEndian;
-#endif		
+		int audio_adapter;	
 		
 		bool Muted;
 #if defined (__sh__)
@@ -134,13 +126,6 @@ class cAudio
 
 		// select channels
 		int setChannel(int channel);
-		
-		// for pcm playback
-#if defined (ENABLE_PCMDECODER)		
-		int PrepareClipPlay(int NoOfChannels, int SampleRate, int BitsPerSample, int LittleEndian);
-		int WriteClip(unsigned char * buffer, int size);
-		int StopClip();
-#endif		
 		
 		void SetHdmiDD(int ac3);
 		

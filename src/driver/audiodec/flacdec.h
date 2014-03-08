@@ -31,8 +31,6 @@
 #ifndef __FLAC_DEC__
 #define __FLAC_DEC__
 
-#define DBOX
-
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>

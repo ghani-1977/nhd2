@@ -82,4 +82,5 @@ inline int access(const std::string &s, int mode) { return access(s.c_str(), mod
 
 inline void cstrncpy(char *dest, const char * const src, size_t n) { n--; strncpy(dest, src, n); dest[n] = 0; }
 inline void cstrncpy(char *dest, const std::string &src, size_t n) { n--; strncpy(dest, src.c_str(), n); dest[n] = 0; }
+
 #endif

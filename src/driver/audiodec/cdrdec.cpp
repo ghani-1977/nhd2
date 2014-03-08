@@ -42,6 +42,7 @@ CCdrDec* CCdrDec::getInstance()
 	{
 		CdrDec = new CCdrDec();
 	}
+	
 	return CdrDec;
 }
 
@@ -59,7 +60,8 @@ bool CCdrDec::SetMetaData(FILE* in, CAudioMetaData* m)
 	mChannels = 2;
 	m->total_time = filesize / (44100 * 2 * 2);
 	m->type_info = "CDR / 2 channels / 16 bit";
-	m->changed=true;
+	m->changed = true;
+	
 	return true;
 }
 

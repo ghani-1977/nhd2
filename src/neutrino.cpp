@@ -165,7 +165,7 @@
 #if defined (USE_OPENGL)
 #include <playback_cs.h>
 extern cPlayback *playback;
-extern char rec_filename[512];				// defined in stream2file.cpp
+extern char rec_filename[1024];				// defined in stream2file.cpp
 #endif
 
 

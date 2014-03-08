@@ -46,10 +46,8 @@
 #include <sstream>
 #include <driver/netfile.h>
 
-#if defined (ENABLE_PCMDECODER)
-#include <audio_cs.h>
-extern cAudio *audioDecoder;
-#endif
+#include <system/debug.h>
+
 
 #define ProgName "FlacDec"
 // nr of msecs to skip in ff/rev mode
@@ -137,7 +135,8 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 	FLAC__uint32 test = 1;
 	bool is_big_endian_host_ = (*((FLAC__byte*)(&test)))? false : true;
 
-	if (flacdec->mFrameCount == 0) {
+	if (flacdec->mFrameCount == 0) 
+	{
 		int fmt;
 
 		flacdec->mChannels = frame->header.channels;
@@ -159,18 +158,7 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 				printf("Flacdecoder: wrong bits per sample (%d)\n", flacdec->mBps);
 				flacdec->Status=CFlacDec::DSPSET_ERR;
 				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-		}
-		
-#if defined (ENABLE_PCMDECODER)		
-		if(audioDecoder)
-		{
-			if(audioDecoder->PrepareClipPlay(flacdec->mChannels, flacdec->mSampleRate, flacdec->mBps, 1) < 0)
-			{
-				flacdec->Status = CFlacDec::DSPSET_ERR;
-				return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-			}
-		}
-#endif		
+		}		
 	}
 
 	const unsigned bps = frame->header.bits_per_sample, channels = frame->header.channels;
@@ -178,7 +166,7 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 	FLAC__bool is_big_endian = false;
 	FLAC__bool is_unsigned_samples = bps<=8;
 	unsigned wide_samples = frame->header.blocksize, wide_sample, sample, channel, byte;
-//	unsigned frame_bytes = 0;
+	//unsigned frame_bytes = 0;
 
 	static FLAC__int8 s8buffer[FLAC__MAX_BLOCK_SIZE * FLAC__MAX_CHANNELS * sizeof(FLAC__int32)]; /* WATCHOUT: can be up to 2 megs */
 	FLAC__uint8  *u8buffer  = (FLAC__uint8  *)s8buffer;
@@ -396,28 +384,19 @@ FLAC__StreamDecoderWriteStatus flac_write(const FLAC__StreamDecoder *vf, const F
 	if(bytes_to_write > 0) 
 	{
 		size_t cnt;
-		unsigned int j=0;
-		while (j<bytes_to_write) 
+		unsigned int j = 0;
+		
+		while (j < bytes_to_write) 
 		{
 			if (j+flacdec->mBuffersize > bytes_to_write) 
 				cnt = bytes_to_write - j;
 			else	
-				cnt = flacdec->mBuffersize;
-
-#if defined (ENABLE_PCMDECODER)			
-			if(audioDecoder)
-			{
-				if(audioDecoder->WriteClip(&u8buffer[j], cnt) != (ssize_t)cnt) 
-				{
-					/* if a pipe closed when writing to stdout, we let it go without an error message */
-					return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-				}
-			}
-#endif			
+				cnt = flacdec->mBuffersize;			
 		
 			j += cnt;
 		}
 	}
+	
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -430,7 +409,8 @@ void flac_metadata(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadat
 	{
 		case FLAC__METADATA_TYPE_STREAMINFO:
 		{
-			printf("STREAMINFO block received\n");
+			dprintf(DEBUG_NORMAL, "STREAMINFO block received\n");
+			
 			flacdec->mTotalSamples = metadata->data.stream_info.total_samples;
 			flacdec->mBps = metadata->data.stream_info.bits_per_sample;
 			flacdec->mChannels = metadata->data.stream_info.channels;
@@ -558,12 +538,7 @@ CBaseDec::RetCode CFlacDec::Decoder(FILE *in, const int OutputFd, State* const s
 	{
 		printf("...drying - *state=%x, Status=%x\n", *state, Status);
 		usleep(100000);
-	}
-	
-#if defined (ENABLE_PCMDECODER)	
-	if(audioDecoder)
-		audioDecoder->StopClip();
-#endif	
+	}	
 
 	/* clean up the junk from the party */
 	if (mMetadata)
@@ -621,8 +596,10 @@ void CFlacDec::ParseUserComments(FLAC__StreamMetadata_VorbisComment* vc, CAudioM
 		printf("vendor_string = %d: %s\n", vc->vendor_string.length, vc->vendor_string.entry);
 	
 	printf("num_comments = %u\n", vc->num_comments);
-	for(unsigned int i = 0; i < vc->num_comments; i++) {
-		if(vc->comments[i].entry) {
+	for(unsigned int i = 0; i < vc->num_comments; i++) 
+	{
+		if(vc->comments[i].entry) 
+		{
 			printf("comments[%u] = %d: %s\n", i, vc->comments[i].length, vc->comments[i].entry);
 			char* search;
 			if((search=strstr((/*const*/ char*)vc->comments[i].entry,"Artist"))!=NULL ||
@@ -655,11 +632,7 @@ void CFlacDec::SetMetaData(FLAC__StreamMetadata *metadata, CAudioMetaData* m)
 	m->samplerate = mSampleRate;
 
 	//if(mSeekable)
-//#ifdef __sh__
-//		m->total_time = (time_t) mLengthInMsec / 1000;
-//#else
 		m->total_time = (time_t) mLengthInMsec;
-//#endif
 
 	std::stringstream ss;
 	ss << "FLAC V." << FLAC__VERSION_STRING << " / " <<  mChannels << "channel(s)";

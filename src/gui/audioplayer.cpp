@@ -222,7 +222,6 @@ void CAudioPlayerGui::Init(void)
 		audiofilefilter.addFilter("mpa");
 		audiofilefilter.addFilter("mp2");
 		audiofilefilter.addFilter("m3u");
-		//audiofilefilter.addFilter("ogg");
 		audiofilefilter.addFilter("wav");
 		audiofilefilter.addFilter("flac");
 	}
@@ -1348,7 +1347,6 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 						child = child->xmlNextNode;
 					}
 					if 	(strcmp("audio/mpeg", type) == 0) 	skip = false;
-					//else if (strcmp("application/ogg", type) == 0) 	skip = false;
 					else if (strcmp("mp3", type) == 0) 		skip = false;
 					else if (strcmp("application/mp3", type) == 0) 	skip = false;
 				} 
@@ -1435,7 +1433,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 			}
 			
 			if ((files->getType() == CFile::FILE_CDR)
-					//||  (files->getType() == CFile::FILE_OGG)
 					||  (files->getType() == CFile::FILE_MP3)
 					||  (files->getType() == CFile::FILE_WAV)
 					||  (files->getType() == CFile::FILE_FLAC)
@@ -1524,7 +1521,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 									CFile::FileType fileType = playlistItem.getType();
 									if (fileType == CFile::FILE_CDR
 											|| fileType == CFile::FILE_MP3
-											//|| fileType == CFile::FILE_OGG
 											|| fileType == CFile::FILE_WAV
 											|| fileType == CFile::FILE_FLAC
 									)

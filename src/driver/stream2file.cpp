@@ -71,7 +71,7 @@ extern "C" {
 #include <driver/vcrcontrol.h>
 
 static cRecord * record = NULL;
-//extern CZapitChannel * rec_channel;
+
 extern CFrontend * record_fe;
 extern t_channel_id live_channel_id;
 extern t_channel_id rec_channel_id;

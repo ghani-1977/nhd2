@@ -74,7 +74,7 @@ class CMoviePlayerGui : public CMenuTarget
 		enum {
 			NO_TIMESHIFT = 0,
 			TIMESHIFT,
-			P_TIMESHIFT,	//paused timeshift
+			P_TIMESHIFT,	// paused timeshift
 			R_TIMESHIFT	// rewind timeshift
 		};
 		
@@ -82,11 +82,11 @@ class CMoviePlayerGui : public CMenuTarget
 		int playstate;
 		
 		bool isMovieBrowser;
+		bool isURL;
 		bool isVlc;
 		bool cdDvd;
 		bool isDVD;
 		bool isBlueRay;
-		bool isURL;
 
 		int speed;
 		int slow;
@@ -145,7 +145,7 @@ class CMoviePlayerGui : public CMenuTarget
 		std::string _response;
 		
 		// multi select
-		CFileList _filelist;
+		CFileList filelist;
 		unsigned int selected;
 		
 		// lcd
