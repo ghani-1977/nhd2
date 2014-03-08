@@ -2887,7 +2887,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						    (strcasecmp("m2p", extension.c_str()) == 0) ||
 						    (strcasecmp("mpv", extension.c_str()) == 0) ||
 						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
-						    (strcasecmp("m2ts", extension.c_str()) == 0) ||
 						    (strcasecmp("vob", extension.c_str()) == 0) ||
 						    (strcasecmp("mp4", extension.c_str()) == 0) ||
 						    (strcasecmp("mov", extension.c_str()) == 0) ||
@@ -2895,7 +2894,8 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						    (strcasecmp("dat", extension.c_str()) == 0) ||
 						    (strcasecmp("trp", extension.c_str()) == 0) ||
 						    (strcasecmp("vdr", extension.c_str()) == 0) ||
-						    (strcasecmp("mts", extension.c_str()) == 0)
+						    (strcasecmp("mts", extension.c_str()) == 0) ||
+						    (strcasecmp("wmv", extension.c_str()) == 0)
 						    )
 							  test = 0;
 					}

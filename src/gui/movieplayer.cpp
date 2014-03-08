@@ -275,10 +275,10 @@ CMoviePlayerGui::CMoviePlayerGui()
 	tsfilefilter.addFilter("trp");
 	tsfilefilter.addFilter("vdr");
 	tsfilefilter.addFilter("mts");
+	tsfilefilter.addFilter("wmv");
 	tsfilefilter.addFilter("wav");
 	tsfilefilter.addFilter("flac");
 	tsfilefilter.addFilter("mp3");
-	tsfilefilter.addFilter("wmv");
 	tsfilefilter.addFilter("wma");
 	tsfilefilter.addFilter("ogg");
 #endif	
