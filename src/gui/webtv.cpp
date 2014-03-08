@@ -229,8 +229,6 @@ void CWebTV::loadChannels(void)
 		default:
 			break;	
 	}
-	
-	//sort(channels.begin(), channels.end());
 }
 
 // readxml file

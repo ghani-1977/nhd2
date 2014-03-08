@@ -32,6 +32,9 @@
 #include <sys/time.h> /* gettimeofday */
 #include "driver/framebuffer.h"
 
+/* zapit types */
+#include <client/zapittypes.h>
+
 
 class CPictureViewer
 {
@@ -85,10 +88,10 @@ class CPictureViewer
 		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true), bool transp = false);
 		
 		// for picons
-		bool DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale = false, bool center_x = true, bool center_y = true);
+		bool DisplayLogo(t_channel_id channel_id, int posx, int posy, int width, int height, bool upscale = false, bool center_x = true, bool center_y = true);
 		void getSize(const std::string &name, int* width, int *height, int * nbpp);
-		bool checkLogo(uint64_t channel_id);
-		void getLogoSize(uint64_t channel_id, int * width, int * height, int * bpp);
+		bool checkLogo(t_channel_id channel_id);
+		void getLogoSize(t_channel_id channel_id, int * width, int * height, int * bpp);
 };
 
 #endif

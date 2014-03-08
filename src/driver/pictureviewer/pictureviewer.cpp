@@ -526,7 +526,7 @@ void CPictureViewer::getSize(const std::string &name, int * width, int * height,
 }
 
 // check for logo
-bool CPictureViewer::checkLogo(uint64_t channel_id)
+bool CPictureViewer::checkLogo(t_channel_id channel_id)
 {	
         char fname[255];
 	bool logo_ok = false;
@@ -549,7 +549,7 @@ bool CPictureViewer::checkLogo(uint64_t channel_id)
 	return logo_ok;
 }
 
-void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height, int * bpp)
+void CPictureViewer::getLogoSize(t_channel_id channel_id, int * width, int * height, int * bpp)
 {
 	char fname[255];
 	bool logo_ok = false;
@@ -578,7 +578,7 @@ void CPictureViewer::getLogoSize(uint64_t channel_id, int * width, int * height,
 }
 
 // display logos
-bool CPictureViewer::DisplayLogo(uint64_t channel_id, int posx, int posy, int width, int height, bool upscale, bool center_x, bool center_y)
+bool CPictureViewer::DisplayLogo(t_channel_id channel_id, int posx, int posy, int width, int height, bool upscale, bool center_x, bool center_y)
 {	
         char fname[255];
 	bool ret = false;

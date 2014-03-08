@@ -79,10 +79,14 @@ class CFile
 		std::string	getPath(void) const;
 
 		CFile();
+		
 		off_t Size;
 		std::string Name;
 		std::string Url;
-		std::string Description;
+		std::string Title;
+		std::string Info1;
+		std::string Info2;
+		std::string thumbnail;
 		unsigned int Index;
 		mode_t Mode;
 		bool Marked;
