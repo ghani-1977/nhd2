@@ -1130,9 +1130,7 @@ int CMovieBrowser::exec(const char * path)
 	// browser paint 
 	m_pcBrowser->paint();
 	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
 
 	bool loop = true;
 	bool result;
@@ -1187,9 +1185,7 @@ int CMovieBrowser::exec(const char * path)
 			}
 		}
 		
-#if !defined USE_OPENGL
-		m_pcWindow->blit();
-#endif		
+		m_pcWindow->blit();	
 
 		if ( msg <= CRCInput::RC_MaxRC )
 			timeoutEnd = CRCInput::calcTimeoutEnd(timeout); // calcualate next timeout
@@ -1212,10 +1208,7 @@ void CMovieBrowser::hide(void)
 	dprintf(DEBUG_NORMAL, "[mb]->Hide\r\n");
 	
 	m_pcWindow->paintBackground();
-
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
 	
 	if (m_pcFilter != NULL)
 	{
@@ -1424,9 +1417,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 		}
 	}
 	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
 }
 
 void CMovieBrowser::refreshLCD(void)
@@ -2059,10 +2050,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		if(m_movieSelectionHandler != NULL)
 		{
 			m_pcWindow->paintBackground();
-
-#if !defined USE_OPENGL
 			m_pcWindow->blit();
-#endif		  
+	  
 			m_movieInfo.showMovieInfo(*m_movieSelectionHandler);
 			
 			refresh();
@@ -2092,10 +2081,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			hintBox->hide();
 			delete hintBox;
 			m_pcWindow->paintBackground(); // clear screen
-			
-#if !defined USE_OPENGL
-			m_pcWindow->blit();
-#endif			
+			m_pcWindow->blit();	
 
 			off64_t res = copy_movie(m_movieSelectionHandler, &m_movieInfo, msg == CRCInput::RC_mode);
 
@@ -2119,10 +2105,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 			hintBox->hide();
 			delete hintBox;
 			m_pcWindow->paintBackground(); // clear screen
-			
-#if !defined USE_OPENGL
 			m_pcWindow->blit();
-#endif			
+		
 			off64_t res = cut_movie(m_movieSelectionHandler, &m_movieInfo);
 			//g_RCInput->clearRCMsg();
 			if(res == 0)
@@ -3231,10 +3215,7 @@ void CMovieBrowser::loadMovies(void)
 	
 	//first clear screen */
 	m_pcWindow->paintBackground();
-	
-#if !defined USE_OPENGL
-	m_pcWindow->blit();
-#endif		
+	m_pcWindow->blit();	
 
 	//CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_NETZKINO)?LOCALE_MOVIEPLAYER_NETZKINO : (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
@@ -3441,10 +3422,8 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 {
 	//first clear screen */
 	m_pcWindow->paintBackground();
-	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif	
+
 	int i;
 
 	// directory menu
@@ -3454,7 +3433,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	// parental lock
 	CMenuWidget parentalMenu(LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD , NEUTRINO_ICON_STREAMING);
-	//parentalMenu.enableSaveScreen(true);
 	
 	// intros
 	//parentalMenu.addItem(GenericMenuSeparator);
@@ -3463,7 +3441,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	// optionsVerzeichnisse 
 	CMenuWidget optionsMenuDir(LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD , NEUTRINO_ICON_STREAMING);
-	//optionsMenuDir.enableSaveScreen(true);
 	
 	// intros
 	//optionsMenuDir.addItem(GenericMenuSeparator);
@@ -3504,7 +3481,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 		browserRowWidthIntInput[i] = new CIntInput(LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,(int&) m_settings.browserRowWidth[i], 3, NONEXISTANT_LOCALE, NONEXISTANT_LOCALE);
 
 	CMenuWidget optionsMenuBrowser(LOCALE_MOVIEBROWSER_OPTION_BROWSER , NEUTRINO_ICON_STREAMING);
-	//optionsMenuBrowser.enableSaveScreen(true);
 	
 	// intros
 	//optionsMenuBrowser.addItem(GenericMenuSeparator);
@@ -3525,7 +3501,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 
 	// options
 	CMenuWidget optionsMenu(LOCALE_EPGPLUS_OPTIONS , NEUTRINO_ICON_STREAMING);
-	//optionsMenu.enableSaveScreen(true);
 
 	// intros
 	//optionsMenu.addItem(GenericMenuSeparator);
@@ -3554,7 +3529,6 @@ bool CMovieBrowser::showMenu(MI_MOVIE_INFO */*movie_info*/)
 	CNFSSmallMenu * nfs = new CNFSSmallMenu();
 
 	CMenuWidget mainMenu(LOCALE_MOVIEBROWSER_MENU_MAIN_HEAD, NEUTRINO_ICON_STREAMING);
-	//mainMenu.enableSaveScreen(true);
 	
 	// intros
 	//mainMenu.addItem(GenericMenuSeparator);
@@ -4122,10 +4096,7 @@ neutrino_locale_t CMovieBrowser::getFeedLocale(void)
 bool CMovieBrowser::showYTMenu()
 {
 	m_pcWindow->paintBackground();
-	
-#if !defined USE_OPENGL
 	m_pcWindow->blit();
-#endif
 
 	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_YT_SMALL);
 	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);

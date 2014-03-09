@@ -423,7 +423,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 	{
 		frameBuffer->saveBackgroundImage();
 		frameBuffer->ClearFrameBuffer();
-
 		frameBuffer->blit();
 	}
 	
@@ -623,7 +622,6 @@ int CMoviePlayerGui::exec(CMenuTarget * parent, const std::string & actionKey)
 		frameBuffer->restoreBackgroundImage();
 		frameBuffer->useBackground(true);
 		frameBuffer->paintBackground();
-
 		frameBuffer->blit();
 	}
 	

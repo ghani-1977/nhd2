@@ -113,10 +113,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 	videoDecoder->setTint(*tint);
 	
 	paint();
-	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int selected = 0;
 	int max = 4;
@@ -359,9 +356,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 				}
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -375,10 +370,7 @@ int CPSISetup::exec(CMenuTarget * parent, const std::string &)
 void CPSISetup::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 }
 
 void CPSISetup::paint()

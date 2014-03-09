@@ -144,9 +144,7 @@ void CHintBox::paint(void)
 			       height + borderwidth);
 	refresh();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 }
 
 void CHintBox::refresh(void)
@@ -228,12 +226,9 @@ int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const 
  	CHintBox * hintBox = new CHintBox(Caption, Text, Width, Icon);
 	hintBox->paint();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 
 	if ( timeout == -1 )
-		//timeout = 5; /// default timeout 5 sec
 		timeout = g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR];
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
@@ -273,9 +268,7 @@ int ShowHintUTF(const neutrino_locale_t Caption, const char * const Text, const 
 			}
 		}
 
-#if !defined USE_OPENGL
-	CFrameBuffer::getInstance()->blit();
-#endif		
+		CFrameBuffer::getInstance()->blit();	
 	}
 
 	hintBox->hide();

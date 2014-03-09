@@ -150,9 +150,7 @@ int CMotorControl::exec(CMenuTarget* parent, const std::string &)
 	paintMenu();
 	paintStatus();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	while (!istheend)
 	{
@@ -390,9 +388,7 @@ int CMotorControl::exec(CMenuTarget* parent, const std::string &)
 		if(istheend)
 			g_Zapit->Rezap();
 		
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
@@ -466,9 +462,8 @@ void CMotorControl::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height + 20); //20:???
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
+
 	stopSatFind();
 }
 

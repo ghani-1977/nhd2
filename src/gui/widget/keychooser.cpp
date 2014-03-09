@@ -112,9 +112,7 @@ int CKeyChooserItem::exec(CMenuTarget* parent, const std::string &)
 
 	paint();
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif	
 
 	g_RCInput->clearRCMsg();
 
@@ -141,9 +139,7 @@ void CKeyChooserItem::hide()
 {
 	CFrameBuffer::getInstance()->paintBackgroundBoxRel(x, y, width, height);
 	
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif
 }
 
 void CKeyChooserItem::paint()

@@ -314,9 +314,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 
 	paint();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
@@ -420,9 +418,7 @@ int CStringInput::exec( CMenuTarget* parent, const std::string & )
 			}
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -460,9 +456,7 @@ void CStringInput::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 const char * CStringInput::getHint1(void)
@@ -732,9 +726,7 @@ int CPINInput::exec( CMenuTarget* parent, const std::string & )
 
 	paint();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	bool loop = true;
 
@@ -785,9 +777,7 @@ int CPINInput::exec( CMenuTarget* parent, const std::string & )
 			}
 		}
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 
 	hide();
@@ -852,9 +842,7 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	{
 		frameBuffer->SaveScreen(x- borderwidth, y- borderwidth, width+ 2* borderwidth, height+ 2* borderwidth, pixbuf);
 		
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 
 	// clear border
@@ -863,9 +851,7 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	frameBuffer->paintBackgroundBoxRel(x- borderwidth, y, borderwidth, height);
 	frameBuffer->paintBackgroundBoxRel(x+ width, y, borderwidth, height);
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	int res = CPINInput::exec ( parent, "" );
 
@@ -873,10 +859,8 @@ int CPLPINInput::exec( CMenuTarget* parent, const std::string & )
 	{
 		frameBuffer->RestoreScreen(x- borderwidth, y- borderwidth, width+ 2* borderwidth, height+ 2* borderwidth, pixbuf);
 
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
-		//frameBuffer->RestoreScreen(x- borderwidth, y- borderwidth, 720, 576, pixbuf);
+		
 		delete[] pixbuf;//Mismatching allocation and deallocation: pixbuf
 	}
 

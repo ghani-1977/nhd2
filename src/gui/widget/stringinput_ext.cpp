@@ -146,9 +146,7 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 	strcpy(oldval, value);
 	paint();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_MENU] == 0 ? 0xFFFF : g_settings.timing[SNeutrinoSettings::TIMING_MENU]);
 
@@ -157,20 +155,21 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 	{
 		if ( strcmp(value, dispval) != 0)
 		{
-#if 0
-			CVFD::getInstance()->showMenuText(1, value, selectedChar+1);
-#endif
 			strcpy(dispval, value);
 		}
 
 		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd, true );
 
-		if (msg==CRCInput::RC_left) {
+		if (msg == CRCInput::RC_left) 
+		{
 			bool found = false;
 			int oldSelectedChar = selectedChar;
-			if(selectedChar > 0) {
-				for(int i=selectedChar-1; i>=0;i--) {
-					if (inputFields[i]->isSelectable()) {
+			if(selectedChar > 0) 
+			{
+				for(int i=selectedChar-1; i>=0;i--) 
+				{
+					if (inputFields[i]->isSelectable()) 
+					{
 						found = true;
 						selectedChar = i;
 						break;
@@ -194,9 +193,6 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 			{
 				inputFields[oldSelectedChar]->paint( x+20, y+hheight +20, false );
 				inputFields[selectedChar]->paint( x+20, y+hheight +20, true );
-#if 0
-				CVFD::getInstance()->showMenuText(1, value, selectedChar+1);
-#endif
 			}
 		} 
 		else if (msg==CRCInput::RC_right) 
@@ -235,9 +231,6 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 			{
 				inputFields[oldSelectedChar]->paint( x+20, y+hheight +20, false );
 				inputFields[selectedChar]->paint( x+20, y+hheight +20, true );
-#if 0
-				CVFD::getInstance()->showMenuText(1, value, selectedChar+1);
-#endif
 			}
 		}
 		else if ( (CRCInput::getUnicodeValue(msg) != -1) || (msg == CRCInput::RC_red) || (msg == CRCInput::RC_green) || (msg == CRCInput::RC_blue) || (msg == CRCInput::RC_yellow) || (msg == CRCInput::RC_up) || (msg == CRCInput::RC_down))
@@ -286,9 +279,7 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 			res = menu_return::RETURN_EXIT_ALL;
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -305,11 +296,9 @@ int CExtendedInput::exec( CMenuTarget* parent, const std::string & )
 
 void CExtendedInput::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x - 10, y - 10, width + 10, height + 10);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
 
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CExtendedInput::paint()

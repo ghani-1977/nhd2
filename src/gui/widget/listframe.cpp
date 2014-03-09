@@ -404,8 +404,6 @@ void CListFrame::refreshList(void)
 		{
 			color = LIST_FONT_COLOR_SELECTED;
 
-			//frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED, RADIUS_LARGE, CORNER_BOTH);
-			//test
 			frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED);
 		}
 		int width;

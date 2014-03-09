@@ -329,10 +329,7 @@ int CScanSetup::exec(CMenuTarget * parent, const std::string &actionKey)
 void CScanSetup::hide()
 {
 	frameBuffer->paintBackgroundBoxRel(x, y, width, height);
-
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CScanSetup::showScanService()

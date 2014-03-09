@@ -427,9 +427,7 @@ void CRemoteControl::getSubChannels()
 
 				t_channel_id * p = new t_channel_id;
 				*p = current_channel_id;
-				//char *p = new char[sizeof(t_channel_id)];
-				//memcpy(p, &current_channel_id, sizeof(t_channel_id));
-			
+				
 				g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOT_SUBSERVICES, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 			}
 		}
@@ -474,8 +472,6 @@ void CRemoteControl::getNVODs()
 
 			t_channel_id * p = new t_channel_id;
 			*p = current_channel_id;
-			//char *p = new char[sizeof(t_channel_id)];
-			//memcpy(p, &current_channel_id, sizeof(t_channel_id));
 			
 			g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOT_SUBSERVICES, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 
@@ -600,8 +596,6 @@ void CRemoteControl::processAPIDnames()
 							if(!tags[i].component.empty())
 							{
 								strncpy(current_PIDs.APIDs[j].desc, tags[i].component.c_str(), 25);
-								//if (current_PIDs.APIDs[j].is_ac3)
-								//	strncat(current_PIDs.APIDs[j].desc, " (Dolby Digital)", 25);
 							}
 							current_PIDs.APIDs[j].component_tag = -1;
 							break;
@@ -636,8 +630,6 @@ void CRemoteControl::processAPIDnames()
 
 	t_channel_id * p = new t_channel_id;
 	*p = current_channel_id;
-	//char *p = new char[sizeof(t_channel_id)];
-	//memcpy(p, &current_channel_id, sizeof(t_channel_id));
 			
 	g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTAPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 }
@@ -685,6 +677,7 @@ const std::string & CRemoteControl::setSubChannel(const int numSub, const bool f
 	}
 
 	g_Zapit->zapTo_subServiceID_NOWAIT( current_sub_channel_id );
+	
 	// Houdini: to restart reading the private EPG when switching to a new option
 	g_Sectionsd->setServiceChanged( current_sub_channel_id , true );
 

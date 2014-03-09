@@ -215,9 +215,7 @@ int CMessageBox::exec(int timeout)
 
 	unsigned long long timeoutEnd = CRCInput::calcTimeoutEnd( timeout );
 
-#if !defined USE_OPENGL
 	CFrameBuffer::getInstance()->blit();
-#endif
 
 	bool loop = true;
 	while (loop)
@@ -285,9 +283,7 @@ int CMessageBox::exec(int timeout)
 			loop = false;
 		}
 
-#if !defined USE_OPENGL
 		CFrameBuffer::getInstance()->blit();
-#endif
 	}
 
 	hide();

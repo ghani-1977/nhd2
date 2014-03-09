@@ -2603,6 +2603,20 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_START_PLAYBACK:
 			startPlayBack(live_channel);
 			
+			// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+			playback->Close();
+			char _fname[255];
+		
+			if(strlen(rec_filename))
+			{
+				sprintf(_fname, "%s.ts", rec_filename);
+				
+				usleep(10000000);
+				playback->Open();
+				playback->Start(_fname);
+			}
+#endif			
 			break;
 	
 		case CZapitMessages::CMD_SB_STOP_PLAYBACK:
@@ -2611,6 +2625,11 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			CZapitMessages::responseCmd response;
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
+			
+// ugly and dirty://FIXME
+#if defined (USE_OPENGL)
+			playback->Close();
+#endif			
 			break;
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:		

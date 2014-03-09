@@ -158,9 +158,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 	selected=0;
 
 	if (parent)
-	{
 		parent->hide();
-	}
 
 	paintHead();
 	paint();

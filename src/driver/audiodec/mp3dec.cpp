@@ -1310,16 +1310,19 @@ void id3_finish_file(struct id3_file* file)
 	if (file->path)
 		free(file->path);
 
-	if (file->primary) {
+	if (file->primary) 
+	{
 		id3_tag_delref(file->primary);
 		id3_tag_delete(file->primary);
 	}
 	
-	for (i = 0; i < file->ntags; ++i) {
+	for (i = 0; i < file->ntags; ++i) 
+	{
 		struct id3_tag *tag;
 		
 		tag = file->tags[i].tag;
-		if (tag) {
+		if (tag) 
+		{
 			id3_tag_delref(tag);
 			id3_tag_delete(tag);
 		}

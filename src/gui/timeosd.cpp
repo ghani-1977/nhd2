@@ -141,9 +141,7 @@ void CTimeOSD::update(time_t time_show)
 		g_Font[TIMEOSD_FONT]->RenderString(m_xend - m_width - 5, m_y + m_height, m_width + 5, cDisplayTime, color2);
 	}
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 }
 
 void CTimeOSD::hide()
@@ -157,9 +155,7 @@ void CTimeOSD::hide()
 
 	// hide time
 	frameBuffer->paintBackgroundBoxRel(m_xend - m_width - 10, m_y, m_width + 10 + SHADOW_OFFSET, m_height + SHADOW_OFFSET );
-	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
+
 	visible = false;
 }

@@ -767,9 +767,7 @@ showList:
 			}
 		}
 			
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
@@ -789,10 +787,7 @@ void CWebTV::hide()
 	frameBuffer->paintBackgroundBoxRel(x, y, width + 5, height + info_height + 5);
 			
         clearItem2DetailsLine();
-	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 }
 
 void CWebTV::paintItem(int pos)

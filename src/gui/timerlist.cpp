@@ -569,9 +569,7 @@ int CTimerList::show()
 			}
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 	
 	hide();
@@ -586,10 +584,7 @@ void CTimerList::hide()
 	if(visible)
 	{
 		frameBuffer->paintBackgroundBoxRel(x, y, width, height + info_height);
-
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 		
 		visible = false;
 	}
@@ -833,10 +828,7 @@ void CTimerList::paint()
 	}
 
 	paintFoot();
-	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif
 
 	visible = true;
 }

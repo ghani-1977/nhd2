@@ -299,7 +299,7 @@ void CMsgBox::initFramesRel(void)
 //////////////////////////////////////////////////////////////////////
 void CMsgBox::refreshFoot(void)
 {
-	int color,bgcolor;
+	int color, bgcolor;
 	if(!(m_nMode & FOOT)) 
 		return;
 

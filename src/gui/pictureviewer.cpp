@@ -160,10 +160,7 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 	{
 		frameBuffer->saveBackgroundImage();
 		frameBuffer->ClearFrameBuffer();
-
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
 	}
 	
 	//
@@ -192,10 +189,7 @@ int CPictureViewerGui::exec(CMenuTarget* parent, const std::string &/*actionKey*
 		frameBuffer->restoreBackgroundImage();
 		frameBuffer->useBackground(true);
 		frameBuffer->paintBackground();
-
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif			
+		frameBuffer->blit();	
 	}
 	
 	//
@@ -569,9 +563,7 @@ int CPictureViewerGui::show()
 			}
 		}
 
-#if !defined USE_OPENGL
-		frameBuffer->blit();
-#endif		
+		frameBuffer->blit();	
 	}
 
 	hide();
@@ -584,10 +576,8 @@ void CPictureViewerGui::hide()
 	if(visible) 
 	{
 		frameBuffer->paintBackground();
-
-#if !defined USE_OPENGL
 		frameBuffer->blit();
-#endif
+
 		visible = false;
 	}
 }
@@ -740,9 +730,7 @@ void CPictureViewerGui::paint()
 	paintFoot();
 	paintInfo();
 	
-#if !defined USE_OPENGL
 	frameBuffer->blit();
-#endif	
 	
 	visible = true;
 }
