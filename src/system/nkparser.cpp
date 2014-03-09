@@ -48,7 +48,7 @@
 
 cNKFeedParser::cNKFeedParser()
 {
-	thumbnail_dir = /*NULL*/"/tmp/netzkino";
+	thumbnail_dir = "/tmp/netzkino";
 	parsed = false;
 	max_results = 25;
 	concurrent_downloads = 2;
@@ -62,13 +62,6 @@ cNKFeedParser::~cNKFeedParser()
 	DownloadThumbnailsEnd();
 	curl_easy_cleanup(curl_handle);
 }
-
-/*
-void cNKFeedParser::setThumbnailDir(std::string &_thumbnail_dir)
-{
-	thumbnail_dir = &_thumbnail_dir;
-}
-*/
 
 size_t cNKFeedParser::CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data)
 {
@@ -92,18 +85,6 @@ bool cNKFeedParser::getUrl(std::string &url, std::string &answer, CURL *_curl_ha
 	curl_easy_setopt(_curl_handle, CURLOPT_FAILONERROR, 1);
 	curl_easy_setopt(_curl_handle, CURLOPT_TIMEOUT, URL_TIMEOUT);
 	curl_easy_setopt(_curl_handle, CURLOPT_NOSIGNAL, (long)1);
-
-	/*
-	if(g_settings.softupdate_proxyserver != "") 
-	{
-		curl_easy_setopt(_curl_handle, CURLOPT_PROXY, g_settings.softupdate_proxyserver.c_str());
-		if(g_settings.softupdate_proxyusername != "") 
-		{
-			std::string tmp = g_settings.softupdate_proxyusername + ":" + g_settings.softupdate_proxypassword;
-			curl_easy_setopt(_curl_handle, CURLOPT_PROXYUSERPWD, tmp.c_str());
-		}
-	}
-	*/
 
 	char cerror[CURL_ERROR_SIZE];
 	curl_easy_setopt(_curl_handle, CURLOPT_ERRORBUFFER, cerror);
@@ -138,16 +119,6 @@ bool cNKFeedParser::DownloadUrl(std::string &url, std::string &file, CURL *_curl
 	curl_easy_setopt(_curl_handle, CURLOPT_FAILONERROR, 1);
 	curl_easy_setopt(_curl_handle, CURLOPT_TIMEOUT, URL_TIMEOUT);
 	curl_easy_setopt(_curl_handle, CURLOPT_NOSIGNAL, (long)1);
-
-	/*
-	if(g_settings.softupdate_proxyserver != "") {
-		curl_easy_setopt(_curl_handle, CURLOPT_PROXY, g_settings.softupdate_proxyserver.c_str());
-		if(g_settings.softupdate_proxyusername != "") {
-			std::string tmp = g_settings.softupdate_proxyusername + ":" + g_settings.softupdate_proxypassword;
-			curl_easy_setopt(_curl_handle, CURLOPT_PROXYUSERPWD, tmp.c_str());
-		}
-	}
-	*/
 
 	char cerror[CURL_ERROR_SIZE];
 	curl_easy_setopt(_curl_handle, CURLOPT_ERRORBUFFER, cerror);
@@ -299,6 +270,7 @@ bool cNKFeedParser::parseCategoriesJSON(std::string &answer)
 		if (c.id > 0)
 			categories.push_back(c);
 	}
+	
 	return !categories.empty();
 }
 
@@ -458,9 +430,6 @@ bool cNKFeedParser::DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle)
 
 bool cNKFeedParser::DownloadThumbnails()
 {
-	//if (!thumbnail_dir)
-	//	return false;
-	
 	if (safe_mkdir(thumbnail_dir.c_str()) && errno != EEXIST) 
 	{
 		perror(thumbnail_dir.c_str());

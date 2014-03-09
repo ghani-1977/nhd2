@@ -192,18 +192,14 @@ typedef enum
 	MB_SHOW_NETZKINO
 } MB_SHOW_MODE;
 
-struct Channellist{
-	char * title;
-	char * url;
-	char * description;
-	char * tfile;
-};
-
 #define MB_MAX_ROWS 6
 #define MB_MAX_DIRS 10
 /* MB_SETTINGS to be stored in g_settings anytime ....*/
 typedef struct
 {
+	// show mode
+	int show_mode;
+	
 	// moviebrowser
 	MB_GUI gui; //MB_GUI
 	MB_SORTING sorting; //MB_SORTING
@@ -245,9 +241,6 @@ typedef struct
 	std::string ytregion;
 	std::string ytvid;
 	std::string ytsearch;
-	
-	// show mode
-	int show_mode;
 	
 	// netzkino	
 	int nkmode;
