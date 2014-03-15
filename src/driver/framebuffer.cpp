@@ -671,10 +671,12 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
 		
         	pos += stride;
 		
+#if defined (ENABLE_SHADING)
 		if(mode == PAINT_SHADING)
 			col += spot;
 		else if(mode == PAINT_LIGHTING)
 			col -= spot;
+#endif		
     	}
 }
 

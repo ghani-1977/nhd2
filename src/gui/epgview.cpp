@@ -112,6 +112,7 @@ void reformatExtendedEvents(std::string strItem, std::string strLabel, bool bUse
 				}
 			}
 		}
+		
 		// Remove superfluous ", "
 		if (bHasItems) 
 		{
@@ -193,7 +194,7 @@ void CEpgData::processTextToArray(std::string text) // UTF-8
 	text += ' ';
 	char * text_= (char*) text.c_str();
 
-	while(*text_!=0)
+	while(*text_ != 0)
 	{
 		if ( (*text_ == ' ') || (*text_ == '\n') || (*text_ == '-') || (*text_ == '.') )
 		{
@@ -652,6 +653,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		std::vector<std::string>::iterator description;
 		std::vector<std::string>::iterator item;
 		processTextToArray(""); // Add a blank line
+		
 		//printf("show:: items %d descriptions %d\n", epgData.items.size(), epgData.itemDescriptions.size());
 		for (description = epgData.itemDescriptions.begin(), item = epgData.items.begin(); description != epgData.itemDescriptions.end(), item != epgData.items.end(); ++description, ++item) 
 		{
@@ -696,7 +698,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 
 	//from-to
 	widthl = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->getRenderWidth(fromto);
-	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+40,  sy+oy-3, widthl, fromto, COL_MENUHEAD);
+	g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx + 40,  sy + oy - 3, widthl, fromto, COL_MENUHEAD);
 	
 	//epg-date
 	widthr = g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->getRenderWidth(epg_date);
@@ -742,7 +744,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 	{
 		int pbx = sx + 10 + widthl + 10 + ((ox - 104 - widthr - widthl - 10 - 10 - 20)>>1);
 		timescale->reset();
-		timescale->paint(pbx+2, sy+oy-height+2, epg_done);
+		timescale->paint(pbx + 2, sy + oy - height + 2, epg_done);
 	}
 
 	GetPrevNextEPGData( epgData.eventID, &epgData.epg_times.startzeit );
@@ -758,6 +760,7 @@ int CEpgData::show(const t_channel_id channel_id, unsigned long long a_id, time_
 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_DATE]->RenderString(sx+ ox- botboxheight+ 8, sy+ oy- 3, widthr, ">", COL_MENUCONTENT + 3);
 	}
 	
+	// blit
 	frameBuffer->blit();
 
 	if ( doLoop )
@@ -991,6 +994,7 @@ void CEpgData::GetEPGData(const t_channel_id channel_id, unsigned long long id, 
 {
 	if(clear)
 		epgText.clear();
+	
 	emptyLineCount = 0;
 	epgData.title.clear();
 

@@ -53,16 +53,17 @@
 
 #include <gui/epgplus.h>
 
-extern CBouquetList * bouquetList;
-extern t_channel_id live_channel_id;
-extern char recDir[255];			// defined in neutrino.cpp
-
 #include <client/zapitclient.h> 		/* CZapitClient::Utf8_to_Latin1 */
 #include <driver/screen_max.h>
 
 #include <client/zapittools.h>			/*zapit*/
 
 #include <algorithm>
+
+
+extern CBouquetList * bouquetList;
+extern t_channel_id live_channel_id;
+extern char recDir[255];			// defined in neutrino.cpp
 extern CPictureViewer * g_PicViewer;
 #define PIC_W 120
 
@@ -112,21 +113,22 @@ void EventList::readEvents(const t_channel_id channel_id)
 {
 	evtlist.clear();
 	sectionsd_getEventsServiceKey(channel_id &0xFFFFFFFFFFFFULL, evtlist);
-	time_t azeit=time(NULL);
+	time_t azeit = time(NULL);
 
 	CChannelEventList::iterator e;
 	
 	if ( evtlist.size() != 0 ) 
 	{
 		CEPGData epgData;
+		
 		// todo: what if there are more than one events in the Portal
-		if (sectionsd_getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData ))
+		if (sectionsd_getActualEPGServiceKey(channel_id&0xFFFFFFFFFFFFULL, &epgData))
 		{
 			CSectionsdClient::LinkageDescriptorList	linkedServices;
 
 			if ( sectionsd_getLinkageDescriptorsUniqueKey( epgData.eventID, linkedServices ) )
 			{
-				if ( linkedServices.size()> 1 )
+				if ( linkedServices.size() > 1 )
 				{
 					CChannelEventList evtlist2; // stores the temporary eventlist of the subchannel channelid
 					t_channel_id channel_id2;
@@ -161,7 +163,7 @@ void EventList::readEvents(const t_channel_id channel_id)
 		
   		// Houdini: dirty workaround for RTL double events, remove them
   		CChannelEventList::iterator e2;
-  		for ( e=evtlist.begin(); e!=evtlist.end(); ++e )
+  		for ( e = evtlist.begin(); e != evtlist.end(); ++e )
   		{
   			e2 = e + 1;
   			if ( e2 != evtlist.end() && (e->startTime == e2->startTime)) 
@@ -170,7 +172,7 @@ void EventList::readEvents(const t_channel_id channel_id)
   			}
   		}
 		timerlist.clear();
-		g_Timerd->getTimerList (timerlist);
+		g_Timerd->getTimerList(timerlist);
 
 	}
 	
@@ -193,6 +195,7 @@ void EventList::readEvents(const t_channel_id channel_id)
 		evtlist.push_back(evt);
 
 	}
+	
 	if (current_event == (unsigned int) - 1)
 		current_event = 0;
 	selected = current_event;
@@ -239,11 +242,8 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	if(m_search_list == SEARCH_LIST_NONE) // init globals once only
 	{
 		m_search_epg_item = SEARCH_EPG_TITLE;
-		//m_search_keyword = "";
 		m_search_list = SEARCH_LIST_CHANNEL;
-		//m_search_channel_id = channel_id;
 		m_search_bouquet_id= bouquetList->getActiveBouquetNumber();
-		//m_search_source_text = "";
 	}
 	
 	m_search_channel_id = channel_id;
@@ -257,6 +257,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 	paint(channel_id);
 	showFunctionBar(true);
 	
+	// blit
 	frameBuffer->blit();
 
 	int oldselected = selected;
@@ -336,11 +337,12 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				if ( evtlist[selected].eventID == selected_id )
 					break;
 			}
-			oldselected=selected;
+			oldselected = selected;
 			if(selected <=listmaxshow)
 				liststart=0;
 			else
 				liststart=(selected/listmaxshow)*listmaxshow;
+			
 			hide();
 			paintHead(channel_id);
 			paint(channel_id);
@@ -389,6 +391,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 									evtlist[selected].eventID, evtlist[selected].startTime,
 									evtlist[selected].startTime - (ANNOUNCETIME + 120),
 									TIMERD_APIDS_CONF, true, recDir,true);
+									
 							ShowLocalizedMessage(LOCALE_TIMER_EVENTRECORD_TITLE, LOCALE_TIMER_EVENTRECORD_MSG, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO);
 						}
 					} 
@@ -408,6 +411,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 		{
 			int tID = -1;
 			CTimerd::CTimerEventTypes etype = isScheduled(channel_id, &evtlist[selected], &tID);
+			
 			if(etype == CTimerd::TIMER_ZAPTO) 
 			{
 				g_Timerd->removeTimerEvent(tID);
@@ -421,6 +425,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 					evtlist[selected].startTime,
 					evtlist[selected].startTime - ANNOUNCETIME, 0,
 					evtlist[selected].eventID, evtlist[selected].startTime, 0);
+					
 			ShowLocalizedMessage(LOCALE_TIMER_EVENTTIMED_TITLE, LOCALE_TIMER_EVENTTIMED_MSG, CMessageBox::mbrBack, CMessageBox::mbBack, NEUTRINO_ICON_INFO);
 			timerlist.clear();
 			g_Timerd->getTimerList (timerlist);
@@ -471,6 +476,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				hide();
 
 				res = g_EpgData->show(channel_id, evtlist[selected].eventID, &evtlist[selected].startTime);
+				
 				if ( res == menu_return::RETURN_EXIT_ALL )
 				{
 					loop = false;
@@ -493,7 +499,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 				}
 			}
 		}
-		else if ( msg==CRCInput::RC_green )
+		else if ( msg == CRCInput::RC_green )
 		{
 			in_search = findEvents();
 			timeoutEnd = CRCInput::calcTimeoutEnd(g_settings.timing[SNeutrinoSettings::TIMING_CHANLIST]);
@@ -513,6 +519,7 @@ int EventList::exec(const t_channel_id channel_id, const std::string& channelnam
 			}
 		}
 
+		// blit
 		frameBuffer->blit();	
 	}
 
@@ -534,6 +541,7 @@ void EventList::hide()
 CTimerd::CTimerEventTypes EventList::isScheduled(t_channel_id channel_id, CChannelEvent * event, int * tID)
 {
 	CTimerd::TimerList::iterator timer = timerlist.begin();
+	
 	for(; timer != timerlist.end(); timer++) 
 	{
 		if(timer->channel_id == channel_id && (timer->eventType == CTimerd::TIMER_ZAPTO || timer->eventType == CTimerd::TIMER_RECORD)) 
@@ -556,7 +564,7 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 {
 	uint8_t    color;
 	fb_pixel_t bgcolor;
-	int ypos = y+ theight+0 + pos*fheight;
+	int ypos = y + theight + pos*fheight;
 	std::string datetime1_str, datetime2_str, duration_str;
 	const char * icontype = 0;
 
@@ -579,7 +587,7 @@ void EventList::paintItem(unsigned int pos, t_channel_id channel_id)
 	// paint  item box
 	frameBuffer->paintBoxRel(x, ypos, width - 15, fheight, bgcolor);
 
-	if(liststart+pos<evtlist.size())
+	if(liststart + pos < evtlist.size())
 	{
 		if ( evtlist[liststart+pos].eventID != 0 )
 		{
@@ -839,7 +847,6 @@ int CEventListHandler::exec(CMenuTarget* parent, const std::string &/*actionKey*
 	return res;
 }
 
-/**/
 int EventList::findEvents(void)
 {
 	int res = 0;
@@ -876,6 +883,7 @@ int EventList::findEvents(void)
 			CHintBox box(LOCALE_TIMING_EPG,g_Locale->getText(LOCALE_EVENTFINDER_SEARCHING));
 			box.paint();
 			int bouquet_nr = bouquetList->Bouquets.size();
+			
 			for(int bouquet = 0; bouquet < bouquet_nr; bouquet++)
 			{
 				int channel_nr = bouquetList->Bouquets[bouquet]->channelList->getSize();
@@ -908,7 +916,7 @@ int EventList::findEvents(void)
 			if ( evtlist.size() == 0 )
 			{
 				CChannelEvent evt;
-				//evt.description = m_search_keyword + ": " + g_Locale->getText(LOCALE_EPGVIEWER_NOTFOUND);
+
 				evt.description = g_Locale->getText(LOCALE_EPGVIEWER_NOTFOUND);
 				evt.eventID = 0;
 				evtlist.push_back(evt);
