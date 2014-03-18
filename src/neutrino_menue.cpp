@@ -227,7 +227,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	MediaPlayer.addItem(GenericMenuBackItemMenuIcon);
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
-#if defined (ENABLE_PCMDECODER) || defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
+#if defined (ENABLE_LIBEPLAYER3) || defined (ENABLE_GSTREAMER)	
 	//Internet Radio
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_INETRADIO, true, NULL, new CAudioPlayerGui(true), NULL, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED, NEUTRINO_ICON_INTERNETRADIO, LOCALE_HELPTEXT_INTERNETRADIO ));
 
