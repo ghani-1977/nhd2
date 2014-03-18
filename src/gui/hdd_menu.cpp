@@ -69,6 +69,8 @@
 #include <mntent.h>
 
 
+bool hdd_found = 0;
+
 #define HDD_NOISE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval HDD_NOISE_OPTIONS[HDD_NOISE_OPTION_COUNT] =
 {
@@ -159,8 +161,6 @@ int CHDDMenuHandler::hddMenu()
 	
 	struct stat s;
 	int root_dev = -1;
-	
-	bool hdd_found = 0;
 
 	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
 
@@ -556,6 +556,8 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
 
         if (n < 0)
                 return 0;
+	
+	hdd_found = 1;
 	
 	const char hdparm[] = "/sbin/hdparm";
 	bool hdparm_link = false;

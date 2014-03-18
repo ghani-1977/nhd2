@@ -177,8 +177,6 @@ int old_b_id = -1;
 // hintbox
 CHintBox * reloadhintBox = 0;
 
-extern bool has_hdd;					// defined in gui/hdd_menu.cpp
-
 // record and timeshift
 bool autoshift = false;
 uint32_t shift_timer;
@@ -382,7 +380,15 @@ CNeutrinoApp * CNeutrinoApp::getInstance()
 #define FONT_STYLE_BOLD    1
 #define FONT_STYLE_ITALIC  2
 
-/* neutrino_font */
+typedef struct font_sizes
+{
+        const neutrino_locale_t name;
+        const unsigned int      defaultsize;
+        const unsigned int      style;
+        const unsigned int      size_offset;
+} font_sizes_struct;
+
+// neutrino_font
 font_sizes_struct neutrino_font[FONT_TYPE_COUNT] =
 {
         {LOCALE_FONTSIZE_MENU               ,  20, FONT_STYLE_BOLD   , 0},
@@ -1751,7 +1757,6 @@ void CNeutrinoApp::CmdParser(int argc, char **argv)
 		else 
 		{
 			dprintf(DEBUG_NORMAL, "Usage: neutrino [-v | --verbose 0..2]\n");
-			//exit(1);
 		}
 	}
 }
@@ -5022,11 +5027,11 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 	int returnval = menu_return::RETURN_REPAINT;
 
-	if(actionKey=="shutdown") 
+	if(actionKey == "shutdown") 
 	{
 		ExitRun(SHUTDOWN);
 	}
-	else if(actionKey=="reboot")
+	else if(actionKey == "reboot")
 	{
 		ExitRun(REBOOT);
 	}
@@ -5034,22 +5039,22 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 	{		
 		ExitRun(RESTART);
 	}	
-	else if(actionKey=="tv") 
+	else if(actionKey == "tv") 
 	{
 		tvMode();
 		returnval = menu_return::RETURN_EXIT_ALL;
 	}
-	else if(actionKey=="radio") 
+	else if(actionKey == "radio") 
 	{
 		radioMode();
 		returnval = menu_return::RETURN_EXIT_ALL;
 	}
-	else if(actionKey=="webtv") 
+	else if(actionKey == "webtv") 
 	{
 		webtvMode();
 		return menu_return::RETURN_EXIT_ALL;
 	}
-	else if(actionKey=="scart") 
+	else if(actionKey == "scart") 
 	{
 		g_RCInput->postMsg( NeutrinoMessages::VCR_ON, 0 );
 		returnval = menu_return::RETURN_EXIT_ALL;
@@ -5089,7 +5094,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 	}
-	else if(actionKey=="recording") 
+	else if(actionKey == "recording") 
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT)); // UTF-8
 		hintBox->paint();
@@ -5099,7 +5104,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 	}
-	else if(actionKey=="reloadchannels") 
+	else if(actionKey == "reloadchannels") 
 	{
 		if(!reloadhintBox)
 			reloadhintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_RELOAD_HINT));
@@ -5110,7 +5115,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		
 		reloadhintBox->hide();
 	}
-	else if(actionKey=="reloadplugins") 
+	else if(actionKey == "reloadplugins") 
 	{
 		CHintBox * hintBox = new CHintBox(LOCALE_MESSAGEBOX_INFO, g_Locale->getText(LOCALE_SERVICEMENU_GETPLUGINS_HINT));
 		hintBox->paint();
@@ -5120,7 +5125,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		hintBox->hide();
 		delete hintBox;
 	}
-	else if(actionKey=="osd.def") 
+	else if(actionKey == "osd.def") 
 	{
 		for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 			g_settings.timing[i] = default_timing[i];
@@ -5156,7 +5161,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 
 		if (b.exec(g_settings.network_nfs_moviedir))
 			strncpy(g_settings.network_nfs_moviedir, b.getSelectedFile()->Name.c_str(), sizeof(g_settings.network_nfs_moviedir)-1);
@@ -5168,7 +5173,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 		parent->hide();
 		
 		CFileBrowser b;
-		b.Dir_Mode=true;
+		b.Dir_Mode = true;
 
 		if (b.exec(g_settings.network_nfs_recordingdir)) 
 		{
@@ -5226,7 +5231,6 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 			else
 			{
 				g_settings.epg_dir = b.getSelectedFile()->Name;
-				//strcpy(g_settings.epg_dir.c_str(), b.getSelectedFile()->Name.c_str());
 				SendSectionsdConfig();
 			}
 		}
@@ -5642,8 +5646,6 @@ int main(int argc, char *argv[])
         signal(SIGTERM, sighandler);
         signal(SIGINT, sighandler);
         signal(SIGHUP, SIG_IGN);
-	
-	// from coolstream neutrino
 	signal(SIGHUP, sighandler);
 	signal(SIGPIPE, SIG_IGN);
 	

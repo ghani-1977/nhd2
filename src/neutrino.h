@@ -64,14 +64,6 @@ typedef struct neutrino_font_descr
 	int          size_offset;
 } neutrino_font_descr_struct;
 
-typedef struct font_sizes
-{
-        const neutrino_locale_t name;
-        const unsigned int      defaultsize;
-        const unsigned int      style;
-        const unsigned int      size_offset;
-} font_sizes_struct;
-
 class CNeutrinoApp : public CMenuTarget, CChangeObserver
 {
  	private:

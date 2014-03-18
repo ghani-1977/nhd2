@@ -233,7 +233,7 @@ struct SNeutrinoSettings
 		TIMING_NUMERICZAP  = 5
 	};
 
-	int  timing       [TIMING_SETTING_COUNT]   ;
+	int  timing[TIMING_SETTING_COUNT]   ;
 	char timing_string[TIMING_SETTING_COUNT][4];
 
 #define FONT_TYPE_COUNT 22
