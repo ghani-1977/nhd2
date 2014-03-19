@@ -69,8 +69,6 @@
 #include <mntent.h>
 
 
-bool hdd_found = 0;
-
 #define HDD_NOISE_OPTION_COUNT 4
 const CMenuOptionChooser::keyval HDD_NOISE_OPTIONS[HDD_NOISE_OPTION_COUNT] =
 {
@@ -97,6 +95,44 @@ static int my_filter(const struct dirent * dent)
 	if(dent->d_name[0] == 's' && dent->d_name[1] == 'd')
 		return 1;
 	
+	return 0;
+}
+
+bool hasHDD()
+{
+	struct dirent **namelist;
+	
+	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
+	
+	if (n < 0) 
+	{
+                perror("hasHDD: scandir(\"/sys/block\") failed");
+
+                return false;
+        }
+	
+	return true;
+}
+
+/* return 1 if mounted and 0 if not mounted */
+static int check_if_mounted(char * dev)
+{
+	char buffer[255];
+	FILE *f = fopen("/proc/mounts", "r");
+	
+	if(f != NULL)
+	{
+		while (fgets (buffer, 255, f) != NULL) 
+		{
+			if(strstr(buffer, dev)) 
+			{
+				fclose(f);
+				return 1;
+			}
+		}
+		fclose(f);
+	}
+
 	return 0;
 }
 
@@ -130,28 +166,6 @@ int CHDDMenuHandler::exec(CMenuTarget * parent, const std::string &actionKey)
 	return hddMenu();
 }
 
-/* return 1 if mounted and 0 if not mounted */
-static int check_if_mounted(char * dev)
-{
-	char buffer[255];
-	FILE *f = fopen("/proc/mounts", "r");
-	
-	if(f != NULL)
-	{
-		while (fgets (buffer, 255, f) != NULL) 
-		{
-			if(strstr(buffer, dev)) 
-			{
-				fclose(f);
-				return 1;
-			}
-		}
-		fclose(f);
-	}
-
-	return 0;
-}
-
 int CHDDMenuHandler::hddMenu()
 {
 	FILE * f;
@@ -161,6 +175,7 @@ int CHDDMenuHandler::hddMenu()
 	
 	struct stat s;
 	int root_dev = -1;
+	bool hdd_found = 0;
 
 	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
 
@@ -556,8 +571,6 @@ int CHDDDestExec::exec(CMenuTarget * /*parent*/, const std::string&)
 
         if (n < 0)
                 return 0;
-	
-	hdd_found = 1;
 	
 	const char hdparm[] = "/sbin/hdparm";
 	bool hdparm_link = false;

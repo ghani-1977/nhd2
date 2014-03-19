@@ -174,7 +174,7 @@ extern char recDir[255];			// defined in neutrino.cpp
 // webtv
 extern CWebTV * webtv;
 
-extern bool hdd_found;
+bool hasHDD();
 
 // option off0_on1
 #define OPTIONS_OFF0_ON1_OPTION_COUNT 2
@@ -374,7 +374,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_MISC, true, NULL, &miscSettings, NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, NEUTRINO_ICON_MAINSETTINGS, LOCALE_HELPTEXT_MISCSETTINGS ));
 
 	//HDD settings
-	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, hdd_found, NULL, new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_HDDSETTINGS, LOCALE_HELPTEXT_HDDSETTINGS ));
+	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_HDD_SETTINGS, hasHDD(), NULL, new CHDDMenuHandler(), NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_HDDSETTINGS, LOCALE_HELPTEXT_HDDSETTINGS ));
 }
 
 //Video Settings
