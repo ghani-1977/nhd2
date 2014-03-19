@@ -98,22 +98,6 @@ static int my_filter(const struct dirent * dent)
 	return 0;
 }
 
-bool hasHDD()
-{
-	struct dirent **namelist;
-	
-	int n = scandir("/sys/block", &namelist, my_filter, alphasort);
-	
-	if (n < 0) 
-	{
-                perror("hasHDD: scandir(\"/sys/block\") failed");
-
-                return false;
-        }
-	
-	return true;
-}
-
 /* return 1 if mounted and 0 if not mounted */
 static int check_if_mounted(char * dev)
 {
@@ -201,10 +185,10 @@ int CHDDMenuHandler::hddMenu()
 	hddmenu->addItem(new CMenuForwarder(LOCALE_HDD_ACTIVATE, true, NULL, this, "activateNow", CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
 
 	// sleep time
-	hddmenu->addItem( new CMenuOptionChooser(LOCALE_HDD_SLEEP, &g_settings.hdd_sleep, HDD_SLEEP_OPTIONS, HDD_SLEEP_OPTION_COUNT, true, NULL, /*CRCInput::RC_nokey, ""*/ CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, true));
+	hddmenu->addItem( new CMenuOptionChooser(LOCALE_HDD_SLEEP, &g_settings.hdd_sleep, HDD_SLEEP_OPTIONS, HDD_SLEEP_OPTION_COUNT, true, NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, true));
 	
 	// noise
-	hddmenu->addItem( new CMenuOptionChooser(LOCALE_HDD_NOISE, &g_settings.hdd_noise, HDD_NOISE_OPTIONS, HDD_NOISE_OPTION_COUNT, true, NULL, /*CRCInput::RC_nokey, ""*/ CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, true ));
+	hddmenu->addItem( new CMenuOptionChooser(LOCALE_HDD_NOISE, &g_settings.hdd_noise, HDD_NOISE_OPTIONS, HDD_NOISE_OPTION_COUNT, true, NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, true ));
 
 	//hddmenu->addItem( GenericMenuSeparatorLine );
 	
