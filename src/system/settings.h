@@ -345,7 +345,7 @@ struct SNeutrinoSettings
                 BUTTON_GREEN = 1,
                 BUTTON_YELLOW = 2,
                 BUTTON_BLUE = 3,
-#if defined (PLATFORM_GIGABLUE)  
+#if defined (ENABLE_FUNCTIONKEYS)  
 		BUTTON_F1 = 4,
 		BUTTON_F2 = 5,
 		BUTTON_F3 = 6,
