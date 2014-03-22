@@ -63,6 +63,11 @@ extern CZapitClient::SatelliteList satList;
 #include "lcdapi.h"
 #endif
 
+// opengl liveplayback
+#if defined (USE_OPENGL)
+void stopOpenGLplayback();
+#endif
+
 void sectionsd_getChannelEvents(CChannelEventList &eList, const bool tv_mode = true, t_channel_id *chidlist = NULL, int clen = 0);
 
 //
@@ -204,7 +209,11 @@ void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 	if(CNeutrinoApp::getInstance()->getMode() == NeutrinoMessages::mode_standby)
 	{
 		Zapit->setStandby(false);
-
+		
+// opengl liveplayback
+#if defined (USE_OPENGL)
+		stopOpenGLplayback();
+#endif		
 	
 		if (channel_id != 0) 
 		{
@@ -219,6 +228,11 @@ void CNeutrinoAPI::ZapToChannelId(t_channel_id channel_id)
 	{
 		if ( channel_id == Zapit->getCurrentServiceID() )
 			return;
+		
+// opengl liveplayback
+#if defined (USE_OPENGL)
+		stopOpenGLplayback();
+#endif		
 
 		if (Zapit->zapTo_serviceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
 			Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);
@@ -232,6 +246,11 @@ void CNeutrinoAPI::ZapToSubService(const char * const target)
 	sscanf(target,
 		SCANF_CHANNEL_ID_TYPE,
 		&channel_id);
+		
+// opengl liveplayback
+#if defined (USE_OPENGL)
+	stopOpenGLplayback();
+#endif		
 
 	if (Zapit->zapTo_subServiceID(channel_id) != CZapitClient::ZAP_INVALID_PARAM)
 		Sectionsd->setServiceChanged(channel_id&0xFFFFFFFFFFFFULL, false);

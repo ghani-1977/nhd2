@@ -143,7 +143,8 @@ void cRecord::RecordThread()
 		dprintf(DEBUG_INFO, "unable to allocate buffer! (out of memory)\n");
 	}
 
-	dmx->Start();
+	if(dmx)
+		dmx->Start();
 	
 	while (exit_flag == RECORD_RUNNING)
 	{
@@ -189,7 +190,8 @@ void cRecord::RecordThread()
 		}
 	}
 	
-	dmx->Stop();
+	if(dmx)
+		dmx->Stop();
 	
 	while (buf_pos > 0) /* write out the unwritten buffer content */
 	{

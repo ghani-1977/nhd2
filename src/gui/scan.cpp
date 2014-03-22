@@ -367,6 +367,10 @@ int CScanTs::exec(CMenuTarget * parent, const std::string & actionKey)
 	/* start sectionsd */
 	g_Sectionsd->setPauseScanning(false);
 	
+#if defined (USE_OPENGL)
+	g_Zapit->startPlayBack();
+#endif
+	
 	CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 
 	return menu_return::RETURN_REPAINT;

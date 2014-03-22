@@ -294,12 +294,12 @@ static char **global_argv;
 extern const char * locale_real_names[]; 		//#include <system/locals_intern.h>
 
 //user menu
-const char* usermenu_button_def[SNeutrinoSettings::BUTTON_MAX]={
+const char *usermenu_button_def[SNeutrinoSettings::BUTTON_MAX]={
 	"red", 
 	"green", 
 	"yellow", 
 	"blue",
-#if defined (PLATFORM_GIGABLUE)
+#if defined (ENABLE_FUNCTIONKEYS)
 	"f1",
 	"f2",
 	"f3",
@@ -352,6 +352,13 @@ CNeutrinoApp::CNeutrinoApp()
 	current_muted = 0;
 	
 	memset(&font, 0, sizeof(neutrino_font_descr_struct));
+	
+	//
+	recordingstatus = 0;
+	timeshiftstatus = 0;
+#if defined (USE_OPENGL)
+	playbackstatus = 0;
+#endif
 }
 
 // CNeutrinoApp - Destructor
@@ -596,11 +603,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy( g_settings.network_nfs_recordingdir, configfile.getString( "network_nfs_recordingdir", "/media/hdd/record" ).c_str() );
 
 	// permanent timeshift
-#if defined (USE_OPENGL)
-	g_settings.auto_timeshift = 1;	
-#else
-	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );
-#endif	
+	g_settings.auto_timeshift = configfile.getInt32( "auto_timeshift", 0 );	
 
 	// timeshift dir
 	sprintf(timeshiftDir, "%s/.timeshift", g_settings.network_nfs_recordingdir);
@@ -787,7 +790,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
                 "5",                            // GREEN
                 "6",                            // YELLOW
                 "8, 9, 12, 11, 13",   		// BLUE
-#if defined (PLATFORM_GIGABLUE)
+#if defined (ENABLE_FUNCTIONKEYS)
 		"0",				// F1
 		"0",				// F2
 		"0",				// F3
@@ -1880,12 +1883,122 @@ void CNeutrinoApp::setupRecordingDevice(void)
 bool sectionsd_getActualEPGServiceKey(const t_channel_id uniqueServiceKey, CEPGData * epgdata);
 bool sectionsd_getEPGid(const event_id_t epgID, const time_t startzeit, CEPGData * epgdata);
 
+#if defined (USE_OPENGL)
+int startOpenGLplayback()
+{
+	CTimerd::RecordingInfo eventinfo;
+
+	if( !CVCRControl::getInstance()->isDeviceRegistered() )
+		return 0;
+
+	eventinfo.channel_id = live_channel_id;
+	CEPGData epgData;
+	
+	if (sectionsd_getActualEPGServiceKey(live_channel_id&0xFFFFFFFFFFFFULL, &epgData ))
+	{
+		eventinfo.epgID = epgData.eventID;
+		eventinfo.epg_starttime = epgData.epg_times.startzeit;
+		strncpy(eventinfo.epgTitle, epgData.title.c_str(), EPG_TITLE_MAXLEN-1);
+		eventinfo.epgTitle[EPG_TITLE_MAXLEN - 1] = 0;
+	}
+	else 
+	{
+		eventinfo.epgID = 0;
+		eventinfo.epg_starttime = 0;
+		strcpy(eventinfo.epgTitle, "");
+	}
+
+	eventinfo.apids = TIMERD_APIDS_CONF;
+
+	(static_cast<CVCRControl::CFileDevice*>(recordingdevice))->Directory = timeshiftDir;
+
+	if( CVCRControl::getInstance()->Record(&eventinfo))
+		CNeutrinoApp::getInstance()->playbackstatus = 1;
+	else
+		CNeutrinoApp::getInstance()->playbackstatus = 0;
+	
+	// start playback	
+	char fname[255];
+	int cnt = 10 * 1000000;
+
+	while (!strlen(rec_filename)) 
+	{
+		usleep(1000);
+		cnt -= 1000;
+		if (!cnt)
+			break;
+	}
+
+	if(strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+		
+		usleep(10000000);
+		playback->Open();
+		playback->Start(fname);
+	} 
+	
+	return 0;
+}
+
+void stopOpenGLplayback()
+{
+	// stop playback
+	playback->Close();
+	
+	// stop recording
+	if(CNeutrinoApp::getInstance()->playbackstatus) 
+	{
+		CNeutrinoApp::getInstance()->playbackstatus = 0;
+		
+		CVCRControl::getInstance()->Stop();
+		
+		if(CNeutrinoApp::getInstance()->recording_id) 
+		{
+			CNeutrinoApp::getInstance()->recording_id = 0;
+		}
+	}
+}
+
+int unlockOpenGLplayback()
+{
+	// start playback	
+	char fname[255];
+	int cnt = 10 * 1000000;
+
+	while (!strlen(rec_filename)) 
+	{
+		usleep(1000);
+		cnt -= 1000;
+		if (!cnt)
+			break;
+	}
+
+	if(strlen(rec_filename))
+	{
+		sprintf(fname, "%s.ts", rec_filename);
+		
+		usleep(10000000);
+		playback->Open();
+		playback->Start(fname);
+	} 
+	
+	return 0;
+}
+
+void lockOpenGLplayback()
+{
+	// stop playback
+	playback->Close();
+}
+#endif
+
 // start auto record (permanent/temp timeshift)
 int startAutoRecord(bool addTimer)
 {
 	CTimerd::RecordingInfo eventinfo;
 
-	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() /*|| (recDir != NULL)*/ )
+	if(CNeutrinoApp::getInstance()->recordingstatus || !CVCRControl::getInstance()->isDeviceRegistered() )
 		return 0;
 
 	eventinfo.channel_id = live_channel_id;
@@ -1931,30 +2044,6 @@ int startAutoRecord(bool addTimer)
 	}	
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, true);
-	
-	// ugly and dirty://FIXME
-#if defined (USE_OPENGL)
-	playback->Close();
-	char fname[255];
-	int cnt = 10 * 1000000;
-
-	while (!strlen(rec_filename)) 
-	{
-		usleep(1000);
-		cnt -= 1000;
-		if (!cnt)
-			break;
-	}
-
-	if(strlen(rec_filename))
-	{
-		sprintf(fname, "%s.ts", rec_filename);
-		
-		usleep(10000000);
-		playback->Open();
-		playback->Start(fname);
-	}
-#endif		
 
 	return 0;
 }
@@ -1982,11 +2071,6 @@ void stopAutoRecord()
 	}
 	
 	CVFD::getInstance()->ShowIcon(VFD_ICON_TIMESHIFT, false);
-	
-	// ugly and dirty://FIXME
-#if defined (USE_OPENGL)
-	playback->Close();
-#endif	
 }
 
 // do gui-record
@@ -2244,6 +2328,10 @@ void CNeutrinoApp::InitZapper()
 		g_Zapit->getPIDS(g_RemoteControl->current_PIDs);
 		g_RemoteControl->processAPIDnames();
 		
+		// opengl liveplayback
+#if defined (USE_OPENGL)
+		startOpenGLplayback();
+#endif		
 		// permenant timeshift
 		if(g_settings.auto_timeshift)
 			startAutoRecord(true);
@@ -3099,7 +3187,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				showUserMenu(SNeutrinoSettings::BUTTON_BLUE);
 				StartSubtitles();
 			}
-#if defined (PLATFORM_GIGABLUE)			
+#if defined (ENABLE_FUNCTIONKEYS)			
 			else if( msg == CRCInput::RC_f1 ) 
 			{
 				StopSubtitles();
@@ -3702,7 +3790,13 @@ _repeat:
 			}
 		}
 		
+#if defined (USE_OPENGL)
+		if(!playbackstatus)
+			recordingstatus = data;
+#else
 		recordingstatus = data;
+#endif
+		
 		if( ( !g_InfoViewer->is_visible ) && data && !autoshift)
 			g_RCInput->postMsg( NeutrinoMessages::SHOW_INFOBAR, 0 );
 
@@ -4849,6 +4943,11 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 					saveEpg();
 				}
 			}
+			
+// opengl liveplayback
+#if defined (USE_OPENGL)
+			stopOpenGLplayback();
+#endif			
 		}
 
 		//run script
@@ -4924,6 +5023,11 @@ void CNeutrinoApp::standbyMode( bool bOnOff )
 
 		// set vol (saved)
 		AudioMute(current_muted, false );
+		
+// opengl liveplayback
+#if defined (USE_OPENGL)
+		startOpenGLplayback();
+#endif					
 
 		// start record if
 		if((mode == mode_tv) && wasshift) 
@@ -5437,7 +5541,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 		return true;
 	}
 	else if(ARE_LOCALES_EQUAL(OptionName, LOCALE_EXTRA_AUTO_TIMESHIFT)) 
-	{
+	{	  
 		if(g_settings.auto_timeshift)
 			startAutoRecord(true);
 		else
@@ -5449,7 +5553,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 				timeshiftstatus = 0;
 			}
 		}
-		
+	
 		return true;
 	}
 

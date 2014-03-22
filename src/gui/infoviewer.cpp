@@ -303,7 +303,7 @@ void CInfoViewer::paintTime(bool show_dot, bool firstPaint, int posx, int posy)
 }
 
 void CInfoViewer::showRecordIcon(const bool show)
-{
+{ 
 	recordModeActive = CNeutrinoApp::getInstance()->recordingstatus || shift_timer;
 
 	if (recordModeActive) 
@@ -326,7 +326,7 @@ void CInfoViewer::showRecordIcon(const bool show)
 		} 
 		else 
 			frameBuffer->paintBackgroundBoxRel(BoxStartX + 5, BoxStartY - 30, icon_w_rec, icon_h_rec);
-	}
+	}	
 }
 
 void CInfoViewer::showTitle(const int ChanNum, const std::string & Channel, const t_satellite_position satellitePosition, const t_channel_id new_channel_id, const bool calledFromNumZap, int epgpos)
@@ -1574,8 +1574,9 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 		}
   	} 
 	else if (msg == NeutrinoMessages::EVT_RECORDMODE) 
-	{
+	{	  
 		recordModeActive = data;
+		
 		if(is_visible) 
 			showRecordIcon(true);		
   	} 
@@ -2153,7 +2154,6 @@ void CInfoViewer::showButton_Audio()
 		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(sx, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5 - icon_w, g_Locale->getText(LOCALE_INFOVIEWER_LANGUAGES), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
   	}
 
-  	//const char *dd_icon;
 	int ac3state;
   	if ((g_RemoteControl->current_PIDs.PIDs.selected_apid < count) && (g_RemoteControl->current_PIDs.APIDs[g_RemoteControl->current_PIDs.PIDs.selected_apid].is_ac3))
 	{
@@ -2174,8 +2174,6 @@ void CInfoViewer::showButton_Audio()
 
 void CInfoViewer::killTitle()
 {
-	printf("CInfoViewer::killTitle\n");
-	
   	if (is_visible) 
 	{
 		is_visible = false;

@@ -239,6 +239,10 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		/* recording_id */
 		int recording_id;
 		
+#if defined (USE_OPENGL)
+		int playbackstatus;
+#endif		
+		
 		void SendSectionsdConfig(void);
 		int GetChannelMode(void) { return g_settings.channel_mode; };
 		void SetChannelMode(int mode);

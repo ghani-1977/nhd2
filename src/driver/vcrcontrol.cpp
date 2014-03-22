@@ -75,6 +75,7 @@
 #include <channel.h>
 
 #include <system/helpers.h>
+#include <system/debug.h>
 
 
 extern bool autoshift;
@@ -264,7 +265,7 @@ bool CVCRControl::CVCRDevice::Stop()
 
 bool CVCRControl::CVCRDevice::Record(const t_channel_id channel_id, int mode, const event_id_t epgid, const std::string& epgTitle, unsigned char apids, const time_t epg_time)
 {
-	printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE " epg: %llx, apids %x mode\n", channel_id, epgid, apids);
+	dprintf(DEBUG_NORMAL, "[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE " epg: %llx, apids %x mode\n", channel_id, epgid, apids);
 	
 	// leave menu (if in any)
 	g_RCInput->postMsg( CRCInput::RC_timeout, 0 );
@@ -519,23 +520,11 @@ bool CVCRControl::CFileDevice::Stop()
 {
 	std::string extMessage = " ";
 	time_t end_time = time(0);
-	
-	//printf("[direct] Stop recording, g_movieInfo %lx\n", g_movieInfo); fflush(stdout);
-	//FIXME why not save info if shift ?
-	//if(!autoshift || autoshift_delete) 
-	{
-		// g_movieInfo->length = (end_time - start_time) / 60;
-		g_movieInfo->length = (int) round((double) (end_time - start_time) / (double) 60);
-		//printf("[direct] stop recording 1\n"); fflush(stdout);
-		g_cMovieInfo->encodeMovieInfoXml(&extMessage, g_movieInfo);
-		//printf("[direct] stop recording 2\n"); fflush(stdout);
-	}
+		
+	g_movieInfo->length = (int) round((double) (end_time - start_time) / (double) 60);
+	g_cMovieInfo->encodeMovieInfoXml(&extMessage, g_movieInfo);	
 
 	bool return_value = (::stop_recording(extMessage.c_str()) == STREAM2FILE_OK);
-
-	//test
-	//bool return_value = (::stop_recording() == STREAM2FILE_OK);
-	//printf("[direct] stop recording 3\n"); fflush(stdout);
 
 	RestoreNeutrino();
 
@@ -553,8 +542,6 @@ bool CVCRControl::CFileDevice::Stop()
 std::string ext_channel_name;
 bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, const event_id_t epgid, const std::string& epgTitle, unsigned char apids, const time_t epg_time) 
 {
-	//printf("[CVCRControl] Record channel_id: " PRINTF_CHANNEL_ID_TYPE " epg: %llx, apids %x mode %d\n", channel_id, epgid, apids, mode);
-
 	// cut neutrino
 	CutBackNeutrino(channel_id, mode);
 
@@ -598,13 +585,6 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 	}
 
 	pos = strlen(filename);
-	
-#if 0
-	time_t t = time(NULL);
-	strftime(&(filename[pos]), sizeof(filename) - pos - 1, "%Y%m%d_%H%M%S", localtime(&t));
-	strcat(filename, "_");
-	pos = strlen(filename);
-#endif
 
 	ext_channel_name = g_Zapit->getChannelName(channel_id);
 	if (!(ext_channel_name.empty()))
@@ -697,11 +677,9 @@ bool CVCRControl::CFileDevice::Record(const t_channel_id channel_id, int mode, c
 		}
 	}
 
-#if 1
 	pos = strlen(filename);
 	time_t t = time(NULL);
 	strftime(&(filename[pos]), sizeof(filename) - pos - 1, "%Y%m%d_%H%M%S", localtime(&t));
-#endif
 
 	start_time = time(0);
 

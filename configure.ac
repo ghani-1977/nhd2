@@ -149,6 +149,16 @@ if test "$enable_shading" = "yes"; then
 AC_DEFINE(ENABLE_SHADING,1,[include shading and spotlighting support])
 fi
 
+# function keys
+AC_ARG_ENABLE(functionkeys,
+	AS_HELP_STRING(--enable-functionkeys,include RC functions keys support),
+	,[enable_functionkeys=no])
+AM_CONDITIONAL(ENABLE_FUNCTIONKEYS,test "$enable_functionkeys" = "yes")
+
+if test "$enable_functionkeys" = "yes"; then
+AC_DEFINE(ENABLE_FUNCTIONKEYS,1,[include RC function keys support])
+fi
+
 AC_OUTPUT([
 Makefile
 lib/Makefile

@@ -2443,7 +2443,7 @@ void CNeutrinoApp::InitKeySettings(CMenuWidget &keySettings, CMenuWidget &bindSe
         keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_GREEN, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_GREEN, 1), NULL, CRCInput::convertDigitToKey(shortcutkeysettings++) ));
         keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_YELLOW, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_YELLOW, 2), NULL, CRCInput::convertDigitToKey(shortcutkeysettings++) ));
         keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_BLUE, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_BLUE, 3), NULL, CRCInput::convertDigitToKey(shortcutkeysettings++) ));
-#if defined (PLATFORM_GIGABLUE)	
+#if defined (ENABLE_FUNCTIONKEYS)	
 	keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_F1, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_F1, 4) ));
         keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_F2, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_F2, 5) ));
         keySettings.addItem(new CMenuForwarder(LOCALE_USERMENU_BUTTON_F3, true, NULL, new CUserMenuMenu(LOCALE_USERMENU_BUTTON_F3, 6) ));
@@ -2540,7 +2540,7 @@ const CMenuOptionChooser::keyval MAINMENU_RECORDING_OPTIONS[MAINMENU_RECORDING_O
 
 // USERMENU
 // This is just a quick helper for the usermenu only. I already made it a class for future use.
-#if defined (PLATFORM_GIGABLUE) //FIXME:???
+#if defined (ENABLE_FUNCTIONKEYS) //FIXME:???
 #define BUTTONMAX 8
 #else
 #define BUTTONMAX 4
@@ -2551,7 +2551,7 @@ const neutrino_msg_t key_helper_msg_def[BUTTONMAX] = {
 	CRCInput::RC_green,
 	CRCInput::RC_yellow,
 	CRCInput::RC_blue,
-#if defined (PLATFORM_GIGABLUE)
+#if defined (ENABLE_FUNCTIONKEYS)
 	CRCInput::RC_f1,
 	CRCInput::RC_f2,
 	CRCInput::RC_f3,
@@ -2564,7 +2564,7 @@ const char * key_helper_icon_def[BUTTONMAX]={
 	NEUTRINO_ICON_BUTTON_GREEN, 
 	NEUTRINO_ICON_BUTTON_YELLOW, 
 	NEUTRINO_ICON_BUTTON_BLUE,
-#if defined (PLATFORM_GIGABLUE)	
+#if defined (ENABLE_FUNCTIONKEYS)	
 	NEUTRINO_ICON_BUTTON_F1, 
 	NEUTRINO_ICON_BUTTON_F2, 
 	NEUTRINO_ICON_BUTTON_F3, 
@@ -2603,7 +2603,7 @@ class CKeyHelper
                                 button = 2;
                         if(prefered_key == CRCInput::RC_blue)
                                 button = 3;
-#if defined (PLATFORM_GIGABLUE) //FIXME:???
+#if defined (ENABLE_FUNCTIONKEYS) //FIXME:???
 			if(prefered_key == CRCInput::RC_f1)
                                 button = 4;
 			if(prefered_key == CRCInput::RC_f2)
@@ -2666,7 +2666,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 		-1, 
 		-1, 
 		-1,
-#if defined (PLATFORM_GIGABLUE) //FIXME:???
+#if defined (ENABLE_FUNCTIONKEYS) //FIXME:???
 		-1,
 		-1,
 		-1,

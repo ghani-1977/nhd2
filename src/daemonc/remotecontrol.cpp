@@ -56,6 +56,12 @@ extern tallchans allchans;	// defined in bouquets.h
 extern bool autoshift;
 extern uint32_t scrambled_timer;
 
+// opengl liveplayback
+#if defined (USE_OPENGL)
+int startOpenGLplayback();
+void stopOpenGLplayback();
+#endif
+
 bool sectionsd_getComponentTagsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::ComponentTagList& tags);
 bool sectionsd_getLinkageDescriptorsUniqueKey(const event_id_t uniqueKey, CSectionsdClient::LinkageDescriptorList& descriptors);
 bool sectionsd_getNVODTimesServiceKey(const t_channel_id uniqueServiceKey, CSectionsdClient::NVODTimesList& nvod_list);
@@ -295,12 +301,10 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 		}
 		return messages_return::handled;
 	}
-	else if ( (msg == NeutrinoMessages::EVT_ZAP_COMPLETE) || 
-		  (msg == NeutrinoMessages::EVT_ZAP_SUB_COMPLETE) ) 
+	else if ( (msg == NeutrinoMessages::EVT_ZAP_COMPLETE) || (msg == NeutrinoMessages::EVT_ZAP_SUB_COMPLETE) ) 
 	{
 		if ((*(t_channel_id *)data) == ((msg == NeutrinoMessages::EVT_ZAP_COMPLETE) ? current_channel_id : current_sub_channel_id))
 		{
-			//TEST
 			// tell sectionsd to start epg on the zapped channel
 			g_Sectionsd->setServiceChanged( current_channel_id&0xFFFFFFFFFFFFULL, false );
 		
@@ -334,9 +338,7 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 
 			t_channel_id * p = new t_channel_id;
 			*p = current_channel_id;
-			//char *p = new char[sizeof(t_channel_id)];
-			//memcpy(p, &current_channel_id, sizeof(t_channel_id));
-
+		
 			g_RCInput->postMsg(NeutrinoMessages::EVT_ZAP_GOTPIDS, (const neutrino_msg_data_t)p, false); // data is pointer to allocated memory
 
 			processAPIDnames();
@@ -346,7 +348,12 @@ int CRemoteControl::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data
 			{
 				g_Radiotext->setPid(current_PIDs.APIDs[current_PIDs.PIDs.selected_apid].pid);
 			}
-#endif			
+#endif
+
+// opengl liveplayback
+#if defined (USE_OPENGL)
+			startOpenGLplayback();
+#endif
 		}
 
 	    	return messages_return::handled;
@@ -725,6 +732,7 @@ const std::string & CRemoteControl::subChannelDown(void)
 
 void stopAutoRecord();
 extern int abort_zapit;
+
 void CRemoteControl::zapTo_ChannelID(const t_channel_id channel_id, const std::string & channame, const bool start_video) // UTF-8
 {
 	current_channel_id = channel_id;
@@ -756,10 +764,15 @@ void CRemoteControl::zapTo_ChannelID(const t_channel_id channel_id, const std::s
 	{
 		g_InfoViewer->chanready = 0;
 		
+// opengl liveplayback
+#if defined (USE_OPENGL)
+		stopOpenGLplayback();
+#endif		
+		
 		if(autoshift) 
 		{
 			stopAutoRecord();
-			CNeutrinoApp::getInstance ()->recordingstatus = 0;
+			CNeutrinoApp::getInstance()->recordingstatus = 0;
 		}
 		
 		if(scrambled_timer) 

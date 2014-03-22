@@ -477,8 +477,11 @@ int main (int argc, char** argv)
 		unsigned int processed_transponder;
 		unsigned int transponder;
 		unsigned int services;
+		
 		printf("[pzapit] Start scan, mode %d\n", scan_mode);
-		zapit.startScan(scan_mode);
+		
+		int feindex = 0;
+		zapit.startScan(scan_mode, feindex);
 
 		while (zapit.isScanReady(satellite, processed_transponder, transponder, services) == false)
 		{

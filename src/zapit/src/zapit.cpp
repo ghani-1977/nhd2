@@ -71,13 +71,12 @@
 #include <dvb-ci.h>
 #endif
 
-// ugly and dirty://FIXME
-#if defined (USE_OPENGL)
-#include <playback_cs.h>
-extern cPlayback *playback;
-extern char rec_filename[1024];				// defined in stream2file.cpp
-#endif
 
+// opengl liveplayback
+#if defined (USE_OPENGL)
+int lockOpenGLplayback();
+void unlockOpenGLplayback();
+#endif
 
 /* globals */
 int zapit_ready;
@@ -2603,19 +2602,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 		case CZapitMessages::CMD_SB_START_PLAYBACK:
 			startPlayBack(live_channel);
 			
-			// ugly and dirty://FIXME
+// opengl liveplayback
 #if defined (USE_OPENGL)
-			playback->Close();
-			char _fname[255];
-		
-			if(strlen(rec_filename))
-			{
-				sprintf(_fname, "%s.ts", rec_filename);
-				
-				usleep(10000000);
-				playback->Open();
-				playback->Start(_fname);
-			}
+			unlockOpenGLplayback();
 #endif			
 			break;
 	
@@ -2626,23 +2615,24 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			response.cmd = CZapitMessages::CMD_READY;
 			CBasicServer::send_data(connfd, &response, sizeof(response));
 			
-// ugly and dirty://FIXME
+// opengl liveplayback
 #if defined (USE_OPENGL)
-			playback->Close();
+			lockOpenGLplayback();
 #endif			
 			break;
 	
 		case CZapitMessages::CMD_SB_LOCK_PLAYBACK:		
-			stopPlayBack(true);									
+			stopPlayBack(true);
+			
 #if !defined (PLATFORM_COOLSTREAM)			
 			closeAVDecoder();
 #endif			
 			
 			playbackStopForced = true;
 			
-			// ugly and dirty://FIXME
+// opengl liveplayback
 #if defined (USE_OPENGL)
-			playback->Close();
+			lockOpenGLplayback();
 #endif
 
 			break;
@@ -2664,19 +2654,9 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 			ci->SendCaPMT(live_channel->getCaPmt(), live_fe->fenumber);
 #endif				
 			
-			// ugly and dirty://FIXME
+// opengl liveplayback
 #if defined (USE_OPENGL)
-			playback->Close();
-			char fname[255];
-		
-			if(strlen(rec_filename))
-			{
-				sprintf(fname, "%s.ts", rec_filename);
-				
-				usleep(10000000);
-				playback->Open();
-				playback->Start(fname);
-			}
+			unlockOpenGLplayback();
 #endif			
 			
 			break;
