@@ -844,7 +844,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.audioplayer_highprio  = configfile.getInt32("audioplayer_highprio",0);
 	g_settings.audioplayer_select_title_by_name = configfile.getInt32("audioplayer_select_title_by_name", 0);
 	g_settings.audioplayer_repeat_on = configfile.getInt32("audioplayer_repeat_on",0);
-	g_settings.audioplayer_screensaver_type = configfile.getInt32("audioplayer_screensaver_type", CAudioPlayerGui::SHOW_PIC);
+	g_settings.audioplayer_screensaver_type = configfile.getInt32("audioplayer_screensaver_type", CAudioPlayerGui::NONE);
 	g_settings.audioplayer_enable_sc_metadata = configfile.getInt32("audioplayer_enable_sc_metadata", 1);
 	
 	// shoutcast --- not in GUI
