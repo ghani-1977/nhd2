@@ -44,8 +44,7 @@
 class CFlacDec : public CBaseDec
 {
 	public:
-		static CFlacDec* getInstance();
-		virtual RetCode Decoder(FILE *, const int, State* const, CAudioMetaData*, time_t* const, unsigned int* const);
+		static CFlacDec *getInstance();
 		bool GetMetaData(FILE *in, const bool nice, CAudioMetaData* m);
 		CFlacDec(){ mMetadata = NULL; };
 

@@ -39,16 +39,11 @@
 #include <sstream>
 
 #include <linux/soundcard.h>
-
 #include <driver/audioplay.h>
-
 #include <system/debug.h>
 
+
 #define ProgName "WavDec"
-// nr of msecs to skip in ff/rev mode
-#define MSECS_TO_SKIP 3000
-// nr of msecs to play in ff/rev mode
-#define MSECS_TO_PLAY 200
 
 struct WavHeader
 {
@@ -67,7 +62,8 @@ struct WavHeader
 	int   Subchunk2Size;
 } __attribute__ ((packed));
 
-int endianTest=1;
+int endianTest = 1;
+
 #define Swap32IfBE(l) \
     (*(char *)&endianTest ? (l) : \
                              ((((l) & 0xff000000) >> 24) | \
@@ -79,91 +75,7 @@ int endianTest=1;
                              ((((l) & 0xff00) >> 8) | \
                              (((l) &  0x00ff) << 8)))
 
-#define MAX_OUTPUT_SAMPLES 1022 /* AVIA_GT_PCM_MAX_SAMPLES-1 */
-
-CBaseDec::RetCode CWavDec::Decoder(FILE *in, int OutputFd, State* state, CAudioMetaData* meta_data, time_t* time_played, unsigned int* secondsToSkip)
-{
-	char* buffer;
-	RetCode Status=OK; 
-
-	if (!SetMetaData(in, meta_data))
-	{
-		Status=DATA_ERR;
-		return Status;
-	}
-	fseek(in, header_size, SEEK_SET);
-	int fmt;
-
-	switch(mBitsPerSample)
-	{
-		case 8  : fmt = AFMT_U8;
-			break;
-		case 16 : fmt = header_size == 0 ? AFMT_S16_BE : AFMT_S16_LE;
-			break;
-		default:
-			dprintf(DEBUG_NORMAL, "%s: wrong bits per sample (%d)\n", ProgName, mBitsPerSample);
-			Status=DATA_ERR;
-			return Status;
-	}
-	
-	int actSecsToSkip = (*secondsToSkip != 0) ? *secondsToSkip : MSECS_TO_SKIP / 1000;
-	unsigned int oldSecsToSkip = *secondsToSkip;
-	int jumppos=0;
-	int bytes;
-	int bytes_to_play = (int) (1.0 * MSECS_TO_PLAY / 1000 * meta_data->bitrate / 8);
-	int bytes_to_skip = (int) (1.0 * actSecsToSkip * meta_data->bitrate / 8);
-	int buffersize = MAX_OUTPUT_SAMPLES * mChannels * mBitsPerSample / 8;
-	buffer = (char*) malloc (buffersize);
-	
-	do
-	{
-		while(*state==PAUSE)
-			usleep(10000);
-		
-		if(*state==FF || *state==REV)
-		{
-			if (oldSecsToSkip != *secondsToSkip)
-			{
-				actSecsToSkip = (*secondsToSkip != 0) ? *secondsToSkip : MSECS_TO_SKIP / 1000;
-				bytes_to_skip = (int) (1.0 * actSecsToSkip * meta_data->bitrate / 8);
-				oldSecsToSkip = *secondsToSkip;
-			}
-			//printf("skipping %d secs and %d bytes\n",actSecsToSkip,bytes_to_skip);
-			if(std::abs(ftell(in)-jumppos) > bytes_to_play)
-			{
-				if(*state==FF)
-				{
-					fseek(in, bytes_to_skip, SEEK_CUR);
-					jumppos=ftell(in);
-				}
-				else
-				{
-					if(ftell(in) < bytes_to_skip)
-					{
-						fseek(in, header_size, SEEK_SET);
-						*state=PLAY;
-					}
-					else
-					{
-						fseek(in, -bytes_to_skip, SEEK_CUR);
-						jumppos=ftell(in);
-					}
-				}
-			}
-			// if a custom value was set we only jump once
-			if (*secondsToSkip != 0) {
-				*state=PLAY;
-			}
-		}
-
-		bytes = fread(buffer, 1, buffersize, in);	
-		
-		*time_played = (meta_data->bitrate!=0) ? (ftell(in)-header_size)*8/meta_data->bitrate : 0;
-	} while (bytes > 0 && *state!=STOP_REQ && Status == OK);	
-
-	free(buffer);
-	return Status;
-}
+//#define MAX_OUTPUT_SAMPLES 1022 /* AVIA_GT_PCM_MAX_SAMPLES-1 */
 
 bool CWavDec::GetMetaData(FILE *in, const bool nice, CAudioMetaData* m)
 {
@@ -208,6 +120,7 @@ bool CWavDec::SetMetaData(FILE* in, CAudioMetaData* m)
 	std::stringstream ss;
 	ss << "Riff/Wave / " << mChannels << "channel(s) / " << mBitsPerSample << "bit";
 	m->type_info = ss.str();
-	m->changed=true;
+	m->changed = true;
+	
 	return true;
 }

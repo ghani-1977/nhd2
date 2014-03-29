@@ -67,9 +67,7 @@
 
 #define VLC_URI "vlc://"
 
-/************************************************************************
 
-************************************************************************/
 CMovieInfo::CMovieInfo()
 {
 
@@ -84,6 +82,7 @@ bool CMovieInfo::convertTs2XmlName(char *char_filename, int size)
 {
 	bool result = false;
 	std::string filename = char_filename;
+	
 	if (convertTs2XmlName(&filename) == true) 
 	{
 		strncpy(char_filename, filename.c_str(), size);
@@ -112,7 +111,8 @@ bool CMovieInfo::convertTs2XmlName(std::string * filename)
 
 	if (bytes != -1) 
 	{
-		if (bytes > 3) {
+		if (bytes > 3) 
+		{
 			if ((*filename)[bytes - 4] == '.') 
 			{
 				bytes = bytes - 4;
@@ -188,10 +188,10 @@ bool CMovieInfo::encodeMovieInfoXml(std::string * extMessage, MI_MOVIE_INFO * mo
 	XML_ADD_TAG_LONG(*extMessage, MI_XML_TAG_ID, movie_info->epgId);
 	XML_ADD_TAG_STRING(*extMessage, MI_XML_TAG_INFO1, movie_info->epgInfo1);
 	XML_ADD_TAG_STRING(*extMessage, MI_XML_TAG_INFO2, movie_info->epgInfo2);
-	XML_ADD_TAG_LONG(*extMessage, MI_XML_TAG_EPGID, movie_info->epgEpgId);	// %llu
-	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_MODE, movie_info->epgMode);	//%d
+	XML_ADD_TAG_LONG(*extMessage, MI_XML_TAG_EPGID, movie_info->epgEpgId);			// %llu
+	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_MODE, movie_info->epgMode);		//%d
 	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_VIDEOPID, movie_info->epgVideoPid);	//%u
-	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_VIDEOTYPE, movie_info->VideoType);	//%u
+	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_VIDEOTYPE, movie_info->VideoType);		//%u
 	
 	if (movie_info->audioPids.size() > 0) 
 	{
@@ -232,11 +232,14 @@ bool CMovieInfo::encodeMovieInfoXml(std::string * extMessage, MI_MOVIE_INFO * mo
 	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_BOOKMARK_END, movie_info->bookmarks.end);
 	*extMessage += "\t";
 	XML_ADD_TAG_UNSIGNED(*extMessage, MI_XML_TAG_BOOKMARK_LAST, movie_info->bookmarks.lastPlayStop);
-	for (int i = 0; i < MI_MOVIE_BOOK_USER_MAX; i++) {
-		if (movie_info->bookmarks.user[i].pos != 0 || i == 0) {
+	
+	for (int i = 0; i < MI_MOVIE_BOOK_USER_MAX; i++) 
+	{
+		if (movie_info->bookmarks.user[i].pos != 0 || i == 0) 
+		{
 			// encode any valid book, at least 1
 			*extMessage += "\t\t\t<" MI_XML_TAG_BOOKMARK_USER " " MI_XML_TAG_BOOKMARK_USER_POS "=\"";
-			sprintf(tmp, "%d", movie_info->bookmarks.user[i].pos);	//pids.APIDs[i].pid);
+			sprintf(tmp, "%d", movie_info->bookmarks.user[i].pos);		//pids.APIDs[i].pid);
 			*extMessage += tmp;
 			*extMessage += "\" " MI_XML_TAG_BOOKMARK_USER_TYPE "=\"";
 			sprintf(tmp, "%d", movie_info->bookmarks.user[i].length);	//pids.APIDs[i].pid);
@@ -252,6 +255,7 @@ bool CMovieInfo::encodeMovieInfoXml(std::string * extMessage, MI_MOVIE_INFO * mo
 
 	*extMessage += "\t</" MI_XML_TAG_RECORD ">\n";
 	*extMessage += "</" MI_XML_TAG_NEUTRINO ">\n";
+	
 	return true;
 }
 
@@ -326,6 +330,7 @@ bool CMovieInfo::loadMovieInfo(MI_MOVIE_INFO * movie_info, CFile * file)
 #endif /* XMLTREE_LIB */
 		}
 	}
+	
 	if (movie_info->productionDate > 50 && movie_info->productionDate < 200)	// backwardcompaibility
 		movie_info->productionDate += 1900;
 
@@ -375,9 +380,10 @@ bool CMovieInfo::parseXmlTree(char */*text*/, MI_MOVIE_INFO */*movie_info*/)
 				XML_GET_DATA_STRING(xam1, MI_XML_TAG_INFO1, movie_info->epgInfo1);
 				XML_GET_DATA_STRING(xam1, MI_XML_TAG_INFO2, movie_info->epgInfo2);
 				XML_GET_DATA_LONG(xam1, MI_XML_TAG_EPGID, movie_info->epgEpgId);	// %llu
-				XML_GET_DATA_INT(xam1, MI_XML_TAG_MODE, movie_info->epgMode);	//%d
+				XML_GET_DATA_INT(xam1, MI_XML_TAG_MODE, movie_info->epgMode);		//%d
 				XML_GET_DATA_INT(xam1, MI_XML_TAG_VIDEOPID, movie_info->epgVideoPid);	//%u
 				XML_GET_DATA_INT(xam1, MI_XML_TAG_VIDEOTYPE, movie_info->VideoType);	//%u
+				
 				if (!strcmp(xam1->GetType(), MI_XML_TAG_AUDIOPIDS)) 
 				{
 					for (XMLTreeNode * xam2 = xam1->GetChild(); xam2; xam2 = xam2->GetNext()) 
@@ -442,9 +448,6 @@ bool CMovieInfo::parseXmlTree(char */*text*/, MI_MOVIE_INFO */*movie_info*/)
 	return (true);
 }
 
-/************************************************************************
-
-************************************************************************/
 void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 {
 	std::string print_buffer;
@@ -559,18 +562,18 @@ void CMovieInfo::printDebugMovieInfo(MI_MOVIE_INFO & movie_info)
 	//dprintf(DEBUG_DEBUG, " FileLength: %d", movie_info.file.GetLength ); 
 	//dprintf(DEBUG_DEBUG, " FileStatus: %d", movie_info.file.GetStatus ); 
 
-	dprintf(DEBUG_DEBUG, " ********** Movie Data ***********\r\n");	// (date, month, year)
+	dprintf(DEBUG_DEBUG, " ********** Movie Data ***********\r\n");				// (date, month, year)
 	dprintf(DEBUG_DEBUG, " dateOfLastPlay: \t%d\r\n", (int)movie_info.dateOfLastPlay);	// (date, month, year)
-	dprintf(DEBUG_DEBUG, " dirItNr: \t\t%d\r\n", movie_info.dirItNr);	// 
-	dprintf(DEBUG_DEBUG, " genreMajor: \t\t%d\r\n", movie_info.genreMajor);	//genreMajor;                           
-	dprintf(DEBUG_DEBUG, " genreMinor: \t\t%d\r\n", movie_info.genreMinor);	//genreMinor;                           
-	dprintf(DEBUG_DEBUG, " length: \t\t%d\r\n", movie_info.length);	// (minutes)
-	dprintf(DEBUG_DEBUG, " quality: \t\t%d\r\n", movie_info.quality);	// (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
+	dprintf(DEBUG_DEBUG, " dirItNr: \t\t%d\r\n", movie_info.dirItNr);			// 
+	dprintf(DEBUG_DEBUG, " genreMajor: \t\t%d\r\n", movie_info.genreMajor);			//genreMajor;                           
+	dprintf(DEBUG_DEBUG, " genreMinor: \t\t%d\r\n", movie_info.genreMinor);			//genreMinor;                           
+	dprintf(DEBUG_DEBUG, " length: \t\t%d\r\n", movie_info.length);				// (minutes)
+	dprintf(DEBUG_DEBUG, " quality: \t\t%d\r\n", movie_info.quality);			// (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
 	dprintf(DEBUG_DEBUG, " productionCount:\t>%s<\r\n", movie_info.productionCountry.c_str());
-	dprintf(DEBUG_DEBUG, " productionDate: \t%d\r\n", movie_info.productionDate);	// (Year)  years since 1900
+	dprintf(DEBUG_DEBUG, " productionDate: \t%d\r\n", movie_info.productionDate);		// (Year)  years since 1900
 	dprintf(DEBUG_DEBUG, " parentalLockAge: \t\t\t%d\r\n", movie_info.parentalLockAge);	// MI_PARENTAL_LOCKAGE (0,6,12,16,18)
-	dprintf(DEBUG_DEBUG, " format: \t\t%d\r\n", movie_info.format);	// MI_VIDEO_FORMAT(16:9, 4:3)
-	dprintf(DEBUG_DEBUG, " audio: \t\t%d\r\n", movie_info.audio);	// MI_AUDIO (AC3, Deutsch, Englisch)
+	dprintf(DEBUG_DEBUG, " format: \t\t%d\r\n", movie_info.format);				// MI_VIDEO_FORMAT(16:9, 4:3)
+	dprintf(DEBUG_DEBUG, " audio: \t\t%d\r\n", movie_info.audio);				// MI_AUDIO (AC3, Deutsch, Englisch)
 	dprintf(DEBUG_DEBUG, " epgId: \t\t%d\r\n", (int)movie_info.epgId);
 	dprintf(DEBUG_DEBUG, " epgEpgId: \t\t%llu\r\n", movie_info.epgEpgId);
 	dprintf(DEBUG_DEBUG, " epgMode: \t\t%d\r\n", movie_info.epgMode);
@@ -898,18 +901,18 @@ void CMovieInfo::clearMovieInfo(MI_MOVIE_INFO * movie_info)
 	timePlay.tm_mon = 1;
 
 	movie_info->file.Name = "";
-	movie_info->file.Size = 0;	// Megabytes
+	movie_info->file.Size = 0;			// Megabytes
 	movie_info->file.Time = mktime(&timePlay);
 	movie_info->dateOfLastPlay = mktime(&timePlay);	// (date, month, year)
-	movie_info->dirItNr = 0;	// 
-	movie_info->genreMajor = 0;	//genreMajor;                           
-	movie_info->genreMinor = 0;	//genreMinor;                           
-	movie_info->length = 0;	// (minutes)
-	movie_info->quality = 0;	// (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
-	movie_info->productionDate = 0;	// (Year)  years since 1900
-	movie_info->parentalLockAge = 0;	// MI_PARENTAL_LOCKAGE (0,6,12,16,18)
-	movie_info->format = 0;	// MI_VIDEO_FORMAT(16:9, 4:3)
-	movie_info->audio = 0;	// MI_AUDIO (AC3, Deutsch, Englisch)
+	movie_info->dirItNr = 0;			// 
+	movie_info->genreMajor = 0;			//genreMajor;                           
+	movie_info->genreMinor = 0;			//genreMinor;                           
+	movie_info->length = 0;				// (minutes)
+	movie_info->quality = 0;			// (3 stars: classics, 2 stars: very good, 1 star: good, 0 stars: OK)
+	movie_info->productionDate = 0;			// (Year)  years since 1900
+	movie_info->parentalLockAge = 0;		// MI_PARENTAL_LOCKAGE (0,6,12,16,18)
+	movie_info->format = 0;				// MI_VIDEO_FORMAT(16:9, 4:3)
+	movie_info->audio = 0;				// MI_AUDIO (AC3, Deutsch, Englisch)
 
 	movie_info->epgId = 0;
 	movie_info->epgEpgId = 0;
@@ -922,10 +925,10 @@ void CMovieInfo::clearMovieInfo(MI_MOVIE_INFO * movie_info)
 
 	movie_info->productionCountry = "";
 	movie_info->epgTitle = "";
-	movie_info->epgInfo1 = "";	//epgInfo1              
-	movie_info->epgInfo2 = "";	//epgInfo2
+	movie_info->epgInfo1 = "";			//epgInfo1              
+	movie_info->epgInfo2 = "";			//epgInfo2
 	movie_info->epgChannel = "";
-	movie_info->serieName = "";	// (name e.g. 'StarWars)
+	movie_info->serieName = "";			// (name e.g. 'StarWars)
 	movie_info->bookmarks.end = 0;
 	movie_info->bookmarks.start = 0;
 	movie_info->bookmarks.lastPlayStop = 0;

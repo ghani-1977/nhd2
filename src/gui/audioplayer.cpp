@@ -2295,7 +2295,7 @@ void CAudioPlayerGui::updateMetaData()
 		if ( meta.bitrate > 0 )
 		{
 			//NOTE: some meta can as vbr can be parsed only when the decoder is running
-#if defined (ENABLE_PCMDECODER)		  
+#if 0	  
 			info << " / ";			
 			
 			if ( meta.vbr )

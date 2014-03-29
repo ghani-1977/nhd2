@@ -50,10 +50,12 @@
 
 
 #define ProgName "FlacDec"
+
+
 // nr of msecs to skip in ff/rev mode
-#define MSECS_TO_SKIP 3000
+//#define MSECS_TO_SKIP 3000
 // nr of msecs to play in ff/rev mode
-#define MSECS_TO_PLAY 200
+//#define MSECS_TO_PLAY 200
 
 #define MAX_OUTPUT_SAMPLES 1022 /* AVIA_GT_PCM_MAX_SAMPLES-1 */
 
@@ -448,110 +450,6 @@ void flac_error(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStat
 {
 }
 
-CBaseDec::RetCode CFlacDec::Decoder(FILE *in, const int OutputFd, State* const state, CAudioMetaData* meta_data, time_t* const time_played, unsigned int* const secondsToSkip)
-{
-	int rval;
-	//FLAC__uint64 jumptime=0;
-	Status = OK;
-	mOutputFd = OutputFd;
-	mState = state;
-	mTimePlayed = time_played;
-	mFrameCount = 0;
-	mSamplesProcessed = 0;
-
-	mFlacDec = FLAC__stream_decoder_new();
-
-	if (!Open(in, mFlacDec))
-	{
-		Status=DATA_ERR;
-		return Status;
-	}
-
-	/* up and away ... */
-	mSlotSize = MAX_OUTPUT_SAMPLES * 2 * FLAC__stream_decoder_get_channels(mFlacDec);
-	//State oldstate=*state;
-	int jumppos=0;
-	int actSecsToSkip = (*secondsToSkip != 0) ? *secondsToSkip : MSECS_TO_SKIP / 1000;
-	int bytes_to_skip = (int) (1.0 * actSecsToSkip * meta_data->bitrate / 8);
-	int bytes_to_play = (int) (1.0 * MSECS_TO_PLAY / 1000 * meta_data->bitrate / 8);
-	unsigned int oldSecsToSkip = *secondsToSkip;
-	//FLAC__uint64 position;
-
-	do
-	{
-		while(*state==PAUSE)
-			usleep(10000);
-		
-		if(*state==FF || *state==REV)
-		{
-			if (oldSecsToSkip != *secondsToSkip)
-			{
-				actSecsToSkip = (*secondsToSkip != 0) ? *secondsToSkip : MSECS_TO_SKIP / 1000;
-				bytes_to_skip = (int) (1.0 * actSecsToSkip * meta_data->bitrate / 8);
-				oldSecsToSkip = *secondsToSkip;
-			}
-			printf("skipping %d secs and %d bytes\n",actSecsToSkip,bytes_to_skip);
-			if(std::abs(ftell(in)-jumppos) > bytes_to_play)
-			{
-				if(*state==FF)
-				{
-					fseek(in, bytes_to_skip, SEEK_CUR);
-					jumppos=ftell(in);
-				}
-				else
-				{
-					if(ftell(in) < bytes_to_skip)
-					{
-						fseek(in, 0, SEEK_SET);
-						*state=PLAY;
-					}
-					else
-					{
-						fseek(in, -bytes_to_skip, SEEK_CUR);
-						jumppos=ftell(in);
-					}
-				}
-			}
-
-			// if a custom value was set we only jump once
-			if (*secondsToSkip != 0) 
-			{
-				*state=PLAY;
-			}
-		}
-
-		if (FLAC__stream_decoder_get_state(mFlacDec) == FLAC__STREAM_DECODER_END_OF_STREAM) 
-		{
-		    rval = false;
-		    break;
-		}
-
-		rval = FLAC__stream_decoder_process_single(mFlacDec);
-		// TODO: calculate time_played from the actual file position so that REW/FF actions will be included
-		*time_played = (mSamplesProcessed * (mLengthInMsec/1000)) / mTotalSamples;
-
-	} while (rval && *state!=STOP_REQ && Status==OK);
-
-	// let buffer run dry
-	printf("let buffer run dry\n");
-	while (rval==true && *state!=STOP_REQ && Status==OK /* && mReadSlot != mWriteSlot*/)
-	{
-		printf("...drying - *state=%x, Status=%x\n", *state, Status);
-		usleep(100000);
-	}	
-
-	/* clean up the junk from the party */
-	if (mMetadata)
-		FLAC__metadata_object_delete(mMetadata);
-	mMetadata = NULL;
-	FLAC__stream_decoder_finish(mFlacDec);
-	FLAC__stream_decoder_delete(mFlacDec);
-	mFlacDec = NULL;
-
-	/* and drive home ;) */
-	return Status;
-}
-
 bool CFlacDec::GetMetaData(FILE *in, const bool nice, CAudioMetaData* m)
 {
 	FLAC__StreamDecoder *vf;
@@ -561,6 +459,7 @@ bool CFlacDec::GetMetaData(FILE *in, const bool nice, CAudioMetaData* m)
 	// we need streaminfo (default on) and FLAC__METADATA_TYPE_VORBIS_COMMENT (default off) for ID3 tags
 	FLAC__stream_decoder_set_metadata_respond(vf, FLAC__METADATA_TYPE_STREAMINFO);
 	FLAC__stream_decoder_set_metadata_respond(vf, FLAC__METADATA_TYPE_VORBIS_COMMENT);
+	
 	if (!Open(in, vf))
 	{
 		return false;
@@ -569,7 +468,8 @@ bool CFlacDec::GetMetaData(FILE *in, const bool nice, CAudioMetaData* m)
 	if (FLAC__stream_decoder_process_until_end_of_metadata(vf)) 
 	{
 		// if the metadata callback was called mMetadata should be filled with infos
-		if (mMetadata) {
+		if (mMetadata) 
+		{
 			SetMetaData(mMetadata, m);
 		}
 	}

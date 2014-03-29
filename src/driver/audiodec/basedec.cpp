@@ -84,31 +84,7 @@ CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputF
 			{
 				fprintf( stderr, "Error adding shoutcast callback: %s", err_txt );
 			}
-			
-			Status = CMP3Dec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
 		}
-		else if( in->FileType == CFile::FILE_MP3)
-		{
-			Status = CMP3Dec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
-		}
-		else if( in->FileType == CFile::FILE_WAV )
-		{
-			Status = CWavDec::getInstance()->Decoder( fp, OutputFd, state,&in->MetaData, t, secondsToSkip );
-		}
-		else if( in->FileType == CFile::FILE_CDR )
-		{
-			Status = CCdrDec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
-		}
-		else if( in->FileType == CFile::FILE_FLAC )
-		{
-			Status = CFlacDec::getInstance()->Decoder( fp, OutputFd, state, &in->MetaData, t, secondsToSkip );
-		}
-		else
-		{
-			dprintf(DEBUG_NORMAL, "DecoderBase: Supplied filetype is not supported by Audioplayer.\n");
-			
-			Status = INTERNAL_ERR;
-		}		
 
 		if ( fclose( fp ) == EOF )
 		{

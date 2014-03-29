@@ -238,8 +238,8 @@ CAudioPlayer::CAudioPlayer()
 void CAudioPlayer::init()
 {
 	CBaseDec::Init();
-	state = CBaseDec::STOP;
-		
+	
+	state = CBaseDec::STOP;	
 	thrPlay = 0;	
 }
 
@@ -294,6 +294,7 @@ CAudioMetaData CAudioPlayer::getMetaData()
 {
 	CAudioMetaData m = m_Audiofile.MetaData;
 	m_Audiofile.MetaData.changed = false;
+	
 	return m;
 }
 
