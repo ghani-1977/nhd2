@@ -7793,10 +7793,10 @@ void sectionsd_main_thread(void */*data*/)
 	oldEventsAre = (atoi(ntp_config.getString("epg_old_events","1").c_str() ) *60L*60L); //Stunden
 	max_events= atoi(ntp_config.getString("epg_max_events","50000").c_str() );
 
-	printf("[sectionsd] Caching max %d events\n", max_events);
-	printf("[sectionsd] Caching %ld days\n", secondsToCache / (24*60*60L));
-	printf("[sectionsd] Caching %ld hours Extended Text\n", secondsExtendedTextCache / (60*60L));
-	printf("[sectionsd] Events are old %ldmin after their end time\n", oldEventsAre / 60);
+	dprintf(DEBUG_NORMAL, "[sectionsd] Caching max %d events\n", max_events);
+	dprintf(DEBUG_NORMAL, "[sectionsd] Caching %ld days\n", secondsToCache / (24*60*60L));
+	dprintf(DEBUG_NORMAL, "[sectionsd] Caching %ld hours Extended Text\n", secondsExtendedTextCache / (60*60L));
+	dprintf(DEBUG_NORMAL, "[sectionsd] Events are old %ldmin after their end time\n", oldEventsAre / 60);
 
 	readEPGFilter();
 	readDVBTimeFilter();
@@ -7804,7 +7804,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (!sectionsd_server.prepare(SECTIONSD_UDS_NAME)) 
 	{
-		fprintf(stderr, "[sectionsd] failed to prepare basic server\n");
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to prepare basic server\n");
 		return;
 	}
 	
@@ -7815,7 +7815,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create time-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create time-thread (rc=%d)\n", rc);
 		return;
 	}
 
@@ -7824,7 +7824,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
 		return;
 	}
 
@@ -7833,7 +7833,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create eit-thread (rc=%d)\n", rc);
 		return;
 	}
 
@@ -7841,8 +7841,9 @@ void sectionsd_main_thread(void */*data*/)
 	// EIT-Thread3 starten
 	rc = pthread_create(&threadFSEIT, 0, fseitThread, 0);
 
-	if (rc) {
-		fprintf(stderr, "[sectionsd] failed to create fseit-thread (rc=%d)\n", rc);
+	if (rc) 
+	{
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create fseit-thread (rc=%d)\n", rc);
 		return;
 	}
 
@@ -7852,7 +7853,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create ppt-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create ppt-thread (rc=%d)\n", rc);
 		return;
 	}
 #endif
@@ -7863,7 +7864,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create nit-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create nit-thread (rc=%d)\n", rc);
 		return;
 	}
 	
@@ -7872,7 +7873,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create sdt-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create sdt-thread (rc=%d)\n", rc);
 		return;
 	}
 #endif
@@ -7882,7 +7883,7 @@ void sectionsd_main_thread(void */*data*/)
 
 	if (rc) 
 	{
-		fprintf(stderr, "[sectionsd] failed to create housekeeping-thread (rc=%d)\n", rc);
+		dprintf(DEBUG_NORMAL, "[sectionsd] failed to create housekeeping-thread (rc=%d)\n", rc);
 		return;
 	}
 
@@ -7933,10 +7934,13 @@ void sectionsd_main_thread(void */*data*/)
 		usleep(20000);
 	}
 
-	printf("[sectionsd] stopping...\n");
+	dprintf(DEBUG_NORMAL, "[sectionsd] stopping...\n");
+	
 	scanning = 0;
 	timeset = true;
-	printf("broadcasting...\n");
+	
+	dprintf(DEBUG_NORMAL, "broadcasting...\n");
+	
 	pthread_mutex_lock(&timeIsSetMutex);
 	pthread_cond_broadcast(&timeIsSetCond);
 	pthread_mutex_unlock(&timeIsSetMutex);
@@ -7959,7 +7963,8 @@ void sectionsd_main_thread(void */*data*/)
 	pthread_cond_broadcast(&dmxSDT.change_cond);
 	pthread_mutex_unlock(&dmxSDT.start_stop_mutex);
 #endif
-	printf("pausing...\n");
+	dprintf(DEBUG_NORMAL, "pausing...\n");
+	
 	dmxEIT.request_pause();
 	dmxCN.request_pause();
 #ifdef ENABLE_PPT
@@ -7978,25 +7983,20 @@ void sectionsd_main_thread(void */*data*/)
 		dmxUTC->Stop();
 
 	pthread_cancel(threadTOT);
-
-	printf("join 1\n");
+	
 	pthread_join(threadTOT, NULL);
 	if(dmxUTC) 
 		delete dmxUTC;
 	
-	printf("join 2\n");
 	pthread_join(threadEIT, NULL);
 	
-	printf("join 3\n");
 	pthread_join(threadCN, NULL);
 	
 #ifdef ENABLE_PPT
-	printf("join 3\n");
 	pthread_join(threadPPT, NULL);
 #endif
 
 #ifdef UPDATE_NETWORKS
-	printf("join 4\n");
 	pthread_join(threadSDT, NULL);
 #endif
 
@@ -8004,11 +8004,13 @@ void sectionsd_main_thread(void */*data*/)
 	if(eitDmx)
 		delete eitDmx;
 
-	printf("close 1\n");
+	// close eitdmx
 	dmxEIT.close();
-	printf("close 3\n");
+	
+	// close cndmx
 	dmxCN.close();
-	// freesat
+	
+	// close freesatdmx
 	dmxFSEIT.close();
 
 #ifdef ENABLE_PPT
@@ -8019,7 +8021,7 @@ void sectionsd_main_thread(void */*data*/)
 	dmxNIT.close();
 #endif
 
-	printf("[sectionsd] ended\n");
+	dprintf(DEBUG_NORMAL, "[sectionsd] ended\n");
 
 	return;
 }
