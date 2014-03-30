@@ -2723,7 +2723,6 @@ int CNeutrinoApp::run(int argc, char **argv)
 	{
 		// startup pic
 		frameBuffer->loadBackgroundPic("start.jpg");	
-
 		frameBuffer->blit();
 	
 		// setup languages
@@ -5752,9 +5751,6 @@ int main(int argc, char *argv[])
         signal(SIGHUP, SIG_IGN);
 	signal(SIGHUP, sighandler);
 	signal(SIGPIPE, SIG_IGN);
-	
-	// set time convertion
-	tzset();
 	
 	// init globals
 	initGlobals();
