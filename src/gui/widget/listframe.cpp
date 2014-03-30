@@ -69,13 +69,11 @@
 #define TITLE_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUHEAD_PLUS_0)
 #define HEADER_LIST_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUCONTENT_PLUS_0)
 #define LIST_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUCONTENT_PLUS_0)
-//#define LIST_BACKGROUND_COLOR_SELECTED ((CFBWindow::color_t)COL_MENUCONTENT_PLUS_1)
 #define LIST_BACKGROUND_COLOR_SELECTED ((CFBWindow::color_t)COL_MENUCONTENTSELECTED_PLUS_0)
 
 #define TITLE_FONT_COLOR COL_MENUHEAD
 #define HEADER_LIST_FONT_COLOR COL_MENUCONTENT
 #define LIST_FONT_COLOR COL_MENUCONTENT
-//#define LIST_FONT_COLOR_SELECTED COL_MENUCONTENT 
 #define LIST_FONT_COLOR_SELECTED COL_MENUCONTENTSELECTED
 
 #define FONT_LIST g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]
@@ -86,7 +84,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CListFrame::CListFrame(	LF_LINES* lines, Font * font_text, const int _mode, const CBox* position, const char* textTitle, Font* font_title)
+CListFrame::CListFrame(	LF_LINES* lines, CFont * font_text, const int _mode, const CBox* position, const char* textTitle, CFont *font_title)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame] new\r\n");
 	
@@ -248,57 +246,57 @@ void CListFrame::initFramesRel(void)
 
 	if(m_nMode & TITLE)
 	{
-		m_cFrameTitleRel.iX			= 0;
-		m_cFrameTitleRel.iY			= 0;
-		m_cFrameTitleRel.iHeight	= m_nFontTitleHeight +2 ;
-		m_cFrameTitleRel.iWidth		= m_cFrame.iWidth ;
+		m_cFrameTitleRel.iX = 0;
+		m_cFrameTitleRel.iY = 0;
+		m_cFrameTitleRel.iHeight = m_nFontTitleHeight + 2 ;
+		m_cFrameTitleRel.iWidth = m_cFrame.iWidth ;
 	}
 	else
 	{
-		m_cFrameTitleRel.iX		= 0;
-		m_cFrameTitleRel.iY		= 0;
-		m_cFrameTitleRel.iHeight= 0;
+		m_cFrameTitleRel.iX = 0;
+		m_cFrameTitleRel.iY = 0;
+		m_cFrameTitleRel.iHeight = 0;
 		m_cFrameTitleRel.iWidth	= 0;
 	}
 
 	if(m_nMode & HEADER_LINE)
 	{
-		m_cFrameHeaderListRel.iX		= 0;
-		m_cFrameHeaderListRel.iY		= 0 + m_cFrameTitleRel.iHeight;
-		m_cFrameHeaderListRel.iHeight	= m_nFontHeaderListHeight ;
+		m_cFrameHeaderListRel.iX = 0;
+		m_cFrameHeaderListRel.iY = 0 + m_cFrameTitleRel.iHeight;
+		m_cFrameHeaderListRel.iHeight = m_nFontHeaderListHeight ;
 	}
 	else
 	{
-		m_cFrameHeaderListRel.iX		= 0;
-		m_cFrameHeaderListRel.iY		= 0;
-		m_cFrameHeaderListRel.iHeight	= 0;
-		m_cFrameHeaderListRel.iWidth	= 0;
+		m_cFrameHeaderListRel.iX = 0;
+		m_cFrameHeaderListRel.iY = 0;
+		m_cFrameHeaderListRel.iHeight = 0;
+		m_cFrameHeaderListRel.iWidth = 0;
 	}
 
-	m_cFrameListRel.iX		= 0;
-	m_cFrameListRel.iY		= m_cFrameHeaderListRel.iHeight + m_cFrameTitleRel.iHeight;
+	m_cFrameListRel.iX = 0;
+	m_cFrameListRel.iY = m_cFrameHeaderListRel.iHeight + m_cFrameTitleRel.iHeight;
 	m_cFrameListRel.iHeight	= m_cFrame.iHeight - m_cFrameHeaderListRel.iHeight - m_cFrameTitleRel.iHeight;
 
 	if(m_nMode & SCROLL)
 	{
-		m_cFrameScrollRel.iX		= m_cFrame.iWidth - SCROLL_FRAME_WIDTH;
-		m_cFrameScrollRel.iY		= m_cFrameTitleRel.iHeight;
-		m_cFrameScrollRel.iWidth	= SCROLL_FRAME_WIDTH;
-		m_cFrameScrollRel.iHeight	= m_cFrameListRel.iHeight + m_cFrameHeaderListRel.iHeight;
+		m_cFrameScrollRel.iX = m_cFrame.iWidth - SCROLL_FRAME_WIDTH;
+		m_cFrameScrollRel.iY = m_cFrameTitleRel.iHeight;
+		m_cFrameScrollRel.iWidth = SCROLL_FRAME_WIDTH;
+		m_cFrameScrollRel.iHeight = m_cFrameListRel.iHeight + m_cFrameHeaderListRel.iHeight;
 	}
 	else
 	{
-		m_cFrameScrollRel.iX		= 0;
-		m_cFrameScrollRel.iY		= 0;
-		m_cFrameScrollRel.iHeight	= 0;
-		m_cFrameScrollRel.iWidth	= 0;
+		m_cFrameScrollRel.iX = 0;
+		m_cFrameScrollRel.iY = 0;
+		m_cFrameScrollRel.iHeight = 0;
+		m_cFrameScrollRel.iWidth = 0;
 	}
 
 	m_cFrameListRel.iWidth	= m_cFrame.iWidth - m_cFrameScrollRel.iWidth;
 	
 	if(m_nMode & HEADER_LINE)
 	{
-		m_cFrameHeaderListRel.iWidth	= m_cFrame.iWidth - m_cFrameScrollRel.iWidth;
+		m_cFrameHeaderListRel.iWidth = m_cFrame.iWidth - m_cFrameScrollRel.iWidth;
 	}
 
 	m_nLinesPerPage = (m_cFrameListRel.iHeight - (2*TEXT_BORDER_WIDTH)) / m_nFontListHeight;
@@ -441,7 +439,6 @@ void CListFrame::refreshLine(int line)
 	{
 		color = LIST_FONT_COLOR_SELECTED;
 
-		//frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY,  m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED, RADIUS_LARGE, 3);
 		frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY,  m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED);
 	}
 	else

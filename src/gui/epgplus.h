@@ -134,7 +134,7 @@ class EpgPlus
 				int y;
 				int width;
 				
-				static Font* font;
+				static CFont *font;
 		};
 
 		class TimeLine
@@ -164,8 +164,8 @@ class EpgPlus
 				int y;
 				int width;
 			      
-				static Font* fontTime;
-				static Font* fontDate;
+				static CFont *fontTime;
+				static CFont *fontDate;
 
 				int startX;
 				int durationX;
@@ -206,7 +206,7 @@ class EpgPlus
 				int width;
 				static int separationLineHeight;
 
-				static Font* font;
+				static CFont *font;
 		};
 
 		typedef std::vector<ChannelEventEntry*> TCChannelEventEntries;
@@ -254,7 +254,7 @@ class EpgPlus
 				int width;
 				static int separationLineHeight;
 
-				static Font* font;
+				static CFont *font;
 
 				TCChannelEventEntries      channelEventEntries;
 		};
@@ -303,10 +303,10 @@ class EpgPlus
 				int y;
 				int width;
 
-				static Font*  fontBouquetChannelName;
-				static Font*  fontEventDescription;     
-				static Font*  fontEventShortDescription;
-				static Font*  fontButtons;
+				static CFont*  fontBouquetChannelName;
+				static CFont*  fontEventDescription;     
+				static CFont*  fontEventShortDescription;
+				static CFont*  fontButtons;
 
 				static int color;
 
@@ -397,23 +397,6 @@ class EpgPlus
 		};
 
 		typedef time_t DurationSetting;
-
-		/*
-		struct Settings
-		{
-			Settings ( bool doInit = true);
-
-			virtual ~Settings();
-
-			FontSetting*    fontSettings;
-			SizeSetting*    sizeSettings;
-			DurationSetting durationSetting;
-		};
-		typedef std::map<int, Font*> Fonts;
-		typedef std::map<int, int>   Sizes;
-		static Font * fonts[NumberOfFontSettings];
-		static int  sizes[NumberOfSizeSettings];
-		*/
 
 		friend class EpgPlus::MenuOptionChooserSwitchSwapMode;
 		friend class EpgPlus::MenuOptionChooserSwitchViewMode;

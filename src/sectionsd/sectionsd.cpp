@@ -3644,8 +3644,6 @@ static void commandGetIsTimeSet(int connfd, char* /*data*/, const unsigned /*dat
 	{
 		writeNbytes(connfd, (const char *)&rmsg, responseHeader.dataLength, WRITE_TIMEOUT_IN_SECONDS);
 	}
-	//else
-	//	dputs("[sectionsd] Fehler/Timeout bei write");
 }
 
 static void commandRegisterEventClient(int /*connfd*/, char *data, const unsigned dataLength)
@@ -6165,7 +6163,7 @@ static void *timeThread(void *)
 			{	
 				// only do this once!
 				time_t actTime;
-				actTime=time(NULL);
+				actTime = time(NULL);
 				pthread_mutex_lock(&timeIsSetMutex);
 				timeset = true;
 				pthread_cond_broadcast(&timeIsSetCond);
@@ -6175,11 +6173,10 @@ static void *timeThread(void *)
 				break;
 			}
 		}
-
 		else if ( ntpenable && system( ntp_system_cmd.c_str() ) == 0)
 		{
 			time_t actTime;
-			actTime=time(NULL);
+			actTime = time(NULL);
 			first_time = false;
 			pthread_mutex_lock(&timeIsSetMutex);
 			timeset = true;
@@ -6216,7 +6213,9 @@ static void *timeThread(void *)
 					struct tm *tmTime;
 					actTime=time(NULL);
 					tmTime = localtime(&actTime);
+					
 					dprintf(DEBUG_DEBUG, "[%sThread] - %02d.%02d.%04d %02d:%02d:%02d, tim: %s", "time\n", tmTime->tm_mday, tmTime->tm_mon+1, tmTime->tm_year+1900, tmTime->tm_hour, tmTime->tm_min, tmTime->tm_sec, ctime(&tim));
+					
 					pthread_mutex_lock(&timeIsSetMutex);
 					timeset = true;
 					time_ntp= false;
@@ -6240,8 +6239,7 @@ static void *timeThread(void *)
 			}
 			else 
 			{
-				dprintf(DEBUG_DEBUG, "[%sThread] Time %sset via DVB(%s), going to sleep for %d seconds.\n",
-					"time", success?"":"not ", first_time?"TDT":"TOT", seconds);
+				dprintf(DEBUG_DEBUG, "[%sThread] Time %sset via DVB(%s), going to sleep for %d seconds.\n", "time", success?"":"not ", first_time?"TDT":"TOT", seconds);
 			}
 			first_time = false;
 		}
@@ -6288,6 +6286,7 @@ static void *timeThread(void *)
 	}
 
 	dprintf(DEBUG_DEBUG, "[sectionsd] timeThread ended\n");
+	
 	pthread_exit(NULL);
 }
 
@@ -6339,8 +6338,6 @@ int eit_set_update_filter(int *fd)
 	mask[3] = (0x1F << 1) | 0x01;
 	mode[3] = 0x1F << 1;
 	eitDmx->sectionFilter(0x12, filter, mask, 4, timeout, mode);
-
-	//printf("[sectionsd] start EIT update filter: current version %02X, filter %02X %02X %02X %02X, mask %02X mode %02X \n", cur_eit, dsfp.filter.filter[0], dsfp.filter.filter[1], dsfp.filter.filter[2], dsfp.filter.filter[3], dsfp.filter.mask[3], dsfp.filter.mode[3]);
 	
 	*fd = 1;
 	return 0;
@@ -6369,7 +6366,6 @@ int eit_stop_update_filter(int *fd)
 //
 static void *fseitThread(void *)
 {
-
 	struct SI_section_header *header;
 	/* we are holding the start_stop lock during this timeout, so don't
 	   make it too long... */
@@ -6634,7 +6630,7 @@ static void *fseitThread(void *)
 }
 
 //
-//EIT-thread
+// EIT-thread
 // reads EPG-datas
 //
 static void *eitThread(void *)
@@ -6667,19 +6663,16 @@ static void *eitThread(void *)
 	dmxEIT.addfilter(0x60, 0xf0); //3  other TS, scheduled
 #endif
 
-	//if (sections_debug) 
-	//{
+	// debug
 	int policy;
 	struct sched_param parm;
 	int rc = pthread_getschedparam(pthread_self(), &policy, &parm);
 	dprintf(DEBUG_DEBUG, "eitThread getschedparam: %d pol %d, prio %d\n", rc, policy, parm.sched_priority);
-	//}
 	
 	dprintf(DEBUG_DEBUG, "[%sThread] pid %d (%lu) start\n", "eit", getpid(), pthread_self());
 	
 	int timeoutsDMX = 0;
 	uint8_t *static_buf = new uint8_t[MAX_SECTION_LENGTH];
-	//int rc;
 
 	if (static_buf == NULL)
 	{
@@ -6695,8 +6688,10 @@ static void *eitThread(void *)
 	waitForTimeset();
 	dmxEIT.lastChanged = time_monotonic();
 
-	while (!sectionsd_stop) {
-		while (!scanning) {
+	while (!sectionsd_stop) 
+	{
+		while (!scanning) 
+		{
 			if(sectionsd_stop)
 				break;
 			sleep(1);

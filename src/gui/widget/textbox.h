@@ -117,7 +117,7 @@ class CTextBox
 		int m_nCurrentLine;
 		int m_nCurrentPage;
 
-		Font* m_pcFontText;
+		CFont *m_pcFontText;
 		int m_nFontTextHeight;
 		CFBWindow::color_t m_textBackgroundColor;
 
@@ -128,7 +128,7 @@ class CTextBox
 		CTextBox();
 		CTextBox(	const char * text);
 		CTextBox(	const char * text, 
-					Font* font_text,
+					CFont *font_text,
 					const int mode, 
 					const CBox* position,
 					CFBWindow::color_t textBackgroundColor = COL_MENUCONTENT_PLUS_0);

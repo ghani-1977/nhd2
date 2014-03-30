@@ -318,8 +318,8 @@ class CMovieBrowser : public CMenuTarget
 		bool m_file_info_stale; // if this bit is set, MovieBrowser shall reload all movie infos from HD
 		bool m_seriename_stale;
 
-		Font * m_pcFontFoot;
-		Font * m_pcFontTitle;
+		CFont * m_pcFontFoot;
+		CFont * m_pcFontTitle;
 		std::string m_textTitle;
 		
 		MB_PARENTAL_LOCK m_parentalLock;

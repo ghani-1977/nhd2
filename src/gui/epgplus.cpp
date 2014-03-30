@@ -57,7 +57,7 @@ extern CPictureViewer * g_PicViewer;
 #define COL_MENUCONTENT_P2                 254-8*4+2
 extern CBouquetList *bouquetList;
 
-Font * fonts[EpgPlus::NumberOfFontSettings];
+CFont * fonts[EpgPlus::NumberOfFontSettings];
 int sizes[EpgPlus::NumberOfSizeSettings];
 
 time_t EpgPlus::duration = 0;
@@ -97,7 +97,7 @@ static EpgPlus::SizeSetting sizeSettingTable[] = {
 	{EpgPlus::EPGPlus_vergap2_width, 4},
 };
 
-Font * EpgPlus::Header::font = NULL;
+CFont * EpgPlus::Header::font = NULL;
 
 EpgPlus::Header::Header(CFrameBuffer * _frameBuffer, int _x, int _y, int _width)
 {
@@ -149,8 +149,8 @@ int EpgPlus::Header::getUsedHeight ()
   	return font->getHeight ();
 }
 
-Font *EpgPlus::TimeLine::fontTime = NULL;
-Font *EpgPlus::TimeLine::fontDate = NULL;
+CFont *EpgPlus::TimeLine::fontTime = NULL;
+CFont *EpgPlus::TimeLine::fontDate = NULL;
 
 EpgPlus::TimeLine::TimeLine(CFrameBuffer * _frameBuffer, int _x, int _y, int _width, int _startX, int _durationX)
 {
@@ -264,7 +264,7 @@ int EpgPlus::TimeLine::getUsedHeight()
 	return std::max(fontDate->getHeight(), fontTime->getHeight()) + fontTime->getHeight ();
 }
 
-Font * EpgPlus::ChannelEventEntry::font = NULL;
+CFont * EpgPlus::ChannelEventEntry::font = NULL;
 int EpgPlus::ChannelEventEntry::separationLineHeight = 0;
 
 EpgPlus::ChannelEventEntry::ChannelEventEntry(const CChannelEvent * _channelEvent, CFrameBuffer * _frameBuffer, TimeLine * _timeLine, Footer * _footer, int _x, int _y, int _width)
@@ -333,7 +333,7 @@ int EpgPlus::ChannelEventEntry::getUsedHeight()
   	return font->getHeight() + separationLineHeight;
 }
 
-Font * EpgPlus::ChannelEntry::font = NULL;
+CFont * EpgPlus::ChannelEntry::font = NULL;
 int EpgPlus::ChannelEntry::separationLineHeight = 0;
 
 EpgPlus::ChannelEntry::ChannelEntry(const CZapitChannel * _channel, int _index, CFrameBuffer * _frameBuffer, Footer * _footer, CBouquetList * _bouquetList, int _x, int _y, int _width)
@@ -454,10 +454,10 @@ int EpgPlus::ChannelEntry::getUsedHeight ()
 		+ separationLineHeight;
 }
 
-Font *EpgPlus::Footer::fontBouquetChannelName = NULL;
-Font *EpgPlus::Footer::fontEventDescription = NULL;
-Font *EpgPlus::Footer::fontEventShortDescription = NULL;
-Font *EpgPlus::Footer::fontButtons = NULL;
+CFont *EpgPlus::Footer::fontBouquetChannelName = NULL;
+CFont *EpgPlus::Footer::fontEventDescription = NULL;
+CFont *EpgPlus::Footer::fontEventShortDescription = NULL;
+CFont *EpgPlus::Footer::fontButtons = NULL;
 int EpgPlus::Footer::color = 0;
 
 EpgPlus::Footer::Footer (CFrameBuffer * _frameBuffer, int _x, int _y, int _width)
@@ -710,7 +710,7 @@ void EpgPlus::createChannelEntries (int selectedChannelEntryIndex)
 	}
 }
 
-void EpgPlus::init ()
+void EpgPlus::init()
 {
 	frameBuffer = CFrameBuffer::getInstance ();
 	currentViewMode = ViewMode_Scroll;
@@ -721,7 +721,7 @@ void EpgPlus::init ()
 	std::string FileName = std::string (g_settings.font_file);
 	for (size_t i = 0; i < NumberOfFontSettings; ++i) {
 		std::string family = g_fontRenderer->getFamily (FileName.c_str ());
-		Font *font = g_fontRenderer->getFont (family.c_str (), fontSettingTable[i].style, fontSettingTable[i].size);
+		CFont *font = g_fontRenderer->getFont (family.c_str (), fontSettingTable[i].style, fontSettingTable[i].size);
 	
 		if (font == NULL)
 		font = g_fontRenderer->getFont (family.c_str (), "Regular", fontSettingTable[i].size);

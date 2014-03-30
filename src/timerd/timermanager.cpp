@@ -22,6 +22,7 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
 #include <config.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -115,12 +116,14 @@ void* CTimerManager::timerThread(void *arg)
 			if (timeset)
 			{
 				dprintf(DEBUG_DEBUG, "[timermanager] sectionsd says \"time ok\"\n");
-				timerManager->m_isTimeSet=true;
+				
+				timerManager->m_isTimeSet = true;
 				timerManager->loadEventsFromConfig();
 			}
 			else
 			{
 				dprintf(DEBUG_DEBUG, "[timermanager] waiting for time to be set\n");
+				
 				wait.tv_sec = time(NULL) + 5 ;
 				wait.tv_nsec = 0;
 				pthread_cond_timedwait(&dummy_cond, &dummy_mutex, &wait);
@@ -129,7 +132,6 @@ void* CTimerManager::timerThread(void *arg)
 		else
 		{
 			time_t now = time(NULL);
-			//dprintf(DEBUG_DEBUG, "[timermanager] Timer Thread time: %u\n", (uint) now);
 
 			// fire events who's time has come
 			CTimerEvent *event;

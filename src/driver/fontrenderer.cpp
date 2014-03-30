@@ -214,7 +214,7 @@ FBFontRenderClass::fontListEntry::~fontListEntry()
 	free(style);
 }
 
-Font *FBFontRenderClass::getFont(const char * const family, const char * const style, int size)
+CFont *FBFontRenderClass::getFont(const char * const family, const char * const style, int size)
 {
 	FTC_FaceID id = getFaceID(family, style);
 
@@ -226,7 +226,7 @@ Font *FBFontRenderClass::getFont(const char * const family, const char * const s
 
 	dprintf(DEBUG_DEBUG, "[FONT] getFont: family %s, style %s ok\n", family, style);
 
-	return new Font(this, id, size, (strcmp(((fontListEntry *)id)->style, style) == 0) ? Font::Regular : Font::Embolden);
+	return new CFont(this, id, size, (strcmp(((fontListEntry *)id)->style, style) == 0) ? CFont::Regular : CFont::Embolden);
 }
 
 std::string FBFontRenderClass::getFamily(const char * const filename) const
@@ -240,7 +240,7 @@ std::string FBFontRenderClass::getFamily(const char * const filename) const
   	return "";
 }
 
-Font::Font(FBFontRenderClass * render, FTC_FaceID faceid, const int isize, const fontmodifier _stylemodifier)
+CFont::CFont(FBFontRenderClass * render, FTC_FaceID faceid, const int isize, const fontmodifier _stylemodifier)
 {
 	stylemodifier   = _stylemodifier;
 
@@ -263,12 +263,12 @@ Font::Font(FBFontRenderClass * render, FTC_FaceID faceid, const int isize, const
 	setSize(isize);
 }
 
-FT_Error Font::getGlyphBitmap(FT_ULong glyph_index, FTC_SBit *sbit)
+FT_Error CFont::getGlyphBitmap(FT_ULong glyph_index, FTC_SBit *sbit)
 {
 	return renderer->getGlyphBitmap(&scaler, glyph_index, sbit);
 }
 
-int Font::setSize(int isize)
+int CFont::setSize(int isize)
 {
 	int temp = font.width; 
 	font.width = font.height = isize;
@@ -310,12 +310,12 @@ int Font::setSize(int isize)
 	return temp;
 }
 
-int Font::getHeight(void)
+int CFont::getHeight(void)
 {
 	return height;
 }
 
-int Font::getWidth(void)
+int CFont::getWidth(void)
 {
 	return fontwidth;
 }
@@ -404,7 +404,7 @@ static std::string fribidiShapeChar(const char * text)
 }
 #endif
 
-void Font::RenderString(int x, int y, const int width, const char *text, const uint8_t color, const int boxheight, const bool utf8_encoded)
+void CFont::RenderString(int x, int y, const int width, const char *text, const uint8_t color, const int boxheight, const bool utf8_encoded)
 {
 	if (!frameBuffer->getActive())
 		return;
@@ -528,7 +528,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	}
 	
 	int spread_by = 0;
-	if (stylemodifier == Font::Embolden)
+	if (stylemodifier == CFont::Embolden)
 	{
 		spread_by = (fontwidth / 6) - 1;
 		if (spread_by < 1)
@@ -595,7 +595,7 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 				int ax;
 				for (ax = 0; ax < w + spread_by; ax++)
 				{
-					if (stylemodifier != Font::Embolden)
+					if (stylemodifier != CFont::Embolden)
 					{
 						if(*s != 0)
 							*td = colors[*s];
@@ -646,12 +646,12 @@ void Font::RenderString(int x, int y, const int width, const char *text, const u
 	pthread_mutex_unlock( &renderer->render_mutex );
 }
 
-void Font::RenderString(int x, int y, const int width, const std::string & text, const uint8_t color, const int boxheight, const bool utf8_encoded)
+void CFont::RenderString(int x, int y, const int width, const std::string & text, const uint8_t color, const int boxheight, const bool utf8_encoded)
 {
 	RenderString(x, y, width, text.c_str(), color, boxheight, utf8_encoded);
 }
 
-int Font::getRenderWidth(const char *text, const bool utf8_encoded)
+int CFont::getRenderWidth(const char *text, const bool utf8_encoded)
 {
 	pthread_mutex_lock( &renderer->render_mutex );
 	
@@ -712,7 +712,7 @@ int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 		lastindex = index;
 	}
 
-	if (stylemodifier == Font::Embolden)
+	if (stylemodifier == CFont::Embolden)
 	{
 		int spread_by = (fontwidth / 6) - 1;
 		if (spread_by < 1)
@@ -726,7 +726,7 @@ int Font::getRenderWidth(const char *text, const bool utf8_encoded)
 	return x;
 }
 
-int Font::getRenderWidth(const std::string & text, const bool utf8_encoded)
+int CFont::getRenderWidth(const std::string & text, const bool utf8_encoded)
 {
 	return getRenderWidth(text.c_str(), utf8_encoded);
 }

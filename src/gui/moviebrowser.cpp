@@ -1251,7 +1251,7 @@ int CMovieBrowser::paint(void)
 
 	CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD));	
 
-	Font * font = NULL;
+	CFont * font = NULL;
 
 	m_pcBrowser = new CListFrame(&m_browserListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE, &m_cBoxFrameBrowserList);
 	m_pcLastPlay = new CListFrame(&m_playListLines, font, CListFrame::SCROLL | CListFrame::HEADER_LINE | CListFrame::TITLE, &m_cBoxFrameLastPlayList, g_Locale->getText(LOCALE_MOVIEBROWSER_HEAD_PLAYLIST), g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]);

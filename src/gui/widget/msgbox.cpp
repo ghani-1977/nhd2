@@ -84,11 +84,11 @@
 // Notes:		
 //////////////////////////////////////////////////////////////////////
 CMsgBox::CMsgBox(  const char * text, 
-				   Font* fontText,
+				   CFont *fontText,
 				   const int _mode, 
 				   const CBox* position, 
 				   const char * title,
-				   Font* fontTitle,
+				   CFont *fontTitle,
 				   const char * icon,
 				   int return_button , 
 				   const result_ default_result)

@@ -111,19 +111,19 @@ class CMsgBox
 		CBox	m_cBoxFrameTitleRel;
 		CBox	m_cBoxFrameFootRel;
 
-		int		m_nMode;
+		int m_nMode;
 
-		int		m_nWindowFrameBorderWidth;
+		int m_nWindowFrameBorderWidth;
 
-		Font*	m_pcFontTitle;
-		int		m_nFontTitleHeight;
+		CFont *m_pcFontTitle;
+		int m_nFontTitleHeight;
 
-		Font*	m_pcFontFoot;
-		int		m_nFontFootHeight;
-		int		m_nFootButtons;
+		CFont *m_pcFontFoot;
+		int m_nFontFootHeight;
+		int m_nFootButtons;
 
-		CTextBox* m_pcTextBox;
-		//CFBWindow* m_pcWindow;
+		CTextBox *m_pcTextBox;
+
 		CFrameBuffer * m_pcWindow;
 
 		result_	m_nResult;
@@ -133,11 +133,11 @@ class CMsgBox
 		CMsgBox();
 		CMsgBox(const char * text);
 		CMsgBox(  const char * text, 
-				   Font* fontText,
+				   CFont *fontText,
 				   const int mode, 
 				   const CBox* position, 
 				   const char * title,
-				   Font* fontTitle,
+				   CFont *fontTitle,
 				   const char * icon,
 				   int return_button = mbCancel, 
 				   const result_ default_result = mbrCancel);

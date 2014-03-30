@@ -348,33 +348,9 @@ bool timerd_parse_command(CBasicMessage::Header &rmsg, int connfd)
 					break;
 
 				case CTimerd::TIMER_NEXTPROGRAM :
-//					CTimerd::EventInfo evInfo;
 					CBasicServer::receive_data(connfd, &evInfo, sizeof(CTimerd::TransferEventInfo));
-/*
-					it = CTimerEvent_NextProgram::events.find(evInfo.uniqueKey);
-					if (it == CTimerEvent_NextProgram::events.end())
-					{
-						event = new CTimerEvent_NextProgram(
-							msgAddTimer.announceTime,
-							msgAddTimer.alarmTime,
-							msgAddTimer.stopTime,
-							msgAddTimer.eventRepeat);
-						static_cast<CTimerEvent_NextProgram*>(event)->eventInfo = evInfo;
-						CTimerEvent_NextProgram::events.insert(make_pair(static_cast<CTimerEvent_NextProgram*>(event)->eventInfo.uniqueKey, static_cast<CTimerEvent_NextProgram*>(event)));
-						rspAddTimer.eventID = CTimerManager::getInstance()->addEvent(event);
-					}
-					else
-					{
-						event = it->second;
-						static_cast<CTimerEvent_NextProgram*>(event)->eventInfo = evInfo;
-						event->alarmtime.tm_mon  = msgAddTimer.month;
-						event->alarmtime.tm_mday = msgAddTimer.day;
-						event->alarmtime.tm_hour = msgAddTimer.hour;
-						event->alarmtime.tm_min  = msgAddTimer.min;
-						rspAddTimer.eventID = event->eventID;
-					}
-*/
 					break;
+					
 				case CTimerd::TIMER_REMIND :
 					CTimerdMsg::commandRemind remind;
 					CBasicServer::receive_data(connfd, &remind, sizeof(CTimerdMsg::commandRemind));

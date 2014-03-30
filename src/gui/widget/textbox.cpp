@@ -72,7 +72,7 @@
 #define MIN_WINDOW_WIDTH  ((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
 #define MIN_WINDOW_HEIGHT 40	
 
-CTextBox::CTextBox(const char * text, Font * font_text, const int _mode, const CBox * position, CFBWindow::color_t textBackgroundColor)
+CTextBox::CTextBox(const char * text, CFont * font_text, const int _mode, const CBox * position, CFBWindow::color_t textBackgroundColor)
 {
 	dprintf(DEBUG_DEBUG, "[CTextBox] new\r\n");
 	
@@ -106,6 +106,7 @@ CTextBox::CTextBox(const char * text, Font * font_text, const int _mode, const C
 
 	m_textBackgroundColor = textBackgroundColor;
 	m_nFontTextHeight  = m_pcFontText->getHeight();
+	
 	dprintf(DEBUG_DEBUG, " CTextBox::m_nFontTextHeight: %d\t\r\n", m_nFontTextHeight);
 
 	//Initialise the window frames first

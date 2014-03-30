@@ -93,5 +93,5 @@ bool CFBWindow::paintIcon(const char * const _filename, const int _x, const int 
 
 void CFBWindow::RenderString(const font_t _font, const int _x, const int _y, const int _width, const char * const _text, const color_t _color, const int _boxheight, const bool _utf8_encoded)
 {
-	((Font *)_font)->RenderString(x + _x, y + _y, _width, _text, _color, _boxheight, _utf8_encoded);
+	((CFont *)_font)->RenderString(x + _x, y + _y, _width, _text, _color, _boxheight, _utf8_encoded);
 }

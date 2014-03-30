@@ -41,7 +41,7 @@
 
 
 class FBFontRenderClass;
-class Font
+class CFont
 {
 	CFrameBuffer	* frameBuffer;
 	FTC_ImageTypeRec	font;
@@ -74,8 +74,8 @@ class Font
 		int getSize(){return font.width;}
 		int setSize(int isize);
 
-		Font(FBFontRenderClass *render, FTC_FaceID faceid, const int isize, const fontmodifier _stylemodifier);
-		~Font(){}		
+		CFont(FBFontRenderClass *render, FTC_FaceID faceid, const int isize, const fontmodifier _stylemodifier);
+		~CFont(){}		
 };
 
 class FBFontRenderClass
@@ -113,7 +113,7 @@ class FBFontRenderClass
 		                                     FT_Pointer  request_data,
 		                                     FT_Face*    aface);
 
-		Font *getFont(const char * const family, const char * const style, int size);
+		CFont *getFont(const char * const family, const char * const style, int size);
 
 		std::string getFamily(const char * const filename) const;
 
@@ -122,7 +122,7 @@ class FBFontRenderClass
 		FBFontRenderClass(const int xres = 72, const int yres = 72);
 		~FBFontRenderClass();
 		
-		friend class Font;
+		friend class CFont;
 };
 
 #endif

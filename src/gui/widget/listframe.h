@@ -104,14 +104,14 @@ class CListFrame
 
 		bool m_showSelection;
 		
-		Font* m_pcFontTitle;
+		CFont *m_pcFontTitle;
 		std::string m_textTitle;
 		int m_nFontTitleHeight;
 		
-		Font* m_pcFontList;
+		CFont *m_pcFontList;
 		int m_nFontListHeight;
 		
-		Font* m_pcFontHeaderList;
+		CFont *m_pcFontHeaderList;
 		int m_nFontHeaderListHeight;
 
 		CFrameBuffer * frameBuffer;
@@ -120,11 +120,11 @@ class CListFrame
 		CListFrame();
 		CListFrame(	LF_LINES* lines);
 		CListFrame(	LF_LINES* lines, 
-					Font* font_text,
+					CFont *font_text,
 					const int mode, 
 					const CBox* position,
 					const char* textTitle = NULL,
-					Font* font_title = NULL);
+					CFont *font_title = NULL);
 
 		virtual ~CListFrame();
 

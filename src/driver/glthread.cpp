@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "glthread.h"
-//#include <GL/glx.h>
+#include <GL/glx.h>
 
 
 /*static*/ GLThreadObj *gThiz = 0; /* GLUT does not allow for an arbitrary argument to the render func */
@@ -154,11 +154,11 @@ void GLThreadObj::setupCtx()
 	glutInit(&argc, const_cast<char **>(argv));
 	glutInitWindowSize(mX, mY);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("neutrinohd2");
+	glutCreateWindow("neutrinoHD2");
 	
 	//
 	//GLWinID = glutGetWindow();
-	//GLWinID = glXGetCurrentDrawable(); // this was the holy grail to get the right window handle for gstreamer :D
+	GLWinID = glXGetCurrentDrawable(); // this was the holy grail to get the right window handle for gstreamer :D
 	GLxStart = mX;
 	GLyStart = mY;
 	GLWidth = getOSDWidth();

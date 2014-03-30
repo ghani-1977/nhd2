@@ -180,8 +180,8 @@ extern  CTimerdClient *g_Timerd;
 
 extern  FBFontRenderClass *g_fontRenderer;
 
-extern  Font * g_Font[FONT_TYPE_COUNT];
-extern  Font * g_SignalFont;
+extern  CFont * g_Font[FONT_TYPE_COUNT];
+extern  CFont * g_SignalFont;
 
 extern  CRCInput *g_RCInput;
 
