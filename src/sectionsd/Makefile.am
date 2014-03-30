@@ -7,8 +7,6 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libeventserver \
 	-I$(top_srcdir)/lib/libxmltree
 
-AM_CPPFLAGS = -D DO_NOT_INCLUDE_STUFF_NOT_NEEDED_FOR_SECTIONSD
-
 if BOXTYPE_COOLSTREAM
 INCLUDES += -I$(top_srcdir)/src/zapit/include \
 	-I$(top_srcdir)/lib/libcoolstream

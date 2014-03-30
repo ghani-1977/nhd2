@@ -18,29 +18,30 @@
 #define TABLE1_FILENAME CONFIGDIR "/freesat.t1"
 #define TABLE2_FILENAME CONFIGDIR "/freesat.t2"
 
-class huffTableEntry {
+class huffTableEntry 
+{
 	friend class freesatHuffmanDecoder;
-private: 
-	uint32_t value; 
-	uint16_t bits; 
-	char next;
-	huffTableEntry * nextEntry;
-public: 
-	huffTableEntry(unsigned int Value, short Bits, char Next, huffTableEntry * NextEntry) : value(Value), bits(Bits), next(Next), nextEntry(NextEntry)
-	{ }
+	private: 
+		uint32_t value; 
+		uint16_t bits; 
+		char next;
+		huffTableEntry * nextEntry;
+	public: 
+		huffTableEntry(unsigned int Value, short Bits, char Next, huffTableEntry * NextEntry) : value(Value), bits(Bits), next(Next), nextEntry(NextEntry)
+		{ }
 };
 
 class freesatHuffmanDecoder 
 {
-private:
-	huffTableEntry	*m_tables[2][256];
-	bool 		loadFile(int tableid, const char *filename);
-	void 		loadTables();
-	bool		m_tablesLoaded;
-public:
-	freesatHuffmanDecoder();
-	~freesatHuffmanDecoder();
-	std::string decode(const unsigned char *src, size_t size);
+	private:
+		huffTableEntry	*m_tables[2][256];
+		bool 		loadFile(int tableid, const char *filename);
+		void 		loadTables();
+		bool		m_tablesLoaded;
+	public:
+		freesatHuffmanDecoder();
+		~freesatHuffmanDecoder();
+		std::string decode(const unsigned char *src, size_t size);
 };
 
 #endif

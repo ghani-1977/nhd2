@@ -154,7 +154,6 @@ class CSectionsdClient : private CBasicClient
 
 		typedef struct
 		{
-			int scanMode;
 			int epg_cache;
 			int epg_old_events;
 			int epg_max_events;
@@ -175,8 +174,6 @@ class CSectionsdClient : private CBasicClient
 
 		bool getIsTimeSet();
 
-		//void setEventsAreOldInMinutes(const unsigned short minutes);
-
 		void setPauseScanning(const bool doPause);
 
 		bool getIsScanningActive();
@@ -196,10 +193,6 @@ class CSectionsdClient : private CBasicClient
 		bool getActualEPGServiceKey(const t_channel_id channel_id, CEPGData * epgdata);
 
 		bool getEPGidShort(const event_id_t eventid, CShortEPGData * epgdata);
-
-		void setPrivatePid(const unsigned short pid);
-
-		//void setSectionsdScanMode(const int scanMode);
 
 		void freeMemory();
 

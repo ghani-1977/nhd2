@@ -679,16 +679,6 @@ bool CSectionsdClient::getEPGidShort(const event_id_t eventid, CShortEPGData * e
 	return false;
 }
 
-#ifdef ENABLE_PPT
-void CSectionsdClient::setPrivatePid(const unsigned short pid)
-{
-	send(sectionsd::setPrivatePid, (char*)&pid, sizeof(pid));
-
-	readResponse();
-	close_connection();
-}
-#endif
-
 void CSectionsdClient::freeMemory()
 {
 	send(sectionsd::freeMemory);
@@ -719,16 +709,15 @@ void CSectionsdClient::setConfig(const epg_config config)
 	char* pData = new char[sizeof(sectionsd::commandSetConfig) + config.network_ntpserver.length() + 1 + config.epg_dir.length() + 1];
 	msg = (sectionsd::commandSetConfig *)pData;
 
-	msg->scanMode		= config.scanMode;
 	msg->epg_cache		= config.epg_cache;
 	msg->epg_old_events	= config.epg_old_events;
 	msg->epg_max_events	= config.epg_max_events;
 	msg->network_ntprefresh	= config.network_ntprefresh;
 	msg->network_ntpenable	= config.network_ntpenable;
 	msg->epg_extendedcache	= config.epg_extendedcache;
-//	config.network_ntpserver:
+	//network_ntpserver:
 	strcpy(&pData[sizeof(sectionsd::commandSetConfig)], config.network_ntpserver.c_str());
-//	config.epg_dir:
+	//epg_dir:
 	strcpy(&pData[sizeof(sectionsd::commandSetConfig) + config.network_ntpserver.length() + 1], config.epg_dir.c_str());
 
 	send(sectionsd::setConfig, (char*)pData, sizeof(sectionsd::commandSetConfig) + config.network_ntpserver.length() + 1 + config.epg_dir.length() + 1);

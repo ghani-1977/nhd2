@@ -71,7 +71,7 @@
 
 TP_params TP;
 CFrontend * getFE(int index);
-extern CScanSettings * scanSettings;
+extern CScanSettings * scanSettings;		// defined in 
 
 
 CScanTs::CScanTs(int num)

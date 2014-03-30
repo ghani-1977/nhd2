@@ -229,7 +229,7 @@ void setZapitConfig(Zapit_config * Cfg);
 void getZapitConfig(Zapit_config * Cfg);
 extern CZapitChannel * live_channel;			// defined in zapit.cpp
 extern CFrontend * live_fe;
-extern CScanSettings * scanSettings;
+extern CScanSettings * scanSettings;			// defined in scan_setup.cpp
 extern int FrontendCount;				// defined in zapit.cpp
 
 //nhttpd thread
@@ -2257,7 +2257,6 @@ void CNeutrinoApp::SendSectionsdConfig(void)
 {
         CSectionsdClient::epg_config config;
 	
-        config.scanMode                 = scanSettings->scanSectionsd;
         config.epg_cache                = atoi(g_settings.epg_cache.c_str());
         config.epg_old_events           = atoi(g_settings.epg_old_events.c_str());
         config.epg_max_events           = atoi(g_settings.epg_max_events.c_str());

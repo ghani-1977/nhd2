@@ -67,7 +67,7 @@ struct sectionsd
                 dummy7, // dumpAllServices,             // commandDumpAllServices
                 dummy8, // actualEventListRadioshort,   // commandEventListRadio
                 dummy9, // getNextEPG,                  // commandGetNextEPG
-                dummy10,// getNextShort,                        // commandGetNextShort
+                dummy10,// getNextShort,                // commandGetNextShort
                 pauseScanning,                  // commandPauseScanning // for the grabbers ;)
                 getIsScanningActive,            // commandGetIsScanningActive
                 actualEPGchannelID,             // commandActualEPGchannelID
@@ -86,12 +86,7 @@ struct sectionsd
                 pauseSorting,                   // commandPauseSorting
                 CMD_registerEvents,             // commandRegisterEventClient
                 CMD_unregisterEvents,           // commandUnRegisterEventClient
-#ifdef ENABLE_PPT
-                setPrivatePid,                  // commandSetPrivatePid
-#else
-                dummy11_setPrivatePid,
-#endif
-                setSectionsdScanMode,           // commandSetSectionsdScanMode
+
                 freeMemory,                     // commandFreeMemory
                 readSIfromXML,                  // commandReadSIfromXML
                 writeSI2XML,                    // commandWriteSI2XML
@@ -128,15 +123,12 @@ struct sectionsd
 
 	struct commandSetConfig
 	{
-		int scanMode;
 		int epg_cache;
 		int epg_old_events;
 		unsigned int epg_max_events;
 		int network_ntprefresh;
 		int network_ntpenable;
 		int epg_extendedcache;
-		//std::string network_ntpserver;
-		//std::string epg_dir;
 	};
 
 };
