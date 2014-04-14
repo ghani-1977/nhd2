@@ -266,7 +266,10 @@ static char* Codec2Encoding(AVCodecContext *codec, int* version)
 #endif 
 
 		default:
-			ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",codec->codec_id);
+			if (codec->codec_type == AVMEDIA_TYPE_AUDIO)
+				return "A_IPCM";
+			else
+				ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",codec->codec_id);
 	}
 	
 	return NULL;
@@ -1967,7 +1970,8 @@ static char *FFMPEG_Capabilities[] = {
 	"mp3", 
 	"mpg", 
 	"m2ts", 
-	"vob", 
+	"vob",
+	"wav",
 	"wmv",
 	"wma", 
 	"asf", 

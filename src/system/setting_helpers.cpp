@@ -755,6 +755,7 @@ bool CTZChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	dprintf(DEBUG_NORMAL, "CTZChangeNotifier::changeNotify: %s\n", (char *) Data);
 
         xmlDocPtr parser = parseXmlFile("/etc/timezone.xml");
+	
         if (parser != NULL) 
 	{
                 xmlNodePtr search = xmlDocGetRootElement(parser)->xmlChildrenNode;
@@ -786,8 +787,7 @@ bool CTZChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
 		
 		system(cmd.c_str());
 		
-		cmd = ":" + zone;
-		setenv("TZ", cmd.c_str(), 1);
+		tzset();
 	}
 
 	return true;
