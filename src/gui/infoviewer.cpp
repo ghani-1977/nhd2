@@ -1599,6 +1599,7 @@ int CInfoViewer::handleMsg(const neutrino_msg_t msg, neutrino_msg_data_t data)
 				showIcon_SubT();
 				showIcon_CA_Status(0);
 				showIcon_Resolution();
+				showIcon_16_9();
 	  		}
 		}
 		return messages_return::handled;
