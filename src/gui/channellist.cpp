@@ -809,7 +809,8 @@ int CChannelList::show()
 			paintHead();
 
 			// refresh logo box
-			frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
+			//frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
+			frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING, 2);
 	
 			// paint logo
 			g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight, true);
@@ -1734,7 +1735,7 @@ void CChannelList::paintItem(int pos)
 		paintDetails(curr);
 
 		// refresh logo box
-		frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2) - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING, 2);
 	
 		// paint logo
 		int PIC_W_1 = theight*1.67;
