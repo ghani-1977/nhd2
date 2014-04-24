@@ -2941,7 +2941,7 @@ void CAudioPlayerGui::savePlaylist()
 		}
 		absPlaylistDir += file->getFileName();
 
-		const int filenamesize = 30;
+		const int filenamesize = MAX_INPUT_CHARS + 1;
 		char filename[filenamesize + 1] = "";
 
 		if (file->getType() == CFile::FILE_PLAYLIST) 
