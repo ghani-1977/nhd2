@@ -86,13 +86,9 @@ typedef struct stat64 stat_struct;
 typedef struct dirent64 dirent_struct;
 #define my_stat stat64
 static off64_t get_full_len(char * startname);
-//static off64_t truncate_movie(char * name, off64_t size, int len, int seconds);
 static off64_t truncate_movie(MI_MOVIE_INFO * minfo);
 static off64_t cut_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie);
 static off64_t copy_movie(MI_MOVIE_INFO * minfo, CMovieInfo * cmovie, bool onefile);
-
-#define TRACE  printf
-#define TRACE_1 printf
 
 #define VLC_URI "vlc://"
 
@@ -211,7 +207,7 @@ const neutrino_locale_t m_localizedItemName[MB_INFO_MAX_NUMBER + 1] =
 #define	MB_ROW_WIDTH_LENGTH		40
 #define	MB_ROW_WIDTH_SIZE 		80
 
-const int m_defaultRowWidth[MB_INFO_MAX_NUMBER+1] = 
+const int m_defaultRowWidth[MB_INFO_MAX_NUMBER + 1] = 
 {
 	MB_ROW_WIDTH_FILENAME ,
 	MB_ROW_WIDTH_FILEPATH,
@@ -477,7 +473,7 @@ void CMovieBrowser::init(void)
 	
 	if(m_settings.sorting.direction >= MB_DIRECTION_MAX_NUMBER)
 		m_settings.sorting.direction = MB_DIRECTION_DOWN;
-	if(m_settings.sorting.item 	>=  MB_INFO_MAX_NUMBER)
+	if(m_settings.sorting.item >=  MB_INFO_MAX_NUMBER)
 		m_settings.sorting.item =  MB_INFO_TITLE;
 
 	if(m_settings.filter.item >= MB_INFO_MAX_NUMBER)
@@ -1513,6 +1509,7 @@ void CMovieBrowser::refreshFilterList(void)
 void CMovieBrowser::refreshLastPlayList(void) //P2
 {
 	dprintf(DEBUG_INFO, "[mb]->refreshlastPlayList \r\n");
+	
 	std::string string_item;
 
 	// Initialise and clear list array

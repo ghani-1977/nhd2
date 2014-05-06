@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<webtvs>
+<webtv title="Al Arabiya Al Hadath" url="http://livestream2.alarabiya.tv/files/hadath.m3u8" description="Stream" />
+<webtv title="AL FAYHAA TV" url="mmsh://77.67.107.89/al-fayhaa" description="Stream" />
+<webtv title="AL HAYAT" url="rtmp://media.islamexplained.com:1935/live/_definst_mp4:ahme.stream_360p" description="Stream" />
+<webtv title="AL SHARGİAH" url="rtmp://ns8.indexforce.com/home/mystream" description="Stream" />
+<webtv title="Al Sharqiya News" url="rtmp://ns8.indexforce.com/alsharqiyalive/mystream" description="Stream" />
+<webtv title="MTV Lubnan" url="rtsp://livestreaming1.itworkscdn.net/mtvlive/murrtelevision_160p" description="Stream" />
+<webtv title="INFINITY TV" url="rtsp://202.142.207.150:1935/live/liveinfinity1" description="Stream" />
+</webtvs> 
