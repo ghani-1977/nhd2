@@ -524,7 +524,7 @@ int CAudioPlayerGui::show()
 									g_PicViewer->SetAspectRatio(4.0/3);
 
 
-								g_PicViewer->ShowImage(filename);
+								g_PicViewer->ShowImage(filename, true);
 							}
 							else if(_selected) // when all pics are shown show the mp3 pic once again
 							{
