@@ -3268,9 +3268,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				if( mode == mode_radio )
 				{
 					if (!g_settings.radiotext_enable)
+					{
 						frameBuffer->loadBackgroundPic("radiomode.jpg");
-						
-					frameBuffer->blit();	
+						frameBuffer->blit();	
+					}
 				}
 					
 				StartSubtitles();
@@ -3293,9 +3294,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				if( mode == mode_radio )
 				{
 					if (!g_settings.radiotext_enable)
+					{
 						frameBuffer->loadBackgroundPic("radiomode.jpg");
-						
-					frameBuffer->blit();	
+						frameBuffer->blit();	
+					}
 				}
 					
 				StartSubtitles();
@@ -3318,9 +3320,10 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				if( mode == mode_radio )
 				{
 					if (!g_settings.radiotext_enable)
-						frameBuffer->loadBackgroundPic("radiomode.jpg");						
-
-					frameBuffer->blit();	
+					{
+						frameBuffer->loadBackgroundPic("radiomode.jpg");
+						frameBuffer->blit();	
+					}
 				}
 					
 				StartSubtitles();
@@ -4804,9 +4807,10 @@ void CNeutrinoApp::radioMode( bool rezap)
 	}
 
 	if (!g_settings.radiotext_enable)
+	{
 		frameBuffer->loadBackgroundPic("radiomode.jpg");
-	
-	frameBuffer->blit();
+		frameBuffer->blit();
+	}
 
 	if (g_settings.radiotext_enable) 
 	{
@@ -5518,6 +5522,7 @@ bool CNeutrinoApp::changeNotify(const neutrino_locale_t OptionName, void */*data
 			g_Radiotext = NULL;
 			
 			frameBuffer->loadBackgroundPic("radiomode.jpg");
+			frameBuffer->blit();
 		}
 		
 		return true;
