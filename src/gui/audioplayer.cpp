@@ -524,7 +524,7 @@ int CAudioPlayerGui::show()
 									g_PicViewer->SetAspectRatio(4.0/3);
 
 
-								g_PicViewer->ShowImage(filename, true);
+								g_PicViewer->ShowImage(filename);
 							}
 							else if(_selected) // when all pics are shown show the mp3 pic once again
 							{
@@ -2547,6 +2547,7 @@ void CAudioPlayerGui::screensaver(int type)
 		m_screensaver = type;
 //#if defined (USE_OPENGL)		
 		m_frameBuffer->ClearFrameBuffer();
+		m_frameBuffer->blit();
 //#else
 //		videoDecoder->finishShowSinglePic();
 //#endif
