@@ -819,7 +819,7 @@ int CStreamInfo2::ts_setup()
 #if defined (PLATFORM_COOLSTREAM)
 	ts_dmx->Open(DMX_TP_CHANNEL);
 #else	
-	ts_dmx->Open( DMX_TP_CHANNEL, 3 *3008 * 62, live_fe );
+	ts_dmx->Open( DMX_TP_CHANNEL, 3*3008*62, live_fe );
 #endif	
 	
 	if(vpid > 0) 

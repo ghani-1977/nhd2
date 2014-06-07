@@ -33,7 +33,7 @@
 #include <frontend_c.h>
 
 
-#define TS_SIZE 188
+#define TS_SIZE 	188
 #define IN_SIZE         (TS_SIZE * 362)
 
 /* maximum number of pes pids */

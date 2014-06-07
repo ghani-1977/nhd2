@@ -29,7 +29,7 @@
 #include <frontend_c.h>
 
 //NOTE: dvb_core: the dvb_ring_buffer is limted to max 65536
-#define DEMUX_POLL_TIMEOUT 0  			// timeout in ms
+#define DEMUX_POLL_TIMEOUT 0  				// timeout in ms
 #define DMX_BUFFER_SIZE			8192
 #define AUDIO_STREAM_BUFFER_SIZE     	64*1024 	//65536
 #define VIDEO_STREAM_BUFFER_SIZE     	64*1024 	//65536

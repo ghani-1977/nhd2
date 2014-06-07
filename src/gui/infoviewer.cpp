@@ -1283,7 +1283,12 @@ void CInfoViewer::showIcon_16_9()
 		aspect_icon = NEUTRINO_ICON_16_9;
 	
 	if (is_visible)
+	{
+		// refresh
+		frameBuffer->paintBoxRel(BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), buttonBarStartY + (buttonBarHeight - icon_h_aspect)/2, icon_w_aspect, icon_h_aspect, COL_INFOBAR_BUTTONS_BACKGROUND);
+		
 		frameBuffer->paintIcon(aspect_icon, BoxEndX - (LEFT_OFFSET + icon_w_subt + 2 + icon_w_vtxt + 2 + icon_w_dd + 2 + icon_w_aspect), buttonBarStartY + (buttonBarHeight - icon_h_aspect)/2 );
+	}
 }
 
 void CInfoViewer::showIcon_VTXT() const
