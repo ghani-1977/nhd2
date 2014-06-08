@@ -1067,6 +1067,9 @@ void CNeutrinoApp::InitAudioplayerSettings(CMenuWidget &audioplayerSettings)
 	// sc dev id
 	CStringInputSMS * shoutCastDevID = new CStringInputSMS(LOCALE_AUDIOPLAYER_ENABLE_SC_ID, &g_settings.shoutcast_dev_id);
 	audioplayerSettings.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ENABLE_SC_ID, true, g_settings.shoutcast_dev_id, shoutCastDevID));
+	
+	// audioplayer screensaver dir
+	audioplayerSettings.addItem( new CMenuForwarder(LOCALE_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
 }
 
 // InitPicViewerSettings
@@ -1197,7 +1200,7 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_LOGOSDIR, true, g_settings.logos_dir, this, "logos_dir" ) );
 	
 	// audioplayer screensaver dir
-	miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
+	//miscSettingsGeneral.addItem( new CMenuForwarder(LOCALE_MISCSETTINGS_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
 	
 	// epgplus logos
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_EPGPLUS_SHOW_LOGOS, &g_settings.epgplus_show_logo, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));

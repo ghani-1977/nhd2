@@ -78,6 +78,7 @@ audioplayer.screensaver_type Bildschirmschoner Modus
 audioplayer_screensaver_none aus
 audioplayer_screensaver_hide_playlist verstecke Playliste
 audioplayer_screensaver_diashow Diashow
+audioplayer_screensaver_dir Audioplayer Diashow
 audioplayer.shuffle Shuffle
 audioplayer.spectrum LCD Skala
 audioplayer.stop Stop
@@ -766,7 +767,6 @@ miscsettings.epg_old_events_hint1 Wie lange abgelaufene EPG-Daten aufheben?
 miscsettings.epg_old_events_hint2 Angabe in Stunden
 miscsettings.epg_save EPG zwischenspeichern?
 miscsettings.epgplus_show_logos Kanal Logo(EPGPlus)
-miscsettings.audioplayer_screensaver_dir Audioplayer Diashow
 miscsettings.fb_destination EXPERTE! Boot-Konsole
 miscsettings.general Allgemein
 servicemenu.tuner Tuner Einstellungen
