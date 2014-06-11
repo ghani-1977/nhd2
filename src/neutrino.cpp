@@ -4719,7 +4719,6 @@ void CNeutrinoApp::tvMode( bool rezap )
 
 	frameBuffer->useBackground(false);
 	frameBuffer->paintBackground();
-
 	frameBuffer->blit();
 
 	g_RemoteControl->tvMode();

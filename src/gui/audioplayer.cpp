@@ -110,9 +110,9 @@ extern cVideo * videoDecoder;
 
 // check if files to be added are already in the playlist
 #define AUDIOPLAYER_CHECK_FOR_DUPLICATES
-#define AUDIOPLAYER_START_SCRIPT CONFIGDIR 		"/audioplayer.start"
-#define AUDIOPLAYER_END_SCRIPT CONFIGDIR 		"/audioplayer.end"
-#define DEFAULT_RADIOSTATIONS_XMLFILE CONFIGDIR 	"/radio-stations.xml"
+#define AUDIOPLAYER_START_SCRIPT 			CONFIGDIR "/audioplayer.start"
+#define AUDIOPLAYER_END_SCRIPT 				CONFIGDIR "/audioplayer.end"
+#define DEFAULT_RADIOSTATIONS_XMLFILE 			CONFIGDIR "/radio-stations.xml"
 
 const long int GET_PLAYLIST_TIMEOUT = 10;
 const char RADIO_STATION_XML_FILE[] = {DEFAULT_RADIOSTATIONS_XMLFILE};
@@ -139,6 +139,7 @@ void CAudiofileExt::operator=(const CAudiofileExt& src)
 {
 	if (&src == this)
 		return;
+	
 	CAudiofile::operator=(src);
 	firstChar = src.firstChar;
 }
@@ -503,7 +504,9 @@ int CAudioPlayerGui::show()
 							
 							// hide radiomode background pic
 //#if defined (USE_OPENGL)								
-							m_frameBuffer->ClearFrameBuffer();
+							//m_frameBuffer->ClearFrameBuffer();
+							m_frameBuffer->useBackground(false);
+							m_frameBuffer->paintBackground();
 							m_frameBuffer->blit();
 //#else	
 //							videoDecoder->finishShowSinglePic();
@@ -817,6 +820,7 @@ int CAudioPlayerGui::show()
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_IC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
 					//InputSelector.addItem(GenericMenuSeparator);
+					
 					hide();
 					InputSelector.exec(NULL, "");
 					delete InetRadioInputChanger;
@@ -1480,12 +1484,17 @@ bool CAudioPlayerGui::openFilebrowser(void)
 					if(strlen(cLine) > 0 && cLine[0]!='#')
 					{
 						char *url = strstr(cLine, "http://");
-						if (url != NULL) {
+						if (url != NULL) 
+						{
 							if (strstr(url, ".m3u") || strstr(url, ".pls"))
 								processPlaylistUrl(url);
-						} else if ((url = strstr(cLine, "icy://")) != NULL) {
+						} 
+						else if ((url = strstr(cLine, "icy://")) != NULL) 
+						{
 							addUrl2Playlist(url);
-						} else if ((url = strstr(cLine, "scast:://")) != NULL) {
+						} 
+						else if ((url = strstr(cLine, "scast:://")) != NULL) 
+						{
 							addUrl2Playlist(url);
 						}
 						else
@@ -2525,6 +2534,7 @@ void CAudioPlayerGui::screensaver(int type)
 	{
 		if(stimer)
 			g_RCInput->killTimer(stimer);
+		
 		stimer = 0;
 		m_screensaver = NONE;
 		
@@ -2534,6 +2544,7 @@ void CAudioPlayerGui::screensaver(int type)
 
 //#if defined (USE_OPENGL)
 		m_frameBuffer->loadBackgroundPic("mp3.jpg");
+		m_frameBuffer->blit();
 //#else
 //		videoDecoder->showSinglePic(DATADIR "/neutrino/icons/mp3.m2v");
 //#endif
@@ -2546,7 +2557,8 @@ void CAudioPlayerGui::screensaver(int type)
 	{
 		m_screensaver = type;
 //#if defined (USE_OPENGL)		
-		m_frameBuffer->ClearFrameBuffer();
+		//m_frameBuffer->ClearFrameBuffer();
+		m_frameBuffer->paintBackground();
 		m_frameBuffer->blit();
 //#else
 //		videoDecoder->finishShowSinglePic();
