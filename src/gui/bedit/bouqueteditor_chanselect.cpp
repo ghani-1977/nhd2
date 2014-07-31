@@ -92,6 +92,7 @@ bool CBEChannelSelectWidget::isChannelInBouquet( int index)
 		if ((*bouquetChannels)[i]->channel_id == Channels[index]->channel_id)
 			return true;
 	}
+	
 	return false;
 }
 
