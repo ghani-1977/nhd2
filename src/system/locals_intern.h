@@ -602,6 +602,7 @@ const char * locale_real_names[] = {
 	"miscsettings.infobar_sat_display",
 	"miscsettings.infobar_colored_events",
 	"miscsettings.infobar_show_channelname",
+	"miscsettings.infobar_show_logos_left",
 	"miscsettings.infobar_showca",
 	"miscsettings.infobar_radiotext",
 	"miscsettings.infobar_hddvar_display",

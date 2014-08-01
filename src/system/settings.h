@@ -419,6 +419,7 @@ struct SNeutrinoSettings
 	std::string logos_dir;
 	int epgplus_show_logo;
 	int show_channelname;
+	int show_logos_left;
 	std::string audioplayer_screensaver_dir;
 
 	// channellist

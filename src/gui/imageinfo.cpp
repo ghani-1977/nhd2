@@ -188,17 +188,17 @@ void CImageInfo::paint()
 	// image name
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_IMAGE));
-	paintLine(xpos + 125, font_info, imagename);
+	paintLine(xpos + 150, font_info, imagename);
 
 	// image date
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DATE));
-	paintLine(xpos+125, font_info, imagedate);
+	paintLine(xpos + 150, font_info, imagedate);
 
 	// release cycle
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_VERSION));
-	paintLine(xpos + 125, font_info, releaseCycle);
+	paintLine(xpos + 150, font_info, releaseCycle);
 	
 	// svn/git built date
 	ypos += iheight;
@@ -207,65 +207,65 @@ void CImageInfo::paint()
 #else
 	paintLine(xpos    , font_info, GIT_REV);
 #endif
-	paintLine(xpos + 125, font_info, builddate );	
+	paintLine(xpos + 150, font_info, builddate );	
 	
 	// image type
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_TYPE));
-	paintLine(xpos + 125, font_info, imageType);
+	paintLine(xpos + 150, font_info, imageType);
 
 	// image creator
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_CREATOR));
-	paintLine(xpos + 125, font_info, creator);
+	paintLine(xpos + 150, font_info, creator);
 
 	// homepage
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_HOMEPAGE));
-	paintLine(xpos + 125, font_info, homepage);
+	paintLine(xpos + 150, font_info, homepage);
 
 	/* doko */
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DOKUMENTATION));
-	paintLine(xpos + 125, font_info, docs);
+	paintLine(xpos + 150, font_info, docs);
 
 	// forum
 	ypos += iheight;
 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_FORUM));
-	paintLine(xpos + 125, font_info, forum);
+	paintLine(xpos + 150, font_info, forum);
 
 	// license
 	ypos += iheight;
 	paintLine(xpos, font_info,g_Locale->getText(LOCALE_IMAGEINFO_LICENSE));
-	paintLine(xpos + 125, font_small, "This program is free software; you can redistribute it and/or modify");
+	paintLine(xpos + 150, font_small, "This program is free software; you can redistribute it and/or modify");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "it under the terms of the GNU General Public License as published by");
+	paintLine(xpos + 150, font_small, "it under the terms of the GNU General Public License as published by");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "the Free Software Foundation; either version 2 of the License, or");
+	paintLine(xpos + 150, font_small, "the Free Software Foundation; either version 2 of the License, or");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "(at your option) any later version.");
+	paintLine(xpos + 150, font_small, "(at your option) any later version.");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "This program is distributed in the hope that it will be useful,");
+	paintLine(xpos + 150, font_small, "This program is distributed in the hope that it will be useful,");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
+	paintLine(xpos + 150, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+	paintLine(xpos + 150, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "See the GNU General Public License for more details.");
+	paintLine(xpos + 150, font_small, "See the GNU General Public License for more details.");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "You should have received a copy of the GNU General Public License");
+	paintLine(xpos + 150, font_small, "You should have received a copy of the GNU General Public License");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "along with this program; if not, write to the Free Software");
+	paintLine(xpos + 150, font_small, "along with this program; if not, write to the Free Software");
 
 	ypos += sheight;
-	paintLine(xpos + 125, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
+	paintLine(xpos + 150, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
 }

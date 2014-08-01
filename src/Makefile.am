@@ -96,7 +96,7 @@ endif
 
 # graph lcd
 if ENABLE_GRAPHLCD
-neutrino_LDADD += -lglcddrivers -lglcdgraphics -lusb
+neutrino_LDADD += -lglcddrivers -lglcdgraphics
 endif
 
 if USE_OPENGL

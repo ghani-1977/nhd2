@@ -933,6 +933,9 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// infobar show channel name
 	g_settings.show_channelname = configfile.getBool("show_channelname", true);
+
+	// infobar show logos left from EPG
+	g_settings.show_logos_left = configfile.getBool("show_logos_left", true);
 	
 	// vol
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
@@ -1395,6 +1398,9 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	// infobar show channelname
 	configfile.setBool("show_channelname", g_settings.show_channelname);
+
+	// infobar show logos left from EPG
+	configfile.setBool("show_logos_left", g_settings.show_logos_left);
 	
 	// record screenshot
 	configfile.setInt32("recording_screenshot", g_settings.recording_screenshot);
