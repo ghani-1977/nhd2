@@ -77,12 +77,12 @@ extern "C" {
 #define ftype	f_type
 
 extern FILE	*f_open(const char *, const char *);
-extern int		f_close(FILE *);
+extern int	f_close(FILE *);
 extern size_t	f_read (void *, size_t, size_t, FILE *);
 extern long	f_tell(FILE *);
 extern void	f_rewind(FILE *);
-extern int		f_seek(FILE *, long, int);
-extern int		f_status(FILE *, void (*)(void*));
+extern int	f_seek(FILE *, long, int);
+extern int	f_status(FILE *, void (*)(void*));
 extern char	*f_type(FILE*, char*);
 
 extern char err_txt[2048];

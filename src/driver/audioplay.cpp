@@ -42,7 +42,7 @@
 
 #include <playback_cs.h>
 
-
+void ShoutcastCallback(void *arg);
 extern cPlayback *playback;
 
 void CAudioPlayer::stop()
@@ -56,6 +56,8 @@ void CAudioPlayer::stop()
 		pthread_join(thrPlay, NULL);
 	
 	thrPlay = 0;
+	
+	state = CBaseDec::STOP;
 }
 
 void CAudioPlayer::pause()
@@ -124,7 +126,52 @@ CAudioPlayer * CAudioPlayer::getInstance()
 
 void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 {
+	/*
 	int soundfd = -1;
+	
+	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
+	
+	if(Status != CBaseDec::OK)
+		return NULL;
+	*/
+	
+	playback->Close();
+	
+	FILE * fp = fopen( getInstance()->m_Audiofile.Filename.c_str(), "r" );
+	if ( fp == NULL )
+	{
+		fprintf( stderr, "Error opening file %s for decoding.\n", getInstance()->m_Audiofile.Filename.c_str() );
+		return NULL;
+	}
+	// jump to first audio frame; audio_start_pos is only set for FILE_MP3
+	else if ( getInstance()->m_Audiofile.MetaData.audio_start_pos && fseek( fp, getInstance()->m_Audiofile.MetaData.audio_start_pos, SEEK_SET ) == -1 )
+	{
+		fprintf( stderr, "fseek() failed.\n" );
+		return NULL;
+	}
+	
+	// shoutcast
+	if( getInstance()->m_Audiofile.FileType == CFile::STREAM_AUDIO )
+	{
+		if ( fstatus( fp, ShoutcastCallback ) < 0 )
+		{
+			fprintf( stderr, "Error adding shoutcast callback: %s", err_txt );
+		}
+	}
+	
+#if defined (PLATFORM_COOLSTREAM)
+	if(! playback->Open(PLAYMODE_FILE))
+#else	
+	if(! playback->Open())
+#endif	  
+		return NULL;
+	
+#if defined (PLATFORM_COOLSTREAM)
+	if(!playback->Start( (char *)getInstance()->m_Audiofile.Filename.c_str(), 0, 0, 0, 0, 0 ))
+#else		
+	if(!playback->Start( (char *)getInstance()->m_Audiofile.Filename.c_str() ))
+#endif
+		return NULL;
 	
 	int position = 0;
 	int duration = 0;
@@ -133,12 +180,12 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 #if defined (PLATFORM_COOLSTREAM)
 		if(!playback->GetPosition(position, duration))
 #else
- 		if(!playback->GetPosition((int64_t &)position, (int64_t &)duration))
+		if(!playback->GetPosition((int64_t &)position, (int64_t &)duration))
 #endif		
 		{
 			getInstance()->state = CBaseDec::STOP;
 			playback->Close();
-			
+				
 			break;	
 		}
 		getInstance()->m_played_time = position/1000;	// in sec				  
@@ -149,7 +196,7 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	return NULL;
 }
 
-void ShoutcastCallback(void *arg);
+//void ShoutcastCallback(void *arg);
 bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 {
 	if (state != CBaseDec::STOP)
@@ -161,7 +208,7 @@ bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 	transfer information from CAudiofile to member variable, so that it does not have to be gathered again
 	this assignment is important, otherwise the player would crash if the file currently played was deleted from the playlist
 	*/
-	m_Audiofile = * file;
+	m_Audiofile = *file;
 
 	state = CBaseDec::PLAY;
 
@@ -179,44 +226,6 @@ bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 	}
 
 	bool ret = true;
-	
-	playback->Close();
-	
-	FILE * fp = fopen( file->Filename.c_str(), "r" );
-	if ( fp == NULL )
-	{
-		fprintf( stderr, "Error opening file %s for decoding.\n", file->Filename.c_str() );
-		//Status = INTERNAL_ERR;
-	}
-	// jump to first audio frame; audio_start_pos is only set for FILE_MP3
-	else if ( file->MetaData.audio_start_pos && fseek( fp, file->MetaData.audio_start_pos, SEEK_SET ) == -1 )
-	{
-		fprintf( stderr, "fseek() failed.\n" );
-		//Status = INTERNAL_ERR;
-	}
-	
-	// shoutcast
-	if( file->FileType == CFile::STREAM_AUDIO )
-	{
-		if ( fstatus( fp, ShoutcastCallback ) < 0 )
-		{
-			fprintf( stderr, "Error adding shoutcast callback: %s", err_txt );
-		}
-	}
-	
-#if defined (PLATFORM_COOLSTREAM)
-	if(! playback->Open(PLAYMODE_FILE))
-#else	
-	if(! playback->Open())
-#endif	  
-		ret = false;
-	
-#if defined (PLATFORM_COOLSTREAM)
-	if(!playback->Start( (char *)file->Filename.c_str(), 0, 0, 0, 0, 0 ))
-#else		
-	if(!playback->Start( (char *)file->Filename.c_str() ))
-#endif
-		ret = false;		
 
 	// play thread (retrieve position/duration etc...)
 	if (pthread_create (&thrPlay, &attr, PlayThread, (void*)&ret) != 0 )

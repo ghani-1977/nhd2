@@ -59,42 +59,6 @@ void ShoutcastCallback(void *arg)
 	CAudioPlayer::getInstance()->sc_callback(arg);
 }
 
-CBaseDec::RetCode CBaseDec::DecoderBase(CAudiofile * const in, const int OutputFd, State* const state, time_t* const t, unsigned int* const secondsToSkip)
-{
-	RetCode Status = OK;
-
-	FILE * fp = fopen( in->Filename.c_str(), "r" );
-	if ( fp == NULL )
-	{
-		fprintf( stderr, "Error opening file %s for decoding.\n", in->Filename.c_str() );
-		Status = INTERNAL_ERR;
-	}
-	/* jump to first audio frame; audio_start_pos is only set for FILE_MP3 */
-	else if ( in->MetaData.audio_start_pos && fseek( fp, in->MetaData.audio_start_pos, SEEK_SET ) == -1 )
-	{
-		fprintf( stderr, "fseek() failed.\n" );
-		Status = INTERNAL_ERR;
-	}
-
-	if ( Status == OK )
-	{
-		if( in->FileType == CFile::STREAM_AUDIO )
-		{
-			if ( fstatus( fp, ShoutcastCallback ) < 0 )
-			{
-				fprintf( stderr, "Error adding shoutcast callback: %s", err_txt );
-			}
-		}
-
-		if ( fclose( fp ) == EOF )
-		{
-			fprintf( stderr, "Could not close file %s.\n", in->Filename.c_str() );
-		}
-	}
-
-	return Status;
-}
-
 bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 {
 	bool Status = true;

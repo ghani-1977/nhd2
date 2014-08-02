@@ -2246,6 +2246,7 @@ void CAudioPlayerGui::play(unsigned int pos)
 		//printf("play: need getMetaData\n");
 		GetMetaData(m_playlist[pos]);
 	}
+	
 	m_metainfo.clear();
 	m_time_played = 0;
 	m_time_total = m_playlist[m_current].MetaData.total_time;

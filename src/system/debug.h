@@ -37,5 +37,4 @@ void setDebugLevel( int level );
 #define dprintf(debuglevel, fmt, args...) {if(debug>=debuglevel) printf(fmt, ## args);}
 #define dperror(str) {perror("[neutrino] " str);}
 
-
 #endif

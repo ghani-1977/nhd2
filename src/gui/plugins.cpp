@@ -58,7 +58,7 @@
 
 
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
-extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
+//extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
 
 
 bool CPlugins::plugin_exists(const std::string & filename)
@@ -155,6 +155,7 @@ void CPlugins::scanDir(const char * dir)
 void CPlugins::loadPlugins()
 {
 	dprintf(DEBUG_NORMAL, "CPlugins::loadPlugins\n");
+	
 	frameBuffer = CFrameBuffer::getInstance();
 	number_of_plugins = 0;
 	plugin_list.clear();
