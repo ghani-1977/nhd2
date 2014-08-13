@@ -30,13 +30,15 @@
 #include <config.h>
 #endif
 
+#include <basedec.h>
+#include <cdrdec.h>
+#include <mp3dec.h>
+#include <flacdec.h>
+#include <wavdec.h>
+#include <linux/soundcard.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-
-#include <basedec.h>
-#include <ffmpegdec.h>
-
 #include <driver/netfile.h>
 
 #include <driver/audioplay.h> // for ShoutcastCallback()
@@ -61,20 +63,44 @@ bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 {
 	bool Status = true;
 
-	FILE * fp = fopen( in->Filename.c_str(), "r" );
-	if ( fp == NULL )
+	if ( in->FileType == CFile::FILE_MP3 || in->FileType == CFile::FILE_WAV || in->FileType == CFile::FILE_CDR || in->FileType == CFile::FILE_FLAC )
 	{
-		fprintf( stderr, "Error opening file %s for meta data reading.\n", in->Filename.c_str() );
-		Status = false;
+		FILE * fp = fopen( in->Filename.c_str(), "r" );
+		if ( fp == NULL )
+		{
+			fprintf( stderr, "Error opening file %s for meta data reading.\n", in->Filename.c_str() );
+			Status = false;
+		}
+		else
+		{
+			if(in->FileType == CFile::FILE_MP3)
+			{
+				Status = CMP3Dec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
+			}
+			else if(in->FileType == CFile::FILE_WAV)
+			{
+				Status = CWavDec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
+			}
+			else if(in->FileType == CFile::FILE_CDR)
+			{
+				Status = CCdrDec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
+			}
+			else if(in->FileType == CFile::FILE_FLAC)
+			{
+				Status = CFlacDec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
+			}
+			
+			if ( fclose( fp ) == EOF )
+			{
+				dprintf(DEBUG_NORMAL, "Could not close file %s.\n", in->Filename.c_str() );
+			}
+		}
 	}
 	else
 	{
-		Status = CFfmpegDec::getInstance()->GetMetaData(fp, nice, &in->MetaData);
-			
-		if ( fclose( fp ) == EOF )
-		{
-			dprintf(DEBUG_NORMAL, "Could not close file %s.\n", in->Filename.c_str() );
-		}
+		dprintf(DEBUG_NORMAL, "GetMetaDataBase: Filetype is not supported for meta data reading.\n" );
+		
+		Status = false;
 	}
 
 	return Status;
@@ -85,3 +111,4 @@ void CBaseDec::Init()
 	mSamplerate = 0;
 }
 
+ 

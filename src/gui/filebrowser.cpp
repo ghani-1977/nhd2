@@ -110,17 +110,11 @@ unsigned char SMSKeyInput::handleMsg(const neutrino_msg_t msg)
 	gettimeofday(&keyTime,NULL);
 	bool timeoutNotReached = (keyTime.tv_sec*1000+keyTime.tv_usec/1000 <= m_oldKeyTime.tv_sec*1000+m_oldKeyTime.tv_usec/1000 + m_timeout);
 
-	//printf("act: %ld , old: %ld (diff: %ld ) , timeout: %ld => timout= %d\n",
-	//keyTime.tv_sec*1000+keyTime.tv_usec/1000,
-	//m_oldKeyTime.tv_sec*1000+m_oldKeyTime.tv_usec/1000,
-	//keyTime.tv_sec*1000+keyTime.tv_usec/1000 -
-	//m_oldKeyTime.tv_sec*1000+m_oldKeyTime.tv_usec/1000,
-	//m_timeout,!timeoutNotReached);
-
 	unsigned char key = 0;
+	
 	if(msg == CRCInput::RC_1)
 	{
-			key = '1';
+		key = '1';
 	}
 	
 	if(msg == CRCInput::RC_2)
@@ -276,8 +270,8 @@ bool sortByName (const CFile& a, const CFile& b)
 	return a.Mode < b.Mode;
 }
 
-bool sortByNameDirsFirst(const CFile& a, const CFile& b)
 // Sorts alphabetically with Directories first
+bool sortByNameDirsFirst(const CFile& a, const CFile& b)
 {
 	int typea, typeb;
 	typea = a.getType();
@@ -812,6 +806,7 @@ bool CFileBrowser::readDir_std(const std::string & dirname, CFileList* flist)
 		perror(("Filebrowser scandir: "+dirname).c_str());
 		return false;
 	}
+	
 	for(int i = 0; i < n;i++)
 	{
 		CFile file;
@@ -1503,6 +1498,7 @@ void CFileBrowser::SMSInput(const neutrino_msg_t msg)
 			break;
 		}
 	}
+	
 	int prevselected = selected;
 	selected = i;
 	paintItem(prevselected - liststart);

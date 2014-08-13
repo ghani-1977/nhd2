@@ -374,13 +374,16 @@ static std::string fribidiShapeChar(const char * text)
 	if(text && *text)
 	{
 		int len = strlen(text);
+		
 		fribidi_set_mirroring(true);
 		fribidi_set_reorder_nsm(false);
 			
 		// init to utf-8
-		FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;	
+		FriBidiCharSet fribidiCharset = FRIBIDI_CHAR_SET_UTF8;
+		
 		// tell bidi that we need bidirectional
-		FriBidiCharType Base = FRIBIDI_TYPE_LTR;
+		FriBidiCharType Base = FRIBIDI_TYPE_L;
+		
 		// our buffer
 		FriBidiChar *Logical = (FriBidiChar *)alloca(sizeof(FriBidiChar)*(len + 1));
 		FriBidiChar *Visual = (FriBidiChar *)alloca(sizeof(FriBidiChar)*(len + 1));
@@ -388,14 +391,17 @@ static std::string fribidiShapeChar(const char * text)
 		// convert from the selected charset to Unicode
 		int RtlLen = fribidi_charset_to_unicode(fribidiCharset, const_cast<char *>(text), len, Logical);
 		
+		char * Rtl = NULL;
+		
 		// logical to visual
 		if (fribidi_log2vis(Logical, len, &Base, Visual, NULL, NULL, NULL)) 
 		{
 			// removes bidirectional marks
-			//fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
+			fribidi_remove_bidi_marks(Visual, RtlLen, NULL, NULL, NULL);
 			
-			char *Rtl = (char *)alloca(sizeof(char)*(RtlLen * 4 + 1));
+			Rtl = (char *)alloca(sizeof(char)*(RtlLen * 4 + 1));
 			fribidi_unicode_to_charset(fribidiCharset, Visual, RtlLen, Rtl);
+			
 			return std::string(Rtl);
 		}
 	}
@@ -547,7 +553,7 @@ void CFont::RenderString(int x, int y, const int width, const char *text, const 
 		if (*text == '\n')
 		{
 			unicode_value = ' ';
-		}
+		}		
 
 		int index = FT_Get_Char_Index(face, unicode_value);
 
@@ -685,7 +691,7 @@ int CFont::getRenderWidth(const char *text, const bool utf8_encoded)
 		int unicode_value = UTF8ToUnicode(text, utf8_encoded);
 
 		if (unicode_value == -1)
-			break;		
+			break;			
 
 		int index = FT_Get_Char_Index(face, unicode_value);
 

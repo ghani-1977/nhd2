@@ -227,20 +227,20 @@ int CPictureViewerGui::show()
 
 	int timeout;
 
-	bool loop=true;
-	bool update=true;
+	bool loop = true;
+	bool update = true;
 	
 	while(loop)
 	{
 		if(update)
 		{
 			hide();
-			update=false;
+			update = false;
 			paint();
 		}
 		
 		if(m_state != SLIDESHOW)
-			timeout=50; // egal
+			timeout = 50; // egal
 		else
 		{
 			timeout=(m_time+atoi(g_settings.picviewer_slide_time)-(long)time(NULL))*10;
@@ -266,7 +266,7 @@ int CPictureViewerGui::show()
 		{
 			if(m_state == SLIDESHOW)
 			{
-				m_time=(long)time(NULL);
+				m_time = (long)time(NULL);
 				unsigned int next = selected + 1;
 				if (next >= playlist.size())
 					next = 0;
@@ -379,7 +379,7 @@ int CPictureViewerGui::show()
 				}
 			}
 		}
-		else if(msg==CRCInput::RC_green)
+		else if(msg == CRCInput::RC_green)
 		{
 			if (m_state == MENU)
 			{
@@ -413,6 +413,7 @@ int CPictureViewerGui::show()
 						else
 							printf("Wrong Filetype %s:%d\n",files->Name.c_str(), files->getType());
 					}
+					
 					if (m_sort == FILENAME)
 						std::sort(playlist.begin(), playlist.end(), comparePictureByFilename);
 					else if (m_sort == DATE)
@@ -421,22 +422,22 @@ int CPictureViewerGui::show()
 				update = true;
 			}
 		}
-		else if(msg==CRCInput::RC_yellow)
+		else if(msg == CRCInput::RC_yellow)
 		{
 			if (m_state == MENU && !playlist.empty())
 			{
 				playlist.clear();
-				selected=0;
-				update=true;
+				selected = 0;
+				update = true;
 			}
 		}
-		else if(msg==CRCInput::RC_blue)
+		else if(msg == CRCInput::RC_blue)
 		{
 			if ((m_state == MENU) && (!playlist.empty()))
 			{
-				m_time=(long)time(NULL);
+				m_time = (long)time(NULL);
 				view(selected);
-				m_state=SLIDESHOW;
+				m_state = SLIDESHOW;
 			} 
 			else 
 			{
@@ -446,7 +447,7 @@ int CPictureViewerGui::show()
 					m_state = SLIDESHOW;
 			}
 		}
-		else if(msg==CRCInput::RC_info )
+		else if(msg == CRCInput::RC_info )
 		{
 			if (m_state == MENU)
 			{
@@ -497,7 +498,7 @@ int CPictureViewerGui::show()
 					}
 					else if(m_sort==DATE)
 					{
-						m_sort=FILENAME;
+						m_sort = FILENAME;
 						std::sort(playlist.begin(),playlist.end(),comparePictureByFilename);
 					}
 					update=true;
@@ -581,8 +582,6 @@ void CPictureViewerGui::hide()
 		visible = false;
 	}
 }
-
-//------------------------------------------------------------------------
 
 void CPictureViewerGui::paintItem(int pos)
 {
