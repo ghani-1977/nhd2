@@ -1898,8 +1898,9 @@ void CFrameBuffer::disableManualBlit()
 
 void CFrameBuffer::blit(int mode3d)
 {
-#if !defined USE_OPENGL  
-#if defined (__sh__)
+#if defined USE_OPENGL  
+	mpGLThreadObj->blit();
+#elif defined (__sh__)
 	STMFBIO_BLT_DATA  bltData; 
 	memset(&bltData, 0, sizeof(STMFBIO_BLT_DATA)); 
 
@@ -1984,7 +1985,7 @@ void CFrameBuffer::blit(int mode3d)
 			perror("FBIO_BLIT");		
 	}
 #endif	
-#endif
+//#endif
 }
 
 

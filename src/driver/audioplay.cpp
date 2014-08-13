@@ -40,6 +40,8 @@
 #include <driver/audioplay.h>
 #include <driver/netfile.h>
 
+#include <system/debug.h>
+
 #include <playback_cs.h>
 
 void ShoutcastCallback(void *arg);
@@ -125,18 +127,7 @@ CAudioPlayer * CAudioPlayer::getInstance()
 }
 
 void * CAudioPlayer::PlayThread( void * /*dummy*/ )
-{
-	/*
-	int soundfd = -1;
-	
-	CBaseDec::RetCode Status = CBaseDec::DecoderBase( &getInstance()->m_Audiofile, soundfd, &getInstance()->state, &getInstance()->m_played_time, &getInstance()->m_SecondsToSkip );
-	
-	if(Status != CBaseDec::OK)
-		return NULL;
-	*/
-	
-	playback->Close();
-	
+{	
 	FILE * fp = fopen( getInstance()->m_Audiofile.Filename.c_str(), "r" );
 	if ( fp == NULL )
 	{
@@ -159,6 +150,10 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 		}
 	}
 	
+	//stop playing if already playing (multiselect)
+	if(playback->playing)
+		playback->Close();
+	
 #if defined (PLATFORM_COOLSTREAM)
 	if(! playback->Open(PLAYMODE_FILE))
 #else	
@@ -172,6 +167,8 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 	if(!playback->Start( (char *)getInstance()->m_Audiofile.Filename.c_str() ))
 #endif
 		return NULL;
+		
+	getInstance()->state = CBaseDec::PLAY;
 	
 	int position = 0;
 	int duration = 0;
@@ -188,15 +185,18 @@ void * CAudioPlayer::PlayThread( void * /*dummy*/ )
 				
 			break;	
 		}
-		getInstance()->m_played_time = position/1000;	// in sec				  
+		getInstance()->m_played_time = position/1000;	// in sec
+		//dprintf(DEBUG_NORMAL, "[ap]  m_played_time: %d sec\r\n", getInstance()->m_played_time);
 	}while(getInstance()->state != CBaseDec::STOP_REQ);
+	
+	getInstance()->state = CBaseDec::STOP;
+	playback->Close();
 	
 	pthread_exit(0);
 
 	return NULL;
 }
 
-//void ShoutcastCallback(void *arg);
 bool CAudioPlayer::play(const CAudiofile *file, const bool highPrio)
 {
 	if (state != CBaseDec::STOP)

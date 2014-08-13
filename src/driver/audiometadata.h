@@ -72,9 +72,11 @@ public:
 	time_t total_time;
 	long audio_start_pos; /* position of first audio frame */
 	bool vbr;
-	/* if the variable hasInfoOrXingTag is true, this means the values of
+	/* 
+	   if the variable hasInfoOrXingTag is true, this means the values of
 	   VBR and Duration are correct and should not be changed by the
-	   decoder */
+	   decoder 
+	*/
 	bool hasInfoOrXingTag;
 
 	std::string artist;

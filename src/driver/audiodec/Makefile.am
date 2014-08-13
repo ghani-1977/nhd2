@@ -20,9 +20,4 @@ noinst_LIBRARIES = libneutrino_driver_audiodec.a
 
 libneutrino_driver_audiodec_a_SOURCES = \
 	basedec.cpp \
-	cdrdec.cpp \
-	tag.c \
-	mp3dec.cpp \
-	wavdec.cpp \
-	flacdec.cpp
-
+	ffmpegdec.cpp

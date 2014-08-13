@@ -49,6 +49,8 @@ class GLThreadObj : public OpenThreads::Thread
 		int getOSDHeight() { return mState.height; }
 
 		void clear();
+		
+		void blit() { mState.blit = true; }
 
 	private:
 		int mX;				/* window size */
@@ -58,6 +60,7 @@ class GLThreadObj : public OpenThreads::Thread
 		bool mInitDone;			/* condition predicate */
 
 		std::vector<unsigned char> mOSDBuffer; /* silly bounce buffer */
+		std::vector<unsigned char> mDisplayBuffer; /* silly bounce buffer */
 
 		std::map<unsigned char, neutrino_msg_t> mKeyMap;
 		std::map<int, neutrino_msg_t> mSpecialMap;
@@ -74,20 +77,21 @@ class GLThreadObj : public OpenThreads::Thread
 		void setupGLObjects();		/* PBOs, textures and stuff */
 		void releaseGLObjects();
 		void eventLoop();		/* enter the GL window event loop */
-		void drawCube(float size);	/* cubes are the building blocks of our society */
 		void drawSquare(float size);	/* do not be square */
 		void initDone();		/* "things are now set up", called by this */
+		void setupDisplayBuffer();
 
 		struct {
 			int width;		/* width and height, fixed for a framebuffer instance */
 			int height;
 			GLuint osdtex;		/* holds the OSD texture */
-			GLuint pbo;		/* PBO we use for transfer to texture */
+			GLuint osdpbo;		/* PBO we use for transfer to texture */
 			GLuint displaytex;	/* holds the display texture */
 			GLuint displaypbo;
-			int go3d;
+			bool blit;
 		} mState;
 
 		void bltOSDBuffer();
+		void bltDisplayBuffer();
 };
 #endif

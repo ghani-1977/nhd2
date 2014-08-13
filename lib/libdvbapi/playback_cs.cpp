@@ -56,15 +56,11 @@ bool isTS = false;
 #if defined (USE_OPENGL)
 #include <gst/interfaces/xoverlay.h>
 
-#include <OpenThreads/ScopedLock>
-#include <OpenThreads/ReentrantMutex>
-
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
 
-OpenThreads::ReentrantMutex	mutex;
 extern int GLWinID;
 extern int GLxStart;
 extern int GLyStart;
@@ -146,7 +142,7 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 			}
 			g_error_free(err);
 			
-			//end_eof = true;
+			end_eof = true;
 			
 			break;
 		}
@@ -210,12 +206,22 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 					
 					// set audio video sink
 					children = gst_bin_iterate_recurse(GST_BIN(m_gst_playbin));
+					
+#if defined (USE_OPENGL) //FIXME: ???						
+					//audioSink = gst_element_factory_make ("xvimagesink", NULL);
+#else					
 					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
+#endif					
 					
 					if(audioSink)
 						dprintf(DEBUG_NORMAL, "%s %s - audio sink created\n", FILENAME, __FUNCTION__);
 					
+#if defined (USE_OPENGL) //FIXME: ???						
+					//videoSink = gst_element_factory_make ("xvimagesink", NULL);
+#else
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
+#endif
+
 					if(videoSink)
 						dprintf(DEBUG_NORMAL, "%s %s - video sink created\n", FILENAME, __FUNCTION__);
 					
@@ -260,22 +266,20 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 #if defined (USE_OPENGL) //FIXME: ???		
 		case GST_MESSAGE_ELEMENT:
 		{
-			if(gst_structure_has_name(gst_message_get_structure(msg), "prepare-xwindow-id")) 
+			if( gst_structure_has_name(gst_message_get_structure(msg), "prepare-xwindow-id") || gst_structure_has_name(gst_message_get_structure(msg), "have-xwindow-id") ) 
 			{
-				//OpenThreads::ScopedLock<OpenThreads::Mutex> m_lock(mutex);
-				//mutex.lock();
 				// set window id
-				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), glXGetCurrentDrawable());
+				gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), GLWinID);
 				
-				// reshape window
-				//gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), GLxStart, GLyStart, GLWidth, GLHeight);
+				// not needed gst overlay shall render video into full osd window
+				//gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), /*GLxStart*/0, /*GLyStart*/0, GLWidth, GLHeight);
 				
 				// sync frames
 				//gst_x_overlay_expose(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)));
 				
 				// depends on gst rev, not working here ;(
 				//gst_x_overlay_set_window_handle(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), (guintptr)glutGetWindow());
-				//mutex.unlock();
+				//gst_x_overlay_handle_events(GST_X_OVERLAY(GST_MESSAGE_SRC (msg)), true);
 			}
 		}
 		break;
