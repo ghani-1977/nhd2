@@ -183,13 +183,6 @@ void GLThreadObj::setupOSDBuffer()
 	}
 }
 
-void GLThreadObj::setupDisplayBuffer()
-{
-	// set displayer buffer
-	mDisplayBuffer.resize(5*1024*1024);
-	printf("DisplayBuffer set to %d bytes\n", 5*1024*1024);
-}
-
 void GLThreadObj::setupGLObjects()
 {
 	glGenTextures(1, &mState.osdtex);
@@ -252,7 +245,7 @@ void GLThreadObj::specialcb(int key, int /*x*/, int /*y*/)
 	}
 }
 
-int sleep_us = 60000;
+int sleep_us = 30000;
 void GLThreadObj::render() 
 {
 	if(!mReInit)
@@ -286,7 +279,7 @@ void GLThreadObj::render()
 	}
 	
 	//
-	//bltDisplayBuffer();
+	bltDisplayBuffer();
 	//glutPostOverlayRedisplay();
 	
 	if(mX != glutGet(GLUT_WINDOW_WIDTH) && mY != glutGet(GLUT_WINDOW_HEIGHT))
@@ -305,8 +298,8 @@ void GLThreadObj::render()
 	
 	
 	// Display
-	//glBindTexture(GL_TEXTURE_2D, mState.displaytex);
-	//drawSquare(1.0);
+	glBindTexture(GL_TEXTURE_2D, mState.displaytex);
+	drawSquare(1.0);
 	
 	// OSD
 	glBindTexture(GL_TEXTURE_2D, mState.osdtex);
@@ -402,6 +395,10 @@ void GLThreadObj::bltDisplayBuffer()
 	if(playback && !playback->playing)
 		return;
 	
+	// set displayer buffer
+	mDisplayBuffer.resize(5*1024*1024);
+	//printf("DisplayBuffer set to %d bytes\n", 5*1024*1024);
+	
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mState.displaypbo);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, mDisplayBuffer.size(), &mDisplayBuffer[0], GL_STREAM_DRAW_ARB);
 
@@ -410,13 +407,11 @@ void GLThreadObj::bltDisplayBuffer()
 
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	
-	sleep_us = 1;
+	//sleep_us = 1;
 }
 
 void GLThreadObj::clear()
 {
 	memset(&mOSDBuffer[0], 0, mOSDBuffer.size());
-	
-	//memset(&mDisplayBuffer[0], 0, mDisplayBuffer.size());
 }
 

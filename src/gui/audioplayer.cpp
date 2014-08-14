@@ -226,8 +226,12 @@ void CAudioPlayerGui::Init(void)
 		audiofilefilter.addFilter("mpa");
 		audiofilefilter.addFilter("mp2");
 		audiofilefilter.addFilter("m3u");
+		audiofilefilter.addFilter("ogg");
 		audiofilefilter.addFilter("wav");
 		audiofilefilter.addFilter("flac");
+		audiofilefilter.addFilter("aac");
+		audiofilefilter.addFilter("dts");
+		audiofilefilter.addFilter("m4a");
 	}
 	
 	m_SMSKeyInput.setTimeout(AUDIOPLAYERGUI_SMSKEY_TIMEOUT);
@@ -1437,6 +1441,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 			
 			if ((files->getType() == CFile::FILE_CDR)
 					||  (files->getType() == CFile::FILE_MP3)
+					||  (files->getType() == CFile::FILE_OGG)
 					||  (files->getType() == CFile::FILE_WAV)
 					||  (files->getType() == CFile::FILE_FLAC)
 			)
@@ -1529,6 +1534,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 									CFile::FileType fileType = playlistItem.getType();
 									if (fileType == CFile::FILE_CDR
 											|| fileType == CFile::FILE_MP3
+											|| fileType == CFile::FILE_OGG
 											|| fileType == CFile::FILE_WAV
 											|| fileType == CFile::FILE_FLAC
 									)

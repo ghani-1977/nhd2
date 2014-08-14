@@ -201,11 +201,11 @@ typedef struct
 	int show_mode;
 	
 	// moviebrowser
-	MB_GUI gui; //MB_GUI
-	MB_SORTING sorting; //MB_SORTING
-	MB_FILTER filter;//MB_FILTER
-	MI_PARENTAL_LOCKAGE parentalLockAge ;//MI_PARENTAL_LOCKAGE
-	MB_PARENTAL_LOCK parentalLock;//MB_PARENTAL_LOCK
+	MB_GUI gui; 				//MB_GUI
+	MB_SORTING sorting; 			//MB_SORTING
+	MB_FILTER filter;			//MB_FILTER
+	MI_PARENTAL_LOCKAGE parentalLockAge ;	//MI_PARENTAL_LOCKAGE
+	MB_PARENTAL_LOCK parentalLock;		//MB_PARENTAL_LOCK
 	
 	std::string storageDir[MB_MAX_DIRS];
 	int storageDirUsed[MB_MAX_DIRS];
@@ -448,6 +448,7 @@ class CMovieBrowser : public CMenuTarget
 		void updateSerienames(void);
         	void autoFindSerie(void);
 		
+		// yt
 		neutrino_locale_t getFeedLocale(void);
 };
 

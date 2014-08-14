@@ -1907,7 +1907,11 @@ void CMoviePlayerGui::PlayFile(void)
 					
 					filename = stream_url.c_str();
 				}
-			}			
+			}
+			
+			// stop playing if already playing (multiselect)
+			if(playback->playing)
+				playback->Close();
 
 			// init player
 #if defined (PLATFORM_COOLSTREAM)

@@ -79,7 +79,6 @@ class GLThreadObj : public OpenThreads::Thread
 		void eventLoop();		/* enter the GL window event loop */
 		void drawSquare(float size);	/* do not be square */
 		void initDone();		/* "things are now set up", called by this */
-		void setupDisplayBuffer();
 
 		struct {
 			int width;		/* width and height, fixed for a framebuffer instance */

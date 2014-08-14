@@ -158,8 +158,7 @@
 // neutrino
 #include <neutrino.h>
 
-
-typedef uint64_t (*PluginExec)( void );
+typedef void (*PluginExec)( void );
 
 typedef enum plugin_type
 {
