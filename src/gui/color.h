@@ -56,24 +56,21 @@
 #define COL_WHITE                       (CFrameBuffer::getInstance()->realcolor[0x10])
 #define COL_BLACK                       (CFrameBuffer::getInstance()->realcolor[0x11])
 
-#define COL_BACKGROUND 			255
-
 //
+#define COL_BACKGROUND 			255
 #define COL_MENUCONTENTINACTIVE		254-8*1
 #define COL_MENUCONTENTSELECTED		254-8*2
 #define COL_MENUCONTENTDARK		254-8*3
 #define COL_MENUCONTENT			254-8*4
 #define COL_MENUHEAD			254-8*5
-#define COL_INFOBAR			254-8*6
-#define COL_INFOBAR_SHADOW		254-8*7
-#define COL_COLORED_EVENTS_INFOBAR	254-8*8
-#define COL_MENUFOOT			254-8*9
-#define COL_COLORED_EVENTS_CHANNELLIST	254-8*10
+#define COL_MENUFOOT			254-8*6
+#define COL_INFOBAR			254-8*7
+#define COL_INFOBAR_SHADOW		254-8*8
+#define COL_COLORED_EVENTS_INFOBAR	254-8*9
 
 #define COL_INFOBAR_PLUS_0              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 0)])
 #define COL_INFOBAR_PLUS_1              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 1)])
 #define COL_INFOBAR_PLUS_3              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 3)])
-#define COL_INFOBAR_PLUS_7              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 7)])
 
 #define COL_INFOBAR_SHADOW_PLUS_0       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 0)])
 #define COL_INFOBAR_SHADOW_PLUS_1       (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR_SHADOW + 1)])

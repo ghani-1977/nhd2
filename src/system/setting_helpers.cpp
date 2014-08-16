@@ -375,13 +375,6 @@ bool CColorSetupNotifier::changeNotify(const neutrino_locale_t, void *)
 	                              convertSetupColor2RGB(g_settings.menu_Foot_Text_red, g_settings.menu_Foot_Text_green, g_settings.menu_Foot_Text_blue),
 	                              8, 
 				      convertSetupAlpha2Alpha(g_settings.menu_Foot_alpha) );
-	
-	// channellist colored events
-	frameBuffer->paletteGenFade(COL_COLORED_EVENTS_CHANNELLIST,
-	                              convertSetupColor2RGB(int(g_settings.menu_Content_red), int(g_settings.menu_Content_green), int(g_settings.menu_Content_blue)),
-	                              convertSetupColor2RGB(g_settings.infobar_colored_events_red, g_settings.infobar_colored_events_green, g_settings.infobar_colored_events_blue),
-	                              8, 
-				      convertSetupAlpha2Alpha(g_settings.menu_Content_alpha) );
 
 	frameBuffer->paletteSet();
 
