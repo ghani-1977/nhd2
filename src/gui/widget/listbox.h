@@ -52,6 +52,7 @@ class CListBox : public CMenuWidget
 		unsigned int	listmaxshow;
 	
 		int 		ButtonHeight;
+		int 		info_height;
 
 		virtual void paintItem(int pos);
 		virtual void paint();

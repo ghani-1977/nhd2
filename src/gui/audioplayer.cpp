@@ -305,11 +305,9 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	if (usedBackground)
 		m_frameBuffer->saveBackgroundImage();
 	
-	//show audio background pic
-//#if defined (USE_OPENGL)	
+	//show audio background pic	
 	m_frameBuffer->loadBackgroundPic("mp3.jpg");
-	m_frameBuffer->blit();
-//#endif	
+	m_frameBuffer->blit();	
 	
 	// tell neutrino we're in audio mode
 	CNeutrinoApp::getInstance()->handleMsg(NeutrinoMessages::CHANGEMODE , NeutrinoMessages::mode_audio );
@@ -330,11 +328,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		
 		//pause epg scanning
 		g_Sectionsd->setPauseScanning(true);
-	}
-	
-//#if !defined (USE_OPENGL)	
-//	videoDecoder->showSinglePic(DATADIR "/neutrino/icons/mp3.m2v");
-//#endif	
+	}	
 
 	//start AP start-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_START_SCRIPT "."); 
@@ -349,11 +343,9 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		m_frameBuffer->restoreBackgroundImage();
 	
 	m_frameBuffer->useBackground(usedBackground);
-	
-//#if defined (USE_OPENGL)	
+		
 	m_frameBuffer->paintBackground();
-	m_frameBuffer->blit();	
-//#endif	
+	m_frameBuffer->blit();		
 
 	// end-script
 	puts("[audioplayer.cpp] executing " AUDIOPLAYER_END_SCRIPT "."); 
@@ -373,11 +365,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 		
 		//start epg scanning
 		g_Sectionsd->setPauseScanning(false);
-	}
-	
-//#if !defined (USE_OPENGL)	
-//	videoDecoder->finishShowSinglePic();
-//#endif	
+	}	
 
 	//set last saved mode
 	CNeutrinoApp::getInstance()->handleMsg( NeutrinoMessages::CHANGEMODE, m_LastMode );
@@ -507,16 +495,11 @@ int CAudioPlayerGui::show()
 							dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", filename, ret1 ? "not found" : "found");
 							
 							// hide radiomode background pic
-//#if defined (USE_OPENGL)								
-							//m_frameBuffer->ClearFrameBuffer();
 							m_frameBuffer->useBackground(false);
 							m_frameBuffer->paintBackground();
 							m_frameBuffer->blit();
-//#else	
-//							videoDecoder->finishShowSinglePic();
-//#endif
 							
-								
+							// show pics
 							if(ret1 == 0) 
 							{
 								_selected++;
@@ -764,10 +747,13 @@ int CAudioPlayerGui::show()
 							5,
 							LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT1,
 							LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT2);
+							
 					int res = secondsInput.exec(NULL,"");
+					
 					if (seconds != 0 && res!= menu_return::RETURN_EXIT_ALL)
 						rev(seconds);
-					update=true;
+					
+					update = true;
 				}
 			}
 		}
@@ -813,13 +799,16 @@ int CAudioPlayerGui::show()
 					int select = -1;
 					
 					CMenuSelectorTarget * InetRadioInputChanger = new CMenuSelectorTarget(&select);
-					// -- setup menue for inetradio input
+					
+					// localeradios
 					sprintf(cnt, "%d", count);
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_LOC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 	
+					// shoutcast
 					sprintf(cnt, "%d", ++count);
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_SC, true, NULL, InetRadioInputChanger,cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
+					// icecast
 					sprintf(cnt, "%d", ++count);
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_IC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
@@ -829,12 +818,12 @@ int CAudioPlayerGui::show()
 					InputSelector.exec(NULL, "");
 					delete InetRadioInputChanger;
 					
-					if(select >= 0)
+					if(select >= LOCALRADIO)
 						old_select = select;
 					
 					switch (select) 
 					{
-						case 0:	
+						case LOCALRADIO:	
 							scanXmlFile(RADIO_STATION_XML_FILE); 	
 
 							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));							
@@ -842,10 +831,12 @@ int CAudioPlayerGui::show()
 							
 							break;
 							
-						case 1:	openSCbrowser();
+						case SHOUTCAST:	
+							openSCbrowser();
 							break;
 							
-						case 2:	readDir_ic();
+						case ICECAST:	
+							readDir_ic();
 							CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));							
 							paintLCD();
 							
@@ -878,9 +869,12 @@ int CAudioPlayerGui::show()
 							5,
 							LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT1,
 							LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT2);
+							
 					int res = secondsInput.exec(NULL,"");
+					
 					if (seconds != 0 && res!= menu_return::RETURN_EXIT_ALL)
 						ff(seconds);
+					
 					update = true;
 				}
 			}
@@ -934,14 +928,15 @@ int CAudioPlayerGui::show()
 /* show a hint box with current char (too slow at the moment?)*/
 #if 1
  					char selectedKey[1];
- 					sprintf(selectedKey,"%c",smsKey);
- 					int x1=(g_settings.screen_EndX- g_settings.screen_StartX)/2 + g_settings.screen_StartX-50;
- 					int y1=(g_settings.screen_EndY- g_settings.screen_StartY)/2 + g_settings.screen_StartY;
+ 					sprintf(selectedKey, "%c", smsKey);
+ 					int x1 = (g_settings.screen_EndX- g_settings.screen_StartX)/2 + g_settings.screen_StartX - 50;
+ 					int y1 = (g_settings.screen_EndY- g_settings.screen_StartY)/2 + g_settings.screen_StartY;
  					int h = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->getHeight();
  					int w = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->getRenderWidth(selectedKey);
+					
  					m_frameBuffer->paintBoxRel(x1 - 7, y1 - h - 5, w + 14, h + 10, COL_MENUCONTENT_PLUS_6);
  					m_frameBuffer->paintBoxRel(x1 - 4, y1 - h - 3, w +  8, h +  6, COL_MENUCONTENTSELECTED_PLUS_0);
- 					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->RenderString(x1,y1,w+1,selectedKey,COL_MENUCONTENTSELECTED,0);
+ 					g_Font[SNeutrinoSettings::FONT_TYPE_CHANNEL_NUM_ZAP]->RenderString(x1, y1, w + 1, selectedKey, COL_MENUCONTENTSELECTED, 0, true);
 #endif
 
 				} while (CRCInput::isNumeric(msg) && !(m_playlist.empty()));
@@ -1088,6 +1083,7 @@ bool CAudioPlayerGui::shufflePlaylist(void)
 {	
 	RandomNumber rnd;
 	bool result = false;
+	
 	if (!(m_playlist.empty()))
 	{
 		if (m_current > 0)
@@ -1106,6 +1102,7 @@ bool CAudioPlayerGui::shufflePlaylist(void)
 
 		result = true;
 	}
+	
 	return(result);
 }
 
@@ -1405,10 +1402,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 
 	if (filebrowser.exec(m_Path.c_str()))
 	{
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval start;
-		gettimeofday(&start,NULL);
-#endif
 		CProgressWindow progress;
 		long maxProgress = (filebrowser.getSelectedFiles().size() > 1) ? filebrowser.getSelectedFiles().size() - 1 : 1;
 		long currentProgress = -1;
@@ -1464,6 +1457,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 					if (len && (strstr(buf, ".m3u") || strstr(buf, ".pls")))
 					{
 						dprintf(DEBUG_INFO, "m3u/pls Playlist found: %s\n", buf);
+						
 						filename = buf;
 						processPlaylistUrl(buf);
 					}
@@ -1571,12 +1565,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 			buildSearchTree();
 		}
 		
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval end;
-		gettimeofday(&end,NULL);
-		printf("adding %ld files took: ",maxProgress+1);
-		printTimevalDiff(start,end);
-#endif
 		result = true;
 	}
 	
@@ -1602,10 +1590,6 @@ bool CAudioPlayerGui::openSCbrowser(void)
 
 	if (filebrowser.exec(filebrowser.sc_init_dir.c_str()))
 	{
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval start;
-		gettimeofday(&start,NULL);
-#endif
 		CProgressWindow progress;
 		long maxProgress = (filebrowser.getSelectedFiles().size() > 1) ? filebrowser.getSelectedFiles().size() - 1: 1;
 		long currentProgress = -1;
@@ -1651,12 +1635,7 @@ bool CAudioPlayerGui::openSCbrowser(void)
 		{
 			buildSearchTree();
 		}
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval end;
-		gettimeofday(&end,NULL);
-		printf("adding %ld files took: ",maxProgress+1);
-		printTimevalDiff(start,end);
-#endif
+
 		result = true;
 	}
 	

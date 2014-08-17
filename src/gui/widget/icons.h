@@ -23,7 +23,7 @@
  */
 
 
-// icon files
+// buttons
 #define NEUTRINO_ICON_BUTTON_BLUE		"blue"
 #define NEUTRINO_ICON_BUTTON_GREEN		"green"
 #define NEUTRINO_ICON_BUTTON_RED		"red"
@@ -62,6 +62,14 @@
 #define NEUTRINO_ICON_BUTTON_PLUS		"plus"
 #define NEUTRINO_ICON_BUTTON_MINUS		"minus"
 
+#define NEUTRINO_ICON_BUTTON_F1			"f1"
+#define NEUTRINO_ICON_BUTTON_F2			"f2"
+#define NEUTRINO_ICON_BUTTON_F3			"f3"
+#define NEUTRINO_ICON_BUTTON_F4			"f4"
+
+#define NEUTRINO_ICON_BUTTON_MARK		"mark"
+
+// misc
 #define NEUTRINO_ICON_16_9			"16_9"
 #define NEUTRINO_ICON_16_9_GREY			"16_9_gray"
 #define NEUTRINO_ICON_AUDIO			"audio"
@@ -81,17 +89,7 @@
 #define NEUTRINO_ICON_HIDDEN			"hidden"
 #define NEUTRINO_ICON_MOUNTED			"mounted"
 #define NEUTRINO_ICON_MP3			"mp3"
-#define NEUTRINO_ICON_MULTIMEDIA		"multimedia"
 #define NEUTRINO_ICON_NOT_MOUNTED		"not_mounted"
-#define NEUTRINO_ICON_PAUSE			"mp_pause"
-#define NEUTRINO_ICON_PAUSE_SMALL		"mp_pause_small"
-#define NEUTRINO_ICON_PLAY 			"mp_play"
-#define NEUTRINO_ICON_PLAY_SMALL 		"mp_play_small"
-#define NEUTRINO_ICON_REW			"mp_rew"
-#define NEUTRINO_ICON_REW_SMALL			"mp_rew_small"
-#define NEUTRINO_ICON_FF 			"mp_ff"
-#define NEUTRINO_ICON_FF_SMALL 			"mp_ff_small"
-#define NEUTRINO_ICON_STOP_SMALL 		"mp_stop_small"
 #define NEUTRINO_ICON_PROTECTING		"protecting"
 #define NEUTRINO_ICON_QUESTION			"question"
 #define NEUTRINO_ICON_RECORDING			"recording"
@@ -127,6 +125,8 @@
 #define NEUTRINO_ICON_NETWORK			"network"
 #define NEUTRINO_ICON_LCD			"lcd"
 #define NEUTRINO_ICON_VOLUME			"volume"
+#define NEUTRINO_ICON_BUTTON_MUTE_ZAP_ACTIVE 	"mute_zap_green"
+#define NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE 	"mute_zap_gray"
 
 #define NEUTRINO_ICON_RESOLUTION_1920		"res_1920"
 #define NEUTRINO_ICON_RESOLUTION_1080		"res_1080"
@@ -144,75 +144,72 @@
 #define NEUTRINO_ICON_RESOLUTION_000		"res_000"
 #define NEUTRINO_ICON_RESOLUTION_HD2		"res_hd2"
 #define NEUTRINO_ICON_RESOLUTION_SD2		"res_sd2"
-
 #define NEUTRINO_ICON_RESOLUTION_HD		"res_hd"
-
-#define NEUTRINO_ICON_BUTTON_MUTE_ZAP_ACTIVE 	"mute_zap_green"
-#define NEUTRINO_ICON_BUTTON_MUTE_ZAP_INACTIVE 	"mute_zap_gray"
 
 // new
 #define NEUTRINO_ICON_MOVIE			"movie"
 #define NEUTRINO_ICON_PICTURE			"picture"
-
 #define NEUTRINO_ICON_PLUGIN			"plugin"
-
-#define NEUTRINO_ICON_BUTTON_F1			"f1"
-#define NEUTRINO_ICON_BUTTON_F2			"f2"
-#define NEUTRINO_ICON_BUTTON_F3			"f3"
-#define NEUTRINO_ICON_BUTTON_F4			"f4"
-
-#define NEUTRINO_ICON_BUTTON_MARK		"mark"
 
 #define NEUTRINO_ICON_RADIOTEXTOFF		"radiotextoff"
 #define NEUTRINO_ICON_RADIOTEXTGET		"radiotextget"
 #define NEUTRINO_ICON_RADIOTEXTWAIT		"radiotextwait"
 
-#define NEUTRINO_ICON_YT      			"youtube"
 #define NEUTRINO_ICON_YT_SMALL			"youtube_small"
-
-#define NEUTRINO_ICON_NETZKINO			"netzkino"
 #define NEUTRINO_ICON_NETZKINO_SMALL		"netzkino_small"
-
-#define NEUTRINO_ICON_WEBTV			"webtv"
 #define NEUTRINO_ICON_WEBTV_SMALL		"webtv_small"
 
+// mp infobar
 #define NEUTRINO_ICON_IPTV			"iptv"
 #define NEUTRINO_ICON_MP			"mp"
 
+#define NEUTRINO_ICON_PAUSE			"mp_pause"
+#define NEUTRINO_ICON_PAUSE_SMALL		"mp_pause_small"
+#define NEUTRINO_ICON_PLAY 			"mp_play"
+#define NEUTRINO_ICON_PLAY_SMALL 		"mp_play_small"
+#define NEUTRINO_ICON_REW			"mp_rew"
+#define NEUTRINO_ICON_REW_SMALL			"mp_rew_small"
+#define NEUTRINO_ICON_FF 			"mp_ff"
+#define NEUTRINO_ICON_FF_SMALL 			"mp_ff_small"
+#define NEUTRINO_ICON_STOP_SMALL 		"mp_stop_small"
+
 // menuitem icons
-#define NEUTRINO_ICON_TV			"tv"
-#define NEUTRINO_ICON_RADIO			"radio"
-#define NEUTRINO_ICON_MOVIEPLAYER		"movieplayer"
-#define NEUTRINO_ICON_INTERNETRADIO		"internetradio"
-#define NEUTRINO_ICON_AUDIOPLAYER		"audioplayer"
-#define NEUTRINO_ICON_VLC			"vlc"
-#define NEUTRINO_ICON_DVD			"dvd"
+#define NEUTRINO_ICON_MENUITEM_TV			"tv"
+#define NEUTRINO_ICON_MENUITEM_RADIO			"radio"
+#define NEUTRINO_ICON_MENUITEM_MOVIEPLAYER		"movieplayer"
+#define NEUTRINO_ICON_MENUITEM_INTERNETRADIO		"internetradio"
+#define NEUTRINO_ICON_MENUITEM_AUDIOPLAYER		"audioplayer"
+#define NEUTRINO_ICON_MENUITEM_VLC			"vlc"
+#define NEUTRINO_ICON_MENUITEM_DVD			"dvd"
+#define NEUTRINO_ICON_MENUITEM_YT      			"youtube"
+#define NEUTRINO_ICON_MENUITEM_NETZKINO			"netzkino"
+#define NEUTRINO_ICON_MENUITEM_WEBTV			"webtv"
 
-#define NEUTRINO_ICON_PICTUREVIEWER		"pictureviewer"
-#define NEUTRINO_ICON_UPNPBROWSER		"upnpbrowser"
+#define NEUTRINO_ICON_MENUITEM_PICTUREVIEWER		"pictureviewer"
+#define NEUTRINO_ICON_MENUITEM_UPNPBROWSER		"upnpbrowser"
 
-#define NEUTRINO_ICON_MAINSETTINGS		"mainsettings"
-#define NEUTRINO_ICON_SERVICE			"service"
-#define NEUTRINO_ICON_SLEEPTIMER		"sleeptimer"
-#define NEUTRINO_ICON_PLUGINS			"plugins"
+#define NEUTRINO_ICON_MENUITEM_MAINSETTINGS		"mainsettings"
+#define NEUTRINO_ICON_MENUITEM_SERVICE			"service"
+#define NEUTRINO_ICON_MENUITEM_SLEEPTIMER		"sleeptimer"
+#define NEUTRINO_ICON_MENUITEM_PLUGINS			"plugins"
 
-#define NEUTRINO_ICON_REBOOT			"reboot"
-#define NEUTRINO_ICON_SHUTDOWN			"shutdown"
-#define NEUTRINO_ICON_BOXINFO			"boxinfo"
+#define NEUTRINO_ICON_MENUITEM_REBOOT			"reboot"
+#define NEUTRINO_ICON_MENUITEM_SHUTDOWN			"shutdown"
+#define NEUTRINO_ICON_MENUITEM_BOXINFO			"boxinfo"
 
-#define NEUTRINO_ICON_AUDIOSETTINGS		"audiosettings"
-#define NEUTRINO_ICON_PARENTALLOCK		"parentallock"
-#define NEUTRINO_ICON_RECORDINGSETTINGS		"recordingsettings"
-#define NEUTRINO_ICON_OSDSETTINGS		"osdsettings"
-#define NEUTRINO_ICON_KEYSSETTINGS		"keyssettings"
-#define NEUTRINO_ICON_AUDIOPLAYERSETTINGS	"audioplayersettings"
-#define NEUTRINO_ICON_HDDSETTINGS		"hddsettings"
-#define NEUTRINO_ICON_CAM			"cam"
+#define NEUTRINO_ICON_MENUITEM_AUDIOSETTINGS		"audiosettings"
+#define NEUTRINO_ICON_MENUITEM_PARENTALLOCK		"parentallock"
+#define NEUTRINO_ICON_MENUITEM_RECORDINGSETTINGS	"recordingsettings"
+#define NEUTRINO_ICON_MENUITEM_OSDSETTINGS		"osdsettings"
+#define NEUTRINO_ICON_MENUITEM_KEYSSETTINGS		"keyssettings"
+#define NEUTRINO_ICON_MENUITEM_AUDIOPLAYERSETTINGS	"audioplayersettings"
+#define NEUTRINO_ICON_MENUITEM_HDDSETTINGS		"hddsettings"
+#define NEUTRINO_ICON_MENUITEM_CAM			"cam"
 
-#define NEUTRINO_ICON_USB			"usb"
-#define NEUTRINO_ICON_USB_GREY			"usb_gray"
+#define NEUTRINO_ICON_USB				"usb"
+#define NEUTRINO_ICON_USB_GREY				"usb_gray"
 
 // misc
-#define DUMMY_ICON				"dummy"
+#define DUMMY_ICON					"dummy"
 
 #endif /* __gui_widget_icons_h__ */

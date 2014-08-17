@@ -24,39 +24,38 @@
 #ifndef __zapit__settings_h__
 #define __zapit__settings_h__
 
+#include <config.h>
 
-#ifdef HAVE_CONFIG_H
-#include                		"config.h"
-#else
-#define CONFIGDIR       		"/var/tuxbox/config"
-#endif
 
-#define ZAPIT_CONFIGFILE      		CONFIGDIR "/zapit/zapit.conf"
-#define SATCONFIG 			CONFIGDIR "/zapit/sat.conf"
+// settings
 #define SERVICES_XML    		CONFIGDIR "/zapit/services.xml"
-#define SERVICES_TMP    		"/tmp/services.tmp"
 #define BOUQUETS_XML    		CONFIGDIR "/zapit/bouquets.xml"
 #define UBOUQUETS_XML    		CONFIGDIR "/zapit/ubouquets.xml"
-#define BOUQUETS_TMP    		"/tmp/bouquets.tmp"
+#define MYSERVICES_XML			CONFIGDIR "/zapit/myservices.xml"
 
+// sdt update 
+#define SERVICES_TMP    		"/tmp/services.tmp"
+#define BOUQUETS_TMP    		"/tmp/bouquets.tmp"
 #define CURRENTSERVICES_XML     	"/tmp/currentservices.xml"
 #define CURRENTSERVICES_TMP     	"/tmp/currentservices.tmp"
 #define CURRENTBOUQUETS_XML		"/tmp/currentbouquets.xml"
 #define CURRENTBOUQUETS_TMP		"/tmp/currentbouquets.tmp"
 
-#define MYSERVICES_XML			CONFIGDIR "/zapit/myservices.xml"
-
+// providers
 #define CABLES_XML      		CONFIGDIR "/cables.xml"
 #define SATELLITES_XML  		CONFIGDIR "/satellites.xml"
 #define TERRESTRIALS_XML 		CONFIGDIR "/terrestrial.xml"
 
-#define CAMD_UDS_NAME  			"/tmp/camd.socket"
-
+// zapit/frontend/audio
+#define ZAPIT_CONFIGFILE      		CONFIGDIR "/zapit/zapit.conf"
+#define SATCONFIG 			CONFIGDIR "/zapit/sat.conf"
 #define FRONTEND_CONFIGFILE 		CONFIGDIR "/zapit/frontend.conf"
 #define VOLUME_CONFIG_FILE 		CONFIGDIR "/zapit/audiovolume.conf"
 #define AUDIO_CONFIG_FILE 		CONFIGDIR "/zapit/audio.conf"
 
-#define DVBADAPTER_MAX			2
+#define DVBADAPTER_MAX			2	// needed for twin on generic HW (x86)
 #define FRONTEND_MAX			4
+
+#define CAMD_UDS_NAME  			"/tmp/camd.socket"
 
 #endif /* __zapit__settings_h__ */

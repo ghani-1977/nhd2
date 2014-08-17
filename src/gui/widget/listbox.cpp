@@ -49,9 +49,11 @@ CListBox::CListBox(const char * const Caption)
 	fheight     = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();
 	listmaxshow = (height-theight-0)/fheight;
 	height = theight+0+listmaxshow*fheight; // recalc height
+	
+	info_height = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_DESCR]->getHeight() + 10;
 
-	x=frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) / 2);
-	y=frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) / 2);
+	x = frameBuffer->getScreenX() + ((frameBuffer->getScreenWidth() - width) / 2);
+	y = frameBuffer->getScreenY() + ((frameBuffer->getScreenHeight() - height) / 2);
 }
 
 void CListBox::setModified(void)
@@ -70,19 +72,19 @@ void CListBox::paint()
 
 	int ypos = y+ theight;
 	int sb = fheight* listmaxshow;
-	frameBuffer->paintBoxRel(x+ width- 15,ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
+	frameBuffer->paintBoxRel(x + width- 15,ypos, 15, sb,  COL_MENUCONTENT_PLUS_1);
 
-	int sbc= ((getItemCount()- 1)/ listmaxshow)+ 1;
+	int sbc= ((getItemCount() - 1)/ listmaxshow) + 1;
 	float sbh= (sb- 4)/ sbc;
 	int sbs= (selected/listmaxshow);
 
-	frameBuffer->paintBoxRel(x+ width- 13, ypos+ 2+ int(sbs* sbh) , 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
+	frameBuffer->paintBoxRel(x + width - 13, ypos + 2 + int(sbs* sbh), 11, int(sbh),  COL_MENUCONTENT_PLUS_3);
 }
 
 void CListBox::paintHead()
 {
-	frameBuffer->paintBoxRel(x,y, width,theight+0, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);//round
-	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x+10,y+theight+0, width, caption.c_str() , COL_MENUHEAD, 0, true);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);//round
+	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, caption.c_str() , COL_MENUHEAD, 0, true);
 }
 
 void CListBox::paintFoot()
@@ -112,7 +114,7 @@ void CListBox::paintItem(int pos)
 
 void CListBox::hide()
 {
-	frameBuffer->paintBackgroundBoxRel(x, y, width, height+ButtonHeight);
+	frameBuffer->paintBackgroundBoxRel(x, y, width, height + ButtonHeight + 5 + info_height);
 	
 	frameBuffer->blit();
 }
@@ -129,7 +131,7 @@ int CListBox::getItemHeight()
 
 void CListBox::paintItem(unsigned int /*itemNr*/, int paintNr, bool _selected)
 {
-	int ypos = y+ theight + paintNr*getItemHeight();
+	int ypos = y + theight + paintNr*getItemHeight();
 
 	uint8_t    color;
 	fb_pixel_t bgcolor;
@@ -145,7 +147,7 @@ void CListBox::paintItem(unsigned int /*itemNr*/, int paintNr, bool _selected)
 		bgcolor = COL_MENUCONTENT_PLUS_0;
 	}
 
-	frameBuffer->paintBoxRel(x, ypos, width- 15, getItemHeight(), bgcolor);
+	frameBuffer->paintBoxRel(x, ypos, width - 15, getItemHeight(), bgcolor);
 	g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->RenderString(x + 10, ypos + fheight, width - 20, "demo", color);
 }
 
@@ -155,7 +157,7 @@ int CListBox::exec(CMenuTarget* parent, const std::string &/*actionKey*/)
 	neutrino_msg_data_t data;
 
 	int res = menu_return::RETURN_REPAINT;
-	selected=0;
+	selected = 0;
 
 	if (parent)
 		parent->hide();

@@ -463,7 +463,7 @@ void SaveMotorPositions()
 	for(sit = satellitePositions.begin(); sit != satellitePositions.end(); sit++) 
 	{
 		if(sit->second.type == DVB_S)
-		      fprintf(fd, "%d %d %d %d %d %d %d %d %d %d\n", 
+			fprintf(fd, "%d %d %d %d %d %d %d %d %d %d\n", 
 				sit->first, 
 				sit->second.motor_position,
 				sit->second.diseqc, 

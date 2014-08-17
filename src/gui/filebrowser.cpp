@@ -355,7 +355,7 @@ void CFileBrowser::commonInit()
 	frameBuffer = CFrameBuffer::getInstance();
 	
 	//shoutcast
-	sc_init_dir = "/legacy/genrelist?k="  + g_settings.shoutcast_dev_id;
+	sc_init_dir = "/legacy/genrelist?k=" + g_settings.shoutcast_dev_id;
 
 	Filter = NULL;
 	use_filter = true;
@@ -636,7 +636,7 @@ and add to neutrino playlist
 	const std::string sc_get_genre = "/legacy/stationsearch?k=" + g_settings.shoutcast_dev_id + "&search=";
 	const std::string sc_tune_in_base = "http://yp.shoutcast.com";
 
-	std::string answer="";
+	std::string answer = "";
 	std::string url = m_baseurl;
 	url += dirname;
 	std::cout << "[FileBrowser] SC URL: " << url << std::endl;

@@ -96,7 +96,7 @@ class CListFrame
 		int m_nNrOfPages;
 		int m_nNrOfLines;
 		int m_nNrOfRows;
-		int	m_nMaxLineWidth;
+		int m_nMaxLineWidth;
 		int m_nLinesPerPage;
 		int m_nCurrentLine;
 		int m_nCurrentPage;

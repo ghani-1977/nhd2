@@ -67,7 +67,6 @@ class CBaseDec
 		unsigned static int mSamplerate;
 };
 
-
 #endif
 
  

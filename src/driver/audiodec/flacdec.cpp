@@ -556,7 +556,7 @@ bool CFlacDec::Open(FILE* in, FLAC__StreamDecoder* vf)
 	/* from the stream !                                 */ 
 
 	/* test the dope ... */
-	rval = FLAC__stream_decoder_init_stream   (	vf,
+	rval = FLAC__stream_decoder_init_stream(	vf,
 							flac_read,
 							flac_seek,
 							flac_tell,

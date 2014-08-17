@@ -104,6 +104,13 @@ class CAudioPlayerGui : public CMenuTarget
 			HIDE_PLAYLIST = 1,
 			SHOW_PIC = 2
 		};
+		
+		enum
+		{
+			LOCALRADIO,
+			SHOUTCAST,
+			ICECAST
+		};
 
 	private:
 		void Init(void);

@@ -472,8 +472,8 @@ class CMenuForwarderItemMenuIconNonLocalized : public CMenuForwarderItemMenuIcon
 		virtual const char * getName(void);
 	public:
 		// Text must be UTF-8 encoded:
-		CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active = true, const char * const Option = NULL, CMenuTarget* Target=NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL, const char * const ItemIcon = NULL);
-		CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target=NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL, const char * const ItemIcon = NULL);
+		CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active = true, const char * const Option = NULL, CMenuTarget* Target = NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL, const char * const ItemIcon = NULL);
+		CMenuForwarderItemMenuIconNonLocalized(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target = NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL, const char * const ItemIcon = NULL);
 };
 
 class CMenuSeparatorItemMenuIcon : public CMenuItem

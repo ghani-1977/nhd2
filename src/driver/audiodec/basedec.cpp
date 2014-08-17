@@ -35,13 +35,12 @@
 #include <mp3dec.h>
 #include <flacdec.h>
 #include <wavdec.h>
-#include <linux/soundcard.h>
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <driver/netfile.h>
 
-#include <driver/audioplay.h> // for ShoutcastCallback()
+#include <driver/netfile.h>
 
 #include <global.h>
 #include <neutrino.h>
@@ -54,10 +53,6 @@
 
 unsigned int CBaseDec::mSamplerate = 0;
 
-void ShoutcastCallback(void *arg)
-{
-	CAudioPlayer::getInstance()->sc_callback(arg);
-}
 
 bool CBaseDec::GetMetaDataBase(CAudiofile* const in, const bool nice)
 {

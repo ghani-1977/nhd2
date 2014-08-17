@@ -176,7 +176,7 @@ void CListFrame::initVar(void)
 	
 	m_showSelection = true;
 
-	m_pcFontList  =  FONT_LIST ;
+	m_pcFontList  =  FONT_LIST;
 	m_nFontListHeight = m_pcFontList->getHeight();
 	
 	m_pcFontHeaderList  =  FONT_HEADER_LIST ;
