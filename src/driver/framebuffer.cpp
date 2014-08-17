@@ -226,7 +226,7 @@ void CFrameBuffer::init(const char * const fbDevice)
         paletteSetColor(0x11, 0x000000, tr);
         paletteSetColor(COL_BACKGROUND, 0x000000, 0xffff);
 
-        paletteSet();
+        paletteSet(&cmap);
 
         useBackground(false);
 
@@ -528,6 +528,15 @@ void CFrameBuffer::paletteSetColor(int i, __u32 rgb, int tr)
 	cmap.transp[i] = tr;
 }
 
+inline fb_pixel_t make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
+				  uint32_t  /*rl*/ = 0, uint32_t  /*ro*/ = 0,
+				  uint32_t  /*gl*/ = 0, uint32_t  /*go*/ = 0,
+				  uint32_t  /*bl*/ = 0, uint32_t  /*bo*/ = 0,
+				  uint32_t  /*tl*/ = 0, uint32_t  /*to*/ = 0)
+{
+	return ((t << 24) & 0xFF000000) | ((r << 8) & 0xFF0000) | ((g << 0) & 0xFF00) | (b >> 8 & 0xFF);
+}
+
 void CFrameBuffer::paletteSet(struct fb_cmap *map)
 {
 	if (!active)
@@ -536,10 +545,21 @@ void CFrameBuffer::paletteSet(struct fb_cmap *map)
 	if(map == NULL)
 		map = &cmap;
 
-	// 256 real color
-	for (int i = 0; i < 256; i++) 
+	uint32_t rl, ro, gl, go, bl, bo, tl, to;
+	
+	rl = screeninfo.red.length;
+	ro = screeninfo.red.offset;
+	gl = screeninfo.green.length;
+	go = screeninfo.green.offset;
+	bl = screeninfo.blue.length;
+	bo = screeninfo.blue.offset;
+	tl = screeninfo.transp.length;
+	to = screeninfo.transp.offset;
+
+	for (int i = 0; i < 256; i++)
 	{
-                realcolor[i] = make16color(cmap.red[i], cmap.green[i], cmap.blue[i], cmap.transp[i]);
+		realcolor[i] = make16color(cmap.red[i], cmap.green[i], cmap.blue[i], cmap.transp[i],
+					   rl, ro, gl, go, bl, bo, tl, to);
 	}
 }
 

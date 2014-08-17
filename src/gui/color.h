@@ -106,6 +106,5 @@
 int convertSetupColor2RGB(unsigned char r, unsigned char g, unsigned char b);
 int convertSetupAlpha2Alpha(unsigned char alpha);
 void fadeColor(unsigned char &r, unsigned char &g, unsigned char &b, int fade, bool protect = true);
-unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t);
 
 #endif

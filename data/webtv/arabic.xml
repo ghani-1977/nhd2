@@ -7,4 +7,5 @@
 <webtv title="Al Sharqiya News" url="rtmp://ns8.indexforce.com/alsharqiyalive/mystream" description="Stream" />
 <webtv title="MTV Lubnan" url="rtsp://livestreaming1.itworkscdn.net/mtvlive/murrtelevision_160p" description="Stream" />
 <webtv title="INFINITY TV" url="rtsp://202.142.207.150:1935/live/liveinfinity1" description="Stream" />
+<webtv title="Nesma TV" url="mms://193.95.93.146/nessma" description="Stream" />
 </webtvs> 

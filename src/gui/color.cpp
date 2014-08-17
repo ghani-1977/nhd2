@@ -96,7 +96,3 @@ void fadeColor(unsigned char &r, unsigned char &g, unsigned char &b, int fade, b
 	protectColor(r, g, b, protect);
 }
 
-unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t)
-{
-        return ((t << 24) & 0xFF000000) | ((r << 8) & 0xFF0000) | ((g << 0) & 0xFF00) | (b >> 8 & 0xFF);
-}
