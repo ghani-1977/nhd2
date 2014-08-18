@@ -66,10 +66,10 @@
 #define MIN_WINDOW_WIDTH  (frameBuffer->getScreenWidth() >> 1)
 #define MIN_WINDOW_HEIGHT 40	
 
-#define TITLE_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUHEAD_PLUS_0)
-#define HEADER_LIST_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUCONTENT_PLUS_0)
-#define LIST_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUCONTENT_PLUS_0)
-#define LIST_BACKGROUND_COLOR_SELECTED ((CFBWindow::color_t)COL_MENUCONTENTSELECTED_PLUS_0)
+#define TITLE_BACKGROUND_COLOR 		COL_MENUHEAD_PLUS_0
+#define HEADER_LIST_BACKGROUND_COLOR 	COL_MENUCONTENT_PLUS_0
+#define LIST_BACKGROUND_COLOR 		COL_MENUCONTENT_PLUS_0
+#define LIST_BACKGROUND_COLOR_SELECTED 	COL_MENUCONTENTSELECTED_PLUS_0
 
 #define TITLE_FONT_COLOR COL_MENUHEAD
 #define HEADER_LIST_FONT_COLOR COL_MENUCONTENT
@@ -80,10 +80,14 @@
 #define FONT_HEADER_LIST g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]
 #define FONT_TITLE g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE];
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
+CFont* CListFrame::m_pcFontTitle = NULL;
+CFont* CListFrame::m_pcFontList = NULL;
+CFont* CListFrame::m_pcFontHeaderList = NULL;
+
+//
+// Construction/Destruction
+//
 CListFrame::CListFrame(	LF_LINES* lines, CFont * font_text, const int _mode, const CBox* position, const char* textTitle, CFont *font_title)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame] new\r\n");
@@ -386,17 +390,20 @@ void CListFrame::refreshScroll(void)
 
 void CListFrame::refreshList(void)
 {
-	dprintf(DEBUG_DEBUG, "[CListFrame]->refreshList: %d\r\n",m_nCurrentLine);
-	if( frameBuffer == NULL) return;
-	frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, m_cFrameListRel.iY+m_cFrame.iY, m_cFrameListRel.iWidth, m_cFrameListRel.iHeight,  LIST_BACKGROUND_COLOR);
+	dprintf(DEBUG_DEBUG, "[CListFrame]->refreshList: %d\r\n", m_nCurrentLine);
+	
+	if( frameBuffer == NULL) 
+		return;
+	
+	frameBuffer->paintBoxRel(m_cFrameListRel.iX + m_cFrame.iX, m_cFrameListRel.iY + m_cFrame.iY, m_cFrameListRel.iWidth, m_cFrameListRel.iHeight, LIST_BACKGROUND_COLOR);
 
-	if(  m_nNrOfLines <= 0) 
+	if(m_nNrOfLines <= 0) 
 		return;
 
 	int y = m_cFrameListRel.iY + TEXT_BORDER_WIDTH ;
 	for(int line = m_nCurrentLine; line < m_nNrOfLines && line < m_nCurrentLine + m_nLinesPerPage; line++)
 	{
-		int color = LIST_FONT_COLOR;
+		uint32_t color = LIST_FONT_COLOR;
 		// draw line
 		if(line == m_nSelectedLine && m_showSelection == true)
 		{
@@ -404,9 +411,11 @@ void CListFrame::refreshList(void)
 
 			frameBuffer->paintBoxRel(m_cFrameListRel.iX+m_cFrame.iX, y+m_cFrame.iY, m_cFrameListRel.iWidth, m_nFontListHeight, LIST_BACKGROUND_COLOR_SELECTED);
 		}
+		
 		int width;
 		int x = m_cFrameListRel.iX + TEXT_BORDER_WIDTH;
 		y += m_nFontListHeight;
+		
 		for(int row = 0; row < m_pLines->rows; row++)
 		{
 			width = m_pLines->rowWidth[row] ;
@@ -415,7 +424,7 @@ void CListFrame::refreshList(void)
 				width = m_cFrameListRel.iWidth - x + m_cFrameListRel.iX - TEXT_BORDER_WIDTH;
 				dprintf(DEBUG_DEBUG, "   normalize width to %d , x:%d \r\n",width,x);
 			}
-			m_pcFontList->RenderString(x+m_cFrame.iX, y+m_cFrame.iY, width, m_pLines->lineArray[row][line].c_str(), color, 0, true); // UTF-8
+			m_pcFontList->RenderString(x + m_cFrame.iX, y + m_cFrame.iY, width, m_pLines->lineArray[row][line].c_str(), color, 0, true); // UTF-8
 			x += m_pLines->rowWidth[row] + ROW_BORDER_WIDTH;								
 		}
 	}	
@@ -425,13 +434,14 @@ void CListFrame::refreshLine(int line)
 {
 	if( frameBuffer == NULL) 
 		return;
+	
 	if( m_nNrOfLines <= 0) 
 		return;
 
 	if((line < m_nCurrentLine) && (line > m_nCurrentLine + m_nLinesPerPage))
 		return;
 
-	uint8_t color;
+	uint32_t color;
 	int rel_line = line - m_nCurrentLine;
 	int y = m_cFrameListRel.iY + TEXT_BORDER_WIDTH + (rel_line*m_nFontListHeight);
 

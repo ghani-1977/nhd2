@@ -35,15 +35,18 @@
 #include <gui/widget/icons.h>
 
 
-CListBox::CListBox(const char * const Caption)
+CListBox::CListBox(const char * const Caption, int _width, int _height)
 {
 	frameBuffer = CFrameBuffer::getInstance();
 	caption = Caption;
 	liststart = 0;
 	selected =  0;
-	width =  400;
-	height = 420;
-	ButtonHeight = 25;
+	width =  _width;
+	height = _height;
+	//ButtonHeight = 25;
+	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_bf_w, &icon_bf_h);
+	ButtonHeight = std::max(icon_bf_h, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight()) + 6;
+	
 	modified = false;
 	theight     = g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight();
 	fheight     = g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST]->getHeight();

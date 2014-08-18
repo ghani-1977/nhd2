@@ -173,6 +173,9 @@
 #define NEUTRINO_ICON_FF_SMALL 			"mp_ff_small"
 #define NEUTRINO_ICON_STOP_SMALL 		"mp_stop_small"
 
+#define NEUTRINO_ICON_USB				"usb"
+#define NEUTRINO_ICON_USB_GREY				"usb_gray"
+
 // menuitem icons
 #define NEUTRINO_ICON_MENUITEM_TV			"tv"
 #define NEUTRINO_ICON_MENUITEM_RADIO			"radio"
@@ -205,9 +208,6 @@
 #define NEUTRINO_ICON_MENUITEM_AUDIOPLAYERSETTINGS	"audioplayersettings"
 #define NEUTRINO_ICON_MENUITEM_HDDSETTINGS		"hddsettings"
 #define NEUTRINO_ICON_MENUITEM_CAM			"cam"
-
-#define NEUTRINO_ICON_USB				"usb"
-#define NEUTRINO_ICON_USB_GREY				"usb_gray"
 
 // misc
 #define DUMMY_ICON					"dummy"

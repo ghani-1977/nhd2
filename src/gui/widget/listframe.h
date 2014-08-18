@@ -54,7 +54,7 @@
 #include <string>
 #include <vector>
 #include <gui/widget/textbox.h>
-#include <driver/fb_window.h>
+
 
 #define LF_MAX_ROWS 6
 typedef struct
@@ -104,14 +104,14 @@ class CListFrame
 
 		bool m_showSelection;
 		
-		CFont *m_pcFontTitle;
+		static CFont* m_pcFontTitle;
 		std::string m_textTitle;
 		int m_nFontTitleHeight;
 		
-		CFont *m_pcFontList;
+		static CFont* m_pcFontList;
 		int m_nFontListHeight;
 		
-		CFont *m_pcFontHeaderList;
+		static CFont* m_pcFontHeaderList;
 		int m_nFontHeaderListHeight;
 
 		CFrameBuffer * frameBuffer;
@@ -120,7 +120,7 @@ class CListFrame
 		CListFrame();
 		CListFrame(	LF_LINES* lines);
 		CListFrame(	LF_LINES* lines, 
-					CFont *font_text,
+					CFont* font_text,
 					const int mode, 
 					const CBox* position,
 					const char* textTitle = NULL,

@@ -1127,8 +1127,11 @@ void CMoviePlayerGui::PlayFile(void)
 		//
 		sel_filename = std::string(rindex(filename, '/') + 1);
 		
-		g_file_epg = sel_filename;
-		g_file_epg1 = sel_filename;
+		if(g_file_epg.empty())
+			g_file_epg = sel_filename;
+		
+		if(g_file_epg1.empty())
+			g_file_epg1 = sel_filename;
 		
 		update_lcd = true;
 		start_play = true;

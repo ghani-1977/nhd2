@@ -24,7 +24,8 @@
 #ifndef __listbox_legacy__
 #define __listbox_legacy__
 
-#include "listbox.h"
+#include <listbox.h>
+
 
 class CListBoxExt : public CListBox
 {
@@ -41,6 +42,5 @@ class CListBoxExt : public CListBox
 	public:
 		CListBoxExt(void); 
 };
-
 
 #endif
