@@ -48,13 +48,17 @@ class CWebTV
 		enum {
 			WEBTV,
 			USER,
+			IPTV,
 			DIVERS = 255
 		};
 		
 		struct webtv_channels {
-			char * title;
-			char * url;
-			char * description;
+			//char * title;
+			//char * url;
+			//char * description;
+			std::string title;
+			std::string url;
+			std::string description;
 			bool locked;		// for parentallock
 		};
 
