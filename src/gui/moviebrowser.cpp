@@ -39,7 +39,7 @@
 
 	Date:	   Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 ****************************************************************************/
 
@@ -151,8 +151,8 @@ const CMenuOptionChooser::keyval MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS[MESSAGEBOX_
 #define MIN_WINDOW_WIDTH  ((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
 #define MIN_WINDOW_HEIGHT 200	
 
-#define TITLE_BACKGROUND_COLOR ((CFBWindow::color_t)COL_MENUHEAD_PLUS_0)
-#define TITLE_FONT_COLOR ((CFBWindow::color_t)COL_MENUHEAD)
+#define TITLE_BACKGROUND_COLOR 		COL_MENUHEAD_PLUS_0
+#define TITLE_FONT_COLOR 		COL_MENUHEAD
 
 #define TITLE_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
 #define FOOT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
@@ -425,6 +425,7 @@ void CMovieBrowser::fileInfoStale(void)
 	m_vHandleSerienames.clear();
 	m_movieSelectionHandler = NULL;
 	
+	//
 	for(int i = 0; i < LF_MAX_ROWS; i++)
 	{
 		m_browserListLines.lineArray[i].clear();
@@ -567,6 +568,17 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.browserRowWidth[4] = m_defaultRowWidth[m_settings.browserRowItem[4]]; 		//30;
 	m_settings.browserRowWidth[5] = m_defaultRowWidth[m_settings.browserRowItem[5]]; 		//30;
 	
+	//
+	m_settings.storageDirMovieUsed = true;
+	m_settings.storageDirRecUsed = true;
+	m_settings.reload = true;	// not used reload for first time or when show mode changes
+	m_settings.remount = false;
+	m_settings.browser_serie_mode = 0;
+	m_settings.serie_auto_create = 0;
+	
+	// show_mode
+	m_settings.show_mode = MB_SHOW_RECORDS;
+	
 	// youtube
 	m_settings.ytmode = cYTFeedParser::MOST_POPULAR;
 	m_settings.ytorderby = cYTFeedParser::ORDERBY_PUBLISHED;
@@ -579,17 +591,6 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.nkconcconn = 1;
 	m_settings.nkcategoryname = "Actionkino";
 	m_settings.nkrtmp = true;
-	//
-
-	m_settings.storageDirMovieUsed = true;
-	m_settings.storageDirRecUsed = true;
-	m_settings.reload = true;	// not used reload for first time or when show mode changes
-	m_settings.remount = false;
-	m_settings.browser_serie_mode = 0;
-	m_settings.serie_auto_create = 0;
-	
-	// show_mode
-	m_settings.show_mode = MB_SHOW_RECORDS;
 }
 
 void CMovieBrowser::initFrames(void)
@@ -1543,7 +1544,7 @@ void CMovieBrowser::refreshLastPlayList(void) //P2
 	// sort the not filtered files
 	onSortMovieInfoHandleList(m_vHandlePlayList, MB_INFO_PREVPLAYDATE, MB_DIRECTION_DOWN);
 
-	for( int handle=0; handle < (int) m_vHandlePlayList.size() && handle < m_settings.lastPlayMaxItems ;handle++)
+	for( int handle = 0; handle < (int) m_vHandlePlayList.size() && handle < m_settings.lastPlayMaxItems ;handle++)
 	{
 		for(int row = 0; row < m_settings.lastPlayRowNr ;row++)
 		{
@@ -1774,7 +1775,7 @@ void CMovieBrowser::refreshFoot(void)
 {
 	dprintf(DEBUG_INFO, "[mb]->refreshButtonLine \r\n");
 	
-	int color = (CFBWindow::color_t) COL_MENUHEAD;
+	uint8_t color = COL_MENUHEAD;
 
 	// filter
 	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_FILTER);
@@ -1793,7 +1794,7 @@ void CMovieBrowser::refreshFoot(void)
 	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
 	
 	// draw the background first
-	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight + 6, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight + 6, COL_MENUHEAD_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
 
 	int width = m_cBoxFrameFootRel.iWidth>>2;
 	int xpos1 = m_cBoxFrameFootRel.iX + 10;
@@ -1814,9 +1815,9 @@ void CMovieBrowser::refreshFoot(void)
 
 		//1
 		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO ) 
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS), color, 0, true); // UTF-8
 		else
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), color, 0, true); // UTF-8
 	}
 
 	// green
@@ -1827,9 +1828,9 @@ void CMovieBrowser::refreshFoot(void)
 
 		//2
 		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO ) 
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS), (CFBWindow::color_t)color, 0, true); // UTF-8
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS), color, 0, true); // UTF-8
 		else
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
+			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), color, 0, true); // UTF-8
 	}
 
 	// yellow/ok
@@ -1846,7 +1847,7 @@ void CMovieBrowser::refreshFoot(void)
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &icon_w, &icon_h);
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
 
-	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, ok_text.c_str(), (CFBWindow::color_t)color, 0, true); // UTF-8
+	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, ok_text.c_str(), color, 0, true); // UTF-8
 
 	// refresh/delete (mute/blue)
 	if (show_mode != MB_SHOW_RECORDS) 
@@ -1854,14 +1855,14 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
 
-		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES), color, 0, true); // UTF-8
 	}
 	else if(show_mode == MB_SHOW_RECORDS)
 	{
 		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_w, &icon_h);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
 
-		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), color, 0, true); // UTF-8
 	}
 }
 
@@ -2396,7 +2397,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 {
 	dprintf(DEBUG_INFO, "[onDeleteFile] ");
 	
-	int test= movieSelectionHandler.file.Name.find(".ts");
+	int test = movieSelectionHandler.file.Name.find(".ts");
 	if(test == -1) 
 	{ 
 		// not a TS file, return!!!!! 
@@ -4063,23 +4064,23 @@ int CMenuSelector::paint( bool selected )
 int CMovieHelp::exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung ändern");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung Ã¤ndern");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, "Filterfenster einblenden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "Hauptmenü");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "HauptmenÃ¼");
 	helpbox.addLine("'+/-'  Ansicht wechseln");
 	helpbox.addLine("'Rec'  Screenshot");
 	helpbox.addLine("'Audio' Cut Jumps from Movie");
 	helpbox.addLine("'teletxt' copy Jumps from movie");
 	helpbox.addLine("'dvbsub' truncate movie");
 	helpbox.addLine("'Pause' remove screenshot");
-	helpbox.addLine("Während der Filmwiedergabe:");
+	helpbox.addLine("WÃ¤hrend der Filmwiedergabe:");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, " Markierungsmenu ");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausführen");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausfÃ¼hren");
 	helpbox.addLine("");
 	helpbox.addLine("MovieBrowser $Revision: 1.10 $");
-	helpbox.addLine("by Günther");
+	helpbox.addLine("by GÃ¼nther");
 	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 	return(0);
 }
@@ -5078,8 +5079,10 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 		ytparser.SetRegion("");
 	else
 		ytparser.SetRegion(m_settings.ytregion);
+	
+	printf("line per page:%d\n", m_pcBrowser->getLines());
 
-	ytparser.SetMaxResults(m_settings.ytresults);
+	ytparser.SetMaxResults(/*m_settings.ytresults*/m_pcBrowser->getLines());
 
 	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) 
 	{
@@ -5296,7 +5299,7 @@ bool CMovieBrowser::showYTMenu()
 //netzkino
 void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp)
 {
-	nkparser.SetMaxResults(m_settings.nkresults ? m_settings.nkresults : 100000);
+	nkparser.SetMaxResults(/*m_settings.nkresults ? m_settings.nkresults : 100000*/m_pcBrowser->getLines());
 	nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
 	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
 
