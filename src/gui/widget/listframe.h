@@ -36,12 +36,12 @@
 
 	Date:	Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	Revision History:
 	Date			Author		Change Description
-	   Nov 2005		Günther	initial implementation
+	   Nov 2005		GÃ¼nther	initial implementation
 ****************************************************************************/
 
 #if !defined(LISTFRAME_H_)
@@ -148,6 +148,8 @@ class CListFrame
 		inline  int     getPages(void)				{return(m_nNrOfPages);};
 		inline  void    showSelection(bool show)	{m_showSelection = show;refreshLine(m_nSelectedLine);};
 		inline	void	movePosition(int x, int y){m_cFrame.iX = x; m_cFrame.iY = y;};
+		
+		inline int getLinesPerPage(void)		{return(m_nLinesPerPage);};
 
 
 		/* Variables */
