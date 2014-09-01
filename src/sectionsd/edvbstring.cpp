@@ -852,3 +852,98 @@ int isUTF8(const std::string &string)
 	return 1; // can be UTF8 (or pure ASCII, at least no non-UTF-8 8bit characters)
 }
 
+unsigned int truncateUTF8(std::string &s, unsigned int newsize)
+{
+	unsigned int length = s.size();
+
+	while (length > newsize)
+	{
+		if ((unsigned char)s[length - 1] > 0x7F)
+		{
+			do
+			{
+				/* remove all UTF data bytes, not including the start byte, which is {0xC0 <= startbyte <= 0xFD} */
+				length--;
+			} while (length > 0 && (unsigned char)s[length - 1] <= 0xBF); /* remove only databytes */
+		}
+		/* remove the UTF startbyte, or normal ascii character */
+		if (length > 0) length--;
+	}
+	s.resize(length);
+	return length;
+}
+
+std::string removeDVBChars(const std::string &s)
+{
+	std::string res;
+
+	int len = s.length();
+
+	for(int i = 0; i < len; i++)
+	{
+		unsigned char c1 = s[i];
+		unsigned int c;
+
+			/* UTF8? decode (but only simple) */
+		if((c1 > 0x80) && (i < len-1))
+		{
+			unsigned char c2 = s[i + 1];
+			c = ((c1&0x3F)<<6) + (c2&0x3F);
+			if ((c >= 0x80) && (c <= 0x9F))
+			{
+				++i; /* skip 2nd utf8 char */
+				continue;
+			}
+		}
+		
+		res += s[i];
+	}
+	
+	return res;
+}
+
+std::string urlDecode(const std::string &s)
+{
+	int len = s.size();
+	std::string res;
+	int i;
+	for (i = 0; i < len; ++i)
+	{
+		unsigned char c = s[i];
+		if (c != '%')
+		{
+			res += c;
+		}
+		else
+		{
+			i += 2;
+			if (i >= len) break;
+			char t[3] = {s[i - 1], s[i], 0};
+			unsigned char r = strtoul(t, 0, 0x10);
+			if (r) res += r;
+		}
+	}
+	return res;
+}
+
+static std::string encode(const std::string s)
+{
+	int len = s.size();
+	std::string res;
+	int i;
+	for (i=0; i<len; ++i)
+	{
+		unsigned char c = s[i];
+		if ((c == ':') || (c < 32) || (c == '%'))
+		{
+			res += "%";
+			char hex[8];
+			snprintf(hex, 8, "%02x", c);
+			res += hex;
+		} else
+			res += c;
+	}
+	return res;
+}
+
+
