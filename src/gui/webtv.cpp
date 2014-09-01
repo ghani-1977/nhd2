@@ -49,6 +49,9 @@
 
 #include <xmlinterface.h>
 
+#include <sectionsd/edvbstring.h>
+#include <client/zapittools.h>
+
 #include <system/debug.h>
 
 /* libdvbapi */
@@ -234,50 +237,118 @@ void CWebTV::loadChannels(void)
 // readxml file
 bool CWebTV::readChannellist(std::string filename)
 {
-	dprintf(DEBUG_INFO, "CWebTV::readChannellist parsing %s\n", filename.c_str());
+	dprintf(DEBUG_NORMAL, "CWebTV::readChannellist parsing %s\n", filename.c_str());
 	
 	// clear channellist
 	ClearChannels();
 	
-	webtv_channels * tmp = new webtv_channels();
-	
-	parser = parseXmlFile(filename.c_str());
-	
-	if (parser) 
+	// check for extension
+	int ext_pos = 0;
+	ext_pos = filename.rfind('.');
+	bool iptv = false;
+					
+	if( ext_pos > 0)
 	{
-		xmlNodePtr l0 = NULL;
-		xmlNodePtr l1 = NULL;
-		l0 = xmlDocGetRootElement(parser);
-		l1 = l0->xmlChildrenNode;
-		
-		if (l1) 
-		{
-			while ((xmlGetNextOccurence(l1, "webtv"))) 
-			{
-				char * title = xmlGetAttribute(l1, (char *)"title");
-				char * url = xmlGetAttribute(l1, (char *)"url");
-				char * description = xmlGetAttribute(l1, (char *)"description");
-				bool locked = xmlGetAttribute(l1, (char *)"locked");
-				
-				// fill webtv list
-				tmp = new webtv_channels();
-				
-				tmp->title = title;
-				tmp->url = url;
-				tmp->description = description;
-				tmp->locked = locked;
-				
-				// fill channelslist
-				channels.push_back(tmp);
-
-				l1 = l1->xmlNextNode;
-			}
-		}
-		
-		return true;
+		std::string extension;
+		extension = filename.substr(ext_pos + 1, filename.length() - ext_pos);
+						
+		if( strcasecmp("tv", extension.c_str()) == 0)
+			iptv = true;
 	}
 	
-	xmlFreeDoc(parser);
+	if(iptv)
+	{
+		FILE * f = fopen(filename.c_str(), "r");
+		std::string title;
+		std::string URL;
+		std::string url;
+		std::string description;
+		
+		if(f != NULL)
+		{
+			while(1)
+			{
+				char line[1024];
+				if (!fgets(line, 1024, f))
+					break;
+				
+				size_t len = strlen(line);
+				if (len < 2)
+					// Lines with less than one char aren't meaningful
+					continue;
+				
+				/* strip newline */
+				line[--len] = 0;
+				
+				// strip carriage return (when found)
+				if (line[len - 1] == '\r')
+					line[len - 1 ] = 0;
+				
+				if (strncmp(line, "#SERVICE 4097:0:1:0:0:0:0:0:0:0:", 32) == 0)
+					url = line + 32;
+				else if (strncmp(line, "#DESCRIPTION: ", 14) == 0)
+					title = line + 14;
+				
+				description = "stream";
+				
+				printf("title:%s url:%s desc:%s\n", title.c_str(), urlDecode(url).c_str(), description.c_str());
+				
+				webtv_channels * tmp = new webtv_channels();
+					
+				tmp->title = title.c_str();
+				tmp->url = urlDecode(url).c_str();
+				tmp->description = description.c_str();
+				tmp->locked = false;
+					
+				// fill channelslist
+				channels.push_back(tmp);
+			}
+			
+			fclose(f);
+			
+			return true;
+		}
+	}
+	else
+	{
+		parser = parseXmlFile(filename.c_str());
+		
+		if (parser) 
+		{
+			xmlNodePtr l0 = NULL;
+			xmlNodePtr l1 = NULL;
+			l0 = xmlDocGetRootElement(parser);
+			l1 = l0->xmlChildrenNode;
+			
+			if (l1) 
+			{
+				while ((xmlGetNextOccurence(l1, "webtv"))) 
+				{
+					char * title = xmlGetAttribute(l1, (char *)"title");
+					char * url = xmlGetAttribute(l1, (char *)"url");
+					char * description = xmlGetAttribute(l1, (char *)"description");
+					bool locked = xmlGetAttribute(l1, (char *)"locked");
+					
+					// fill webtv list
+					webtv_channels * tmp = new webtv_channels();
+					
+					tmp->title = title;
+					tmp->url = url;
+					tmp->description = description;
+					tmp->locked = locked;
+					
+					// fill channelslist
+					channels.push_back(tmp);
+
+					l1 = l1->xmlNextNode;
+				}
+			}
+			
+			return true;
+		}
+		
+		xmlFreeDoc(parser);
+	}
 	
 	return false;
 }
@@ -299,7 +370,7 @@ void CWebTV::showUserBouquet(void)
 	// divers
 	sprintf(cnt, "%d", ++count);
 	InputSelector.addItem(new CMenuForwarder(LOCALE_WEBTV_USER, true, NULL, WebTVInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
-
+	
 	hide();
 	InputSelector.exec(NULL, "");
 	delete WebTVInputChanger;
@@ -467,7 +538,7 @@ bool CWebTV::startPlayBack(int pos)
 		pos = 0;
 	}
 	
-	if (!playback->Start(channels[pos]->url))
+	if (!playback->Start((char *)channels[pos]->url.c_str()))
 		return false;
 	
 	playstate = PLAY;
@@ -828,14 +899,14 @@ void CWebTV::paintItem(int pos)
 		int l = 0;
 		
 		sprintf((char*) tmp, "%d", curr + 1);
-		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr]->title);
+		l = snprintf(nameAndDescription, sizeof(nameAndDescription), "%s", channels[curr]->title.c_str());
 		
 		// number
 		int numpos = x + 10 + numwidth - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getRenderWidth(tmp);
 		g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->RenderString(numpos, ypos + (iheight - g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_CHANNELLIST_NUMBER]->getHeight(), numwidth + 5, tmp, color, 0, true);
 		
 		// description
-		std::string Descr = channels[curr]->description;
+		std::string Descr = channels[curr]->description.c_str();
 		if(!(Descr.empty()))
 		{
 			snprintf(nameAndDescription + l, sizeof(nameAndDescription) -l, "  -  ");
@@ -1034,27 +1105,31 @@ void CWebTV::paint()
 void CWebTV::showFileInfoWebTV(int pos)
 {
 	if(pos > -1)
-		ShowMsg2UTF(channels[pos]->title, channels[pos]->description, CMsgBox::mbrBack, CMsgBox::mbBack);
+		ShowMsg2UTF(channels[pos]->title.c_str(), channels[pos]->description.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);
 }
 
 void CWebTV::openFilebrowser(void)
 {
 	CFileBrowser filebrowser;
 	CFileFilter fileFilter;
+	
 	fileFilter.addFilter("xml");
+	fileFilter.addFilter("tv");
 
-	filebrowser.Multi_Select    = true;
-	filebrowser.Dirs_Selectable = true;
-	filebrowser.Filter          = &fileFilter;
+	//filebrowser.Multi_Select    = true;
+	//filebrowser.Dirs_Selectable = true;
+	filebrowser.Filter = &fileFilter;
 
 	if (filebrowser.exec(CONFIGDIR))
 	{
 		// select file
 		strcpy(g_settings.webtv_settings, filebrowser.getSelectedFile()->Name.c_str());
+		
 		printf("[webtv] webtv settings file %s\n", filebrowser.getSelectedFile()->Name.c_str());
 		
 		// load channels
 		mode = USER;
+		
 		readChannellist(g_settings.webtv_settings);
 		selected = 0;
 	}
