@@ -26,6 +26,7 @@
 
 #include <string>
 
+
 namespace ZapitTools
 {
 	std::string UTF8_to_Latin1 (const char *);
