@@ -926,7 +926,7 @@ std::string urlDecode(const std::string &s)
 	return res;
 }
 
-static std::string encode(const std::string s)
+std::string encode(const std::string s)
 {
 	int len = s.size();
 	std::string res;
