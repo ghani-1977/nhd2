@@ -287,21 +287,23 @@ bool CWebTV::readChannellist(std::string filename)
 				if (strncmp(line, "#SERVICE 4097:0:1:0:0:0:0:0:0:0:", 32) == 0)
 					url = line + 32;
 				else if (strncmp(line, "#DESCRIPTION: ", 14) == 0)
+				{
 					title = line + 14;
 				
-				description = "stream";
-				
-				printf("title:%s url:%s desc:%s\n", title.c_str(), urlDecode(url).c_str(), description.c_str());
-				
-				webtv_channels * tmp = new webtv_channels();
+					description = "stream";
 					
-				tmp->title = title.c_str();
-				tmp->url = urlDecode(url).c_str();
-				tmp->description = description.c_str();
-				tmp->locked = false;
+					printf("title:%s url:%s desc:%s\n", title.c_str(), urlDecode(url).c_str(), description.c_str());
 					
-				// fill channelslist
-				channels.push_back(tmp);
+					webtv_channels * tmp = new webtv_channels();
+						
+					tmp->title = title.c_str();
+					tmp->url = urlDecode(url).c_str();
+					tmp->description = description.c_str();
+					tmp->locked = false;
+						
+					// fill channelslist
+					channels.push_back(tmp);
+				}
 			}
 			
 			fclose(f);
