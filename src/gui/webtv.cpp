@@ -286,9 +286,12 @@ bool CWebTV::readChannellist(std::string filename)
 				
 				if (strncmp(line, "#SERVICE 4097:0:1:0:0:0:0:0:0:0:", 32) == 0)
 					url = line + 32;
-				else if (strncmp(line, "#DESCRIPTION: ", 14) == 0)
+				//else if ( (strncmp(line, "#DESCRIPTION: ", 14) == 0) || (strncmp(line, "#DESCRIPTION ", 13) == 0) )
+				else if (strncmp(line, "#DESCRIPTION", 12) == 0)
 				{
-					title = line + 14;
+					int offs = line[12] == ':' ? 14 : 13;
+			
+					title = line + offs;
 				
 					description = "stream";
 					
