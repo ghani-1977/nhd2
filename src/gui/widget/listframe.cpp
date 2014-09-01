@@ -36,12 +36,12 @@
 
 	Date:	 Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	Revision History:
 	Date			Author		Change Description
-	   Nov 2005		Günther	initial implementation
+	   Nov 2005		GÃ¼nther	initial implementation
 
 ****************************************************************************/
 
@@ -403,7 +403,7 @@ void CListFrame::refreshList(void)
 	int y = m_cFrameListRel.iY + TEXT_BORDER_WIDTH ;
 	for(int line = m_nCurrentLine; line < m_nNrOfLines && line < m_nCurrentLine + m_nLinesPerPage; line++)
 	{
-		uint32_t color = LIST_FONT_COLOR;
+		uint8_t color = LIST_FONT_COLOR;
 		// draw line
 		if(line == m_nSelectedLine && m_showSelection == true)
 		{
@@ -441,7 +441,7 @@ void CListFrame::refreshLine(int line)
 	if((line < m_nCurrentLine) && (line > m_nCurrentLine + m_nLinesPerPage))
 		return;
 
-	uint32_t color;
+	uint8_t color;
 	int rel_line = line - m_nCurrentLine;
 	int y = m_cFrameListRel.iY + TEXT_BORDER_WIDTH + (rel_line*m_nFontListHeight);
 
@@ -679,6 +679,7 @@ bool CListFrame::setSelectedLine(int selection)
 		refreshList();
 		refreshScroll();  //NEW
 		result = true;
+		
 		dprintf(DEBUG_DEBUG, " selected line: %d,%d,%d \r\n",m_nSelectedLine, m_nCurrentPage, m_nCurrentLine);
 	}
 	
