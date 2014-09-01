@@ -53,9 +53,6 @@ class CWebTV
 		};
 		
 		struct webtv_channels {
-			//char * title;
-			//char * url;
-			//char * description;
 			std::string title;
 			std::string url;
 			std::string description;
