@@ -39,7 +39,7 @@
 
 	Date:	   Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 ****************************************************************************/
 
@@ -145,20 +145,20 @@ const CMenuOptionChooser::keyval MESSAGEBOX_PARENTAL_LOCKAGE_OPTIONS[MESSAGEBOX_
 	{ 99, LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_ALWAYS, NULL }
 };
 
-#define MAX_WINDOW_WIDTH  (g_settings.screen_EndX - g_settings.screen_StartX - 40)
-#define MAX_WINDOW_HEIGHT (g_settings.screen_EndY - g_settings.screen_StartY - 40)	
+#define MAX_WINDOW_WIDTH  		(g_settings.screen_EndX - g_settings.screen_StartX - 40)
+#define MAX_WINDOW_HEIGHT 		(g_settings.screen_EndY - g_settings.screen_StartY - 40)	
 
-#define MIN_WINDOW_WIDTH  ((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
-#define MIN_WINDOW_HEIGHT 200	
+#define MIN_WINDOW_WIDTH  		((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
+#define MIN_WINDOW_HEIGHT 		200	
 
 #define TITLE_BACKGROUND_COLOR 		COL_MENUHEAD_PLUS_0
 #define TITLE_FONT_COLOR 		COL_MENUHEAD
 
-#define TITLE_FONT g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
-#define FOOT_FONT g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
+#define TITLE_FONT 			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
+#define FOOT_FONT 			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
 
-#define INTER_FRAME_SPACE 4  // space between e.g. upper and lower window
-#define TEXT_BORDER_WIDTH 8
+#define INTER_FRAME_SPACE 		4  // space between e.g. upper and lower window
+#define TEXT_BORDER_WIDTH 		8
 
 CFont* CMovieBrowser::m_pcFontFoot = NULL;
 CFont* CMovieBrowser::m_pcFontTitle = NULL;
@@ -1071,6 +1071,7 @@ int CMovieBrowser::exec(const char * path)
 
 	m_selectedDir = path; 
 
+	// paint mb
 	if(paint() == false)
 		return res;// paint failed due to less memory , exit 
 
@@ -1922,12 +1923,12 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_minus) 
 	{
-		if (show_mode != MB_SHOW_YT)
+		if ( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
 			onSetGUIWindowPrev();
 	}
 	else if (msg == CRCInput::RC_plus) 
 	{
-		if (show_mode != MB_SHOW_YT)
+		if ( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
 			onSetGUIWindowNext();
 	}
 	else if (msg == CRCInput::RC_green) 
@@ -2260,7 +2261,7 @@ bool CMovieBrowser::onButtonPressLastRecordList(neutrino_msg_t msg)
 	
 	bool result = true;
 	
-	if(msg==CRCInput::RC_up)
+	if(msg == CRCInput::RC_up)
 	{
 		m_pcLastRecord->scrollLineUp(1);
 	}
@@ -2372,7 +2373,7 @@ bool CMovieBrowser::onButtonPressFilterList(neutrino_msg_t msg)
 
 bool CMovieBrowser::onButtonPressMovieInfoList(neutrino_msg_t msg) 
 {
-	//dprintf(DEBUG_NORMAL, "[mb]->onButtonPressEPGInfoList %d\r\n",msg);
+	dprintf(DEBUG_INFO, "[mb]->onButtonPressEPGInfoList %d\r\n",msg);
 	
 	bool result = true;
 	
@@ -2475,7 +2476,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 {
-	if (show_mode == MB_SHOW_YT || MB_SHOW_NETZKINO )
+	if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO )
 	{
 		switch(gui) 
 		{
@@ -2492,6 +2493,7 @@ void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 	if(gui == MB_GUI_MOVIE_INFO)
 	{
 		dprintf(DEBUG_NORMAL, "[mb] browser info\r\n");
+		
 		// Paint these frames ...
 		m_showMovieInfo = true;
 		m_showBrowserFiles = true;
@@ -2913,7 +2915,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					}
 					
 					//TEST: remove me
-					if(show_mode != MB_SHOW_YT)
+					if( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
 					{
 						if(movieInfo.serieName.empty())
 							movieInfo.serieName = movieInfo.epgTitle;
@@ -4035,8 +4037,8 @@ int CMenuSelector::paint( bool selected )
 {
 	CFrameBuffer * frameBuffer = CFrameBuffer::getInstance();
 
-	unsigned char color   = COL_MENUCONTENT;
-	fb_pixel_t    bgcolor = COL_MENUCONTENT_PLUS_0;
+	uint8_t color   = COL_MENUCONTENT;
+	fb_pixel_t bgcolor = COL_MENUCONTENT_PLUS_0;
 
 	if (selected)
 	{
@@ -4064,23 +4066,23 @@ int CMenuSelector::paint( bool selected )
 int CMovieHelp::exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung Ã¤ndern");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung ändern");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, "Filterfenster einblenden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "HauptmenÃ¼");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "Hauptmenü");
 	helpbox.addLine("'+/-'  Ansicht wechseln");
 	helpbox.addLine("'Rec'  Screenshot");
 	helpbox.addLine("'Audio' Cut Jumps from Movie");
 	helpbox.addLine("'teletxt' copy Jumps from movie");
 	helpbox.addLine("'dvbsub' truncate movie");
 	helpbox.addLine("'Pause' remove screenshot");
-	helpbox.addLine("WÃ¤hrend der Filmwiedergabe:");
+	helpbox.addLine("Während der Filmwiedergabe:");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, " Markierungsmenu ");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausfÃ¼hren");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausführen");
 	helpbox.addLine("");
 	helpbox.addLine("MovieBrowser $Revision: 1.10 $");
-	helpbox.addLine("by GÃ¼nther");
+	helpbox.addLine("by Günther");
 	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 	return(0);
 }
@@ -4231,8 +4233,8 @@ void CDirMenu::updateDirState(void)
 			{
 				if(CFSMounter::isMounted (g_settings.network_nfs_local_dir[dirNfsMountNr[i]]) == 0)
 				{
-					dirOptionText[i]="Not mounted";
-					dirState[i]=DIR_STATE_NOT_MOUNTED;
+					dirOptionText[i] = "Not mounted";
+					dirState[i] = DIR_STATE_NOT_MOUNTED;
 				}
 				else
 				{
@@ -5080,9 +5082,9 @@ void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
 	else
 		ytparser.SetRegion(m_settings.ytregion);
 	
-	printf("line per page:%d\n", m_pcBrowser->getLines());
+	//printf("line per page:%d\n", m_pcBrowser->getLines());
 
-	ytparser.SetMaxResults(/*m_settings.ytresults*/m_pcBrowser->getLines());
+	ytparser.SetMaxResults(m_settings.ytresults /*m_pcBrowser->getLines()*/);
 
 	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) 
 	{
@@ -5299,7 +5301,9 @@ bool CMovieBrowser::showYTMenu()
 //netzkino
 void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp)
 {
-	nkparser.SetMaxResults(/*m_settings.nkresults ? m_settings.nkresults : 100000*/m_pcBrowser->getLines());
+	//printf("line per page:%d\n", m_pcBrowser->getLines());
+	
+	nkparser.SetMaxResults(m_settings.nkresults ? m_settings.nkresults : 100000 /*m_pcBrowser->getLines()*/);
 	nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
 	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
 
@@ -5368,6 +5372,7 @@ CNKCategoriesMenu::CNKCategoriesMenu(int &_nkmode, int &_nkcategory, std::string
 int CNKCategoriesMenu::exec(CMenuTarget *parent, const std::string &actionKey)
 {
 	nk_category_list_t cats = nkparser->GetCategoryList();
+	
 	if (!cats.size())
 		return menu_return::RETURN_NONE;
 	
@@ -5454,7 +5459,9 @@ bool CMovieBrowser::showNKMenu()
 	if (select == cNKFeedParser::SEARCH) 
 	{
 		printf("search for: %s\n", search.c_str());
-		if (!search.empty()) {
+		
+		if (!search.empty()) 
+		{
 			reload = true;
 			m_settings.nksearch = search;
 			m_settings.nkmode = cNKFeedParser::SEARCH;

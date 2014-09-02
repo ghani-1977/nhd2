@@ -36,12 +36,12 @@
 
 	Date:	 Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	Revision History:
 	Date			Author		Change Description
-	   Nov 2005		GÃ¼nther	initial implementation
+	   Nov 2005		Günther	initial implementation
 
 ****************************************************************************/
 
@@ -55,30 +55,30 @@
 
 #include <system/debug.h>
 
-#define	TEXT_BORDER_WIDTH			8
-#define ROW_BORDER_WIDTH             		4
-#define	SCROLL_FRAME_WIDTH			10
-#define	SCROLL_MARKER_BORDER		 	2
+#define	TEXT_BORDER_WIDTH		8
+#define ROW_BORDER_WIDTH             	4
+#define	SCROLL_FRAME_WIDTH		10
+#define	SCROLL_MARKER_BORDER		2
 
-#define MAX_WINDOW_WIDTH  (frameBuffer->getScreenWidth() - 40)
-#define MAX_WINDOW_HEIGHT (frameBuffer->getScreenHeight() - 40)	
+#define MAX_WINDOW_WIDTH  		(frameBuffer->getScreenWidth() - 40)
+#define MAX_WINDOW_HEIGHT 		(frameBuffer->getScreenHeight() - 40)	
 
-#define MIN_WINDOW_WIDTH  (frameBuffer->getScreenWidth() >> 1)
-#define MIN_WINDOW_HEIGHT 40	
+#define MIN_WINDOW_WIDTH  		(frameBuffer->getScreenWidth() >> 1)
+#define MIN_WINDOW_HEIGHT 		40	
 
 #define TITLE_BACKGROUND_COLOR 		COL_MENUHEAD_PLUS_0
 #define HEADER_LIST_BACKGROUND_COLOR 	COL_MENUCONTENT_PLUS_0
 #define LIST_BACKGROUND_COLOR 		COL_MENUCONTENT_PLUS_0
 #define LIST_BACKGROUND_COLOR_SELECTED 	COL_MENUCONTENTSELECTED_PLUS_0
 
-#define TITLE_FONT_COLOR COL_MENUHEAD
-#define HEADER_LIST_FONT_COLOR COL_MENUCONTENT
-#define LIST_FONT_COLOR COL_MENUCONTENT
-#define LIST_FONT_COLOR_SELECTED COL_MENUCONTENTSELECTED
+#define TITLE_FONT_COLOR 		COL_MENUHEAD
+#define HEADER_LIST_FONT_COLOR 		COL_MENUCONTENT
+#define LIST_FONT_COLOR 		COL_MENUCONTENT
+#define LIST_FONT_COLOR_SELECTED 	COL_MENUCONTENTSELECTED
 
-#define FONT_LIST g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]
-#define FONT_HEADER_LIST g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]
-#define FONT_TITLE g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE];
+#define FONT_LIST 			g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO2]
+#define FONT_HEADER_LIST 		g_Font[SNeutrinoSettings::FONT_TYPE_EPG_INFO1]
+#define FONT_TITLE 			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE];
 
 
 CFont* CListFrame::m_pcFontTitle = NULL;
@@ -127,7 +127,7 @@ CListFrame::CListFrame(	LF_LINES* lines, CFont * font_text, const int _mode, con
 	m_nFontHeaderListHeight = m_pcFontHeaderList->getHeight();
 	m_nFontTitleHeight = m_pcFontTitle->getHeight();
 
-	dprintf(DEBUG_DEBUG, " CListFrame::m_nFontTextHeight: %d\t\r\n",m_nFontListHeight);
+	dprintf(DEBUG_DEBUG, " CListFrame::m_nFontTextHeight: %d\t\r\n", m_nFontListHeight);
 
 	/* Initialise the window frames first */
 	initFramesRel();
@@ -361,7 +361,7 @@ void CListFrame::refreshTitle(void)
 	if( frameBuffer == NULL) 
 		return;
 
-	frameBuffer->paintBoxRel(m_cFrameTitleRel.iX+m_cFrame.iX, m_cFrameTitleRel.iY+m_cFrame.iY, m_cFrameTitleRel.iWidth, m_cFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR);
+	frameBuffer->paintBoxRel(m_cFrameTitleRel.iX + m_cFrame.iX, m_cFrameTitleRel.iY + m_cFrame.iY, m_cFrameTitleRel.iWidth, m_cFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR);
 
 	m_pcFontTitle->RenderString(m_cFrameTitleRel.iX + TEXT_BORDER_WIDTH + m_cFrame.iX, m_cFrameTitleRel.iY + m_cFrameTitleRel.iHeight + m_cFrame.iY, m_cFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1), m_textTitle.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
 }
@@ -468,7 +468,7 @@ void CListFrame::refreshLine(int line)
 			dprintf(DEBUG_DEBUG, "   normalize to %d,x:%d\r\n",width,x);
 		}
 
-		m_pcFontList->RenderString(x+m_cFrame.iX, y+m_cFrame.iY, width, m_pLines->lineArray[row][line].c_str(), color, 0, true); // UTF-8
+		m_pcFontList->RenderString(x + m_cFrame.iX, y+m_cFrame.iY, width, m_pLines->lineArray[row][line].c_str(), color, 0, true); // UTF-8
 		x += m_pLines->rowWidth[row] + ROW_BORDER_WIDTH;								
 	}	
 }

@@ -62,17 +62,17 @@
 
 #include <system/debug.h>
 
-#define	TEXT_BORDER_WIDTH			8
-#define	SCROLL_FRAME_WIDTH			10
-#define	SCROLL_MARKER_BORDER		 	2
+#define	TEXT_BORDER_WIDTH	8
+#define	SCROLL_FRAME_WIDTH	10
+#define	SCROLL_MARKER_BORDER	2
 
-#define MAX_WINDOW_WIDTH  (g_settings.screen_EndX - g_settings.screen_StartX - 40)
-#define MAX_WINDOW_HEIGHT (g_settings.screen_EndY - g_settings.screen_StartY - 40)	
+#define MAX_WINDOW_WIDTH  	(g_settings.screen_EndX - g_settings.screen_StartX - 40)
+#define MAX_WINDOW_HEIGHT 	(g_settings.screen_EndY - g_settings.screen_StartY - 40)	
 
-#define MIN_WINDOW_WIDTH  ((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
-#define MIN_WINDOW_HEIGHT 40	
+#define MIN_WINDOW_WIDTH  	((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
+#define MIN_WINDOW_HEIGHT 	40	
 
-CTextBox::CTextBox(const char * text, CFont * font_text, const int _mode, const CBox * position, CFBWindow::color_t textBackgroundColor)
+CTextBox::CTextBox(const char * text, CFont * font_text, const int _mode, const CBox * position, fb_pixel_t textBackgroundColor)
 {
 	dprintf(DEBUG_DEBUG, "[CTextBox] new\r\n");
 	
@@ -429,7 +429,6 @@ void CTextBox::scrollPageDown(const int pages)
 		return;
 	
 	dprintf(DEBUG_DEBUG, "[CTextBox]->ScrollPageDown \r\n");
-
 
 	if(m_nCurrentPage + pages < m_nNrOfPages)
 	{

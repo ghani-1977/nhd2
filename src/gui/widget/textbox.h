@@ -62,7 +62,7 @@
 #include <vector>
 
 #include <global.h>
-#include <driver/fb_window.h>
+#include <driver/framebuffer.h>
 
 
 class CBox
@@ -119,19 +119,19 @@ class CTextBox
 
 		CFont *m_pcFontText;
 		int m_nFontTextHeight;
-		CFBWindow::color_t m_textBackgroundColor;
+		fb_pixel_t m_textBackgroundColor;
 
 		CFrameBuffer * frameBuffer;
 		int max_width;
 	public:
 		/* Constructor */
 		CTextBox();
-		CTextBox(	const char * text);
-		CTextBox(	const char * text, 
+		CTextBox(const char * text);
+		CTextBox(const char * text, 
 					CFont *font_text,
 					const int mode, 
 					const CBox* position,
-					CFBWindow::color_t textBackgroundColor = COL_MENUCONTENT_PLUS_0);
+					fb_pixel_t textBackgroundColor = COL_MENUCONTENT_PLUS_0);
 
 		virtual ~CTextBox();
 

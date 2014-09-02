@@ -36,12 +36,12 @@
 
 	Date:	Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	Revision History:
 	Date			Author		Change Description
-	   Nov 2005		GÃ¼nther	initial implementation
+	   Nov 2005		Günther	initial implementation
 ****************************************************************************/
 
 #if !defined(LISTFRAME_H_)
@@ -118,8 +118,8 @@ class CListFrame
 	public:
 		/* Constructor */
 		CListFrame();
-		CListFrame(	LF_LINES* lines);
-		CListFrame(	LF_LINES* lines, 
+		CListFrame(LF_LINES* lines);
+		CListFrame(LF_LINES* lines, 
 					CFont* font_text,
 					const int mode, 
 					const CBox* position,

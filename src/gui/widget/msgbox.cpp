@@ -62,14 +62,14 @@
 #define	TEXT_BORDER_WIDTH			8
 #define	TITLE_ICON_WIDTH			(40 - TEXT_BORDER_WIDTH)
 
-#define MAX_WINDOW_WIDTH  (g_settings.screen_EndX - g_settings.screen_StartX )
-#define MAX_WINDOW_HEIGHT (g_settings.screen_EndY - g_settings.screen_StartY - 40)	
+#define MAX_WINDOW_WIDTH  			(g_settings.screen_EndX - g_settings.screen_StartX )
+#define MAX_WINDOW_HEIGHT 			(g_settings.screen_EndY - g_settings.screen_StartY - 40)	
 
-#define MIN_WINDOW_WIDTH  (MAX_WINDOW_WIDTH>>1)
-#define MIN_WINDOW_HEIGHT 40	
+#define MIN_WINDOW_WIDTH  			(MAX_WINDOW_WIDTH>>1)
+#define MIN_WINDOW_HEIGHT 			40	
 
-#define DEFAULT_TITLE_FONT	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
-#define DEFAULT_FOOT_FONT	g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
+#define DEFAULT_TITLE_FONT			g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]
+#define DEFAULT_FOOT_FONT			g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -299,7 +299,9 @@ void CMsgBox::initFramesRel(void)
 //////////////////////////////////////////////////////////////////////
 void CMsgBox::refreshFoot(void)
 {
-	int color, bgcolor;
+	uint8_t color;
+	fb_pixel_t bgcolor;
+	
 	if(!(m_nMode & FOOT)) 
 		return;
 
@@ -308,7 +310,7 @@ void CMsgBox::refreshFoot(void)
 								m_cBoxFrameFootRel.iY + m_cBoxFrame.iY, 
 								m_cBoxFrameFootRel.iWidth, 
 								m_cBoxFrameFootRel.iHeight,  
-								(CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
+								COL_MENUHEAD_PLUS_0);
 
 	int MaxButtonTextWidth = m_pcFontFoot->getRenderWidth(g_Locale->getText(LOCALE_MESSAGEBOX_CANCEL), true); // UTF-8
 	int ButtonWidth = 20 + 33 + MaxButtonTextWidth;
@@ -329,9 +331,9 @@ void CMsgBox::refreshFoot(void)
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
 		
-		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
+		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, bgcolor);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, xpos + 14 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
-		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_YES), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_YES), color, 0, true); // UTF-8
 	}
 
 	xpos += ButtonWidth + ButtonSpacing;
@@ -350,9 +352,9 @@ void CMsgBox::refreshFoot(void)
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
 
-		m_pcWindow->paintBoxRel(xpos + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
+		m_pcWindow->paintBoxRel(xpos + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, bgcolor);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, xpos + 14 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY);
-		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_NO), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 4 + (ADD_FOOT_HEIGHT>>1) + m_cBoxFrame.iY, ButtonWidth - 53, g_Locale->getText(LOCALE_MESSAGEBOX_NO), color, 0, true); // UTF-8
 	}
 
 	xpos += ButtonWidth + ButtonSpacing;
@@ -371,9 +373,9 @@ void CMsgBox::refreshFoot(void)
 			bgcolor = COL_INFOBAR_SHADOW_PLUS_0;
 		}
 
-		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, (CFBWindow::color_t)bgcolor);
+		m_pcWindow->paintBoxRel(xpos+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth, m_nFontFootHeight + 4, bgcolor);
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HOME, xpos+10+m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY);
-		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 2 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText((m_nFootButtons & mbCancel) ? LOCALE_MESSAGEBOX_CANCEL : LOCALE_MESSAGEBOX_BACK), (CFBWindow::color_t)color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(xpos + 43 + m_cBoxFrame.iX, m_cBoxFrameFootRel.iY + m_nFontFootHeight + 2 + (ADD_FOOT_HEIGHT>>1)+m_cBoxFrame.iY, ButtonWidth- 53, g_Locale->getText((m_nFootButtons & mbCancel) ? LOCALE_MESSAGEBOX_CANCEL : LOCALE_MESSAGEBOX_BACK), color, 0, true); // UTF-8
 	}
 }
 
@@ -392,19 +394,19 @@ void CMsgBox::refreshTitle(void)
 		return;
 
 	// draw the background
-	m_pcWindow->paintBoxRel(m_cBoxFrameTitleRel.iX + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, (CFBWindow::color_t)COL_MENUHEAD_PLUS_0);
+	m_pcWindow->paintBoxRel(m_cBoxFrameTitleRel.iX + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, COL_MENUHEAD_PLUS_0);
 
 	if (!m_cIcon.empty())
 	{
 		// draw icon and title text
 		m_pcWindow->paintIcon(m_cIcon.c_str(), m_cBoxFrameTitleRel.iX + 8 + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iY + 5 + m_cBoxFrame.iY);
 		
-		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH+m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TITLE_ICON_WIDTH + TEXT_BORDER_WIDTH, m_cTitle.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 	}
 	else
 	{
 		// no icon available, just draw the title text
-		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, m_cTitle.c_str(), (CFBWindow::color_t)COL_MENUHEAD, 0, true); // UTF-8
+		m_pcFontTitle->RenderString(m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + m_cBoxFrame.iX, m_cBoxFrameTitleRel.iHeight + 3 + m_cBoxFrame.iY, m_cBoxFrameTitleRel.iWidth - TEXT_BORDER_WIDTH, m_cTitle.c_str(), COL_MENUHEAD, 0, true); // UTF-8
 	}
 }
 
