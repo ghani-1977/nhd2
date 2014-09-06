@@ -206,21 +206,13 @@ GstBusSyncReply Gst_bus_call(GstBus * /*bus*/, GstMessage * msg, gpointer /*user
 					
 					// set audio video sink
 					children = gst_bin_iterate_recurse(GST_BIN(m_gst_playbin));
-					
-#if defined (USE_OPENGL) //FIXME: ???						
-					//audioSink = gst_element_factory_make ("xvimagesink", NULL);
-#else					
-					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));
-#endif					
+										
+					audioSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBAudioSink"));	
 					
 					if(audioSink)
 						dprintf(DEBUG_NORMAL, "%s %s - audio sink created\n", FILENAME, __FUNCTION__);
 					
-#if defined (USE_OPENGL) //FIXME: ???						
-					//videoSink = gst_element_factory_make ("xvimagesink", NULL);
-#else
 					videoSink = GST_ELEMENT_CAST(gst_iterator_find_custom(children, (GCompareFunc)match_sinktype, (gpointer)"GstDVBVideoSink"));
-#endif
 
 					if(videoSink)
 						dprintf(DEBUG_NORMAL, "%s %s - video sink created\n", FILENAME, __FUNCTION__);
