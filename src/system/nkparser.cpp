@@ -330,7 +330,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 					if(rtmp)
 						vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
 					else
-						vinfo.url = "http://dl.netzkinotv.c.nmdn.net/netzkino_tv/" + v[_i].asString() + ".mp4";
+						vinfo.url = /*"http://dl.netzkinotv.c.nmdn.net/netzkino_tv/"*/"http://pmd.netzkino-and.netzkino.de/" + v[_i].asString() + ".mp4";
 				}
 			}
 		}
