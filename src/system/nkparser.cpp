@@ -50,16 +50,16 @@ cNKFeedParser::cNKFeedParser()
 {
 	thumbnail_dir = "/tmp/netzkino";
 	parsed = false;
-	max_results = 25;
-	concurrent_downloads = 2;
+	max_results = 500;
+	concurrent_downloads = 1;
 	curl_handle = curl_easy_init();
-	stopThumbnailDownload = false;
-	threadCount = 0;
+	//stopThumbnailDownload = false;
+	//threadCount = 0;
 }
 
 cNKFeedParser::~cNKFeedParser()
 {
-	DownloadThumbnailsEnd();
+	//DownloadThumbnailsEnd();
 	curl_easy_cleanup(curl_handle);
 }
 
@@ -304,7 +304,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 		{
 			vinfo.id = to_string(v.asInt());
 			//if (thumbnail_dir)
-				vinfo.tfile = thumbnail_dir + "/" + vinfo.id + ".jpg";
+			vinfo.tfile = thumbnail_dir + "/" + vinfo.id + ".jpg";
 		}
 		v = flick.get("content", "");
 		if (v.type() == Json::stringValue) 
@@ -327,10 +327,10 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 				if (v[_i].type() == Json::stringValue)
 				{
 					// rtmp url
-					if(rtmp)
-						vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
-					else
-						vinfo.url = /*"http://dl.netzkinotv.c.nmdn.net/netzkino_tv/"*/"http://pmd.netzkino-and.netzkino.de/" + v[_i].asString() + ".mp4";
+					//if(rtmp)
+					//	vinfo.url = "rtmp://mf.netzkino.c.nmdn.net/netzkino/_definst_/mp4:" + v[_i].asString();
+					//else
+					vinfo.url = /*"http://dl.netzkinotv.c.nmdn.net/netzkino_tv/"*/"http://pmd.netzkino-and.netzkino.de/" + v[_i].asString() + ".mp4";
 				}
 			}
 		}
@@ -351,7 +351,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 
 bool cNKFeedParser::ParseFeed(std::string &url, bool rtmp)
 {
-	DownloadThumbnailsEnd();
+	//DownloadThumbnailsEnd();
 	videos.clear();
 
 	std::string answer;
@@ -396,6 +396,7 @@ bool cNKFeedParser::ParseCategories(void)
 	return !categories.empty();
 }
 
+/*
 void *cNKFeedParser::DownloadThumbnailsThread(void *arg)
 {
 	set_threadname("NK::DownloadThumbnails");
@@ -427,14 +428,18 @@ bool cNKFeedParser::DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle)
 	}
 	return found;
 }
+*/
 
-bool cNKFeedParser::DownloadThumbnails()
+bool cNKFeedParser::DownloadThumbnails(unsigned start, unsigned end)
 {
+	bool ret = false;
 	if (safe_mkdir(thumbnail_dir.c_str()) && errno != EEXIST) 
 	{
 		perror(thumbnail_dir.c_str());
-		return false;
+		//return false;
 	}
+	
+	/*
 	unsigned int max_threads = concurrent_downloads;
 	if (videos.size() < max_threads)
 		max_threads = videos.size();
@@ -443,9 +448,25 @@ bool cNKFeedParser::DownloadThumbnails()
 	for (unsigned i = 0; i < max_threads; i++)
 		if (!pthread_create(&thr, NULL, cNKFeedParser::DownloadThumbnailsThread, this))
 			pthread_detach(thr);
-	return true;
+	*/
+	for (unsigned int i = start; i < end; i++)
+	{
+		bool found = false;
+		
+		if (!videos[i].thumbnail.empty()) 
+		{
+			found = !access(videos[i].tfile, F_OK);
+			if (!found)
+				found = DownloadUrl(videos[i].thumbnail, videos[i].tfile, curl_handle);
+			
+			ret |= found;
+		}
+	}
+	
+	return /*true*/ret;
 }
 
+/*
 void cNKFeedParser::DownloadThumbnailsEnd(void)
 {
 	stopThumbnailDownload = true;
@@ -459,6 +480,7 @@ int cNKFeedParser::ThreadCount(int what)
 	threadCount += what;
 	return threadCount;
 }
+*/
 
 void cNKFeedParser::Cleanup(bool delete_thumbnails)
 {
@@ -471,7 +493,40 @@ void cNKFeedParser::Cleanup(bool delete_thumbnails)
 			unlink(videos[i].tfile.c_str());
 		}
 	}
-	DownloadThumbnailsEnd();
+	//DownloadThumbnailsEnd();
 	videos.clear();
 	parsed = false;
 }
+
+void cNKFeedParser::CleanUpThumbnails(unsigned int start, unsigned int end)
+{
+	printf("cNKFeedParser::CleanUpThumbnails\n");
+	
+	for (unsigned i = start; i < end; i++) 
+	{
+		unlink(videos[i].tfile.c_str());
+	}
+}
+
+bool cNKFeedParser::DownloadMovie(unsigned int index)
+{
+	bool ret = false;
+	
+	bool found = false;
+		
+	if (!videos[index].url.empty()) 
+	{
+		std::string fname = g_settings.network_nfs_moviedir;
+		fname += "/";
+		fname += videos[index].title;
+	
+		bool found = !access(fname.c_str(), F_OK);
+		if (!found)  
+			found = DownloadUrl(videos[index].url, fname, curl_handle);
+			
+		ret |= found;
+	}
+	
+	return ret;
+}
+

@@ -72,9 +72,9 @@ class cNKFeedParser
 		CURL *curl_handle;
 		//OpenThreads::Mutex mutex;
 		//OpenThreads::Mutex thumbnailthread_mutex;
-		int threadCount;
-		int worker_index;
-		static void* DownloadThumbnailsThread(void*);
+		//int threadCount;
+		//int worker_index;
+		//static void* DownloadThumbnailsThread(void*);
 
 		static size_t CurlWriteToString(void *ptr, size_t size, size_t nmemb, void *data);
 		void encodeUrl(std::string &txt);
@@ -85,23 +85,22 @@ class cNKFeedParser
 		bool parseCategoriesJSON(std::string &answer);
 		bool ParseFeed(std::string &url, bool rtmp = true);
 		void removeHTMLMarkup(std::string &s);
-		void DownloadThumbnailsEnd(void);
+		//void DownloadThumbnailsEnd(void);
 	public:
 		enum nk_feed_mode_t
 		{
 			CATEGORY,
 			SEARCH,
-			MODE_LAST,
-			NEXT,
-			PREV
+			MODE_LAST
 		};
+		
 		cNKFeedParser();
 		~cNKFeedParser();
 
 		bool ParseFeed(nk_feed_mode_t mode, std::string search, int category, bool rtmp = true);
 		bool ParseCategories(void);
-		bool DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle = NULL);
-		bool DownloadThumbnails();
+		//bool DownloadThumbnail(sNKVideoInfo &vinfo, CURL *_curl_handle = NULL);
+		bool DownloadThumbnails(unsigned int start, unsigned int end);
 		void Cleanup(bool delete_thumbnails = true);
 
 		nk_video_list_t &GetVideoList() { return videos; }
@@ -111,7 +110,9 @@ class cNKFeedParser
 		void SetMaxResults(int count) { max_results = count; }
 		void SetConcurrentDownloads(int count) { concurrent_downloads = count; }
 		//void setThumbnailDir(std::string &_thumbnail_dir);
-		int ThreadCount(int what = 0);
+		//int ThreadCount(int what = 0);
+		void CleanUpThumbnails(unsigned int start, unsigned int end);
+		bool DownloadMovie(unsigned int index);
 };
 
 #endif

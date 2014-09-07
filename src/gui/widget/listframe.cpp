@@ -88,7 +88,7 @@ CFont* CListFrame::m_pcFontHeaderList = NULL;
 //
 // Construction/Destruction
 //
-CListFrame::CListFrame(	LF_LINES* lines, CFont * font_text, const int _mode, const CBox* position, const char* textTitle, CFont *font_title)
+CListFrame::CListFrame(	LF_LINES * lines, CFont * font_text, const int _mode, const CBox* position, const char* textTitle, CFont *font_title)
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame] new\r\n");
 	
@@ -160,6 +160,7 @@ CListFrame::CListFrame(	LF_LINES* lines)
 CListFrame::CListFrame()
 {
 	dprintf(DEBUG_DEBUG, "[CListFrame] new\r\n");
+	
 	initVar();
 	initFramesRel();
 	
@@ -174,8 +175,9 @@ CListFrame::~CListFrame()
 
 void CListFrame::initVar(void)
 {
-	frameBuffer = CFrameBuffer::getInstance();
 	dprintf(DEBUG_DEBUG, "[CListFrame]->InitVar\r\n");
+	
+	frameBuffer = CFrameBuffer::getInstance();
 	m_nMode = SCROLL;
 	
 	m_showSelection = true;
@@ -304,6 +306,10 @@ void CListFrame::initFramesRel(void)
 	}
 
 	m_nLinesPerPage = (m_cFrameListRel.iHeight - (2*TEXT_BORDER_WIDTH)) / m_nFontListHeight;
+	
+	LinesPerPage = m_nLinesPerPage;
+	
+	//printf("CFrameList::initFramesRel: lines per page:%d\n", m_nLinesPerPage);
 }
 
 void CListFrame::onNewLineArray(void)
@@ -326,6 +332,7 @@ void CListFrame::onNewLineArray(void)
 		{
 			reSizeMainFrameHeight(m_nNrOfLines * m_nFontListHeight);
 		}
+		
 		m_nLinesPerPage = (m_cFrameListRel.iHeight - (2*TEXT_BORDER_WIDTH)) / m_nFontListHeight;
 
 		if(m_nLinesPerPage <= 0)
@@ -352,6 +359,8 @@ void CListFrame::onNewLineArray(void)
 		m_nLinesPerPage = 1;
 		m_nNrOfPages = 0;
 	}
+	
+	//printf("CFrameList::onNewLineArray: lines per page:%d\n", m_nLinesPerPage);
 }
 
 void CListFrame::refreshTitle(void)
@@ -617,7 +626,7 @@ void CListFrame::scrollPageUp(const int pages)
 	{
 		m_nSelectedLine = m_nCurrentLine;
 	}
-	dprintf(DEBUG_DEBUG, "[CListFrame]  m_nCurrentLine: %d, m_nCurrentPage: %d \r\n",m_nCurrentLine,m_nCurrentPage);
+	dprintf(DEBUG_DEBUG, "[CListFrame]  m_nCurrentLine: %d, m_nCurrentPage: %d \r\n", m_nCurrentLine, m_nCurrentPage);
 	refresh();
 }
 
@@ -645,6 +654,7 @@ bool CListFrame::setLines(LF_LINES* lines)
 
 	if(m_nNrOfRows > LF_MAX_ROWS)
 		m_nNrOfRows = LF_MAX_ROWS;
+	
 	onNewLineArray();
 	refresh();
 	
@@ -704,3 +714,4 @@ void CListFrame::paint(void)
 	frameBuffer = CFrameBuffer::getInstance();
 	refresh();
 }
+

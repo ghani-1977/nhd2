@@ -63,11 +63,14 @@ void cYTVideoInfo::Dump()
 std::string cYTVideoInfo::GetUrl(int fmt)
 {
 	yt_urlmap_iterator_t it;
-	if (fmt) {
+	
+	if (fmt) 
+	{
 		if ((it = formats.find(fmt)) != formats.end())
 			return it->second.GetUrl();
 		return "";
 	}
+	
 	if ((it = formats.find(37)) != formats.end())
 		return it->second.GetUrl();
 	if ((it = formats.find(22)) != formats.end())
@@ -124,6 +127,7 @@ bool cYTFeedParser::getUrl(std::string &url, std::string &answer)
 		printf("error: %s\n", cerror);
 		return false;
 	}
+	
 	return true;
 }
 
@@ -261,6 +265,7 @@ std::string cYTFeedParser::getXmlData(xmlNodePtr node)
 bool cYTFeedParser::parseFeedXml(std::string &answer)
 {
 	xmlDocPtr answer_parser = parseXmlFile(curfeedfile.c_str());
+	
 	if (answer_parser == NULL)
 		answer_parser = parseXml(answer.c_str());
 
@@ -592,7 +597,7 @@ bool cYTFeedParser::ParseFeed(yt_feed_mode_t mode, std::string search, std::stri
 		url += "v=2&max-results=";
 		char res[10];
 		sprintf(res, "%d", max_results);
-		url+= res;
+		url += res;
 	}
 
 	return ParseFeed(url);
