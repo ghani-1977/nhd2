@@ -23,15 +23,18 @@
  *
  */
 
+#include <driver/fontrenderer.h>
+#include <driver/framebuffer.h>
+
 class CFBWindow
 {
 	public:
 		typedef unsigned int color_t;
 		typedef void *         font_t;
-		typedef void *         private_data_t;
-
+		
 	private:
-		private_data_t private_data;
+		CFrameBuffer	* frameBuffer;
+		fb_pixel_t	* Background;
 
 	public:
 		int x, y;   /* upper left corner */
