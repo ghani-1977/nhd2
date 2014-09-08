@@ -1044,7 +1044,7 @@ int CMovieBrowser::exec(const char * path)
 			m_settings.browserRowItem[1] = MB_INFO_INFO1;
 			m_settings.browserRowItem[2] = MB_INFO_RECORDDATE;
 
-			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]];		//300;
+			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]]*1.5;		//300;
 			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
 			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
 		}
