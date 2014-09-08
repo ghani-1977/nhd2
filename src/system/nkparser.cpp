@@ -469,17 +469,20 @@ bool cNKFeedParser::DownloadThumbnails(unsigned start, unsigned end)
 		if (!pthread_create(&thr, NULL, cNKFeedParser::DownloadThumbnailsThread, this))
 			pthread_detach(thr);
 	*/
-	for (unsigned int i = start; i < end; i++)
+	if(videos.size() > 0)
 	{
-		bool found = false;
-		
-		if (!videos[i].thumbnail.empty()) 
+		for (unsigned int i = start; i < end; i++)
 		{
-			found = !access(videos[i].tfile, F_OK);
-			if (!found)
-				found = DownloadUrl(videos[i].thumbnail, videos[i].tfile, curl_handle);
+			bool found = false;
 			
-			ret |= found;
+			if (!videos[i].thumbnail.empty()) 
+			{
+				found = !access(videos[i].tfile, F_OK);
+				if (!found)
+					found = DownloadUrl(videos[i].thumbnail, videos[i].tfile, curl_handle);
+				
+				ret |= found;
+			}
 		}
 	}
 	
