@@ -52,6 +52,7 @@ std::string trim(std::string &str, const std::string &trimChars = " \n\r\t");
 std::string replace_all(const std::string &in, const std::string &entity, const std::string &symbol);
 unsigned long long getcurrenttime();
 void strReplace(std::string & orig, const char *fstr, const std::string rstr);
+std::string& htmlEntityDecode(std::string& text, bool removeTags = false);
 
 class CFileHelpers
 {
