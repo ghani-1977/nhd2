@@ -1,4 +1,4 @@
- /***************************************************************************
+  /***************************************************************************
 	Neutrino-GUI  -   DBoxII-Project
 
  	Homepage: http://dbox.cyberphoria.org/
@@ -525,11 +525,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 
 	print_buffer += "\n\n";
 	
-	if(!movie_info.ytdate.empty())
-	{
-		print_buffer += movie_info.ytdate;
-	}
-	else
+	if(movie_info.ytdate.empty())
 	{
 		print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_PREVPLAYDATE);
 		print_buffer += ": ";
@@ -554,11 +550,15 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		print_buffer += date_char;
 		//print_buffer += "\n"; 
 	}
-	print_buffer += "\n";
-	print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_PATH);
-	print_buffer += ": ";
-	print_buffer += movie_info.file.Name;
-	print_buffer += "\n";
+	
+	if(movie_info.ytdate.empty())
+	{
+		print_buffer += "\n";
+		print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_PATH);
+		print_buffer += ": ";
+		print_buffer += movie_info.file.Name;
+		print_buffer += "\n";
+	}
 
 	ShowMsg2UTF(movie_info.epgTitle.empty()? movie_info.file.getFileName().c_str() : movie_info.epgTitle.c_str(), print_buffer.c_str(), CMsgBox::mbrBack, CMsgBox::mbBack);	// UTF-8*/ 
 }
