@@ -111,8 +111,6 @@ class cNKFeedParser
 		void SetConcurrentDownloads(int count) { concurrent_downloads = count; }
 		//void setThumbnailDir(std::string &_thumbnail_dir);
 		//int ThreadCount(int what = 0);
-		void CleanUpThumbnails(unsigned int start, unsigned int end);
-		bool DownloadMovie(unsigned int index);
 };
 
 #endif
