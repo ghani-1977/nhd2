@@ -37,7 +37,7 @@
 
 	Date:	   Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	$Log: moviebrowser.h,v $
@@ -253,7 +253,6 @@ typedef struct
 	std::string nksearch;
 	//std::string nkthumbnaildir;
 	//std::list<std::string> nksearch_history;
-	bool nkrtmp;
 	//
 }MB_SETTINGS;
 
@@ -346,7 +345,7 @@ class CMovieBrowser : public CMenuTarget
 		cNKFeedParser nkparser;
 		std::string nkcategory_name;
 		
-		void loadNKTitles(int mode, std::string search, int id, bool rtmp, unsigned int start, unsigned int end);
+		void loadNKTitles(int mode, std::string search, int id, unsigned int start, unsigned int end);
 		bool showNKMenu();
 		int videoListsize;
 		
