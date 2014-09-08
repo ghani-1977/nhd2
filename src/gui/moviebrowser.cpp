@@ -2036,7 +2036,7 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	else if (msg == CRCInput::RC_yellow) 
 	{
 		//if (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO )
-			onSetFocusNext();
+		onSetFocusNext();
 	}
 	else if (msg == CRCInput::RC_blue) 
 	{
@@ -5542,17 +5542,19 @@ bool CMovieBrowser::showNKMenu()
 	delete selector;
 
 	bool reload = false;
-	printf("MovieBrowser::%s(): selected: %d\n", __func__, select);
+	
+	dprintf(DEBUG_NORMAL, "select:%d\n", select);
 	
 	if (select == cNKFeedParser::SEARCH) 
 	{
-		printf("search for: %s\n", search.c_str());
+		dprintf(DEBUG_NORMAL, "search for: %s\n", search.c_str());
 		
 		if (!search.empty()) 
 		{
 			reload = true;
 			m_settings.nksearch = search;
 			m_settings.nkmode = cNKFeedParser::SEARCH;
+			
 			/*
 			m_settings.nksearch_history.push_front(search);
 			std::list<std::string>::iterator it = m_settings.nksearch_history.begin();
@@ -5569,7 +5571,7 @@ bool CMovieBrowser::showNKMenu()
 			m_settings.nksearch_history_size = m_settings.nksearch_history_max;
 			*/
 		}
-	} 
+	}
 	else if (oldmode != m_settings.nkmode || oldcat != m_settings.nkcategory || oldrtmp != m_settings.nkrtmp || oldresults != m_settings.nkresults) 
 	{
 		reload = true;
