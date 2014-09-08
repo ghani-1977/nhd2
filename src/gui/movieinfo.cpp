@@ -35,11 +35,11 @@
 
 	Date:	  Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 
 	Revision History:
 	Date			Author		Change Description
-	Nov 2005		Günther	initial start
+	Nov 2005		GÃ¼nther	initial start
 
 ****************************************************************************/
 #ifdef HAVE_CONFIG_H
@@ -524,17 +524,25 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 	}
 
 	print_buffer += "\n\n";
-	print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_PREVPLAYDATE);
-	print_buffer += ": ";
-	date_tm = localtime(&movie_info.dateOfLastPlay);
-	snprintf(date_char, 12, "%02d.%02d.%04d", date_tm->tm_mday, date_tm->tm_mon + 1, date_tm->tm_year + 1900);
-	print_buffer += date_char;
-	print_buffer += "\n";
-	print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_RECORDDATE);
-	print_buffer += ": ";
-	date_tm = localtime(&movie_info.file.Time);
-	snprintf(date_char, 12, "%02d.%02d.%04d", date_tm->tm_mday, date_tm->tm_mon + 1, date_tm->tm_year + 1900);
-	print_buffer += date_char;
+	
+	if(!movie_info.ytdate.empty())
+	{
+		print_buffer += movie_info.ytdate;
+	}
+	else
+	{
+		print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_PREVPLAYDATE);
+		print_buffer += ": ";
+		date_tm = localtime(&movie_info.dateOfLastPlay);
+		snprintf(date_char, 12, "%02d.%02d.%04d", date_tm->tm_mday, date_tm->tm_mon + 1, date_tm->tm_year + 1900);
+		print_buffer += date_char;
+		print_buffer += "\n";
+		print_buffer += g_Locale->getText(LOCALE_MOVIEBROWSER_INFO_RECORDDATE);
+		print_buffer += ": ";
+		date_tm = localtime(&movie_info.file.Time);
+		snprintf(date_char, 12, "%02d.%02d.%04d", date_tm->tm_mday, date_tm->tm_mon + 1, date_tm->tm_year + 1900);
+		print_buffer += date_char;
+	}
 	
 	if (movie_info.file.Size != 0) 
 	{
