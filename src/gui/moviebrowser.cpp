@@ -39,7 +39,7 @@
 
 	Date:	   Nov 2005
 
-	Author: Günther@tuxbox.berlios.org
+	Author: GÃ¼nther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 ****************************************************************************/
 
@@ -471,6 +471,8 @@ void CMovieBrowser::init(void)
     
 	m_parentalLock = m_settings.parentalLock;
 	
+	//show_mode = MB_SHOW_RECORDS; //FIXME
+	
 	// check g_setting values 
 	if(m_settings.gui >= MB_GUI_MAX_NUMBER)
 		m_settings.gui = MB_GUI_MOVIE_INFO;
@@ -523,12 +525,15 @@ void CMovieBrowser::init(void)
 	refreshBrowserList();	
 	refreshFilterList();
 	
-	show_mode = MB_SHOW_RECORDS; //FIXME
+	//show_mode = MB_SHOW_RECORDS; //FIXME
 }
 
 void CMovieBrowser::initGlobalSettings(void)
 {
 	dprintf(DEBUG_NORMAL, "[mb]->initGlobalSettings\r\n");
+	
+	// show_mode
+	m_settings.show_mode = MB_SHOW_RECORDS;
 	
 	m_settings.gui = MB_GUI_MOVIE_INFO;
 	
@@ -575,9 +580,6 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.remount = false;
 	m_settings.browser_serie_mode = 0;
 	m_settings.serie_auto_create = 0;
-	
-	// show_mode
-	m_settings.show_mode = MB_SHOW_RECORDS;
 	
 	// youtube
 	m_settings.ytmode = cYTFeedParser::MOST_POPULAR;
@@ -709,6 +711,10 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 	
 	if(configfile.loadConfig(MOVIEBROWSER_SETTINGS_FILE))
 	{
+		// show mode
+		settings->show_mode = configfile.getInt32("show_mode", MB_SHOW_RECORDS);
+		
+		//
 		settings->lastPlayMaxItems = configfile.getInt32("mb_lastPlayMaxItems", NUMBER_OF_MOVIES_LAST);
 		settings->lastRecordMaxItems = configfile.getInt32("mb_lastRecordMaxItems", NUMBER_OF_MOVIES_LAST);
 		settings->browser_serie_mode = configfile.getInt32("mb_browser_serie_mode", 0);
@@ -743,6 +749,7 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 		// these variables are used for the listframes
 		settings->browserFrameHeight  = configfile.getInt32("mb_browserFrameHeight", 250);
 		settings->browserRowNr  = configfile.getInt32("mb_browserRowNr", 0);
+		
 		for(int i = 0; i < MB_MAX_ROWS && i < settings->browserRowNr; i++)
 		{
 			sprintf(cfg_key, "mb_browserRowItem_%d", i);
@@ -750,9 +757,6 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 			sprintf(cfg_key, "mb_browserRowWidth_%d", i);
 			settings->browserRowWidth[i] = configfile.getInt32(cfg_key, 50);
 		}
-		
-		// show mode
-		settings->show_mode = configfile.getInt32("show_mode", MB_SHOW_RECORDS);
 	}
 	else
 	{
@@ -804,7 +808,10 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 {
 	bool result = true;
-	dprintf(DEBUG_NORMAL, "[mb] saveSettings\r\n"); 
+	dprintf(DEBUG_NORMAL, "[mb] saveSettings\r\n");
+	
+	// show_mode
+	configfile.setInt32("show_mode", show_mode);
 
 	configfile.setInt32("mb_lastPlayMaxItems", settings->lastPlayMaxItems);
 	configfile.setInt32("mb_lastRecordMaxItems", settings->lastRecordMaxItems);
@@ -840,6 +847,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	// these variables are used for the listframes
 	configfile.setInt32("mb_browserFrameHeight", settings->browserFrameHeight);
 	configfile.setInt32("mb_browserRowNr",settings->browserRowNr);
+	
 	for(int i = 0; i < MB_MAX_ROWS && i < settings->browserRowNr; i++)
 	{
 		sprintf(cfg_key, "mb_browserRowItem_%d", i);
@@ -849,7 +857,7 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	}
 	
 	// show_mode
-	configfile.setInt32("show_mode", show_mode);
+	//configfile.setInt32("show_mode", show_mode);
 	
 	// youtube
 	configfile.setInt32("mb_ytmode", settings->ytmode);
@@ -1028,6 +1036,36 @@ int CMovieBrowser::exec(const char * path)
 	// reset sorting/filter
 	if(show_mode != m_settings.show_mode)
 	{
+		//
+		if( (show_mode == MB_SHOW_YT) || (show_mode == MB_SHOW_NETZKINO) )
+		{
+			m_settings.browserRowNr = 3;
+			m_settings.browserRowItem[0] = MB_INFO_TITLE;
+			m_settings.browserRowItem[1] = MB_INFO_INFO1;
+			m_settings.browserRowItem[2] = MB_INFO_RECORDDATE;
+
+			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]];		//300;
+			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
+			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
+		}
+		else
+		{
+			m_settings.browserRowNr = 6;
+			m_settings.browserRowItem[0] = MB_INFO_TITLE;
+			m_settings.browserRowItem[1] = MB_INFO_INFO1;
+			m_settings.browserRowItem[2] = MB_INFO_RECORDDATE;
+			m_settings.browserRowItem[3] = MB_INFO_SIZE;
+			m_settings.browserRowItem[4] = MB_INFO_PARENTAL_LOCKAGE;
+			m_settings.browserRowItem[5] = MB_INFO_QUALITY;
+			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]];		//300;
+			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
+			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
+			m_settings.browserRowWidth[3] = m_defaultRowWidth[m_settings.browserRowItem[3]]; 		//50;
+			m_settings.browserRowWidth[4] = m_defaultRowWidth[m_settings.browserRowItem[4]]; 		//30;
+			m_settings.browserRowWidth[5] = m_defaultRowWidth[m_settings.browserRowItem[5]]; 		//30;
+		}
+		//
+		
 		// reset filter
 		m_settings.filter.item = MB_INFO_MAX_NUMBER;
 		m_settings.filter.optionString = "";
@@ -1286,11 +1324,6 @@ int CMovieBrowser::paint(void)
 		return (false);
 	} 
 	
-	//printf("CMovieBrowser: line per page:%d\n", m_pcBrowser->getLinesPerPage());
-	//printf("CMovieBrowser: line per page:%d\n", m_pcLastPlay->getLinesPerPage());
-	//printf("CMovieBrowser: line per page:%d\n", m_pcLastRecord->getLinesPerPage());
-	//printf("CMovieBrowser: line per page:%d\n", m_pcFilter->getLinesPerPage());
-	
 	Start = 0;
 	End = m_pcBrowser->getLinesPerPage();
 	
@@ -1407,7 +1440,7 @@ void CMovieBrowser::refreshMovieInfo(void)
 		//m_pcWindow->paintBoxRel(lx, ly, PIC_W, PIC_H, TITLE_BACKGROUND_COLOR);
         	//g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
 
-		/* display screenshot if exists */
+		// display screenshot if exists
 		if(logo_ok && m_settings.gui != MB_GUI_FILTER) 
 		{
 			lx = m_cBoxFrameInfo.iX + m_cBoxFrameInfo.iWidth - picw - 10;
@@ -1630,6 +1663,7 @@ void CMovieBrowser::refreshLastRecordList(void) //P2
 	m_pcLastRecord->setLines(&m_recordListLines);
 
 	m_currentRecordSelection = m_pcLastRecord->getSelectedLine();
+	
 	// update selected movie if browser is in the focus
 	if (m_windowFocus == MB_FOCUS_LAST_RECORD)
 	{
@@ -1969,40 +2003,29 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		}		
 		else if(show_mode == MB_SHOW_NETZKINO)
 		{
-			//onButtonPress(CRCInput::RC_page_down);
-			
-			/*
-			nkparser.CleanUpThumbnails(m_pcBrowser->getLinesPerPage());
-			
-			unsigned int Start = 0;
-			Start -= m_pcBrowser->getLinesPerPage();
-			if( Start < 0) Start = 0;
-			unsigned int End -= m_pcBrowser->getLinesPerPage();
-			if(End < m_pcBrowser->getLinesPerPage() End = m_pcBrowser->getLinesPerPage();
-	
-			nkparser.DownloadThumbnails(Start, End);
-			*/
-			
-			m_pcWindow->paintBackground();
-				
-			//
-			CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-			loadBox.paint();
-			
 			Start += m_pcBrowser->getLinesPerPage();
 			End += m_pcBrowser->getLinesPerPage();
 			
-			nkparser.Cleanup();
-			loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp, Start, End);
-			
-			loadBox.hide();
+			if(End <= videoListsize)
+			{
+				m_pcWindow->paintBackground();
+					
+				//
+				CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+				loadBox.paint();
 				
-			refreshBrowserList();
-			refreshLastPlayList();
-			refreshLastRecordList();
-			refreshFilterList();
-			//refreshMovieInfo();
-			refresh();
+				nkparser.Cleanup();
+				loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp, Start, End);
+				
+				loadBox.hide();
+					
+				refreshBrowserList();
+				refreshLastPlayList();
+				refreshLastRecordList();
+				refreshFilterList();
+				//refreshMovieInfo();
+				refresh();
+			}
 		}
 		else if(m_settings.gui == MB_GUI_MOVIE_INFO)
 			onSetGUIWindow(MB_GUI_FILTER);
@@ -2058,24 +2081,29 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 		}		
 		else if(show_mode == MB_SHOW_NETZKINO)
 		{
-			//onButtonPress(CRCInput::RC_page_up);
-			int Start = 0;
-			Start += m_pcBrowser->getLinesPerPage();
-			int End = m_pcBrowser->getLinesPerPage();
-			End += m_pcBrowser->getLinesPerPage();
+			Start -= m_pcBrowser->getLinesPerPage();
+			End -= m_pcBrowser->getLinesPerPage();
 			
-			nkparser.Cleanup();
-			loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp, Start, End);
-			
-			/*
-			nkparser.CleanUpThumbnails(m_pcBrowser->getLinesPerPage());
-			
-			unsigned int Start = 0;
-			Start += m_pcBrowser->getLinesPerPage();
-			unsigned int End = m_pcBrowser->getLinesPerPage();
-			End += m_pcBrowser->getLinesPerPage();
-			nkparser.DownloadThumbnails(Start, End + m_pcBrowser->getLinesPerPage());
-			*/
+			if(Start >= m_pcBrowser->getLinesPerPage())
+			{
+				m_pcWindow->paintBackground();
+					
+				//
+				CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+				loadBox.paint();
+				
+				nkparser.Cleanup();
+				loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, m_settings.nkrtmp, Start, End);
+				
+				loadBox.hide();
+					
+				refreshBrowserList();
+				refreshLastPlayList();
+				refreshLastRecordList();
+				refreshFilterList();
+				//refreshMovieInfo();
+				refresh();
+			}
 		}
 		else if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 		{
@@ -4126,23 +4154,23 @@ int CMenuSelector::paint( bool selected )
 int CMovieHelp::exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung ändern");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung Ã¤ndern");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, "Filterfenster einblenden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "Hauptmenü");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "HauptmenÃ¼");
 	helpbox.addLine("'+/-'  Ansicht wechseln");
 	helpbox.addLine("'Rec'  Screenshot");
 	helpbox.addLine("'Audio' Cut Jumps from Movie");
 	helpbox.addLine("'teletxt' copy Jumps from movie");
 	helpbox.addLine("'dvbsub' truncate movie");
 	helpbox.addLine("'Pause' remove screenshot");
-	helpbox.addLine("Während der Filmwiedergabe:");
+	helpbox.addLine("WÃ¤hrend der Filmwiedergabe:");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, " Markierungsmenu ");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausführen");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausfÃ¼hren");
 	helpbox.addLine("");
 	helpbox.addLine("MovieBrowser $Revision: 1.10 $");
-	helpbox.addLine("by Günther");
+	helpbox.addLine("by GÃ¼nther");
 	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 	return(0);
 }
@@ -5275,7 +5303,7 @@ bool CMovieBrowser::showYTMenu()
 	mainMenu.addItem(new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, selector, cnt, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
 
 	mainMenu.addItem(GenericMenuSeparatorLine);
-	mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.ytresults, true, 10, 50, NULL));
+	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.ytresults, true, 10, 50, NULL));
 
 	char rstr[20];
 	sprintf(rstr, "%s", m_settings.ytregion.c_str());
@@ -5362,7 +5390,7 @@ bool CMovieBrowser::showYTMenu()
 void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp, unsigned int start, unsigned int end)
 {
 	//nkparser.SetMaxResults(/*m_settings.nkresults*/m_pcBrowser->getLinesPerPage());
-	nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
+	//nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
 	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
 
 	if (nkparser.ParseFeed((cNKFeedParser::nk_feed_mode_t)mode, search, id, rtmp)) 
@@ -5382,13 +5410,13 @@ void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, bool rtmp
 	//
 	videoListsize = ylist.size();
 	
-	for (int i = start; i < /*m_settings.nkresults*/end && end /*m_settings.nkresults*/ <= ylist.size(); i++) 
+	for (unsigned int i = start; i < /*m_settings.nkresults*/end && end /*m_settings.nkresults*/ <= ylist.size(); i++) 
 	{
 		MI_MOVIE_INFO movieInfo;
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 		
 		movieInfo.epgTitle = ylist[i].title;
-		movieInfo.epgInfo1 = ylist[i].description;
+		movieInfo.epgInfo1 = /*ylist[i].description*/m_settings.nkcategoryname;
 		movieInfo.epgInfo2 = ylist[i].description;
 		movieInfo.tfile = ylist[i].tfile;
 		movieInfo.ytdate = ylist[i].published;
@@ -5492,8 +5520,8 @@ bool CMovieBrowser::showNKMenu()
 		mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_HISTORY, true, NULL, &nkHistory, "", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
 	*/
 
-	mainMenu.addItem(GenericMenuSeparatorLine);
-	mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.nkresults, true, 1, 500, NULL));
+	//mainMenu.addItem(GenericMenuSeparatorLine);
+	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.nkresults, true, 1, 500, NULL));
 	
 	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_HISTORY, &m_settings.nksearch_history_max, true, 10, 50, NULL));
 	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_CONCURRENT_CONNECTIONS, &m_settings.nkconcconn, true, 1, 8));
