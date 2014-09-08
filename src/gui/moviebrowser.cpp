@@ -2562,6 +2562,7 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 {
+	/*
 	if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO )
 	{
 		switch(gui) 
@@ -2573,6 +2574,7 @@ void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 				gui = MB_GUI_MOVIE_INFO;
 		}
 	}
+	*/
 
 	m_settings.gui = gui;
 	
