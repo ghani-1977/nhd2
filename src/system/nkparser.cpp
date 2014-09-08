@@ -261,12 +261,15 @@ bool cNKFeedParser::parseCategoriesJSON(std::string &answer)
 		v = cat.get("id", "");
 		if (v.type() == Json::intValue || v.type() == Json::uintValue)
 			c.id = v.asInt();
+		
 		v = cat.get("title", "");
 		if (v.type() == Json::stringValue)
 			c.title = v.asString();
+		
 		v = cat.get("post_count", "");
 		if (v.type() == Json::intValue || v.type() == Json::uintValue)
 			c.post_count = v.asInt();
+		
 		if (c.id > 0)
 			categories.push_back(c);
 	}
@@ -278,6 +281,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 {
 	Json::Value root, v;
 	Json::Reader reader;
+	
 	if (!reader.parse(answer, root))
 		return false;
 
@@ -299,6 +303,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 			vinfo.title = v.asString();
 			removeHTMLMarkup(vinfo.title);
 		}
+		
 		v = flick.get("id", "");
 		if (v.type() == Json::intValue || v.type() == Json::uintValue) 
 		{
@@ -306,17 +311,20 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 			//if (thumbnail_dir)
 			vinfo.tfile = thumbnail_dir + "/" + vinfo.id + ".jpg";
 		}
+		
 		v = flick.get("content", "");
 		if (v.type() == Json::stringValue) 
 		{
 			vinfo.description = v.asString();
 			removeHTMLMarkup(vinfo.description);
 		}
+		
 		v = flick.get("modified", "");
 		if (v.type() == Json::stringValue) 
 		{
 			vinfo.published = v.asString();
 		}
+		
 		unsigned int _i = 0;
 		v = flick.get("custom_fields", "");
 		if (v.type() == Json::objectValue) 
@@ -334,6 +342,7 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 				}
 			}
 		}
+		
 		v = flick.get("attachments", "");
 		if (v.type() == Json::arrayValue && v.size() > 0 && v[_i].type() == Json::objectValue) 
 		{
@@ -341,22 +350,29 @@ bool cNKFeedParser::parseFeedJSON(std::string &answer, bool rtmp)
 			if (v.type() == Json::stringValue)
 				vinfo.thumbnail = v.asString();
 		}
+		
+		// fill list
 		if (!vinfo.id.empty())
 			videos.push_back(vinfo);
 	}
 
 	parsed = !videos.empty();
+	
 	return parsed;
 }
 
 bool cNKFeedParser::ParseFeed(std::string &url, bool rtmp)
 {
 	//DownloadThumbnailsEnd();
+	
+	// clear list
 	videos.clear();
 
 	std::string answer;
+	
 	if (!getUrl(url, answer))
 		return false;
+	
 	return parseFeedJSON(answer, rtmp);
 }
 
@@ -368,6 +384,7 @@ bool cNKFeedParser::ParseFeed(nk_feed_mode_t mode, std::string search, int categ
 	{
 		if (search.empty())
 			return false;
+		
 		encodeUrl(search);
 		url += "get_search_results?search=" + search;
 	} 
@@ -389,10 +406,13 @@ bool cNKFeedParser::ParseCategories(void)
 	{
 		std::string url = "http://www.netzkino.de/capi/get_category_index";
 		std::string answer;
+		
 		if (!getUrl(url, answer))
 			return false;
+		
 		return parseCategoriesJSON(answer);
 	}
+	
 	return !categories.empty();
 }
 
@@ -496,37 +516,5 @@ void cNKFeedParser::Cleanup(bool delete_thumbnails)
 	//DownloadThumbnailsEnd();
 	videos.clear();
 	parsed = false;
-}
-
-void cNKFeedParser::CleanUpThumbnails(unsigned int start, unsigned int end)
-{
-	printf("cNKFeedParser::CleanUpThumbnails\n");
-	
-	for (unsigned i = start; i < end; i++) 
-	{
-		unlink(videos[i].tfile.c_str());
-	}
-}
-
-bool cNKFeedParser::DownloadMovie(unsigned int index)
-{
-	bool ret = false;
-	
-	bool found = false;
-		
-	if (!videos[index].url.empty()) 
-	{
-		std::string fname = g_settings.network_nfs_moviedir;
-		fname += "/";
-		fname += videos[index].title;
-	
-		bool found = !access(fname.c_str(), F_OK);
-		if (!found)  
-			found = DownloadUrl(videos[index].url, fname, curl_handle);
-			
-		ret |= found;
-	}
-	
-	return ret;
 }
 
