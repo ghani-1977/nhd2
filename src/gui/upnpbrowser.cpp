@@ -81,9 +81,9 @@ extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
 extern CWebTV * webtv;
 
 const struct button_label RescanButton = {NEUTRINO_ICON_BUTTON_BLUE  , LOCALE_UPNPBROWSER_RESCAN};
-const struct button_label StopButton   = {NEUTRINO_ICON_BUTTON_RED/*YELLOW*/, LOCALE_AUDIOPLAYER_STOP};
-const struct button_label PUpButton    = {NEUTRINO_ICON_BUTTON_GREEN/*RED*/, LOCALE_FILEBROWSER_NEXTPAGE};
-const struct button_label PDownButton  = {NEUTRINO_ICON_BUTTON_YELLOW/*GREEN*/, LOCALE_FILEBROWSER_PREVPAGE};
+const struct button_label StopButton   = {NEUTRINO_ICON_BUTTON_RED, LOCALE_AUDIOPLAYER_STOP};
+const struct button_label PUpButton    = {NEUTRINO_ICON_BUTTON_GREEN, LOCALE_FILEBROWSER_NEXTPAGE};
+const struct button_label PDownButton  = {NEUTRINO_ICON_BUTTON_YELLOW, LOCALE_FILEBROWSER_PREVPAGE};
 
 
 CUpnpBrowserGui::CUpnpBrowserGui()
@@ -845,7 +845,6 @@ bool CUpnpBrowserGui::selectItem(std::string id)
 						m_frameBuffer->ClearFrameBuffer();
 						m_frameBuffer->blit();	
 						
-						// /*g_settings.streaming_server_url*/moviePlayerGui->filename = /*std::string*/((*entries)[selected - index].resources[preferred].url); //FIXME
 						moviePlayerGui->filename = (*entries)[selected - index].resources[preferred].url.c_str(); //FIXME
 						moviePlayerGui->exec(NULL, "urlplayback");
 						

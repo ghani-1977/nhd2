@@ -56,7 +56,7 @@
 #include <vector>
 
 
-#define VLC_URI "vlc://"
+//#define VLC_URI "vlc://"
 
 /**
  * Converts input of numeric keys to SMS style char input.
@@ -146,9 +146,9 @@ class CFileBrowser
 
 		CFileList		selected_filelist;
 		bool			readDir(const std::string & dirname, CFileList* flist);
-		bool			readDir_vlc(const std::string & dirname, CFileList* flist);
-		bool			readDir_std(const std::string & dirname, CFileList* flist);
-		bool			readDir_sc(const std::string & dirname, CFileList* flist);
+		//bool			readDir_vlc(const std::string & dirname, CFileList* flist);
+		//bool			readDir_std(const std::string & dirname, CFileList* flist);
+		//bool			readDir_sc(const std::string & dirname, CFileList* flist);
 		void			addRecursiveDir(CFileList * re_filelist, std::string path, bool bRootCall, CProgressWindow * progress = NULL);
 		void SMSInput(const neutrino_msg_t msg);
 
@@ -160,9 +160,13 @@ class CFileBrowser
 		int 			fheight;	// Fonthoehe Filelist-Inhalt
 		int 			theight;	// Fonthoehe Filelist-Titel
 		int			foheight;	// Hoehe der button leiste
+		
 		std::string		name;
 		std::string		base;
-		std::string		m_baseurl;
+		
+		//vlc/sc
+		//std::string		m_baseurl;
+		
 		int 			width;
 		int 			height;
 		
@@ -185,14 +189,16 @@ class CFileBrowser
 	public:
 		CFileList filelist;
 
+		/*
 		typedef enum {
 			ModeFile,
 			ModeVLC,
 			ModeSC,
 		} tFileBrowserMode;
+		*/
 		
 		//shoutcast
-		std::string sc_init_dir;
+		//std::string sc_init_dir;
 
 		/**
 		 * @param selection select the specified entry, ignored if selection == -1
@@ -210,7 +216,7 @@ class CFileBrowser
 		CFileFilter * Filter;
 
 		CFileBrowser();
-		CFileBrowser(const char * const _base, const tFileBrowserMode mode = ModeFile);
+		CFileBrowser(const char * const _base/*, const tFileBrowserMode mode = ModeFile*/);
 		~CFileBrowser();
 
 		bool exec(const char * const dirname);
@@ -225,8 +231,8 @@ class CFileBrowser
 		{
 			return Path;
 		}
-	private:
-		tFileBrowserMode 	m_Mode;
+	//private:
+	//	tFileBrowserMode m_Mode;
 };
 
 #endif

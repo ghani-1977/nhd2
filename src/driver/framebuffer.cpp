@@ -768,16 +768,18 @@ void CFrameBuffer::getIconSize(const char * const filename, int * width, int * h
 		return;
 	
 	int icon_fd;
+	std::string iconfile = filename;
 	
-	// png
-	std::string iconfile = iconBasePath + filename + ".png";
+	if( !strstr(iconfile.c_str(), ".png"))
+		iconfile = iconBasePath + filename + ".png";
 
 	icon_fd = open(iconfile.c_str(), O_RDONLY);
 
 	if (icon_fd == -1)
 	{
+		// check for fullname icon
 		std::string iconfile1 = iconBasePath + filename + ".raw";
-		
+			
 		icon_fd = open(iconfile1.c_str(), O_RDONLY);
 		
 		if (icon_fd == -1)
@@ -791,12 +793,12 @@ void CFrameBuffer::getIconSize(const char * const filename, int * width, int * h
 			struct rawHeader header;
 			uint16_t x;
 			uint16_t y;
-			
+				
 			read(icon_fd, &header, sizeof(struct rawHeader));
-		
+			
 			x = (header.width_hi << 8) | header.width_lo;
 			y = (header.height_hi << 8) | header.height_lo;
-			
+				
 			*width = x;
 			*height = y;
 		}
@@ -830,8 +832,8 @@ bool CFrameBuffer::paintIcon8(const std::string & filename, const int x, const i
 		return false;
 
 	struct rawHeader header;
-	uint16_t         width, height;
-	int              _fd;
+	uint16_t width, height;
+	int _fd;
 
 	_fd = open((iconBasePath + filename).c_str(), O_RDONLY);
 
@@ -975,12 +977,10 @@ bool CFrameBuffer::paintIconRaw(const std::string & filename, const int x, const
 * if height h is given, center vertically between y and y+h
 * offset is a color offset (probably only useful with palette) 
 */
-bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const int y, const int h, const unsigned char /*offset*/, bool paint)
+bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const int y, const int h, bool paint, int width, int height)
 {
 	if (!getActive())
 		return false;
-	
-	int width, height;
 	
 	fb_pixel_t * data;
 	struct Icon tmpIcon;
@@ -994,10 +994,18 @@ bool CFrameBuffer::paintIcon(const std::string & filename, const int x, const in
 	{
 		std::string newname = iconBasePath + filename.c_str() + ".png";
 		
-		data = getIcon(newname, &width, &height);
+		//data = getIcon(newname, &width, &height);
+		if(width == 0 || height == 0)	
+			getIconSize(newname.c_str(), &width, &height);
+		data = getImage(newname, width, height);
 		
 		if(!data) 
-			data = getIcon(filename, &width, &height);
+		{
+			//data = getIcon(filename, &width, &height);
+			if(width == 0 || height == 0)	
+				getIconSize(filename.c_str(), &width, &height);
+			data = getImage(filename, width, height);
+		}
 
 		if(data) 
 		{
@@ -1826,6 +1834,7 @@ fb_pixel_t * CFrameBuffer::getImage(const std::string & name, int width, int hei
 	return ret;
 }
 
+/*
 fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * height)
 {
 	int x, y;
@@ -1871,6 +1880,7 @@ fb_pixel_t * CFrameBuffer::getIcon(const std::string & name, int * width, int * 
 
 	return fbbuff;
 }
+*/
 
 //
 #ifndef FBIO_WAITFORVSYNC

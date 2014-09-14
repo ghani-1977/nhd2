@@ -92,8 +92,7 @@ CHintBoxExt::~CHintBoxExt(void)
 
 		// content has been set using "m_message" so we are responsible to 
 		// delete it
-		for (ContentLines::iterator it = m_lines.begin();
-			 it != m_lines.end(); it++)
+		for (ContentLines::iterator it = m_lines.begin(); it != m_lines.end(); it++)
 		{
 			for (std::vector<Drawable*>::iterator it2 = it->begin(); it2 != it->end(); it2++)
 			{

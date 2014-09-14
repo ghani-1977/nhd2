@@ -213,7 +213,7 @@ class CFrameBuffer
 		bool paintIcon8(const std::string & filename, const int x, const int y, const unsigned char offset = 0);
 		bool paintIconRaw(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
 		/* h is the height of the target "window", if != 0 the icon gets centered in that window */
-		bool paintIcon(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
+		bool paintIcon(const std::string & filename, const int x, const int y, const int h = 0, bool paint = true, int width = 0, int height = 0);
 		
 		void loadPal(const std::string & filename, const unsigned char offset = 0, const unsigned char endidx = 255);
 		
@@ -264,7 +264,7 @@ class CFrameBuffer
 		
 		unsigned char * Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
-		fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
+		//fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
 		
 		enum PaintingMode 
 		{

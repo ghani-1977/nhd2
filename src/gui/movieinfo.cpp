@@ -1,4 +1,4 @@
-  /***************************************************************************
+ /***************************************************************************
 	Neutrino-GUI  -   DBoxII-Project
 
  	Homepage: http://dbox.cyberphoria.org/
@@ -35,11 +35,11 @@
 
 	Date:	  Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 
 	Revision History:
 	Date			Author		Change Description
-	Nov 2005		GÃ¼nther	initial start
+	Nov 2005		Günther	initial start
 
 ****************************************************************************/
 #ifdef HAVE_CONFIG_H
@@ -453,6 +453,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 	std::string print_buffer;
 	tm *date_tm;
 	char date_char[100];
+	
 	// prepare print buffer  
 	print_buffer = movie_info.epgInfo1;
 	print_buffer += "\n";
@@ -540,6 +541,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		print_buffer += date_char;
 	}
 	
+	// file size
 	if (movie_info.file.Size != 0) 
 	{
 		print_buffer += "\n";
@@ -551,6 +553,7 @@ void CMovieInfo::showMovieInfo(MI_MOVIE_INFO & movie_info)
 		//print_buffer += "\n"; 
 	}
 	
+	// file path
 	if(movie_info.ytdate.empty())
 	{
 		print_buffer += "\n";

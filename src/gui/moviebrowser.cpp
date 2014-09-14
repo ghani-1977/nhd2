@@ -39,7 +39,7 @@
 
 	Date:	   Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 ****************************************************************************/
 
@@ -1045,6 +1045,16 @@ int CMovieBrowser::exec(const char * path)
 			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
 			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
 		}
+		else if(show_mode == MB_SHOW_FILES)
+		{
+			m_settings.browserRowNr = 3;
+			m_settings.browserRowItem[0] = MB_INFO_TITLE;
+			m_settings.browserRowItem[1] = MB_INFO_RECORDDATE;
+			m_settings.browserRowItem[2] = MB_INFO_SIZE;
+			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]]*1.5;		//300;
+			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
+			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
+		}
 		else
 		{
 			m_settings.browserRowNr = 6;
@@ -1192,7 +1202,7 @@ int CMovieBrowser::exec(const char * path)
 				if(m_movieSelectionHandler != NULL)
 				{
 					// If there is any available bookmark, show the bookmark menu
-					if( (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO) && (m_movieSelectionHandler->bookmarks.lastPlayStop != 0 || m_movieSelectionHandler->bookmarks.start != 0) )
+					if( (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO && show_mode != MB_SHOW_FILES) && (m_movieSelectionHandler->bookmarks.lastPlayStop != 0 || m_movieSelectionHandler->bookmarks.start != 0) )
 					{
 						dprintf(DEBUG_NORMAL, "[mb] stop: %d start:%d \r\n", m_movieSelectionHandler->bookmarks.lastPlayStop,m_movieSelectionHandler->bookmarks.start);
 						m_currentStartPos = showStartPosSelectionMenu(); // display start menu m_currentStartPos = 
@@ -1425,33 +1435,17 @@ void CMovieBrowser::refreshMovieInfo(void)
 		//printf("screenshot name: %s\n", fname.c_str());
 		
 		logo_ok = !access(fname.c_str(), F_OK);
-
-		m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2, (logo_ok) ? m_cBoxFrameInfo.iWidth - picw - 20: 0);
-
-		//printf("refreshMovieInfo: EpgId %llx id %llx y %d\n", m_movieSelectionHandler->epgEpgId, m_movieSelectionHandler->epgId, m_cBoxFrameTitleRel.iY);
 		
-		/* display channel logo */
-		//lx = m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + m_cBoxFrameTitleRel.iWidth - PIC_W -10;
-		//ly = m_cBoxFrameTitleRel.iY+m_cBoxFrame.iY+ (m_cBoxFrameTitleRel.iHeight - PIC_H)/2;
-
-		//m_pcWindow->paintBoxRel(lx, ly, PIC_W, PIC_H, TITLE_BACKGROUND_COLOR);
-        	//g_PicViewer->DisplayLogo(m_movieSelectionHandler->epgEpgId >>16, lx, ly, PIC_W, PIC_H);
-
 		// display screenshot if exists
 		if(logo_ok && m_settings.gui != MB_GUI_FILTER) 
 		{
 			lx = m_cBoxFrameInfo.iX + m_cBoxFrameInfo.iWidth - picw - 10;
 			ly = m_cBoxFrameInfo.iY + (m_cBoxFrameInfo.iHeight - pich)/2;
 			
-			/* quadrat */
-			m_pcWindow->paintVLineRel(lx, ly, pich, COL_WHITE);
-			m_pcWindow->paintVLineRel(lx + picw, ly, pich, COL_WHITE);
-			m_pcWindow->paintHLineRel(lx, picw, ly, COL_WHITE);
-			m_pcWindow->paintHLineRel(lx, picw, ly + pich, COL_WHITE);
-			
-			// display screenshot
-			g_PicViewer->DisplayImage(fname, lx + 3, ly + 3, picw - 3, pich - 3);
+			m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2, m_cBoxFrameInfo.iWidth - picw - 20, fname, lx, ly, picw, pich);
 		}
+		else
+			m_pcInfo->setText(&m_movieSelectionHandler->epgInfo2);
 	}
 	
 	m_pcWindow->blit();
@@ -1695,9 +1689,9 @@ void CMovieBrowser::refreshBrowserList(void) //P1
 	
 	MI_MOVIE_INFO* movie_handle;
 	// prepare Browser list for sorting and filtering
-	for(unsigned int file=0; file < m_vMovieInfo.size(); file++)
+	for(unsigned int file = 0; file < m_vMovieInfo.size(); file++)
 	{
-		if(	isFiltered(m_vMovieInfo[file]) == false &&
+		if(isFiltered(m_vMovieInfo[file]) == false &&
 				isParentalLock(m_vMovieInfo[file]) == false  &&
 				(m_settings.browser_serie_mode == 0 || m_vMovieInfo[file].serieName.empty() || m_settings.filter.item == MB_INFO_SERIE) )
 		{
@@ -1705,10 +1699,11 @@ void CMovieBrowser::refreshBrowserList(void) //P1
 			m_vHandleBrowserList.push_back(movie_handle);
 		}
 	}
+	
 	// sort the not filtered files
 	onSortMovieInfoHandleList(m_vHandleBrowserList,m_settings.sorting.item, MB_DIRECTION_AUTO);
 
-	for(unsigned int handle=0; handle < m_vHandleBrowserList.size() ;handle++)
+	for(unsigned int handle = 0; handle < m_vHandleBrowserList.size() ;handle++)
 	{
 		for(int row = 0; row < m_settings.browserRowNr ;row++)
 		{
@@ -2986,21 +2981,13 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					
 					if(show_mode == MB_SHOW_FILES)
 					{
-						// title
-						if(movieInfo.epgTitle.empty())
-							movieInfo.epgTitle = flist[i].Name;
-						
-						// info1
-						if(movieInfo.epgInfo1.empty())
-							movieInfo.epgInfo1 = flist[i].Name;
-						
-						// info2
-						if(movieInfo.epgInfo2.empty())
-							movieInfo.epgInfo2 = flist[i].Name;
+						movieInfo.epgTitle = flist[i].getFileName();
+						movieInfo.epgInfo1 = flist[i].getFileName();
+						//movieInfo.epgInfo2 = flist[i].getFileName(); //IMDB???
 					}
 					
 					//TEST: remove me
-					if( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
+					if( (show_mode != MB_SHOW_FILES) && (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
 					{
 						if(movieInfo.serieName.empty())
 							movieInfo.serieName = movieInfo.epgTitle;
@@ -3018,6 +3005,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 						m_dirNames.push_back(dirname);
 						file_found_in_dir = true;
 					}
+					
 					movieInfo.dirItNr = m_dirNames.size()-1;
 					m_vMovieInfo.push_back(movieInfo);
 				}
@@ -3031,6 +3019,7 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 	return (result);
 }
 
+#if 0
 bool CMovieBrowser::readDir(const std::string & dirname, CFileList * flist)
 {
 	bool result = false;
@@ -3050,12 +3039,13 @@ bool CMovieBrowser::readDir_vlc(const std::string &/*dirname*/, CFileList */*fli
 {
 	return false;
 }
+#endif
 
-bool CMovieBrowser::readDir_std(const std::string & dirname, CFileList* flist)
+bool CMovieBrowser::readDir(const std::string & dirname, CFileList* flist)
 {
 	bool result = true;
 	
-	dprintf(DEBUG_INFO, "readDir_std %s\n",dirname.c_str());
+	dprintf(DEBUG_INFO, "readDir %s\n",dirname.c_str());
 	
 	stat_struct statbuf;
 	dirent_struct **namelist;
@@ -3096,6 +3086,7 @@ bool CMovieBrowser::readDir_std(const std::string & dirname, CFileList* flist)
 	return(result);
 }
 
+#if 0
 bool CMovieBrowser::delFile(CFile& file)
 {
 	bool result = false;
@@ -3116,8 +3107,9 @@ bool CMovieBrowser::delFile_vlc(CFile &/*file*/)
 	bool result = false;
 	return(result);
 }
+#endif
 
-bool CMovieBrowser::delFile_std(CFile& file)
+bool CMovieBrowser::delFile(CFile& file)
 {
 	bool result = true;
 	unlink(file.Name.c_str()); // fix: use full path
@@ -4153,23 +4145,23 @@ int CMenuSelector::paint( bool selected )
 int CMovieHelp::exec(CMenuTarget */*parent*/, const std::string &/*actionKey*/)
 {
 	Helpbox helpbox;
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung Ã¤ndern");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_RED, "Sortierung ändern");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_GREEN, "Filterfenster einblenden");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_YELLOW, "Aktives Fenster wechseln");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, "Filminfos neu laden");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "HauptmenÃ¼");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_SETUP, "Hauptmenü");
 	helpbox.addLine("'+/-'  Ansicht wechseln");
 	helpbox.addLine("'Rec'  Screenshot");
 	helpbox.addLine("'Audio' Cut Jumps from Movie");
 	helpbox.addLine("'teletxt' copy Jumps from movie");
 	helpbox.addLine("'dvbsub' truncate movie");
 	helpbox.addLine("'Pause' remove screenshot");
-	helpbox.addLine("WÃ¤hrend der Filmwiedergabe:");
+	helpbox.addLine("Während der Filmwiedergabe:");
 	helpbox.addLine(NEUTRINO_ICON_BUTTON_BLUE, " Markierungsmenu ");
-	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausfÃ¼hren");
+	helpbox.addLine(NEUTRINO_ICON_BUTTON_0,    " Markierungsaktion nicht ausführen");
 	helpbox.addLine("");
 	helpbox.addLine("MovieBrowser $Revision: 1.10 $");
-	helpbox.addLine("by GÃ¼nther");
+	helpbox.addLine("by Günther");
 	helpbox.show(LOCALE_MESSAGEBOX_INFO);
 	return(0);
 }
@@ -5415,7 +5407,7 @@ void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, unsigned 
 		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
 		
 		movieInfo.epgTitle = ylist[i].title;
-		movieInfo.epgInfo1 = /*ylist[i].description*/m_settings.nkcategoryname;
+		movieInfo.epgInfo1 = m_settings.nkcategoryname;
 		movieInfo.epgInfo2 = ylist[i].description;
 		movieInfo.tfile = ylist[i].tfile;
 		movieInfo.ytdate = ylist[i].published;

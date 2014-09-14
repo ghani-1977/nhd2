@@ -70,7 +70,10 @@
 #define MAX_WINDOW_HEIGHT 	(g_settings.screen_EndY - g_settings.screen_StartY - 40)	
 
 #define MIN_WINDOW_WIDTH  	((g_settings.screen_EndX - g_settings.screen_StartX)>>1)
-#define MIN_WINDOW_HEIGHT 	40	
+#define MIN_WINDOW_HEIGHT 	40
+
+#include <gui/pictureviewer.h>
+extern CPictureViewer * g_PicViewer;
 
 CTextBox::CTextBox(const char * text, CFont * font_text, const int _mode, const CBox * position, fb_pixel_t textBackgroundColor)
 {
@@ -419,6 +422,23 @@ void CTextBox::refreshText(void)
 
 		m_pcFontText->RenderString(m_cFrameTextRel.iX + TEXT_BORDER_WIDTH + x_center+m_cFrame.iX, y + m_cFrame.iY, m_cFrameTextRel.iWidth, m_cLineArray[i].c_str(), COL_MENUCONTENT, 0, true); // UTF-8
 	}
+	
+	// paint thumbnail
+	/*
+	if (!thumbnail.empty())
+	{
+		if(frameBuffer != NULL) 
+		{
+			frameBuffer->paintVLineRel(lx, ly, th, COL_WHITE);
+			frameBuffer->paintVLineRel(lx + tw, ly, th, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
+		}
+			
+		// display screenshot
+		g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
+	}
+	*/
 }
 
 void CTextBox::scrollPageDown(const int pages)
@@ -460,6 +480,7 @@ void CTextBox::scrollPageUp(const int pages)
 	{
 		m_nCurrentPage = 0;
 	}
+	
 	m_nCurrentLine = m_nCurrentPage * m_nLinesPerPage; 
 	refresh();
 }
@@ -474,12 +495,32 @@ void CTextBox::refresh(void)
 	//Paint text
 	refreshScroll();
 	refreshText();
+	
+	if (!thumbnail.empty())
+	{
+		if(frameBuffer != NULL) 
+		{
+			frameBuffer->paintVLineRel(lx, ly, th, COL_WHITE);
+			frameBuffer->paintVLineRel(lx + tw, ly, th, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
+		}
+			
+			// display screenshot
+		g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
+	}
 }
 
-bool CTextBox::setText(const std::string* newText, int _max_width)
+bool CTextBox::setText(const std::string* newText, int _max_width, std::string _thumbnail, int _lx, int _ly, int _tw, int _th)
 {
 	bool result = false;
 	max_width = _max_width;
+	
+	thumbnail = _thumbnail;
+	lx = _lx;
+	ly = _ly;
+	tw = _tw;
+	th = _th;
 	
 	if (newText != NULL)
 	{
@@ -487,8 +528,26 @@ bool CTextBox::setText(const std::string* newText, int _max_width)
 		//m_cText = *newText + "\n"; //FIXME test
 		refreshTextLineArray();
 		refresh();
+		
+		// paint thumbnail
+		/*
+		if (!thumbnail.empty())
+		{
+			if(frameBuffer != NULL) 
+			{
+			frameBuffer->paintVLineRel(lx, ly, th, COL_WHITE);
+			frameBuffer->paintVLineRel(lx + tw, ly, th, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly, COL_WHITE);
+			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
+			}
+			
+			// display screenshot
+			g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
+		}
+		*/
 		result = true;
 	}
+	
 	return(result);
 };
 

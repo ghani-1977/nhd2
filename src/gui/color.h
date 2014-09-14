@@ -67,6 +67,7 @@
 #define COL_INFOBAR			254-8*7
 #define COL_INFOBAR_SHADOW		254-8*8
 #define COL_COLORED_EVENTS_INFOBAR	254-8*9
+#define COL_COLORED_EVENTS_CHANNELLIST	254-8*10
 
 #define COL_INFOBAR_PLUS_0              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 0)])
 #define COL_INFOBAR_PLUS_1              (CFrameBuffer::getInstance()->realcolor[(COL_INFOBAR + 1)])

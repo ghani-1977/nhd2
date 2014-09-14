@@ -811,6 +811,17 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 		gint64 pts;
 		position = 0;
 		
+#if defined (USE_OPENGL)
+		gst_element_query_position(m_gst_playbin, &fmt, &pts);
+#else
+		
+		if(audioSink || videoSink)
+		{
+			g_signal_emit_by_name(audioSink ? audioSink : videoSink, "get-decoder-time", &pts);
+			GST_CLOCK_TIME_IS_VALID(pts);
+		}
+
+		/*
 		if(audioSink && !isTS)
 		{
 			gchar *name = gst_element_get_name(audioSink);
@@ -837,8 +848,8 @@ bool cPlayback::GetPosition(int64_t &position, int64_t &duration)
 			else
 				gst_element_query_position(m_gst_playbin, &fmt, &pts);
 		}
-		else		  
-			gst_element_query_position(m_gst_playbin, &fmt, &pts);
+		*/		  
+#endif		
 			
 		position = pts / 1000000;	// in ms
 		

@@ -108,7 +108,7 @@ class CAudioPlayerGui : public CMenuTarget
 		enum
 		{
 			LOCALRADIO,
-			SHOUTCAST,
+			//SHOUTCAST,
 			ICECAST
 		};
 
@@ -226,7 +226,6 @@ class CAudioPlayerGui : public CMenuTarget
 		void printSearchTree();
 		void buildSearchTree();
 		unsigned char getFirstChar(CAudiofileExt &file);
-		void printTimevalDiff(timeval &start, timeval &end);
 
 		/**
 		* Saves the current playlist into a .m3u playlist file.
@@ -256,7 +255,7 @@ class CAudioPlayerGui : public CMenuTarget
 		*/
 		bool askToOverwriteFile(const std::string& filename);
 		bool openFilebrowser(void);
-		bool openSCbrowser(void);
+		//bool openSCbrowser(void);
 		bool clearPlaylist(void);
 		bool shufflePlaylist(void);
 		bool playNext(bool allow_rotate = false);

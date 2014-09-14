@@ -106,8 +106,6 @@ extern cVideo * videoDecoder;
 #define AUDIOPLAYERGUI_SMSKEY_TIMEOUT 1000
 #define SHOW_FILE_LOAD_LIMIT 50
 
-//#define AUDIOPLAYER_TIME_DEBUG
-
 // check if files to be added are already in the playlist
 #define AUDIOPLAYER_CHECK_FOR_DUPLICATES
 #define AUDIOPLAYER_START_SCRIPT 			CONFIGDIR "/audioplayer.start"
@@ -805,8 +803,8 @@ int CAudioPlayerGui::show()
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_LOC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 	
 					// shoutcast
-					sprintf(cnt, "%d", ++count);
-					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_SC, true, NULL, InetRadioInputChanger,cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+					//sprintf(cnt, "%d", ++count);
+					//InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_SC, true, NULL, InetRadioInputChanger,cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
 					// icecast
 					sprintf(cnt, "%d", ++count);
@@ -830,10 +828,12 @@ int CAudioPlayerGui::show()
 							paintLCD();
 							
 							break;
-							
+						
+						/*
 						case SHOUTCAST:	
 							openSCbrowser();
 							break;
+						*/
 							
 						case ICECAST:	
 							readDir_ic();
@@ -1141,7 +1141,7 @@ void CAudioPlayerGui::processPlaylistUrl(const char *url, const char *name, cons
 
 	dprintf(DEBUG_NORMAL, "CAudioPlayerGui::processPlaylistUrl (%s, %s)\n", url, name);
 	
-	chunk.memory=NULL; /* we expect realloc(NULL, size) to work */
+	chunk.memory = NULL; /* we expect realloc(NULL, size) to work */
 	chunk.size = 0;    /* no data at this point */
 
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -1194,6 +1194,7 @@ void CAudioPlayerGui::processPlaylistUrl(const char *url, const char *name, cons
 			iss.str (std::string(chunk.memory, chunk.size));
 			char line[512];
 			char *ptr;
+			
 			while (iss.rdstate() == std::ifstream::goodbit) 
 			{
 				iss.getline(line, 512);
@@ -1228,10 +1229,11 @@ void CAudioPlayerGui::processPlaylistUrl(const char *url, const char *name, cons
 
 void CAudioPlayerGui::readDir_ic(void)
 {
-	std::string answer="";
+	std::string answer = "";
 	std::cout << "[readDir_ic] IC URL: " << icecasturl << std::endl;
 	CURL *curl_handle;
 	CURLcode httpres;
+	
 	/* init the curl session */
 	curl_handle = curl_easy_init();
 	/* specify URL to get */
@@ -1248,6 +1250,7 @@ void CAudioPlayerGui::readDir_ic(void)
 	/* error handling */
 	char error[CURL_ERROR_SIZE];
 	curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, error);
+	
 	/* get it! */
 	CHintBox *scanBox = new CHintBox(LOCALE_AUDIOPLAYER_ADD_IC, g_Locale->getText(LOCALE_AUDIOPLAYER_RECEIVING_LIST)); // UTF-8
 	scanBox->paint();
@@ -1289,7 +1292,7 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 		
 		if (element == NULL) 
 		{
-			dprintf(DEBUG_NORMAL, "[openFilebrowser] No valid XML File.\n");
+			dprintf(DEBUG_NORMAL, "CAudioPlayerGui::scanXmlData: No valid XML File.\n");
 		} 
 		else 
 		{
@@ -1322,6 +1325,7 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 				time_t bitrate = 0;
 				bool skip = true;
 				listPos++;
+				
 				// show status
 				int global = 100*listPos / maxProgress;
 				progress.showGlobalStatus(global);
@@ -1371,6 +1375,7 @@ void CAudioPlayerGui::scanXmlData(xmlDocPtr answer_parser, const char *nametag, 
 				if ((url != NULL) && !skip) 
 				{
 					progress.showStatusMessageUTF(url);
+					
 					//printf("Processing %s, %s\n", url, name);
 					if (strstr(url, ".m3u") || strstr(url, ".pls"))
 						processPlaylistUrl(url, name);
@@ -1574,6 +1579,7 @@ bool CAudioPlayerGui::openFilebrowser(void)
 	return ( result);
 }
 
+/*
 bool CAudioPlayerGui::openSCbrowser(void)
 {
 	bool result = false;
@@ -1644,6 +1650,7 @@ bool CAudioPlayerGui::openSCbrowser(void)
 
 	return ( result);
 }
+*/
 
 void CAudioPlayerGui::hide()
 {
@@ -2528,12 +2535,8 @@ void CAudioPlayerGui::screensaver(int type)
 		if (usedBackground)
 			m_frameBuffer->saveBackgroundImage();
 
-//#if defined (USE_OPENGL)
 		m_frameBuffer->loadBackgroundPic("mp3.jpg");
 		m_frameBuffer->blit();
-//#else
-//		videoDecoder->showSinglePic(DATADIR "/neutrino/icons/mp3.m2v");
-//#endif
 
 		paint();		
 		
@@ -2542,13 +2545,10 @@ void CAudioPlayerGui::screensaver(int type)
 	else
 	{
 		m_screensaver = type;
-//#if defined (USE_OPENGL)		
-		//m_frameBuffer->ClearFrameBuffer();
+
 		m_frameBuffer->paintBackground();
 		m_frameBuffer->blit();
-//#else
-//		videoDecoder->finishShowSinglePic();
-//#endif
+
 		info_visible = false;
 
 		stimer = g_RCInput->addTimer(10*1000*1000, false);
@@ -2710,11 +2710,6 @@ void CAudioPlayerGui::removeFromPlaylist(long pos)
 
 	if (m_select_title_by_name)
 	{
-
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval start;
-		gettimeofday(&start,NULL);
-#endif
 		//printf("searching for key: %c val: %ld\n",firstChar,pos);
 
 		CTitle2Pos::iterator item = m_title2Pos.find(firstChar);
@@ -2752,13 +2747,6 @@ void CAudioPlayerGui::removeFromPlaylist(long pos)
 			//title->second.clear();
 			title->second = newList;
 		}		
-#ifdef AUDIOPLAYER_TIME_DEBUG
-		timeval end;
-		gettimeofday(&end,NULL);
-		printf("delete took: ");
-		printTimevalDiff(start,end);
-#endif
-
 	}
 }
 
@@ -2837,11 +2825,6 @@ void CAudioPlayerGui::printSearchTree()
 
 void CAudioPlayerGui::buildSearchTree()
 {
-#ifdef AUDIOPLAYER_TIME_DEBUG
-	timeval start;
-	gettimeofday(&start,NULL);
-#endif
-
 	CProgressWindow progress;
 	progress.setTitle(LOCALE_AUDIOPLAYER_BUILDING_SEARCH_INDEX);
 	progress.exec(this, "");
@@ -2868,12 +2851,6 @@ void CAudioPlayerGui::buildSearchTree()
 	progress.hide();
 	m_playlistHasChanged = false;
 
-#ifdef AUDIOPLAYER_TIME_DEBUG
-	timeval end;
-	gettimeofday(&end,NULL);
-	printf("searchtree took: ");
-	printTimevalDiff(start,end);
-#endif
 	//printf("after:\n");
 	//printSearchTree();
 }
@@ -2888,21 +2865,6 @@ unsigned char CAudioPlayerGui::getFirstChar(CAudiofileExt &file)
 	//printf("getFirstChar: %c\n",file.firstChar);
 	return file.firstChar;
 }
-
-#ifdef AUDIOPLAYER_TIME_DEBUG
-void CAudioPlayerGui::printTimevalDiff(timeval &start, timeval &end)
-{
-
-	long secs = end.tv_sec - start.tv_sec;
-	long usecs = end.tv_usec -start.tv_usec;
-	if (usecs < 0)
-	{
-		usecs = 1000000 + usecs;
-		secs--;		
-	}
-	printf("%ld:%ld\n",secs,usecs);
-}
-#endif
 
 void CAudioPlayerGui::savePlaylist()
 {

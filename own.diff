@@ -1,0 +1,579 @@
+diff -Naur nhd2-exp-orig/data/locale/deutsch.locale nhd2-exp/data/locale/deutsch.locale
+--- nhd2-exp-orig/data/locale/deutsch.locale	2014-08-02 16:24:10.000000000 +0200
++++ nhd2-exp/data/locale/deutsch.locale	2014-09-14 15:47:19.195400158 +0200
+@@ -776,6 +776,7 @@
+ miscsettings.infobar_sat_display Infobar Satellitenanzeige
+ miscsettings.infobar_colored_events Sendung farbig
+ miscsettings.infobar_show_channelname Kanal Name
++miscsettings.infobar_show_logos_left Logos neben EPG
+ miscsettings.infobar_showca Infobar Cryptanzeige
+ miscsettings.infobar_radiotext Radio Text
+ miscsettings.infobar_hddvar_display HDD Anzeige
+diff -Naur nhd2-exp-orig/data/locale/english.locale nhd2-exp/data/locale/english.locale
+--- nhd2-exp-orig/data/locale/english.locale	2014-08-02 16:24:10.000000000 +0200
++++ nhd2-exp/data/locale/english.locale	2014-09-14 15:47:19.195400158 +0200
+@@ -776,6 +776,7 @@
+ miscsettings.infobar_sat_display Satellite display on infobar
+ miscsettings.infobar_colored_events Program colored
+ miscsettings.infobar_show_channelname Channel name
++miscsettings.infobar_show_logos_left Logos near EPG
+ miscsettings.infobar_showca Infobar Crypticons
+ miscsettings.infobar_radiotext Radio Text
+ miscsettings.infobar_hddvar_display HDD Display
+diff -Naur nhd2-exp-orig/src/gui/hdd_menu.cpp nhd2-exp/src/gui/hdd_menu.cpp
+--- nhd2-exp-orig/src/gui/hdd_menu.cpp	2014-08-02 16:24:06.000000000 +0200
++++ nhd2-exp/src/gui/hdd_menu.cpp	2014-09-14 15:47:19.195400158 +0200
+@@ -750,7 +750,7 @@
+ 	progress->showGlobalStatus(100);
+ 	sleep(2);
+ 
+-	sprintf(cmd, "tune2fs -r 0 -c 0 -i 0 %s", src);
++	sprintf(cmd, "tune2fs -L RECORD -r 0 -c 0 -i 0 %s", src);
+ 	printf("CHDDFmtExec: executing %s\n", cmd);
+ 	system(cmd);
+ 	
+diff -Naur nhd2-exp-orig/src/gui/imageinfo.cpp nhd2-exp/src/gui/imageinfo.cpp
+--- nhd2-exp-orig/src/gui/imageinfo.cpp	2014-08-02 16:24:06.000000000 +0200
++++ nhd2-exp/src/gui/imageinfo.cpp	2014-09-14 15:47:19.195400158 +0200
+@@ -188,17 +188,17 @@
+ 	// image name
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_IMAGE));
+-	paintLine(xpos + 125, font_info, imagename);
++	paintLine(xpos + 150, font_info, imagename);
+ 
+ 	// image date
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DATE));
+-	paintLine(xpos+125, font_info, imagedate);
++	paintLine(xpos + 150, font_info, imagedate);
+ 
+ 	// release cycle
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_VERSION));
+-	paintLine(xpos + 125, font_info, releaseCycle);
++	paintLine(xpos + 150, font_info, releaseCycle);
+ 	
+ 	// svn/git built date
+ 	ypos += iheight;
+@@ -207,65 +207,65 @@
+ #else
+ 	paintLine(xpos    , font_info, GIT_REV);
+ #endif
+-	paintLine(xpos + 125, font_info, builddate );	
++	paintLine(xpos + 150, font_info, builddate );	
+ 	
+ 	// image type
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_TYPE));
+-	paintLine(xpos + 125, font_info, imageType);
++	paintLine(xpos + 150, font_info, imageType);
+ 
+ 	// image creator
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_CREATOR));
+-	paintLine(xpos + 125, font_info, creator);
++	paintLine(xpos + 150, font_info, creator);
+ 
+ 	// homepage
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_HOMEPAGE));
+-	paintLine(xpos + 125, font_info, homepage);
++	paintLine(xpos + 150, font_info, homepage);
+ 
+ 	/* doko */
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DOKUMENTATION));
+-	paintLine(xpos + 125, font_info, docs);
++	paintLine(xpos + 150, font_info, docs);
+ 
+ 	// forum
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_FORUM));
+-	paintLine(xpos + 125, font_info, forum);
++	paintLine(xpos + 150, font_info, forum);
+ 
+ 	// license
+ 	ypos += iheight;
+ 	paintLine(xpos, font_info,g_Locale->getText(LOCALE_IMAGEINFO_LICENSE));
+-	paintLine(xpos + 125, font_small, "This program is free software; you can redistribute it and/or modify");
++	paintLine(xpos + 150, font_small, "This program is free software; you can redistribute it and/or modify");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "it under the terms of the GNU General Public License as published by");
++	paintLine(xpos + 150, font_small, "it under the terms of the GNU General Public License as published by");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "the Free Software Foundation; either version 2 of the License, or");
++	paintLine(xpos + 150, font_small, "the Free Software Foundation; either version 2 of the License, or");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "(at your option) any later version.");
++	paintLine(xpos + 150, font_small, "(at your option) any later version.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "This program is distributed in the hope that it will be useful,");
++	paintLine(xpos + 150, font_small, "This program is distributed in the hope that it will be useful,");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
++	paintLine(xpos + 150, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
++	paintLine(xpos + 150, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "See the GNU General Public License for more details.");
++	paintLine(xpos + 150, font_small, "See the GNU General Public License for more details.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "You should have received a copy of the GNU General Public License");
++	paintLine(xpos + 150, font_small, "You should have received a copy of the GNU General Public License");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "along with this program; if not, write to the Free Software");
++	paintLine(xpos + 150, font_small, "along with this program; if not, write to the Free Software");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
++	paintLine(xpos + 150, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
+ }
+diff -Naur nhd2-exp-orig/src/gui/infoviewer.cpp nhd2-exp/src/gui/infoviewer.cpp
+--- nhd2-exp-orig/src/gui/infoviewer.cpp	2014-08-02 16:24:07.000000000 +0200
++++ nhd2-exp/src/gui/infoviewer.cpp	2014-09-14 15:47:19.199398108 +0200
+@@ -138,7 +138,8 @@
+ #define CHANNUMBER_WIDTH	100
+ 
+ // logo
+-#define CHANNEL_LOGO_HEIGHT	40
++#define CHANNEL_LOGO_HEIGHT	50
++#define CHANNEL_LOGO_WIDTH	125
+ 
+ // infoboxheight
+ #define BOXHEIGHT_CHANNELINFO	140
+@@ -216,11 +217,11 @@
+ 	buttonBarStartY = BoxStartY + BoxHeight;
+ 	
+ 	// channel logo
+-	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
++	PIC_X = BoxStartX + 15;
++	PIC_Y = (BoxStartY + (BoxHeight - CHANNEL_LOGO_HEIGHT) / 2) + 40;
+ 	
+ 	// channel number
+-	ChanNumberX = BoxStartX + 10;
++	ChanNumberX = BoxStartX + 30;
+ 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel name
+@@ -228,12 +229,12 @@
+ 	ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel logo
+-	PIC_W = CHANNEL_LOGO_HEIGHT*1.67;
+-	PIC_H = CHANNEL_LOGO_HEIGHT;
++	PIC_W = CHANNEL_LOGO_WIDTH;
++ 	PIC_H = CHANNEL_LOGO_HEIGHT;
+ 	
+ 	// channel info
+ 	ChanInfoX = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 3; //PIC_Y + CHANNEL_LOGO_HEIGHT + 5
++	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT - 5 + CHANNEL_LOGO_HEIGHT + 3; //PIC_Y + CHANNEL_LOGO_HEIGHT + 5
+ 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
+ 
+ 	// button cell width
+@@ -379,11 +380,11 @@
+ 	buttonBarStartY = BoxStartY + BoxHeight;
+ 	
+ 	// channel logo
+-	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
++	PIC_X = BoxStartX + 15;
++	PIC_Y = (BoxStartY + (BoxHeight - CHANNEL_LOGO_HEIGHT) / 2) + 40;
+ 	
+ 	// channel number
+-	ChanNumberX = BoxStartX + 10;
++	ChanNumberX = BoxStartX + 30;
+ 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel name
+@@ -392,7 +393,7 @@
+ 	
+ 	// channel info
+ 	ChanInfoX = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 3;
++	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT - 5 + CHANNEL_LOGO_HEIGHT + 3;
+ 	//ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+ 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
+ 	
+@@ -525,11 +526,11 @@
+ 			g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, (logo_bpp == 4 && !g_settings.show_channelname)? logo_w : PIC_W, PIC_H, (logo_h > PIC_H)? true : false, false, true);
+ 
+ 			// recalculate ChanNameWidth
+-			ChanNameWidth = BoxWidth - (time_width + CHANNUMBER_WIDTH + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
++			//ChanNameWidth = BoxWidth - (time_width + CHANNUMBER_WIDTH + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
+ 			
+ 			// ChannelName
+ 			if(g_settings.show_channelname)
+-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + ((logo_bpp == 4)? logo_w : PIC_W) + 10, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
++				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + CHANNUMBER_WIDTH + 10, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+ 		}
+ 		else
+ 		{
+@@ -2020,83 +2021,170 @@
+ 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+ 	  		}
+ 		}
+-
+-		// paint epg infos
+-		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++		// check logo
++		logo_w = PIC_W;
++		logo_h = PIC_H;
++		logo_bpp = 0;
++		bool logo_ok = false;
++		logo_ok = g_PicViewer->checkLogo(channel_id);
++		if(logo_ok)
+ 		{
+-	  		// no EPG available	
+-			// refresh box
+-	  		frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++			// paint epg infos
++			if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++			{
++		  		// no EPG available	
++				// refresh box
++		  		frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 			
+-			// noepg/waiting for time
+-	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
+-		} 
+-		else 
+-		{
+-	  		// found some epg
+-	  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
+-	  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
++				// noepg/waiting for time
++		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
++			} 
++			else 
++			{
++		  		// found some epg
++		  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
++		  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
+ 
+-	  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
+-	  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
++		  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
++		  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
+ 
+-	  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
+-			{
+-				// there are later events available - yet no current
+-				//refresh box current
+-				frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++		  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
++				{
++					// there are later events available - yet no current
++					//refresh box current
++					frameBuffer->paintBox(BoxStartX + 100, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
+ 				
+-				// current infos
+-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
++					// current infos
++					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
+ 
+-				// next
+-				if(last_next_id != info_CurrentNext.next_uniqueKey) 
+-				{
+-					// refresh box
+-					frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++					// next
++					if(last_next_id != info_CurrentNext.next_uniqueKey) 
++					{
++						// refresh box
++						frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 110, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 105, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+ 
+-					last_next_id = info_CurrentNext.next_uniqueKey;
+-				}
+-	  		} 
+-			else 
+-			{
+-				// current
+-		  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++						last_next_id = info_CurrentNext.next_uniqueKey;
++					}
++		  		} 
++				else 
+ 				{
+-					// refresh box
+-			  		frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++					// current
++			  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++					{
++						// refresh box
++				  		frameBuffer->paintBox(BoxStartX + 100, ChanInfoY, BoxEndX - 100, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
+ 					
+-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
+-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 110, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX + 100, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 105, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++
++				  		last_curr_id = info_CurrentNext.current_uniqueKey;
++			  		}
++			  		
++			  		// refresh box
++			  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
++			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++
++					// next 
++					if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++					{
++						if(last_next_id != info_CurrentNext.next_uniqueKey) 
++						{
++							// refresh
++							frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-			  		last_curr_id = info_CurrentNext.current_uniqueKey;
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 110, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 105, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++
++							last_next_id = info_CurrentNext.next_uniqueKey;
++						}
++					} 
+ 		  		}
+-		  		
+-		  		// refresh box
+-		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
+-		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++			}
++		}
++		else
++		{
++			// paint epg infos
++			if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++			{
++		  		// no EPG available	
++				// refresh box
++		  		frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++			
++				// noepg/waiting for time
++		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
++			} 
++			else 
++			{
++		  		// found some epg
++		  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
++		  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
++
++		  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
++		  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
+ 
+-				// next 
+-				if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++		  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
+ 				{
++					// there are later events available - yet no current
++					//refresh box current
++					frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++				
++					// current infos
++					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
++
++					// next
+ 					if(last_next_id != info_CurrentNext.next_uniqueKey) 
+ 					{
+-						// refresh
++						// refresh box
+ 						frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+ 
+ 						last_next_id = info_CurrentNext.next_uniqueKey;
+ 					}
+-				} 
+-	  		}
+-		}
++		  		} 
++				else 
++				{
++					// current
++			  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++					{
++						// refresh box
++				  		frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++					
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++
++				  		last_curr_id = info_CurrentNext.current_uniqueKey;
++			  		}
++			  		
++			  		// refresh box
++			  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
++			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++
++					// next 
++					if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++					{
++						if(last_next_id != info_CurrentNext.next_uniqueKey) 
++						{
++							// refresh
++							frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++
++							last_next_id = info_CurrentNext.next_uniqueKey;
++						}
++					} 
++		  		}
++			}
++		}//Grabber66
+   	}
+ }
+ 
+diff -Naur nhd2-exp-orig/src/Makefile.am nhd2-exp/src/Makefile.am
+--- nhd2-exp-orig/src/Makefile.am	2014-08-02 16:24:08.000000000 +0200
++++ nhd2-exp/src/Makefile.am	2014-09-14 15:47:19.199398108 +0200
+@@ -96,7 +96,7 @@
+ 
+ # graph lcd
+ if ENABLE_GRAPHLCD
+-neutrino_LDADD += -lglcddrivers -lglcdgraphics -lusb
++neutrino_LDADD += -lglcddrivers -lglcdgraphics
+ endif
+ 
+ if USE_OPENGL
+diff -Naur nhd2-exp-orig/src/neutrino.cpp nhd2-exp/src/neutrino.cpp
+--- nhd2-exp-orig/src/neutrino.cpp	2014-09-14 15:41:54.000000000 +0200
++++ nhd2-exp/src/neutrino.cpp	2014-09-14 15:47:19.199398108 +0200
+@@ -933,6 +933,9 @@
+ 	
+ 	// infobar show channel name
+ 	g_settings.show_channelname = configfile.getBool("show_channelname", true);
++
++	// infobar show logos left from EPG
++	g_settings.show_logos_left = configfile.getBool("show_logos_left", true);
+ 	
+ 	// vol
+ 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
+@@ -1395,6 +1398,9 @@
+ 	
+ 	// infobar show channelname
+ 	configfile.setBool("show_channelname", g_settings.show_channelname);
++
++	// infobar show logos left from EPG
++	configfile.setBool("show_logos_left", g_settings.show_logos_left);
+ 	
+ 	// record screenshot
+ 	configfile.setInt32("recording_screenshot", g_settings.recording_screenshot);
+diff -Naur nhd2-exp-orig/src/neutrino_menue.cpp nhd2-exp/src/neutrino_menue.cpp
+--- nhd2-exp-orig/src/neutrino_menue.cpp	2014-09-14 15:41:54.000000000 +0200
++++ nhd2-exp/src/neutrino_menue.cpp	2014-09-14 15:47:19.203396058 +0200
+@@ -307,10 +307,10 @@
+ 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SERVICE, true, NULL, &service, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SERVICE, LOCALE_HELPTEXT_SERVICE ));
+ 	
+ 	// timerlist
+-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
++	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
+ 	
+ 	// features
+-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
++	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
+ 
+ 	//sleep timer
+ 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+@@ -1213,6 +1213,9 @@
+ 	// infobar show channelname
+ 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME, &g_settings.show_channelname, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
+ 	
++	// infobar show logos left from EPG
++	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_LOGOS_LEFT, &g_settings.show_logos_left, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
++
+ 	// recording screenshot
+ 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_RECORDING_SCREENSHOT, &g_settings.recording_screenshot, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
+ 
+diff -Naur nhd2-exp-orig/src/system/fsmounter.cpp nhd2-exp/src/system/fsmounter.cpp
+--- nhd2-exp-orig/src/system/fsmounter.cpp	2014-08-02 16:24:07.000000000 +0200
++++ nhd2-exp/src/system/fsmounter.cpp	2014-09-14 15:47:19.203396058 +0200
+@@ -233,8 +233,8 @@
+ 	{
+ 		if(fstype == NFS)
+ 		{
+-			strcpy(options1, "ro,soft,udp");
+-			strcpy(options2, "nolock,rsize=8192,wsize=8192");
++			strcpy(options1, "rw,soft,udp");
++			strcpy(options2, "nolock,rsize=16384,wsize=16384");
+ 		}
+ 		else if(fstype == CIFS)
+ 		{
+diff -Naur nhd2-exp-orig/src/system/locals.h nhd2-exp/src/system/locals.h
+--- nhd2-exp-orig/src/system/locals.h	2014-08-02 16:24:07.000000000 +0200
++++ nhd2-exp/src/system/locals.h	2014-09-14 15:47:19.203396058 +0200
+@@ -602,6 +602,7 @@
+ 	LOCALE_MISCSETTINGS_INFOBAR_SAT_DISPLAY,
+ 	LOCALE_MISCSETTINGS_INFOBAR_COLORED_EVENTS,
+ 	LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME,
++	LOCALE_MISCSETTINGS_INFOBAR_SHOW_LOGOS_LEFT,
+ 	LOCALE_MISCSETTINGS_INFOBAR_SHOWCA,
+ 	LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT,
+ 	LOCALE_MISCSETTINGS_INFOBAR_HDD_DISPLAY,
+diff -Naur nhd2-exp-orig/src/system/locals_intern.h nhd2-exp/src/system/locals_intern.h
+--- nhd2-exp-orig/src/system/locals_intern.h	2014-08-02 16:24:07.000000000 +0200
++++ nhd2-exp/src/system/locals_intern.h	2014-09-14 15:47:19.203396058 +0200
+@@ -602,6 +602,7 @@
+ 	"miscsettings.infobar_sat_display",
+ 	"miscsettings.infobar_colored_events",
+ 	"miscsettings.infobar_show_channelname",
++	"miscsettings.infobar_show_logos_left",
+ 	"miscsettings.infobar_showca",
+ 	"miscsettings.infobar_radiotext",
+ 	"miscsettings.infobar_hddvar_display",
+diff -Naur nhd2-exp-orig/src/system/settings.h nhd2-exp/src/system/settings.h
+--- nhd2-exp-orig/src/system/settings.h	2014-08-02 16:24:07.000000000 +0200
++++ nhd2-exp/src/system/settings.h	2014-09-14 15:47:19.203396058 +0200
+@@ -419,6 +419,7 @@
+ 	std::string logos_dir;
+ 	int epgplus_show_logo;
+ 	int show_channelname;
++	int show_logos_left;
+ 	std::string audioplayer_screensaver_dir;
+ 
+ 	// channellist
+diff -Naur nhd2-exp-orig/src/zapit/src/zapit.cpp nhd2-exp/src/zapit/src/zapit.cpp
+--- nhd2-exp-orig/src/zapit/src/zapit.cpp	2014-08-02 16:24:08.000000000 +0200
++++ nhd2-exp/src/zapit/src/zapit.cpp	2014-09-14 15:47:19.203396058 +0200
+@@ -96,7 +96,7 @@
+ 
+ /* volume percent conf */
+ #define VOLUME_DEFAULT_PCM 0
+-#define VOLUME_DEFAULT_AC3 25
++#define VOLUME_DEFAULT_AC3 75
+ typedef std::pair<int, int> pid_pair_t;
+ typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
+ typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
+@@ -1461,7 +1461,7 @@
+ 	if (volume_percent != percent) 
+ 		volume_percent = percent;
+ 		
+-	int vol = current_volume + (current_volume*volume_percent)/100;
++	int vol = current_volume + (current_volume*volume_percent+15)/100;
+ 		
+ 	dprintf(DEBUG_NORMAL, "[zapit] setVolumePercent: vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
+ 		

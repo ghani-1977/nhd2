@@ -1,4 +1,4 @@
-//*
+/*
         Copyright (C) 2013 CoolStream International Ltd
         Copyright (C) 2013 martii
 

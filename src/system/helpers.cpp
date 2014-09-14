@@ -395,13 +395,13 @@ std::string& htmlEntityDecode(std::string& text, bool removeTags)
 	};
 
 	decode_table_s dt[] = {
-		{ "Â ",  		"&nbsp;",	6 },
+		{ " ",  		"&nbsp;",	6 },
 		{ "&",  		"&amp;",	5 },
 		{ "<",  		"&lt;",		4 },
 		{ ">",  		"&gt;",		4 },
 		{ "\"", 		"&quot;",	6 },
 		{ "'",  		"&apos;",	6 },
-		{ "â‚¬",  		"&euro;",	6 },
+		{ "€",  		"&euro;",	6 },
 		{ "\xe2\x80\xa6",	"&hellip;",	8 },
 		{ NULL,			NULL,		0 }
 	};

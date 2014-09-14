@@ -37,7 +37,7 @@
 
 	Date:	   Nov 2005
 
-	Author: GÃ¼nther@tuxbox.berlios.org
+	Author: Günther@tuxbox.berlios.org
 		based on code of Steffen Hehn 'McClean'
 
 	$Log: moviebrowser.h,v $
@@ -217,7 +217,8 @@ typedef struct
 	
 	int browser_serie_mode;
 	int serie_auto_create;
-	/* these variables are used for the listframes */	
+	
+	// these variables are used for the listframes
 	int browserFrameHeight;
 	int browserRowNr;
 	MB_INFO_ITEM browserRowItem[MB_MAX_ROWS];//MB_INFO_ITEM
@@ -292,7 +293,6 @@ class CMovieBrowser : public CMenuTarget
 		std::vector<MI_MOVIE_INFO*> m_vHandleRecordList;
 		std::vector<MI_MOVIE_INFO*> m_vHandlePlayList;
 		std::vector<std::string> m_dirNames;
-		//std::vector<std::string> m_serienames;
         	std::vector<MI_MOVIE_INFO*> m_vHandleSerienames;
 
 		unsigned int m_currentBrowserSelection;
@@ -325,7 +325,7 @@ class CMovieBrowser : public CMenuTarget
 		MB_PARENTAL_LOCK m_parentalLock;
 		MB_STORAGE_TYPE m_storageType;
 	
-		CConfigFile	configfile;
+		CConfigFile configfile;
 		CMovieInfo m_movieInfo;
 		MB_SETTINGS m_settings;
 		std::vector<MB_DIR> m_dir;
@@ -365,12 +365,12 @@ class CMovieBrowser : public CMenuTarget
 		void fileInfoStale(void); // call this function to force the Moviebrowser to reload all movie information from HD
 
 		bool readDir(const std::string & dirname, CFileList* flist);
-		bool readDir_vlc(const std::string & dirname, CFileList* flist);
-		bool readDir_std(const std::string & dirname, CFileList* flist);
+		//bool readDir_vlc(const std::string & dirname, CFileList* flist);
+		//bool readDir_std(const std::string & dirname, CFileList* flist);
 
 		bool delFile(CFile& file);
-		bool delFile_vlc(CFile& file);
-		bool delFile_std(CFile& file);
+		//bool delFile_vlc(CFile& file);
+		//bool delFile_std(CFile& file);
 		
 		// youtube
 		int  getMode() { return show_mode; }

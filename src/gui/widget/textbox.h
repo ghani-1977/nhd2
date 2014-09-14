@@ -123,6 +123,12 @@ class CTextBox
 
 		CFrameBuffer * frameBuffer;
 		int max_width;
+		
+		std::string thumbnail;
+		int lx; 
+		int ly; 
+		int tw; 
+		int th;
 	public:
 		/* Constructor */
 		CTextBox();
@@ -139,7 +145,7 @@ class CTextBox
 		void    refresh(void);
 		void    scrollPageDown(const int pages);
 		void    scrollPageUp(const int pages);				
-		bool	setText(const std::string* newText, int _max_width = 0);
+		bool	setText(const std::string* newText, int _max_width = 0, std::string _thumbnail = "", int _lx = 0, int _ly = 0, int _tw = 0, int _th = 0);
 		
 		inline	bool 	isPainted(void){if( frameBuffer == NULL) return (false); else return (true);};
 
