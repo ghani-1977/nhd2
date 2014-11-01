@@ -120,9 +120,6 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		CIPChangeNotifier		*MyIPChanger;
 		CRCLock                         *rcLock;
                 CTimerList                      *Timerlist;			// for user menu
-                
-                /* streamingssetup */
-                std::vector<CMenuItem*> toNotify;
 
 		/* neutrino_menue.cpp */
                 bool showUserMenu(int button);
@@ -160,7 +157,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 		void InitLcdSettings(CMenuWidget &lcdSettings);
 		void InitNetworkSettings(CMenuWidget &networkSettings);
 		void InitRecordingSettings(CMenuWidget &recordingSettings);
-		void InitStreamingSettings(CMenuWidget &streamingSettings);
+		void InitMoviePlayerSettings(CMenuWidget &moviePlayerSettings);
 		void InitScreenSettings(CMenuWidget &);
 		void InitAudioplayerSettings(CMenuWidget &);
 		void InitPicViewerSettings(CMenuWidget &);
@@ -184,7 +181,7 @@ class CNeutrinoApp : public CMenuTarget, CChangeObserver
 				  CMenuWidget &service,
                         	  CMenuWidget &audioplayerSettings, 
 				  CMenuWidget &PicViewerSettings, 
-				  CMenuWidget &streamingSettings, 
+				  CMenuWidget &moviePlayerSettings, 
 				  CMenuWidget &MediaPlayer);
 
 		void SetupFrameBuffer();

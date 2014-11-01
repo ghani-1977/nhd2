@@ -82,14 +82,15 @@ class CPlugins
 		std::string plugin_dir;
 
 		bool parseCfg(plugin *plugin_data);
-		void scanDir(const char *dir);
-		bool plugin_exists(const std::string & filename);
+		void addPlugin(const char *dir);
 		int find_plugin(const std::string & filename);
-		bool pluginfile_exists(const std::string & filename);
 		CPlugins::p_type_t getPluginType(int type);
 	public:
 
 		~CPlugins();
+		
+		bool pluginfile_exists(const std::string & filename);
+		bool plugin_exists(const std::string & filename);
 
 		void loadPlugins();
 

@@ -49,9 +49,7 @@
 
 class CBEChannelWidget : public CMenuWidget
 {
-
 	private:
-	
 		CFrameBuffer	*frameBuffer;
 	
 		enum state_

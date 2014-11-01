@@ -153,7 +153,7 @@
 
 
 extern CMoviePlayerGui * moviePlayerGui;	// defined in neutrino.cpp
-extern CPlugins       * g_PluginList;		// defined in neutrino.cpp
+extern CPlugins * g_PluginList;		// defined in neutrino.cpp
 extern bool parentallocked;			// defined neutrino.cpp
 extern CRemoteControl * g_RemoteControl;	// defined neutrino.cpp
 #if !defined (PLATFORM_COOLSTREAM)
@@ -199,7 +199,7 @@ const CMenuOptionChooser::keyval MESSAGEBOX_NO_YES_OPTIONS[MESSAGEBOX_NO_YES_OPT
 };
 
 // Init Main Menu
-void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings, CMenuWidget &videoSettings, CMenuWidget &audioSettings, CMenuWidget &parentallockSettings, CMenuWidget &networkSettings, CMenuWidget &recordingSettings, CMenuWidget &colorSettings, CMenuWidget &lcdSettings, CMenuWidget &keySettings, CMenuWidget &miscSettings, CMenuWidget &service, CMenuWidget &audioplayerSettings, CMenuWidget &PicViewerSettings, CMenuWidget &streamingSettings, CMenuWidget &MediaPlayer)
+void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings, CMenuWidget &videoSettings, CMenuWidget &audioSettings, CMenuWidget &parentallockSettings, CMenuWidget &networkSettings, CMenuWidget &recordingSettings, CMenuWidget &colorSettings, CMenuWidget &lcdSettings, CMenuWidget &keySettings, CMenuWidget &miscSettings, CMenuWidget &service, CMenuWidget &audioplayerSettings, CMenuWidget &PicViewerSettings, CMenuWidget &moviePlayerSettings, CMenuWidget &MediaPlayer)
 {
 	int shortcut = 1;
 
@@ -245,46 +245,25 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	
 	// movie player
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_MOVIES, true, NULL, moviePlayerGui, "moviebrowser", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_TSMOVIEBROWSER ));
-
-	// file player
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_FILEPLAYBACK ));	
 	
-	// yt/netzkino
-	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+	// fileplayback
+	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_FILEPLAYBACK ));	
+
+	if( g_PluginList->plugin_exists("youtube") || g_PluginList->plugin_exists("netzkino") || g_PluginList->plugin_exists("vlcplayer"))
+	      MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
 	
 	// youtube player
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_YTPLAYBACK, true, NULL, moviePlayerGui, "ytplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_YT, LOCALE_HELPTEXT_NETSTREAM ));
+	if(g_PluginList->plugin_exists("youtube"))
+		MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_YTPLAYBACK, true, NULL, this, "youtube", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_YT, LOCALE_HELPTEXT_NETSTREAM ));
 	
 	// netzkino
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_NETZKINO, true, NULL, moviePlayerGui, "netzkinoplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_NETZKINO, LOCALE_HELPTEXT_NETSTREAM ));
+	if(g_PluginList->plugin_exists("netzkino"))
+		MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_NETZKINO, true, NULL, this, "netzkino", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_NETZKINO, LOCALE_HELPTEXT_NETSTREAM ));
 	
 	
 	// vlc player
-	//MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	//TEST:remember me
-	//if(g_PluginList->pluginfile_exists(vlcplayer))
+	//if(g_PluginList->plugin_exists("vlcplayer"))
 	//	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, this, "vlcplayer", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_VLC, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	/*
-	// vlc client player
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, moviePlayerGui, "vlcplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_VLC, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	// dvd
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCDVDPLAYBACK, true, NULL, moviePlayerGui, "vlcdvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_VLC, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	// svcd
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCSVCDPLAYBACK, true, NULL, moviePlayerGui, "vlcsvcdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_VLC, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	// dvd/blueray iso image
-	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	// dvd player
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_DVDPLAYBACK, true, NULL, moviePlayerGui, "dvdplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_DVD, LOCALE_HELPTEXT_DVD ));
-	
-	// blueray player
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_BLUERAYPLAYBACK, true, NULL, moviePlayerGui, "bluerayplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_DVD, LOCALE_HELPTEXT_BLUERAY ));
-	*/
 #endif	
 
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
@@ -307,7 +286,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SERVICE, true, NULL, &service, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SERVICE, LOCALE_HELPTEXT_SERVICE ));
 	
 	// timerlist
-	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
+	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
 	
 	// features
 	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
@@ -355,7 +334,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_RECORDING, true, NULL, &recordingSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_MENUITEM_RECORDINGSETTINGS, LOCALE_HELPTEXT_RECORDINGSETTINGS ));
 
 	//MoviePlayer und Streamings Settings
-	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_STREAMING, true, NULL, &streamingSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_MOVIEPLAYERSETTINGS ));
+	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_STREAMING, true, NULL, &moviePlayerSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_MOVIEPLAYERSETTINGS ));
 
 	//OSD settings
 	mainSettings.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINSETTINGS_OSD, true, NULL, &colorSettings, NULL, CRCInput::convertDigitToKey(shortcutMainSettings++), NULL, NEUTRINO_ICON_MENUITEM_OSDSETTINGS, LOCALE_HELPTEXT_OSDSETTINGS ));
@@ -1212,10 +1191,10 @@ void CNeutrinoApp::InitMiscSettings(CMenuWidget &miscSettings, CMenuWidget &misc
 	
 	// infobar show channelname
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME, &g_settings.show_channelname, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
-	
+
 	// infobar show logos left from EPG
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_LOGOS_LEFT, &g_settings.show_logos_left, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
-
+	
 	// recording screenshot
 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_RECORDING_SCREENSHOT, &g_settings.recording_screenshot, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
 
@@ -1758,109 +1737,23 @@ const CMenuOptionChooser::keyval STREAMINGMENU_VLC_VERSION_OPTIONS[STREAMINGMENU
 };
 
 // init streamingssettings
-void CNeutrinoApp::InitStreamingSettings(CMenuWidget &streamingSettings)
+void CNeutrinoApp::InitMoviePlayerSettings(CMenuWidget &moviePlayerSettings)
 {
-	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitStreamingSettings\n");
+	dprintf(DEBUG_NORMAL, "CNeutrinoApp::InitMoviePlayerSettings\n");
 	
 	// intros
-	streamingSettings.addItem(GenericMenuBack);
-	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+	moviePlayerSettings.addItem(GenericMenuBack);
+	moviePlayerSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 	
 	// save settings
-	streamingSettings.addItem(new CMenuForwarder(LOCALE_MAINSETTINGS_SAVESETTINGSNOW, true, NULL, this, "savesettings", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
-	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
+	moviePlayerSettings.addItem(new CMenuForwarder(LOCALE_MAINSETTINGS_SAVESETTINGSNOW, true, NULL, this, "savesettings", CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
+	moviePlayerSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
 	
 	// multi select
-	streamingSettings.addItem(new CMenuOptionChooser(LOCALE_STREAMINGMENU_FILEBROWSER_ALLOW_MULTISELECT, &g_settings.streaming_allow_multiselect, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true));
+	moviePlayerSettings.addItem(new CMenuOptionChooser(LOCALE_STREAMINGMENU_FILEBROWSER_ALLOW_MULTISELECT, &g_settings.movieplayer_allow_multiselect, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, true));
 
 	// multiformat Dir
-	streamingSettings.addItem(new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFDIR, true, g_settings.network_nfs_moviedir, this, "moviedir") ); 
-	
-	// streaming setup sub menu
-	CMenuWidget* mp_streaming_setup = new CMenuWidget(LOCALE_MAINSETTINGS_STREAMING, NEUTRINO_ICON_SETTINGS);
-	CMenuForwarder* mp_streaming_setup_mf = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SETTINGS, true, NULL, mp_streaming_setup, NULL, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN);
-
-	// intros
-	streamingSettings.addItem( new CMenuSeparator(CMenuSeparator::LINE) );
-	mp_streaming_setup->addItem(GenericMenuBack);
-	mp_streaming_setup->addItem( new CMenuSeparator(CMenuSeparator::LINE) );
-
-	// server ip
-	CIPInput* mp_setup_server_ip = new CIPInput(LOCALE_STREAMINGMENU_SERVER_IP, g_settings.streaming_server_ip, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2);
-	CStringInput* mp_setup_server_port = new CStringInput(LOCALE_STREAMINGMENU_SERVER_PORT, g_settings.streaming_server_port, 6, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
-
-	// cd drive
-	CStringInputSMS * cddriveInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE, g_settings.streaming_server_cddrive);
-	
-	// video rate
-	CStringInput* mp_setup_videorate = new CStringInput(LOCALE_STREAMINGMENU_STREAMING_VIDEORATE, g_settings.streaming_videorate, 5, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
-	
-	// audio rate
-	CStringInput* mp_setup_audiorate = new CStringInput(LOCALE_STREAMINGMENU_STREAMING_AUDIORATE, g_settings.streaming_audiorate, 5, LOCALE_IPSETUP_HINT_1, LOCALE_IPSETUP_HINT_2,"0123456789 ");
-	
-	// start dir
-	CStringInputSMS* startdirInput = new CStringInputSMS(LOCALE_STREAMINGMENU_STREAMING_SERVER_STARTDIR, g_settings.streaming_server_startdir);
-
-	CMenuForwarder* mf1 = new CMenuForwarder(LOCALE_STREAMINGMENU_SERVER_IP                , (g_settings.streaming_type==1), g_settings.streaming_server_ip      , mp_setup_server_ip);
-	CMenuForwarder* mf2 = new CMenuForwarder(LOCALE_STREAMINGMENU_SERVER_PORT              , (g_settings.streaming_type==1), g_settings.streaming_server_port    , mp_setup_server_port);
-	CMenuForwarder* mf3 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE , (g_settings.streaming_type==1), g_settings.streaming_server_cddrive , cddriveInput);
-	CMenuForwarder* mf4 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_VIDEORATE      , (g_settings.streaming_type==1), g_settings.streaming_videorate      , mp_setup_videorate);
-	CMenuForwarder* mf5 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_AUDIORATE      , (g_settings.streaming_type==1), g_settings.streaming_audiorate      , mp_setup_audiorate);
-	CMenuForwarder* mf6 = new CMenuForwarder(LOCALE_STREAMINGMENU_STREAMING_SERVER_STARTDIR, (g_settings.streaming_type==1), g_settings.streaming_server_startdir, startdirInput);
-
-	// transcode audio
-	CMenuOptionChooser* oj1 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_AUDIO, &g_settings.streaming_transcode_audio      , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
-
-	// force avi
-	CMenuOptionChooser* oj2 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_FORCE_AVI_RAWAUDIO, &g_settings.streaming_force_avi_rawaudio   , MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
-
-	// transcode video
-	CMenuOptionChooser* oj3 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_FORCE_TRANSCODE_VIDEO, &g_settings.streaming_force_transcode_video, MESSAGEBOX_NO_YES_OPTIONS, MESSAGEBOX_NO_YES_OPTION_COUNT, g_settings.streaming_type);
-
-	// not yet supported by VLC
-	CMenuOptionChooser* oj4 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC, &g_settings.streaming_transcode_video_codec, STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTIONS, STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC_OPTION_COUNT, g_settings.streaming_type);
-
-	// resolution
-	CMenuOptionChooser* oj5 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_RESOLUTION, &g_settings.streaming_resolution, STREAMINGMENU_STREAMING_RESOLUTION_OPTIONS, STREAMINGMENU_STREAMING_RESOLUTION_OPTION_COUNT, g_settings.streaming_type);
-
-	// vlc version
-	CMenuOptionChooser* oj10 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_VLC10, &g_settings.streaming_vlc10, STREAMINGMENU_VLC_VERSION_OPTIONS, STREAMINGMENU_VLC_VERSION_OPTION_COUNT, g_settings.streaming_type);
-
-	COnOffNotifier * StreamingNotifier = new COnOffNotifier();
-
-	StreamingNotifier->addItem(mf1);
-	StreamingNotifier->addItem(mf2);
-	StreamingNotifier->addItem(mf3);
-	StreamingNotifier->addItem(mf4);
-	StreamingNotifier->addItem(mf5);
-	StreamingNotifier->addItem(mf6);
-	StreamingNotifier->addItem(oj1);
-	StreamingNotifier->addItem(oj2);
-	StreamingNotifier->addItem(oj3);
-	StreamingNotifier->addItem(oj4);
-	StreamingNotifier->addItem(oj5);
-	StreamingNotifier->addItem(oj10);
-
-	// streaming type
-	CMenuOptionChooser* oj0 = new CMenuOptionChooser(LOCALE_STREAMINGMENU_STREAMING_TYPE, &g_settings.streaming_type, STREAMINGMENU_STREAMING_TYPE_OPTIONS, STREAMINGMENU_STREAMING_TYPE_OPTION_COUNT, true, StreamingNotifier);
-
-	streamingSettings.addItem(mp_streaming_setup_mf);	//streaming server settings
-	mp_streaming_setup->addItem(oj0);			//enable/disable streamingserver
-	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator	
-	mp_streaming_setup->addItem(mf1);			//Server IP
-	mp_streaming_setup->addItem(mf2);			//Server Port
-	mp_streaming_setup->addItem(mf3);			//CD-Drive
-	mp_streaming_setup->addItem(mf6);			//vlc Startdir
-	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator	
-	mp_streaming_setup->addItem(mf4);			//Video-Rate
-	mp_streaming_setup->addItem(oj3);			//transcode
-	mp_streaming_setup->addItem(oj4);			//codec
-	mp_streaming_setup->addItem(oj5);			//definition
-	mp_streaming_setup->addItem(oj10);			//vlc10
-	mp_streaming_setup->addItem(GenericMenuSeparatorLine);	//separator
-	mp_streaming_setup->addItem(mf5);			//Audiorate
-	mp_streaming_setup->addItem(oj1);			//transcode audio
-	mp_streaming_setup->addItem(oj2);			//ac3 on avi	
+	moviePlayerSettings.addItem(new CMenuForwarder(LOCALE_MOVIEPLAYER_DEFDIR, true, g_settings.network_nfs_moviedir, this, "moviedir") ); 
 }
 
 // Init Color Settings
@@ -1912,9 +1805,6 @@ void CNeutrinoApp::InitColorSettings(CMenuWidget &colorSettings)
 	
 	//font scaling
 	colorSettings.addItem(new CMenuForwarder(LOCALE_FONTMENU_SCALING, true, NULL, this, "font_scaling", CRCInput::convertDigitToKey(shortcutOSD++) ));
-	
-	// font contrast
-	colorSettings.addItem( new CMenuOptionChooser(LOCALE_COLORMENU_CONTRAST_FONTS, &g_settings.contrast_fonts, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true, NULL, CRCInput::convertDigitToKey(shortcutOSD++)));
 
 	// osd-timing
 	CMenuWidget *colorSettings_timing = new CMenuWidget(LOCALE_COLORMENU_TIMING, NEUTRINO_ICON_SETTINGS);

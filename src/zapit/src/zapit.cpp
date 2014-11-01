@@ -2657,7 +2657,13 @@ bool zapit_parse_command(CBasicMessage::Header &rmsg, int connfd)
 // opengl liveplayback
 #if defined (USE_OPENGL)
 			unlockOpenGLplayback();
-#endif			
+#endif	
+
+#if defined (ENABLE_GSTREAMER)
+			if (! (currentMode & RECORD_MODE))
+				if(live_channel)
+					zapit(live_channel->getChannelID(), current_is_nvod);
+#endif				
 			
 			break;
 	

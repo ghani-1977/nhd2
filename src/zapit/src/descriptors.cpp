@@ -240,7 +240,7 @@ void network_name_descriptor(const unsigned char * const /*buffer*/)
 }
 
 /* 0x41 */
-void service_list_descriptor(const unsigned char * const buffer, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position satellitePosition, freq_id_t freq)
+void service_list_descriptor(const unsigned char * const buffer, const t_transport_stream_id transport_stream_id, const t_original_network_id original_network_id, t_satellite_position /*satellitePosition*/, freq_id_t /*freq*/)
 {
 	for (int i = 0; i < buffer[1]; i += 3) 
 	{

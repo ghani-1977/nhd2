@@ -469,15 +469,20 @@ void CPictureViewer::Cleanup()
 
 // channels logos
 // display image
-bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height, bool transp)
+bool CPictureViewer::DisplayImage(const std::string & name, int posx, int posy, int width, int height)
 {
 	dprintf(DEBUG_INFO, "CPictureViewer::DisplayImage\n");
+	
+	bool isPNG = false;
+	
+	if( name.find(".png") == (name.length() - 4) )
+		isPNG = true;
 	
 	fb_pixel_t * data = CFrameBuffer::getInstance()->getImage(name, width, height);
 
 	if(data) 
 	{
-		CFrameBuffer::getInstance()->blit2FB(data, width, height, posx, posy, 0, 0, transp? true : false);
+		CFrameBuffer::getInstance()->blit2FB(data, width, height, posx, posy, 0, 0, isPNG? true : false);
 		free(data);
 		return true;
 	}
@@ -630,7 +635,7 @@ bool CPictureViewer::DisplayLogo(t_channel_id channel_id, int posx, int posy, in
 				}
 			}
 			
-			ret = DisplayImage(fname, center_x?posx + (width - logo_w)/2 : posx, center_y?posy + (height - logo_h)/2 : posy, logo_w, logo_h, true);
+			ret = DisplayImage(fname, center_x?posx + (width - logo_w)/2 : posx, center_y?posy + (height - logo_h)/2 : posy, logo_w, logo_h);
 		}
 		else
 		{

@@ -909,6 +909,7 @@ moviebrowser.menu_save_all Start update of movie info files
 moviebrowser.option_browser Browser Options
 moviebrowser.reload_at_start Reload movie info at start
 moviebrowser.remount_at_start Remount at start
+moviebrowser.next_focus next focus
 moviebrowser.scan_for_movies Scan for Movies ...
 moviebrowser.serie_auto_create Serie auto create
 moviebrowser.serie_head Serie
@@ -951,7 +952,7 @@ movieplayer.vlcdvdplayback VLC (DVD) Player
 movieplayer.vlcsvcdplayback VLC (SVCD) Player
 movieplayer.records Records Player
 movieplayer.movies Movies Player
-movieplayer.fileplayback File Player
+movieplayer.fileplayback Media Player
 movieplayer.showtshelp Help
 movieplayer.goto Jump to ...
 movieplayer.goto.h1 = -> absolute jump
@@ -1662,4 +1663,6 @@ moviebrowser.nk_error Failed to load Netzkino feed
 moviebrowser.nk_rtmp netzKino URL Protokoll
 moviebrowser.nk_rtmp_http HTTP (mp4)
 moviebrowser.nk_rtmp_rtmp RTMP
+
+plugins.notinstalled is not installed please install again.
 

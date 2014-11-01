@@ -433,7 +433,7 @@ void CMovieBrowser::fileInfoStale(void)
 		m_playListLines.lineArray[i].clear();
 		m_FilterLines.lineArray[i].clear();
 	}
-}; 
+}
 
 void CMovieBrowser::init(void)
 {
@@ -580,18 +580,6 @@ void CMovieBrowser::initGlobalSettings(void)
 	m_settings.remount = false;
 	m_settings.browser_serie_mode = 0;
 	m_settings.serie_auto_create = 0;
-	
-	// youtube
-	m_settings.ytmode = cYTFeedParser::MOST_POPULAR;
-	m_settings.ytorderby = cYTFeedParser::ORDERBY_PUBLISHED;
-	m_settings.ytresults = 25;
-	m_settings.ytregion = "default";
-	
-	// netzkino	
-	m_settings.nkcategory = 1;
-	m_settings.nkresults = 500;
-	m_settings.nkconcconn = 1;
-	m_settings.nkcategoryname = "Actionkino";
 }
 
 void CMovieBrowser::initFrames(void)
@@ -764,42 +752,6 @@ bool CMovieBrowser::loadSettings(MB_SETTINGS *settings)
 		result = false;
 	}
 	
-	// youtube
-	settings->ytmode = configfile.getInt32("mb_ytmode", cYTFeedParser::MOST_POPULAR);
-	settings->ytorderby = configfile.getInt32("mb_ytorderby", cYTFeedParser::ORDERBY_PUBLISHED);
-	settings->ytresults = configfile.getInt32("mb_ytresults", 25);
-	settings->ytregion = configfile.getString("mb_ytregion", "default");
-	settings->ytsearch = configfile.getString("mb_ytsearch", "");
-	settings->ytvid = configfile.getString("mb_ytvid", "");
-	//
-	
-	// netzkino	
-	settings->nkmode = configfile.getInt32("mb_nkmode", cNKFeedParser::CATEGORY);
-	settings->nkresults = configfile.getInt32("mb_nkresults", 10);
-	settings->nkconcconn = configfile.getInt32("mb_nkconcconn", 1); // concurrent connections
-	settings->nksearch = configfile.getString("mb_nksearch", "");
-	//settings->nkthumbnaildir = configfile.getString("mb_nkthumbnaildir", "/media/sda1/netzkino-thumbnails"); // FIXME, add GUI option
-	settings->nkcategory = configfile.getInt32("mb_nkcategory", 1);
-	settings->nkcategoryname = configfile.getString("mb_nkcategoryname", "Actionkino");
-	
-	/*
-	settings->nksearch_history_max = configfile.getInt32("mb_nksearch_history_max", 10);
-	settings->nksearch_history_size = configfile.getInt32("mb_nksearch_history_size", 0);
-	if (settings->nksearch_history_size > settings->nksearch_history_max)
-		settings->nksearch_history_size = settings->nksearch_history_max;
-	settings->nksearch_history.clear();
-	char cfg_key[81];
-	for(int i = 0; i < settings->nksearch_history_size; i++) 
-	{
-		sprintf(cfg_key, "mb_nksearch_history_%d", i);
-		std::string s = configfile.getString(cfg_key);
-		if (s != "")
-			settings->nksearch_history.push_back(configfile.getString(cfg_key, ""));
-	}
-	settings->nksearch_history_size = settings->nksearch_history.size();
-	*/
-	//
-	
 	return (result);
 }
 
@@ -856,38 +808,6 @@ bool CMovieBrowser::saveSettings(MB_SETTINGS *settings)
 	
 	// show_mode
 	//configfile.setInt32("show_mode", show_mode);
-	
-	// youtube
-	configfile.setInt32("mb_ytmode", settings->ytmode);
-	configfile.setInt32("mb_ytorderby", settings->ytorderby);
-	configfile.setInt32("mb_ytresults", settings->ytresults);
-	configfile.setString("mb_ytregion", settings->ytregion);
-	configfile.setString("mb_ytsearch", settings->ytsearch);
-	configfile.setString("mb_ytvid", settings->ytvid);
-	
-	// netzkino	
-	configfile.setInt32("mb_nkmode", settings->nkmode);
-	configfile.setInt32("mb_nkresults", settings->nkresults);
-	configfile.setInt32("mb_nkconcconn", settings->nkconcconn);
-	configfile.setInt32("mb_nkcategory", settings->nkcategory);
-	configfile.setString("mb_nkcategoryname", settings->nkcategoryname);
-	configfile.setString("mb_nksearch", settings->nksearch);
-	//configfile.setString("mb_nkthumbnaildir", settings->nkthumbnaildir);
-	
-	/*
-	settings->nksearch_history_size = settings->nksearch_history.size();
-	if (settings->nksearch_history_size > settings->nksearch_history_max)
-		settings->nksearch_history_size = settings->nksearch_history_max;
-	configfile.setInt32("mb_nksearch_history_max", settings->nksearch_history_max);
-	configfile.setInt32("mb_nksearch_history_size", settings->nksearch_history_size);
-	it = settings->nksearch_history.begin();
-	for(int i = 0; i < settings->nksearch_history_size; i++, ++it)
-	{
-		sprintf(cfg_key, "mb_nksearch_history_%d", i);
-		configfile.setString(cfg_key, *it);
-	}
-	*/
-	//
  
  	if (configfile.getModifiedFlag())
 		configfile.saveConfig(MOVIEBROWSER_SETTINGS_FILE);
@@ -1034,18 +954,7 @@ int CMovieBrowser::exec(const char * path)
 	if(show_mode != m_settings.show_mode)
 	{
 		//
-		if( (show_mode == MB_SHOW_YT) || (show_mode == MB_SHOW_NETZKINO) )
-		{
-			m_settings.browserRowNr = 3;
-			m_settings.browserRowItem[0] = MB_INFO_TITLE;
-			m_settings.browserRowItem[1] = MB_INFO_INFO1;
-			m_settings.browserRowItem[2] = MB_INFO_RECORDDATE;
-
-			m_settings.browserRowWidth[0] = m_defaultRowWidth[m_settings.browserRowItem[0]]*1.5;		//300;
-			m_settings.browserRowWidth[1] = m_defaultRowWidth[m_settings.browserRowItem[1]]; 		//100;
-			m_settings.browserRowWidth[2] = m_defaultRowWidth[m_settings.browserRowItem[2]]; 		//80;
-		}
-		else if(show_mode == MB_SHOW_FILES)
+		if(show_mode == MB_SHOW_FILES)
 		{
 			m_settings.browserRowNr = 3;
 			m_settings.browserRowItem[0] = MB_INFO_TITLE;
@@ -1202,7 +1111,7 @@ int CMovieBrowser::exec(const char * path)
 				if(m_movieSelectionHandler != NULL)
 				{
 					// If there is any available bookmark, show the bookmark menu
-					if( (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO && show_mode != MB_SHOW_FILES) && (m_movieSelectionHandler->bookmarks.lastPlayStop != 0 || m_movieSelectionHandler->bookmarks.start != 0) )
+					if( (show_mode != MB_SHOW_FILES) && (m_movieSelectionHandler->bookmarks.lastPlayStop != 0 || m_movieSelectionHandler->bookmarks.start != 0) )
 					{
 						dprintf(DEBUG_NORMAL, "[mb] stop: %d start:%d \r\n", m_movieSelectionHandler->bookmarks.lastPlayStop,m_movieSelectionHandler->bookmarks.start);
 						m_currentStartPos = showStartPosSelectionMenu(); // display start menu m_currentStartPos = 
@@ -1331,9 +1240,6 @@ int CMovieBrowser::paint(void)
 		return (false);
 	} 
 	
-	Start = 0;
-	End = m_pcBrowser->getLinesPerPage();
-	
 	return (true);
 }
 
@@ -1403,36 +1309,13 @@ void CMovieBrowser::refreshMovieInfo(void)
 		int pich = m_cBoxFrameInfo.iHeight - 10;
 		int picw = pich * (4.0 / 3);		// 4/3 format pics
 		
-		// netzkino
-		if(show_mode == MB_SHOW_NETZKINO )
-			picw /= 2;
-		//
-		
 		int lx, ly;
 		
 		// youtube
 		std::string fname;
-
-		if ( show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO ) 
-		{
-			fname = m_movieSelectionHandler->tfile;
-		} 
-		else 
-		{
-			fname = m_movieSelectionHandler->file.Name;
-		}
+		fname = m_movieSelectionHandler->file.Name;
 		
-		int ext_pos = 0;
-		ext_pos = fname.rfind('.');
-		if( ext_pos > 0)
-		{
-			std::string extension;
-			extension = fname.substr(ext_pos + 1, fname.length() - ext_pos);
-			extension = "." + extension;
-			strReplace(fname, extension.c_str(), ".jpg");
-		}
-		
-		//printf("screenshot name: %s\n", fname.c_str());
+		changeFileNameExt(fname, ".jpg");
 		
 		logo_ok = !access(fname.c_str(), F_OK);
 		
@@ -1719,6 +1602,7 @@ void CMovieBrowser::refreshBrowserList(void) //P1
 	m_pcBrowser->setLines(&m_browserListLines);
 
 	m_currentBrowserSelection = m_pcBrowser->getSelectedLine();
+	
 	// update selected movie if browser is in the focus
 	if (m_windowFocus == MB_FOCUS_BROWSER)
 	{
@@ -1748,38 +1632,6 @@ void CMovieBrowser::refreshTitle(void)
 	{
 		title = g_Locale->getText(LOCALE_MOVIEPLAYER_MOVIES);
 	}
-	// yt
-	else if (show_mode == MB_SHOW_YT) 
-	{
-		title = g_Locale->getText(LOCALE_MOVIEPLAYER_YTPLAYBACK);
-		title += " : ";
-		
-		neutrino_locale_t loc = getFeedLocale();
-		title += g_Locale->getText(loc);
-		if (loc == LOCALE_MOVIEBROWSER_YT_RELATED || loc == LOCALE_MOVIEBROWSER_YT_SEARCH)
-			title += " \"" + m_settings.ytsearch + "\"";
-		
-		mb_icon = NEUTRINO_ICON_YT_SMALL;
-	}
-	// netzkino
-	else if (show_mode == MB_SHOW_NETZKINO) 
-	{
-		title = g_Locale->getText(LOCALE_MOVIEPLAYER_NETZKINO);
-		if (m_settings.nkmode == cNKFeedParser::SEARCH) 
-		{
-			title += ": ";
-			title += g_Locale->getText(LOCALE_MOVIEBROWSER_YT_SEARCH);
-			title += " \"" + m_settings.nksearch + "\"";
-		} 
-		else if (m_settings.nkmode == cNKFeedParser::CATEGORY) 
-		{
-			title += ": ";
-			title += m_settings.nkcategoryname;
-		}
-		
-		mb_icon = NEUTRINO_ICON_NETZKINO_SMALL;
-	}
-	//
 
 	// head box
 	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX, m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY, m_cBoxFrameTitleRel.iWidth, m_cBoxFrameTitleRel.iHeight, TITLE_BACKGROUND_COLOR, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
@@ -1787,7 +1639,7 @@ void CMovieBrowser::refreshTitle(void)
 	// movie icon
 	int icon_w, icon_h;
 	m_pcWindow->getIconSize(mb_icon.c_str(), &icon_w, &icon_h);
-	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrameTitleRel.iHeight + (m_cBoxFrameTitleRel.iHeight - icon_h)/2);
+	m_pcWindow->paintIcon(mb_icon, m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + 10, m_cBoxFrame.iY + m_cBoxFrameTitleRel.iY + (m_cBoxFrameTitleRel.iHeight - icon_h)/2);
 
 	// setup icon
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_w, &icon_h);
@@ -1800,6 +1652,15 @@ void CMovieBrowser::refreshTitle(void)
 	int icon_h_w, icon_h_h;
 	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_SETUP, &icon_h_w, &icon_h_h);
 	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_HELP, xpos1 - icon_w - 2 - icon_h_w, ypos);
+	
+	// mute icon
+	if(show_mode == MB_SHOW_RECORDS)
+	{
+		int icon_hd_w, icon_hd_h;
+		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_hd_w, &icon_hd_h);
+		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, xpos1 - icon_w - 2 - icon_h_w -2 - icon_hd_w, ypos);
+	}
+	//
 	
 	// head title
 	m_pcFontTitle->RenderString(m_cBoxFrame.iX + m_cBoxFrameTitleRel.iX + TEXT_BORDER_WIDTH + icon_w + 10, m_cBoxFrame.iY+m_cBoxFrameTitleRel.iY + m_cBoxFrameTitleRel.iHeight, m_cBoxFrameTitleRel.iWidth - (TEXT_BORDER_WIDTH << 1) - 2*icon_w - 10 - icon_h_w, title.c_str(), TITLE_FONT_COLOR, 0, true); // UTF-8
@@ -1816,17 +1677,14 @@ void CMovieBrowser::refreshFoot(void)
 	std::string filter_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_FILTER);
 	std::string sort_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_SORT);
 	
-	if (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO ) 
-	{
-		// filter
-		filter_text += m_settings.filter.optionString;
+	// filter
+	filter_text += m_settings.filter.optionString;
 		
-		// sort
-		sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
-	}
+	// sort
+	sort_text += g_Locale->getText(m_localizedItemName[m_settings.sorting.item]);
 	
 	// ok (play)
-	std::string ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
+	std::string next_text = g_Locale->getText(LOCALE_MOVIEBROWSER_NEXT_FOCUS);
 	
 	// draw the background first
 	m_pcWindow->paintBoxRel(m_cBoxFrame.iX + m_cBoxFrameFootRel.iX, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY, m_cBoxFrameFootRel.iWidth, m_cBoxFrameFootRel.iHeight + 6, COL_MENUHEAD_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
@@ -1849,10 +1707,7 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_RED, m_cBoxFrame.iX + xpos1, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//1
-		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO ) 
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS), color, 0, true); // UTF-8
-		else
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos1 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, sort_text.c_str(), color, 0, true); // UTF-8
 	}
 
 	// green
@@ -1862,43 +1717,30 @@ void CMovieBrowser::refreshFoot(void)
 		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_GREEN, m_cBoxFrame.iX + xpos2, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2 );
 
 		//2
-		if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO ) 
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, g_Locale->getText(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS), color, 0, true); // UTF-8
-		else
-			m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), color, 0, true); // UTF-8
+		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos2 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width -30, filter_text.c_str(), color, 0, true); // UTF-8
 	}
 
-	// yellow/ok
+	// yellow
 	if(m_settings.gui == MB_GUI_FILTER && m_windowFocus == MB_FOCUS_FILTER)
 	{
-		ok_text = "select";
+		next_text = "select";
 	}
 	else
 	{
-		ok_text = g_Locale->getText(LOCALE_MOVIEBROWSER_FOOT_PLAY);
+		next_text = g_Locale->getText(LOCALE_MOVIEBROWSER_NEXT_FOCUS);
 	}
 
-	// ok
-	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_OKAY, &icon_w, &icon_h);
-	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_OKAY, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
+	// yellow
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_YELLOW, &icon_w, &icon_h);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_YELLOW, m_cBoxFrame.iX + xpos3, m_cBoxFrame.iY + m_cBoxFrameFootRel.iY + (m_cBoxFrameFootRel.iHeight + 6 - icon_h)/2);
 
-	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, ok_text.c_str(), color, 0, true); // UTF-8
+	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos3 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, next_text.c_str(), color, 0, true); // UTF-8
 
-	// refresh/delete (mute/blue)
-	if (show_mode != MB_SHOW_RECORDS) 
-	{
-		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
-		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
+	// blue
+	m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_BLUE, &icon_w, &icon_h);
+	m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_BLUE, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
 
-		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES), color, 0, true); // UTF-8
-	}
-	else if(show_mode == MB_SHOW_RECORDS)
-	{
-		m_pcWindow->getIconSize(NEUTRINO_ICON_BUTTON_MUTE_SMALL, &icon_w, &icon_h);
-		m_pcWindow->paintIcon(NEUTRINO_ICON_BUTTON_MUTE_SMALL, m_cBoxFrame.iX+xpos4, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + (ADD_FOOT_HEIGHT>>1));
-
-		m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_FILEBROWSER_DELETE), color, 0, true); // UTF-8
-	}
+	m_pcFontFoot->RenderString(m_cBoxFrame.iX + xpos4 + 5 + icon_w, m_cBoxFrame.iY+m_cBoxFrameFootRel.iY + m_cBoxFrameFootRel.iHeight + 4 , width-30, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES), color, 0, true); // UTF-8
 }
 
 bool CMovieBrowser::onButtonPress(neutrino_msg_t msg)
@@ -1957,69 +1799,15 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_minus) 
 	{
-		if ( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
-			onSetGUIWindowPrev();
+		onSetGUIWindowPrev();
 	}
 	else if (msg == CRCInput::RC_plus) 
 	{
-		if ( (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
-			onSetGUIWindowNext();
+		onSetGUIWindowNext();
 	}
 	else if (msg == CRCInput::RC_green) 
-	{
-		if (show_mode == MB_SHOW_YT)
-		{
-			if(ytparser.HaveNext())
-			{
-				//
-				m_pcWindow->paintBackground();
-				
-				//
-				CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-				loadBox.paint();
-				
-				// yt clean up
-				ytparser.Cleanup();
-				
-				loadYTitles(cYTFeedParser::NEXT, m_settings.ytsearch, m_settings.ytvid);
-				
-				loadBox.hide();
-				
-				refreshBrowserList();
-				refreshLastPlayList();
-				refreshLastRecordList();
-				refreshFilterList();
-				//refreshMovieInfo();
-				refresh();
-			}
-		}		
-		else if(show_mode == MB_SHOW_NETZKINO)
-		{
-			Start += m_pcBrowser->getLinesPerPage();
-			End += m_pcBrowser->getLinesPerPage();
-			
-			if(End <= videoListsize)
-			{
-				m_pcWindow->paintBackground();
-					
-				//
-				CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-				loadBox.paint();
-				
-				nkparser.Cleanup();
-				loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, Start, End);
-				
-				loadBox.hide();
-					
-				refreshBrowserList();
-				refreshLastPlayList();
-				refreshLastRecordList();
-				refreshFilterList();
-				//refreshMovieInfo();
-				refresh();
-			}
-		}
-		else if(m_settings.gui == MB_GUI_MOVIE_INFO)
+	{		
+		if(m_settings.gui == MB_GUI_MOVIE_INFO)
 			onSetGUIWindow(MB_GUI_FILTER);
 		else if(m_settings.gui == MB_GUI_FILTER)
 			onSetGUIWindow(MB_GUI_MOVIE_INFO);
@@ -2027,77 +1815,16 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_yellow) 
 	{
-		//if (show_mode != MB_SHOW_YT && show_mode != MB_SHOW_NETZKINO )
 		onSetFocusNext();
 	}
 	else if (msg == CRCInput::RC_blue) 
 	{
-		// youtube
-		if (show_mode == MB_SHOW_YT)
-			ytparser.Cleanup();	
-		else if (show_mode == MB_SHOW_NETZKINO)
-			nkparser.Cleanup();	
-
 		loadMovies();
 		refresh();
 	}
 	else if (msg == CRCInput::RC_red ) 
-	{
-		if (show_mode == MB_SHOW_YT)
-		{
-			if(ytparser.HavePrev())
-			{
-				//
-				m_pcWindow->paintBackground();
-				
-				//
-				CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-				loadBox.paint();
-				
-				// yt clean up
-				ytparser.Cleanup();
-		
-				// yt reload
-				loadYTitles(cYTFeedParser::PREV, m_settings.ytsearch, m_settings.ytvid);
-				
-				loadBox.hide();
-				
-				// refresh
-				refreshBrowserList();
-				refreshLastPlayList();
-				refreshLastRecordList();
-				refreshFilterList();
-				//refreshMovieInfo();
-				refresh();
-			}
-		}		
-		else if(show_mode == MB_SHOW_NETZKINO)
-		{
-			Start -= m_pcBrowser->getLinesPerPage();
-			End -= m_pcBrowser->getLinesPerPage();
-			
-			if(Start >= m_pcBrowser->getLinesPerPage())
-			{
-				m_pcWindow->paintBackground();
-					
-				//
-				CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-				loadBox.paint();
-				
-				nkparser.Cleanup();
-				loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, Start, End);
-				
-				loadBox.hide();
-					
-				refreshBrowserList();
-				refreshLastPlayList();
-				refreshLastRecordList();
-				refreshFilterList();
-				//refreshMovieInfo();
-				refresh();
-			}
-		}
-		else if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
+	{	
+		if(m_settings.gui != MB_GUI_LAST_PLAY && m_settings.gui != MB_GUI_LAST_RECORD)
 		{
 			// sorting is not avialable for last play and record
 			do
@@ -2137,16 +1864,8 @@ bool CMovieBrowser::onButtonPressMainFrame(neutrino_msg_t msg)
 	}
 	else if (msg == CRCInput::RC_setup) 
 	{
-		// youtube
-		if (show_mode == MB_SHOW_YT)
-			showYTMenu();	
-		else if (show_mode == MB_SHOW_NETZKINO)
-			showNKMenu();
-		else
-		{
-			if(m_movieSelectionHandler != NULL)
-				showMenu(m_movieSelectionHandler);
-		}
+		if(m_movieSelectionHandler != NULL)
+			showMenu(m_movieSelectionHandler);
 	}
 	else if (msg == CRCInput::RC_text) 
 	{
@@ -2554,20 +2273,6 @@ void CMovieBrowser::onDeleteFile(MI_MOVIE_INFO& movieSelectionHandler)
 
 void CMovieBrowser::onSetGUIWindow(MB_GUI gui)
 {
-	/*
-	if (show_mode == MB_SHOW_YT || show_mode == MB_SHOW_NETZKINO )
-	{
-		switch(gui) 
-		{
-			case MB_GUI_MOVIE_INFO:
-			case MB_GUI_FILTER:
-				break;
-			default:
-				gui = MB_GUI_MOVIE_INFO;
-		}
-	}
-	*/
-
 	m_settings.gui = gui;
 	
 	if(gui == MB_GUI_MOVIE_INFO)
@@ -2983,15 +2688,12 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 					{
 						movieInfo.epgTitle = flist[i].getFileName();
 						movieInfo.epgInfo1 = flist[i].getFileName();
-						//movieInfo.epgInfo2 = flist[i].getFileName(); //IMDB???
+						movieInfo.epgInfo2 = flist[i].getFileName(); //IMDB???
 					}
 					
-					//TEST: remove me
-					if( (show_mode != MB_SHOW_FILES) && (show_mode != MB_SHOW_YT) && (show_mode != MB_SHOW_NETZKINO) )
-					{
-						if(movieInfo.serieName.empty())
-							movieInfo.serieName = movieInfo.epgTitle;
-					}
+					//TEST: remove me (serieName)
+					if(movieInfo.serieName.empty())
+						movieInfo.serieName = movieInfo.epgTitle;
 					
 					//
 					movieInfo.file.Mode = flist[i].Mode;
@@ -3019,28 +2721,6 @@ bool CMovieBrowser::loadTsFileNamesFromDir(const std::string & dirname)
 	return (result);
 }
 
-#if 0
-bool CMovieBrowser::readDir(const std::string & dirname, CFileList * flist)
-{
-	bool result = false;
-	if (strncmp(dirname.c_str(), VLC_URI, strlen(VLC_URI)) == 0)
-	{
-		result = readDir_vlc(dirname, flist);
-	}
-	else
-	{
-		result = readDir_std(dirname, flist);
-	}
-	
-	return(result);
-}
-
-bool CMovieBrowser::readDir_vlc(const std::string &/*dirname*/, CFileList */*flist*/)
-{
-	return false;
-}
-#endif
-
 bool CMovieBrowser::readDir(const std::string & dirname, CFileList* flist)
 {
 	bool result = true;
@@ -3057,6 +2737,7 @@ bool CMovieBrowser::readDir(const std::string & dirname, CFileList* flist)
 		perror(("[mb] scandir: "+dirname).c_str());
 		return false;
 	}
+	
 	CFile file;
 	for(int i = 0; i < n;i++)
 	{
@@ -3086,34 +2767,11 @@ bool CMovieBrowser::readDir(const std::string & dirname, CFileList* flist)
 	return(result);
 }
 
-#if 0
-bool CMovieBrowser::delFile(CFile& file)
-{
-	bool result = false;
-	//only std supported yet
-	if(1)
-	{
-		result = delFile_std(file);
-	}
-	else
-	{
-		result = delFile_vlc(file);
-	}
-	return(result);
-}
-
-bool CMovieBrowser::delFile_vlc(CFile &/*file*/)
-{
-	bool result = false;
-	return(result);
-}
-#endif
-
 bool CMovieBrowser::delFile(CFile& file)
 {
 	bool result = true;
 	unlink(file.Name.c_str()); // fix: use full path
-	dprintf(DEBUG_NORMAL, "  delete file: %s\r\n",file.Name.c_str());
+	dprintf(DEBUG_NORMAL, "  delete file: %s\r\n", file.Name.c_str());
 	return(result);
 }
 
@@ -3295,32 +2953,18 @@ void CMovieBrowser::loadMovies(void)
 	m_pcWindow->paintBackground();
 	m_pcWindow->blit();	
 
-	CHintBox loadBox((show_mode == MB_SHOW_YT)?LOCALE_MOVIEPLAYER_YTPLAYBACK: (show_mode == MB_SHOW_NETZKINO)?LOCALE_MOVIEPLAYER_NETZKINO : (show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
+	CHintBox loadBox((show_mode == MB_SHOW_RECORDS)?LOCALE_MOVIEPLAYER_RECORDS:LOCALE_MOVIEPLAYER_MOVIES, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
 	
 	loadBox.paint();
 
-	// youtube
-	if (show_mode == MB_SHOW_YT) 
-	{
-		loadYTitles(m_settings.ytmode, m_settings.ytsearch, m_settings.ytvid);
-	}	
-	else if (show_mode == MB_SHOW_NETZKINO) 
-	{
-		//printf("line per page:%d\n", m_pcBrowser->getLinesPerPage());
-		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, 0, m_pcBrowser->getLinesPerPage());
-		nkparser.DownloadThumbnails(0, /*m_settings.nkresults*/m_pcBrowser->getLinesPerPage());
-	}	
-	else 
-	{
-		loadAllTsFileNamesFromStorage(); // P1
+	loadAllTsFileNamesFromStorage(); // P1
 
-		m_seriename_stale = true; // we reloaded the movie info, so make sure the other list are  updated later on as well
-		updateSerienames();
+	m_seriename_stale = true; // we reloaded the movie info, so make sure the other list are  updated later on as well
+	updateSerienames();
 		
-		if(m_settings.serie_auto_create == 1)
-		{
-			autoFindSerie();
-		}
+	if(m_settings.serie_auto_create == 1)
+	{
+		autoFindSerie();
 	}
 	
 	loadBox.hide();
@@ -3883,26 +3527,9 @@ bool CMovieBrowser::getMovieInfoItem(MI_MOVIE_INFO& movie_info, MB_INFO_ITEM ite
 			break;
 			
 		case MB_INFO_RECORDDATE: 			// 		= 13,
-			if (show_mode == MB_SHOW_YT) 
-			{
-				*item_string = movie_info.ytdate;
-			} 	
-			else if (show_mode == MB_SHOW_NETZKINO) 
-			{
-				// YYYY-MM-DD hh:mm:ss
-				int day, month, year;
-				if (3 == sscanf(movie_info.ytdate.c_str(), "%d-%d-%d", &day, &month, &year)) 
-				{
-					snprintf(str_tmp,MAX_STR_TMP,"%02d.%02d.%02d", day, month, year);
-					*item_string = str_tmp;
-				}
-			}		
-			else 
-			{
-				tm_tmp = localtime(&movie_info.file.Time);
-				snprintf(str_tmp,MAX_STR_TMP,"%02d.%02d.%02d",tm_tmp->tm_mday,(tm_tmp->tm_mon) + 1,tm_tmp->tm_year >= 100 ? tm_tmp->tm_year-100 : tm_tmp->tm_year);
-				*item_string = str_tmp;
-			}
+			tm_tmp = localtime(&movie_info.file.Time);
+			snprintf(str_tmp,MAX_STR_TMP,"%02d.%02d.%02d",tm_tmp->tm_mday,(tm_tmp->tm_mon) + 1,tm_tmp->tm_year >= 100 ? tm_tmp->tm_year-100 : tm_tmp->tm_year);
+			*item_string = str_tmp;
 			break;
 			
 		case MB_INFO_PRODDATE: 				// 		= 14,
@@ -4369,7 +3996,7 @@ void CDirMenu::show(void)
 	{
 		sprintf(tmp,"%d",i);
 		tmp[1]=0;
-		dirMenu.addItem( new CMenuForwarderNonLocalized ( (*dirList)[i].name.c_str(), (dirState[i] != DIR_STATE_UNKNOWN), dirOptionText[i],       this,tmp));
+		dirMenu.addItem( new CMenuForwarderNonLocalized ( (*dirList)[i].name.c_str(), (dirState[i] != DIR_STATE_UNKNOWN), dirOptionText[i], this, tmp));
 	}
 	dirMenu.exec(NULL," ");
 	return;
@@ -5150,430 +4777,4 @@ ret_err:
 		g_RCInput->postMsg(CRCInput::RC_home, 0);
 	return retval;
 }
-
-// youtube
-void CMovieBrowser::loadYTitles(int mode, std::string search, std::string id)
-{
-	dprintf(DEBUG_NORMAL, "CMovieBrowser::loadYTitles: parsed %d old mode %d new mode %d region %s\n", ytparser.Parsed(), ytparser.GetFeedMode(), m_settings.ytmode, m_settings.ytregion.c_str());
-	
-	if (m_settings.ytregion == "default")
-		ytparser.SetRegion("");
-	else
-		ytparser.SetRegion(m_settings.ytregion);
-	
-	//printf("line per page:%d\n", m_pcBrowser->getLines());
-
-	ytparser.SetMaxResults(/*m_settings.ytresults*/ m_pcBrowser->getLinesPerPage());
-
-	if (!ytparser.Parsed() || (ytparser.GetFeedMode() != mode)) 
-	{
-		if (ytparser.ParseFeed((cYTFeedParser::yt_feed_mode_t)mode, search, id, (cYTFeedParser::yt_feed_orderby_t)m_settings.ytorderby))
-		{
-			ytparser.DownloadThumbnails();
-		} 
-		else 
-		{
-			//FIXME show error
-			DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEBROWSER_YT_ERROR));
-			return;
-		}
-	}
-	
-	m_vMovieInfo.clear();
-	yt_video_list_t &ylist = ytparser.GetVideoList();
-	
-	for (unsigned i = 0; i < ylist.size(); i++) 
-	{
-		MI_MOVIE_INFO movieInfo;
-		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
-		
-		movieInfo.epgChannel = ylist[i].author;
-		movieInfo.epgTitle = ylist[i].title;
-		movieInfo.epgInfo1 = ylist[i].category;
-		movieInfo.epgInfo2 = ylist[i].description;
-		movieInfo.length = ylist[i].duration/60 ;
-		movieInfo.tfile = ylist[i].tfile;
-		movieInfo.ytdate = ylist[i].published;
-		movieInfo.ytid = ylist[i].id;
-		movieInfo.file.Name = ylist[i].title;
-		movieInfo.file.Url = ylist[i].GetUrl();
-		
-		m_vMovieInfo.push_back(movieInfo);
-	}
-	
-	m_currentBrowserSelection = 0;
-	m_currentRecordSelection = 0;
-	m_currentPlaySelection = 0;
-	m_pcBrowser->setSelectedLine(m_currentBrowserSelection);
-	m_pcLastRecord->setSelectedLine(m_currentRecordSelection);
-	m_pcLastPlay->setSelectedLine(m_currentPlaySelection);
-}
-
-const CMenuOptionChooser::keyval YT_FEED_OPTIONS[] =
-{
-        { cYTFeedParser::TOP_RATED, LOCALE_MOVIEBROWSER_YT_TOP_RATED, NULL },
-        { cYTFeedParser::TOP_FAVORITES, LOCALE_MOVIEBROWSER_YT_TOP_FAVORITES, NULL },
-        { cYTFeedParser::MOST_SHARED, LOCALE_MOVIEBROWSER_YT_MOST_SHARED, NULL },
-        { cYTFeedParser::MOST_POPULAR, LOCALE_MOVIEBROWSER_YT_MOST_POPULAR, NULL },
-        { cYTFeedParser::MOST_RESENT, LOCALE_MOVIEBROWSER_YT_MOST_RESENT, NULL },
-        { cYTFeedParser::MOST_DISCUSSED, LOCALE_MOVIEBROWSER_YT_MOST_DISCUSSED, NULL },
-        { cYTFeedParser::MOST_RESPONDED, LOCALE_MOVIEBROWSER_YT_MOST_RESPONDED, NULL },
-        { cYTFeedParser::RECENTLY_FEATURED, LOCALE_MOVIEBROWSER_YT_RECENTLY_FEATURED, NULL },
-        { cYTFeedParser::ON_THE_WEB, LOCALE_MOVIEBROWSER_YT_ON_THE_WEB, NULL },
-};
-
-#define YT_FEED_OPTION_COUNT (sizeof(YT_FEED_OPTIONS)/sizeof(CMenuOptionChooser::keyval))
-
-const CMenuOptionChooser::keyval YT_ORDERBY_OPTIONS[] =
-{
-        { cYTFeedParser::ORDERBY_PUBLISHED, LOCALE_MOVIEBROWSER_YT_ORDERBY_PUBLISHED, NULL },
-        { cYTFeedParser::ORDERBY_RELEVANCE, LOCALE_MOVIEBROWSER_YT_ORDERBY_RELEVANCE, NULL },
-        { cYTFeedParser::ORDERBY_VIEWCOUNT, LOCALE_MOVIEBROWSER_YT_ORDERBY_VIEWCOUNT, NULL },
-        { cYTFeedParser::ORDERBY_RATING, LOCALE_MOVIEBROWSER_YT_ORDERBY_RATING, NULL },
-};
-
-#define YT_ORDERBY_OPTION_COUNT (sizeof(YT_ORDERBY_OPTIONS)/sizeof(CMenuOptionChooser::keyval))
-
-neutrino_locale_t CMovieBrowser::getFeedLocale(void)
-{
-	neutrino_locale_t ret = LOCALE_MOVIEBROWSER_YT_MOST_POPULAR;
-
-	if (m_settings.ytmode == cYTFeedParser::RELATED)
-		return LOCALE_MOVIEBROWSER_YT_RELATED;
-
-	if (m_settings.ytmode == cYTFeedParser::SEARCH)
-		return LOCALE_MOVIEBROWSER_YT_SEARCH;
-
-	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) 
-	{
-		if (m_settings.ytmode == YT_FEED_OPTIONS[i].key)
-			return YT_FEED_OPTIONS[i].value;
-	}
-	
-	return ret;
-}
-
-bool CMovieBrowser::showYTMenu()
-{
-	m_pcWindow->paintBackground();
-	m_pcWindow->blit();
-
-	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_YTPLAYBACK, NEUTRINO_ICON_YT_SMALL);
-	//mainMenu.addIntroItems(LOCALE_MOVIEPLAYER_YTPLAYBACK);
-
-	int select = -1;
-	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
-
-	char cnt[5];
-	for (unsigned i = 0; i < YT_FEED_OPTION_COUNT; i++) 
-	{
-		sprintf(cnt, "%d", YT_FEED_OPTIONS[i].key);
-		mainMenu.addItem(new CMenuForwarder(YT_FEED_OPTIONS[i].value, true, NULL, selector, cnt, CRCInput::convertDigitToKey(i + 1)), m_settings.ytmode == (int) YT_FEED_OPTIONS[i].key);
-	}
-	mainMenu.addItem(GenericMenuSeparatorLine);
-
-	bool enabled = (!m_vMovieInfo.empty()) && (m_movieSelectionHandler != NULL);
-	sprintf(cnt, "%d", cYTFeedParser::RELATED);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_RELATED, enabled, NULL, selector, cnt, CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
-
-	sprintf(cnt, "%d", cYTFeedParser::NEXT);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS, ytparser.HaveNext(), NULL, selector, cnt, CRCInput::RC_green, NEUTRINO_ICON_BUTTON_GREEN));
-	sprintf(cnt, "%d", cYTFeedParser::PREV);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_PREV_RESULTS, ytparser.HavePrev(), NULL, selector, cnt, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
-
-	mainMenu.addItem(GenericMenuSeparatorLine);
-
-	std::string search = m_settings.ytsearch;
-	
-	CStringInputSMS stringInput(LOCALE_MOVIEBROWSER_YT_SEARCH, &search);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_SEARCH, true, search, &stringInput, NULL, CRCInput::RC_nokey, ""));
-	
-	mainMenu.addItem(new CMenuOptionChooser(LOCALE_MOVIEBROWSER_YT_ORDERBY, &m_settings.ytorderby, YT_ORDERBY_OPTIONS, YT_ORDERBY_OPTION_COUNT, true, NULL, CRCInput::RC_nokey, "", true));
-
-	sprintf(cnt, "%d", cYTFeedParser::SEARCH);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, selector, cnt, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE));
-
-	mainMenu.addItem(GenericMenuSeparatorLine);
-	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.ytresults, true, 10, 50, NULL));
-
-	char rstr[20];
-	sprintf(rstr, "%s", m_settings.ytregion.c_str());
-	CMenuOptionStringChooser * region = new CMenuOptionStringChooser(LOCALE_MOVIEBROWSER_YT_REGION, rstr, true, NULL, CRCInput::RC_nokey, "", true);
-	region->addOption("default");
-	region->addOption("DE");
-	region->addOption("PL");
-	region->addOption("RU");
-	region->addOption("NL");
-	region->addOption("CZ");
-	region->addOption("FR");
-	region->addOption("HU");
-	region->addOption("US");
-	mainMenu.addItem(region);
-
-	mainMenu.exec(NULL, "");
-	delete selector;
-
-	bool reload = false;
-	printf("MovieBrowser::showYTMenu(): selected: %d\n", select);
-	int newmode = -1;
-	if (select >= 0) 
-	{
-		newmode = select;
-		if (newmode == cYTFeedParser::NEXT || newmode == cYTFeedParser::PREV) 
-		{
-			reload = true;
-		}
-		else if (select == cYTFeedParser::RELATED) 
-		{
-			if (m_settings.ytvid != m_movieSelectionHandler->ytid) 
-			{
-				printf("get related for: %s\n", m_movieSelectionHandler->ytid.c_str());
-				m_settings.ytvid = m_movieSelectionHandler->ytid;
-				m_settings.ytmode = newmode;
-				reload = true;
-			}
-		}
-		else if (select == cYTFeedParser::SEARCH) 
-		{
-			printf("search for: %s\n", search.c_str());
-			if (!search.empty()) {
-				reload = true;
-				m_settings.ytsearch = search;
-				m_settings.ytmode = newmode;
-			}
-		}
-		else if (m_settings.ytmode != newmode) 
-		{
-			m_settings.ytmode = newmode;
-			reload = true;
-		}
-	}
-	
-	if(rstr != m_settings.ytregion) 
-	{
-		m_settings.ytregion = rstr;
-		if (newmode < 0)
-			newmode = m_settings.ytmode;
-		reload = true;
-		printf("change region to %s\n", m_settings.ytregion.c_str());
-	}
-	
-	if (reload) 
-	{
-		CHintBox loadBox(LOCALE_MOVIEPLAYER_YTPLAYBACK, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-		loadBox.paint();
-		ytparser.Cleanup();
-		loadYTitles(newmode, m_settings.ytsearch, m_settings.ytvid);
-		loadBox.hide();
-	}
-	
-	refreshBrowserList();
-	refreshLastPlayList();
-	refreshLastRecordList();
-	refreshFilterList();
-	//refreshMovieInfo();
-	refresh();
-	
-	return true;
-}
-
-//netzkino
-void CMovieBrowser::loadNKTitles(int mode, std::string search, int id, unsigned int start, unsigned int end)
-{
-	//nkparser.SetMaxResults(/*m_settings.nkresults*/m_pcBrowser->getLinesPerPage());
-	//nkparser.SetConcurrentDownloads(/*m_settings.ytconcconn*/1);
-	//nkparser.setThumbnailDir(m_settings.nkthumbnaildir);
-
-	if (nkparser.ParseFeed((cNKFeedParser::nk_feed_mode_t)mode, search, id)) 
-	{
-		nkparser.DownloadThumbnails(start, end);
-	} 
-	else 
-	{
-		//FIXME show error
-		DisplayErrorMessage(g_Locale->getText(LOCALE_MOVIEBROWSER_NK_ERROR));
-		return;
-	}
-	
-	m_vMovieInfo.clear();
-	nk_video_list_t &ylist = nkparser.GetVideoList();
-	
-	//
-	videoListsize = ylist.size();
-	
-	for (unsigned int i = start; i < /*m_settings.nkresults*/end && end /*m_settings.nkresults*/ <= ylist.size(); i++) 
-	{
-		MI_MOVIE_INFO movieInfo;
-		m_movieInfo.clearMovieInfo(&movieInfo); // refresh structure
-		
-		movieInfo.epgTitle = ylist[i].title;
-		movieInfo.epgInfo1 = m_settings.nkcategoryname;
-		movieInfo.epgInfo2 = ylist[i].description;
-		movieInfo.tfile = ylist[i].tfile;
-		movieInfo.ytdate = ylist[i].published;
-		movieInfo.ytid = ylist[i].id;
-		movieInfo.file.Name = ylist[i].title;
-		movieInfo.file.Url = ylist[i].url;
-		
-		m_vMovieInfo.push_back(movieInfo);
-	}
-	
-	m_currentBrowserSelection = 0;
-	m_currentRecordSelection = 0;
-	m_currentPlaySelection = 0;
-	m_pcBrowser->setSelectedLine(m_currentBrowserSelection);
-	m_pcLastRecord->setSelectedLine(m_currentRecordSelection);
-	m_pcLastPlay->setSelectedLine(m_currentPlaySelection);
-}
-
-class CNKCategoriesMenu : public CMenuTarget
-{
-	private:
-		int *nkmode;
-		int *nkcategory;
-		std::string *nkcategoryname;
-		cNKFeedParser *nkparser;
-	public:
-		CNKCategoriesMenu(int &_nkmode, int &_nkcategory, std::string &_nkcategoryname, cNKFeedParser &_nkparser);
-		int exec(CMenuTarget* parent, const std::string & actionKey);
-};
-
-CNKCategoriesMenu::CNKCategoriesMenu(int &_nkmode, int &_nkcategory, std::string &_nkcategoryname, cNKFeedParser &_nkparser)
-{
-	nkmode = &_nkmode;
-	nkcategory = &_nkcategory;
-	nkcategoryname = &_nkcategoryname;
-	nkparser = &_nkparser;
-}
-
-int CNKCategoriesMenu::exec(CMenuTarget *parent, const std::string &actionKey)
-{
-	nk_category_list_t cats = nkparser->GetCategoryList();
-	
-	if (!cats.size())
-		return menu_return::RETURN_NONE;
-	
-	if (actionKey != "") 
-	{
-		unsigned int i = atoi(actionKey);
-		if (i < cats.size()) 
-		{
-			*nkmode = cNKFeedParser::CATEGORY;
-			*nkcategory = cats[i].id;
-			*nkcategoryname = cats[i].title;
-		}
-		g_RCInput->postMsg(CRCInput::RC_home, 0);
-		return menu_return::RETURN_EXIT;
-	}
-
-	if(parent)
-		parent->hide();
-
-	CMenuWidget m(LOCALE_MOVIEBROWSER_NK_CATEGORIES, NEUTRINO_ICON_NETZKINO_SMALL);
-
-	for (unsigned i = 0; i < cats.size(); i++)
-		m.addItem(new CMenuForwarderNonLocalized(cats[i].title.c_str(), true, ("(" + to_string(cats[i].post_count) + ")").c_str(), this, to_string(i).c_str(), CRCInput::convertDigitToKey(i + 1)), cats[i].id == *nkcategory);
-
-	m.exec(NULL, "");
-
-	return menu_return::RETURN_REPAINT;
-}
-  
-bool CMovieBrowser::showNKMenu()
-{
-	m_pcWindow->paintBackground();
-
-	CMenuWidget mainMenu(LOCALE_MOVIEPLAYER_NETZKINO, NEUTRINO_ICON_NETZKINO_SMALL);
-
-	int select = -1;
-	CMenuSelectorTarget * selector = new CMenuSelectorTarget(&select);
-
-	CNKCategoriesMenu nkCategoriesMenu(m_settings.nkmode, m_settings.nkcategory, m_settings.nkcategoryname, nkparser);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_NK_CATEGORIES, true, m_settings.nkcategoryname, &nkCategoriesMenu));
-	mainMenu.addItem(GenericMenuSeparatorLine);
-
-	std::string search = m_settings.nksearch;
-	CStringInputSMS stringInput(LOCALE_MOVIEBROWSER_YT_SEARCH, &search);
-	mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_SEARCH, true, search, &stringInput, NULL, CRCInput::RC_nokey, ""));
-
-	mainMenu.addItem(new CMenuForwarder(LOCALE_EVENTFINDER_START_SEARCH, true, NULL, selector, to_string(cNKFeedParser::SEARCH).c_str(), CRCInput::RC_red, NEUTRINO_ICON_BUTTON_RED));
-
-	/*
-	CYTHistory nkHistory(m_settings, search, true);
-	if (m_settings.nksearch_history_size > 0)
-		mainMenu.addItem(new CMenuForwarder(LOCALE_MOVIEBROWSER_YT_HISTORY, true, NULL, &nkHistory, "", CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW));
-	*/
-
-	//mainMenu.addItem(GenericMenuSeparatorLine);
-	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_RESULTS, &m_settings.nkresults, true, 1, 500, NULL));
-	
-	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_MAX_HISTORY, &m_settings.nksearch_history_max, true, 10, 50, NULL));
-	//mainMenu.addItem(new CMenuOptionNumberChooser(LOCALE_MOVIEBROWSER_YT_CONCURRENT_CONNECTIONS, &m_settings.nkconcconn, true, 1, 8));
-	
-	// rtmp
-	//mainMenu.addItem(new CMenuOptionChooser(LOCALE_MOVIEBROWSER_NK_RTMP, (int *)&m_settings.nkrtmp, MOVIEBROWSER_NKPROTOKOLL_OPTIONS, MOVIEBROWSER_NKPROTOKOLL_OPTIONS_COUNT, true));
-
-	int oldcat = m_settings.nkcategory;
-	int oldmode = m_settings.nkmode;
-	int oldresults = m_settings.nkresults;
-
-	mainMenu.exec(NULL, "");
-
-	nkparser.SetConcurrentDownloads(m_settings.nkconcconn);
-	delete selector;
-
-	bool reload = false;
-	
-	dprintf(DEBUG_NORMAL, "select:%d\n", select);
-	
-	if (select == cNKFeedParser::SEARCH) 
-	{
-		dprintf(DEBUG_NORMAL, "search for: %s\n", search.c_str());
-		
-		if (!search.empty()) 
-		{
-			reload = true;
-			m_settings.nksearch = search;
-			m_settings.nkmode = cNKFeedParser::SEARCH;
-			
-			/*
-			m_settings.nksearch_history.push_front(search);
-			std::list<std::string>::iterator it = m_settings.nksearch_history.begin();
-			it++;
-			while (it != m_settings.nksearch_history.end()) 
-			{
-				if (*it == search)
-					it = m_settings.nksearch_history.erase(it);
-				else
-					++it;
-			}
-			m_settings.nksearch_history_size = m_settings.nksearch_history.size();
-			if (m_settings.nksearch_history_size > m_settings.nksearch_history_max)
-			m_settings.nksearch_history_size = m_settings.nksearch_history_max;
-			*/
-		}
-	}
-	else if (oldmode != m_settings.nkmode || oldcat != m_settings.nkcategory || oldresults != m_settings.nkresults) 
-	{
-		reload = true;
-	}
-	
-	if (reload) 
-	{
-		CHintBox loadBox(LOCALE_MOVIEPLAYER_NETZKINO, g_Locale->getText(LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES));
-		loadBox.paint();
-		nkparser.Cleanup();
-		loadNKTitles(m_settings.nkmode, m_settings.nksearch, m_settings.nkcategory, 0, m_pcBrowser->getLinesPerPage());
-		loadBox.hide();
-	}
-	
-	refreshBrowserList();
-	refreshLastPlayList();
-	refreshLastRecordList();
-	refreshFilterList();
-	//refreshMovieInfo();
-	refresh();
-	return true;
-}
-
 

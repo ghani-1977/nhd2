@@ -42,7 +42,7 @@
 #include <stdarg.h>
 
 #include <system/helpers.h>
-//#include <gui/update_ext.h>
+
 
 off_t file_size(const char *filename)
 {
@@ -487,6 +487,63 @@ unsigned long long getcurrenttime()
 	struct timeval tv;
 	gettimeofday( &tv, NULL );
 	return (unsigned long long) tv.tv_usec + (unsigned long long)((unsigned long long) tv.tv_sec * (unsigned long long) 1000000);
+}
+
+std::string to_string(int i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string to_string(unsigned int i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string to_string(long i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string to_string(unsigned long i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string to_string(long long i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string to_string(unsigned long long i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+std::string changeFileNameExt(std::string &filename, const char *ext)
+{
+	int ext_pos = 0;
+	ext_pos = filename.rfind('.');
+	if( ext_pos > 0)
+	{
+		std::string extension;
+		extension = filename.substr(ext_pos + 1, filename.length() - ext_pos);
+		extension = "." + extension;
+		strReplace(filename, extension.c_str(), ext);
+	}
+	
+	return filename;
 }
 
 CFileHelpers::CFileHelpers()

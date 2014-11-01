@@ -574,7 +574,7 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	snprintf(g_settings.ifname, sizeof(g_settings.ifname), "%s", configfile.getString("ifname", "eth0").c_str());
 
 	// nfs entries
-	for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+	for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 	{
 		sprintf(cfg_key, "network_nfs_ip_%d", i);
 		g_settings.network_nfs_ip[i] = configfile.getString(cfg_key, "");
@@ -620,23 +620,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	// movieplayer
 	strcpy( g_settings.network_nfs_moviedir, configfile.getString( "network_nfs_moviedir", "/media/hdd/movie" ).c_str() );
 	
-	//streaming (server)
-	g_settings.streaming_type = configfile.getInt32( "streaming_type", 0 );
-	g_settings.streaming_server_ip = configfile.getString("streaming_server_ip", "192.168.1.234");
-	strcpy( g_settings.streaming_server_port, configfile.getString( "streaming_server_port", "8080").c_str() );
-	strcpy( g_settings.streaming_server_cddrive, configfile.getString("streaming_server_cddrive", "D:").c_str() );
-	strcpy( g_settings.streaming_videorate,  configfile.getString("streaming_videorate", "1000").c_str() );
-	strcpy( g_settings.streaming_audiorate, configfile.getString("streaming_audiorate", "192").c_str() );
-	strcpy( g_settings.streaming_server_startdir, configfile.getString("streaming_server_startdir", "C:/Movies").c_str() );
-	g_settings.streaming_transcode_audio = configfile.getInt32( "streaming_transcode_audio", 0 );
-	g_settings.streaming_force_transcode_video = configfile.getInt32( "streaming_force_transcode_video", 0 );
-	g_settings.streaming_transcode_video_codec = configfile.getInt32( "streaming_transcode_video_codec", 0 );
-	g_settings.streaming_force_avi_rawaudio = configfile.getInt32( "streaming_force_avi_rawaudio", 0 );
-	g_settings.streaming_resolution = configfile.getInt32( "streaming_resolution", 0 );
-	g_settings.streaming_vlc10 = configfile.getInt32( "streaming_vlc10", 0);
-	
 	// multi select
-	g_settings.streaming_allow_multiselect = configfile.getBool("streaming_allow_multiselect", false);
+	g_settings.movieplayer_allow_multiselect = configfile.getBool("movieplayer_allow_multiselect", false);
 	// end movieplayer
 
 	// OSD
@@ -644,46 +629,46 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	strcpy(g_settings.language, configfile.getString("language", "english").c_str());
 
 	// themes
-	g_settings.menu_Head_alpha = configfile.getInt32( "menu_Head_alpha", 0x00 );
-	g_settings.menu_Head_red = configfile.getInt32( "menu_Head_red", 0x00 );
-	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 0x0A );
-	g_settings.menu_Head_blue = configfile.getInt32( "menu_Head_blue", 0x19 );
-	g_settings.menu_Head_Text_alpha = configfile.getInt32( "menu_Head_Text_alpha", 0x00 );
-	g_settings.menu_Head_Text_red = configfile.getInt32( "menu_Head_Text_red", 0x5f );
-	g_settings.menu_Head_Text_green = configfile.getInt32( "menu_Head_Text_green", 0x46 );
-	g_settings.menu_Head_Text_blue = configfile.getInt32( "menu_Head_Text_blue", 0x00 );
-	g_settings.menu_Content_alpha = configfile.getInt32( "menu_Content_alpha", 0x14 );
-	g_settings.menu_Content_red = configfile.getInt32( "menu_Content_red", 0x00 );
-	g_settings.menu_Content_green = configfile.getInt32( "menu_Content_green", 0x0f );
-	g_settings.menu_Content_blue = configfile.getInt32( "menu_Content_blue", 0x23 );
-	g_settings.menu_Content_Text_alpha = configfile.getInt32( "menu_Content_Text_alpha", 0x00 );
-	g_settings.menu_Content_Text_red = configfile.getInt32( "menu_Content_Text_red", 0x64 );
-	g_settings.menu_Content_Text_green = configfile.getInt32( "menu_Content_Text_green", 0x64 );
-	g_settings.menu_Content_Text_blue = configfile.getInt32( "menu_Content_Text_blue", 0x64 );
-	g_settings.menu_Content_Selected_alpha = configfile.getInt32( "menu_Content_Selected_alpha", 0x14 );
-	g_settings.menu_Content_Selected_red = configfile.getInt32( "menu_Content_Selected_red", 0x19 );
-	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 0x37 );
-	g_settings.menu_Content_Selected_blue = configfile.getInt32( "menu_Content_Selected_blue", 0x64 );
-	g_settings.menu_Content_Selected_Text_alpha = configfile.getInt32( "menu_Content_Selected_Text_alpha", 0x00 );
-	g_settings.menu_Content_Selected_Text_red = configfile.getInt32( "menu_Content_Selected_Text_red", 0x00 );
-	g_settings.menu_Content_Selected_Text_green = configfile.getInt32( "menu_Content_Selected_Text_green", 0x00 );
-	g_settings.menu_Content_Selected_Text_blue = configfile.getInt32( "menu_Content_Selected_Text_blue", 0x00 );
-	g_settings.menu_Content_inactive_alpha = configfile.getInt32( "menu_Content_inactive_alpha", 0x14 );
-	g_settings.menu_Content_inactive_red = configfile.getInt32( "menu_Content_inactive_red", 0x00 );
-	g_settings.menu_Content_inactive_green = configfile.getInt32( "menu_Content_inactive_green", 0x0f );
-	g_settings.menu_Content_inactive_blue = configfile.getInt32( "menu_Content_inactive_blue", 0x23 );
-	g_settings.menu_Content_inactive_Text_alpha = configfile.getInt32( "menu_Content_inactive_Text_alpha", 0x00 );
-	g_settings.menu_Content_inactive_Text_red = configfile.getInt32( "menu_Content_inactive_Text_red", 55 );
-	g_settings.menu_Content_inactive_Text_green = configfile.getInt32( "menu_Content_inactive_Text_green", 70 );
-	g_settings.menu_Content_inactive_Text_blue = configfile.getInt32( "menu_Content_inactive_Text_blue", 85 );
-	g_settings.infobar_alpha = configfile.getInt32( "infobar_alpha", 0x14 );
-	g_settings.infobar_red = configfile.getInt32( "infobar_red", 0x00 );
-	g_settings.infobar_green = configfile.getInt32( "infobar_green", 0x0e );
-	g_settings.infobar_blue = configfile.getInt32( "infobar_blue", 0x23 );
-	g_settings.infobar_Text_alpha = configfile.getInt32( "infobar_Text_alpha", 0x00 );
-	g_settings.infobar_Text_red = configfile.getInt32( "infobar_Text_red", 0x64 );
-	g_settings.infobar_Text_green = configfile.getInt32( "infobar_Text_green", 0x64 );
-	g_settings.infobar_Text_blue = configfile.getInt32( "infobar_Text_blue", 0x64 );
+	g_settings.menu_Head_alpha = configfile.getInt32( "menu_Head_alpha", 20 );
+	g_settings.menu_Head_red = configfile.getInt32( "menu_Head_red", 5 );
+	g_settings.menu_Head_green = configfile.getInt32( "menu_Head_green", 10 );
+	g_settings.menu_Head_blue = configfile.getInt32( "menu_Head_blue", 60 );
+	g_settings.menu_Head_Text_alpha = configfile.getInt32( "menu_Head_Text_alpha", 0 );
+	g_settings.menu_Head_Text_red = configfile.getInt32( "menu_Head_Text_red", 100 );
+	g_settings.menu_Head_Text_green = configfile.getInt32( "menu_Head_Text_green", 100 );
+	g_settings.menu_Head_Text_blue = configfile.getInt32( "menu_Head_Text_blue", 100 );
+	g_settings.menu_Content_alpha = configfile.getInt32( "menu_Content_alpha", 20 );
+	g_settings.menu_Content_red = configfile.getInt32( "menu_Content_red", 50 );
+	g_settings.menu_Content_green = configfile.getInt32( "menu_Content_green", 50 );
+	g_settings.menu_Content_blue = configfile.getInt32( "menu_Content_blue", 50 );
+	g_settings.menu_Content_Text_alpha = configfile.getInt32( "menu_Content_Text_alpha", 0 );
+	g_settings.menu_Content_Text_red = configfile.getInt32( "menu_Content_Text_red", 100 );
+	g_settings.menu_Content_Text_green = configfile.getInt32( "menu_Content_Text_green", 100 );
+	g_settings.menu_Content_Text_blue = configfile.getInt32( "menu_Content_Text_blue", 100 );
+	g_settings.menu_Content_Selected_alpha = configfile.getInt32( "menu_Content_Selected_alpha", 20 );
+	g_settings.menu_Content_Selected_red = configfile.getInt32( "menu_Content_Selected_red", 1 );
+	g_settings.menu_Content_Selected_green = configfile.getInt32( "menu_Content_Selected_green", 25 );
+	g_settings.menu_Content_Selected_blue = configfile.getInt32( "menu_Content_Selected_blue", 80 );
+	g_settings.menu_Content_Selected_Text_alpha = configfile.getInt32( "menu_Content_Selected_Text_alpha", 0 );
+	g_settings.menu_Content_Selected_Text_red = configfile.getInt32( "menu_Content_Selected_Text_red", 100 );
+	g_settings.menu_Content_Selected_Text_green = configfile.getInt32( "menu_Content_Selected_Text_green", 100 );
+	g_settings.menu_Content_Selected_Text_blue = configfile.getInt32( "menu_Content_Selected_Text_blue", 100 );
+	g_settings.menu_Content_inactive_alpha = configfile.getInt32( "menu_Content_inactive_alpha", 20 );
+	g_settings.menu_Content_inactive_red = configfile.getInt32( "menu_Content_inactive_red", 50 );
+	g_settings.menu_Content_inactive_green = configfile.getInt32( "menu_Content_inactive_green", 50 );
+	g_settings.menu_Content_inactive_blue = configfile.getInt32( "menu_Content_inactive_blue", 50 );
+	g_settings.menu_Content_inactive_Text_alpha = configfile.getInt32( "menu_Content_inactive_Text_alpha", 0 );
+	g_settings.menu_Content_inactive_Text_red = configfile.getInt32( "menu_Content_inactive_Text_red", 80 );
+	g_settings.menu_Content_inactive_Text_green = configfile.getInt32( "menu_Content_inactive_Text_green", 80 );
+	g_settings.menu_Content_inactive_Text_blue = configfile.getInt32( "menu_Content_inactive_Text_blue", 80 );
+	g_settings.infobar_alpha = configfile.getInt32( "infobar_alpha", 20 );
+	g_settings.infobar_red = configfile.getInt32( "infobar_red", 5 );
+	g_settings.infobar_green = configfile.getInt32( "infobar_green", 10 );
+	g_settings.infobar_blue = configfile.getInt32( "infobar_blue", 60 );
+	g_settings.infobar_Text_alpha = configfile.getInt32( "infobar_Text_alpha", 0 );
+	g_settings.infobar_Text_red = configfile.getInt32( "infobar_Text_red", 100 );
+	g_settings.infobar_Text_green = configfile.getInt32( "infobar_Text_green", 100 );
+	g_settings.infobar_Text_blue = configfile.getInt32( "infobar_Text_blue", 100 );
 		
 	g_settings.infobar_colored_events_alpha = configfile.getInt32( "infobar_colored_events_alpha", 0x00 );
 	g_settings.infobar_colored_events_red = configfile.getInt32( "infobar_colored_events_red", 95 );
@@ -700,18 +685,24 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.menu_Foot_Text_green = configfile.getInt32( "menu_Foot_Text_green", 50 );
 	g_settings.menu_Foot_Text_blue = configfile.getInt32( "menu_Foot_Text_blue", 50 );
 
-	strcpy( g_settings.font_file, configfile.getString( "font_file", FONTDIR"/neutrino.ttf" ).c_str() );
-	
-	g_settings.contrast_fonts = configfile.getInt32("contrast_fonts", 0);
+	strcpy( g_settings.font_file, configfile.getString( "font_file", FONTDIR "/micron.ttf" ).c_str() );
 
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
 		g_settings.timing[i] = configfile.getInt32(locale_real_names[timing_setting_name[i]], default_timing[i]);
 
 	// screen setup
+#if defined (USE_OPENGL)
+	g_settings.screen_StartX = configfile.getInt32( "screen_StartX", 145 );
+#else
 	g_settings.screen_StartX = configfile.getInt32( "screen_StartX", 35 );
+#endif	
 	g_settings.screen_StartY = configfile.getInt32( "screen_StartY", 35 );
+#if defined (USE_OPENGL)
+	g_settings.screen_EndX = configfile.getInt32( "screen_EndX", frameBuffer->getScreenWidth(true) - 145 );
+#else
 	g_settings.screen_EndX = configfile.getInt32( "screen_EndX", frameBuffer->getScreenWidth(true) - 35 );
+#endif	
 	g_settings.screen_EndY = configfile.getInt32( "screen_EndY", frameBuffer->getScreenHeight(true) - 35 );
 	g_settings.screen_width = configfile.getInt32("screen_width", frameBuffer->getScreenWidth(true) );
 	g_settings.screen_height = configfile.getInt32("screen_height", frameBuffer->getScreenHeight(true) );
@@ -780,7 +771,12 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.mb_truncate = configfile.getInt32( "mb_truncate", CRCInput::RC_nokey );
 	
 	// webtv
-	strcpy( g_settings.webtv_settings, configfile.getString( "webtv_settings", "").c_str() );
+	for(int i = 0; i < WEBTV_USER_BOUQUET_NR_OF_ENTRIES; i++) 
+	{
+		sprintf(cfg_key, "webtv_user_bouquet_%d", i);
+		strcpy( g_settings.webtv_user_bouquet[i], configfile.getString( cfg_key, "" ).c_str() );
+	}
+	g_settings.user_bouquet_count = configfile.getInt32( "user_bouquet_count", 0 );
 	
         // USERMENU -> in system/settings.h
         //-------------------------------------------
@@ -980,11 +976,15 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.glcd_percent_time = configfile.getInt32("glcd_percent_time", 22);
 	g_settings.glcd_mirror_osd = configfile.getInt32("glcd_mirror_osd", 0);
 	g_settings.glcd_time_in_standby = configfile.getInt32("glcd_time_in_standby", 0);
-	g_settings.glcd_font = configfile.getString("glcd_font", FONTDIR "/neutrino.ttf");
+	g_settings.glcd_font = configfile.getString("glcd_font", FONTDIR "/micron.ttf");
 #endif	
 	
 	//set OSD resolution
+#if defined (USE_OPENGL)
+#define DEFAULT_X_OFF 145
+#else
 #define DEFAULT_X_OFF 35
+#endif
 #define DEFAULT_Y_OFF 35
 	if((g_settings.screen_width != (int) frameBuffer->getScreenWidth(true)) || (g_settings.screen_height != (int) frameBuffer->getScreenHeight(true))) 
 	{
@@ -1073,7 +1073,7 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	configfile.setString("ifname", g_settings.ifname);
 
-	for(int i=0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
+	for(int i = 0 ; i < NETWORK_NFS_NR_OF_ENTRIES ; i++) 
 	{
 		sprintf(cfg_key, "network_nfs_ip_%d", i);
 		configfile.setString( cfg_key, g_settings.network_nfs_ip[i] );
@@ -1110,23 +1110,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	// MOVIEPLAYER
 	configfile.setString( "network_nfs_moviedir", g_settings.network_nfs_moviedir);
 	
-	//streaming
-	configfile.setInt32 ( "streaming_type", g_settings.streaming_type );
-	configfile.setString( "streaming_server_ip", g_settings.streaming_server_ip );
-	configfile.setString( "streaming_server_port", g_settings.streaming_server_port );
-	configfile.setString( "streaming_server_cddrive", g_settings.streaming_server_cddrive );
-	configfile.setString( "streaming_videorate", g_settings.streaming_videorate );
-	configfile.setString( "streaming_audiorate", g_settings.streaming_audiorate );
-	configfile.setString( "streaming_server_startdir", g_settings.streaming_server_startdir );
-	configfile.setInt32 ( "streaming_transcode_audio", g_settings.streaming_transcode_audio );
-	configfile.setInt32 ( "streaming_force_avi_rawaudio", g_settings.streaming_force_avi_rawaudio );
-	configfile.setInt32 ( "streaming_force_transcode_video", g_settings.streaming_force_transcode_video );
-	configfile.setInt32 ( "streaming_transcode_video_codec", g_settings.streaming_transcode_video_codec );
-	configfile.setInt32 ( "streaming_resolution", g_settings.streaming_resolution );
-	configfile.setInt32 ( "streaming_vlc10", g_settings.streaming_vlc10 );
-	
 	// multi select
-	configfile.setBool ("streaming_allow_multiselect", g_settings.streaming_allow_multiselect);
+	configfile.setBool ("movieplayer_allow_multiselect", g_settings.movieplayer_allow_multiselect);
 	// END MOVIEPLAYER
 
 	// OSD
@@ -1210,7 +1195,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "screen_yres", g_settings.screen_yres);
 
 	configfile.setString("font_file", g_settings.font_file);
-	configfile.setInt32( "contrast_fonts", g_settings.contrast_fonts );
 
 	// menue timing
 	for (int i = 0; i < TIMING_SETTING_COUNT; i++)
@@ -1277,7 +1261,12 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "mb_truncate", g_settings.mb_truncate );
 	
 	// webtv
-	configfile.setString("webtv_settings", g_settings.webtv_settings);
+	for(int i = 0 ; i < WEBTV_USER_BOUQUET_NR_OF_ENTRIES ; i++) 
+	{
+		sprintf(cfg_key, "webtv_user_bouquet_%d", i);
+		configfile.setString( cfg_key, g_settings.webtv_user_bouquet[i] );
+	}
+	configfile.setInt32( "user_bouquet_count", g_settings.user_bouquet_count );
 	
         // USERMENU
         char txt1[81];
@@ -1799,14 +1788,14 @@ void CNeutrinoApp::SetupFonts()
 
 	if(access(g_settings.font_file, F_OK)) 
 	{
-		if(!access(FONTDIR"/neutrino.ttf", F_OK))
+		if(!access(FONTDIR "/micron.ttf", F_OK))
 		{
-			font.filename = strdup(FONTDIR"/neutrino.ttf");
+			font.filename = strdup(FONTDIR "/micron.ttf");
 			strcpy(g_settings.font_file, font.filename);
 		}
 		else
 		{
-			  fprintf( stderr,"CNeutrinoApp::SetupFonts: font file [%s] not found\n neutrino exit\n", FONTDIR"/neutrino.ttf");
+			  fprintf( stderr,"CNeutrinoApp::SetupFonts: font file [%s] not found\n neutrino exit\n", FONTDIR "/micron.ttf");
 			  _exit(0);
 		}
 	}
@@ -1814,19 +1803,19 @@ void CNeutrinoApp::SetupFonts()
 	{
 		font.filename = strdup(g_settings.font_file);
 		
-		// check??? (use only true type fonts or fallback to neutrino.ttf
+		// check??? (use only true type fonts or fallback to micron.ttf
 		if( !strstr(font.filename, ".ttf") )
 		{
-			dprintf(DEBUG_NORMAL, "CNeutrinoApp::SetupFonts: font file %s not ok falling back to neutrino.ttf\n", g_settings.font_file);
+			dprintf(DEBUG_NORMAL, "CNeutrinoApp::SetupFonts: font file %s not ok falling back to micron.ttf\n", g_settings.font_file);
 			
-			if(!access(FONTDIR"/neutrino.ttf", F_OK))
+			if(!access(FONTDIR "/micron.ttf", F_OK))
 			{
-				font.filename = strdup(FONTDIR"/neutrino.ttf");
+				font.filename = strdup(FONTDIR "/micron.ttf");
 				strcpy(g_settings.font_file, font.filename);
 			}
 			else
 			{
-				  fprintf( stderr,"CNeutrinoApp::SetupFonts: font file [%s] not found\n neutrino exit\n", FONTDIR"/neutrino.ttf");
+				  fprintf( stderr,"CNeutrinoApp::SetupFonts: font file [%s] not found\n neutrino exit\n", FONTDIR "/micron.ttf");
 				  _exit(0);
 			}
 		}
@@ -2569,7 +2558,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 	CMenuWidget languageSettings(LOCALE_LANGUAGESETUP_HEAD, NEUTRINO_ICON_LANGUAGE );
 	CMenuWidget networkSettings(LOCALE_NETWORKMENU_HEAD, NEUTRINO_ICON_NETWORK);
 	CMenuWidget recordingSettings(LOCALE_RECORDINGMENU_HEAD, NEUTRINO_ICON_RECORDING );
-	CMenuWidget streamingSettings(LOCALE_STREAMINGMENU_HEAD, NEUTRINO_ICON_STREAMING );
+	CMenuWidget moviePlayerSettings(LOCALE_STREAMINGMENU_HEAD, NEUTRINO_ICON_STREAMING );
 	CMenuWidget colorSettings(LOCALE_MAINSETTINGS_OSD, NEUTRINO_ICON_COLORS );
 	CMenuWidget lcdSettings(LOCALE_LCDMENU_HEAD, NEUTRINO_ICON_LCD );
 	CMenuWidget keySettings(LOCALE_MAINSETTINGS_KEYBINDING, NEUTRINO_ICON_KEYBINDING );
@@ -2595,7 +2584,7 @@ int CNeutrinoApp::run(int argc, char **argv)
 		     service, 
 		     audioplayerSettings, 
 		     PicViewerSettings, 
-		     streamingSettings, 
+		     moviePlayerSettings, 
 		     MediaPlayer);
 
 	// service
@@ -2714,8 +2703,8 @@ int CNeutrinoApp::run(int argc, char **argv)
 	// recordingsettings
 	InitRecordingSettings(recordingSettings);
 
-	// streamingsettings
-	InitStreamingSettings(streamingSettings);
+	// movieplayer settings
+	InitMoviePlayerSettings(moviePlayerSettings);
 
 	// lcdsettinsg
 	InitLcdSettings(lcdSettings);
@@ -2760,9 +2749,9 @@ int CNeutrinoApp::run(int argc, char **argv)
 		if(ret != menu_return::RETURN_EXIT_ALL)
 			recordingSettings.exec(NULL, "");
 		
-		// streamingsettings
+		// movieplayer settings
 		if(ret != menu_return::RETURN_EXIT_ALL)
-			streamingSettings.exec(NULL, "");
+			moviePlayerSettings.exec(NULL, "");
 		
 		// audioplayersettings
 		if(ret != menu_return::RETURN_EXIT_ALL)
@@ -2887,7 +2876,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 	dprintf(DEBUG_NORMAL, "CNeutrinoApp::RealRun: initialized everything\n");
 
 	// start plugins
-	g_PluginList->startPlugin("startup.cfg"); //NOTE: startup.cfg not used anymore
+	//g_PluginList->startPlugin("startup.cfg"); //NOTE: startup.cfg not used anymore
 
 	// clear msg 
 	g_RCInput->clearRCMsg();
@@ -3392,8 +3381,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 				{
 					if(webtv)
 					{
-						if(webtv->getTunedChannel() > -1)
-							webtv->showInfo();
+						webtv->showInfo();
 					}
 				}
 				else
@@ -3426,7 +3414,7 @@ void CNeutrinoApp::RealRun(CMenuWidget &mainMenu)
 			else 
 			{
 				if ( msg == CRCInput::RC_home )
-				{
+				{ 
   					CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 				}
 
@@ -5764,6 +5752,9 @@ int main(int argc, char *argv[])
         signal(SIGHUP, SIG_IGN);
 	signal(SIGHUP, sighandler);
 	signal(SIGPIPE, SIG_IGN);
+	
+	// set localtime
+	tzset();
 	
 	// init globals
 	initGlobals();

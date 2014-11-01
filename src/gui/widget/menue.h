@@ -183,7 +183,7 @@ class CMenuForwarderNonLocalized : public CMenuForwarder
 		virtual const char * getName(void);
 	public:
 		// Text must be UTF-8 encoded:
-		CMenuForwarderNonLocalized(const char * const Text, const bool Active=true, const char * const Option=NULL, CMenuTarget* Target=NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL);
+		CMenuForwarderNonLocalized(const char * const Text, const bool Active = true, const char * const Option = NULL, CMenuTarget* Target = NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL);
 		CMenuForwarderNonLocalized(const char * const Text, const bool Active, const std::string &Option, CMenuTarget* Target=NULL, const char * const ActionKey = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const char * const IconName = NULL);
 };
 
@@ -267,6 +267,7 @@ class CMenuOptionStringChooser : public CMenuItem
 
 	public:
 		CMenuOptionStringChooser(const neutrino_locale_t OptionName, char* OptionValue, bool Active = false, CChangeObserver* Observ = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const std::string & IconName= "", bool Pulldown = false);
+		CMenuOptionStringChooser(const char * OptionName, char* OptionValue, bool Active = false, CChangeObserver* Observ = NULL, const neutrino_msg_t DirectKey = CRCInput::RC_nokey, const std::string & IconName= "", bool Pulldown = false);
 		~CMenuOptionStringChooser();
 
 		void addOption(const char * value);

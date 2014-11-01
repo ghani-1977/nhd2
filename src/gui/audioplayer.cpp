@@ -288,7 +288,7 @@ int CAudioPlayerGui::exec(CMenuTarget * parent, const std::string &)
 	m_height = m_theight + m_info_height + m_title_height + 2*m_buttonHeight + m_listmaxshow * m_fheight; // recalc height
 
 	m_x = (((g_settings.screen_EndX - g_settings.screen_StartX) - (m_width + ConnectLineBox_Width)) / 2) + g_settings.screen_StartX + ConnectLineBox_Width;
-	m_y = (((g_settings.screen_EndY- g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
+	m_y = (((g_settings.screen_EndY - g_settings.screen_StartY) - m_height)/ 2) + g_settings.screen_StartY;
 	
 	m_idletime = time(NULL);
 	m_screensaver = g_settings.audioplayer_screensaver_type;
@@ -803,8 +803,8 @@ int CAudioPlayerGui::show()
 					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_LOC, true, NULL, InetRadioInputChanger, cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 	
 					// shoutcast
-					//sprintf(cnt, "%d", ++count);
-					//InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_SC, true, NULL, InetRadioInputChanger,cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
+					sprintf(cnt, "%d", ++count);
+					InputSelector.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ADD_SC, true, NULL, InetRadioInputChanger,cnt, CRCInput::convertDigitToKey(count + 1)), old_select == count);
 
 					// icecast
 					sprintf(cnt, "%d", ++count);
@@ -829,11 +829,10 @@ int CAudioPlayerGui::show()
 							
 							break;
 						
-						/*
 						case SHOUTCAST:	
-							openSCbrowser();
+							//openSCbrowser();
+							readDir_sc();
 							break;
-						*/
 							
 						case ICECAST:	
 							readDir_ic();
@@ -1274,6 +1273,181 @@ void CAudioPlayerGui::readDir_ic(void)
 	delete scanBox;
 }
 
+//
+void CAudioPlayerGui::readDir_sc(void)
+{
+#define GET_SHOUTCAST_TIMEOUT	60
+/* how the shoutcast xml interfaces looks/works:
+1st step: get http://www.shoutcast.com/sbin/newxml.phtml
+example answer:
+
+<genrelist>
+...
+<genre name="Trance"/>
+<genre name=...
+...
+
+2nd step: get http://www.shoutcast.com/sbin/newxml.phtml?genre=Trance
+example answer:
+
+<stationlist>
+<tunein base="/sbin/tunein-station.pls"/>
+<station name="TechnoBase.FM - 24h Techno, Dance, Trance, House and More - 128k MP3" mt="audio/mpeg" id="524" br="128" genre="Techno Trance Dance House" ct="We aRe oNe" lc="4466"/>
+<station name=...
+...
+
+3rd step: get/decode playlist http://www.shoutcast.com/sbin/tunein-station.pls?id=524
+and add to neutrino playlist
+
+4th step: play from neutrio playlist
+*/
+
+	//shoutcast
+	const std::string sc_get_top500 = "/legacy/Top500?k=" + g_settings.shoutcast_dev_id;
+	const std::string sc_get_genre = "/legacy/stationsearch?k=" + g_settings.shoutcast_dev_id + "&search=";
+	const std::string sc_tune_in_base = "http://yp.shoutcast.com";
+
+	std::string answer = "";
+	std::string url = "http://api.shoutcast.com";
+	url += "/legacy/genrelist?k=" + g_settings.shoutcast_dev_id;
+	
+	std::cout << "CAudioPlayerGui::readDir_sc: SC URL: " << url << std::endl;
+	
+	CURL *curl_handle;
+	CURLcode httpres;
+	
+	/* init the curl session */
+	curl_handle = curl_easy_init();
+	/* specify URL to get */
+	curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
+	/* send all data to this function  */
+	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, CurlWriteToString);
+	/* we pass our 'chunk' struct to the callback function */
+	curl_easy_setopt(curl_handle, CURLOPT_FILE, (void *)&answer);
+	/* Generate error if http error >= 400 occurs */
+	curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, 1);
+	/* set timeout to 30 seconds */
+	curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, GET_SHOUTCAST_TIMEOUT);
+
+	/* error handling */
+	char error[CURL_ERROR_SIZE];
+	curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, error);
+	/* get it! */
+	httpres = curl_easy_perform(curl_handle);
+	/* cleanup curl stuff */
+	curl_easy_cleanup(curl_handle);
+	
+	if (!answer.empty() && httpres == 0)
+	{
+		dprintf(DEBUG_INFO, "CAudioPlayerGui::readDir_sc: read done, size %d\n", answer.size());
+		xmlDocPtr answer_parser = parseXml(answer.c_str());
+
+		if (answer_parser != NULL) 
+		{
+			char *ptr;
+			unsigned char xml_decode = 0;
+			xmlNodePtr element = xmlDocGetRootElement(answer_parser);
+
+			if (strcmp(xmlGetName(element), "genrelist") == 0) 
+				xml_decode = 1;
+			else if (strcmp(xmlGetName(element), "stationlist") == 0) 
+				xml_decode = 2;
+			element = element->xmlChildrenNode;
+
+			if (element != NULL) 
+			{
+				char * tunein_base = NULL;
+
+				if (xml_decode == 1) 
+				{
+					CFile file;
+					file.Mode = S_IFDIR + 0777 ;
+					file.Name = " Top500"; // use space to have it at the beginning of the list
+					file.Url = sc_get_top500;
+					file.Size = 0;
+					file.Time = 0;
+					//flist->push_back(file);
+					processPlaylistUrl(file.Url.c_str(), file.Name.c_str(), file.Time);
+				} 
+				else if (xml_decode == 2) 
+				{
+					CFile file2;
+					file2.Mode = S_IFDIR + 0777 ;
+					file2.Name = "..";
+					file2.Url = "/legacy/genrelist?k=" + g_settings.shoutcast_dev_id;;
+					file2.Size = 0;
+					file2.Time = 0;
+					//flist->push_back(file2);
+					processPlaylistUrl(file2.Url.c_str(), file2.Name.c_str(), file2.Time);
+				}
+				
+				while (element) 
+				{
+					CFile file;
+					if (xml_decode == 1) 
+					{
+						file.Mode = S_IFDIR + 0777 ;
+						file.Name = xmlGetAttribute(element, (char *) "name");
+						file.Url = "/sbin/newxml.phtml?genre=" + file.Name;
+						file.Size = 0;
+						file.Time = 0;
+
+						processPlaylistUrl(file.Url.c_str(), file.Name.c_str(), file.Time);
+					}
+					else if (xml_decode == 2) 
+					{
+						ptr = xmlGetName(element);
+						if (ptr != NULL) 
+						{
+							if (strcmp(ptr, "tunein")==0) 
+							{
+								ptr = xmlGetAttribute(element, (char *) "base");
+								if (ptr)
+									tunein_base = ptr;
+							} 
+							else if (strcmp(ptr, "station")==0) 
+							{
+								ptr = xmlGetAttribute(element, (char *) "mt");
+								if (ptr && (strcmp(ptr, "audio/mpeg")==0)) 
+								{
+									file.Mode = S_IFREG + 0777 ;
+									file.Name = xmlGetAttribute(element, (char *) "name");
+									
+									file.Url = sc_tune_in_base + tunein_base + (std::string)"?id=" + xmlGetAttribute(element, "id") + (std::string)"&k=" + g_settings.shoutcast_dev_id;
+									
+									//printf("adding %s (%s)\n", file.Name.c_str(), file.Url.c_str());
+									
+									ptr = xmlGetAttribute(element, (char *) "br");
+									if (ptr) 
+									{
+										file.Size = atoi(ptr);
+										file.Time = atoi(ptr);
+									} 
+									else 
+									{
+										file.Size = 0;
+										file.Time = 0;
+									}
+
+									processPlaylistUrl(file.Url.c_str(), file.Name.c_str(), file.Time);
+								}
+							}
+						}
+					}
+					element = element->xmlNextNode;
+				}
+			}
+			xmlFreeDoc(answer_parser);
+			
+			if (m_select_title_by_name)
+			{
+				buildSearchTree();
+			}
+		}
+	}
+}
+//
+
 void CAudioPlayerGui::scanXmlFile(std::string filename)
 {
 	xmlDocPtr answer_parser = parseXmlFile(filename.c_str());
@@ -1579,79 +1753,6 @@ bool CAudioPlayerGui::openFilebrowser(void)
 	return ( result);
 }
 
-/*
-bool CAudioPlayerGui::openSCbrowser(void)
-{
-	bool result = false;
-	//CFileBrowser filebrowser(SC_BASE_DIR, CFileBrowser::ModeSC);
-	//shoutcast
-	const char *sc_base_dir	= "http://api.shoutcast.com";
-	CFileBrowser filebrowser(sc_base_dir, CFileBrowser::ModeSC);
-
-	filebrowser.Multi_Select    = true;
-	filebrowser.Dirs_Selectable = true;
-	filebrowser.Filter          = NULL;//&audiofilefilter;
-
-	hide();
-
-	if (filebrowser.exec(filebrowser.sc_init_dir.c_str()))
-	{
-		CProgressWindow progress;
-		long maxProgress = (filebrowser.getSelectedFiles().size() > 1) ? filebrowser.getSelectedFiles().size() - 1: 1;
-		long currentProgress = -1;
-		
-		//if (maxProgress > SHOW_FILE_LOAD_LIMIT)
-		{
-			progress.setTitle(LOCALE_AUDIOPLAYER_READING_FILES);
-			progress.exec(this,"");
-		}
-
-		m_Path = filebrowser.getCurrentDir();
-		CFileList::const_iterator files = filebrowser.getSelectedFiles().begin();
-		neutrino_msg_t      msg;
-		neutrino_msg_data_t data;
-		g_RCInput->getMsg(&msg, &data, 0);
-		
-		for(; (files != filebrowser.getSelectedFiles().end()) && (msg != CRCInput::RC_home);files++)
-		{
-			//if (maxProgress > SHOW_FILE_LOAD_LIMIT)
-			{
-				currentProgress++;
-				// show progress
-				int global = 100*currentProgress/maxProgress;
-				progress.showGlobalStatus(global);
-				progress.showStatusMessageUTF(files->Name);			
-#if ENABLE_LCD
-#ifdef LCD_UPDATE
-				CVFD::getInstance()->showProgressBar(global, "read metadata...");
-				CVFD::getInstance()->setMode(CVFD::MODE_PROGRESSBAR);
-#endif				
-#endif
-			}
-			//printf("processPlaylistUrl(%s, %s)\n", files->Url.c_str(), files->Name.c_str());
-			processPlaylistUrl(files->Url.c_str(), files->Name.c_str(), files->Time);
-			g_RCInput->getMsg(&msg, &data, 0);
-		}
-		
-		//FIXME: do we need this???
-		progress.hide();
-		
-		
-		if (m_select_title_by_name)
-		{
-			buildSearchTree();
-		}
-
-		result = true;
-	}
-	
-	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));	
-	paintLCD();
-
-	return ( result);
-}
-*/
-
 void CAudioPlayerGui::hide()
 {
 	//printf("hide(){\n");
@@ -1677,7 +1778,7 @@ void CAudioPlayerGui::paintItem(int pos)
 {
 	int ypos = m_y + m_title_height + m_theight + pos*m_fheight;
 	
-	uint8_t    color;
+	uint8_t color;
 	fb_pixel_t bgcolor;
 
 	if ((pos + m_liststart) == m_selected)
@@ -1952,6 +2053,7 @@ void CAudioPlayerGui::paintInfo()
 			tmp += sNr ;
 		}
 
+		// first line
 		int w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		int xstart = (m_width - w) / 2;
 		if(xstart < 10)
@@ -1980,13 +2082,6 @@ void CAudioPlayerGui::paintInfo()
 			tmp += " / ";
 			tmp += m_curr_audiofile.MetaData.title;
 		}
-		
-		// cover
-		if (!m_curr_audiofile.MetaData.cover.empty())
-		{
-			if(!access("/tmp/cover.jpg", F_OK))
-				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
-		}
 
 		w = g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->getRenderWidth(tmp, true); // UTF-8
 		xstart=(m_width-w)/2;
@@ -1994,6 +2089,13 @@ void CAudioPlayerGui::paintInfo()
 			xstart = 10;
 		
 		g_Font[SNeutrinoSettings::FONT_TYPE_MENU]->RenderString(m_x+xstart, m_y + 4 + 2*m_fheight, m_width - 20, tmp, COL_MENUCONTENTSELECTED, 0, true); // UTF-8		
+		
+		// cover
+		if (!m_curr_audiofile.MetaData.cover.empty())
+		{
+			if(!access("/tmp/cover.jpg", F_OK))
+				g_PicViewer->DisplayImage("/tmp/cover.jpg", m_x + 2, m_y + 2, m_title_height - 14, m_title_height - 14);		
+		}
 
 		// reset so fields get painted always
 		m_metainfo.clear();

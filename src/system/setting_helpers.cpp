@@ -781,7 +781,7 @@ bool CTZChangeNotifier::changeNotify(const neutrino_locale_t, void * Data)
 	{
 		dprintf(DEBUG_NORMAL, "CTZChangeNotifier::changeNotify: Timezone: %s -> %s\n", name.c_str(), zone.c_str());
 		
-		std::string cmd = "cp /usr/share/zoneinfo/" + zone + " /etc/localtime";
+		std::string cmd = "ln -sf /usr/share/zoneinfo/" + zone + " /etc/localtime";
 		
 		dprintf(DEBUG_NORMAL, "exec %s\n", cmd.c_str());
 		

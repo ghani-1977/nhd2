@@ -53,6 +53,22 @@ std::string replace_all(const std::string &in, const std::string &entity, const 
 unsigned long long getcurrenttime();
 void strReplace(std::string & orig, const char *fstr, const std::string rstr);
 std::string& htmlEntityDecode(std::string& text, bool removeTags = false);
+std::string to_string(int);
+std::string to_string(unsigned int);
+std::string to_string(long);
+std::string to_string(unsigned long);
+std::string to_string(long long);
+std::string to_string(unsigned long long);
+
+inline int atoi(std::string &s) { return atoi(s.c_str()); }
+inline int atoi(const std::string &s) { return atoi(s.c_str()); }
+inline int access(std::string &s, int mode) { return access(s.c_str(), mode); }
+inline int access(const std::string &s, int mode) { return access(s.c_str(), mode); }
+
+inline void cstrncpy(char *dest, const char * const src, size_t n) { n--; strncpy(dest, src, n); dest[n] = 0; }
+inline void cstrncpy(char *dest, const std::string &src, size_t n) { n--; strncpy(dest, src.c_str(), n); dest[n] = 0; }
+
+std::string changeFileNameExt(std::string &filename, const char *ext);
 
 class CFileHelpers
 {
@@ -68,20 +84,5 @@ class CFileHelpers
 		bool removeDir(const char *Dir);
 
 };
-
-template<class C> std::string to_string(C i)
-{
-	std::stringstream s;
-	s << i;
-	return s.str();
-}
-
-inline int atoi(std::string &s) { return atoi(s.c_str()); }
-inline int atoi(const std::string &s) { return atoi(s.c_str()); }
-inline int access(std::string &s, int mode) { return access(s.c_str(), mode); }
-inline int access(const std::string &s, int mode) { return access(s.c_str(), mode); }
-
-inline void cstrncpy(char *dest, const char * const src, size_t n) { n--; strncpy(dest, src, n); dest[n] = 0; }
-inline void cstrncpy(char *dest, const std::string &src, size_t n) { n--; strncpy(dest, src.c_str(), n); dest[n] = 0; }
 
 #endif

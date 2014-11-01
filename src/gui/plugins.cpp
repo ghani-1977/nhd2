@@ -58,8 +58,6 @@
 
 
 extern CPlugins       * g_PluginList;    /* neutrino.cpp */
-//extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
-
 
 bool CPlugins::plugin_exists(const std::string & filename)
 {
@@ -91,7 +89,7 @@ bool CPlugins::pluginfile_exists(const std::string & filename)
 	}
 }
 
-void CPlugins::scanDir(const char * dir)
+void CPlugins::addPlugin(const char * dir)
 {
 	struct dirent **namelist;
 	std::string fname;
@@ -103,6 +101,7 @@ void CPlugins::scanDir(const char * dir)
 		std::string filename;
 
 		filename = namelist[i]->d_name;
+		
 		int pos = filename.find(".cfg");
 		if (pos > -1)
 		{
@@ -159,12 +158,33 @@ void CPlugins::loadPlugins()
 	frameBuffer = CFrameBuffer::getInstance();
 	number_of_plugins = 0;
 	plugin_list.clear();
-
-	// for compatibility with neutrinoHD
-	scanDir("/lib/tuxbox/plugins");
-	scanDir("/var/plugins");
 	
-	scanDir(PLUGINDIR);
+	//
+	struct dirent **namelist;
+	int i = 0;
+	std::string pluginPath;
+
+	i = scandir(PLUGINDIR, &namelist, 0, 0);
+	if(i < 0)
+	{
+		return;
+	}
+
+	while(i--)
+	{
+		if(namelist[i]->d_type == DT_DIR && !strstr(namelist[i]->d_name, ".") && !strstr(namelist[i]->d_name, ".."))
+		{
+			pluginPath += PLUGINDIR;
+			pluginPath += "/";
+			pluginPath += namelist[i]->d_name;
+			
+			addPlugin(pluginPath.c_str());
+			
+			pluginPath.clear();
+		}
+		free(namelist[i]);
+	}
+	free(namelist);
 	
 	sort(plugin_list.begin(), plugin_list.end());
 }
@@ -237,7 +257,15 @@ void CPlugins::startPlugin(const char * const name)
 	if (pluginnr > -1)
 		startPlugin(pluginnr);
 	else
+	{
 		printf("[CPlugins] could not find %s\n", name);
+		
+		std::string hint = name;
+		hint += " ";
+		hint += g_Locale->getText(LOCALE_PLUGINS_NOT_INSTALLED);
+		
+		ShowHintUTF(LOCALE_MESSAGEBOX_INFO, hint.c_str(), 450, 2 );
+	}
 
 }
 

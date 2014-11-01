@@ -85,7 +85,7 @@ class CPictureViewer
 		void SetVisible(int startx, int endx, int starty, int endy);
 		static double m_aspect_ratio_correction;
 		
-		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true), bool transp = false);
+		bool DisplayImage(const std::string & name, int posx = 0, int posy = 0, int width = CFrameBuffer::getInstance()->getScreenWidth(true), int height = CFrameBuffer::getInstance()->getScreenHeight(true));
 		
 		// for picons
 		bool DisplayLogo(t_channel_id channel_id, int posx, int posy, int width, int height, bool upscale = false, bool center_x = true, bool center_y = true);

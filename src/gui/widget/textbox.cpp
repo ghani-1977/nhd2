@@ -422,23 +422,6 @@ void CTextBox::refreshText(void)
 
 		m_pcFontText->RenderString(m_cFrameTextRel.iX + TEXT_BORDER_WIDTH + x_center+m_cFrame.iX, y + m_cFrame.iY, m_cFrameTextRel.iWidth, m_cLineArray[i].c_str(), COL_MENUCONTENT, 0, true); // UTF-8
 	}
-	
-	// paint thumbnail
-	/*
-	if (!thumbnail.empty())
-	{
-		if(frameBuffer != NULL) 
-		{
-			frameBuffer->paintVLineRel(lx, ly, th, COL_WHITE);
-			frameBuffer->paintVLineRel(lx + tw, ly, th, COL_WHITE);
-			frameBuffer->paintHLineRel(lx, tw, ly, COL_WHITE);
-			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
-		}
-			
-		// display screenshot
-		g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
-	}
-	*/
 }
 
 void CTextBox::scrollPageDown(const int pages)
@@ -506,7 +489,7 @@ void CTextBox::refresh(void)
 			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
 		}
 			
-			// display screenshot
+		// display screenshot
 		g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
 	}
 }
@@ -529,22 +512,6 @@ bool CTextBox::setText(const std::string* newText, int _max_width, std::string _
 		refreshTextLineArray();
 		refresh();
 		
-		// paint thumbnail
-		/*
-		if (!thumbnail.empty())
-		{
-			if(frameBuffer != NULL) 
-			{
-			frameBuffer->paintVLineRel(lx, ly, th, COL_WHITE);
-			frameBuffer->paintVLineRel(lx + tw, ly, th, COL_WHITE);
-			frameBuffer->paintHLineRel(lx, tw, ly, COL_WHITE);
-			frameBuffer->paintHLineRel(lx, tw, ly + th, COL_WHITE);
-			}
-			
-			// display screenshot
-			g_PicViewer->DisplayImage(thumbnail.c_str(), lx + 3, ly + 3, tw - 3, th - 3);
-		}
-		*/
 		result = true;
 	}
 	

@@ -210,19 +210,15 @@ class CFrameBuffer
 
 		void setIconBasePath(const std::string & iconPath);
 		void getIconSize(const char * const filename, int* width, int *height);
-		bool paintIcon8(const std::string & filename, const int x, const int y, const unsigned char offset = 0);
-		bool paintIconRaw(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
 		/* h is the height of the target "window", if != 0 the icon gets centered in that window */
 		bool paintIcon(const std::string & filename, const int x, const int y, const int h = 0, bool paint = true, int width = 0, int height = 0);
 		
+		// raw/pal
+		bool paintIcon8(const std::string & filename, const int x, const int y, const unsigned char offset = 0);
+		bool paintIconRaw(const std::string & filename, const int x, const int y, const int h = 0, const unsigned char offset = 1, bool paint = true);
 		void loadPal(const std::string & filename, const unsigned char offset = 0, const unsigned char endidx = 255);
 		
-		bool loadPicture2Mem        (const std::string & filename, fb_pixel_t * const memp);
-		bool loadPicture2FrameBuffer(const std::string & filename);
-		bool loadPictureToMem       (const std::string & filename, const uint16_t width, const uint16_t height, const uint16_t stride, fb_pixel_t * const memp);
-		bool savePictureFromMem     (const std::string & filename, const fb_pixel_t * const memp);
-		bool loadBackground(const std::string & filename, const unsigned char col = 0);
-
+		// background
 		int getBackgroundColor() { return backgroundColor;}
 		void setBackgroundColor(const fb_pixel_t color);
 		void useBackground(bool);
@@ -235,13 +231,13 @@ class CFrameBuffer
 		inline void paintBackgroundBox(int xa, int ya, int xb, int yb) { paintBackgroundBoxRel(xa, ya, xb - xa, yb - ya); }
 
 		void paintBackground();
+		bool loadBackgroundPic(const std::string & filename, bool show = true);
 
+		// misc
 		void SaveScreen(int x, int y, int dx, int dy, fb_pixel_t * const memp);
 		void RestoreScreen(int x, int y, int dx, int dy, fb_pixel_t * const memp);
 
 		void ClearFrameBuffer();
-		
-		bool loadBackgroundPic(const std::string & filename, bool show = true);
 		
 		enum 
 		{
@@ -264,7 +260,6 @@ class CFrameBuffer
 		
 		unsigned char * Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
-		//fb_pixel_t * getIcon (const std::string & name, int * width, int * height);
 		
 		enum PaintingMode 
 		{

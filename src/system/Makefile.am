@@ -31,7 +31,5 @@ libneutrino_system_a_SOURCES = \
 	ping.c flashtool.cpp httptool.cpp \
 	settings.cpp lastchannel.cpp \
 	configure_network.cpp fsmounter.cpp \
-	helpers.cpp \
-	ytparser.cpp \
-	nkparser.cpp
+	helpers.cpp
 

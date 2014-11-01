@@ -119,9 +119,6 @@ class CMoviePlayerGui : public CMenuTarget
 
 		bool showaudioselectdialog;
 		
-		//int streamtype;
-		//int skt;
-		
 		const char *filename;
 		
 		// global flags

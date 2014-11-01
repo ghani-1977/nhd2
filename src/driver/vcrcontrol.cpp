@@ -798,15 +798,7 @@ bool CVCRControl::Screenshot(const t_channel_id channel_id, char * fname, bool m
 
 		std::string file_name = fname; // UTF-8
 		
-		int ext_pos = 0;
-		ext_pos = file_name.rfind('.');
-		if( ext_pos > 0)
-		{
-			std::string extension;
-			extension = file_name.substr(ext_pos + 1, file_name.length() - ext_pos);
-			extension = "." + extension;
-			strReplace(file_name, extension.c_str(), ".jpg");
-		}
+		changeFileNameExt(file_name, ".jpg");
 		
 		sprintf(cmd, "grab -v -r320 %s", (char *)file_name.c_str());
 	}

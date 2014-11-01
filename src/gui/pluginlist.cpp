@@ -306,7 +306,12 @@ void CPluginList::paintItem(int pos)
 		int icon_h = 0;
 		if(!isback_menu)
 		{
-			std::string IconName = PLUGINDIR "/" + actplugin->icon;
+			std::string IconName;
+			IconName = PLUGINDIR;
+			IconName += "/";
+			IconName += g_PluginList->getFileName(pluginlist[liststart + pos]->number);
+			IconName += "/";
+			IconName += actplugin->icon;
 			
 			frameBuffer->getIconSize(NEUTRINO_ICON_PLUGIN, &icon_w, &icon_h);
 			
