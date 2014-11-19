@@ -750,7 +750,7 @@ int CHDDFmtExec::exec(CMenuTarget */*parent*/, const std::string& actionKey)
 	progress->showGlobalStatus(100);
 	sleep(2);
 
-	sprintf(cmd, "tune2fs -L RECORD -r 0 -c 0 -i 0 %s", src);
+	sprintf(cmd, "tune2fs -r 0 -c 0 -i 0 %s", src);
 	printf("CHDDFmtExec: executing %s\n", cmd);
 	system(cmd);
 	

@@ -65,10 +65,6 @@ else
 libneutrino_driver_a_SOURCES += vfd.cpp
 endif
 
-if ENABLE_GRAPHLCD
-libneutrino_driver_a_SOURCES += nglcd.cpp
-endif
-
 if USE_OPENGL
 libneutrino_driver_a_SOURCES += \
 	glthread.cpp

@@ -43,9 +43,7 @@
 #include <driver/fontrenderer.h>
 #include <driver/rcinput.h>
 #include <driver/vcrcontrol.h>
-#ifdef ENABLE_GRAPHLCD
-#include <driver/nglcd.h>
-#endif
+
 #include <daemonc/remotecontrol.h>
 #include <system/settings.h>
 #include <system/helpers.h>
@@ -542,11 +540,7 @@ void CMoviePlayerGui::updateLcd(const std::string & lcd_filename)
 			break;
 	}
 	
-	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);
-	
-#if defined (ENABLE_GRAPHLCD)
-	nGLCD::lockChannel(lcd);
-#endif	
+	CVFD::getInstance()->showMenuText(0, lcd.c_str(), -1, true);	
 }
 
 // moviebrowser
@@ -1982,10 +1976,6 @@ void CMoviePlayerGui::PlayFile(void)
 
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PLAY, false);
 	CVFD::getInstance()->ShowIcon(VFD_ICON_PAUSE, false);
-	
-#if defined (ENABLE_GRAPHLCD)
-	nGLCD::unlockChannel();
-#endif	
 
 	if (was_file || m_loop) 
 	{

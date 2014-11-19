@@ -142,10 +142,6 @@
 #include <client/zapitclient.h>
 #include <frontend_c.h>
 
-#if ENABLE_GRAPHLCD
-#include "gui/glcdsetup.h"
-#endif
-
 #include "gui/proxyserver_setup.h"
 #include "gui/opkg_manager.h"
 #include "gui/themes.h"
@@ -248,22 +244,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	
 	// fileplayback
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_FILEPLAYBACK, true, NULL, moviePlayerGui, "fileplayback", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_MOVIEPLAYER, LOCALE_HELPTEXT_FILEPLAYBACK ));	
-
-	if( g_PluginList->plugin_exists("youtube") || g_PluginList->plugin_exists("netzkino") || g_PluginList->plugin_exists("vlcplayer"))
-	      MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
-	
-	// youtube player
-	if(g_PluginList->plugin_exists("youtube"))
-		MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_YTPLAYBACK, true, NULL, this, "youtube", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_YT, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	// netzkino
-	if(g_PluginList->plugin_exists("netzkino"))
-		MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_NETZKINO, true, NULL, this, "netzkino", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_NETZKINO, LOCALE_HELPTEXT_NETSTREAM ));
-	
-	
-	// vlc player
-	//if(g_PluginList->plugin_exists("vlcplayer"))
-	//	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MOVIEPLAYER_VLCPLAYBACK, true, NULL, this, "vlcplayer", CRCInput::convertDigitToKey(shortcutMediaPlayer++), NULL, NEUTRINO_ICON_MENUITEM_VLC, LOCALE_HELPTEXT_NETSTREAM ));
 #endif	
 
 	MediaPlayer.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
@@ -286,7 +266,7 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SERVICE, true, NULL, &service, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SERVICE, LOCALE_HELPTEXT_SERVICE ));
 	
 	// timerlist
-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
+	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
 	
 	// features
 	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
@@ -2583,9 +2563,6 @@ bool CNeutrinoApp::showUserMenu(int button)
         CEventListHandler * tmpEventListHandler                 = NULL;
         CEPGplusHandler * tmpEPGplusHandler                     = NULL;
         CEPGDataHandler * tmpEPGDataHandler                     = NULL;
-#if ENABLE_GRAPHLCD
-	GLCD_Menu * glcdMenu 					= NULL;
-#endif
 	COPKGManager * tmpOPKGManager				= NULL;
 
         std::string txt = g_settings.usermenu_text[button];
@@ -2781,19 +2758,7 @@ bool CNeutrinoApp::showUserMenu(int button)
 					menu_item = new CMenuForwarder(LOCALE_USERMENU_ITEM_VTXT, true, NULL, TuxtxtChanger, "-1", key, icon);
 					menu->addItem(menu_item, false);
 				}
-                                break;
-			
-#if ENABLE_GRAPHLCD				
-			case SNeutrinoSettings::ITEM_GLCD:
-                                menu_items++;
-                                menu_prev = SNeutrinoSettings::ITEM_GLCD;                              
-				glcdMenu = new GLCD_Menu();				
-				
-                                keyhelper.get(&key, &icon);				
-                                menu_item = new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, glcdMenu, "-1", key, icon);
-                                menu->addItem(menu_item, false);
-                                break;
-#endif				
+                                break;	
 
 			case SNeutrinoSettings::ITEM_OPKG:
                                 menu_items++;
@@ -2845,10 +2810,6 @@ bool CNeutrinoApp::showUserMenu(int button)
         if(tmpEPGDataHandler)
 		delete tmpEPGDataHandler;
 	
-#if ENABLE_GRAPHLCD
-	if(glcdMenu)
-		delete glcdMenu;
-#endif
 	if(tmpOPKGManager)
 		delete tmpOPKGManager;
 

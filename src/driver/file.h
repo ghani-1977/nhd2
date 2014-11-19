@@ -37,12 +37,13 @@
 
 #include <features.h> /* make sure off_t has size 8 in __USE_FILE_OFFSET64 mode */
 
-#if !defined (__USE_FILE_OFFSET64) && !defined (_DARWIN_USE_64_BIT_INODE)
+#include <config.h>
+
+#if !defined (_FILE_OFFSET_BITS) && !defined (__USE_FILE_OFFSET64) && !defined (_DARWIN_USE_64_BIT_INODE)
 #error not using 64 bit file offsets
 #endif /* __USE_FILE__OFFSET64 */
 
 #include <sys/types.h>
-
 
 #include <string>
 #include <vector>

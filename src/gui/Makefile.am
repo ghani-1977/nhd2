@@ -58,10 +58,3 @@ libneutrino_gui2_a_SOURCES += cam_menu.cpp
 endif
 
 libtimerlist_a_SOURCES = timerlist.cpp
-
-if ENABLE_GRAPHLCD
-libneutrino_gui_a_SOURCES += \
-	glcdsetup.cpp
-endif
-
-

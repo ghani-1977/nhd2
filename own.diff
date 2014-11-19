@@ -1,0 +1,4463 @@
+diff -Naur nhd2-exp.orig/data/locale/deutsch.locale nhd2-exp/data/locale/deutsch.locale
+--- nhd2-exp.orig/data/locale/deutsch.locale	2014-11-01 22:13:09.000000000 +0100
++++ nhd2-exp/data/locale/deutsch.locale	2014-11-19 17:24:53.068914841 +0100
+@@ -776,6 +776,7 @@
+ miscsettings.infobar_sat_display Infobar Satellitenanzeige
+ miscsettings.infobar_colored_events Sendung farbig
+ miscsettings.infobar_show_channelname Kanal Name
++miscsettings.infobar_show_logos_left Logos neben EPG
+ miscsettings.infobar_showca Infobar Cryptanzeige
+ miscsettings.infobar_radiotext Radio Text
+ miscsettings.infobar_hddvar_display HDD Anzeige
+diff -Naur nhd2-exp.orig/data/locale/english.locale nhd2-exp/data/locale/english.locale
+--- nhd2-exp.orig/data/locale/english.locale	2014-11-01 22:13:09.000000000 +0100
++++ nhd2-exp/data/locale/english.locale	2014-11-19 17:24:53.068914841 +0100
+@@ -776,6 +776,7 @@
+ miscsettings.infobar_sat_display Satellite display on infobar
+ miscsettings.infobar_colored_events Program colored
+ miscsettings.infobar_show_channelname Channel name
++miscsettings.infobar_show_logos_left Logos near EPG
+ miscsettings.infobar_showca Infobar Crypticons
+ miscsettings.infobar_radiotext Radio Text
+ miscsettings.infobar_hddvar_display HDD Display
+diff -Naur nhd2-exp.orig/src/gui/imageinfo.cpp nhd2-exp/src/gui/imageinfo.cpp
+--- nhd2-exp.orig/src/gui/imageinfo.cpp	2014-09-07 20:26:25.000000000 +0200
++++ nhd2-exp/src/gui/imageinfo.cpp	2014-11-19 17:24:53.076907916 +0100
+@@ -188,17 +188,17 @@
+ 	// image name
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_IMAGE));
+-	paintLine(xpos + 125, font_info, imagename);
++	paintLine(xpos + 150, font_info, imagename);
+ 
+ 	// image date
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DATE));
+-	paintLine(xpos+125, font_info, imagedate);
++	paintLine(xpos + 150, font_info, imagedate);
+ 
+ 	// release cycle
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_VERSION));
+-	paintLine(xpos + 125, font_info, releaseCycle);
++	paintLine(xpos + 150, font_info, releaseCycle);
+ 	
+ 	// svn/git built date
+ 	ypos += iheight;
+@@ -207,65 +207,65 @@
+ #else
+ 	paintLine(xpos    , font_info, GIT_REV);
+ #endif
+-	paintLine(xpos + 125, font_info, builddate );	
++	paintLine(xpos + 150, font_info, builddate );	
+ 	
+ 	// image type
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_TYPE));
+-	paintLine(xpos + 125, font_info, imageType);
++	paintLine(xpos + 150, font_info, imageType);
+ 
+ 	// image creator
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_CREATOR));
+-	paintLine(xpos + 125, font_info, creator);
++	paintLine(xpos + 150, font_info, creator);
+ 
+ 	// homepage
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_HOMEPAGE));
+-	paintLine(xpos + 125, font_info, homepage);
++	paintLine(xpos + 150, font_info, homepage);
+ 
+ 	/* doko */
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_DOKUMENTATION));
+-	paintLine(xpos + 125, font_info, docs);
++	paintLine(xpos + 150, font_info, docs);
+ 
+ 	// forum
+ 	ypos += iheight;
+ 	paintLine(xpos    , font_info, g_Locale->getText(LOCALE_IMAGEINFO_FORUM));
+-	paintLine(xpos + 125, font_info, forum);
++	paintLine(xpos + 150, font_info, forum);
+ 
+ 	// license
+ 	ypos += iheight;
+ 	paintLine(xpos, font_info,g_Locale->getText(LOCALE_IMAGEINFO_LICENSE));
+-	paintLine(xpos + 125, font_small, "This program is free software; you can redistribute it and/or modify");
++	paintLine(xpos + 150, font_small, "This program is free software; you can redistribute it and/or modify");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "it under the terms of the GNU General Public License as published by");
++	paintLine(xpos + 150, font_small, "it under the terms of the GNU General Public License as published by");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "the Free Software Foundation; either version 2 of the License, or");
++	paintLine(xpos + 150, font_small, "the Free Software Foundation; either version 2 of the License, or");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "(at your option) any later version.");
++	paintLine(xpos + 150, font_small, "(at your option) any later version.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "This program is distributed in the hope that it will be useful,");
++	paintLine(xpos + 150, font_small, "This program is distributed in the hope that it will be useful,");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
++	paintLine(xpos + 150, font_small, "but WITHOUT ANY WARRANTY; without even the implied warranty of");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
++	paintLine(xpos + 150, font_small, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "See the GNU General Public License for more details.");
++	paintLine(xpos + 150, font_small, "See the GNU General Public License for more details.");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "You should have received a copy of the GNU General Public License");
++	paintLine(xpos + 150, font_small, "You should have received a copy of the GNU General Public License");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "along with this program; if not, write to the Free Software");
++	paintLine(xpos + 150, font_small, "along with this program; if not, write to the Free Software");
+ 
+ 	ypos += sheight;
+-	paintLine(xpos + 125, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
++	paintLine(xpos + 150, font_small, "Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.");	
+ }
+diff -Naur nhd2-exp.orig/src/gui/infoviewer.cpp nhd2-exp/src/gui/infoviewer.cpp
+--- nhd2-exp.orig/src/gui/infoviewer.cpp	2014-09-07 20:26:25.000000000 +0200
++++ nhd2-exp/src/gui/infoviewer.cpp	2014-11-19 17:24:53.076907916 +0100
+@@ -138,7 +138,8 @@
+ #define CHANNUMBER_WIDTH	100
+ 
+ // logo
+-#define CHANNEL_LOGO_HEIGHT	40
++#define CHANNEL_LOGO_HEIGHT	50
++#define CHANNEL_LOGO_WIDTH	125
+ 
+ // infoboxheight
+ #define BOXHEIGHT_CHANNELINFO	140
+@@ -216,11 +217,11 @@
+ 	buttonBarStartY = BoxStartY + BoxHeight;
+ 	
+ 	// channel logo
+-	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
++	PIC_X = BoxStartX + 15;
++	PIC_Y = (BoxStartY + (BoxHeight - CHANNEL_LOGO_HEIGHT) / 2) + 40;
+ 	
+ 	// channel number
+-	ChanNumberX = BoxStartX + 10;
++	ChanNumberX = BoxStartX + 30;
+ 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel name
+@@ -228,12 +229,12 @@
+ 	ChanNameY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel logo
+-	PIC_W = CHANNEL_LOGO_HEIGHT*1.67;
+-	PIC_H = CHANNEL_LOGO_HEIGHT;
++	PIC_W = CHANNEL_LOGO_WIDTH;
++ 	PIC_H = CHANNEL_LOGO_HEIGHT;
+ 	
+ 	// channel info
+ 	ChanInfoX = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 3; //PIC_Y + CHANNEL_LOGO_HEIGHT + 5
++	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT - 5 + CHANNEL_LOGO_HEIGHT + 3; //PIC_Y + CHANNEL_LOGO_HEIGHT + 5
+ 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
+ 
+ 	// button cell width
+@@ -379,11 +380,11 @@
+ 	buttonBarStartY = BoxStartY + BoxHeight;
+ 	
+ 	// channel logo
+-	PIC_X = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	PIC_Y = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
++	PIC_X = BoxStartX + 15;
++	PIC_Y = (BoxStartY + (BoxHeight - CHANNEL_LOGO_HEIGHT) / 2) + 40;
+ 	
+ 	// channel number
+-	ChanNumberX = BoxStartX + 10;
++	ChanNumberX = BoxStartX + 30;
+ 	ChanNumberY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5;
+ 	
+ 	// channel name
+@@ -392,7 +393,7 @@
+ 	
+ 	// channel info
+ 	ChanInfoX = BoxStartX + CHANNUMBER_WIDTH + 10;
+-	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT + 5 + CHANNEL_LOGO_HEIGHT + 3;
++	ChanInfoY = BoxStartY + SAT_INFOBOX_HEIGHT + TIMESCALE_BAR_HEIGHT - 5 + CHANNEL_LOGO_HEIGHT + 3;
+ 	//ChanInfoHeight = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight();
+ 	ChanInfoHeight = std::max(CHANINFO_HEIGHT, (g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight() > CHANINFO_HEIGHT)? CHANINFO_HEIGHT : g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getHeight());
+ 	
+@@ -525,11 +526,11 @@
+ 			g_PicViewer->DisplayLogo(channel_id, PIC_X, PIC_Y, (logo_bpp == 4 && !g_settings.show_channelname)? logo_w : PIC_W, PIC_H, (logo_h > PIC_H)? true : false, false, true);
+ 
+ 			// recalculate ChanNameWidth
+-			ChanNameWidth = BoxWidth - (time_width + CHANNUMBER_WIDTH + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
++			//ChanNameWidth = BoxWidth - (time_width + CHANNUMBER_WIDTH + logo_w + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->getRenderWidth(ChannelName, true));
+ 			
+ 			// ChannelName
+ 			if(g_settings.show_channelname)
+-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString(PIC_X + ((logo_bpp == 4)? logo_w : PIC_W) + 10, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
++				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_CHANNAME]->RenderString( BoxStartX + CHANNUMBER_WIDTH + 10, ChanNameY + time_height, ChanNameWidth, ChannelName, COL_INFOBAR, 0, true);	// UTF-8
+ 		}
+ 		else
+ 		{
+@@ -2020,83 +2021,170 @@
+ 				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->RenderString(BoxStartX + 5 + icon_red_w + 5, buttonBarStartY + (buttonBarHeight - g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight())/2 + g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL]->getHeight(), asize - 5, g_Locale->getText(LOCALE_INFOVIEWER_EVENTLIST), COL_INFOBAR_BUTTONS, 0, true); // UTF-8
+ 	  		}
+ 		}
+-
+-		// paint epg infos
+-		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++		// check logo
++		logo_w = PIC_W;
++		logo_h = PIC_H;
++		logo_bpp = 0;
++		bool logo_ok = false;
++		logo_ok = g_PicViewer->checkLogo(channel_id);
++		if(logo_ok)
+ 		{
+-	  		// no EPG available	
+-			// refresh box
+-	  		frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++			// paint epg infos
++			if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++			{
++		  		// no EPG available	
++				// refresh box
++		  		frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 			
+-			// noepg/waiting for time
+-	  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
+-		} 
+-		else 
+-		{
+-	  		// found some epg
+-	  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
+-	  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
++				// noepg/waiting for time
++		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
++			} 
++			else 
++			{
++		  		// found some epg
++		  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
++		  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
+ 
+-	  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
+-	  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
++		  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
++		  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
+ 
+-	  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
+-			{
+-				// there are later events available - yet no current
+-				//refresh box current
+-				frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++		  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
++				{
++					// there are later events available - yet no current
++					//refresh box current
++					frameBuffer->paintBox(BoxStartX + 100, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
+ 				
+-				// current infos
+-				g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
++					// current infos
++					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
+ 
+-				// next
+-				if(last_next_id != info_CurrentNext.next_uniqueKey) 
+-				{
+-					// refresh box
+-					frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++					// next
++					if(last_next_id != info_CurrentNext.next_uniqueKey) 
++					{
++						// refresh box
++						frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+-					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 110, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 105, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+ 
+-					last_next_id = info_CurrentNext.next_uniqueKey;
+-				}
+-	  		} 
+-			else 
+-			{
+-				// current
+-		  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++						last_next_id = info_CurrentNext.next_uniqueKey;
++					}
++		  		} 
++				else 
+ 				{
+-					// refresh box
+-			  		frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++					// current
++			  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++					{
++						// refresh box
++				  		frameBuffer->paintBox(BoxStartX + 100, ChanInfoY, BoxEndX - 100, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
+ 					
+-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
+-			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 110, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX + 100, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 105, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++
++				  		last_curr_id = info_CurrentNext.current_uniqueKey;
++			  		}
++			  		
++			  		// refresh box
++			  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
++			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++
++					// next 
++					if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++					{
++						if(last_next_id != info_CurrentNext.next_uniqueKey) 
++						{
++							// refresh
++							frameBuffer->paintBox(BoxStartX + 100, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-			  		last_curr_id = info_CurrentNext.current_uniqueKey;
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 110, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX + 100, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 105, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++
++							last_next_id = info_CurrentNext.next_uniqueKey;
++						}
++					} 
+ 		  		}
+-		  		
+-		  		// refresh box
+-		  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
+-		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++			}
++		}
++		else
++		{
++			// paint epg infos
++			if ((info_CurrentNext.flags & CSectionsdClient::epgflags::not_broadcast) || ((calledFromEvent) && !(info_CurrentNext.flags & (CSectionsdClient::epgflags::has_next | CSectionsdClient::epgflags::has_current)))) 
++			{
++		  		// no EPG available	
++				// refresh box
++		  		frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++			
++				// noepg/waiting for time
++		  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, BoxEndX - (BoxStartX + CHANNUMBER_WIDTH + 20), g_Locale->getText (gotTime ? LOCALE_INFOVIEWER_NOEPG : LOCALE_INFOVIEWER_WAITTIME), COL_INFOBAR, 0, true);	// UTF-8
++			} 
++			else 
++			{
++		  		// found some epg
++		  		int duration1Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(runningRest);
++		  		int duration1TextPos = BoxEndX - duration1Width - BORDER_RIGHT;
++
++		  		int duration2Width = g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->getRenderWidth(nextDuration);
++		  		int duration2TextPos = BoxEndX - duration2Width - BORDER_RIGHT;
+ 
+-				// next 
+-				if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++		  		if ((info_CurrentNext.flags & CSectionsdClient::epgflags::has_next) && (!(info_CurrentNext.flags & CSectionsdClient::epgflags::has_current))) 
+ 				{
++					// there are later events available - yet no current
++					//refresh box current
++					frameBuffer->paintBox(/*ChanInfoX + 10*/BoxStartX, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++				
++					// current infos
++					g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, BoxEndX - ChanInfoX, g_Locale->getText(LOCALE_INFOVIEWER_NOCURRENT), COL_COLORED_EVENTS_INFOBAR, 0, true);	// UTF-8
++
++					// next
+ 					if(last_next_id != info_CurrentNext.next_uniqueKey) 
+ 					{
+-						// refresh
++						// refresh box
+ 						frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
+ 
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
+-						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR );
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++						g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString(duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
+ 
+ 						last_next_id = info_CurrentNext.next_uniqueKey;
+ 					}
+-				} 
+-	  		}
+-		}
++		  		} 
++				else 
++				{
++					// current
++			  		if(last_curr_id != info_CurrentNext.current_uniqueKey) 
++					{
++						// refresh box
++				  		frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);
++					
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + ChanInfoHeight, EPGTimeWidth, runningStart, COL_COLORED_EVENTS_INFOBAR);
++				  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + ChanInfoHeight, duration1TextPos - ChanInfoX - 5, info_CurrentNext.current_name, COL_COLORED_EVENTS_INFOBAR, 0, true);
++
++				  		last_curr_id = info_CurrentNext.current_uniqueKey;
++			  		}
++			  		
++			  		// refresh box
++			  		frameBuffer->paintBox(BoxEndX - 80, ChanInfoY, BoxEndX, ChanInfoY + CHANINFO_HEIGHT, COL_INFOBAR_PLUS_0);//FIXME duration1TextPos not really good
++			  		g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration1TextPos, ChanInfoY + ChanInfoHeight, duration1Width, runningRest, COL_INFOBAR);
++
++					// next 
++					if ((!is_nvod) && (info_CurrentNext.flags & CSectionsdClient::epgflags::has_next)) 
++					{
++						if(last_next_id != info_CurrentNext.next_uniqueKey) 
++						{
++							// refresh
++							frameBuffer->paintBox(BoxStartX /*+ 10*/, ChanInfoY + CHANINFO_HEIGHT, BoxEndX, ChanInfoY + 2*ChanInfoHeight, COL_INFOBAR_PLUS_0);
++
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (BoxStartX + 10, ChanInfoY + 2*ChanInfoHeight, EPGTimeWidth, nextStart, COL_INFOBAR);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (ChanInfoX, ChanInfoY + 2*ChanInfoHeight, duration2TextPos - ChanInfoX - 5, info_CurrentNext.next_name, COL_INFOBAR, 0, true);
++							g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_INFO]->RenderString (duration2TextPos, ChanInfoY + 2*ChanInfoHeight, duration2Width, nextDuration, COL_INFOBAR );
++
++							last_next_id = info_CurrentNext.next_uniqueKey;
++						}
++					} 
++		  		}
++			}
++		}//Grabber66
+   	}
+ }
+ 
+diff -Naur nhd2-exp.orig/src/neutrino.cpp nhd2-exp/src/neutrino.cpp
+--- nhd2-exp.orig/src/neutrino.cpp	2014-11-19 17:22:16.000000000 +0100
++++ nhd2-exp/src/neutrino.cpp	2014-11-19 17:24:53.068914841 +0100
+@@ -925,6 +925,9 @@
+ 	
+ 	// infobar show channel name
+ 	g_settings.show_channelname = configfile.getBool("show_channelname", true);
++
++	// infobar show logos left from EPG
++	g_settings.show_logos_left = configfile.getBool("show_logos_left", true);
+ 	
+ 	// vol
+ 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
+@@ -1366,6 +1369,9 @@
+ 	
+ 	// infobar show channelname
+ 	configfile.setBool("show_channelname", g_settings.show_channelname);
++
++	// infobar show logos left from EPG
++	configfile.setBool("show_logos_left", g_settings.show_logos_left);
+ 	
+ 	// record screenshot
+ 	configfile.setInt32("recording_screenshot", g_settings.recording_screenshot);
+diff -Naur nhd2-exp.orig/src/neutrino_menue.cpp nhd2-exp/src/neutrino_menue.cpp
+--- nhd2-exp.orig/src/neutrino_menue.cpp	2014-11-19 17:22:16.000000000 +0100
++++ nhd2-exp/src/neutrino_menue.cpp	2014-11-19 17:28:00.180927680 +0100
+@@ -266,10 +266,10 @@
+ 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_SERVICE, true, NULL, &service, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SERVICE, LOCALE_HELPTEXT_SERVICE ));
+ 	
+ 	// timerlist
+-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
++	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_TIMERLIST_NAME, true, NULL, Timerlist, NULL, CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_SLEEPTIMER, LOCALE_HELPTEXT_TIMERLIST ));
+ 	
+ 	// features
+-	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
++	//mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_INFOVIEWER_FEATURES, true, NULL, this, "features", CRCInput::convertDigitToKey(shortcut++), NULL, NEUTRINO_ICON_MENUITEM_PLUGINS, LOCALE_HELPTEXT_FEATURES ));
+ 
+ 	//sleep timer
+ 	mainMenu.addItem( new CMenuSeparatorItemMenuIcon(CMenuSeparatorItemMenuIcon::LINE) );
+@@ -1171,6 +1171,9 @@
+ 	
+ 	// infobar show channelname
+ 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME, &g_settings.show_channelname, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
++
++	// infobar show logos left from EPG
++	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_INFOBAR_SHOW_LOGOS_LEFT, &g_settings.show_logos_left, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
+ 	
+ 	// recording screenshot
+ 	miscSettingsGeneral.addItem(new CMenuOptionChooser(LOCALE_MISCSETTINGS_RECORDING_SCREENSHOT, &g_settings.recording_screenshot, OPTIONS_OFF0_ON1_OPTIONS, OPTIONS_OFF0_ON1_OPTION_COUNT, true ));
+diff -Naur nhd2-exp.orig/src/system/locals.h nhd2-exp/src/system/locals.h
+--- nhd2-exp.orig/src/system/locals.h	2014-11-01 22:13:08.000000000 +0100
++++ nhd2-exp/src/system/locals.h	2014-11-19 17:24:53.068914841 +0100
+@@ -602,6 +602,7 @@
+ 	LOCALE_MISCSETTINGS_INFOBAR_SAT_DISPLAY,
+ 	LOCALE_MISCSETTINGS_INFOBAR_COLORED_EVENTS,
+ 	LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME,
++	LOCALE_MISCSETTINGS_INFOBAR_SHOW_LOGOS_LEFT,
+ 	LOCALE_MISCSETTINGS_INFOBAR_SHOWCA,
+ 	LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT,
+ 	LOCALE_MISCSETTINGS_INFOBAR_HDD_DISPLAY,
+diff -Naur nhd2-exp.orig/src/system/locals.h.orig nhd2-exp/src/system/locals.h.orig
+--- nhd2-exp.orig/src/system/locals.h.orig	1970-01-01 01:00:00.000000000 +0100
++++ nhd2-exp/src/system/locals.h.orig	2014-11-01 22:13:08.000000000 +0100
+@@ -0,0 +1,1685 @@
++#ifndef __locals__
++#define __locals__
++
++typedef enum {
++	NONEXISTANT_LOCALE,
++	LOCALE_AUDIOSELECTMENUE_HEAD,
++	LOCALE_EPGMENU_EPGPLUS,
++	LOCALE_EPGMENU_EVENTINFO,
++	LOCALE_EPGMENU_EVENTLIST,
++	LOCALE_EPGMENU_HEAD,
++	LOCALE_EPGMENU_STREAMINFO,
++	LOCALE_EPGPLUS_ACTIONS,
++	LOCALE_EPGPLUS_BYBOUQUET_MODE,
++	LOCALE_EPGPLUS_BYPAGE_MODE,
++	LOCALE_EPGPLUS_CHANGE_FONT_SIZE,
++	LOCALE_EPGPLUS_CHANGE_FONT_STYLE,
++	LOCALE_EPGPLUS_CHANGE_SIZE,
++	LOCALE_EPGPLUS_CHANNELENTRY_FONT,
++	LOCALE_EPGPLUS_CHANNELENTRY_SEPARATIONLINEHEIGHT,
++	LOCALE_EPGPLUS_CHANNELENTRY_WIDTH,
++	LOCALE_EPGPLUS_CHANNELEVENTENTRY_FONT,
++	LOCALE_EPGPLUS_EDIT_FONTS,
++	LOCALE_EPGPLUS_EDIT_SIZES,
++	LOCALE_EPGPLUS_FONT_STYLE_BOLD,
++	LOCALE_EPGPLUS_FONT_STYLE_ITALIC,
++	LOCALE_EPGPLUS_FONT_STYLE_REGULAR,
++	LOCALE_EPGPLUS_FOOTER_FONTBOUQUETCHANNELNAME,
++	LOCALE_EPGPLUS_FOOTER_FONTBUTTONS,
++	LOCALE_EPGPLUS_FOOTER_FONTEVENTDESCRIPTION,
++	LOCALE_EPGPLUS_FOOTER_FONTEVENTSHORTDESCRIPTION,
++	LOCALE_EPGPLUS_HEAD,
++	LOCALE_EPGPLUS_HEADER_FONT,
++	LOCALE_EPGPLUS_HORGAP1_HEIGHT,
++	LOCALE_EPGPLUS_HORGAP2_HEIGHT,
++	LOCALE_EPGPLUS_NEXT_BOUQUET,
++	LOCALE_EPGPLUS_OPTIONS,
++	LOCALE_EPGPLUS_PAGE_DOWN,
++	LOCALE_EPGPLUS_PAGE_UP,
++	LOCALE_EPGPLUS_PREV_BOUQUET,
++	LOCALE_EPGPLUS_RECORD,
++	LOCALE_EPGPLUS_REFRESH_EPG,
++	LOCALE_EPGPLUS_REMIND,
++	LOCALE_EPGPLUS_RESET_SETTINGS,
++	LOCALE_EPGPLUS_SAVE_SETTINGS,
++	LOCALE_EPGPLUS_SCROLL_MODE,
++	LOCALE_EPGPLUS_SELECT_FONT_NAME,
++	LOCALE_EPGPLUS_SETTINGS,
++	LOCALE_EPGPLUS_SLIDER_WIDTH,
++	LOCALE_EPGPLUS_STRETCH_MODE,
++	LOCALE_EPGPLUS_SWAP_MODE,
++	LOCALE_EPGPLUS_TIMELINE_FONTDATE,
++	LOCALE_EPGPLUS_TIMELINE_FONTTIME,
++	LOCALE_EPGPLUS_VERGAP1_WIDTH,
++	LOCALE_EPGPLUS_VERGAP2_WIDTH,
++	LOCALE_EPGPLUS_VIEW_MODE,
++	LOCALE_GENRE_ARTS_0,
++	LOCALE_GENRE_ARTS_1,
++	LOCALE_GENRE_ARTS_10,
++	LOCALE_GENRE_ARTS_11,
++	LOCALE_GENRE_ARTS_2,
++	LOCALE_GENRE_ARTS_3,
++	LOCALE_GENRE_ARTS_4,
++	LOCALE_GENRE_ARTS_5,
++	LOCALE_GENRE_ARTS_6,
++	LOCALE_GENRE_ARTS_7,
++	LOCALE_GENRE_ARTS_8,
++	LOCALE_GENRE_ARTS_9,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_0,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_1,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_2,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_3,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_4,
++	LOCALE_GENRE_CHILDRENS_PROGRAMMES_5,
++	LOCALE_GENRE_DOCUS_MAGAZINES_0,
++	LOCALE_GENRE_DOCUS_MAGAZINES_1,
++	LOCALE_GENRE_DOCUS_MAGAZINES_2,
++	LOCALE_GENRE_DOCUS_MAGAZINES_3,
++	LOCALE_GENRE_DOCUS_MAGAZINES_4,
++	LOCALE_GENRE_DOCUS_MAGAZINES_5,
++	LOCALE_GENRE_DOCUS_MAGAZINES_6,
++	LOCALE_GENRE_DOCUS_MAGAZINES_7,
++	LOCALE_GENRE_MOVIE_0,
++	LOCALE_GENRE_MOVIE_1,
++	LOCALE_GENRE_MOVIE_2,
++	LOCALE_GENRE_MOVIE_3,
++	LOCALE_GENRE_MOVIE_4,
++	LOCALE_GENRE_MOVIE_5,
++	LOCALE_GENRE_MOVIE_6,
++	LOCALE_GENRE_MOVIE_7,
++	LOCALE_GENRE_MOVIE_8,
++	LOCALE_GENRE_MUSIC_DANCE_0,
++	LOCALE_GENRE_MUSIC_DANCE_1,
++	LOCALE_GENRE_MUSIC_DANCE_2,
++	LOCALE_GENRE_MUSIC_DANCE_3,
++	LOCALE_GENRE_MUSIC_DANCE_4,
++	LOCALE_GENRE_MUSIC_DANCE_5,
++	LOCALE_GENRE_MUSIC_DANCE_6,
++	LOCALE_GENRE_NEWS_0,
++	LOCALE_GENRE_NEWS_1,
++	LOCALE_GENRE_NEWS_2,
++	LOCALE_GENRE_NEWS_3,
++	LOCALE_GENRE_NEWS_4,
++	LOCALE_GENRE_SHOW_0,
++	LOCALE_GENRE_SHOW_1,
++	LOCALE_GENRE_SHOW_2,
++	LOCALE_GENRE_SHOW_3,
++	LOCALE_GENRE_SOCIAL_POLITICAL_0,
++	LOCALE_GENRE_SOCIAL_POLITICAL_1,
++	LOCALE_GENRE_SOCIAL_POLITICAL_2,
++	LOCALE_GENRE_SOCIAL_POLITICAL_3,
++	LOCALE_GENRE_SPORTS_0,
++	LOCALE_GENRE_SPORTS_1,
++	LOCALE_GENRE_SPORTS_10,
++	LOCALE_GENRE_SPORTS_11,
++	LOCALE_GENRE_SPORTS_2,
++	LOCALE_GENRE_SPORTS_3,
++	LOCALE_GENRE_SPORTS_4,
++	LOCALE_GENRE_SPORTS_5,
++	LOCALE_GENRE_SPORTS_6,
++	LOCALE_GENRE_SPORTS_7,
++	LOCALE_GENRE_SPORTS_8,
++	LOCALE_GENRE_SPORTS_9,
++	LOCALE_GENRE_TRAVEL_HOBBIES_0,
++	LOCALE_GENRE_TRAVEL_HOBBIES_1,
++	LOCALE_GENRE_TRAVEL_HOBBIES_2,
++	LOCALE_GENRE_TRAVEL_HOBBIES_3,
++	LOCALE_GENRE_TRAVEL_HOBBIES_4,
++	LOCALE_GENRE_TRAVEL_HOBBIES_5,
++	LOCALE_GENRE_TRAVEL_HOBBIES_6,
++	LOCALE_GENRE_TRAVEL_HOBBIES_7,
++	LOCALE_GENRE_UNKNOWN,
++	LOCALE_APIDSELECTOR_HEAD,
++	LOCALE_AUDIOMENU_PCMOFFSET,
++	LOCALE_AUDIOMENU_ANALOGOUT,
++	LOCALE_AUDIOMENU_AVS,
++	LOCALE_AUDIOMENU_AVS_CONTROL,
++	LOCALE_AUDIOMENU_DOLBYDIGITAL,
++	LOCALE_AUDIOMENU_HEAD,
++	LOCALE_AUDIOMENU_LIRC,
++	LOCALE_AUDIOMENU_MONOLEFT,
++	LOCALE_AUDIOMENU_MONORIGHT,
++	LOCALE_AUDIOMENU_OST,
++	LOCALE_AUDIOMENU_STEREO,
++	LOCALE_AUDIOMENU_HDMI_DD,
++	LOCALE_AUDIOMENU_HDMI_DD_SOURCE,
++	LOCALE_AUDIOMENU_SPDIF_DD,
++	LOCALE_AUDIOMENU_AVSYNC,
++	LOCALE_AUDIOMENU_AVSYNC_AM,
++	LOCALE_AUDIOMENU_CLOCKREC,
++	LOCALE_AUDIOMENU_VOLUME_ADJUST,
++	
++	LOCALE_AUDIOMENU_AC3_DELAY,
++	LOCALE_AUDIOMENU_PCM_DELAY,
++	
++	LOCALE_AUDIOMENU_AUTO_LANG,
++	LOCALE_AUDIOMENU_AUTO_SUBS,
++	LOCALE_AUDIOMENU_PREF_LANG,
++	LOCALE_AUDIOMENU_PREF_LANG_HEAD,
++	LOCALE_AUDIOMENU_PREF_LANGUAGES,
++	LOCALE_AUDIOMENU_PREF_SUBS,
++	LOCALE_AUDIOMENU_PREF_SUBS_HEAD,
++	
++	LOCALE_AUDIOPLAYER_ADD,
++	LOCALE_AUDIOPLAYER_ADD_IC,
++	LOCALE_AUDIOPLAYER_ADD_LOC,
++	LOCALE_AUDIOPLAYER_ADD_SC,
++	LOCALE_AUDIOPLAYER_ARTIST_TITLE,
++	LOCALE_AUDIOPLAYER_BUILDING_SEARCH_INDEX,
++	LOCALE_AUDIOPLAYER_BUTTON_SELECT_TITLE_BY_ID,
++	LOCALE_AUDIOPLAYER_BUTTON_SELECT_TITLE_BY_NAME,
++	LOCALE_AUDIOPLAYER_DEFDIR,
++	LOCALE_AUDIOPLAYER_DELETE,
++	LOCALE_AUDIOPLAYER_DELETEALL,
++	LOCALE_AUDIOPLAYER_DISPLAY_ORDER,
++	LOCALE_AUDIOPLAYER_ENABLE_SC_METADATA,
++	LOCALE_AUDIOPLAYER_ENABLE_SC_ID,
++	LOCALE_AUDIOPLAYER_FASTFORWARD,
++	LOCALE_AUDIOPLAYER_FOLLOW,
++	LOCALE_AUDIOPLAYER_HEAD,
++	LOCALE_AUDIOPLAYER_HIGHPRIO,
++	LOCALE_AUDIOPLAYER_SPECTRUM,
++	LOCALE_AUDIOPLAYER_JUMP_BACKWARDS,
++	LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT1,
++	LOCALE_AUDIOPLAYER_JUMP_DIALOG_HINT2,
++	LOCALE_AUDIOPLAYER_JUMP_DIALOG_TITLE,
++	LOCALE_AUDIOPLAYER_JUMP_FORWARDS,
++	LOCALE_AUDIOPLAYER_KEYLEVEL,
++	LOCALE_AUDIOPLAYER_LOAD_RADIO_STATIONS,
++	LOCALE_AUDIOPLAYER_NAME,
++	LOCALE_AUDIOPLAYER_PAUSE,
++	LOCALE_AUDIOPLAYER_PLAY,
++	LOCALE_AUDIOPLAYER_PLAYING,
++	LOCALE_AUDIOPLAYER_PLAYLIST_FILEERROR_MSG,
++	LOCALE_AUDIOPLAYER_PLAYLIST_FILEOVERWRITE_MSG,
++	LOCALE_AUDIOPLAYER_PLAYLIST_FILEOVERWRITE_TITLE,
++	LOCALE_AUDIOPLAYER_PLAYLIST_NAME,
++	LOCALE_AUDIOPLAYER_PLAYLIST_NAME_HINT1,
++	LOCALE_AUDIOPLAYER_PLAYLIST_NAME_HINT2,
++	LOCALE_AUDIOPLAYER_READING_FILES,
++	LOCALE_AUDIOPLAYER_RECEIVING_LIST,
++	LOCALE_AUDIOPLAYER_REPEAT_ON,
++	LOCALE_AUDIOPLAYER_REWIND,
++	LOCALE_AUDIOPLAYER_SAVE_PLAYLIST,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_TIMEOUT,
++	LOCALE_AUDIOPLAYER_SELECT_TITLE_BY_NAME,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_TYPE,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_NONE,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_HIDEPLAYLIST,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_DIASHOW,
++	LOCALE_AUDIOPLAYER_SCREENSAVER_DIR,
++	LOCALE_AUDIOPLAYER_SHUFFLE,
++	LOCALE_AUDIOPLAYER_STOP,
++	LOCALE_AUDIOPLAYER_TITLE_ARTIST,
++	LOCALE_AUDIOPLAYERSETTINGS_GENERAL,
++	LOCALE_BOOKMARKMANAGER_DELETE,
++	LOCALE_BOOKMARKMANAGER_NAME,
++	LOCALE_BOOKMARKMANAGER_RENAME,
++	LOCALE_BOOKMARKMANAGER_SELECT,
++	LOCALE_BOUQUETEDITOR_ADD,
++	LOCALE_BOUQUETEDITOR_BOUQUETNAME,
++	LOCALE_BOUQUETEDITOR_DELETE,
++	LOCALE_BOUQUETEDITOR_DISCARDINGCHANGES,
++	LOCALE_BOUQUETEDITOR_HIDE,
++	LOCALE_BOUQUETEDITOR_LOCK,
++	LOCALE_BOUQUETEDITOR_MOVE,
++	LOCALE_BOUQUETEDITOR_NAME,
++	LOCALE_BOUQUETEDITOR_NEWBOUQUETNAME,
++	LOCALE_BOUQUETEDITOR_RENAME,
++	LOCALE_BOUQUETEDITOR_RETURN,
++	LOCALE_BOUQUETEDITOR_SAVECHANGES,
++	LOCALE_BOUQUETEDITOR_SAVINGCHANGES,
++	LOCALE_BOUQUETEDITOR_SWITCH,
++	LOCALE_BOUQUETEDITOR_SWITCHMODE,
++	LOCALE_BOUQUETLIST_HEAD,
++	LOCALE_CABLESETUP_PROVIDER,
++	LOCALE_TERRESTRIALSETUP_PROVIDER,
++	LOCALE_CHANNELLIST_EDIT,
++	LOCALE_CHANNELLIST_EPGTEXT_ALIGN_LEFT,
++	LOCALE_CHANNELLIST_EPGTEXT_ALIGN_RIGHT,
++	LOCALE_CHANNELLIST_EXTENDED,
++	LOCALE_CHANNELLIST_HEAD,
++	LOCALE_CHANNELLIST_NONEFOUND,
++	LOCALE_CHANNELLIST_SINCE,
++	LOCALE_CHANNELLIST_START,
++	LOCALE_CHANNELLIST_FAVS,
++	LOCALE_CHANNELLIST_PROVS,
++	LOCALE_CHANNELLIST_SATS,
++	LOCALE_CHANNELLIST_HISTORY,
++	LOCALE_CHANNELLIST_CURRENT_TP,
++	LOCALE_CHANNELLIST_MAKE_HDLIST,
++	LOCALE_CHANNELLIST_SHOWCA,
++	LOCALE_CHANNELLIST_MINITV,
++	LOCALE_COLORCHOOSER_ALPHA,
++	LOCALE_COLORCHOOSER_BLUE,
++	LOCALE_COLORCHOOSER_GREEN,
++	LOCALE_COLORCHOOSER_RED,
++	LOCALE_COLORMENU_BACKGROUND,
++	LOCALE_COLORMENU_FADE,
++	LOCALE_COLORMENU_FONT,
++	LOCALE_COLORMENU_BLENDMODE,
++	LOCALE_COLORMENU_GTX_ALPHA,
++	LOCALE_COLORMENU_GAIN,
++	LOCALE_COLORMENU_HEAD,
++	LOCALE_COLORMENU_MENUCOLORS,
++	LOCALE_COLORMENU_STATUSBAR,
++	LOCALE_COLORMENU_TEXTCOLOR,
++	LOCALE_COLORMENU_THEMESELECT,
++	LOCALE_COLORMENU_TIMING,
++	LOCALE_COLORMENUSETUP_HEAD,
++	LOCALE_COLORMENUSETUP_MENUCONTENT,
++	LOCALE_COLORMENUSETUP_MENUCONTENT_INACTIVE,
++	LOCALE_COLORMENUSETUP_MENUCONTENT_SELECTED,
++	LOCALE_COLORMENUSETUP_MENUHEAD,
++	LOCALE_COLORSTATUSBAR_HEAD,
++	LOCALE_COLORSTATUSBAR_TEXT,
++	LOCALE_COLORTHEMEMENU_CLASSIC_THEME,
++	LOCALE_COLORTHEMEMENU_DBLUE_THEME,
++	LOCALE_COLORTHEMEMENU_DVB2K_THEME,
++	LOCALE_COLORTHEMEMENU_RED_THEME,
++	LOCALE_COLORTHEMEMENU_PINKY_THEME,
++	LOCALE_COLORTHEMEMENU_NEUTRINOHD2_THEME,
++	LOCALE_COLORTHEMEMENU_GIGABLUE_THEME,
++	LOCALE_COLORTHEMEMENU_HEAD,
++	LOCALE_COLORTHEMEMENU_HEAD2,
++	LOCALE_COLORTHEMEMENU_NAME,
++	LOCALE_COLORTHEMEMENU_NEUTRINO_THEME,
++	LOCALE_COLORTHEMEMENU_QUESTION,
++	LOCALE_COLORTHEMEMENU_SAVE,
++	LOCALE_COLORTHEMEMENU_SELECT1,
++	LOCALE_COLORTHEMEMENU_SELECT2,
++	LOCALE_COLORTHEMEMENU_GRAY,
++	LOCALE_DATE_APR,
++	LOCALE_DATE_AUG,
++	LOCALE_DATE_DEC,
++	LOCALE_DATE_FEB,
++	LOCALE_DATE_FRI,
++	LOCALE_DATE_JAN,
++	LOCALE_DATE_JUL,
++	LOCALE_DATE_JUN,
++	LOCALE_DATE_MAR,
++	LOCALE_DATE_MAY,
++	LOCALE_DATE_MON,
++	LOCALE_DATE_NOV,
++	LOCALE_DATE_OCT,
++	LOCALE_DATE_SAT,
++	LOCALE_DATE_SEP,
++	LOCALE_DATE_SUN,
++	LOCALE_DATE_THU,
++	LOCALE_DATE_TUE,
++	LOCALE_DATE_WED,
++	LOCALE_EPGEXTENDED_ACTORS,
++	LOCALE_EPGEXTENDED_DIRECTOR,
++	LOCALE_EPGEXTENDED_GUESTS,
++	LOCALE_EPGEXTENDED_ORIGINAL_TITLE,
++	LOCALE_EPGEXTENDED_PRESENTER,
++	LOCALE_EPGEXTENDED_YEAR_OF_PRODUCTION,
++	LOCALE_EPGLIST_NOEVENTS,
++	LOCALE_EPGVIEWER_MORE_SCREENINGS,
++	LOCALE_EPGVIEWER_NODETAILED,
++	LOCALE_EPGVIEWER_NOTFOUND,
++	LOCALE_EVENTFINDER_HEAD,
++	LOCALE_EVENTFINDER_KEYWORD,
++	LOCALE_EVENTFINDER_SEARCH,
++	LOCALE_EVENTFINDER_SEARCH_WITHIN_EPG,
++	LOCALE_EVENTFINDER_SEARCH_WITHIN_LIST,
++	LOCALE_EVENTFINDER_SEARCHING,
++	LOCALE_EVENTFINDER_START_SEARCH,
++	LOCALE_EVENTLISTBAR_CHANNELSWITCH,
++	LOCALE_EVENTLISTBAR_EVENTSORTTIME,
++	LOCALE_EVENTLISTBAR_EVENTSORTALPHA,
++	LOCALE_EVENTLISTBAR_RECORDEVENT,
++	LOCALE_FAVORITES_ADDCHANNEL,
++	LOCALE_FAVORITES_BOUQUETNAME,
++	LOCALE_FAVORITES_BQCREATED,
++	LOCALE_FAVORITES_CHADDED,
++	LOCALE_FAVORITES_CHALREADYINBQ,
++	LOCALE_FAVORITES_FINALHINT,
++	LOCALE_FAVORITES_MENUEADD,
++	LOCALE_FAVORITES_NOBOUQUETS,
++	LOCALE_FAVORITES_COPY,
++	LOCALE_FILEBROWSER_DELETE,
++	LOCALE_FILEBROWSER_DENYDIRECTORYLEAVE,
++	LOCALE_FILEBROWSER_DODELETE1,
++	LOCALE_FILEBROWSER_DODELETE2,
++	LOCALE_FILEBROWSER_FILTER_ACTIVE,
++	LOCALE_FILEBROWSER_FILTER_INACTIVE,
++	LOCALE_FILEBROWSER_HEAD,
++	LOCALE_FILEBROWSER_MARK,
++	LOCALE_FILEBROWSER_NEXTPAGE,
++	LOCALE_FILEBROWSER_PREVPAGE,
++	LOCALE_FILEBROWSER_SCAN,
++	LOCALE_FILEBROWSER_SELECT,
++	LOCALE_FILEBROWSER_SHOWRIGHTS,
++	LOCALE_FILEBROWSER_SORT_DATE,
++	LOCALE_FILEBROWSER_SORT_NAME,
++	LOCALE_FILEBROWSER_SORT_NAMEDIRSFIRST,
++	LOCALE_FILEBROWSER_SORT_SIZE,
++	LOCALE_FILEBROWSER_SORT_TYPE,
++	LOCALE_FILESYSTEM_IS_UTF8,
++	LOCALE_FILESYSTEM_IS_UTF8_OPTION_ISO8859_1,
++	LOCALE_FILESYSTEM_IS_UTF8_OPTION_UTF8,
++	LOCALE_FLASHUPDATE_ACTIONREADFLASH,
++	LOCALE_FLASHUPDATE_CANTOPENFILE,
++	LOCALE_FLASHUPDATE_CANTOPENMTD,
++	LOCALE_FLASHUPDATE_CHECKUPDATE,
++	LOCALE_FLASHUPDATE_CURRENTRELEASECYCLE,
++	LOCALE_FLASHUPDATE_CURRENTVERSION_SEP,
++	LOCALE_FLASHUPDATE_CURRENTVERSIONDATE,
++	LOCALE_FLASHUPDATE_CURRENTVERSIONSNAPSHOT,
++	LOCALE_FLASHUPDATE_CURRENTVERSIONTIME,
++	LOCALE_FLASHUPDATE_ERASEFAILED,
++	LOCALE_FLASHUPDATE_ERASING,
++	LOCALE_FLASHUPDATE_EXPERIMENTALIMAGE,
++	LOCALE_FLASHUPDATE_EXPERTFUNCTIONS,
++	LOCALE_FLASHUPDATE_FILEIS0BYTES,
++	LOCALE_FLASHUPDATE_FILESELECTOR,
++	LOCALE_FLASHUPDATE_FLASHREADYREBOOT,
++	LOCALE_FLASHUPDATE_GETINFOFILE,
++	LOCALE_FLASHUPDATE_GETINFOFILEERROR,
++	LOCALE_FLASHUPDATE_GETUPDATEFILE,
++	LOCALE_FLASHUPDATE_GETUPDATEFILEERROR,
++	LOCALE_FLASHUPDATE_GLOBALPROGRESS,
++	LOCALE_FLASHUPDATE_HEAD,
++	LOCALE_FLASHUPDATE_MD5CHECK,
++	LOCALE_FLASHUPDATE_FLASHMD5SUMERROR,
++	LOCALE_FLASHUPDATE_PACKAGEMD5SUMERROR,
++	LOCALE_FLASHUPDATE_FLASHMSGBOX,
++	LOCALE_FLASHUPDATE_PACKAGEMSGBOX,
++	LOCALE_FLASHUPDATE_MTDSELECTOR,
++	LOCALE_FLASHUPDATE_PROGRAMMINGFLASH,
++	LOCALE_FLASHUPDATE_PROXYPASSWORD,
++	LOCALE_FLASHUPDATE_PROXYPASSWORD_HINT1,
++	LOCALE_FLASHUPDATE_PROXYPASSWORD_HINT2,
++	LOCALE_FLASHUPDATE_PROXYSERVER,
++	LOCALE_FLASHUPDATE_PROXYSERVER_HINT1,
++	LOCALE_FLASHUPDATE_PROXYSERVER_HINT2,
++	LOCALE_FLASHUPDATE_PROXYSERVER_SEP,
++	LOCALE_FLASHUPDATE_PROXYUSERNAME,
++	LOCALE_FLASHUPDATE_PROXYUSERNAME_HINT1,
++	LOCALE_FLASHUPDATE_PROXYUSERNAME_HINT2,
++	LOCALE_FLASHUPDATE_READFLASH,
++	LOCALE_FLASHUPDATE_READFLASHMTD,
++	LOCALE_FLASHUPDATE_READY,
++	LOCALE_FLASHUPDATE_REALLYFLASHMTD,
++	LOCALE_FLASHUPDATE_SAVESUCCESS,
++	LOCALE_FLASHUPDATE_SELECTIMAGE,
++	LOCALE_FLASHUPDATE_SQUASHFS_NOVERSION,
++	LOCALE_FLASHUPDATE_TITLEREADFLASH,
++	LOCALE_FLASHUPDATE_TITLEWRITEFLASH,
++	LOCALE_FLASHUPDATE_UPDATEMODE,
++	LOCALE_FLASHUPDATE_UPDATEMODE_INTERNET,
++	LOCALE_FLASHUPDATE_UPDATEMODE_MANUAL,
++	LOCALE_FLASHUPDATE_URL_FILE,
++	LOCALE_FLASHUPDATE_VERSIONCHECK,
++	LOCALE_FLASHUPDATE_WRITEFLASH,
++	LOCALE_FLASHUPDATE_WRITEFLASHMTD,
++	LOCALE_FLASHUPDATE_WRONGBASE,
++	LOCALE_FLASHUPDATE_NOVERSION,
++	LOCALE_FLASHUPDATE_DOWNLOADEDIMAGE,
++	LOCALE_FLASHUPDATE_INSTALLPACKAGE,
++	LOCALE_FLASHUPDATE_INSTALLFAILED,
++	LOCALE_FONTMENU_CHANNELLIST,
++	LOCALE_FONTMENU_EPG,
++	LOCALE_FONTMENU_EVENTLIST,
++	LOCALE_FONTMENU_GAMELIST,
++	LOCALE_FONTMENU_HEAD,
++	LOCALE_FONTMENU_INFOBAR,
++	LOCALE_FONTSIZE_CHANNEL_NUM_ZAP,
++	LOCALE_FONTSIZE_CHANNELLIST,
++	LOCALE_FONTSIZE_CHANNELLIST_DESCR,
++	LOCALE_FONTSIZE_CHANNELLIST_NUMBER,
++	LOCALE_FONTSIZE_EPG_DATE,
++	LOCALE_FONTSIZE_EPG_INFO1,
++	LOCALE_FONTSIZE_EPG_INFO2,
++	LOCALE_FONTSIZE_EPG_TITLE,
++	LOCALE_FONTSIZE_EVENTLIST_DATETIME,
++	LOCALE_FONTSIZE_EVENTLIST_ITEMLARGE,
++	LOCALE_FONTSIZE_EVENTLIST_ITEMSMALL,
++	LOCALE_FONTSIZE_EVENTLIST_TITLE,
++	LOCALE_FONTSIZE_FILEBROWSER_ITEM,
++	LOCALE_FONTSIZE_GAMELIST_ITEMLARGE,
++	LOCALE_FONTSIZE_GAMELIST_ITEMSMALL,
++	LOCALE_FONTSIZE_HINT,
++	LOCALE_FONTSIZE_INFOBAR_CHANNAME,
++	LOCALE_FONTSIZE_INFOBAR_INFO,
++	LOCALE_FONTSIZE_INFOBAR_NUMBER,
++	LOCALE_FONTSIZE_INFOBAR_SMALL,
++	LOCALE_FONTSIZE_MENU,
++	LOCALE_FONTSIZE_MENU_INFO,
++	LOCALE_FONTSIZE_MENU_TITLE,
++	LOCALE_FONTMENU_SCALING,
++	LOCALE_FONTMENU_SCALING_X,
++	LOCALE_FONTMENU_SCALING_X_HINT2,
++	LOCALE_FONTMENU_SCALING_Y,
++	LOCALE_FONTMENU_SCALING_Y_HINT2,
++	LOCALE_COLORMENU_CONTRAST_FONTS,
++	LOCALE_GTXALPHA_ALPHA1,
++	LOCALE_GTXALPHA_ALPHA2,
++	LOCALE_INFOVIEWER_EPGNOTLOAD,
++	LOCALE_INFOVIEWER_EPGWAIT,
++	LOCALE_INFOVIEWER_EVENTLIST,
++	LOCALE_INFOVIEWER_LANGUAGES,
++	LOCALE_INFOVIEWER_MOTOR_MOVING,
++	LOCALE_INFOVIEWER_NEXT,
++	LOCALE_INFOVIEWER_NOCURRENT,
++	LOCALE_INFOVIEWER_NOEPG,
++	LOCALE_INFOVIEWER_NOTAVAILABLE,
++	LOCALE_INFOVIEWER_NOW,
++	LOCALE_INFOVIEWER_SELECTTIME,
++	LOCALE_INFOVIEWER_FEATURES,
++	LOCALE_INFOVIEWER_SUBCHAN_DISP_POS,
++	LOCALE_INFOVIEWER_SUBSERVICE,
++	LOCALE_INFOVIEWER_WAITTIME,
++	LOCALE_IPSETUP_HINT_1,
++	LOCALE_IPSETUP_HINT_2,
++	LOCALE_KEYBINDINGMENU_RC,
++	LOCALE_KEYBINDINGMENU_ADDRECORD,
++	LOCALE_KEYBINDINGMENU_ADDREMIND,
++	LOCALE_KEYBINDINGMENU_ALLCHANNELS_ON_OK,
++	LOCALE_KEYBINDINGMENU_BOUQUETCHANNELS_ON_OK,
++	LOCALE_KEYBINDINGMENU_BOUQUETDOWN,
++	LOCALE_KEYBINDINGMENU_BOUQUETHANDLING,
++	LOCALE_KEYBINDINGMENU_BOUQUETLIST_ON_OK,
++	LOCALE_KEYBINDINGMENU_BOUQUETUP,
++	LOCALE_KEYBINDINGMENU_CANCEL,
++	LOCALE_KEYBINDINGMENU_CHANNELDOWN,
++	LOCALE_KEYBINDINGMENU_CHANNELLIST,
++	LOCALE_KEYBINDINGMENU_CHANNELUP,
++	LOCALE_KEYBINDINGMENU_HEAD,
++	LOCALE_KEYBINDINGMENU_LASTCHANNEL,
++	LOCALE_KEYBINDINGMENU_PIP,
++	LOCALE_KEYBINDINGMENU_MODECHANGE,
++	LOCALE_KEYBINDINGMENU_PAGEDOWN,
++	LOCALE_KEYBINDINGMENU_PAGEUP,
++	LOCALE_KEYBINDINGMENU_QUICKZAP,
++	LOCALE_KEYBINDINGMENU_REPEATBLOCK,
++	LOCALE_KEYBINDINGMENU_REPEATBLOCKGENERIC,
++	LOCALE_KEYBINDINGMENU_SORT,
++	LOCALE_KEYBINDINGMENU_SEARCH,
++	LOCALE_KEYBINDINGMENU_SUBCHANNELDOWN,
++	LOCALE_KEYBINDINGMENU_SUBCHANNELUP,
++	LOCALE_KEYBINDINGMENU_TVRADIOMODE,
++	LOCALE_KEYBINDINGMENU_ZAPHISTORY,
++	LOCALE_KEYCHOOSER_HEAD,
++	LOCALE_KEYCHOOSER_TEXT1,
++	LOCALE_KEYCHOOSER_TEXT2,
++	LOCALE_KEYCHOOSERMENU_CURRENTKEY,
++	LOCALE_KEYCHOOSERMENU_SETNEW,
++	LOCALE_KEYCHOOSERMENU_SETNONE,
++	LOCALE_LANGUAGESETUP_HEAD,
++	LOCALE_LANGUAGESETUP_SELECT,
++	LOCALE_LCDCONTROLER_BRIGHTNESS,
++	LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY,
++	LOCALE_LCDCONTROLER_CONTRAST,
++	LOCALE_LCDMENU_AUTODIMM,
++	LOCALE_LCDMENU_DIM_BRIGHTNESS,
++	LOCALE_LCDMENU_DIM_TIME,
++	LOCALE_LCDMENU_HEAD,
++	LOCALE_LCDMENU_INVERSE,
++	LOCALE_LCDMENU_LCDCONTROLER,
++	LOCALE_LCDMENU_POWER,
++	LOCALE_LCDMENU_STATUSLINE,
++	LOCALE_LCDMENU_STATUSLINE_BOTH,
++	LOCALE_LCDMENU_STATUSLINE_PLAYTIME,
++	LOCALE_LCDMENU_STATUSLINE_VOLUME,
++	//test
++	LOCALE_LCDMENU_SCROLLTEXT,
++	LOCALE_LCDMENU_SETFPTIME,
++	LOCALE_LCDMENU_EPG,
++	LOCALE_LCDMENU_EPG_NAME,
++	LOCALE_LCDMENU_EPG_NAME_SEPLINE_TITLE,
++	LOCALE_LCDMENU_EPG_NAME_TITLE,
++	LOCALE_LCDMENU_EPG_NAMESHORT_SEPLINE_TITLE,
++	LOCALE_LCDMENU_EPG_NAMESHORT_TITLE,
++	LOCALE_LCDMENU_EPG_TITLE,
++	LOCALE_LCDMENU_EPGALIGN,
++	LOCALE_LCDMENU_EPGALIGN_CENTER,
++	LOCALE_LCDMENU_EPGALIGN_LEFT,
++	LOCALE_LCDMENU_STATUSLINE_BOTH_AUDIO,
++	LOCALE_LCDMENU_DUMP_PNG,
++	LOCALE_LCDMENU_LEDCOLOR,
++	LOCALE_LCDMENU_LEDCOLOR_RED,
++	LOCALE_LCDMENU_LEDCOLOR_BLUE,
++	LOCALE_LCDMENU_LEDCOLOR_PURPLE,
++	LOCALE_MAINMENU_AUDIOPLAYER,
++	LOCALE_MAINMENU_INETRADIO,
++	LOCALE_MAINMENU_CLEARSECTIONSD,
++	LOCALE_MAINMENU_GAMES,
++	LOCALE_MAINMENU_HEAD,
++	LOCALE_MAINMENU_MOVIEPLAYER,
++	LOCALE_MAINMENU_PAUSESECTIONSD,
++	LOCALE_MAINMENU_PICTUREVIEWER,
++	LOCALE_MAINMENU_RADIOMODE,
++	LOCALE_MAINMENU_REBOOT,
++	LOCALE_MAINMENU_RECORDING,
++	LOCALE_MAINMENU_RECORDING_START,
++	LOCALE_MAINMENU_RECORDING_STOP,
++	LOCALE_MAINMENU_SCARTMODE,
++	LOCALE_MAINMENU_SCRIPTS,
++	LOCALE_MAINMENU_SERVICE,
++	LOCALE_MAINMENU_SETTINGS,
++	LOCALE_MAINMENU_SHUTDOWN,
++	LOCALE_MAINMENU_SLEEPTIMER,
++	LOCALE_MAINMENU_TVMODE,
++	LOCALE_MAINSETTINGS_AUDIO,
++	LOCALE_MAINSETTINGS_OSD,
++	LOCALE_MAINSETTINGS_HEAD,
++	LOCALE_MAINSETTINGS_KEYBINDING,
++	LOCALE_MAINSETTINGS_LANGUAGE,
++	LOCALE_MAINSETTINGS_TIMEZONE,
++	LOCALE_MAINSETTINGS_LCD,
++	LOCALE_MAINSETTINGS_MISC,
++	LOCALE_MAINSETTINGS_NETWORK,
++	LOCALE_MAINSETTINGS_RECORDING,
++	LOCALE_MAINSETTINGS_SAVESETTINGSNOW,
++	LOCALE_MAINSETTINGS_SAVESETTINGSNOW_HINT,
++	LOCALE_MAINSETTINGS_STREAMING,
++	LOCALE_MAINSETTINGS_VIDEO,
++	LOCALE_MENU_BACK,
++	LOCALE_MENU_NAVI,
++	LOCALE_MENU_ENTER,
++	LOCALE_MENU_EXIT,
++	LOCALE_MESSAGEBOX_BACK,
++	LOCALE_MESSAGEBOX_CANCEL,
++	LOCALE_MESSAGEBOX_DISCARD,
++	LOCALE_MESSAGEBOX_ERROR,
++	LOCALE_MESSAGEBOX_INFO,
++	LOCALE_MESSAGEBOX_NO,
++	LOCALE_MESSAGEBOX_OK,
++	LOCALE_MESSAGEBOX_YES,
++	LOCALE_MISCSETTINGS_BOOTINFO,
++	LOCALE_MISCSETTINGS_BOOTMENU,
++	LOCALE_MISCSETTINGS_CHANNELLIST,
++	LOCALE_MISCSETTINGS_CHANNELLIST_EPGTEXT_ALIGN,
++	LOCALE_MISCSETTINGS_DRIVER_BOOT,
++	LOCALE_MISCSETTINGS_FB_DESTINATION,
++	LOCALE_MISCSETTINGS_GENERAL,
++	LOCALE_SERVICEMENU_TUNER,
++	LOCALE_MISCSETTINGS_ZAPIT,
++	LOCALE_MISCSETTINGS_HEAD,
++	LOCALE_MISCSETTINGS_HWSECTIONS,
++	LOCALE_MISCSETTINGS_INFOBAR_SAT_DISPLAY,
++	LOCALE_MISCSETTINGS_INFOBAR_COLORED_EVENTS,
++	LOCALE_MISCSETTINGS_INFOBAR_SHOW_CHANNELNAME,
++	LOCALE_MISCSETTINGS_INFOBAR_SHOWCA,
++	LOCALE_MISCSETTINGS_INFOBAR_RADIOTEXT,
++	LOCALE_MISCSETTINGS_INFOBAR_HDD_DISPLAY,
++	LOCALE_MISCSETTINGS_SHUTDOWN_COUNT,
++	LOCALE_MISCSETTINGS_SHUTDOWN_COUNT_HINT1,
++	LOCALE_MISCSETTINGS_SHUTDOWN_COUNT_HINT2,
++	LOCALE_MISCSETTINGS_NOAVIAWATCHDOG,
++	LOCALE_MISCSETTINGS_NOENXWATCHDOG,
++	LOCALE_MISCSETTINGS_PMTUPDATE,
++	LOCALE_MISCSETTINGS_SHUTDOWN_REAL,
++	LOCALE_MISCSETTINGS_SHUTDOWN_REAL_RCDELAY,
++	LOCALE_MISCSETTINGS_SPTSMODE,
++	LOCALE_MISCSETTINGS_VIRTUAL_ZAP_MODE,
++	LOCALE_MISCSETTINGS_EPG_CACHE,
++	LOCALE_MISCSETTINGS_EPG_CACHE_HINT1,
++	LOCALE_MISCSETTINGS_EPG_CACHE_HINT2,
++	LOCALE_MISCSETTINGS_EPG_DIR,
++	LOCALE_MISCSETTINGS_EPG_EXTENDEDCACHE,
++	LOCALE_MISCSETTINGS_EPG_EXTENDEDCACHE_HINT1,
++	LOCALE_MISCSETTINGS_EPG_EXTENDEDCACHE_HINT2,
++	LOCALE_MISCSETTINGS_EPG_HEAD,
++	LOCALE_MISCSETTINGS_EPG_MAX_EVENTS,
++	LOCALE_MISCSETTINGS_EPG_MAX_EVENTS_HINT1,
++	LOCALE_MISCSETTINGS_EPG_MAX_EVENTS_HINT2,
++	LOCALE_MISCSETTINGS_EPG_OLD_EVENTS,
++	LOCALE_MISCSETTINGS_EPG_OLD_EVENTS_HINT1,
++	LOCALE_MISCSETTINGS_EPG_OLD_EVENTS_HINT2,
++	LOCALE_MISCSETTINGS_EPG_SAVE,
++	LOCALE_MISCSETTINGS_EPGPLUS_SHOW_LOGOS,
++	//LOCALE_MISCSETTINGS_AUDIOPLAYER_SCREENSAVER_DIR,
++	LOCALE_MOTORCONTROL_HEAD,
++	LOCALE_MOTORCONTROL_USER_MENU,
++	LOCALE_MOTORCONTROL_INSTALL_MENU,
++	LOCALE_MOTORCONTROL_STEP_WEST,
++	LOCALE_MOTORCONTROL_STEP_EAST,
++	LOCALE_MOTORCONTROL_HALT,
++	LOCALE_MOTORCONTROL_WEST_LIMIT,
++	LOCALE_MOTORCONTROL_EAST_LIMIT,
++	LOCALE_MOTORCONTROL_ENABLE_LIMIT,
++	LOCALE_MOTORCONTROL_DISABLE_LIMIT,
++	LOCALE_MOTORCONTROL_REF_POSITION,
++	LOCALE_MOTORCONTROL_CALC_POSITIONS,
++	LOCALE_MOTORCONTROL_POS_INCREASE,
++	LOCALE_MOTORCONTROL_POS_DECREASE,
++	LOCALE_MOTORCONTROL_STEP_DRIVE,
++	LOCALE_MOTORCONTROL_STORE,
++	LOCALE_MOTORCONTROL_STEP_INCREASE,
++	LOCALE_MOTORCONTROL_STEP_DECREASE,
++	LOCALE_MOTORCONTROL_GOTO,
++	LOCALE_MOTORCONTROL_NOTDEF,
++	LOCALE_MOTORCONTROL_MOTOR_POS,
++	LOCALE_MOTORCONTROL_SETTINGS,
++	LOCALE_MOTORCONTROL_MOVEMENT,
++	LOCALE_MOTORCONTROL_STEP_MODE,
++	LOCALE_MOTORCONTROL_DRIVE_MODE,
++	LOCALE_MOTORCONTROL_DRIVE_MODE_AUTO,
++	LOCALE_MOTORCONTROL_TIMED_MODE,
++	LOCALE_MOTORCONTROL_STEP_SIZE,
++	LOCALE_MOTORCONTROL_STOP_MOVING,
++	LOCALE_MOTORCONTROL_STOP_STOPPED,
++	LOCALE_MOTORCONTROL_NO_MODE,
++	LOCALE_MOTORCONTROL_MSEC,
++	LOCALE_MOTORCONTROL_STATUS,
++	LOCALE_MOTORCONTROL_SAT_POS,
++	LOCALE_MOVIEBROWSER_OPTION_BROWSER,
++	LOCALE_MOVIEBROWSER_BOOK_CLEAR_ALL,
++	LOCALE_MOVIEBROWSER_MENU_SAVE,
++	LOCALE_MOVIEBROWSER_MENU_SAVE_ALL,
++	LOCALE_MOVIEBROWSER_INFO_HEAD_UPDATE,
++	LOCALE_MOVIEBROWSER_UPDATE_IF_DEST_EMPTY_ONLY,
++	LOCALE_MOVIEBROWSER_SERIE_AUTO_CREATE,
++	LOCALE_MOVIEBROWSER_LOAD_DEFAULT,
++	LOCALE_MOVIEBROWSER_BROWSER_ROW_HEAD,
++	LOCALE_MOVIEBROWSER_BROWSER_ROW_NR,
++	LOCALE_MOVIEBROWSER_BROWSER_ROW_ITEM,
++	LOCALE_MOVIEBROWSER_BROWSER_ROW_WIDTH,
++	LOCALE_MOVIEBROWSER_RELOAD_AT_START,
++	LOCALE_MOVIEBROWSER_REMOUNT_AT_START,
++	LOCALE_MOVIEBROWSER_DIR_HEAD,
++	LOCALE_MOVIEBROWSER_DIR,
++	LOCALE_MOVIEBROWSER_USE_DIR,
++	LOCALE_MOVIEBROWSER_USE_REC_DIR,
++	LOCALE_MOVIEBROWSER_USE_MOVIE_DIR,
++	LOCALE_MOVIEBROWSER_HIDE_SERIES,
++	LOCALE_MOVIEBROWSER_LAST_RECORD_MAX_ITEMS,
++	LOCALE_MOVIEBROWSER_LAST_PLAY_MAX_ITEMS,
++	LOCALE_MOVIEBROWSER_BROWSER_FRAME_HIGH,
++	LOCALE_MOVIEBROWSER_BOOK_HEAD,
++	LOCALE_MOVIEBROWSER_BOOK_LASTMOVIESTOP,
++	LOCALE_MOVIEBROWSER_BOOK_MOVIEEND,
++	LOCALE_MOVIEBROWSER_BOOK_MOVIESTART,
++	LOCALE_MOVIEBROWSER_BOOK_NAME,
++	LOCALE_MOVIEBROWSER_BOOK_NEW,
++	LOCALE_MOVIEBROWSER_BOOK_POSITION,
++	LOCALE_MOVIEBROWSER_BOOK_TYPE,
++	LOCALE_MOVIEBROWSER_BOOK_TYPE_BACKWARD,
++	LOCALE_MOVIEBROWSER_BOOK_TYPE_FORWARD,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_NAME_INFO1,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_NAME_INFO2,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO1,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_POS_INFO2,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_TYPE_INFO1,
++	LOCALE_MOVIEBROWSER_EDIT_BOOK_TYPE_INFO2,
++	LOCALE_MOVIEBROWSER_EDIT_SERIE,
++	LOCALE_MOVIEBROWSER_ERROR_NO_MOVIES,
++	LOCALE_MOVIEBROWSER_FOOT_FILTER,
++	LOCALE_MOVIEBROWSER_FOOT_PLAY,
++	LOCALE_MOVIEBROWSER_FOOT_SORT,
++	LOCALE_MOVIEBROWSER_HEAD,
++	LOCALE_MOVIEBROWSER_HEAD_FILTER,
++	LOCALE_MOVIEBROWSER_HEAD_PLAYLIST,
++	LOCALE_MOVIEBROWSER_HEAD_RECORDLIST,
++	LOCALE_MOVIEBROWSER_HINT_JUMPBACKWARD,
++	LOCALE_MOVIEBROWSER_HINT_JUMPFORWARD,
++	LOCALE_MOVIEBROWSER_HINT_MOVIEEND,
++	LOCALE_MOVIEBROWSER_HINT_NEWBOOK_BACKWARD,
++	LOCALE_MOVIEBROWSER_HINT_NEWBOOK_FORWARD,
++	LOCALE_MOVIEBROWSER_INFO_AUDIO,
++	LOCALE_MOVIEBROWSER_INFO_CHANNEL,
++	LOCALE_MOVIEBROWSER_INFO_FILENAME,
++	LOCALE_MOVIEBROWSER_INFO_GENRE_MAJOR,
++	LOCALE_MOVIEBROWSER_INFO_GENRE_MINOR,
++	LOCALE_MOVIEBROWSER_INFO_HEAD,
++	LOCALE_MOVIEBROWSER_INFO_INFO1,
++	LOCALE_MOVIEBROWSER_INFO_LENGTH,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_0YEAR,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_12YEAR,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_16YEAR,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_18YEAR,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_6YEAR,
++	LOCALE_MOVIEBROWSER_INFO_PARENTAL_LOCKAGE_ALWAYS,
++	LOCALE_MOVIEBROWSER_INFO_PATH,
++	LOCALE_MOVIEBROWSER_INFO_PREVPLAYDATE,
++	LOCALE_MOVIEBROWSER_INFO_PRODCOUNTRY,
++	LOCALE_MOVIEBROWSER_INFO_PRODYEAR,
++	LOCALE_MOVIEBROWSER_INFO_QUALITY,
++	LOCALE_MOVIEBROWSER_INFO_RECORDDATE,
++	LOCALE_MOVIEBROWSER_INFO_SERIE,
++	LOCALE_MOVIEBROWSER_INFO_SIZE,
++	LOCALE_MOVIEBROWSER_INFO_TITLE,
++	LOCALE_MOVIEBROWSER_INFO_VIDEOFORMAT,
++	LOCALE_MOVIEBROWSER_MENU_DIRECTORIES_HEAD,
++	LOCALE_MOVIEBROWSER_MENU_HELP_HEAD,
++	LOCALE_MOVIEBROWSER_MENU_MAIN_BOOKMARKS,
++	LOCALE_MOVIEBROWSER_MENU_MAIN_HEAD,
++	LOCALE_MOVIEBROWSER_MENU_NFS_HEAD,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_ACTIVATED,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_ACTIVATED_NO,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_ACTIVATED_YES,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_ACTIVATED_NO_TEMP,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_HEAD,
++	LOCALE_MOVIEBROWSER_MENU_PARENTAL_LOCK_RATE_HEAD,
++	LOCALE_MOVIEBROWSER_NEXT_FOCUS,
++	LOCALE_MOVIEBROWSER_SCAN_FOR_MOVIES,
++	LOCALE_MOVIEBROWSER_SERIE_HEAD,
++	LOCALE_MOVIEBROWSER_SERIE_NAME,
++	LOCALE_MOVIEBROWSER_SHORT_AUDIO,
++	LOCALE_MOVIEBROWSER_SHORT_BOOK,
++	LOCALE_MOVIEBROWSER_SHORT_CHANNEL,
++	LOCALE_MOVIEBROWSER_SHORT_COUNTRY,
++	LOCALE_MOVIEBROWSER_SHORT_FILENAME,
++	LOCALE_MOVIEBROWSER_SHORT_FORMAT,
++	LOCALE_MOVIEBROWSER_SHORT_GENRE_MAJOR,
++	LOCALE_MOVIEBROWSER_SHORT_GENRE_MINOR,
++	LOCALE_MOVIEBROWSER_SHORT_INFO1,
++	LOCALE_MOVIEBROWSER_SHORT_INFO2,
++	LOCALE_MOVIEBROWSER_SHORT_LENGTH,
++	LOCALE_MOVIEBROWSER_SHORT_PARENTAL_LOCKAGE,
++	LOCALE_MOVIEBROWSER_SHORT_PATH,
++	LOCALE_MOVIEBROWSER_SHORT_PREVPLAYDATE,
++	LOCALE_MOVIEBROWSER_SHORT_PRODYEAR,
++	LOCALE_MOVIEBROWSER_SHORT_QUALITY,
++	LOCALE_MOVIEBROWSER_SHORT_RECORDDATE,
++	LOCALE_MOVIEBROWSER_SHORT_SERIE,
++	LOCALE_MOVIEBROWSER_SHORT_SIZE,
++	LOCALE_MOVIEBROWSER_SHORT_TITLE,
++	LOCALE_MOVIEBROWSER_START_HEAD,
++	LOCALE_MOVIEBROWSER_START_RECORD_START,
++	LOCALE_MOVIEPLAYER_BOOKMARK,
++	LOCALE_MOVIEPLAYER_BOOKMARKNAME,
++	LOCALE_MOVIEPLAYER_BOOKMARKNAME_HINT1,
++	LOCALE_MOVIEPLAYER_BOOKMARKNAME_HINT2,
++	LOCALE_MOVIEPLAYER_BUFFERING,
++	LOCALE_MOVIEPLAYER_DEFDIR,
++	LOCALE_MOVIEPLAYER_DEFPLUGIN,
++	LOCALE_MOVIEPLAYER_VLCPLAYBACK,
++	LOCALE_MOVIEPLAYER_VLCDVDPLAYBACK,
++	LOCALE_MOVIEPLAYER_VLCSVCDPLAYBACK,
++	LOCALE_MOVIEPLAYER_RECORDS,
++	LOCALE_MOVIEPLAYER_MOVIES,
++	LOCALE_MOVIEPLAYER_FILEPLAYBACK,
++	LOCALE_MOVIEPLAYER_SHOWTSHELP,
++	LOCALE_MOVIEPLAYER_GOTO,
++	LOCALE_MOVIEPLAYER_GOTO_H1,
++	LOCALE_MOVIEPLAYER_GOTO_H2,
++	LOCALE_MOVIEPLAYER_HEAD,
++	LOCALE_MOVIEPLAYER_NOSTREAMINGSERVER,
++	LOCALE_MOVIEPLAYER_PESPLAYBACK,
++	LOCALE_MOVIEPLAYER_PLEASEWAIT,
++	LOCALE_MOVIEPLAYER_TOOMANYBOOKMARKS,
++	LOCALE_MOVIEPLAYER_TSHELP1,
++	LOCALE_MOVIEPLAYER_TSHELP10,
++	LOCALE_MOVIEPLAYER_TSHELP11,
++	LOCALE_MOVIEPLAYER_TSHELP12,
++	LOCALE_MOVIEPLAYER_TSHELP13,
++	LOCALE_MOVIEPLAYER_TSHELP14,
++	LOCALE_MOVIEPLAYER_TSHELP2,
++	LOCALE_MOVIEPLAYER_TSHELP3,
++	LOCALE_MOVIEPLAYER_TSHELP4,
++	LOCALE_MOVIEPLAYER_TSHELP5,
++	LOCALE_MOVIEPLAYER_TSHELP6,
++	LOCALE_MOVIEPLAYER_TSHELP7,
++	LOCALE_MOVIEPLAYER_TSHELP8,
++	LOCALE_MOVIEPLAYER_TSHELP9,
++	LOCALE_MOVIEPLAYER_TSPLAYBACK,
++	LOCALE_MOVIEPLAYER_DVDPLAYBACK,
++	LOCALE_MOVIEPLAYER_BLUERAYPLAYBACK,
++	LOCALE_MOVIEPLAYER_VLCHELP1,
++	LOCALE_MOVIEPLAYER_VLCHELP10,
++	LOCALE_MOVIEPLAYER_VLCHELP11,
++	LOCALE_MOVIEPLAYER_VLCHELP12,
++	LOCALE_MOVIEPLAYER_VLCHELP2,
++	LOCALE_MOVIEPLAYER_VLCHELP3,
++	LOCALE_MOVIEPLAYER_VLCHELP4,
++	LOCALE_MOVIEPLAYER_VLCHELP5,
++	LOCALE_MOVIEPLAYER_VLCHELP6,
++	LOCALE_MOVIEPLAYER_VLCHELP7,
++	LOCALE_MOVIEPLAYER_VLCHELP8,
++	LOCALE_MOVIEPLAYER_VLCHELP9,
++	LOCALE_MOVIEPLAYER_WRONGVLCVERSION,
++	LOCALE_NETWORKMENU_BROADCAST,
++	LOCALE_NETWORKMENU_DHCP,
++	LOCALE_NETWORKMENU_GATEWAY,
++	LOCALE_NETWORKMENU_HEAD,
++	LOCALE_NETWORKMENU_IPADDRESS,
++	LOCALE_NETWORKMENU_MOUNT,
++	LOCALE_NETWORKMENU_NAMESERVER,
++	LOCALE_NETWORKMENU_NETMASK,
++	LOCALE_NETWORKMENU_NTPENABLE,
++	LOCALE_NETWORKMENU_NTPREFRESH,
++	LOCALE_NETWORKMENU_NTPREFRESH_HINT1,
++	LOCALE_NETWORKMENU_NTPREFRESH_HINT2,
++	LOCALE_NETWORKMENU_NTPSERVER,
++	LOCALE_NETWORKMENU_NTPSERVER_HINT1,
++	LOCALE_NETWORKMENU_NTPSERVER_HINT2,
++	LOCALE_NETWORKMENU_NTPTITLE,
++	LOCALE_NETWORKMENU_SETUPNOW,
++	LOCALE_NETWORKMENU_SETUPONSTARTUP,
++	LOCALE_NETWORKMENU_SHOW,
++	LOCALE_NETWORKMENU_TEST,
++	LOCALE_NETWORKMENU_SELECT_IF,
++	LOCALE_NETWORKMENU_SSID,
++	LOCALE_NETWORKMENU_WLAN_SECURITY,
++	LOCALE_NETWORKMENU_PASSWORD,
++	LOCALE_NETWORKMENU_HOSTNAME,
++	LOCALE_NFS_ALREADYMOUNTED,
++	LOCALE_NFS_AUTOMOUNT,
++	LOCALE_NFS_DIR,
++	LOCALE_NFS_IP,
++	LOCALE_NFS_LOCALDIR,
++	LOCALE_NFS_MOUNT,
++	LOCALE_NFS_MOUNT_OPTIONS,
++	LOCALE_NFS_MOUNTERROR,
++	LOCALE_NFS_MOUNTERROR_NOTSUP,
++	LOCALE_NFS_MOUNTNOW,
++	LOCALE_NFS_MOUNTOK,
++	LOCALE_NFS_MOUNTTIMEOUT,
++	LOCALE_NFS_PASSWORD,
++	LOCALE_NFS_REMOUNT,
++	LOCALE_NFS_TYPE,
++	LOCALE_NFS_TYPE_CIFS,
++	LOCALE_NFS_TYPE_LUFS,
++	LOCALE_NFS_TYPE_NFS,
++	LOCALE_NFS_TYPE_SMBFS,
++	LOCALE_NFS_UMOUNT,
++	LOCALE_NFS_UMOUNTERROR,
++	LOCALE_NFS_USERNAME,
++	LOCALE_NFSMENU_HEAD,
++	LOCALE_NVOD_PERCENTAGE,
++	LOCALE_NVOD_STARTING,
++	LOCALE_NVODSELECTOR_DIRECTORMODE,
++	LOCALE_NVODSELECTOR_HEAD,
++	LOCALE_NVODSELECTOR_SUBSERVICE,
++	LOCALE_OPTIONS_DEFAULT,
++	LOCALE_OPTIONS_FB,
++	LOCALE_OPTIONS_NULL,
++	LOCALE_OPTIONS_OFF,
++	LOCALE_OPTIONS_ON,
++	LOCALE_OPTIONS_SERIAL,
++	LOCALE_PARENTALLOCK_CHANGEPIN,
++	LOCALE_PARENTALLOCK_CHANGEPIN_HINT1,
++	LOCALE_PARENTALLOCK_CHANGETOLOCKED,
++	LOCALE_PARENTALLOCK_HEAD,
++	LOCALE_PARENTALLOCK_LOCKAGE,
++	LOCALE_PARENTALLOCK_LOCKAGE12,
++	LOCALE_PARENTALLOCK_LOCKAGE16,
++	LOCALE_PARENTALLOCK_LOCKAGE18,
++	LOCALE_PARENTALLOCK_LOCKEDCHANNEL,
++	LOCALE_PARENTALLOCK_LOCKEDPROGRAM,
++	LOCALE_PARENTALLOCK_NEVER,
++	LOCALE_PARENTALLOCK_ONSIGNAL,
++	LOCALE_PARENTALLOCK_PARENTALLOCK,
++	LOCALE_PARENTALLOCK_PROMPT,
++	LOCALE_PICTUREVIEWERSETTINGS_GENERAL,
++	LOCALE_PICTUREVIEWER_DECODE_SERVER_IP,
++	LOCALE_PICTUREVIEWER_DECODE_SERVER_PORT,
++	LOCALE_PICTUREVIEWER_DEFDIR,
++	LOCALE_PICTUREVIEWER_HEAD,
++	LOCALE_PICTUREVIEWER_HELP1,
++	LOCALE_PICTUREVIEWER_HELP10,
++	LOCALE_PICTUREVIEWER_HELP11,
++	LOCALE_PICTUREVIEWER_HELP12,
++	LOCALE_PICTUREVIEWER_HELP13,
++	LOCALE_PICTUREVIEWER_HELP14,
++	LOCALE_PICTUREVIEWER_HELP15,
++	LOCALE_PICTUREVIEWER_HELP16,
++	LOCALE_PICTUREVIEWER_HELP17,
++	LOCALE_PICTUREVIEWER_HELP18,
++	LOCALE_PICTUREVIEWER_HELP19,
++	LOCALE_PICTUREVIEWER_HELP2,
++	LOCALE_PICTUREVIEWER_HELP20,
++	LOCALE_PICTUREVIEWER_HELP21,
++	LOCALE_PICTUREVIEWER_HELP22,
++	LOCALE_PICTUREVIEWER_HELP3,
++	LOCALE_PICTUREVIEWER_HELP4,
++	LOCALE_PICTUREVIEWER_HELP5,
++	LOCALE_PICTUREVIEWER_HELP6,
++	LOCALE_PICTUREVIEWER_HELP7,
++	LOCALE_PICTUREVIEWER_HELP8,
++	LOCALE_PICTUREVIEWER_HELP9,
++	LOCALE_PICTUREVIEWER_RESIZE_COLOR_AVERAGE,
++	LOCALE_PICTUREVIEWER_RESIZE_NONE,
++	LOCALE_PICTUREVIEWER_RESIZE_SIMPLE,
++	LOCALE_PICTUREVIEWER_SCALING,
++	LOCALE_PICTUREVIEWER_SHOW,
++	LOCALE_PICTUREVIEWER_SLIDE_TIME,
++	LOCALE_PICTUREVIEWER_SLIDESHOW,
++	LOCALE_PICTUREVIEWER_SORTORDER,
++	LOCALE_PICTUREVIEWER_SORTORDER_DATE,
++	LOCALE_PICTUREVIEWER_SORTORDER_FILENAME,
++	LOCALE_PICTUREVIEWER_BACKGROUND,
++	LOCALE_PICTUREVIEWER_AUDIOFILE,
++	LOCALE_PING_OK,
++	LOCALE_PING_PROTOCOL,
++	LOCALE_PING_SOCKET,
++	LOCALE_PING_UNREACHABLE,
++	LOCALE_PINPROTECTION_HEAD,
++	LOCALE_PINPROTECTION_WRONGCODE,
++	LOCALE_PLUGINS_RESULT,
++	LOCALE_PLUGINLIST_REMOVE_PLUGIN,
++	LOCALE_PLUGINLIST_START_PLUGIN,
++	LOCALE_RCLOCK_LOCKMSG,
++	LOCALE_RCLOCK_MENUEADD,
++	LOCALE_RCLOCK_TITLE,
++	LOCALE_RCLOCK_UNLOCKMSG,
++	LOCALE_RECORDINGMENU_APIDS,
++	LOCALE_RECORDINGMENU_APIDS_AC3,
++	LOCALE_RECORDINGMENU_APIDS_ALT,
++	LOCALE_RECORDINGMENU_APIDS_STD,
++	LOCALE_RECORDINGMENU_CHOOSE_DIRECT_REC_DIR,
++	LOCALE_RECORDINGMENU_DEFDIR,
++	LOCALE_RECORDINGMENU_TSDIR,
++	LOCALE_RECORDINGMENU_EPG_FOR_FILENAME,
++	LOCALE_RECORDINGMENU_FILE,
++	LOCALE_RECORDINGMENU_FILESETTINGS,
++	LOCALE_RECORDINGMENU_HEAD,
++	LOCALE_RECORDINGMENU_HELP,
++	LOCALE_RECORDINGMENU_NO_SCART,
++	LOCALE_RECORDINGMENU_OFF,
++	LOCALE_RECORDINGMENU_RECORD_IN_SPTS_MODE,
++	LOCALE_RECORDINGMENU_RECORDING_TYPE,
++	LOCALE_RECORDINGMENU_RINGBUFFERS,
++	LOCALE_RECORDINGMENU_SAVE_IN_CHANNELDIR,
++	LOCALE_RECORDINGMENU_SERVER,
++	LOCALE_RECORDINGMENU_SERVER_IP,
++	LOCALE_RECORDINGMENU_SERVER_MAC,
++	LOCALE_RECORDINGMENU_SERVER_PORT,
++	LOCALE_RECORDINGMENU_SERVER_WAKEUP,
++	LOCALE_RECORDINGMENU_SETUPNOW,
++	LOCALE_RECORDINGMENU_SPLITSIZE,
++	LOCALE_RECORDINGMENU_STOPPLAYBACK,
++	LOCALE_RECORDINGMENU_STOPSECTIONSD,
++	LOCALE_RECORDINGMENU_STREAM_VTXT_PID,
++	LOCALE_RECORDINGMENU_STREAM_SUBTITLE_PID,
++	LOCALE_RECORDINGMENU_STREAM_PMT_PID,
++	LOCALE_RECORDINGMENU_USE_FDATASYNC,
++	LOCALE_RECORDINGMENU_USE_O_SYNC,
++	LOCALE_RECORDINGMENU_VCR,
++	LOCALE_RECORDINGMENU_ZAP_ON_ANNOUNCE,
++	LOCALE_RECORDTIMER_ANNOUNCE,
++	LOCALE_REPEATBLOCKER_HINT_1,
++	LOCALE_REPEATBLOCKER_HINT_2,
++	LOCALE_SATSETUP_DISEQC,
++	LOCALE_SATSETUP_DISEQC10,
++	LOCALE_SATSETUP_DISEQC11,
++	LOCALE_SATSETUP_DISEQC12,
++	LOCALE_SATSETUP_DISEQ_ADVANCED,
++	LOCALE_SATSETUP_DISEQC_ORDER,
++	LOCALE_SATSETUP_DISEQC_COM_UNCOM,
++	LOCALE_SATSETUP_DISEQC_UNCOM_COM,
++	LOCALE_SATSETUP_DISEQCREPEAT,
++	LOCALE_SATSETUP_EXTENDED,
++	LOCALE_SATSETUP_EXTENDED_MOTOR,
++	LOCALE_SATSETUP_MINIDISEQC,
++	LOCALE_SATSETUP_MOTORCONTROL,
++	LOCALE_SATSETUP_NODISEQC,
++	LOCALE_SATSETUP_SATELLITE,
++	LOCALE_SATSETUP_SAVESETTINGSNOW,
++	LOCALE_SATSETUP_SMATVREMOTE,
++	LOCALE_SATSETUP_SAT_SETUP,
++	LOCALE_SATSETUP_DO_SCAN,
++	LOCALE_SATSETUP_LOFL,
++	LOCALE_SATSETUP_LOFH,
++	LOCALE_SATSETUP_LOFS,
++	LOCALE_SATSETUP_DISEQC_INPUT,
++	LOCALE_SATSETUP_UNCOMM_INPUT,
++	LOCALE_SATSETUP_COMM_INPUT,
++	LOCALE_SATSETUP_MOTOR_POS,
++	LOCALE_SATSETUP_AUTO_SCAN,
++	LOCALE_SATSETUP_AUTO_SCAN_ALL,
++	LOCALE_SATSETUP_MANUAL_SCAN,
++	LOCALE_SATSETUP_USE_NIT,
++	LOCALE_SATSETUP_USE_USALS,
++	LOCALE_SATSETUP_USALS_REPEAT,
++	LOCALE_SCANTS_ABORT_BODY,
++	LOCALE_SCANTS_ABORT_HEADER,
++	LOCALE_SCANTS_ACTCABLE,
++	LOCALE_SCANTS_ACTSATELLITE,
++	LOCALE_SCANTS_ACTTERRESTRIAL,
++	LOCALE_SCANTS_BOUQUET,
++	LOCALE_SCANTS_BOUQUET_CREATE,
++	LOCALE_SCANTS_BOUQUET_ERASE,
++	LOCALE_SCANTS_BOUQUET_LEAVE,
++	LOCALE_SCANTS_BOUQUET_SATELLITE,
++	LOCALE_SCANTS_BOUQUET_UPDATE,
++	LOCALE_SCANTS_CHANNEL,
++	LOCALE_SCANTS_FAILED,
++	LOCALE_SCANTS_FINISHED,
++	LOCALE_SCANTS_FREQDATA,
++	LOCALE_SCANTS_HEAD,
++	LOCALE_SCANTS_NUMBEROFDATASERVICES,
++	LOCALE_SCANTS_NUMBEROFRADIOSERVICES,
++	LOCALE_SCANTS_NUMBEROFTOTALSERVICES,
++	LOCALE_SCANTS_NUMBEROFTVSERVICES,
++	LOCALE_SCANTS_PROVIDER,
++	LOCALE_SCANTS_STARTNOW,
++	LOCALE_SCANTS_TEST,
++	LOCALE_SCANTS_TRANSPONDERS,
++	LOCALE_SCANTS_SELECT_TP,
++	LOCALE_SCREENSETUP_LOWERRIGHT,
++	LOCALE_SCREENSETUP_UPPERLEFT,
++	LOCALE_SERVICEMENU_GETPLUGINS,
++	LOCALE_SERVICEMENU_GETPLUGINS_HINT,
++	LOCALE_SERVICEMENU_HEAD,
++	LOCALE_SERVICEMENU_RELOAD,
++	LOCALE_SERVICEMENU_RELOAD_HINT,
++	LOCALE_SERVICEMENU_RESTART,
++	LOCALE_SERVICEMENU_RESTART_FAILED,
++	LOCALE_SERVICEMENU_RESTART_HINT,
++	LOCALE_SERVICEMENU_RESTART_REFUSED_RECORDING,
++	LOCALE_SERVICEMENU_SCANTS,
++	LOCALE_SERVICEMENU_UCODECHECK,
++	LOCALE_SERVICEMENU_UPDATE,
++	LOCALE_SETTINGS_HELP,
++	LOCALE_SETTINGS_MISSINGOPTIONSCONFFILE,
++	LOCALE_SETTINGS_NOCONFFILE,
++	LOCALE_SETTINGS_POS_BOTTOM_LEFT,
++	LOCALE_SETTINGS_POS_BOTTOM_RIGHT,
++	LOCALE_SETTINGS_POS_DEFAULT_CENTER,
++	LOCALE_SETTINGS_POS_HIGHER_CENTER,
++	LOCALE_SETTINGS_POS_TOP_LEFT,
++	LOCALE_SETTINGS_POS_TOP_RIGHT,
++	LOCALE_SHUTDOWNTIMER_ANNOUNCE,
++	LOCALE_SHUTDOWN_RECODING_QUERY,
++	LOCALE_SLEEPTIMERBOX_ANNOUNCE,
++	LOCALE_SLEEPTIMERBOX_HINT1,
++	LOCALE_SLEEPTIMERBOX_HINT2,
++	LOCALE_SLEEPTIMERBOX_TITLE,
++	LOCALE_STREAMFEATURES_HEAD,
++	LOCALE_STREAMINFO_ARATIO,
++	LOCALE_STREAMINFO_ARATIO_UNKNOWN,
++	LOCALE_STREAMINFO_AUDIOTYPE,
++	LOCALE_STREAMINFO_AUDIOTYPE_UNKNOWN,
++	LOCALE_STREAMINFO_BITRATE,
++	LOCALE_STREAMINFO_FRAMERATE,
++	LOCALE_STREAMINFO_FRAMERATE_UNKNOWN,
++	LOCALE_STREAMINFO_HEAD,
++	LOCALE_STREAMINFO_NOT_AVAILABLE,
++	LOCALE_STREAMINFO_RESOLUTION,
++	LOCALE_STREAMINFO_SIGNAL,
++	LOCALE_STREAMING_BUFFER_OVERFLOW,
++	LOCALE_STREAMING_BUSY,
++	LOCALE_STREAMING_DIR_NOT_WRITABLE,
++	LOCALE_STREAMING_SUCCESS,
++	LOCALE_STREAMING_WRITE_ERROR,
++	LOCALE_STREAMING_WRITE_ERROR_OPEN,
++	LOCALE_STREAMINGMENU_352X288,
++	LOCALE_STREAMINGMENU_352X576,
++	LOCALE_STREAMINGMENU_480X576,
++	LOCALE_STREAMINGMENU_704X288,
++	LOCALE_STREAMINGMENU_704X576,
++	LOCALE_STREAMINGMENU_HEAD,
++	LOCALE_STREAMINGMENU_MPEG1,
++	LOCALE_STREAMINGMENU_MPEG2,
++	LOCALE_STREAMINGMENU_OFF,
++	LOCALE_STREAMINGMENU_ON,
++	LOCALE_STREAMINGMENU_SERVER_IP,
++	LOCALE_STREAMINGMENU_SERVER_PORT,
++	LOCALE_STREAMINGMENU_STREAMING_AUDIORATE,
++	LOCALE_STREAMINGMENU_STREAMING_FORCE_AVI_RAWAUDIO,
++	LOCALE_STREAMINGMENU_STREAMING_FORCE_TRANSCODE_VIDEO,
++	LOCALE_STREAMINGMENU_STREAMING_RESOLUTION,
++	LOCALE_STREAMINGMENU_STREAMING_SERVER_CDDRIVE,
++	LOCALE_STREAMINGMENU_STREAMING_SERVER_STARTDIR,
++	LOCALE_STREAMINGMENU_STREAMING_SETTINGS,
++	LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_AUDIO,
++	LOCALE_STREAMINGMENU_STREAMING_TRANSCODE_VIDEO_CODEC,
++	LOCALE_STREAMINGMENU_STREAMING_TYPE,
++	LOCALE_STREAMINGMENU_STREAMING_VIDEORATE,
++	LOCALE_STREAMINGMENU_STREAMING_VLC10,
++	LOCALE_STREAMINGMENU_STREAMING_VLCVER08,
++	LOCALE_STREAMINGMENU_STREAMING_VLCVER10,
++	LOCALE_STREAMINGMENU_STREAMING_VLCVER20,
++	LOCALE_STREAMINGSERVER_NOCONNECT,
++	LOCALE_STREAMINGMENU_FILEBROWSER_ALLOW_MULTISELECT,
++	LOCALE_STRINGINPUT_CAPS,
++	LOCALE_STRINGINPUT_CLEAR,
++	LOCALE_TIMER_EVENTRECORD_MSG,
++	LOCALE_TIMER_EVENTRECORD_TITLE,
++	LOCALE_TIMER_EVENTTIMED_MSG,
++	LOCALE_TIMER_EVENTTIMED_TITLE,
++	LOCALE_TIMERBAR_CHANNELSWITCH,
++	LOCALE_TIMERBAR_RECORDEVENT,
++	LOCALE_TIMERLIST_ALARMTIME,
++	LOCALE_TIMERLIST_APIDS,
++	LOCALE_TIMERLIST_APIDS_DFLT,
++	LOCALE_TIMERLIST_BOUQUETSELECT,
++	LOCALE_TIMERLIST_CHANNEL,
++	LOCALE_TIMERLIST_CHANNELSELECT,
++	LOCALE_TIMERLIST_DELETE,
++	LOCALE_TIMERLIST_MENUMODIFY,
++	LOCALE_TIMERLIST_MENUNEW,
++	LOCALE_TIMERLIST_MESSAGE,
++	LOCALE_TIMERLIST_MODERADIO,
++	LOCALE_TIMERLIST_MODESELECT,
++	LOCALE_TIMERLIST_MODETV,
++	LOCALE_TIMERLIST_MODIFY,
++	LOCALE_TIMERLIST_NAME,
++	LOCALE_TIMERLIST_NEW,
++	LOCALE_TIMERLIST_OVERLAPPING_TIMER,
++	LOCALE_TIMERLIST_PLUGIN,
++	LOCALE_TIMERLIST_PROGRAM_UNKNOWN,
++	LOCALE_TIMERLIST_RECORDING_DIR,
++	LOCALE_TIMERLIST_RELOAD,
++	LOCALE_TIMERLIST_REPEAT,
++	LOCALE_TIMERLIST_REPEAT_BIWEEKLY,
++	LOCALE_TIMERLIST_REPEAT_BYEVENTDESCRIPTION,
++	LOCALE_TIMERLIST_REPEAT_DAILY,
++	LOCALE_TIMERLIST_REPEAT_FOURWEEKLY,
++	LOCALE_TIMERLIST_REPEAT_FRIDAY,
++	LOCALE_TIMERLIST_REPEAT_MONDAY,
++	LOCALE_TIMERLIST_REPEAT_MONTHLY,
++	LOCALE_TIMERLIST_REPEAT_ONCE,
++	LOCALE_TIMERLIST_REPEAT_SATURDAY,
++	LOCALE_TIMERLIST_REPEAT_SUNDAY,
++	LOCALE_TIMERLIST_REPEAT_THURSDAY,
++	LOCALE_TIMERLIST_REPEAT_TUESDAY,
++	LOCALE_TIMERLIST_REPEAT_UNKNOWN,
++	LOCALE_TIMERLIST_REPEAT_WEDNESDAY,
++	LOCALE_TIMERLIST_REPEAT_WEEKDAYS,
++	LOCALE_TIMERLIST_REPEAT_WEEKLY,
++	LOCALE_TIMERLIST_REPEATCOUNT,
++	LOCALE_TIMERLIST_REPEATCOUNT_HELP1,
++	LOCALE_TIMERLIST_REPEATCOUNT_HELP2,
++	LOCALE_TIMERLIST_SAVE,
++	LOCALE_TIMERLIST_STANDBY,
++	LOCALE_TIMERLIST_STANDBY_OFF,
++	LOCALE_TIMERLIST_STANDBY_ON,
++	LOCALE_TIMERLIST_STOPTIME,
++	LOCALE_TIMERLIST_TYPE,
++	LOCALE_TIMERLIST_TYPE_EXECPLUGIN,
++	LOCALE_TIMERLIST_TYPE_NEXTPROGRAM,
++	LOCALE_TIMERLIST_TYPE_RECORD,
++	LOCALE_TIMERLIST_TYPE_REMIND,
++	LOCALE_TIMERLIST_TYPE_SHUTDOWN,
++	LOCALE_TIMERLIST_TYPE_SLEEPTIMER,
++	LOCALE_TIMERLIST_TYPE_STANDBY,
++	LOCALE_TIMERLIST_TYPE_UNKNOWN,
++	LOCALE_TIMERLIST_TYPE_ZAPTO,
++	LOCALE_TIMERLIST_WEEKDAYS,
++	LOCALE_TIMERLIST_WEEKDAYS_HINT_1,
++	LOCALE_TIMERLIST_WEEKDAYS_HINT_2,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_AFTER,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_AFTER_HINT_1,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_AFTER_HINT_2,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_BEFORE,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_BEFORE_HINT_1,
++	LOCALE_TIMERSETTINGS_RECORD_SAFETY_TIME_BEFORE_HINT_2,
++	LOCALE_TIMERSETTINGS_SEPARATOR,
++	LOCALE_TIMING_CHANLIST,
++	LOCALE_TIMING_EPG,
++	LOCALE_TIMING_FILEBROWSER,
++	LOCALE_TIMING_HEAD,
++	LOCALE_TIMING_HINT_1,
++	LOCALE_TIMING_HINT_2,
++	LOCALE_TIMING_INFOBAR,
++	LOCALE_TIMING_MENU,
++	LOCALE_TIMING_NUMERICZAP,
++	LOCALE_UCODECHECK_AVIA500,
++	LOCALE_UCODECHECK_AVIA600,
++	LOCALE_UCODECHECK_CAM_ALPHA,
++	LOCALE_UCODECHECK_HEAD,
++	LOCALE_UCODECHECK_UCODE,
++	LOCALE_UCODES_FAILURE,
++	LOCALE_UPNPBROWSER_HEAD,
++	LOCALE_UPNPBROWSER_NOSERVERS,
++	LOCALE_UPNPBROWSER_RESCAN,
++	LOCALE_UPNPBROWSER_SCANNING,
++	LOCALE_USERMENU_BUTTON_BLUE,
++	LOCALE_USERMENU_BUTTON_GREEN,
++	LOCALE_USERMENU_BUTTON_RED,
++	LOCALE_USERMENU_BUTTON_YELLOW,
++	LOCALE_USERMENU_BUTTON_F1,
++	LOCALE_USERMENU_BUTTON_F2,
++	LOCALE_USERMENU_BUTTON_F3,
++	LOCALE_USERMENU_BUTTON_F4,
++	LOCALE_USERMENU_HEAD,
++	LOCALE_USERMENU_ITEM_BAR,
++	LOCALE_USERMENU_ITEM_EPG_MISC,
++	LOCALE_USERMENU_ITEM_NONE,
++	LOCALE_USERMENU_ITEM_VTXT,
++	LOCALE_USERMENU_ITEM_PLUGINS,
++	LOCALE_USERMENU_NAME,
++	LOCALE_VIDEOMENU_CSYNC,
++	LOCALE_VIDEOMENU_HEAD,
++	LOCALE_VIDEOMENU_OSD,
++	LOCALE_VIDEOMENU_RGB_CENTERING,
++	LOCALE_VIDEOMENU_SCREENSETUP,
++	LOCALE_VIDEOMENU_TV_SCART,
++	LOCALE_VIDEOMENU_VCR_SCART,
++	LOCALE_VIDEOMENU_VCRSIGNAL,
++	LOCALE_VIDEOMENU_VCRSIGNAL_COMPOSITE,
++	LOCALE_VIDEOMENU_VCRSIGNAL_SVIDEO,
++	LOCALE_VIDEOMENU_VCRSWITCH,
++	LOCALE_VIDEOMENU_VIDEORATIO,
++	LOCALE_VIDEOMENU_VIDEORATIO_169,
++	LOCALE_VIDEOMENU_VIDEORATIO_43,
++	LOCALE_VIDEOMENU_VIDEORATIO_149,
++	LOCALE_VIDEOMENU_VIDEORATIO_AUTODETECT,
++	LOCALE_VIDEOMENU_VIDEOFORMAT,
++	LOCALE_VIDEOMENU_PANSCAN,
++	LOCALE_VIDEOMENU_PANSCAN2,
++	LOCALE_VIDEOMENU_LETTERBOX,
++	LOCALE_VIDEOMENU_FULLSCREEN,
++	LOCALE_VIDEOMENU_AUTO,
++	LOCALE_VIDEOMENU_ANALOG_MODE,
++	LOCALE_VIDEOMENU_ANALOG_MODE_SD_RGB_SCART,
++	LOCALE_VIDEOMENU_ANALOG_MODE_SD_RGB_CINCH,
++	LOCALE_VIDEOMENU_ANALOG_MODE_SD_YPRPB_SCART,
++	LOCALE_VIDEOMENU_ANALOG_MODE_SD_YPRPB_CINCH,
++	LOCALE_VIDEOMENU_ANALOG_MODE_HD_RGB_SCART,
++	LOCALE_VIDEOMENU_ANALOG_MODE_HD_RGB_CINCH,
++	LOCALE_VIDEOMENU_ANALOG_MODE_HD_YPRPB_SCART,
++	LOCALE_VIDEOMENU_ANALOG_MODE_HD_YPRPB_CINCH,
++	LOCALE_VIDEOMENU_HDMI_COLOR_SPACE,	// DUCKBOX
++	LOCALE_VIDEOMENU_COLOUR_RANGE,		//
++	LOCALE_VIDEOMENU_SCART,
++	LOCALE_VIDEOMENU_CINCH,
++	LOCALE_VIDEOMENU_DBDR,
++	LOCALE_VIDEOMENU_DBDR_NONE,
++	LOCALE_VIDEOMENU_DBDR_DEBLOCK,
++	LOCALE_VIDEOMENU_DBDR_BOTH,
++	LOCALE_VIDEOMENU_ENABLED_MODES,
++	LOCALE_ZAPIT_SCANTYPE,
++	LOCALE_ZAPIT_SCANTYPE_ALL,
++	LOCALE_ZAPIT_SCANTYPE_RADIO,
++	LOCALE_ZAPIT_SCANTYPE_TV,
++	LOCALE_ZAPIT_SCANTYPE_TVRADIO,
++	LOCALE_ZAPTOTIMER_ANNOUNCE,
++	LOCALE_EXTRA_ENGLISH,
++	LOCALE_DBOXINFO,
++	LOCALE_EXTRA_SCANMODE,
++	LOCALE_EXTRA_STARTSTANDBY,
++	LOCALE_EXTRA_ROTORSWAP,
++	LOCALE_SERVICEMENU_TUNERSCAN,
++	LOCALE_EXTRA_MBPREVIEW,
++	LOCALE_EXTRA_USELOG,
++	LOCALE_EXTRA_SPTSMODE,
++	LOCALE_EXTRA_HWSECT,
++	LOCALE_EXTRA_LOGO,
++	LOCALE_EXTRA_SCAN_FULL,
++	LOCALE_EXTRA_SCAN_FAST,
++	LOCALE_HDD_SLOW,
++	LOCALE_HDD_MIDDLE,
++	LOCALE_HDD_FAST,
++	LOCALE_HDD_EXT3,
++	LOCALE_HDD_REISER,
++	LOCALE_HDD_1MIN,
++	LOCALE_HDD_5MIN,
++	LOCALE_HDD_10MIN,
++	LOCALE_HDD_20MIN,
++	LOCALE_HDD_30MIN,
++	LOCALE_HDD_60MIN,
++	LOCALE_HDD_SLEEP,
++	LOCALE_HDD_NOISE,
++	LOCALE_HDD_ACTIVATE,
++	LOCALE_HDD_FS,
++	LOCALE_HDD_FORMAT,
++	LOCALE_HDD_FORMAT_WARN,
++	LOCALE_HDD_FORMAT_FAILED,
++	LOCALE_HDD_UMOUNT_WARN,
++	LOCALE_HDD_CHECK,
++	LOCALE_HDD_CHECK_FAILED,
++	LOCALE_HDD_SETTINGS,
++	LOCALE_HDD_MANAGE,
++	LOCALE_HDD_NOT_FOUND,
++	LOCALE_HDD_INIT,
++	LOCALE_HDD_INIT_WARN,
++	LOCALE_HDD_INIT_FAILED,
++	LOCALE_HDD_BROWSER,
++	LOCALE_EXTRA_CLEAR_LOG,
++	LOCALE_EXTRA_ZAP_CYCLE,
++	LOCALE_EXTRA_SMS_CHANNEL,
++	LOCALE_EXTRA_TPSCAN,
++	LOCALE_EXTRA_FREQ,
++	LOCALE_EXTRA_RATE,
++	LOCALE_EXTRA_POL,
++	LOCALE_EXTRA_POL_V,
++	LOCALE_EXTRA_POL_H,
++	LOCALE_EXTRA_FEC,
++	LOCALE_SCANTP_FEC_1_2,
++	LOCALE_SCANTP_FEC_2_3,
++	LOCALE_SCANTP_FEC_3_4,
++	LOCALE_SCANTP_FEC_5_6,
++	LOCALE_SCANTP_FEC_7_8,
++	LOCALE_EXTRA_MOD,
++	LOCALE_SCANTP_MOD_16,
++	LOCALE_SCANTP_MOD_32,
++	LOCALE_SCANTP_MOD_64,
++	LOCALE_SCANTP_MOD_128,
++	LOCALE_SCANTP_MOD_256,
++	LOCALE_EXTRA_BAND,
++	LOCALE_EXTRA_HP,
++	LOCALE_EXTRA_LP,
++	LOCALE_EXTRA_TM,
++	LOCALE_EXTRA_GI,
++	LOCALE_EXTRA_HR,
++	LOCALE_EXTRA_TZ,
++	LOCALE_EXTRA_ZAPIT_MENU,
++	LOCALE_EXTRA_ZAPIT_MAKE_BOUQUET,
++	LOCALE_EXTRA_ZAPIT_SAVE_LAST,
++	LOCALE_EXTRA_ZAPIT_ROTATION_SPEED,
++	LOCALE_EXTRA_ZAPIT_TIMEOUT,
++	LOCALE_EXTRA_ZAPIT_FASTZAP,
++	LOCALE_EXTRA_ZAPIT_SORTNAMES,
++	LOCALE_EXTRA_ZAPIT_SCANPIDS,
++	LOCALE_EXTRA_ZAPIT_REZAP_TIME,
++	LOCALE_EXTRA_ZAPIT_HVOLTAGE,
++	LOCALE_RESET_CHANNELS,
++	LOCALE_RESET_SETTINGS,
++	LOCALE_RESET_ALL,
++	LOCALE_RESET_CONFIRM,
++	LOCALE_EXTRA_ZAPIT_BACKUP,
++	LOCALE_EXTRA_ZAPIT_RESTORE,
++	LOCALE_EXTRA_ADD_TO_BOUQUET,
++	LOCALE_EXTRA_KEY_LIST_START,
++	LOCALE_EXTRA_KEY_LIST_END,
++	LOCALE_EXTRA_CHADDED,
++	LOCALE_EXTRA_CHALREADYINBQ,
++	LOCALE_EXTRA_MENU_LEFT_EXIT,
++	LOCALE_EXTRA_ZAPIT_WRITE_NAMES,
++	LOCALE_EXTRA_UPDATE_DIR,
++	LOCALE_EXTRA_AUDIO_RUN_PLAYER,
++	LOCALE_MPKEY_REWIND,
++	LOCALE_MPKEY_FORWARD,
++	LOCALE_MPKEY_PAUSE,
++	LOCALE_MPKEY_STOP,
++	LOCALE_MPKEY_PLAY,
++	LOCALE_MPKEY_AUDIO,
++	LOCALE_MPKEY_TIME,
++	LOCALE_MPKEY_BOOKMARK,
++	LOCALE_MPKEY_PLUGIN,
++	LOCALE_EXTRA_LOADCOLORS,
++	LOCALE_EXTRA_SAVECOLORS,
++	LOCALE_EXTRA_LOADKEYS,
++	LOCALE_EXTRA_SAVEKEYS,
++	LOCALE_EXTRA_LOADCONFIG,
++	LOCALE_EXTRA_SAVECONFIG,
++	LOCALE_EXTRA_KEY_CLICK,
++	LOCALE_VIDEOMENU_VIDEOMODE,
++	//LOCALE_VIDEOMENU_VIDEORESOLUTION_NTSC,
++	//LOCALE_VIDEOMENU_VIDEORESOLUTION_PAL,
++	//LOCALE_VIDEOMENU_VIDEORESOLUTION_PALM,
++	LOCALE_EXTRA_KEY_TIMESHIFT,
++	LOCALE_EXTRA_KEY_PLUGIN,
++	LOCALE_EXTRA_TIMESHIFT_PAUSE,
++	LOCALE_RFMOD,
++	LOCALE_RF_CARRIER,
++	LOCALE_RF_CARRIER_4500,
++	LOCALE_RF_CARRIER_5500,
++	LOCALE_RF_CARRIER_6000,
++	LOCALE_RF_CARRIER_6500,
++	LOCALE_RF_ENABLE,
++	LOCALE_RF_CHANNEL,
++	LOCALE_RF_FINETUNE,
++	LOCALE_RF_STANDBY,
++	LOCALE_RF_TEST,
++	LOCALE_EXTRA_KEY_UNLOCK,
++	LOCALE_SERVICEMENU_IMAGEINFO,
++	LOCALE_IMAGEINFO_CREATOR,
++	LOCALE_IMAGEINFO_DATE,
++	LOCALE_IMAGEINFO_DOKUMENTATION,
++	LOCALE_IMAGEINFO_FORUM,
++	LOCALE_IMAGEINFO_HEAD,
++	LOCALE_IMAGEINFO_HOMEPAGE,
++	LOCALE_IMAGEINFO_IMAGE,
++	LOCALE_IMAGEINFO_LICENSE,
++	LOCALE_IMAGEINFO_VERSION,
++	LOCALE_IMAGEINFO_TYPE,
++	LOCALE_INETRADIO_NAME,
++	LOCALE_EXTRA_CACHE_TXT,
++	LOCALE_EXTRA_USE_GOTOXX,
++	LOCALE_EXTRA_LAT,
++	LOCALE_EXTRA_LONG,
++	LOCALE_EXTRA_LADIR,
++	LOCALE_EXTRA_LODIR,
++	LOCALE_EXTRA_SOUTH,
++	LOCALE_EXTRA_NORTH,
++	LOCALE_EXTRA_EAST,
++	LOCALE_EXTRA_WEST,
++	LOCALE_OPTIONS_ON_WITHOUT_MESSAGES,
++	LOCALE_ZAPIT_SCANSDT,
++	LOCALE_ZAPIT_SDTCHANGED,
++	LOCALE_EXTRA_TIMESHIFT,
++	LOCALE_EXTRA_AUTO_TIMESHIFT,
++	LOCALE_EXTRA_TEMP_TIMESHIFT,
++	LOCALE_EXTRA_AUTO_DELETE,
++	LOCALE_EXTRA_AUTO_TO_RECORD,
++	LOCALE_EXTRA_RECORD_TIME,
++	LOCALE_FEC_S2_QPSK_1_2,
++	LOCALE_FEC_S2_QPSK_2_3,
++	LOCALE_FEC_S2_QPSK_3_4,
++	LOCALE_FEC_S2_QPSK_5_6,
++	LOCALE_FEC_S2_QPSK_7_8,
++	LOCALE_FEC_S2_QPSK_8_9,
++	LOCALE_FEC_S2_QPSK_3_5,
++	LOCALE_FEC_S2_QPSK_4_5,
++	LOCALE_FEC_S2_QPSK_9_10,
++	LOCALE_FEC_S2_8PSK_1_2,
++	LOCALE_FEC_S2_8PSK_2_3,
++	LOCALE_FEC_S2_8PSK_3_4,
++	LOCALE_FEC_S2_8PSK_5_6,
++	LOCALE_FEC_S2_8PSK_7_8,
++	LOCALE_FEC_S2_8PSK_8_9,
++	LOCALE_FEC_S2_8PSK_3_5,
++	LOCALE_FEC_S2_8PSK_4_5,
++	LOCALE_FEC_S2_8PSK_9_10,
++	LOCALE_VIDEOMODE_OK,
++	LOCALE_SCRAMBLED_CHANNEL,
++	LOCALE_NEUTRINO_STARTING,
++	LOCALE_CAM_SETTINGS,
++	LOCALE_CAM_EMPTY,
++	LOCACE_CAM_INSERTED,
++	LOCALE_CAM_REMOVED,
++	LOCALE_CAM_INIT_OK,
++	LOCALE_CAM_WAITING,
++	LOCALE_CAM_TIMEOUT,
++	LOCALE_SUBTITLES_HEAD,
++	LOCALE_SUBTITLES_STOP,
++	LOCALE_FAN_SPEED,
++	LOCALE_SRS_IQ,
++	LOCALE_SRS_ALGO,
++	LOCALE_SRS_ALGO_LIGHT,
++	LOCALE_SRS_ALGO_NORMAL,
++	LOCALE_SRS_VOLUME,
++	LOCALE_SRS_NMGR,
++	LOCALE_CPU_FREQ,
++	LOCALE_CPU_FREQ_NORMAL,
++	LOCALE_CPU_FREQ_STANDBY,
++	LOCALE_CPU_FREQ_DEFAULT,
++	LOCALE_AUDIOSELECTMENUE_NO_TRACKS,
++	LOCALE_HDD_MOUNT,
++	LOCALE_HDD_MOUNTED,
++	LOCALE_HDD_MOUNTFAILED,
++	LOCALE_HDD_UMOUNT,
++	LOCALE_HDD_UMOUNTED,
++	LOCALE_MAINMENU_MEDIAPLAYER,
++	LOCALE_OSD_TIMEZONE,
++	LOCALE_EXTRA_ROUNDED_CORNERS,
++	LOCALE_EXTRA_ROUNDED_CORNERS_OFF,
++	LOCALE_EXTRA_ROUNDED_CORNERS_ON,
++	LOCALE_EXTRA_ROUNDED_CORNERS_ONLY_TOP,
++	LOCALE_EXTRA_VOLUME_POS,
++	LOCALE_PROGRESSBAR_COLOR,
++	LOCALE_MISCSETTINGS_RESET,
++	LOCALE_VIDEOMENU_WSS,
++	LOCALE_ZAPITSETUP_LAST_USE,
++	LOCALE_ZAPITSETUP_LAST_MODE,
++	LOCALE_ZAPITSETUP_LAST_TV,
++	LOCALE_ZAPITSETUP_LAST_RADIO,
++	LOCALE_KEYBINDINGMENU_RELOAD,
++	LOCALE_SCREENSHOT_ANNOUNCE,
++	LOCALE_SCREENSHOT_CREATING,
++	LOCALE_SCREENSHOT_REMOVE,
++	LOCALE_SERVICEMENU_RESTART_E2,
++	
++	LOCALE_HELPTEXT_TVMODE,
++	LOCALE_HELPTEXT_RADIOMODE,
++	LOCALE_HELPTEXT_SCART,
++	LOCALE_HELPTEXT_MEDIAPLAYER,
++	LOCALE_HELPTEXT_INTERNETRADIO,
++	LOCALE_HELPTEXT_AUDIOPLAYER,
++	LOCALE_HELPTEXT_TSMOVIEBROWSER,
++	LOCALE_HELPTEXT_FILEPLAYBACK,
++	LOCALE_HELPTEXT_NETSTREAM,
++	LOCALE_HELPTEXT_PICTUREVIEWER,
++	LOCALE_HELPTEXT_UPNPBROWSER,
++	LOCALE_HELPTEXT_MAINSETTINGS,
++	LOCALE_HELPTEXT_SERVICE,
++	LOCALE_HELPTEXT_SLEEPTIMER,
++	LOCALE_HELPTEXT_REBOOT,
++	LOCALE_HELPTEXT_SHUTDOWN,
++	LOCALE_HELPTEXT_BOXINFO,
++	LOCALE_HELPTEXT_VIDEOSETTINGS,
++	LOCALE_HELPTEXT_AUDIOSETTINGS,
++	LOCALE_HELPTEXT_PARENTALLOCK,
++	LOCALE_HELPTEXT_NETWORKSETTINGS,
++	LOCALE_HELPTEXT_RECORDINGSETTINGS,
++	LOCALE_HELPTEXT_MOVIEPLAYERSETTINGS,
++	LOCALE_HELPTEXT_OSDSETTINGS,
++	LOCALE_HELPTEXT_VFDSETTINGS,
++	LOCALE_HELPTEXT_KEYSSETTINGS,
++	LOCALE_HELPTEXT_AUDIOPLAYERSETTINGS,
++	LOCALE_HELPTEXT_PICTUREVIEWERSETTINGS,
++	LOCALE_HELPTEXT_MISCSETTINGS,
++	LOCALE_HELPTEXT_HDDSETTINGS,
++	LOCALE_HELPTEXT_SCANSETUP,
++	LOCALE_HELPTEXT_RELOADCHANNELS,
++	LOCALE_HELPTEXT_BOUQUETSEDITOR,
++	LOCALE_HELPTEXT_DELETECHANNELS,
++	LOCALE_HELPTEXT_CAM,
++	LOCALE_HELPTEXT_RELOADPLUGINS,
++	LOCALE_HELPTEXT_IMAGEINFO,
++	LOCALE_HELPTEXT_SOFTRESTART,
++	LOCALE_HELPTEXT_SOFTWAREUPDATE,
++	LOCALE_HELPTEXT_MISCSETTINGSGENERAL,
++	LOCALE_HELPTEXT_MISCSETTINGSCHANNELLIST,
++	LOCALE_HELPTEXT_MISCSETTINGSEPG,
++	LOCALE_HELPTEXT_MISCSETTINGSFILEBROWSER,
++	LOCALE_HELPTEXT_MISCSETTINGSZAPITSETUP,
++	LOCALE_HELPTEXT_MISCSETTINGSPSISETUP,
++	LOCALE_HELPTEXT_TIMERLIST,
++	LOCALE_HELPTEXT_FEATURES,
++	LOCALE_HELPTEXT_DVD,
++	LOCALE_HELPTEXT_BLUERAY,
++	
++	LOCALE_MISCSETTINGS_LOGOSDIR,
++	LOCALE_MISCSETTINGS_RECORDING_SCREENSHOT,
++	LOCALE_MISCSETTINGS_PREF_EPGS_HEAD,
++	LOCALE_MISCSETTINGS_PREF_EPGS,
++	
++	LOCALE_VIDEOMENU_PSISETUP,
++	LOCALE_PSISETUP_CONTRAST,
++	LOCALE_PSISETUP_SATURATION,
++	LOCALE_PSISETUP_BRIGHTNESS,
++	LOCALE_PSISETUP_TINT,
++	
++	LOCALE_COLORMENU_HELPTXT,
++	LOCALE_COLORMENU_HELPBAR,
++	LOCALE_LCDMENU_MENUTITLEVFD,
++	
++	LOCALE_SCANSETUP_FEMODE,
++	LOCALE_SCANSETUP_FEMODE_CONNECTED,
++	LOCALE_SCANSETUP_FEMODE_LOOP,
++	LOCALE_SCANSETUP_FEMODE_NOTCONNECTED,
++	
++	LOCALE_GLCD_COLOR_BLACK,
++	LOCALE_GLCD_COLOR_BLUE,
++	LOCALE_GLCD_COLOR_CYAN,
++	LOCALE_GLCD_COLOR_GREEN,
++	LOCALE_GLCD_COLOR_MAGENTA,
++	LOCALE_GLCD_COLOR_RED,
++	LOCALE_GLCD_COLOR_WHITE,
++	LOCALE_GLCD_COLOR_YELLOW,
++	LOCALE_GLCD_COLOR_ORANGE,
++	LOCALE_GLCD_COLOR_LIGHT_GRAY,
++	LOCALE_GLCD_COLOR_GRAY,
++	LOCALE_GLCD_COLOR_DARK_GRAY,
++	LOCALE_GLCD_COLOR_DARK_RED,
++	LOCALE_GLCD_COLOR_DARK_GREEN,
++	LOCALE_GLCD_COLOR_DARK_BLUE,
++	LOCALE_GLCD_COLOR_PURPLE,
++	LOCALE_GLCD_COLOR_MINT,
++	LOCALE_GLCD_COLOR_GOLDEN,
++	LOCALE_GLCD_ENABLE,
++	LOCALE_GLCD_FONT,
++	LOCALE_GLCD_HEAD,
++	LOCALE_GLCD_MIRROR_OSD,
++	LOCALE_GLCD_RESTART,
++	LOCALE_GLCD_SELECT_BAR,
++	LOCALE_GLCD_SELECT_BG,
++	LOCALE_GLCD_SELECT_FG,
++	LOCALE_GLCD_SIZE_BAR,
++	LOCALE_GLCD_SIZE_CHANNEL,
++	LOCALE_GLCD_SIZE_EPG,
++	LOCALE_GLCD_SIZE_TIME,
++	LOCALE_GLCD_TIME_IN_STANDBY,
++	LOCALE_GLCD_VOLUME,
++	
++	LOCALE_SETTINGS_BACKUP,
++	LOCALE_SETTINGS_BACKUP_FAILED,
++	LOCALE_SETTINGS_RESTORE,
++	LOCALE_SETTINGS_RESTORE_WARN,
++	
++	LOCALE_OPKG_MANAGER,
++	
++	LOCALE_KEYBINDINGMENU_RECORDSBROWSER,
++	LOCALE_KEYBINDINGMENU_AUDIOPLAYER,
++	LOCALE_KEYBINDINGMENU_PICTUREVIEWER,
++	LOCALE_KEYBINDINGMENU_TIMERLIST,
++	LOCALE_KEYBINDINGMENU_INETRADIO,
++	LOCALE_KEYBINDINGMENU_MOVIEBROWSER,
++	LOCALE_KEYBINDINGMENU_FILEBROWSER,
++	LOCALE_KEYBINDINGMENU_WEBTV,
++	LOCALE_KEYBINDINGMENU_SCREENSHOT,
++	LOCALE_KEYBINDINGMENU_SAVEKEYMAP,
++	LOCALE_KEYBINDINGMENU_SAVEKEYMAP_HINT,
++	
++	LOCALE_KEYBINDINGMENU_MB_COPY_JUMP,
++	LOCALE_KEYBINDINGMENU_MB_CUT_JUMP,
++	LOCALE_KEYBINDINGMENU_MB_TRUNCATE,
++	
++	LOCALE_AUDIOMENU_VOLUMEBAR_AUDIOSTEPS,
++	
++	LOCALE_WEBTV_HEAD,
++	LOCALE_WEBTVCHANNELLIST_NONEFOUND,
++	LOCALE_WEBTV_USER,
++	LOCALE_WEBTV_BOUQUETS,
++	LOCALE_WEBTV_ADD_BOUQUETS,
++	
++	//youtube (plugin)
++	LOCALE_MENU_HINT_YTPLAY,
++	LOCALE_MOVIEBROWSER_YT_ERROR,
++	LOCALE_MOVIEBROWSER_YT_MAX_RESULTS,
++	LOCALE_MOVIEBROWSER_YT_MOST_DISCUSSED,
++	LOCALE_MOVIEBROWSER_YT_MOST_POPULAR,
++	LOCALE_MOVIEBROWSER_YT_MOST_RESENT,
++	LOCALE_MOVIEBROWSER_YT_MOST_RESPONDED,
++	LOCALE_MOVIEBROWSER_YT_MOST_SHARED,
++	LOCALE_MOVIEBROWSER_YT_NEXT_RESULTS,
++	LOCALE_MOVIEBROWSER_YT_ON_THE_WEB,
++	LOCALE_MOVIEBROWSER_YT_PREV_RESULTS,
++	LOCALE_MOVIEBROWSER_YT_RECENTLY_FEATURED,
++	LOCALE_MOVIEBROWSER_YT_REGION,
++	LOCALE_MOVIEBROWSER_YT_RELATED,
++	LOCALE_MOVIEBROWSER_YT_SEARCH,
++	LOCALE_MOVIEBROWSER_YT_TOP_FAVORITES,
++	LOCALE_MOVIEBROWSER_YT_TOP_RATED,
++	LOCALE_MOVIEPLAYER_YTPLAYBACK,
++	LOCALE_MOVIEBROWSER_YT_ORDERBY,
++	LOCALE_MOVIEBROWSER_YT_ORDERBY_PUBLISHED,
++	LOCALE_MOVIEBROWSER_YT_ORDERBY_RATING,
++	LOCALE_MOVIEBROWSER_YT_ORDERBY_RELEVANCE,
++	LOCALE_MOVIEBROWSER_YT_ORDERBY_VIEWCOUNT,
++	LOCALE_MOVIEBROWSER_YT_CONCURRENT_CONNECTIONS,
++	
++	// netzkino (plugins)
++	LOCALE_MOVIEPLAYER_NETZKINO,
++	LOCALE_MOVIEBROWSER_NETZKINO_ERROR,
++	LOCALE_MOVIEBROWSER_NK_CATEGORIES,
++	LOCALE_MOVIEBROWSER_NK_ERROR,
++	LOCALE_MOVIEBROWSER_NK_RTMP,
++	LOCALE_MOVIEBROWSER_NK_RTMP_HTTP,
++	LOCALE_MOVIEBROWSER_NK_RTMP_RTMP,
++	
++	LOCALE_PLUGINS_NOT_INSTALLED
++} neutrino_locale_t;
++
++#endif
+diff -Naur nhd2-exp.orig/src/system/locals_intern.h nhd2-exp/src/system/locals_intern.h
+--- nhd2-exp.orig/src/system/locals_intern.h	2014-11-01 22:13:08.000000000 +0100
++++ nhd2-exp/src/system/locals_intern.h	2014-11-19 17:24:53.068914841 +0100
+@@ -602,6 +602,7 @@
+ 	"miscsettings.infobar_sat_display",
+ 	"miscsettings.infobar_colored_events",
+ 	"miscsettings.infobar_show_channelname",
++	"miscsettings.infobar_show_logos_left",
+ 	"miscsettings.infobar_showca",
+ 	"miscsettings.infobar_radiotext",
+ 	"miscsettings.infobar_hddvar_display",
+diff -Naur nhd2-exp.orig/src/system/locals_intern.h.orig nhd2-exp/src/system/locals_intern.h.orig
+--- nhd2-exp.orig/src/system/locals_intern.h.orig	1970-01-01 01:00:00.000000000 +0100
++++ nhd2-exp/src/system/locals_intern.h.orig	2014-11-01 22:13:08.000000000 +0100
+@@ -0,0 +1,1685 @@
++#ifndef __locals_intern__
++#define __locals_intern__
++
++const char * locale_real_names[] = {
++	"",
++	"AUDIOSelectMenue.head",
++	"EPGMenu.epgplus",
++	"EPGMenu.eventinfo",
++	"EPGMenu.eventlist",
++	"EPGMenu.head",
++	"EPGMenu.streaminfo",
++	"EPGPlus.actions",
++	"EPGPlus.bybouquet_mode",
++	"EPGPlus.bypage_mode",
++	"EPGPlus.change_font_size",
++	"EPGPlus.change_font_style",
++	"EPGPlus.change_size",
++	"EPGPlus.channelentry_font",
++	"EPGPlus.channelentry_separationlineheight",
++	"EPGPlus.channelentry_width",
++	"EPGPlus.channelevententry_font",
++	"EPGPlus.edit_fonts",
++	"EPGPlus.edit_sizes",
++	"EPGPlus.font_style_bold",
++	"EPGPlus.font_style_italic",
++	"EPGPlus.font_style_regular",
++	"EPGPlus.footer_fontbouquetchannelname",
++	"EPGPlus.footer_fontbuttons",
++	"EPGPlus.footer_fonteventdescription",
++	"EPGPlus.footer_fonteventshortdescription",
++	"EPGPlus.head",
++	"EPGPlus.header_font",
++	"EPGPlus.horgap1_height",
++	"EPGPlus.horgap2_height",
++	"EPGPlus.next_bouquet",
++	"EPGPlus.options",
++	"EPGPlus.page_down",
++	"EPGPlus.page_up",
++	"EPGPlus.prev_bouquet",
++	"EPGPlus.record",
++	"EPGPlus.refresh_epg",
++	"EPGPlus.remind",
++	"EPGPlus.reset_settings",
++	"EPGPlus.save_settings",
++	"EPGPlus.scroll_mode",
++	"EPGPlus.select_font_name",
++	"EPGPlus.settings",
++	"EPGPlus.slider_width",
++	"EPGPlus.stretch_mode",
++	"EPGPlus.swap_mode",
++	"EPGPlus.timeline_fontdate",
++	"EPGPlus.timeline_fonttime",
++	"EPGPlus.vergap1_width",
++	"EPGPlus.vergap2_width",
++	"EPGPlus.view_mode",
++	"GENRE.ARTS.0",
++	"GENRE.ARTS.1",
++	"GENRE.ARTS.10",
++	"GENRE.ARTS.11",
++	"GENRE.ARTS.2",
++	"GENRE.ARTS.3",
++	"GENRE.ARTS.4",
++	"GENRE.ARTS.5",
++	"GENRE.ARTS.6",
++	"GENRE.ARTS.7",
++	"GENRE.ARTS.8",
++	"GENRE.ARTS.9",
++	"GENRE.CHILDRENs_PROGRAMMES.0",
++	"GENRE.CHILDRENs_PROGRAMMES.1",
++	"GENRE.CHILDRENs_PROGRAMMES.2",
++	"GENRE.CHILDRENs_PROGRAMMES.3",
++	"GENRE.CHILDRENs_PROGRAMMES.4",
++	"GENRE.CHILDRENs_PROGRAMMES.5",
++	"GENRE.DOCUS_MAGAZINES.0",
++	"GENRE.DOCUS_MAGAZINES.1",
++	"GENRE.DOCUS_MAGAZINES.2",
++	"GENRE.DOCUS_MAGAZINES.3",
++	"GENRE.DOCUS_MAGAZINES.4",
++	"GENRE.DOCUS_MAGAZINES.5",
++	"GENRE.DOCUS_MAGAZINES.6",
++	"GENRE.DOCUS_MAGAZINES.7",
++	"GENRE.MOVIE.0",
++	"GENRE.MOVIE.1",
++	"GENRE.MOVIE.2",
++	"GENRE.MOVIE.3",
++	"GENRE.MOVIE.4",
++	"GENRE.MOVIE.5",
++	"GENRE.MOVIE.6",
++	"GENRE.MOVIE.7",
++	"GENRE.MOVIE.8",
++	"GENRE.MUSIC_DANCE.0",
++	"GENRE.MUSIC_DANCE.1",
++	"GENRE.MUSIC_DANCE.2",
++	"GENRE.MUSIC_DANCE.3",
++	"GENRE.MUSIC_DANCE.4",
++	"GENRE.MUSIC_DANCE.5",
++	"GENRE.MUSIC_DANCE.6",
++	"GENRE.NEWS.0",
++	"GENRE.NEWS.1",
++	"GENRE.NEWS.2",
++	"GENRE.NEWS.3",
++	"GENRE.NEWS.4",
++	"GENRE.SHOW.0",
++	"GENRE.SHOW.1",
++	"GENRE.SHOW.2",
++	"GENRE.SHOW.3",
++	"GENRE.SOCIAL_POLITICAL.0",
++	"GENRE.SOCIAL_POLITICAL.1",
++	"GENRE.SOCIAL_POLITICAL.2",
++	"GENRE.SOCIAL_POLITICAL.3",
++	"GENRE.SPORTS.0",
++	"GENRE.SPORTS.1",
++	"GENRE.SPORTS.10",
++	"GENRE.SPORTS.11",
++	"GENRE.SPORTS.2",
++	"GENRE.SPORTS.3",
++	"GENRE.SPORTS.4",
++	"GENRE.SPORTS.5",
++	"GENRE.SPORTS.6",
++	"GENRE.SPORTS.7",
++	"GENRE.SPORTS.8",
++	"GENRE.SPORTS.9",
++	"GENRE.TRAVEL_HOBBIES.0",
++	"GENRE.TRAVEL_HOBBIES.1",
++	"GENRE.TRAVEL_HOBBIES.2",
++	"GENRE.TRAVEL_HOBBIES.3",
++	"GENRE.TRAVEL_HOBBIES.4",
++	"GENRE.TRAVEL_HOBBIES.5",
++	"GENRE.TRAVEL_HOBBIES.6",
++	"GENRE.TRAVEL_HOBBIES.7",
++	"GENRE.UNKNOWN",
++	"apidselector.head",
++	"audiomenu.PCMOffset",
++	"audiomenu.analogout",
++	"audiomenu.avs",
++	"audiomenu.avs_control",
++	"audiomenu.dolbydigital",
++	"audiomenu.head",
++	"audiomenu.lirc",
++	"audiomenu.monoleft",
++	"audiomenu.monoright",
++	"audiomenu.ost",
++	"audiomenu.stereo",
++	"audiomenu.hdmi_dd",
++	"audiomenu.hdmi_dd_source",
++	"audiomenu.spdif_dd",
++	"audiomenu.avsync",
++	"audiomenu.avsync_am",
++	"audiomenu.clockrec",
++	"audiomenu.volume_adjust",
++	
++	"audiomenu.ac3_delay",
++	"audiomenu.pcm_delay",
++	
++	"audiomenu.auto_lang",
++	"audiomenu.auto_subs",
++	"audiomenu.pref_lang",
++	"audiomenu.pref_lang_head",
++	"audiomenu.pref_languages",
++	"audiomenu.pref_subs",
++	"audiomenu.pref_subs_head",
++	
++	"audioplayer.add",
++	"audioplayer.add_ic",
++	"audioplayer.add_loc",
++	"audioplayer.add_sc",
++	"audioplayer.artist_title",
++	"audioplayer.building_search_index",
++	"audioplayer.button_select_title_by_id",
++	"audioplayer.button_select_title_by_name",
++	"audioplayer.defdir",
++	"audioplayer.delete",
++	"audioplayer.deleteall",
++	"audioplayer.display_order",
++	"audioplayer.enable_sc_metadata",
++	"audioplayer.enable_sc_id",
++	"audioplayer.fastforward",
++	"audioplayer.follow",
++	"audioplayer.head",
++	"audioplayer.highprio",
++	"audioplayer.spectrum",
++	"audioplayer.jump_backwards",
++	"audioplayer.jump_dialog_hint1",
++	"audioplayer.jump_dialog_hint2",
++	"audioplayer.jump_dialog_title",
++	"audioplayer.jump_forwards",
++	"audioplayer.keylevel",
++	"audioplayer.load_radio_stations",
++	"audioplayer.name",
++	"audioplayer.pause",
++	"audioplayer.play",
++	"audioplayer.playing",
++	"audioplayer.playlist_fileerror_msg",
++	"audioplayer.playlist_fileoverwrite_msg",
++	"audioplayer.playlist_fileoverwrite_title",
++	"audioplayer.playlist_name",
++	"audioplayer.playlist_name_hint1",
++	"audioplayer.playlist_name_hint2",
++	"audioplayer.reading_files",
++	"audioplayer.receiving_list",
++	"audioplayer.repeat_on",
++	"audioplayer.rewind",
++	"audioplayer.save_playlist",
++	"audioplayer.screensaver_timeout",
++	"audioplayer.select_title_by_name",
++	"audioplayer.screensaver_type",
++	"audioplayer_screensaver_none",
++	"audioplayer_screensaver_hide_playlist",
++	"audioplayer_screensaver_diashow",
++	"audioplayer_screensaver_dir",
++	"audioplayer.shuffle",
++	"audioplayer.stop",
++	"audioplayer.title_artist",
++	"audioplayersettings.general",
++	"bookmarkmanager.delete",
++	"bookmarkmanager.name",
++	"bookmarkmanager.rename",
++	"bookmarkmanager.select",
++	"bouqueteditor.add",
++	"bouqueteditor.bouquetname",
++	"bouqueteditor.delete",
++	"bouqueteditor.discardingchanges",
++	"bouqueteditor.hide",
++	"bouqueteditor.lock",
++	"bouqueteditor.move",
++	"bouqueteditor.name",
++	"bouqueteditor.newbouquetname",
++	"bouqueteditor.rename",
++	"bouqueteditor.return",
++	"bouqueteditor.savechanges?",
++	"bouqueteditor.savingchanges",
++	"bouqueteditor.switch",
++	"bouqueteditor.switchmode",
++	"bouquetlist.head",
++	"cablesetup.provider",
++	"terrestrialsetup.provider",
++	"channellist.edit",
++	"channellist.epgtext_align_left",
++	"channellist.epgtext_align_right",
++	"channellist.extended",
++	"channellist.head",
++	"channellist.nonefound",
++	"channellist.since",
++	"channellist.start",
++	"channellist.favs",
++	"channellist.provs",
++	"channellist.sats",
++	"channellist.history",
++	"channellist.current_tp",
++	"channellist.make_hdlist",
++	"channellist.ca",
++	"channellist.minitv",
++	"colorchooser.alpha",
++	"colorchooser.blue",
++	"colorchooser.green",
++	"colorchooser.red",
++	"colormenu.background",
++	"colormenu.fade",
++	"colormenu.font",
++	"colormenu.blendmode",
++	"colormenu.gtx_alpha",
++	"colormenu.gain",
++	"colormenu.head",
++	"colormenu.menucolors",
++	"colormenu.statusbar",
++	"colormenu.textcolor",
++	"colormenu.themeselect",
++	"colormenu.timing",
++	"colormenusetup.head",
++	"colormenusetup.menucontent",
++	"colormenusetup.menucontent_inactive",
++	"colormenusetup.menucontent_selected",
++	"colormenusetup.menuhead",
++	"colorstatusbar.head",
++	"colorstatusbar.text",
++	"colorthememenu.classic_theme",
++	"colorthememenu.dblue_theme",
++	"colorthememenu.dvb2k_theme",
++	"colorthememenu.red_theme",
++	"colorthememenu.pinky_theme",
++	"colorthememenu.neutrinohd2_theme",
++	"colorthememenu.gigablue_theme",
++	"colorthememenu.head",
++	"colorthememenu.head2",
++	"colorthememenu.name",
++	"colorthememenu.neutrino_theme",
++	"colorthememenu.question",
++	"colorthememenu.save",
++	"colorthememenu.select1",
++	"colorthememenu.select2",
++	"colorthememenu.gray",
++	"date.Apr",
++	"date.Aug",
++	"date.Dec",
++	"date.Feb",
++	"date.Fri",
++	"date.Jan",
++	"date.Jul",
++	"date.Jun",
++	"date.Mar",
++	"date.May",
++	"date.Mon",
++	"date.Nov",
++	"date.Oct",
++	"date.Sat",
++	"date.Sep",
++	"date.Sun",
++	"date.Thu",
++	"date.Tue",
++	"date.Wed",
++	"epgextended.actors",
++	"epgextended.director",
++	"epgextended.guests",
++	"epgextended.original_title",
++	"epgextended.presenter",
++	"epgextended.year_of_production",
++	"epglist.noevents",
++	"epgviewer.More_Screenings",
++	"epgviewer.nodetailed",
++	"epgviewer.notfound",
++	"eventfinder.head",
++	"eventfinder.keyword",
++	"eventfinder.search",
++	"eventfinder.search_within_epg",
++	"eventfinder.search_within_list",
++	"eventfinder.searching",
++	"eventfinder.start_search",
++	"eventlistbar.channelswitch",
++	"eventlistbar.eventsorttime",
++	"eventlistbar.eventsortalpha",
++	"eventlistbar.recordevent",
++	"favorites.addchannel",
++	"favorites.bouquetname",
++	"favorites.bqcreated",
++	"favorites.chadded",
++	"favorites.chalreadyinbq",
++	"favorites.finalhint",
++	"favorites.menueadd",
++	"favorites.nobouquets",
++	"favorites.copy",
++	"filebrowser.delete",
++	"filebrowser.denydirectoryleave",
++	"filebrowser.dodelete1",
++	"filebrowser.dodelete2",
++	"filebrowser.filter.active",
++	"filebrowser.filter.inactive",
++	"filebrowser.head",
++	"filebrowser.mark",
++	"filebrowser.nextpage",
++	"filebrowser.prevpage",
++	"filebrowser.scan",
++	"filebrowser.select",
++	"filebrowser.showrights",
++	"filebrowser.sort.date",
++	"filebrowser.sort.name",
++	"filebrowser.sort.namedirsfirst",
++	"filebrowser.sort.size",
++	"filebrowser.sort.type",
++	"filesystem.is.utf8",
++	"filesystem.is.utf8.option.iso8859.1",
++	"filesystem.is.utf8.option.utf8",
++	"flashupdate.actionreadflash",
++	"flashupdate.cantopenfile",
++	"flashupdate.cantopenmtd",
++	"flashupdate.checkupdate",
++	"flashupdate.currentreleasecycle",
++	"flashupdate.currentversion_sep",
++	"flashupdate.currentversiondate",
++	"flashupdate.currentversionsnapshot",
++	"flashupdate.currentversiontime",
++	"flashupdate.erasefailed",
++	"flashupdate.erasing",
++	"flashupdate.experimentalimage",
++	"flashupdate.expertfunctions",
++	"flashupdate.fileis0bytes",
++	"flashupdate.fileselector",
++	"flashupdate.flashreadyreboot",
++	"flashupdate.getinfofile",
++	"flashupdate.getinfofileerror",
++	"flashupdate.getupdatefile",
++	"flashupdate.getupdatefileerror",
++	"flashupdate.globalprogress",
++	"flashupdate.head",
++	"flashupdate.md5check",
++	"flashupdate.flashmd5sumerror",
++	"flashupdate.packagemd5sumerror",
++	"flashupdate.flashmsgbox",
++	"flashupdate.packagemsgbox",
++	"flashupdate.mtdselector",
++	"flashupdate.programmingflash",
++	"flashupdate.proxypassword",
++	"flashupdate.proxypassword_hint1",
++	"flashupdate.proxypassword_hint2",
++	"flashupdate.proxyserver",
++	"flashupdate.proxyserver_hint1",
++	"flashupdate.proxyserver_hint2",
++	"flashupdate.proxyserver_sep",
++	"flashupdate.proxyusername",
++	"flashupdate.proxyusername_hint1",
++	"flashupdate.proxyusername_hint2",
++	"flashupdate.readflash",
++	"flashupdate.readflashmtd",
++	"flashupdate.ready",
++	"flashupdate.reallyflashmtd",
++	"flashupdate.savesuccess",
++	"flashupdate.selectimage",
++	"flashupdate.squashfs.noversion",
++	"flashupdate.titlereadflash",
++	"flashupdate.titlewriteflash",
++	"flashupdate.updatemode",
++	"flashupdate.updatemode_internet",
++	"flashupdate.updatemode_manual",
++	"flashupdate.url_file",
++	"flashupdate.versioncheck",
++	"flashupdate.writeflash",
++	"flashupdate.writeflashmtd",
++	"flashupdate.wrongbase",
++	"flashupdate.noversion",
++	"flashupdate.downloadedimage",
++	"flashupdate.installpackage",
++	"flashupdate.installfailed",
++	"fontmenu.channellist",
++	"fontmenu.epg",
++	"fontmenu.eventlist",
++	"fontmenu.gamelist",
++	"fontmenu.head",
++	"fontmenu.infobar",
++	"fontsize.channel_num_zap",
++	"fontsize.channellist",
++	"fontsize.channellist_descr",
++	"fontsize.channellist_number",
++	"fontsize.epg_date",
++	"fontsize.epg_info1",
++	"fontsize.epg_info2",
++	"fontsize.epg_title",
++	"fontsize.eventlist_datetime",
++	"fontsize.eventlist_itemlarge",
++	"fontsize.eventlist_itemsmall",
++	"fontsize.eventlist_title",
++	"fontsize.filebrowser_item",
++	"fontsize.gamelist_itemlarge",
++	"fontsize.gamelist_itemsmall",
++	"fontsize.hint",
++	"fontsize.infobar_channame",
++	"fontsize.infobar_info",
++	"fontsize.infobar_number",
++	"fontsize.infobar_small",
++	"fontsize.menu",
++	"fontsize.menu_info",
++	"fontsize.menu_title",
++	"fontmenu.scaling",
++	"fontmenu.scaling_x",
++	"fontmenu.scaling_x_hint2",
++	"fontmenu.scaling_y",
++	"fontmenu.scaling_y_hint2",
++	"fontmenu.font_contrast",
++	"gtxalpha.alpha1",
++	"gtxalpha.alpha2",
++	"infoviewer.epgnotload",
++	"infoviewer.epgwait",
++	"infoviewer.eventlist",
++	"infoviewer.languages",
++	"infoviewer.motor_moving",
++	"infoviewer.next",
++	"infoviewer.nocurrent",
++	"infoviewer.noepg",
++	"infoviewer.notavailable",
++	"infoviewer.now",
++	"infoviewer.selecttime",
++	"infoviewer.features",
++	"infoviewer.subchan_disp_pos",
++	"infoviewer.subservice",
++	"infoviewer.waittime",
++	"ipsetup.hint_1",
++	"ipsetup.hint_2",
++	"keybindingmenu.RC",
++	"keybindingmenu.addrecord",
++	"keybindingmenu.addremind",
++	"keybindingmenu.allchannels_on_ok",
++	"keybindingmenu.bouquetchannels_on_ok",
++	"keybindingmenu.bouquetdown",
++	"keybindingmenu.bouquethandling",
++	"keybindingmenu.bouquetlist_on_ok",
++	"keybindingmenu.bouquetup",
++	"keybindingmenu.cancel",
++	"keybindingmenu.channeldown",
++	"keybindingmenu.channellist",
++	"keybindingmenu.channelup",
++	"keybindingmenu.head",
++	"keybindingmenu.lastchannel",
++	"keybindingmenu.pip",
++	"keybindingmenu.modechange",
++	"keybindingmenu.pagedown",
++	"keybindingmenu.pageup",
++	"keybindingmenu.quickzap",
++	"keybindingmenu.repeatblock",
++	"keybindingmenu.repeatblockgeneric",
++	"keybindingmenu.sort",
++	"keybindingmenu.search",
++	"keybindingmenu.subchanneldown",
++	"keybindingmenu.subchannelup",
++	"keybindingmenu.tvradiomode",
++	"keybindingmenu.zaphistory",
++	"keychooser.head",
++	"keychooser.text1",
++	"keychooser.text2",
++	"keychoosermenu.currentkey",
++	"keychoosermenu.setnew",
++	"keychoosermenu.setnone",
++	"languagesetup.head",
++	"languagesetup.select",
++	"lcdcontroler.brightness",
++	"lcdcontroler.brightnessstandby",
++	"lcdcontroler.contrast",
++	"lcdmenu.autodimm",
++	"lcdmenu.dim_brightness",
++	"lcdmenu.dim_time",
++	"lcdmenu.head",
++	"lcdmenu.inverse",
++	"lcdmenu.lcdcontroler",
++	"lcdmenu.power",
++	"lcdmenu.statusline",
++	"lcdmenu.statusline.both",
++	"lcdmenu.statusline.playtime",
++	"lcdmenu.statusline.volume",
++	//test
++	"lcdmenu.scrolltext",
++	"lcdmenu.setfptime",
++	"lcdmenu.epg",
++	"lcdmenu.epg.name",
++	"lcdmenu.epg.name.sepline.title",
++	"lcdmenu.epg.name.title",
++	"lcdmenu.epg.nameshort.sepline.title",
++	"lcdmenu.epg.nameshort.title",
++	"lcdmenu.epg.title",
++	"lcdmenu.epgalign",
++	"lcdmenu.epgalign_center",
++	"lcdmenu.epgalign_left",
++	"lcdmenu.statusline.both_audio",
++	"lcdmenu.dump_png",
++	"lcdmenu.ledcolor",
++	"lcdmenu.ledcolor_red",
++	"lcdmenu.ledcolor_blue",
++	"lcdmenu.ledcolor_purple",
++	"mainmenu.audioplayer",
++	"mainmenu.inetradio",
++	"mainmenu.clearsectionsd",
++	"mainmenu.games",
++	"mainmenu.head",
++	"mainmenu.movieplayer",
++	"mainmenu.pausesectionsd",
++	"mainmenu.pictureviewer",
++	"mainmenu.radiomode",
++	"mainmenu.reboot",
++	"mainmenu.recording",
++	"mainmenu.recording_start",
++	"mainmenu.recording_stop",
++	"mainmenu.scartmode",
++	"mainmenu.scripts",
++	"mainmenu.service",
++	"mainmenu.settings",
++	"mainmenu.shutdown",
++	"mainmenu.sleeptimer",
++	"mainmenu.tvmode",
++	"mainsettings.audio",
++	"mainsettings.osd",
++	"mainsettings.head",
++	"mainsettings.keybinding",
++	"mainsettings.language",
++	"mainsettings.timezone",
++	"mainsettings.lcd",
++	"mainsettings.misc",
++	"mainsettings.network",
++	"mainsettings.recording",
++	"mainsettings.savesettingsnow",
++	"mainsettings.savesettingsnow_hint",
++	"mainsettings.streaming",
++	"mainsettings.video",
++	"menu.back",
++	"menu.navi",
++	"menu.enter",
++	"menu.exit",
++	"messagebox.back",
++	"messagebox.cancel",
++	"messagebox.discard",
++	"messagebox.error",
++	"messagebox.info",
++	"messagebox.no",
++	"messagebox.ok",
++	"messagebox.yes",
++	"miscsettings.bootinfo",
++	"miscsettings.bootmenu",
++	"miscsettings.channellist",
++	"miscsettings.channellist_epgtext_align",
++	"miscsettings.driver_boot",
++	"miscsettings.fb_destination",
++	"miscsettings.general",
++	"servicemenu.tuner",
++	"miscsettings.zapit",
++	"miscsettings.head",
++	"miscsettings.hwsections",
++	"miscsettings.infobar_sat_display",
++	"miscsettings.infobar_colored_events",
++	"miscsettings.infobar_show_channelname",
++	"miscsettings.infobar_showca",
++	"miscsettings.infobar_radiotext",
++	"miscsettings.infobar_hddvar_display",
++	"miscsettings.shutdown_count",
++	"miscsettings.shutdown_count_hint1",
++	"miscsettings.shutdown_count_hint2",
++	"miscsettings.noaviawatchdog",
++	"miscsettings.noenxwatchdog",
++	"miscsettings.pmtupdate",
++	"miscsettings.shutdown_real",
++	"miscsettings.shutdown_real_rcdelay",
++	"miscsettings.sptsmode",
++	"miscsettings.virtual_zap_mode",
++	"miscsettings.epg_cache",
++	"miscsettings.epg_cache_hint1",
++	"miscsettings.epg_cache_hint2",
++	"miscsettings.epg_dir",
++	"miscsettings.epg_extendedcache",
++	"miscsettings.epg_extendedcache_hint1",
++	"miscsettings.epg_extendedcache_hint2",
++	"miscsettings.epg_head",
++	"miscsettings.epg_max_events",
++	"miscsettings.epg_max_events_hint1",
++	"miscsettings.epg_max_events_hint2",
++	"miscsettings.epg_old_events",
++	"miscsettings.epg_old_events_hint1",
++	"miscsettings.epg_old_events_hint2",
++	"miscsettings.epg_save",
++	"miscsettings.epgplus_show_logos",
++	//"miscsettings.audioplayer_screensaver_dir",
++	"motorcontrol.head",
++	"motorcontrol.user_menu",
++	"motorcontrol.install_menu",
++	"motorcontrol.step_west",
++	"motorcontrol.step_east",
++	"motorcontrol.halt",
++	"motorcontrol.west_limit",
++	"motorcontrol.east_limit",
++	"motorcontrol.enable_limit",
++	"motorcontrol.disable_limit",
++	"motorcontrol.ref_position",
++	"motorcontrol.calc_positions",
++	"motorcontrol.pos_increase",
++	"motorcontrol.pos_decrease",
++	"motorcontrol.step_drive",
++	"motorcontrol.store",
++	"motorcontrol.step_increase",
++	"motorcontrol.step_decrease",
++	"motorcontrol.goto",
++	"motorcontrol.notdef",
++	"motorcontrol.motor_pos",
++	"motorcontrol.settings",
++	"motorcontrol.movement",
++	"motorcontrol.step_mode",
++	"motorcontrol.drive_mode",
++	"motorcontrol.drive_mode_auto",
++	"motorcontrol.timed_mode",
++	"motorcontrol.step_size",
++	"motorcontrol.stop_moving",
++	"motorcontrol.stop_stopped",
++	"motorcontrol.no_mode",
++	"motorcontrol.msec",
++	"motorcontrol.status",
++	"motorcontrol.sat_pos",
++	"moviebrowser.option_browser",
++	"moviebrowser.book_clear_all",
++	"moviebrowser.menu_save",
++	"moviebrowser.menu_save_all",
++	"moviebrowser.info_head_update",
++	"moviebrowser.update_if_dest_empty_only",
++	"moviebrowser.serie_auto_create",
++	"moviebrowser.load_default",
++	"moviebrowser.browser_row_head",
++	"moviebrowser.browser_row_nr",
++	"moviebrowser.browser_row_item",
++	"moviebrowser.browser_row_width",
++	"moviebrowser.reload_at_start",
++	"moviebrowser.remount_at_start",
++	"moviebrowser.dir_head",
++	"moviebrowser.dir",
++	"moviebrowser.use_dir",
++	"moviebrowser.use_rec_dir",
++	"moviebrowser.use_movie_dir",
++	"moviebrowser.hide_series",
++	"moviebrowser.last_record_max_items",
++	"moviebrowser.last_play_max_items",
++	"moviebrowser.browser_frame_high",
++	"moviebrowser.book_head",
++	"moviebrowser.book_lastmoviestop",
++	"moviebrowser.book_movieend",
++	"moviebrowser.book_moviestart",
++	"moviebrowser.book_name",
++	"moviebrowser.book_new",
++	"moviebrowser.book_position",
++	"moviebrowser.book_type",
++	"moviebrowser.book_type_backward",
++	"moviebrowser.book_type_forward",
++	"moviebrowser.edit_book",
++	"moviebrowser.edit_book_name_info1",
++	"moviebrowser.edit_book_name_info2",
++	"moviebrowser.edit_book_pos_info1",
++	"moviebrowser.edit_book_pos_info2",
++	"moviebrowser.edit_book_type_info1",
++	"moviebrowser.edit_book_type_info2",
++	"moviebrowser.edit_serie",
++	"moviebrowser.error_no_movies",
++	"moviebrowser.foot_filter",
++	"moviebrowser.foot_play",
++	"moviebrowser.foot_sort",
++	"moviebrowser.head",
++	"moviebrowser.head_filter",
++	"moviebrowser.head_playlist",
++	"moviebrowser.head_recordlist",
++	"moviebrowser.hint_jumpbackward",
++	"moviebrowser.hint_jumpforward",
++	"moviebrowser.hint_movieend",
++	"moviebrowser.hint_newbook_backward",
++	"moviebrowser.hint_newbook_forward",
++	"moviebrowser.info_audio",
++	"moviebrowser.info_channel",
++	"moviebrowser.info_filename",
++	"moviebrowser.info_genre_major",
++	"moviebrowser.info_genre_minor",
++	"moviebrowser.info_head",
++	"moviebrowser.info_info1",
++	"moviebrowser.info_length",
++	"moviebrowser.info_parental_lockage",
++	"moviebrowser.info_parental_lockage_0year",
++	"moviebrowser.info_parental_lockage_12year",
++	"moviebrowser.info_parental_lockage_16year",
++	"moviebrowser.info_parental_lockage_18year",
++	"moviebrowser.info_parental_lockage_6year",
++	"moviebrowser.info_parental_lockage_always",
++	"moviebrowser.info_path",
++	"moviebrowser.info_prevplaydate",
++	"moviebrowser.info_prodcountry",
++	"moviebrowser.info_prodyear",
++	"moviebrowser.info_quality",
++	"moviebrowser.info_recorddate",
++	"moviebrowser.info_serie",
++	"moviebrowser.info_size",
++	"moviebrowser.info_title",
++	"moviebrowser.info_videoformat",
++	"moviebrowser.menu_directories_head",
++	"moviebrowser.menu_help_head",
++	"moviebrowser.menu_main_bookmarks",
++	"moviebrowser.menu_main_head",
++	"moviebrowser.menu_nfs_head",
++	"moviebrowser.menu_parental_lock_activated",
++	"moviebrowser.menu_parental_lock_activated_no",
++	"moviebrowser.menu_parental_lock_activated_yes",
++	"moviebrowser.menu_parental_lock_activated_no_temp",
++	"moviebrowser.menu_parental_lock_head",
++	"moviebrowser.menu_parental_lock_rate_head",
++	"moviebrowser.next_focus",
++	"moviebrowser.scan_for_movies",
++	"moviebrowser.serie_head",
++	"moviebrowser.serie_name",
++	"moviebrowser.short_audio",
++	"moviebrowser.short_book",
++	"moviebrowser.short_channel",
++	"moviebrowser.short_country",
++	"moviebrowser.short_filename",
++	"moviebrowser.short_format",
++	"moviebrowser.short_genre_major",
++	"moviebrowser.short_genre_minor",
++	"moviebrowser.short_info1",
++	"moviebrowser.short_info2",
++	"moviebrowser.short_length",
++	"moviebrowser.short_parental_lockage",
++	"moviebrowser.short_path",
++	"moviebrowser.short_prevplaydate",
++	"moviebrowser.short_prodyear",
++	"moviebrowser.short_quality",
++	"moviebrowser.short_recorddate",
++	"moviebrowser.short_serie",
++	"moviebrowser.short_size",
++	"moviebrowser.short_title",
++	"moviebrowser.start_head",
++	"moviebrowser.start_record_start",
++	"movieplayer.bookmark",
++	"movieplayer.bookmarkname",
++	"movieplayer.bookmarkname_hint1",
++	"movieplayer.bookmarkname_hint2",
++	"movieplayer.buffering",
++	"movieplayer.defdir",
++	"movieplayer.defplugin",
++	"movieplayer.vlcplayback",
++	"movieplayer.vlcdvdplayback",
++	"movieplayer.vlcsvcdplayback",
++	"movieplayer.records",
++	"movieplayer.movies",
++	"movieplayer.fileplayback",
++	"movieplayer.showtshelp",
++	"movieplayer.goto",
++	"movieplayer.goto.h1",
++	"movieplayer.goto.h2",
++	"movieplayer.head",
++	"movieplayer.nostreamingserver",
++	"movieplayer.pesplayback",
++	"movieplayer.pleasewait",
++	"movieplayer.toomanybookmarks",
++	"movieplayer.tshelp1",
++	"movieplayer.tshelp10",
++	"movieplayer.tshelp11",
++	"movieplayer.tshelp12",
++	"movieplayer.tshelp13",
++	"movieplayer.tshelp14",
++	"movieplayer.tshelp2",
++	"movieplayer.tshelp3",
++	"movieplayer.tshelp4",
++	"movieplayer.tshelp5",
++	"movieplayer.tshelp6",
++	"movieplayer.tshelp7",
++	"movieplayer.tshelp8",
++	"movieplayer.tshelp9",
++	"movieplayer.tsplayback",
++	"movieplayer.dvdplayback",
++	"movieplayer.bluerayplayback",
++	"movieplayer.vlchelp1",
++	"movieplayer.vlchelp10",
++	"movieplayer.vlchelp11",
++	"movieplayer.vlchelp12",
++	"movieplayer.vlchelp2",
++	"movieplayer.vlchelp3",
++	"movieplayer.vlchelp4",
++	"movieplayer.vlchelp5",
++	"movieplayer.vlchelp6",
++	"movieplayer.vlchelp7",
++	"movieplayer.vlchelp8",
++	"movieplayer.vlchelp9",
++	"movieplayer.wrongvlcversion",
++	"networkmenu.broadcast",
++	"networkmenu.dhcp",
++	"networkmenu.gateway",
++	"networkmenu.head",
++	"networkmenu.ipaddress",
++	"networkmenu.mount",
++	"networkmenu.nameserver",
++	"networkmenu.netmask",
++	"networkmenu.ntpenable",
++	"networkmenu.ntprefresh",
++	"networkmenu.ntprefresh_hint1",
++	"networkmenu.ntprefresh_hint2",
++	"networkmenu.ntpserver",
++	"networkmenu.ntpserver_hint1",
++	"networkmenu.ntpserver_hint2",
++	"networkmenu.ntptitle",
++	"networkmenu.setupnow",
++	"networkmenu.setuponstartup",
++	"networkmenu.show",
++	"networkmenu.test",
++	"networkmenu.select_if",
++	"networkmenu.ssid",
++	"networkmenu.wlan_security",
++	"networkmenu.password",
++	"networkmenu.hostname",
++	"nfs.alreadymounted",
++	"nfs.automount",
++	"nfs.dir",
++	"nfs.ip",
++	"nfs.localdir",
++	"nfs.mount",
++	"nfs.mount_options",
++	"nfs.mounterror",
++	"nfs.mounterror_notsup",
++	"nfs.mountnow",
++	"nfs.mountok",
++	"nfs.mounttimeout",
++	"nfs.password",
++	"nfs.remount",
++	"nfs.type",
++	"nfs.type_cifs",
++	"nfs.type_lufs",
++	"nfs.type_nfs",
++	"nfs.type_smbfs",
++	"nfs.umount",
++	"nfs.umounterror",
++	"nfs.username",
++	"nfsmenu.head",
++	"nvod.percentage",
++	"nvod.starting",
++	"nvodselector.directormode",
++	"nvodselector.head",
++	"nvodselector.subservice",
++	"options.default",
++	"options.fb",
++	"options.null",
++	"options.off",
++	"options.on",
++	"options.serial",
++	"parentallock.changepin",
++	"parentallock.changepin_hint1",
++	"parentallock.changetolocked",
++	"parentallock.head",
++	"parentallock.lockage",
++	"parentallock.lockage12",
++	"parentallock.lockage16",
++	"parentallock.lockage18",
++	"parentallock.lockedchannel",
++	"parentallock.lockedprogram",
++	"parentallock.never",
++	"parentallock.onsignal",
++	"parentallock.parentallock",
++	"parentallock.prompt",
++	"pictureviewersettings.general",
++	"pictureviewer.decode_server_ip",
++	"pictureviewer.decode_server_port",
++	"pictureviewer.defdir",
++	"pictureviewer.head",
++	"pictureviewer.help1",
++	"pictureviewer.help10",
++	"pictureviewer.help11",
++	"pictureviewer.help12",
++	"pictureviewer.help13",
++	"pictureviewer.help14",
++	"pictureviewer.help15",
++	"pictureviewer.help16",
++	"pictureviewer.help17",
++	"pictureviewer.help18",
++	"pictureviewer.help19",
++	"pictureviewer.help2",
++	"pictureviewer.help20",
++	"pictureviewer.help21",
++	"pictureviewer.help22",
++	"pictureviewer.help3",
++	"pictureviewer.help4",
++	"pictureviewer.help5",
++	"pictureviewer.help6",
++	"pictureviewer.help7",
++	"pictureviewer.help8",
++	"pictureviewer.help9",
++	"pictureviewer.resize.color_average",
++	"pictureviewer.resize.none",
++	"pictureviewer.resize.simple",
++	"pictureviewer.scaling",
++	"pictureviewer.show",
++	"pictureviewer.slide_time",
++	"pictureviewer.slideshow",
++	"pictureviewer.sortorder",
++	"pictureviewer.sortorder.date",
++	"pictureviewer.sortorder.filename",
++	"pictureviewer.background",
++	"pictureviewer.picaudiofile",
++	"ping.ok",
++	"ping.protocol",
++	"ping.socket",
++	"ping.unreachable",
++	"pinprotection.head",
++	"pinprotection.wrongcode",
++	"plugins.result",
++	"pluginlist.remove_plugin",
++	"pluginlist.start_plugin",
++	"rclock.lockmsg",
++	"rclock.menueadd",
++	"rclock.title",
++	"rclock.unlockmsg",
++	"recordingmenu.apids",
++	"recordingmenu.apids_ac3",
++	"recordingmenu.apids_alt",
++	"recordingmenu.apids_std",
++	"recordingmenu.choose_direct_rec_dir",
++	"recordingmenu.defdir",
++	"recordingmenu.tsdir",
++	"recordingmenu.epg_for_filename",
++	"recordingmenu.file",
++	"recordingmenu.filesettings",
++	"recordingmenu.head",
++	"recordingmenu.help",
++	"recordingmenu.no_scart",
++	"recordingmenu.off",
++	"recordingmenu.record_in_spts_mode",
++	"recordingmenu.recording_type",
++	"recordingmenu.ringbuffers",
++	"recordingmenu.save_in_channeldir",
++	"recordingmenu.server",
++	"recordingmenu.server_ip",
++	"recordingmenu.server_mac",
++	"recordingmenu.server_port",
++	"recordingmenu.server_wakeup",
++	"recordingmenu.setupnow",
++	"recordingmenu.splitsize",
++	"recordingmenu.stopplayback",
++	"recordingmenu.stopsectionsd",
++	"recordingmenu.stream_vtxt_pid",
++	"recordingmenu.stream_subtitle_pid",
++	"recordingmenu.stream_pmt_pid",
++	"recordingmenu.use_fdatasync",
++	"recordingmenu.use_o_sync",
++	"recordingmenu.vcr",
++	"recordingmenu.zap_on_announce",
++	"recordtimer.announce",
++	"repeatblocker.hint_1",
++	"repeatblocker.hint_2",
++	"satsetup.diseqc",
++	"satsetup.diseqc10",
++	"satsetup.diseqc11",
++	"satsetup.diseqc12",
++	"satsetup.diseqc_advanced",
++	"satsetup.diseqc_order",
++	"satsetup.diseqc_com_uncom",
++	"satsetup.diseqc_uncom_com",
++	"satsetup.diseqcrepeat",
++	"satsetup.extended",
++	"satsetup.extended_motor",
++	"satsetup.minidiseqc",
++	"satsetup.motorcontrol",
++	"satsetup.nodiseqc",
++	"satsetup.satellite",
++	"satsetup.savesettingsnow",
++	"satsetup.smatvremote",
++	"satsetup.sat_setup",
++	"satsetup.do_scan",
++	"satsetup.lofl",
++	"satsetup.lofh",
++	"satsetup.lofs",
++	"satsetup.diseqc_input",
++	"satsetup.uncomm_input",
++	"satsetup.comm_input",
++	"satsetup.motor_pos",
++	"satsetup.auto_scan",
++	"satsetup.auto_scan_all",
++	"satsetup.manual_scan",
++	"satsetup.use_nit",
++	"satsetup.use_usals",
++	"satsetup.usals_repeat",
++	"scants.abort_body",
++	"scants.abort_header",
++	"scants.actcable",
++	"scants.actsatellite",
++	"scants.actterrestrial",
++	"scants.bouquet",
++	"scants.bouquet_create",
++	"scants.bouquet_erase",
++	"scants.bouquet_leave",
++	"scants.bouquet_satellite",
++	"scants.bouquet_update",
++	"scants.channel",
++	"scants.failed",
++	"scants.finished",
++	"scants.freqdata",
++	"scants.head",
++	"scants.numberofdataservices",
++	"scants.numberofradioservices",
++	"scants.numberoftotalservices",
++	"scants.numberoftvservices",
++	"scants.provider",
++	"scants.startnow",
++	"scants.test",
++	"scants.transponders",
++	"scants.select_tp",
++	"screensetup.lowerright",
++	"screensetup.upperleft",
++	"servicemenu.getplugins",
++	"servicemenu.getplugins_hint",
++	"servicemenu.head",
++	"servicemenu.reload",
++	"servicemenu.reload_hint",
++	"servicemenu.restart",
++	"servicemenu.restart_failed",
++	"servicemenu.restart_hint",
++	"servicemenu.restart_refused_recording",
++	"servicemenu.scants",
++	"servicemenu.ucodecheck",
++	"servicemenu.update",
++	"settings.help",
++	"settings.missingoptionsconffile",
++	"settings.noconffile",
++	"settings.pos_bottom_left",
++	"settings.pos_bottom_right",
++	"settings.pos_default_center",
++	"settings.pos_higher_center",
++	"settings.pos_top_left",
++	"settings.pos_top_right",
++	"shutdowntimer.announce",
++	"shutdown.recoding_query",
++	"sleeptimerbox.announce",
++	"sleeptimerbox.hint1",
++	"sleeptimerbox.hint2",
++	"sleeptimerbox.title",
++	"streamfeatures.head",
++	"streaminfo.aratio",
++	"streaminfo.aratio_unknown",
++	"streaminfo.audiotype",
++	"streaminfo.audiotype_unknown",
++	"streaminfo.bitrate",
++	"streaminfo.framerate",
++	"streaminfo.framerate_unknown",
++	"streaminfo.head",
++	"streaminfo.not_available",
++	"streaminfo.mode",
++	"streaminfo.signal",
++	"streaming.buffer_overflow",
++	"streaming.busy",
++	"streaming.dir_not_writable",
++	"streaming.success",
++	"streaming.write_error",
++	"streaming.write_error_open",
++	"streamingmenu.352x288",
++	"streamingmenu.352x576",
++	"streamingmenu.480x576",
++	"streamingmenu.704x288",
++	"streamingmenu.704x576",
++	"streamingmenu.head",
++	"streamingmenu.mpeg1",
++	"streamingmenu.mpeg2",
++	"streamingmenu.off",
++	"streamingmenu.on",
++	"streamingmenu.server_ip",
++	"streamingmenu.server_port",
++	"streamingmenu.streaming_audiorate",
++	"streamingmenu.streaming_force_avi_rawaudio",
++	"streamingmenu.streaming_force_transcode_video",
++	"streamingmenu.streaming_resolution",
++	"streamingmenu.streaming_server_cddrive",
++	"streamingmenu.streaming_server_startdir",
++	"streamingmenu.streaming_settings",
++	"streamingmenu.streaming_transcode_audio",
++	"streamingmenu.streaming_transcode_video_codec",
++	"streamingmenu.streaming_type",
++	"streamingmenu.streaming_videorate",
++	"streamingmenu.streaming_vlc10",
++	"streamingmenu.streaming_vlcver08",
++	"streamingmenu.streaming_vlcver10",
++	"streamingmenu.streaming_vlcver20",
++	"streamingserver.noconnect",
++	"streamingmenu.filebrowser_allow_multiselect",
++	"stringinput.caps",
++	"stringinput.clear",
++	"timer.eventrecord.msg",
++	"timer.eventrecord.title",
++	"timer.eventtimed.msg",
++	"timer.eventtimed.title",
++	"timerbar.channelswitch",
++	"timerbar.recordevent",
++	"timerlist.alarmtime",
++	"timerlist.apids",
++	"timerlist.apids_dflt",
++	"timerlist.bouquetselect",
++	"timerlist.channel",
++	"timerlist.channelselect",
++	"timerlist.delete",
++	"timerlist.menumodify",
++	"timerlist.menunew",
++	"timerlist.message",
++	"timerlist.moderadio",
++	"timerlist.modeselect",
++	"timerlist.modetv",
++	"timerlist.modify",
++	"timerlist.name",
++	"timerlist.new",
++	"timerlist.overlapping_timer",
++	"timerlist.plugin",
++	"timerlist.program.unknown",
++	"timerlist.recording_dir",
++	"timerlist.reload",
++	"timerlist.repeat",
++	"timerlist.repeat.biweekly",
++	"timerlist.repeat.byeventdescription",
++	"timerlist.repeat.daily",
++	"timerlist.repeat.fourweekly",
++	"timerlist.repeat.friday",
++	"timerlist.repeat.monday",
++	"timerlist.repeat.monthly",
++	"timerlist.repeat.once",
++	"timerlist.repeat.saturday",
++	"timerlist.repeat.sunday",
++	"timerlist.repeat.thursday",
++	"timerlist.repeat.tuesday",
++	"timerlist.repeat.unknown",
++	"timerlist.repeat.wednesday",
++	"timerlist.repeat.weekdays",
++	"timerlist.repeat.weekly",
++	"timerlist.repeatcount",
++	"timerlist.repeatcount.help1",
++	"timerlist.repeatcount.help2",
++	"timerlist.save",
++	"timerlist.standby",
++	"timerlist.standby.off",
++	"timerlist.standby.on",
++	"timerlist.stoptime",
++	"timerlist.type",
++	"timerlist.type.execplugin",
++	"timerlist.type.nextprogram",
++	"timerlist.type.record",
++	"timerlist.type.remind",
++	"timerlist.type.shutdown",
++	"timerlist.type.sleeptimer",
++	"timerlist.type.standby",
++	"timerlist.type.unknown",
++	"timerlist.type.zapto",
++	"timerlist.weekdays",
++	"timerlist.weekdays.hint_1",
++	"timerlist.weekdays.hint_2",
++	"timersettings.record_safety_time_after",
++	"timersettings.record_safety_time_after.hint_1",
++	"timersettings.record_safety_time_after.hint_2",
++	"timersettings.record_safety_time_before",
++	"timersettings.record_safety_time_before.hint_1",
++	"timersettings.record_safety_time_before.hint_2",
++	"timersettings.separator",
++	"timing.chanlist",
++	"timing.epg",
++	"timing.filebrowser",
++	"timing.head",
++	"timing.hint_1",
++	"timing.hint_2",
++	"timing.infobar",
++	"timing.menu",
++	"timing.numericzap",
++	"ucodecheck.avia500",
++	"ucodecheck.avia600",
++	"ucodecheck.cam-alpha",
++	"ucodecheck.head",
++	"ucodecheck.ucode",
++	"ucodes.failure",
++	"upnpbrowser.head",
++	"upnpbrowser.noservers",
++	"upnpbrowser.rescan",
++	"upnpbrowser.scanning",
++	"usermenu.button_blue",
++	"usermenu.button_green",
++	"usermenu.button_red",
++	"usermenu.button_yellow",
++	"usermenu.button_f1",
++	"usermenu.button_f2",
++	"usermenu.button_f3",
++	"usermenu.button_f4",
++	"usermenu.head",
++	"usermenu.item_bar",
++	"usermenu.item_epg_misc",
++	"usermenu.item_none",
++	"usermenu.item_vtxt",
++	"usermenu.item_plugins",
++	"usermenu.name",
++	"videomenu.csync",
++	"videomenu.head",
++	"videomenu.osd",
++	"videomenu.rgb_centering",
++	"videomenu.screensetup",
++	"videomenu.tv-scart",
++	"videomenu.vcr-scart",
++	"videomenu.vcrsignal",
++	"videomenu.vcrsignal_composite",
++	"videomenu.vcrsignal_svideo",
++	"videomenu.vcrswitch",
++	"videomenu.videoratio",
++	"videomenu.videoratio_169",
++	"videomenu.videoratio_43",
++	"videomenu.videoratio_149",
++	"videomenu.videoratio_autodetect",
++	"videomenu.videoformat",
++	"videomenu.panscan",
++	"videomenu.panscan2",
++	"videomenu.letterbox",
++	"videomenu.fullscreen",
++	"videomenu.auto",
++	"videomenu.analog_mode",
++	"videomenu.analog_sd_rgb_scart",
++	"videomenu.analog_sd_rgb_cinch",
++	"videomenu.analog_sd_yprpb_scart",
++	"videomenu.analog_sd_yprpb_cinch",
++	"videomenu.analog_hd_rgb_scart",
++	"videomenu.analog_hd_rgb_cinch",
++	"videomenu.analog_hd_yprpb_scart",
++	"videomenu.analog_hd_yprpb_cinch",
++	"videomenu.hdmi_color_space",		// DUCKBOX
++	"videomenu.colour_range",
++	"videomenu.scart",
++	"videomenu.cinch",
++	"videomenu.dbdr",
++	"videomenu.dbdr_none",
++	"videomenu.dbdr_deblock",
++	"videomenu.dbdr_both",
++	"videomenu.enabled_modes",
++	"zapit.scantype",
++	"zapit.scantype.all",
++	"zapit.scantype.radio",
++	"zapit.scantype.tv",
++	"zapit.scantype.tvradio",
++	"zaptotimer.announce",
++	"extra.english",
++	"extra.dboxinfo",
++	"extra.scan_mode",
++	"extra.start_tostandby",
++	"extra.rotor_swap",
++	"servicemenu.tuner_to_scan",
++	"extra.mbpreview",
++	"extra.use_log",
++	"extra.spts_mode",
++	"extra.hw_sect",
++	"extra.logo",
++	"extra.scan_full",
++	"extra.scan_fast",
++	"hdd_slow",
++	"hdd_middle",
++	"hdd_fast",
++	"hdd_ext3",
++	"hdd_reiser",
++	"hdd_1min",
++	"hdd_5min",
++	"hdd_10min",
++	"hdd_20min",
++	"hdd_30min",
++	"hdd_60min",
++	"hdd_sleep",
++	"hdd_noise",
++	"hdd_activate",
++	"hdd_fs",
++	"hdd_format",
++	"hdd_format_warn",
++	"hdd_format_failed",
++	"hdd_umount_warn",
++	"hdd_check",
++	"hdd_check_failed",
++	"hdd_settings",
++	"hdd_manage",
++	"hdd_not_found",
++	"hdd_init",
++	"hdd_init_warn",
++	"hdd_init_failed",
++	"hdd_browser",
++	"extra.clear_log",
++	"extra.zap_cycle",
++	"extra.sms_channel",
++	"extra.manual_scan",
++	"extra.tp_freq",
++	"extra.tp_rate",
++	"extra.tp_pol",
++	"extra.tp.pol_v",
++	"extra.tp_pol_h",
++	"extra.tp_fec",
++	"extra.fec_1_2",
++	"extra.fec_2_3",
++	"extra.fec_3_4",
++	"extra.fec_5_6",
++	"extra.fec_7_8",
++	"extra.tp_mod",
++	"extra.tp_mod_16",
++	"extra.tp_mod_32",
++	"extra.tp_mod_64",
++	"extra.tp_mod_128",
++	"extra.tp_mod_256",
++	"extra.tp_band",
++	"extra.tp_hp",
++	"extra.tp_lp",
++	"extra.tp_trans",
++	"extra.tp_guard",
++	"extra.tp_hierarchy",
++	"extra.timezone",
++	"extra.zapit_menu",
++	"extra.zapit_make_bouquet",
++	"extra.zapit_save_last_chan",
++	"extra.zapit_motor_speed",
++	"extra.zapit_fe_timeout",
++	"extra.zapit_fast_zap",
++	"extra.zapit_sort_names",
++	"extra.zapit_scanpids",
++	"extra.zapit_rezap_time",
++	"extra.zapit_hvoltage",
++	"reset_channels",
++	"reset_settings",
++	"reset_all",
++	"reset_confirm",
++	"extra.zapit_backup",
++	"extra.zapit_restore",
++	"extra.add_to_bouquet",
++	"extra.key_list_start",
++	"extra.key_list_end",
++	"extra.chadded",
++	"extra.chalreadyinbq",
++	"extra.menu_left_exit",
++	"extra.zapit_write_names",
++	"extra.update_dir",
++	"extra.audio_run_player",
++	"mpkey.rewind",
++	"mpkey.forward",
++	"mpkey.pause",
++	"mpkey.stop",
++	"mpkey.play",
++	"mpkey.audio",
++	"mpkey.time",
++	"mpkey.bookmark",
++	"mpkey.plugin",
++	"extra.loadcolors",
++	"extra.savecolors",
++	"extra.loadkeys",
++	"extra.savekeys",
++	"extra.loadconfig",
++	"extra.saveconfig",
++	"extra.key_click",
++	"videomenu.videomode",
++	//"videomenu.videoresolution_ntsc",
++	//"videomenu.videoresolution_pal",
++	//"videomenu.videoresolution_palm",
++	"extra.key_timeshift",
++	"extra.key_plugin",
++	"extra.timeshift_pause",
++	"rfmod.rfmod",
++	"rfmod.carrier",
++	"rfmod.carrier4500",
++	"rfmod.carrier5500",
++	"rfmod.carrier6000",
++	"rfmod.carrier6500",
++	"rfmod.enable",
++	"rfmod.channel",
++	"rfmod.finetune",
++	"rfmod.standby",
++	"rfmod.test",
++	"extra.key_unlock",
++	"servicemenu.imageinfo",
++	"imageinfo.creator",
++	"imageinfo.date",
++	"imageinfo.dokumentation",
++	"imageinfo.forum",
++	"imageinfo.head",
++	"imageinfo.homepage",
++	"imageinfo.image",
++	"imageinfo.license",
++	"imageinfo.version",
++	"imageinfo.type",
++	"inetradio.name",
++	"extra.cache_txt",
++	"extra.use_gotoxx",
++	"extra.latitude",
++	"extra.longitude",
++	"extra.ladirection",
++	"extra.lodirection",
++	"extra.south",
++	"extra.north",
++	"extra.east",
++	"extra.west",
++	"options.on.without_messages",
++	"extra.zapit_scan_sdt",
++	"extra.zapit_sdt_changed",
++	"extra.timeshift",
++	"extra.auto_timeshift",
++	"extra.temp_timeshift",
++	"extra.auto_delete",
++	"extra.auto_to_record",
++	"extra.record_time",
++	"extra.fec_s2_qpsk_1_2",
++	"extra.fec_s2_qpsk_2_3",
++	"extra.fec_s2_qpsk_3_4",
++	"extra.fec_s2_qpsk_5_6",
++	"extra.fec_s2_qpsk_7_8",
++	"extra.fec_s2_qpsk_8_9",
++	"extra.fec_s2_qpsk_3_5",
++	"extra.fec_s2_qpsk_4_5",
++	"extra.fec_s2_qpsk_9_10",
++	"extra.fec_s2_8psk_1_2",
++	"extra.fec_s2_8psk_2_3",
++	"extra.fec_s2_8psk_3_4",
++	"extra.fec_s2_8psk_5_6",
++	"extra.fec_s2_8psk_7_8",
++	"extra.fec_s2_8psk_8_9",
++	"extra.fec_s2_8psk_3_5",
++	"extra.fec_s2_8psk_4_5",
++	"extra.fec_s2_8psk_9_10",
++	"video_mode_ok",
++	"scrambled_channel",
++	"neutrino_starting",
++	"cam.settings",
++	"cam.empty",
++	"cam.inserted",
++	"cam.removed",
++	"cam.init_ok",
++	"cam.waiting",
++	"cam.timeout",
++	"subtitles.head",
++	"subtitles.stop",
++	"fan_speed",
++	"audio.srs_iq",
++	"audio.srs_algo",
++	"audio.srs_algo_light",
++	"audio.srs_algo_normal",
++	"audio.srs_volume",
++	"audio.srs_nmgr",
++	"cpu.freq",
++	"cpu.freq_normal",
++	"cpu.freq_standby",
++	"cpu.freq_default",
++	"AUDIOSelectMenue.no_tracks",
++	"hddmenu.hddmount",
++	"hddmenu.hddmounted",
++	"hddmenu.hddmountfailed",
++	"hddmenu.hddumount",
++	"hddmenu.hddumounted",
++	"mainmenu.mediaplayer",
++	"osd.timezone",
++	"osd.corners",
++	"osd.roundedcornersoff",
++	"osd.roundedcornerson",
++	"osd.roundedcornersonly_top",
++	"extra.volume_pos",
++	"progressbar.color",
++	"miscsettings.reset",
++	"videosettings.wss",
++	"zapitsetup.lastuse",
++	"zapitsetup.lastmode",
++	"zapitsetup.lasttv",
++	"zapitsetup.lastradio",
++	"keybindingmenu.reload",
++	"screenshot.announce",
++	"screenshot.token",
++	"screenshot.remove",
++	"servicemenu.restart_e2",
++	
++	"helptext.tvmode",
++	"helptext.radiomode",
++	"helptext.scart",
++	"helptext.mediaplayer",
++	"helptext.internetradio",
++	"helptext.audioplayer",
++	"helptext.tsmoviebrowser",
++	"helptext.fileplayback",
++	"helptext.netstream",
++	"helptext.pictureviewer",
++	"helptext.upnpbrowser",
++	"helptext.mainsettings",
++	"helptext.service",
++	"helptext.sleeptimer",
++	"helptext.reboot",
++	"helptext.shutdown",
++	"helptext.boxinfo",
++	"helptext.videosettings",
++	"helptext.audiosettings",
++	"helptext.parentallock",
++	"helptext.networksettings",
++	"helptext.recordingsettings",
++	"helptext.movieplayersettings",
++	"helptext.osdsettings",
++	"helptext.vfdsettings",
++	"helptext.keyssettings",
++	"helptext.audioplayersettings",
++	"helptext.pictureviewersettings",
++	"helptext.miscsettings",
++	"helptext.hddsettings",
++	"helptext.scansetup",
++	"helptext.reloadchannels",
++	"helptext.bouquteseditor",
++	"helptext.deletechannels",
++	"helptext.cam",
++	"helptext.reloadplugins",
++	"helptext.imageinfo",
++	"helptext.softrestart",
++	"helptext.softwareupdate",
++	"helptext.miscsettingsgeneral",
++	"helptext.miscsettingschannellist",
++	"helptext.miscsettingsepg",
++	"helptext.miscsettingsfilebrowser",
++	"helptext.miscsettingszapitsetup",
++	"helptext.miscsettingspsisetup",
++	"helptext.timerlist",
++	"helptext.features",
++	"helptext.dvd",
++	"helptext.blueray",
++	
++	"miscsettings.logosdir",
++	"miscsettings.recording_screenshot",
++	"miscsettings.pref_epg_language",
++	"miscsettings.epg_language",
++	
++	"videomenu.psisetup",
++	"psisetup.contrast",
++	"psisetup.saturation",
++	"psisetup.brightness",
++	"psisetup.tint",
++	
++	"colormenu.helptxt",
++	"colormenu.helpbar",
++	"lcdmenu.menutitlevfd",
++	
++	"scansetup.tunermode",
++	"scansetup.tunermode_connected",
++	"scansetup.tunermode_loop",
++	"scansetup.tunermode_notconnected",
++	
++	"glcd.color.black",
++	"glcd.color.blue",
++	"glcd.color.cyan",
++	"glcd.color.green",
++	"glcd.color.magenta",
++	"glcd.color.red",
++	"glcd.color.white",
++	"glcd.color.yellow",
++	"glcd.color.orange",
++	"glcd.color.light_gray",
++	"glcd.color.gray",
++	"glcd.color.dark_gray",
++	"glcd.color.dark_red",
++	"glcd.color.dark_green",
++	"glcd.color.dark_blue",
++	"glcd.color.purple",
++	"glcd.color.mint",
++	"glcd.color.golden",
++	"glcd.enable",
++	"glcd.font",
++	"glcd.head",
++	"glcd.mirror_osd",
++	"glcd.restart",
++	"glcd.select.bar",
++	"glcd.select.bg",
++	"glcd.select.fg",
++	"glcd.size_bar",
++	"glcd.size_channel",
++	"glcd.size_epg",
++	"glcd.size_time",
++	"glcd.time_in_standby",
++	"glcd.volume",
++	
++	"miscsettings.backup",
++	"miscsettings.backupfailed",
++	"miscsettings.restore",
++	"miscsettings.restorewarn",
++	
++	"opkgmanager.head",
++	
++	"keybinding.key_recordsbrowser",
++	"keybinding.key_audioplayer",
++	"keybinding.key_pictureviewer",
++	"keybinding.key_timerlist",
++	"keybinding.key_inetradio",
++	"keybinding.key_moviebrowser",
++	"keybinding.key_filebrowser",
++	"keybinding.key_webtv",
++	"keybinding.key_screenshot",
++	"keybinding.savekeymap",
++	"keybinding.savekeymap_hint",
++	
++	"keybinding.mb_copy_jump",
++	"keybinding.mb_cut_jump",
++	"keybinding.mb_truncate",
++	
++	"audiomenu.volumebar_audiosteps",
++	
++	"webtv.head",
++	"webtvchannellist.nonefound",
++	"webtv.user",
++	"webtv.bouquets",
++	"webtv.add_bouquets",
++	
++	// youtube
++	"menu.hint_ytplay",
++	"moviebrowser.yt_error",
++	"moviebrowser.yt_max_results",
++	"moviebrowser.yt_most_discussed",
++	"moviebrowser.yt_most_popular",
++	"moviebrowser.yt_most_resent",
++	"moviebrowser.yt_most_responded",
++	"moviebrowser.yt_most_shared",
++	"moviebrowser.yt_next_results",
++	"moviebrowser.yt_on_the_web",
++	"moviebrowser.yt_prev_results",
++	"moviebrowser.yt_recently_featured",
++	"moviebrowser.yt_region",
++	"moviebrowser.yt_related",
++	"moviebrowser.yt_search",
++	"moviebrowser.yt_top_favorites",
++	"moviebrowser.yt_top_rated",
++	"movieplayer.ytplayback",
++	"moviebrowser.yt_orderby",
++	"moviebrowser.yt_orderby.published",
++	"moviebrowser.yt_orderby.rating",
++	"moviebrowser.yt_orderby.relevance",
++	"moviebrowser.yt_orderby.viewcount",
++	"moviebrowser.yt_concurrent_connections",
++	
++	// netzkino
++	"movieplayer.netzkino",
++	"moviebrowser.netzkino_error",
++	"moviebrowser.nk_categories",
++	"moviebrowser.nk_error",
++	"moviebrowser.nk_rtmp",
++	"moviebrowser.nk_rtmp_http",
++	"moviebrowser.nk_rtmp_rtmp",
++	
++	"plugins.notinstalled"
++};
++
++#endif
+diff -Naur nhd2-exp.orig/src/system/settings.h nhd2-exp/src/system/settings.h
+--- nhd2-exp.orig/src/system/settings.h	2014-11-19 17:22:16.000000000 +0100
++++ nhd2-exp/src/system/settings.h	2014-11-19 17:24:53.068914841 +0100
+@@ -400,6 +400,7 @@
+ 	std::string logos_dir;
+ 	int epgplus_show_logo;
+ 	int show_channelname;
++	int show_logos_left;
+ 	std::string audioplayer_screensaver_dir;
+ 
+ 	// channellist
+diff -Naur nhd2-exp.orig/src/system/settings.h.orig nhd2-exp/src/system/settings.h.orig
+--- nhd2-exp.orig/src/system/settings.h.orig	1970-01-01 01:00:00.000000000 +0100
++++ nhd2-exp/src/system/settings.h.orig	2014-11-19 17:22:16.000000000 +0100
+@@ -0,0 +1,540 @@
++/*
++  Neutrino-GUI  -   DBoxII-Project
++
++  Copyright (C) 2001 Steffen Hehn 'McClean'
++  Homepage: http://dbox.cyberphoria.org/
++
++  Kommentar:
++
++  Diese GUI wurde von Grund auf neu programmiert und sollte nun vom
++  Aufbau und auch den Ausbaumoeglichkeiten gut aussehen. Neutrino basiert
++  auf der Client-Server Idee, diese GUI ist also von der direkten DBox-
++  Steuerung getrennt. Diese wird dann von Daemons uebernommen.
++
++
++  License: GPL
++
++  This program is free software; you can redistribute it and/or modify
++  it under the terms of the GNU General Public License as published by
++  the Free Software Foundation; either version 2 of the License, or
++  (at your option) any later version.
++
++  This program is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  GNU General Public License for more details.
++
++  You should have received a copy of the GNU General Public License
++  along with this program; if not, write to the Free Software
++  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++*/
++
++#ifndef __settings__
++#define __settings__
++
++#include <system/localize.h>
++#include <configfile.h>
++
++/* zapit */
++#include <client/zapitclient.h>
++
++#include <string>
++
++#include <gui/widget/menue.h>
++#include <gui/widget/icons.h>
++#include <gui/widget/stringinput.h>
++
++
++struct SNeutrinoSettings
++{
++	// VIDEO
++	int video_Mode;
++	int analog_mode;	//scart
++
++	int hdmi_color_space;
++
++	int video_Ratio;
++	int video_Format;
++
++	int wss_mode;
++	
++	unsigned char contrast;
++	unsigned char saturation;
++	unsigned char brightness;
++	unsigned char tint;
++	// END VIDEO
++
++	// AUDIO
++	int audio_AnalogMode;
++	int audio_DolbyDigital;
++
++	int hdmi_dd;
++
++	int avsync;
++	
++	int ac3_delay;
++	int pcm_delay;
++	//
++	
++	// subs
++	int auto_lang;
++	int auto_subs;
++	char pref_lang[3][30];
++	char pref_subs[3][30];
++	char pref_epgs[3][30];
++	// END AUDIO
++
++	// PARENTALLOCK
++	int parentallock_prompt;
++	int parentallock_lockage;
++	char parentallock_pincode[5];
++	// END PARENTALLOCK
++
++	// NETWORK
++#define NETWORK_NFS_NR_OF_ENTRIES 8
++	std::string network_nfs_ip[NETWORK_NFS_NR_OF_ENTRIES];
++	char network_nfs_mac[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
++	char network_nfs_local_dir[NETWORK_NFS_NR_OF_ENTRIES][100];
++	char network_nfs_dir[NETWORK_NFS_NR_OF_ENTRIES][100];
++	int  network_nfs_automount[NETWORK_NFS_NR_OF_ENTRIES];
++	char network_nfs_mount_options1[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
++	char network_nfs_mount_options2[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS +  1];
++	int  network_nfs_type[NETWORK_NFS_NR_OF_ENTRIES];
++	char network_nfs_username[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
++	char network_nfs_password[NETWORK_NFS_NR_OF_ENTRIES][MAX_INPUT_CHARS + 1];
++
++	std::string network_ntpserver;
++	std::string network_ntprefresh;
++	int network_ntpenable;
++	char ifname[10];
++	// END NETWORK
++
++	// RECORDING
++	char record_safety_time_before[3];
++	char record_safety_time_after[3];
++	char network_nfs_recordingdir[100];
++	int auto_timeshift; 	// permanent timeshift
++	int record_hours;
++	unsigned char recording_audio_pids_default;
++	int recording_audio_pids_std;
++	int recording_audio_pids_alt;
++	int recording_audio_pids_ac3;
++
++	int recording_epg_for_filename;
++	int recording_save_in_channeldir;
++	
++	int recording_screenshot;
++	// END RECORDING
++
++	// MOVIEPLAYER
++	char network_nfs_moviedir[100];
++	
++	// multi select
++	int movieplayer_allow_multiselect;
++	// END MOVIEPLAYER
++
++	// OSD
++	unsigned char gtx_alpha;
++	
++	char language[25];
++
++	unsigned char menu_Head_alpha;
++	unsigned char menu_Head_red;
++	unsigned char menu_Head_green;
++	unsigned char menu_Head_blue;
++
++	unsigned char menu_Head_Text_alpha;
++	unsigned char menu_Head_Text_red;
++	unsigned char menu_Head_Text_green;
++	unsigned char menu_Head_Text_blue;
++
++	unsigned char menu_Content_alpha;
++	unsigned char menu_Content_red;
++	unsigned char menu_Content_green;
++	unsigned char menu_Content_blue;
++
++	unsigned char menu_Content_Text_alpha;
++	unsigned char menu_Content_Text_red;
++	unsigned char menu_Content_Text_green;
++	unsigned char menu_Content_Text_blue;
++
++	unsigned char menu_Content_Selected_alpha;
++	unsigned char menu_Content_Selected_red;
++	unsigned char menu_Content_Selected_green;
++	unsigned char menu_Content_Selected_blue;
++
++	unsigned char menu_Content_Selected_Text_alpha;
++	unsigned char menu_Content_Selected_Text_red;
++	unsigned char menu_Content_Selected_Text_green;
++	unsigned char menu_Content_Selected_Text_blue;
++
++	unsigned char menu_Content_inactive_alpha;
++	unsigned char menu_Content_inactive_red;
++	unsigned char menu_Content_inactive_green;
++	unsigned char menu_Content_inactive_blue;
++
++	unsigned char menu_Content_inactive_Text_alpha;
++	unsigned char menu_Content_inactive_Text_red;
++	unsigned char menu_Content_inactive_Text_green;
++	unsigned char menu_Content_inactive_Text_blue;
++
++	unsigned char infobar_alpha;
++	unsigned char infobar_red;
++	unsigned char infobar_green;
++	unsigned char infobar_blue;
++
++	unsigned char infobar_Text_alpha;
++	unsigned char infobar_Text_red;
++	unsigned char infobar_Text_green;
++	unsigned char infobar_Text_blue;
++	
++	unsigned char infobar_colored_events_alpha;
++	unsigned char infobar_colored_events_red;
++	unsigned char infobar_colored_events_green;
++	unsigned char infobar_colored_events_blue;
++	
++	unsigned char menu_Foot_alpha;
++	unsigned char menu_Foot_red;
++	unsigned char menu_Foot_green;
++	unsigned char menu_Foot_blue;
++	
++	unsigned char menu_Foot_Text_alpha;
++	unsigned char menu_Foot_Text_red;
++	unsigned char menu_Foot_Text_green;
++	unsigned char menu_Foot_Text_blue;
++
++	char	font_file[100];
++
++#define TIMING_SETTING_COUNT 6
++	enum TIMING_SETTINGS {
++		TIMING_MENU        = 0,
++		TIMING_CHANLIST    = 1,
++		TIMING_EPG         = 2,
++		TIMING_INFOBAR     = 3,
++		TIMING_FILEBROWSER = 4,
++		TIMING_NUMERICZAP  = 5
++	};
++
++	int  timing[TIMING_SETTING_COUNT]   ;
++	char timing_string[TIMING_SETTING_COUNT][4];
++
++#define FONT_TYPE_COUNT 22
++	enum FONT_TYPES {
++		FONT_TYPE_MENU                =  0,
++		FONT_TYPE_MENU_TITLE          =  1,
++		FONT_TYPE_MENU_INFO           =  2,
++		FONT_TYPE_EPG_TITLE           =  3,
++		FONT_TYPE_EPG_INFO1           =  4,
++		FONT_TYPE_EPG_INFO2           =  5,
++		FONT_TYPE_EPG_DATE            =  6,
++		FONT_TYPE_EVENTLIST_TITLE     =  7,
++		FONT_TYPE_EVENTLIST_ITEMLARGE =  8,
++		FONT_TYPE_EVENTLIST_ITEMSMALL =  9,
++		FONT_TYPE_EVENTLIST_DATETIME  = 10,
++		FONT_TYPE_GAMELIST_ITEMLARGE  = 11,
++		FONT_TYPE_GAMELIST_ITEMSMALL  = 12,
++		FONT_TYPE_CHANNELLIST         = 13,
++		FONT_TYPE_CHANNELLIST_DESCR   = 14,
++		FONT_TYPE_CHANNELLIST_NUMBER  = 15,
++		FONT_TYPE_CHANNEL_NUM_ZAP     = 16,
++		FONT_TYPE_INFOBAR_NUMBER      = 17,
++		FONT_TYPE_INFOBAR_CHANNAME    = 18,
++		FONT_TYPE_INFOBAR_INFO        = 19,
++		FONT_TYPE_INFOBAR_SMALL       = 20,
++		FONT_TYPE_FILEBROWSER_ITEM    = 21
++	};
++
++	int screen_StartX;
++	int screen_StartY;
++	int screen_EndX;
++	int screen_EndY;
++	int screen_width;
++	int screen_height;
++	int screen_xres;
++	int screen_yres;
++	
++	int volume_pos;
++	int rounded_corners;
++	// END OSD
++
++	// KEYS
++	char repeat_blocker[4];
++	char repeat_genericblocker[4];
++
++	int key_tvradio_mode;
++	
++	int key_channelList_pageup;
++	int key_channelList_pagedown;
++	int key_channelList_cancel;
++	int key_channelList_reload;
++	int key_channelList_sort;
++	int key_channelList_addrecord;
++	int key_channelList_addremind;
++	int key_channelList_search;
++
++	int key_quickzap_up;
++	int key_quickzap_down;
++
++	int key_bouquet_up;
++	int key_bouquet_down;
++
++	int key_subchannel_up;
++	int key_subchannel_down;
++
++	int key_zaphistory;
++	int key_lastchannel;
++	int key_list_start;
++	int key_list_end;
++	
++	//pip
++	int key_pip;
++
++	int mpkey_rewind;
++	int mpkey_forward;
++	int mpkey_pause;
++	int mpkey_stop;
++	int mpkey_play;
++	int mpkey_audio;
++	int mpkey_time;
++	int mpkey_bookmark;
++
++	int key_timeshift;
++	
++	int key_recordsbrowser;
++	int key_audioplayer;
++	int key_pictureviewer;
++	int key_timerlist;
++	int key_inetradio;
++	int key_moviebrowser;
++	int key_filebrowser;
++	int key_webtv;
++	
++	int key_screenshot;
++	
++	// mb
++	int mb_copy_jump;
++	int mb_cut_jump;
++	int mb_truncate;
++	// END KEYBINDING
++	
++	// webtv
++#define WEBTV_USER_BOUQUET_NR_OF_ENTRIES 20
++	char webtv_user_bouquet[WEBTV_USER_BOUQUET_NR_OF_ENTRIES][255];
++	int user_bouquet_count;
++
++	// USERMENU
++        typedef enum
++        {
++                BUTTON_RED = 0,  // Do not change ordering of members, add new item just before BUTTON_MAX!!!
++                BUTTON_GREEN = 1,
++                BUTTON_YELLOW = 2,
++                BUTTON_BLUE = 3,
++#if defined (ENABLE_FUNCTIONKEYS)  
++		BUTTON_F1 = 4,
++		BUTTON_F2 = 5,
++		BUTTON_F3 = 6,
++		BUTTON_F4 = 7,
++#endif
++                BUTTON_MAX   // MUST be always the last in the list
++        }USER_BUTTON;
++
++        typedef enum
++        {
++                ITEM_NONE = 0, // Do not change ordering of members, add new item just before ITEM_MAX!!!
++                ITEM_BAR = 1,
++                ITEM_EPG_LIST = 2,
++                ITEM_EPG_SUPER = 3,
++                ITEM_EPG_INFO = 4,
++                ITEM_AUDIO_SELECT = 5,
++                ITEM_SUBCHANNEL = 6,
++                ITEM_MOVIEPLAYER_MB = 7,
++                ITEM_TIMERLIST = 8,
++                ITEM_REMOTE = 9,
++                ITEM_TECHINFO = 10,
++                ITEM_PLUGIN = 11,
++                ITEM_VTXT = 12,
++                ITEM_GAME = 13,
++                ITEM_OPKG = 14,               
++		ITEM_MOVIEPLAYER_TSMB = 15,	
++                ITEM_MAX   // MUST be always the last in the list
++        }USER_ITEM;
++	
++        std::string usermenu_text[BUTTON_MAX];
++        int usermenu[BUTTON_MAX][ITEM_MAX];  // (USER_ITEM)  [button][position in Menue] = feature item
++	// END KEYS
++
++	// AUDIOPLAYER
++	char network_nfs_audioplayerdir[100];
++
++	int   audioplayer_display;
++	int   audioplayer_follow;
++	char  audioplayer_screensaver[3];
++	int   audioplayer_highprio;
++	int   audioplayer_select_title_by_name;
++	int   audioplayer_repeat_on;
++	int   audioplayer_screensaver_type;
++	int   audioplayer_enable_sc_metadata;
++	
++	//shoutcast
++	std::string shoutcast_dev_id;
++	// END AUDIOPLAYER
++
++	// PICVIEWER
++	char network_nfs_picturedir[100];
++	char   picviewer_slide_time[3];
++	int    picviewer_scaling;
++	// END PICVIEWER
++
++	// MISC OPTS
++	int shutdown_real;
++	int shutdown_real_rcdelay;
++        char shutdown_count[4];
++	int power_standby;
++	int infobar_sat_display;
++	int infobar_subchan_disp_pos;
++	int rotor_swap;
++	char timezone[150];
++
++	int radiotext_enable;
++	
++	std::string logos_dir;
++	int epgplus_show_logo;
++	int show_channelname;
++	std::string audioplayer_screensaver_dir;
++
++	// channellist
++	int zap_cycle;
++	int sms_channel;
++	int virtual_zap_mode;
++	int channellist_ca;
++	int make_hd_list;
++	int channellist_extended;
++
++	// epg
++	int epg_save;
++	std::string epg_cache;
++	std::string epg_old_events;
++	std::string epg_max_events;
++	std::string epg_extendedcache;
++	std::string epg_dir;
++
++	//filebrowser
++	int filesystem_is_utf8;
++	int filebrowser_showrights;
++	int filebrowser_sortmethod;
++	int filebrowser_denydirectoryleave;
++
++	//zapit setup
++	int lastChannelMode;
++	std::string StartChannelTV;
++	std::string StartChannelRadio;
++	t_channel_id startchanneltv_id;
++	t_channel_id startchannelradio_id;
++	int startchanneltv_nr;
++	int startchannelradio_nr;
++	int uselastchannel;
++	
++	// inter without GUI setup
++	int channel_mode;
++	
++	// vol
++	char current_volume;
++	char audio_step[3];
++	// MISC OPTS
++
++	// HDD
++	int	hdd_sleep;
++	int	hdd_noise;
++	// END HDD
++
++	// UPDATE
++	char	update_dir[100];
++	char softupdate_proxyserver[MAX_INPUT_CHARS + 1];
++	char softupdate_proxyusername[MAX_INPUT_CHARS + 1];
++	char softupdate_proxypassword[MAX_INPUT_CHARS + 1];
++	char softupdate_url_file[MAX_INPUT_CHARS + 1];
++	// END UPDATE
++
++	// VFD
++#if ENABLE_LCD
++#define LCD_SETTING_COUNT 11
++#else	
++#define LCD_SETTING_COUNT 8
++#endif
++	enum LCD_SETTINGS {
++		LCD_BRIGHTNESS         = 0,
++		LCD_STANDBY_BRIGHTNESS = 1,
++		LCD_CONTRAST           = 2,
++		LCD_POWER              = 3,
++		LCD_INVERSE            = 4,
++		LCD_SHOW_VOLUME        = 5,
++		LCD_AUTODIMM           = 6,
++		LCD_SCROLL_TEXT		= 7,
++#if ENABLE_LCD
++		LCD_EPGMODE		= 8,
++		LCD_EPGALIGN            = 9,
++		LCD_DUMP_PNG		= 10,
++#endif		
++	};
++
++	int lcd_setting[LCD_SETTING_COUNT];
++	char lcd_setting_dim_time[4];
++	int lcd_setting_dim_brightness;
++	int lcd_ledcolor;
++	// END VFD
++
++#define FILESYSTEM_ENCODING_TO_UTF8(a) (g_settings.filesystem_is_utf8 ? (a) : ZapitTools::Latin1_to_UTF8(a).c_str())
++#define UTF8_TO_FILESYSTEM_ENCODING(a) (g_settings.filesystem_is_utf8 ? (a) : ZapitTools::UTF8_to_Latin1(a).c_str())
++#define FILESYSTEM_ENCODING_TO_UTF8_STRING(a) (g_settings.filesystem_is_utf8 ? (a) : Latin1_to_UTF8(a))	
++};
++
++//
++extern const int default_timing     [TIMING_SETTING_COUNT];
++extern const neutrino_locale_t timing_setting_name[TIMING_SETTING_COUNT];
++
++// lcdd
++#if defined(ENABLE_LCD) && (defined(PLATFORM_DREAMBOX) || defined(PLATFORM_GIGABLUE) || defined(PLATFORM_VUPLUS))
++#define DEFAULT_LCD_BRIGHTNESS			0xFF
++#define DEFAULT_LCD_STANDBYBRIGHTNESS		0x7F
++#else
++#define DEFAULT_LCD_BRIGHTNESS			0x07
++#define DEFAULT_LCD_STANDBYBRIGHTNESS		0x07
++#endif
++#define DEFAULT_LCD_CONTRAST			0x0F
++#define DEFAULT_LCD_POWER			0x01
++#define DEFAULT_LCD_INVERSE			0x00
++#define DEFAULT_LCD_AUTODIMM			0x00
++#define DEFAULT_LCD_SHOW_VOLUME			0x01
++#define DEFAULT_LCD_SCROLL_TEXT			0x00
++#define DEFAULT_LCD_EPGMODE			0x01	/* 0x1 = name 0x2 = epgtitle 0x4 = separator */
++#define DEFAULT_LCD_EPGALIGN			0x00
++#define DEFAULT_LCD_DUMP_PNG			0x00
++
++// corners (osd)
++#define CORNER_RADIUS_LARGE		16
++#define CORNER_RADIUS_MID      		8
++#define CORNER_RADIUS_SMALL    		4
++
++#define RADIUS_LARGE    		(g_settings.rounded_corners ? CORNER_RADIUS_LARGE : 0)
++#define RADIUS_MID      		(g_settings.rounded_corners ? CORNER_RADIUS_MID : 0)
++#define RADIUS_SMALL    		(g_settings.rounded_corners ? CORNER_RADIUS_SMALL : 0)
++
++#define BORDER_LEFT			10
++#define BORDER_RIGHT			10
++#define SCROLLBAR_WIDTH			15
++
++#define ANGULAR				0
++#define ROUNDED				1
++#define ONLY_TOP			2
++
++// parentallock
++const int PARENTALLOCK_PROMPT_NEVER          = 0;
++const int PARENTALLOCK_PROMPT_ONSTART        = 1;
++const int PARENTALLOCK_PROMPT_CHANGETOLOCKED = 2;
++const int PARENTALLOCK_PROMPT_ONSIGNAL       = 3;
++
++//
++#define widest_number "2"
++#define ANNOUNCETIME (1 * 60)
++
++#endif
+diff -Naur nhd2-exp.orig/src/zapit/src/zapit.cpp nhd2-exp/src/zapit/src/zapit.cpp
+--- nhd2-exp.orig/src/zapit/src/zapit.cpp	2014-11-01 22:13:08.000000000 +0100
++++ nhd2-exp/src/zapit/src/zapit.cpp	2014-11-19 17:28:23.089163453 +0100
+@@ -96,7 +96,7 @@
+ 
+ /* volume percent conf */
+ #define VOLUME_DEFAULT_PCM 0
+-#define VOLUME_DEFAULT_AC3 25
++#define VOLUME_DEFAULT_AC3 75
+ typedef std::pair<int, int> pid_pair_t;
+ typedef std::pair<t_channel_id, pid_pair_t> volume_pair_t;
+ typedef std::multimap<t_channel_id, pid_pair_t> volume_map_t;
+@@ -1461,7 +1461,7 @@
+ 	if (volume_percent != percent) 
+ 		volume_percent = percent;
+ 		
+-	int vol = current_volume + (current_volume*volume_percent)/100;
++	int vol = current_volume + (current_volume*volume_percent+15)/100;
+ 		
+ 	dprintf(DEBUG_NORMAL, "[zapit] setVolumePercent: vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
+ 		
