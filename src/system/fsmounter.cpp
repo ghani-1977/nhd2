@@ -233,7 +233,7 @@ CFSMounter::MountRes CFSMounter::mount(const char * const ip, const char * const
 	{
 		if(fstype == NFS)
 		{
-			strcpy(options1, "ro,soft,udp");
+			strcpy(options1, "rw,soft,udp");
 			strcpy(options2, "nolock,rsize=16384,wsize=16384")
 		}
 		else if(fstype == CIFS)
