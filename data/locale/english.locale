@@ -1656,7 +1656,7 @@ moviebrowser.yt_orderby.relevance relevance
 moviebrowser.yt_orderby.viewcount view count
 moviebrowser.yt_concurrent_connections Concurrent connections
 
-movieplayer.netzkino Netzkino.de
+movieplayer.netzkino Netzkino
 moviebrowser.netzkino_error Failed to load Netzkino categories
 moviebrowser.nk_categories Select category
 moviebrowser.nk_error Failed to load Netzkino feed
