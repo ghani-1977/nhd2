@@ -841,6 +841,8 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	
 	// shoutcast --- not in GUI
 	g_settings.shoutcast_dev_id = configfile.getString("shoutcast_dev_id","XXXXXXXXXXXXXXXX");
+	// audioplayer screensaver_dir
+	//g_settings.audioplayer_screensaver_dir = configfile.getString("audioplayer_screensaver_dir", DATADIR "/neutrino/icons");
 	// end audioplayer
 
 	// pictureviewer
@@ -933,9 +935,6 @@ int CNeutrinoApp::loadSetup(const char * fname)
 	g_settings.volume_pos = configfile.getInt32( "volume_pos", 1);		//top_left
 	g_settings.current_volume = configfile.getInt32("current_volume", 25);
 	strcpy( g_settings.audio_step,		configfile.getString( "audio_step" , "5" ).c_str() );
-	
-	// audioplayer screensaver_dir
-	g_settings.audioplayer_screensaver_dir = configfile.getString("audioplayer_screensaver_dir", DATADIR "/neutrino/icons");
 	// END MISC OPTS
 
 	// HDD
@@ -1289,6 +1288,8 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	
 	//shoutcast
 	configfile.setString( "shoutcast_dev_id", g_settings.shoutcast_dev_id );
+	// audioplayer_screensaver_dir
+	//configfile.setString("audioplayer_screensaver_dir", g_settings.audioplayer_screensaver_dir);
 	// END AUDIOPLAYER
 
 	// PICVIEWER
@@ -1380,9 +1381,6 @@ void CNeutrinoApp::saveSetup(const char * fname)
 	configfile.setInt32( "volume_pos", g_settings.volume_pos);
 	configfile.setInt32( "current_volume", g_settings.current_volume );
 	configfile.setString( "audio_step"	, g_settings.audio_step);
-	
-	// audioplayer_screensaver_dir
-	configfile.setString("audioplayer_screensaver_dir", g_settings.audioplayer_screensaver_dir);
 	// END MISC OPTS
 
 	// HDD
@@ -5339,6 +5337,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 				
 		return menu_return::RETURN_REPAINT;	
 	}
+	/*
 	else if(actionKey == "audioplayer_screensaver_dir") 
 	{
 		parent->hide();
@@ -5355,6 +5354,7 @@ int CNeutrinoApp::exec(CMenuTarget * parent, const std::string & actionKey)
 
 		return menu_return::RETURN_REPAINT;
 	}
+	*/
 	else // start plugins with name forwarded into menue
 	{
 		g_PluginList->startPlugin((const char *)actionKey.c_str());

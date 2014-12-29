@@ -108,7 +108,6 @@
 #include "gui/motorcontrol.h"
 #include "gui/filebrowser.h"
 #include "gui/psisetup.h"
-#include "gui/upnpbrowser.h"
 
 #include <system/setting_helpers.h>
 #include <system/settings.h>
@@ -250,9 +249,6 @@ void CNeutrinoApp::InitMainMenu(CMenuWidget &mainMenu, CMenuWidget &mainSettings
 
 	//PictureViewer
 	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_MAINMENU_PICTUREVIEWER, true, NULL, new CPictureViewerGui(), NULL, CRCInput::RC_yellow, NEUTRINO_ICON_BUTTON_YELLOW, NEUTRINO_ICON_MENUITEM_PICTUREVIEWER, LOCALE_HELPTEXT_PICTUREVIEWER ));
-
-	//UPNP Browser
-	MediaPlayer.addItem(new CMenuForwarderItemMenuIcon(LOCALE_UPNPBROWSER_HEAD, true, NULL, new CUpnpBrowserGui(), NULL, CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, NEUTRINO_ICON_MENUITEM_UPNPBROWSER, LOCALE_HELPTEXT_UPNPBROWSER ));
 
 	// webtv
 	mainMenu.addItem(new CMenuForwarderItemMenuIcon(LOCALE_WEBTV_HEAD, true, NULL, this, "webtv", CRCInput::RC_blue, NEUTRINO_ICON_BUTTON_BLUE, NEUTRINO_ICON_MENUITEM_WEBTV, LOCALE_HELPTEXT_SCART) );
@@ -981,9 +977,9 @@ const CMenuOptionChooser::keyval AUDIOPLAYER_DISPLAY_ORDER_OPTIONS[AUDIOPLAYER_D
 #define AUDIOPLAYER_SCREENSAVER_TYPE_OPTION_COUNT 2
 const CMenuOptionChooser::keyval AUDIOPLAYER_SCREENSAVER_TYPE_OPTIONS[AUDIOPLAYER_SCREENSAVER_TYPE_OPTION_COUNT] =
 {
-	//{ CAudioPlayerGui::NONE, LOCALE_AUDIOPLAYER_SCREENSAVER_NONE, NULL },
+	{ CAudioPlayerGui::NONE, LOCALE_AUDIOPLAYER_SCREENSAVER_NONE, NULL },
 	{ CAudioPlayerGui::HIDE_PLAYLIST, LOCALE_AUDIOPLAYER_SCREENSAVER_HIDEPLAYLIST, NULL },
-	{ CAudioPlayerGui::SHOW_PIC, LOCALE_AUDIOPLAYER_SCREENSAVER_DIASHOW, NULL }
+	//{ CAudioPlayerGui::SHOW_PIC, LOCALE_AUDIOPLAYER_SCREENSAVER_DIASHOW, NULL }
 };
 
 void CNeutrinoApp::InitAudioplayerSettings(CMenuWidget &audioplayerSettings)
@@ -1033,7 +1029,7 @@ void CNeutrinoApp::InitAudioplayerSettings(CMenuWidget &audioplayerSettings)
 	audioplayerSettings.addItem(new CMenuForwarder(LOCALE_AUDIOPLAYER_ENABLE_SC_ID, true, g_settings.shoutcast_dev_id, shoutCastDevID));
 	
 	// audioplayer screensaver dir
-	audioplayerSettings.addItem( new CMenuForwarder(LOCALE_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
+	//audioplayerSettings.addItem( new CMenuForwarder(LOCALE_AUDIOPLAYER_SCREENSAVER_DIR, true, g_settings.audioplayer_screensaver_dir, this, "audioplayer_screensaver_dir" ) );
 }
 
 // InitPicViewerSettings

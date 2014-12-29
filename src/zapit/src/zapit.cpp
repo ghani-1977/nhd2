@@ -1461,7 +1461,7 @@ void setVolumePercent(int percent)
 	if (volume_percent != percent) 
 		volume_percent = percent;
 		
-	int vol = current_volume + volume_percent;
+	int vol = current_volume + (current_volume*volume_percent+50)/100;
 		
 	dprintf(DEBUG_NORMAL, "[zapit] setVolumePercent: vol %d current_volume %d volume_percent %d\n", vol, current_volume, volume_percent);
 		

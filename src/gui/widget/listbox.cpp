@@ -86,7 +86,7 @@ void CListBox::paint()
 
 void CListBox::paintHead()
 {
-	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);//round
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);//round
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, caption.c_str() , COL_MENUHEAD, 0, true);
 }
 

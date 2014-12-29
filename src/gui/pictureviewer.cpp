@@ -638,7 +638,7 @@ void CPictureViewerGui::paintHead()
 	std::string strCaption = g_Locale->getText(LOCALE_PICTUREVIEWER_HEAD);
 	
 	//head box
-	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	
 	// head icon
 	//frameBuffer->getIconSize(NEUTRINO_ICON_PICTURE, &icon_head_w, &icon_head_h);
@@ -675,7 +675,7 @@ void CPictureViewerGui::paintFoot()
 	int icon_w, icon_h;
 	frameBuffer->getIconSize(NEUTRINO_ICON_BUTTON_RED, &icon_w, &icon_h);
 	
-	frameBuffer->paintBoxRel(x, y + (height - 2*buttonHeight), width, 2*buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y + (height - 2*buttonHeight), width, 2*buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 
 	if (!playlist.empty())
 	{

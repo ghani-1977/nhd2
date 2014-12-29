@@ -345,13 +345,13 @@ void CPluginList::paintHead()
 		sb_width = 15;
 	
 	// head
-	frameBuffer->paintBoxRel(x, y, width + sb_width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y, width + sb_width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	
 	// body
 	frameBuffer->paintBoxRel(x, y + theight, width, height - theight, COL_MENUCONTENT_PLUS_0);
 	
 	// foot
-	frameBuffer->paintBoxRel(x, y + height, width + sb_width, theight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y + height, width + sb_width, theight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 	
 	// foot bottons
 	int icon_w, icon_h;

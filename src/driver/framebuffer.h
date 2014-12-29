@@ -195,7 +195,7 @@ class CFrameBuffer
 
 		void paintPixel(const int x, const int y, const fb_pixel_t col);
 		
-		void paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius = 0, int type = 0, int mode = PAINT_NONE, int spot = 0);
+		void paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius = 0, int type = 0, int mode = PAINT_NONE);
 
 		inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col) { paintBoxRel(xa, ya, xb - xa, yb - ya, col); }
 		inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col, int radius, int type) { paintBoxRel(xa, ya, xb - xa, yb - ya, col, radius, type); }

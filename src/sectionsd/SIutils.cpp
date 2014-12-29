@@ -85,95 +85,6 @@
 #include <time.h>
 #include <string.h>
 
-// Houdini: not used in the code at the moment, found in SIsections.cpp
-#if 0
-static const char descr_tbl[][50] = {
-// defined by ISO/IEC 13818-1 P64
-	"Reserved",
-	"Reserved",
-	"Video Stream",
-	"Audio Stream",
-	"Hierarchy",
-	"Registration",
-	"Data Stream Alignment",
-	"Target Background Grid",
-	"Video Window",
-	"CA",
-	"ISO 639 Language",
-	"System Clock",
-	"Multiplex Buffer Utilization",
-	"Copyright",
-	"Maximum Bitrate",
-	"Private Data Indicator",
-	"Smoothing Buffer",
-	"STD",
-	"IBP",
-	"ITU-T Rec. H.222.0 | ISO/IEC 13818-1 Reserved",
-// defined by ETSI
-	"Network Name",
-	"Service List",
-	"Stuffing",
-	"Satellite Delivery System",
-	"Cable Delivery System",
-	"Reserved for future use",
-	"Reserved for future use",
-	"Bouquet Name",
-	"Service",
-	"Country Availability",
-	"Linkage",
-	"NVOD Reference",
-	"Time Shifted Service",
-	"Short Event",
-	"Extended Event",
-	"Time Shifted Event",
-	"Component",
-	"Mosaic",
-	"Stream Identifier",
-	"CA Identifier",
-	"Content",
-	"Parental Rating",
-	"Teletext",
-	"Telephone",
-	"Local Time Offset",
-	"Subtitling",
-	"Terrestrial Delivery System",
-	"Multilingual Network Name",
-	"Multilingual Bouquet Name",
-	"Multilingual Service Name",
-	"Multilingual Component",
-	"Private Data Specifier",
-	"Service Move",
-	"Short Smoothing Buffer",
-	"Reserved for future use",
-	"User defined",
-	"FORBIDDEN"
-};
-
-// Thanks to tmbinc
-const char *decode_descr (unsigned char _index) {
-	int index = _index;
-
-	if (_index>=0x13 && _index<=0x3F)
-		index = 0x13;
-
-	if (_index>=0x40)
-		index -= (0x3F - 0x13);
-
-	if (_index>=0x62 && _index<=0x7F)
-		index = 0x62 - (_index - index);
-
-	if (_index>=0x80)
-		index -= (0x7F - 0x62);
-
-	if (_index>=0x80 && _index<=0xFE)
-		index = 0x80 - (_index - index);
-
-	if (_index == 0xFF)
-		index = 0xFF - (_index - index) - (0xFE - 0x80);
-
-	return descr_tbl[index];
-}
-#endif
 
 // Thanks to kwon
 time_t changeUTCtoCtime(const unsigned char *buffer, int local_time)
@@ -206,14 +117,6 @@ time_t changeUTCtoCtime(const unsigned char *buffer, int local_time)
 	time.tm_hour = (hour >> 4) * 10 + (hour & 0x0f);
 	time.tm_min = (minutes >> 4) * 10 + (minutes & 0x0f);
 	time.tm_sec = (seconds >> 4) * 10 + (seconds & 0x0f);
-
-#if 0
-	printf ("Startzeit: GMT: %.2d.%.2d.%.4d  %.2x:%.2x:%.2x\n",
-		day, month, year, hour, minutes, seconds);
-	printf ("Startzeit: GMT: %.2d.%.2d.%.4d  %.2d:%.2d:%.2d\n",
-		time.tm_mday, time.tm_mon + 1, time.tm_year + 1900,
-		time.tm_hour, time.tm_min, time.tm_sec);
-#endif
 
 	return mktime(&time) + (local_time ? -timezone : 0);
 }

@@ -495,7 +495,7 @@ void CEpgData::showHead(const t_channel_id channel_id)
 	}
 
 	//show the epg title
-	frameBuffer->paintBoxRel(sx, sy - toph, ox, toph, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(sx, sy - toph, ox, toph, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	
 	//
 	// paint time/date
@@ -1171,7 +1171,7 @@ void CEpgData::showTimerEventBar(bool _show)
 		return;
 	}
 
-	frameBuffer->paintBoxRel(x, y, w, h, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y, w, h, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 	
 	int icon_w = 0;
 	int icon_h = 0;

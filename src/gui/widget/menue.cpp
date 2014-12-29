@@ -590,7 +590,7 @@ void CMenuWidget::paint()
 		saveScreen();
 
 	// paint head
-	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y, width + sb_width, hheight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	
 	//paint icon
 	frameBuffer->paintIcon(iconfile, x + BORDER_LEFT, y + (hheight - icon_head_h)/2);
@@ -603,7 +603,7 @@ void CMenuWidget::paint()
 	frameBuffer->paintBoxRel(x, y + hheight, width + sb_width, sp_height, COL_MENUCONTENTDARK_PLUS_0);
 	
 	//paint foot
-	frameBuffer->paintBoxRel(x, y + (height - fheight), width + sb_width, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y + (height - fheight), width + sb_width, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 	
 	// all height position (needed to paint itemIcon and help text)
 	HEIGHT = y + full_height;
@@ -817,7 +817,7 @@ int CMenuOptionNumberChooser::paint(bool selected)
 		int fposy = HEIGHT - fheight;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 		
 		// paint help icon
 		int icon_w = 0;
@@ -1071,7 +1071,7 @@ int CMenuOptionChooser::paint( bool selected )
 		int fheight = std::max(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 		
 		// paint help icon
 		int icon_h_w = 0;
@@ -1272,7 +1272,7 @@ int CMenuOptionStringChooser::paint( bool selected )
 		int fheight = std::max(icon_foot_h, g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->getHeight()) + 6;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, HEIGHT - fheight, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 		
 		// paint help icon
 		int icon_h_w = 0;
@@ -1392,7 +1392,7 @@ int CMenuOptionLanguageChooser::paint( bool selected )
 		int fposy = HEIGHT - fheight;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 		
 		// paint help icon
 		int icon_h_w = 0;
@@ -1511,7 +1511,7 @@ int CMenuForwarder::paint(bool selected)
 		int fposy = HEIGHT - fheight;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 			
 		// paint help icon
 		int icon_w = 0;
@@ -1909,7 +1909,7 @@ int CMenuForwarderItemMenuIcon::paint(bool selected)
 		int fposy = HEIGHT - fheight;
 		
 		// refresh
-		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+		frameBuffer->paintBoxRel(x, fposy, dx, fheight, COL_MENUFOOT_PLUS_0, RADIUS_MID, (g_settings.rounded_corners == ONLY_TOP) ? 0x0 : CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 			
 		// paint help icon
 		int icon_w = 0;

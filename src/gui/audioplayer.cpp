@@ -381,11 +381,11 @@ int CAudioPlayerGui::show()
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	int _selected = 0;
-	CFileList filelist;
+	//int _selected = 0;
+	//CFileList filelist;
 	
-	if(!filelist.empty())
-		filelist.clear();
+	//if(!filelist.empty())
+	//	filelist.clear();
 
 	int ret = -1;
 
@@ -445,6 +445,7 @@ int CAudioPlayerGui::show()
 
 			if(msg == NeutrinoMessages::EVT_TIMER && data == stimer) 
 			{
+				/*
 				if(m_screensaver == SHOW_PIC) 
 				{
 					struct dirent **namelist;
@@ -518,15 +519,16 @@ int CAudioPlayerGui::show()
 						} 
 					}
 				} 
-				else if(m_screensaver == HIDE_PLAYLIST)
+				else*/
+				if(m_screensaver == HIDE_PLAYLIST)
 				{
 					hide();
 					
 					// paint infos
 					paintInfo();
 				}
-				else
-					_selected = 0;
+				//else
+				//	_selected = 0;
 			}
 
 		}
@@ -1009,8 +1011,8 @@ int CAudioPlayerGui::show()
 	if(m_state != CAudioPlayerGui::STOP)
 		stop();	
 	
-	if(!filelist.empty())
-		filelist.clear();
+	//if(!filelist.empty())
+	//	filelist.clear();
 
 	return ret;
 }
@@ -1871,7 +1873,7 @@ void CAudioPlayerGui::paintHead()
 		strCaption = g_Locale->getText(LOCALE_AUDIOPLAYER_HEAD);
 	
 	// head box
-	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	
 	// head icon
 	m_frameBuffer->getIconSize(NEUTRINO_ICON_MP3, &icon_head_w, &icon_head_h);
@@ -1946,7 +1948,7 @@ void CAudioPlayerGui::paintFoot()
 	int ButtonWidth2 = (m_width - 50) / 2;
 	
 	// foot
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 	
 	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);
@@ -2584,7 +2586,7 @@ void CAudioPlayerGui::screensaver(int type)
 	const char *SCREENSAVER_TYPE[] = {
 		"NONE",
 		"HIDE_PLAYLIST",
-		"SHOW_PIC"
+		//"SHOW_PIC"
 	};
 	
 	dprintf(DEBUG_NORMAL, "CAudioPlayerGui::screensaver: screensaver type %s (%d)\n", SCREENSAVER_TYPE[type], type);

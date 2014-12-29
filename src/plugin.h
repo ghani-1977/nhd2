@@ -128,7 +128,6 @@
 #include <gui/audio_select.h>
 #include <gui/scan_setup.h>
 #include <gui/dvbsub_select.h>
-#include <gui/upnpbrowser.h>
 #include <gui/webtv.h>
 #include <gui/timeosd.h>
 

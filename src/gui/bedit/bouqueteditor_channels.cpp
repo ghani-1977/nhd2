@@ -178,7 +178,7 @@ void CBEChannelWidget::paint()
 
 void CBEChannelWidget::paintHead()
 {
-	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
 	g_Font[SNeutrinoSettings::FONT_TYPE_MENU_TITLE]->RenderString(x + 10, y + theight, width, caption.c_str() , COL_MENUHEAD, 0, true);
 }
 
@@ -192,7 +192,7 @@ const struct button_label CBEChannelWidgetButtons[4] =
 
 void CBEChannelWidget::paintFoot()
 {
-	frameBuffer->paintBoxRel(x, y + height, width, ButtonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING, 2);
+	frameBuffer->paintBoxRel(x, y + height, width, ButtonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
 
 	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, x + BORDER_LEFT, y + height + (ButtonHeight - icon_foot_h)/2, (width - 20) / 4, 4, CBEChannelWidgetButtons);
 }

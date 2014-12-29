@@ -102,7 +102,7 @@ class CAudioPlayerGui : public CMenuTarget
 		{
 			NONE = 0,
 			HIDE_PLAYLIST = 1,
-			SHOW_PIC = 2
+			//SHOW_PIC = 2
 		};
 		
 		enum
