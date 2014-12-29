@@ -166,7 +166,6 @@ lib/libupnpclient/Makefile
 lib/liblcddisplay/Makefile
 lib/libdvbapi/Makefile
 lib/libeplayer3/Makefile
-lib/jsoncpp/Makefile
 src/nhttpd/Makefile
 src/nhttpd/web/Makefile
 src/nhttpd/web/images/Makefile
