@@ -195,7 +195,7 @@ class CFrameBuffer
 
 		void paintPixel(const int x, const int y, const fb_pixel_t col);
 		
-		void paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius = 0, int type = 0, int mode = PAINT_NONE);
+		void paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius = 0, int type = 0);
 
 		inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col) { paintBoxRel(xa, ya, xb - xa, yb - ya, col); }
 		inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col, int radius, int type) { paintBoxRel(xa, ya, xb - xa, yb - ya, col, radius, type); }
@@ -260,14 +260,6 @@ class CFrameBuffer
 		
 		unsigned char * Resize(unsigned char * origin, int ox, int oy, int dx, int dy, ScalingMode type, unsigned char * dst = NULL, bool alpha = false);
 		fb_pixel_t * getImage (const std::string & name, int width, int height);
-		
-		enum PaintingMode 
-		{
-			PAINT_NONE = 0,
-			PAINT_SHADING,
-			PAINT_LIGHTING,
-		
-		};
 };
 
 #define FH_ERROR_OK 0

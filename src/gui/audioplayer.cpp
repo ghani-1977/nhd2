@@ -381,12 +381,6 @@ int CAudioPlayerGui::show()
 	neutrino_msg_t      msg;
 	neutrino_msg_data_t data;
 
-	//int _selected = 0;
-	//CFileList filelist;
-	
-	//if(!filelist.empty())
-	//	filelist.clear();
-
 	int ret = -1;
 
 	CVFD::getInstance()->setMode(CVFD::MODE_AUDIO, g_Locale->getText(m_inetmode? LOCALE_INETRADIO_NAME : LOCALE_AUDIOPLAYER_HEAD));
@@ -445,81 +439,6 @@ int CAudioPlayerGui::show()
 
 			if(msg == NeutrinoMessages::EVT_TIMER && data == stimer) 
 			{
-				/*
-				if(m_screensaver == SHOW_PIC) 
-				{
-					struct dirent **namelist;
-					int n;
-					
-					n = scandir(g_settings.audioplayer_screensaver_dir.c_str(), &namelist, 0, alphasort);
-					
-					if(n > 0)
-					{
-						CFile file;
-						const char * filename;
-					
-						for(int count = 0; count < n; count++) 
-						{
-							if( (strcmp(namelist[count]->d_name, ".") != 0) && (strcmp(namelist[count]->d_name, "..") != 0) )
-							{
-								file.Name = g_settings.audioplayer_screensaver_dir + "/" + namelist[count]->d_name;
-								
-								// 
-								if(strcmp(g_settings.audioplayer_screensaver_dir.c_str(), (DATADIR "/neutrino/icons")) == 0)
-								{
-									// fill only mp3%d.jpg/jpeg
-									if( strstr(file.Name.c_str(), "mp3") && strstr(file.Name.c_str(), "jpg") )
-										filelist.push_back(file);
-								}
-								else
-								{
-									// fill only %s.jpg/.jpeg
-									if( (file.Name.find(".jpg")) || (file.Name.find(".jpeg")) )
-										filelist.push_back(file);
-								}
-							}
-							free(namelist[count]);
-						}
-						free(namelist);
-					
-						if(!filelist.empty())
-						{
-							filename = filelist[_selected].Name.c_str();
-								
-							int ret1 = access(filename, F_OK);
-								
-							dprintf(DEBUG_INFO, "CAudioPlayerGui::show: new pic %s: %s\n", filename, ret1 ? "not found" : "found");
-							
-							// hide radiomode background pic
-							m_frameBuffer->useBackground(false);
-							m_frameBuffer->paintBackground();
-							m_frameBuffer->blit();
-							
-							// show pics
-							if(ret1 == 0) 
-							{
-								_selected++;
-
-								//
-								g_PicViewer->SetScaling((CFrameBuffer::ScalingMode)g_settings.picviewer_scaling);
-								g_PicViewer->SetVisible(g_settings.screen_StartX, g_settings.screen_EndX, g_settings.screen_StartY, g_settings.screen_EndY);
-
-								if(g_settings.video_Ratio == ASPECTRATIO_169)
-									g_PicViewer->SetAspectRatio(16.0/9);
-								else
-									g_PicViewer->SetAspectRatio(4.0/3);
-
-
-								g_PicViewer->ShowImage(filename);
-							}
-							else if(_selected) // when all pics are shown show the mp3 pic once again
-							{
-								_selected = 0;
-							}	
-						} 
-					}
-				} 
-				else*/
 				if(m_screensaver == HIDE_PLAYLIST)
 				{
 					hide();
@@ -527,8 +446,6 @@ int CAudioPlayerGui::show()
 					// paint infos
 					paintInfo();
 				}
-				//else
-				//	_selected = 0;
 			}
 
 		}
@@ -1010,9 +927,6 @@ int CAudioPlayerGui::show()
 
 	if(m_state != CAudioPlayerGui::STOP)
 		stop();	
-	
-	//if(!filelist.empty())
-	//	filelist.clear();
 
 	return ret;
 }
@@ -1873,7 +1787,7 @@ void CAudioPlayerGui::paintHead()
 		strCaption = g_Locale->getText(LOCALE_AUDIOPLAYER_HEAD);
 	
 	// head box
-	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);
+	m_frameBuffer->paintBoxRel(m_x, m_y + m_title_height, m_width, m_theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);
 	
 	// head icon
 	m_frameBuffer->getIconSize(NEUTRINO_ICON_MP3, &icon_head_w, &icon_head_h);
@@ -1948,7 +1862,7 @@ void CAudioPlayerGui::paintFoot()
 	int ButtonWidth2 = (m_width - 50) / 2;
 	
 	// foot
-	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING);
+	m_frameBuffer->paintBoxRel(m_x, top, m_width, 2*m_buttonHeight, COL_INFOBAR_SHADOW_PLUS_1, RADIUS_MID, CORNER_BOTTOM);
 	
 	//
 	m_frameBuffer->paintHLine(m_x, m_x + m_width, top, COL_INFOBAR_SHADOW_PLUS_1);

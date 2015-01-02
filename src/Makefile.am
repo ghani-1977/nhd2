@@ -9,6 +9,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libxmltree \
 	-I$(top_srcdir)/lib/libmd5sum \
+	-I$(top_srcdir)/lib/libupnpclient \
 	@FREETYPE_CFLAGS@
 
 if BOXTYPE_COOLSTREAM
@@ -58,6 +59,7 @@ neutrino_LDADD = \
 	$(top_builddir)/lib/libmd5sum/libtuxbox-md5sum.a \
 	$(top_builddir)/lib/libdvbsub/libdvbsub.a \
 	$(top_builddir)/lib/libtuxtxt/libtuxtxt.a \
+	$(top_builddir)/lib/libupnpclient/libtuxbox-upnpclient.a \
 	@CURL_LIBS@ \
 	@FREETYPE_LIBS@ \
 	@PNG_LIBS@ \

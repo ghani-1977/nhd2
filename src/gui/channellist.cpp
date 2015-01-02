@@ -810,7 +810,7 @@ int CChannelList::show()
 
 			// refresh logo box
 			//frameBuffer->paintBoxRel(x + width - 90 - PIC_W, y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
-			frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING);
+			frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 			// paint logo
 			g_PicViewer->DisplayLogo(chanlist[selected]->channel_id, x + width - 90 - PIC_W, y, PIC_W, theight, true);
@@ -1580,7 +1580,7 @@ void CChannelList::paintDetails(int index)
 	}
 
 	// itembox refresh
-	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING);
+	frameBuffer->paintBoxRel(x + 2, y + height + 2, width - 4, info_height - 4, COL_MENUCONTENTDARK_PLUS_0);
 
 	if (!p_event->description.empty()) 
 	{
@@ -1735,7 +1735,7 @@ void CChannelList::paintItem(int pos)
 		paintDetails(curr);
 
 		// refresh logo box
-		frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0, 0, 0, CFrameBuffer::PAINT_SHADING);
+		frameBuffer->paintBoxRel(x + width - (BORDER_RIGHT + icon_help_w + 2 + icon_setup_w + 2 + icon_head_w + 2 + PIC_W), y, PIC_W, theight, COL_MENUHEAD_PLUS_0);
 	
 		// paint logo
 		int PIC_W_1 = theight*1.67;
@@ -1925,7 +1925,7 @@ const struct button_label CChannelVListButtons[NUM_VLIST_BUTTONS] =
 void CChannelList::paintHead()
 {
 	// head
-	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP, CFrameBuffer::PAINT_SHADING);	//round
+	frameBuffer->paintBoxRel(x, y, width, theight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_TOP);	//round
 	
 	int ButtonWidth = (width - BORDER_LEFT - BORDER_RIGHT) / 4;
 
@@ -1942,7 +1942,7 @@ void CChannelList::paintHead()
 	// foot
 	int f_x = x;
 	int f_y = y + (height - buttonHeight);
-	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM, CFrameBuffer::PAINT_SHADING); //round
+	frameBuffer->paintBoxRel(f_x, f_y, width, buttonHeight, COL_MENUHEAD_PLUS_0, RADIUS_MID, CORNER_BOTTOM); //round
 	
 	// foot buttons
 	::paintButtons(frameBuffer, g_Font[SNeutrinoSettings::FONT_TYPE_INFOBAR_SMALL], g_Locale, f_x + BORDER_RIGHT, f_y + (buttonHeight - icon_footer_h)/2, ButtonWidth, vlist ? NUM_VLIST_BUTTONS : NUM_LIST_BUTTONS, vlist ? CChannelVListButtons : CChannelListButtons);

@@ -563,7 +563,7 @@ void CFrameBuffer::paletteSet(struct fb_cmap *map)
 	}
 }
 
-void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius, int type, int mode)
+void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int dy, /*const*/ fb_pixel_t col, int radius, int type)
 {
 	if (!getActive())
 		return;
@@ -689,14 +689,7 @@ void CFrameBuffer::paintBoxRel(const int x, const int y, const int dx, const int
         	for (int i = 0; i < dxx; i++)
             		*(dest0++) = col;
 		
-        	pos += stride;
-		
-#if defined (ENABLE_SHADING)
-		if(mode == PAINT_SHADING)
-			col += 2;
-		else if(mode == PAINT_LIGHTING)
-			col -= 2;
-#endif		
+        	pos += stride;	
     	}
 }
 

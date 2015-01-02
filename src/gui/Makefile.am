@@ -21,6 +21,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib/libnet \
 	-I$(top_srcdir)/lib/libconfigfile \
 	-I$(top_srcdir)/lib/libxmltree \
+	-I$(top_srcdir)/lib/libupnpclient \
 	@CURL_CFLAGS@ \
 	@FREETYPE_CFLAGS@ 
 
@@ -50,7 +51,7 @@ libneutrino_gui_a_SOURCES = \
 
 libneutrino_gui2_a_SOURCES = \
 	color.cpp motorcontrol.cpp hdd_menu.cpp \
-	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp webtv.cpp
+	alphasetup.cpp dvbsub_select.cpp psisetup.cpp opkg_manager.cpp webtv.cpp upnpbrowser.cpp
 
 if ENABLE_CI
 libneutrino_gui2_a_SOURCES += cam_menu.cpp
